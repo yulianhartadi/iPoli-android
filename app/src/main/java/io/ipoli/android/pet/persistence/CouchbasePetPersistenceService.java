@@ -58,17 +58,6 @@ public class CouchbasePetPersistenceService extends BaseCouchbasePersistenceServ
     }
 
     @Override
-    public void listenById(String id, OnDataChangedListener<Pet> listener) {
-
-    }
-
-
-    @Override
-    public void removeDataChangedListener(OnDataChangedListener<?> listener) {
-
-    }
-
-    @Override
     public void find(OnDataChangedListener<Pet> listener) {
         Query query = allPetsView.createQuery();
         try {

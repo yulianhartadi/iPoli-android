@@ -44,6 +44,11 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
     }
 
     @Override
+    public void save(List<T> objects) {
+
+    }
+
+    @Override
     public void save(T obj) {
         DatabaseReference collectionRef = getCollectionReference();
         boolean isNew = StringUtils.isEmpty(obj.getId());
@@ -95,19 +100,6 @@ public abstract class BaseFirebasePersistenceService<T extends PersistedObject> 
             query.removeEventListener(childEventListener);
         }
         childListeners.clear();
-    }
-
-    @Override
-    public void removeDataChangedListener(OnDataChangedListener<?> listener) {
-        if (!listenerToValueListener.containsKey(listener)) {
-            return;
-        }
-        ValueEventListener valueEventListener = listenerToValueListener.get(listener);
-        Query query = valueListeners.get(valueEventListener);
-        query.removeEventListener(valueEventListener);
-
-        valueListeners.remove(valueEventListener);
-        listenerToValueListener.remove(listener);
     }
 
     protected abstract Class<T> getModelClass();

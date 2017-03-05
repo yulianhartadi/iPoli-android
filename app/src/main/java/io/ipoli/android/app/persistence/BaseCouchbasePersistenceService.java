@@ -3,12 +3,14 @@ package io.ipoli.android.app.persistence;
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
+import com.couchbase.lite.DocumentChange;
 import com.couchbase.lite.LiveQuery;
 import com.couchbase.lite.UnsavedRevision;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.app.utils.StringUtils;
@@ -57,7 +59,16 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
                 e.printStackTrace();
             }
         }
+    }
 
+    @Override
+    public void save(List<T> objects) {
+        database.runInTransaction(() -> {
+            for (T o : objects) {
+                save(o);
+            }
+            return true;
+        });
     }
 
     @Override
@@ -93,6 +104,22 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
             Document doc = entry.getKey();
             doc.removeChangeListener(entry.getValue());
         }
+    }
+
+    @Override
+    public void listenById(String id, OnDataChangedListener<T> listener) {
+        Document.ChangeListener changeListener = event -> {
+            DocumentChange change = event.getChange();
+            if (change.isDeletion()) {
+                listener.onDataChanged(null);
+            } else {
+                listener.onDataChanged(toObject(change.getAddedRevision().getProperties()));
+            }
+        };
+        Document doc = database.getExistingDocument(id);
+        doc.addChangeListener(changeListener);
+        documentToListener.put(doc, changeListener);
+        listener.onDataChanged(toObject(doc.getProperties()));
     }
 
 //    @Override

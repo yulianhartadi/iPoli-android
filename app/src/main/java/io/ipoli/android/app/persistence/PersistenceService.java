@@ -1,5 +1,7 @@
 package io.ipoli.android.app.persistence;
 
+import java.util.List;
+
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 
 /**
@@ -10,6 +12,8 @@ public interface PersistenceService<T extends PersistedObject> {
 
     void save(T obj);
 
+    void save(List<T> objects);
+
     void findById(String id, OnDataChangedListener<T> listener);
 
     void listenById(String id, OnDataChangedListener<T> listener);
@@ -17,6 +21,4 @@ public interface PersistenceService<T extends PersistedObject> {
     void delete(T object);
 
     void removeAllListeners();
-
-    void removeDataChangedListener(OnDataChangedListener<?> listener);
 }

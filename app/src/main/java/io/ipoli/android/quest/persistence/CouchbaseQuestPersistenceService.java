@@ -6,8 +6,6 @@ import android.util.Pair;
 
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
-import com.couchbase.lite.Document;
-import com.couchbase.lite.DocumentChange;
 import com.couchbase.lite.LiveQuery;
 import com.couchbase.lite.Query;
 import com.couchbase.lite.QueryEnumerator;
@@ -123,27 +121,6 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     @Override
     protected Class<Quest> getModelClass() {
         return Quest.class;
-    }
-
-    @Override
-    public void listenById(String id, OnDataChangedListener<Quest> listener) {
-        Document.ChangeListener changeListener = event -> {
-            DocumentChange change = event.getChange();
-            if (change.isDeletion()) {
-                listener.onDataChanged(null);
-            } else {
-                listener.onDataChanged(toObject(change.getAddedRevision().getProperties()));
-            }
-        };
-        Document doc = database.getExistingDocument(id);
-        doc.addChangeListener(changeListener);
-        documentToListener.put(doc, changeListener);
-        listener.onDataChanged(toObject(doc.getProperties()));
-    }
-
-    @Override
-    public void removeDataChangedListener(OnDataChangedListener<?> listener) {
-
     }
 
     @Override
@@ -334,16 +311,6 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     @Override
     public void populateDeleteQuestData(Quest quest, Map<String, Object> data) {
 
-    }
-
-    @Override
-    public void save(List<Quest> quests) {
-        database.runInTransaction(() -> {
-            for (Quest q : quests) {
-                save(q);
-            }
-            return true;
-        });
     }
 
     @Override

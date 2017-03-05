@@ -45,16 +45,6 @@ public class CouchbaseRewardPersistenceService extends BaseCouchbasePersistenceS
     }
 
     @Override
-    public void listenById(String id, OnDataChangedListener<Reward> listener) {
-
-    }
-
-    @Override
-    public void removeDataChangedListener(OnDataChangedListener<?> listener) {
-
-    }
-
-    @Override
     public void listenForAll(OnDataChangedListener<List<Reward>> listener) {
         LiveQuery query = allRewardsView.createQuery().toLiveQuery();
         LiveQuery.ChangeListener changeListener = event -> {
