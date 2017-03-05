@@ -30,7 +30,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
     private final View allRepeatingQuestsView;
     private final QuestPersistenceService questPersistenceService;
-    private final View repeatingQuestWithQuests;
+    private final View repeatingQuestWithQuestsView;
 
     public CouchbaseRepeatingQuestPersistenceService(Database database, ObjectMapper objectMapper, QuestPersistenceService questPersistenceService) {
         super(database, objectMapper);
@@ -47,9 +47,9 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
             }, "1.0");
         }
 
-        repeatingQuestWithQuests = database.getView("repeatingQuests/withQuests");
-        if (repeatingQuestWithQuests.getMap() == null) {
-            repeatingQuestWithQuests.setMapReduce((document, emitter) -> {
+        repeatingQuestWithQuestsView = database.getView("repeatingQuests/withQuests");
+        if (repeatingQuestWithQuestsView.getMap() == null) {
+            repeatingQuestWithQuestsView.setMapReduce((document, emitter) -> {
                 String type = (String) document.get("type");
                 if (RepeatingQuest.TYPE.equals(type)) {
                     emitter.emit(document.get("_id"), document);
@@ -75,7 +75,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
     @Override
     public void listenById(String id, OnDataChangedListener<RepeatingQuest> listener) {
-        LiveQuery query = repeatingQuestWithQuests.createQuery().toLiveQuery();
+        LiveQuery query = repeatingQuestWithQuestsView.createQuery().toLiveQuery();
         query.setStartKey(id);
         query.setEndKey(id);
         query.setGroupLevel(1);
@@ -105,7 +105,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
     @Override
     public void listenForAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
-        LiveQuery query = repeatingQuestWithQuests.createQuery().toLiveQuery();
+        LiveQuery query = repeatingQuestWithQuestsView.createQuery().toLiveQuery();
         query.setGroupLevel(1);
         LiveQuery.ChangeListener changeListener = event -> {
             if (event.getSource().equals(query)) {
