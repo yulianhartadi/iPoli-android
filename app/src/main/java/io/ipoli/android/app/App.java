@@ -455,7 +455,7 @@ public class App extends MultiDexApplication {
                     q.setPriority(null);
                 }
             }
-            questPersistenceService.update(quests);
+            questPersistenceService.save(quests);
         });
     }
 
@@ -505,10 +505,10 @@ public class App extends MultiDexApplication {
             q.setCompletedAtMinute(Time.now().toMinuteOfDay());
             q.setExperience(experienceRewardGenerator.generate(q));
             q.setCoins(coinsRewardGenerator.generate(q));
-            questPersistenceService.update(q);
+            questPersistenceService.save(q);
             onQuestComplete(q, e.source);
         } else {
-            questPersistenceService.update(q);
+            questPersistenceService.save(q);
             Toast.makeText(this, R.string.quest_complete, Toast.LENGTH_SHORT).show();
         }
     }
@@ -519,7 +519,7 @@ public class App extends MultiDexApplication {
         if (bq instanceof Quest) {
             Quest q = (Quest) bq;
             q.setChallengeId(null);
-            questPersistenceService.update(q);
+            questPersistenceService.save(q);
         } else {
             RepeatingQuest rq = (RepeatingQuest) bq;
             rq.setChallengeId(null);
@@ -544,7 +544,7 @@ public class App extends MultiDexApplication {
         Long coins = quest.getCoins();
         quest.setExperience(null);
         quest.setCoins(null);
-        questPersistenceService.update(quest);
+        questPersistenceService.save(quest);
         avatarPersistenceService.find(avatar -> {
             avatar.removeExperience(xp);
             if (shouldDecreaseLevel(avatar)) {
@@ -608,7 +608,7 @@ public class App extends MultiDexApplication {
             quest.setExperience(experienceRewardGenerator.generate(quest));
             quest.setCoins(coinsRewardGenerator.generate(quest));
         }
-        questPersistenceService.update(quest);
+        questPersistenceService.save(quest);
         if (quest.isCompleted()) {
             onQuestComplete(quest, e.source);
         }

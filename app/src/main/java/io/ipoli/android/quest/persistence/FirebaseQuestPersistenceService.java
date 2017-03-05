@@ -358,12 +358,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         getPlayerReference().updateChildren(data);
     }
 
-    @Override
-    public void listenForDayQuestChange(LocalDate date, OnChangeListener onChangeListener) {
-        Query query = getPlayerReference().child("dayQuests").child(createDayQuestKey(date));
-        FirebaseChildEventListener.listenForChanges(onChangeListener, query, childListeners);
-    }
-
     @NonNull
     private String createDayQuestKey(LocalDate date) {
         return String.valueOf(toStartOfDayUTC(date).getTime());

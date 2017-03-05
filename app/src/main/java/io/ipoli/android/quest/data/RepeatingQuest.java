@@ -88,7 +88,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     @Exclude
     public Time getStartTime() {
-        if (getStartMinute() < 0) {
+        if (getStartMinute() == null) {
             return null;
         }
         return Time.of(getStartMinute());
@@ -267,8 +267,8 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.category = category;
     }
 
-    public int getStartMinute() {
-        return startMinute != null ? startMinute : -1;
+    public Integer getStartMinute() {
+        return startMinute;
     }
 
     public List<SubQuest> getSubQuests() {

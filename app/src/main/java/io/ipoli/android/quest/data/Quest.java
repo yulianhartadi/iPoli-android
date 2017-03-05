@@ -168,7 +168,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @Exclude
     @JsonIgnore
     public Time getStartTime() {
-        if (getStartMinute() < 0) {
+        if (getStartMinute() == null) {
             return null;
         }
         return Time.of(getStartMinute());
@@ -396,7 +396,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     public static Date getStartDateTime(Quest quest) {
-        if (quest.getStartMinute() < 0 || quest.getScheduled() == null) {
+        if (quest.getStartMinute() == null || quest.getScheduled() == null) {
             return null;
         }
         Time startTime = Time.of(quest.getStartMinute());
@@ -459,7 +459,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @Exclude
     @JsonIgnore
     public boolean isScheduled() {
-        return getScheduled() != null && getStartMinute() >= 0;
+        return getScheduled() != null && hasStartTime();
     }
 
     @Exclude
@@ -480,8 +480,8 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return getScheduled() != null && getScheduledDate().before(DateUtils.toStartOfDayUTC(LocalDate.now()));
     }
 
-    public int getStartMinute() {
-        return startMinute != null ? startMinute : -1;
+    public Integer getStartMinute() {
+        return startMinute;
     }
 
     public String getSource() {
@@ -665,7 +665,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @Exclude
     @JsonIgnore
     public boolean hasStartTime() {
-        return getStartMinute() >= 0;
+        return getStartMinute() != null;
     }
 
     public void setCompletedCount(int completedCount) {

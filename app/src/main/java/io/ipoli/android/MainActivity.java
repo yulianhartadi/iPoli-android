@@ -477,7 +477,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (!isForSameDay && showAction) {
             snackbar.setAction(R.string.view, view -> {
                 Time scrollToTime = null;
-                if (quest.getStartMinute() > -1) {
+                if (quest.getStartMinute() != null) {
                     scrollToTime = Time.of(quest.getStartMinute());
                 }
                 eventBus.post(new CalendarDayChangedEvent(new LocalDate(date.getTime()), scrollToTime, CalendarDayChangedEvent.Source.DUPLICATE_QUEST_SNACKBAR));
@@ -515,7 +515,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void pickTimeAndSnoozeQuest(Quest quest, boolean showAction) {
-        Time time = quest.getStartMinute() >= 0 ? Time.of(quest.getStartMinute()) : null;
+        Time time = quest.hasStartTime() ? Time.of(quest.getStartMinute()) : null;
         TimePickerFragment.newInstance(false, time, newTime -> {
             quest.setStartMinute(newTime.toMinuteOfDay());
             saveSnoozedQuest(quest, false, showAction);
@@ -530,7 +530,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void saveSnoozedQuest(Quest quest, boolean isDateChanged, boolean showAction) {
-        questPersistenceService.update(quest);
+        questPersistenceService.save(quest);
         String message = getString(R.string.quest_snoozed);
         if (quest.getScheduledDate() == null) {
             message = getString(R.string.quest_moved_to_inbox);
@@ -545,7 +545,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     changeCurrentFragment(new InboxFragment());
                 } else {
                     Time scrollToTime = null;
-                    if (quest.getStartMinute() > -1) {
+                    if (quest.getStartMinute() != null) {
                         scrollToTime = Time.of(quest.getStartMinute());
                     }
                     eventBus.post(new CalendarDayChangedEvent(new LocalDate(quest.getScheduled()), scrollToTime, CalendarDayChangedEvent.Source.SNOOZE_QUEST_SNACKBAR));

@@ -4,10 +4,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
 
+import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
 import com.couchbase.lite.DocumentChange;
 import com.couchbase.lite.LiveQuery;
+import com.couchbase.lite.Query;
 import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.couchbase.lite.View;
@@ -24,6 +26,7 @@ import java.util.TreeMap;
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestReminder;
+import io.ipoli.android.reminder.data.Reminder;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
@@ -36,6 +39,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
     private final View dayQuestsView;
     private final View inboxQuestsView;
+    private final View questRemindersView;
 
     public CouchbaseQuestPersistenceService(Database database, ObjectMapper objectMapper) {
         super(database, objectMapper);
@@ -66,6 +70,43 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 }
             }, "1.0");
         }
+
+        questRemindersView = database.getView("quests/reminders");
+        if (questRemindersView.getMap() == null) {
+            questRemindersView.setMapReduce((document, emitter) -> {
+                String type = (String) document.get("type");
+                if (Quest.TYPE.equals(type) && document.containsKey("scheduled") && document.containsKey("startMinute") && document.containsKey("reminders")) {
+                    List<Map<String, Object>> reminders = (List<Map<String, Object>>) document.get("reminders");
+                    if(reminders.size() == 0){
+                        return;
+                    }
+                    for (Map<String, Object> r : reminders) {
+                        QuestReminder qReminder = new QuestReminder((String) document.get("name"),
+                                (String) document.get("_id"),
+                                Long.valueOf(r.get("minutesFromStart").toString()),
+                                Long.valueOf(r.get("start").toString()),
+                                (Integer) r.get("notificationId"),
+                                (String) r.get("message"));
+                        emitter.emit(r.get("start"), qReminder);
+                    }
+                }
+            }, (keys, values, rereduce) -> {
+                List<QuestReminder> questReminders = new ArrayList<>();
+                for (Object v : values) {
+                    questReminders.add(toObject(v, QuestReminder.class));
+                }
+                Long key = (Long) keys.get(0);
+                return new Pair<>(key, questReminders);
+            }, "1.0");
+        }
+    }
+
+    @Override
+    public void save(Quest obj) {
+        for (Reminder reminder : obj.getReminders()) {
+            reminder.calculateStartTime(obj);
+        }
+        super.save(obj);
     }
 
     @Override
@@ -199,12 +240,37 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
     @Override
     public void findQuestRemindersAtStartTime(long startTime, OnDataChangedListener<List<QuestReminder>> listener) {
-
+        Query query = questRemindersView.createQuery();
+        query.setStartKey(startTime);
+        query.setEndKey(startTime);
+        query.setGroupLevel(1);
+        try {
+            QueryEnumerator enumerator = query.run();
+            while (enumerator.hasNext()) {
+                QueryRow row = enumerator.next();
+                Pair<Long,List<QuestReminder>> pair = (Pair<Long, List<QuestReminder>>) row.getValue();
+                listener.onDataChanged(pair.second);
+            }
+        } catch (CouchbaseLiteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void findNextReminderTime(OnDataChangedListener<Long> listener) {
-
+        Query query = questRemindersView.createQuery();
+        query.setMapOnly(true);
+        query.setStartKey(System.currentTimeMillis());
+        query.setLimit(1);
+        try {
+            QueryEnumerator enumerator = query.run();
+            while (enumerator.hasNext()) {
+                QueryRow row = enumerator.next();
+                listener.onDataChanged((Long) row.getKey());
+            }
+        } catch (CouchbaseLiteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -254,11 +320,6 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
     @Override
     public void update(List<Quest> quests) {
-
-    }
-
-    @Override
-    public void listenForDayQuestChange(LocalDate date, OnChangeListener onChangeListener) {
 
     }
 

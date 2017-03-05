@@ -148,7 +148,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
         }
 
         if(!quests.isEmpty()) {
-            questPersistenceService.update(quests);
+            questPersistenceService.save(quests);
         }
         if(!repeatingQuests.isEmpty()) {
             repeatingQuestPersistenceService.updateChallengeId(repeatingQuests);

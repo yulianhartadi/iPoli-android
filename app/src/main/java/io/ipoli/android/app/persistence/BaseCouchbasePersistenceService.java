@@ -63,7 +63,11 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
     }
 
     protected T toObject(Object data) {
-        return objectMapper.convertValue(data, getModelClass());
+        return  toObject(data, getModelClass());
+    }
+
+    protected <T> T toObject(Object data, Class<T> clazz) {
+        return objectMapper.convertValue(data, clazz);
     }
 
     @Override

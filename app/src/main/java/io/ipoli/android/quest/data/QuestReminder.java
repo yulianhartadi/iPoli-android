@@ -7,6 +7,18 @@ import io.ipoli.android.reminder.data.Reminder;
  * on 12/24/16.
  */
 
+/**
+ * {
+ * "12398172381789": [{
+ * "minutesFromStart": 10,
+ * "questId": 10,
+ * },
+ * {
+ * "minutesFromStart": 10,
+ * "questId": 10,
+ * }]
+ * }
+ */
 public class QuestReminder {
 
     private Long minutesFromStart;
@@ -17,7 +29,7 @@ public class QuestReminder {
     private String message;
 
     public QuestReminder() {
-        
+
     }
 
     public QuestReminder(Quest quest, Reminder reminder) {
@@ -27,6 +39,15 @@ public class QuestReminder {
         setNotificationId(reminder.getNotificationId());
         setStart(reminder.getStart());
         setMessage(reminder.getMessage());
+    }
+
+    public QuestReminder(String questName, String questId, Long minutesFromStart, Long start, Integer notificationId, String message) {
+        this.questName = questName;
+        this.questId = questId;
+        this.minutesFromStart = minutesFromStart;
+        this.start = start;
+        this.notificationId = notificationId;
+        this.message = message;
     }
 
     public Long getMinutesFromStart() {

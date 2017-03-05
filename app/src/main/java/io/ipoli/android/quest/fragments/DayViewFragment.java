@@ -459,7 +459,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     }
 
     private void saveQuest(Quest q) {
-        questPersistenceService.update(q);
+        questPersistenceService.save(q);
     }
 
     @Override
@@ -485,12 +485,12 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     @Subscribe
     public void onQuestCompleted(QuestCompletedEvent e) {
         Quest quest = e.quest;
-        int completeMinute = quest.getStartMinute() >= 0 ? quest.getStartMinute() : quest.getCompletedAtMinute();
+        int completeMinute = quest.hasStartTime() ? quest.getStartMinute() : quest.getCompletedAtMinute();
         calendarDayView.smoothScrollToTime(Time.of(completeMinute));
     }
 
     private boolean hasNoStartTime(Quest q) {
-        return q.getStartMinute() < 0;
+        return q.getStartMinute() == null;
     }
 
     @Override
