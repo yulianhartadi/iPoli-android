@@ -101,6 +101,8 @@ public class RepeatingQuestActivity extends BaseActivity {
     @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
+    private String repeatingQuestId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,6 +110,8 @@ public class RepeatingQuestActivity extends BaseActivity {
             finish();
             return;
         }
+
+        repeatingQuestId = getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY);
 
         setContentView(R.layout.activity_repeating_quest);
         ButterKnife.bind(this);
@@ -154,19 +158,31 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        repeatingQuestPersistenceService.listenById(repeatingQuestId, this::onRepeatingQuestFound);
+    }
+
+    @Override
+    protected void onStop() {
+        repeatingQuestPersistenceService.removeAllListeners();
+        super.onStop();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         eventBus.register(this);
-        String repeatingQuestId = getIntent().getStringExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY);
-        repeatingQuestPersistenceService.findById(repeatingQuestId, repeatingQuest -> {
-            if (repeatingQuest == null) {
-                finish();
-                return;
-            }
-            this.repeatingQuest = repeatingQuest;
-            eventBus.post(new ScreenShownEvent(EventSource.REPEATING_QUEST));
-            displayRepeatingQuest();
-        });
+    }
+
+    private void onRepeatingQuestFound(RepeatingQuest repeatingQuest) {
+        if (repeatingQuest == null) {
+            finish();
+            return;
+        }
+        this.repeatingQuest = repeatingQuest;
+        eventBus.post(new ScreenShownEvent(EventSource.REPEATING_QUEST));
+        displayRepeatingQuest();
     }
 
     @Override

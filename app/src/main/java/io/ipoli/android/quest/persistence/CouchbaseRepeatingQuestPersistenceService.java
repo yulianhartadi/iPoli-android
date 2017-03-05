@@ -2,10 +2,12 @@ package io.ipoli.android.quest.persistence;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Pair;
 
 import com.couchbase.lite.Database;
 import com.couchbase.lite.LiveQuery;
 import com.couchbase.lite.QueryEnumerator;
+import com.couchbase.lite.QueryRow;
 import com.couchbase.lite.View;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -16,6 +18,7 @@ import java.util.Map;
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.RepeatingQuest;
 
 /**
@@ -26,17 +29,15 @@ import io.ipoli.android.quest.data.RepeatingQuest;
 public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePersistenceService<RepeatingQuest> implements RepeatingQuestPersistenceService {
 
     private final View allRepeatingQuestsView;
-    private final Database database;
-    private final ObjectMapper objectMapper;
     private final QuestPersistenceService questPersistenceService;
+    private final View repeatingQuestWithQuests;
 
     public CouchbaseRepeatingQuestPersistenceService(Database database, ObjectMapper objectMapper, QuestPersistenceService questPersistenceService) {
         super(database, objectMapper);
 
-        allRepeatingQuestsView = database.getView("repeatingQuests/all");
-        this.database = database;
-        this.objectMapper = objectMapper;
         this.questPersistenceService = questPersistenceService;
+
+        allRepeatingQuestsView = database.getView("repeatingQuests/all");
         if (allRepeatingQuestsView.getMap() == null) {
             allRepeatingQuestsView.setMap((document, emitter) -> {
                 String type = (String) document.get("type");
@@ -45,6 +46,56 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
                 }
             }, "1.0");
         }
+
+        repeatingQuestWithQuests = database.getView("repeatingQuests/withQuests");
+        if (repeatingQuestWithQuests.getMap() == null) {
+            repeatingQuestWithQuests.setMapReduce((document, emitter) -> {
+                String type = (String) document.get("type");
+                if (RepeatingQuest.TYPE.equals(type)) {
+                    emitter.emit(document.get("_id"), document);
+                } else if (Quest.TYPE.equals(type) && document.containsKey("repeatingQuestId")) {
+                    emitter.emit(document.get("repeatingQuestId"), document);
+                }
+            }, (keys, values, rereduce) -> {
+                RepeatingQuest repeatingQuest = null;
+                List<Quest> quests = new ArrayList<>();
+                for (Object v : values) {
+                    Map<String, Object> data = (Map<String, Object>) v;
+                    if (RepeatingQuest.TYPE.equals(data.get("type"))) {
+                        repeatingQuest = toObject(data);
+                    } else {
+                        quests.add(toObject(data, Quest.class));
+                    }
+
+                }
+                return new Pair<>(repeatingQuest, quests);
+            }, "1.0");
+        }
+    }
+
+    @Override
+    public void listenById(String id, OnDataChangedListener<RepeatingQuest> listener) {
+        LiveQuery query = repeatingQuestWithQuests.createQuery().toLiveQuery();
+        query.setStartKey(id);
+        query.setEndKey(id);
+        query.setGroupLevel(1);
+        LiveQuery.ChangeListener changeListener = event -> {
+            if (event.getSource().equals(query)) {
+                RepeatingQuest rq = null;
+                QueryEnumerator enumerator = event.getRows();
+                while (enumerator.hasNext()) {
+                    QueryRow row = enumerator.next();
+                    Pair<RepeatingQuest, List<Quest>> pair = (Pair<RepeatingQuest, List<Quest>>) row.getValue();
+                    rq = pair.first;
+                    for (Quest q : pair.second) {
+                        rq.addQuestData(q.getId(), new QuestData(q));
+                    }
+                }
+                final RepeatingQuest result = rq;
+                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
+            }
+        };
+        startLiveQuery(query, changeListener);
     }
 
     @Override
@@ -54,13 +105,20 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
     @Override
     public void listenForAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
-        LiveQuery query = allRepeatingQuestsView.createQuery().toLiveQuery();
+        LiveQuery query = repeatingQuestWithQuests.createQuery().toLiveQuery();
+        query.setGroupLevel(1);
         LiveQuery.ChangeListener changeListener = event -> {
             if (event.getSource().equals(query)) {
                 List<RepeatingQuest> result = new ArrayList<>();
                 QueryEnumerator enumerator = event.getRows();
                 while (enumerator.hasNext()) {
-                    result.add(toObject(enumerator.next().getValue()));
+                    QueryRow row = enumerator.next();
+                    Pair<RepeatingQuest, List<Quest>> pair = (Pair<RepeatingQuest, List<Quest>>) row.getValue();
+                    RepeatingQuest rq = pair.first;
+                    for (Quest q : pair.second) {
+                        rq.addQuestData(q.getId(), new QuestData(q));
+                    }
+                    result.add(rq);
                 }
                 new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
             }
