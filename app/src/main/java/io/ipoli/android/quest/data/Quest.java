@@ -111,8 +111,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.name = name;
         setEndDateFromLocal(endDate);
         setStartDateFromLocal(endDate);
-        setScheduledDate(endDate);
-        setOriginalScheduledDate(endDate);
+        setScheduledDateFromLocal(endDate);
         setStartMinute(null);
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
@@ -157,6 +156,9 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     public void setScheduledDate(Date scheduledDate) {
         previousScheduledDate = scheduled;
         setScheduled(scheduledDate != null ? scheduledDate.getTime() : null);
+        if(getOriginalScheduledDate() == null) {
+            setOriginalScheduledDate(getScheduledDate());
+        }
     }
 
     @Exclude

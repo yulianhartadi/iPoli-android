@@ -309,7 +309,6 @@ public class RepeatingQuestScheduler {
         quest.setStartMinute(repeatingQuest.getStartMinute());
         quest.setEndDate(endDate);
         quest.setStartDate(endDate);
-        quest.setOriginalScheduledDate(endDate);
         quest.setScheduledDate(endDate);
         quest.setCreatedAt(DateUtils.nowUTC().getTime());
         quest.setUpdatedAt(DateUtils.nowUTC().getTime());
