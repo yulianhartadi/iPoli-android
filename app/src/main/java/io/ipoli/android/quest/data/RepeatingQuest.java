@@ -91,7 +91,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
     @Exclude
-    
+    @JsonIgnore
     public Time getStartTime() {
         if (getStartMinute() == null) {
             return null;
@@ -99,6 +99,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return Time.of(getStartMinute());
     }
 
+    @JsonIgnore
     public void setStartTime(Time time) {
         if (time != null) {
             setStartMinute(time.toMinuteOfDay());
