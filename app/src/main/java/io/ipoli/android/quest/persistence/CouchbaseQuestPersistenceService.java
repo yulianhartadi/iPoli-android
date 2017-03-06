@@ -253,12 +253,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     public void findAllForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
 
     }
-
-    @Override
-    public void findAllNotCompletedForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
-
-    }
-
+    
     @Override
     public void findAllUpcomingForRepeatingQuest(LocalDate startDate, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
         Query query = uncompletedQuestsForRepeatingQuestView.createQuery();

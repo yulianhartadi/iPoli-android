@@ -4,8 +4,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
 
+import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.LiveQuery;
+import com.couchbase.lite.Query;
 import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.couchbase.lite.View;
@@ -184,12 +186,36 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
     }
 
     @Override
-    public void update(RepeatingQuest repeatingQuest) {
-
+    public void delete(RepeatingQuest repeatingQuest) {
+        database.runInTransaction(() -> {
+            Query query = repeatingQuestWithQuestsView.createQuery();
+            query.setStartKey(repeatingQuest.getId());
+            query.setEndKey(repeatingQuest.getId());
+            query.setGroupLevel(1);
+            try {
+                QueryEnumerator enumerator = query.run();
+                while (enumerator.hasNext()) {
+                    Pair<RepeatingQuest, List<Quest>> pair = (Pair<RepeatingQuest, List<Quest>>) enumerator.next().getValue();
+                    List<Quest> quests = pair.second;
+                    for(Quest q : quests) {
+                        if(q.isCompleted()) {
+                            q.setRepeatingQuestId(null);
+                            questPersistenceService.save(q);
+                        } else {
+                            questPersistenceService.delete(q);
+                        }
+                    }
+                    CouchbaseRepeatingQuestPersistenceService.super.delete(pair.first);
+                }
+                return true;
+            } catch (CouchbaseLiteException e) {
+                return false;
+            }
+        });
     }
 
     @Override
-    public void delete(RepeatingQuest repeatingQuest, List<Quest> quests) {
+    public void update(RepeatingQuest repeatingQuest) {
 
     }
 

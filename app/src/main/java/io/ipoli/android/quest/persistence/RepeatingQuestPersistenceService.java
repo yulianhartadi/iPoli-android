@@ -33,6 +33,4 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
     void update(RepeatingQuest repeatingQuest, List<Quest> questsToRemove, List<Quest> questsToCreate);
 
     void update(RepeatingQuest repeatingQuest);
-
-    void delete(RepeatingQuest repeatingQuest, List<Quest> quests);
 }

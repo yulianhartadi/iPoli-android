@@ -12,7 +12,6 @@ import org.joda.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.StringUtils;
@@ -99,27 +98,6 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
 //        populateNewRepeatingQuest(data, repeatingQuest, quests);
 //        getPlayerReference().updateChildren(data);
 //    }
-
-    @Override
-    public void delete(RepeatingQuest repeatingQuest, List<Quest> quests) {
-        Map<String, Object> data = new HashMap<>();
-        if (!StringUtils.isEmpty(repeatingQuest.getChallengeId())) {
-            data.put("/challenges/" + repeatingQuest.getChallengeId() + "/repeatingQuestIds/" + repeatingQuest.getId(), null);
-            data.put("/challenges/" + repeatingQuest.getChallengeId() + "/challengeRepeatingQuests/" + repeatingQuest.getId(), null);
-        }
-        data.put("/repeatingQuests/" + repeatingQuest.getId(), null);
-
-        Set<String> orphanQuestIds = repeatingQuest.getQuestsData().keySet();
-        for (Quest quest : quests) {
-            orphanQuestIds.remove(quest.getId());
-            questPersistenceService.populateDeleteQuestDataFromRepeatingQuest(quest, data);
-        }
-
-        for (String questId : orphanQuestIds) {
-            data.put("/quests/" + questId + "/repeatingQuestId", null);
-        }
-        getPlayerReference().updateChildren(data);
-    }
 
     @Override
     public void update(RepeatingQuest repeatingQuest, List<Quest> questsToRemove, List<Quest> questsToCreate) {

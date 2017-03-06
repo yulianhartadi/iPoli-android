@@ -162,7 +162,6 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
                 return false;
             }
         });
-
     }
 
     private void removeChallengeIdFromQuests(List<RepeatingQuest> repeatingQuests, List<Quest> quests) {
