@@ -136,6 +136,11 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
     }
 
     @Override
+    public void delete(Challenge object) {
+        delete(object, false);
+    }
+
+    @Override
     public void delete(Challenge challenge, boolean deleteWithQuests) {
         database.runInTransaction(() -> {
 
