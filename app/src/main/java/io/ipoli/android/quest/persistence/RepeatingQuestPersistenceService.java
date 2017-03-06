@@ -30,6 +30,8 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     void saveWithQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests);
 
+    void saveWithQuests(RepeatingQuest repeatingQuest, List<Quest>quests);
+
     void update(RepeatingQuest repeatingQuest, List<Quest> questsToRemove, List<Quest> questsToCreate);
 
     void update(RepeatingQuest repeatingQuest);

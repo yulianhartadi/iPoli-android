@@ -732,12 +732,8 @@ public class App extends MultiDexApplication {
     public void onNewRepeatingQuest(NewRepeatingQuestEvent e) {
         RepeatingQuest repeatingQuest = e.repeatingQuest;
         repeatingQuest.setDuration(Math.max(repeatingQuest.getDuration(), Constants.QUEST_MIN_DURATION));
-
-        repeatingQuestPersistenceService.save(repeatingQuest);
-
         List<Quest> quests = repeatingQuestScheduler.scheduleAhead(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
-
-        questPersistenceService.save(quests);
+        repeatingQuestPersistenceService.saveWithQuests(repeatingQuest, quests);
     }
 
     @Subscribe

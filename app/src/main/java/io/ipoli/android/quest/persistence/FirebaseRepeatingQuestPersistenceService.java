@@ -201,6 +201,11 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
         getPlayerReference().updateChildren(data);
     }
 
+    @Override
+    public void saveWithQuests(RepeatingQuest repeatingQuest, List<Quest> quests) {
+
+    }
+
     private void populateNewRepeatingQuest(Map<String, Object> data, RepeatingQuest repeatingQuest, List<Quest> quests) {
         DatabaseReference rqRef = getCollectionReference().push();
         repeatingQuest.setId(rqRef.getKey());

@@ -12,6 +12,7 @@ import com.couchbase.lite.View;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -164,6 +165,13 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
             }
             return true;
         });
+    }
+
+    @Override
+    public void saveWithQuests(RepeatingQuest repeatingQuest, List<Quest> quests) {
+        saveWithQuests(new HashMap<RepeatingQuest, List<Quest>>() {{
+            put(repeatingQuest, quests);
+        }});
     }
 
     @Override
