@@ -145,7 +145,7 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
         for (Map.Entry<LocalDate, List<Quest>> entry : dateToQuests.entrySet()) {
             List<QuestViewModel> vms = new ArrayList<>();
             for (Quest quest : entry.getValue()) {
-                vms.add(new QuestViewModel(getContext(), quest, use24HourFormat));
+                vms.add(new QuestViewModel(getContext(), quest, shouldUse24HourFormat()));
             }
             viewModels.put(entry.getKey(), vms);
         }

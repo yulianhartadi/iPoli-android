@@ -61,6 +61,7 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
     TextView journeyText;
 
     private LocalDate selectedDate;
+    private boolean use24HourFormat;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,6 +85,8 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         }
+
+        use24HourFormat = shouldUse24HourFormat();
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         questList.setLayoutManager(layoutManager);

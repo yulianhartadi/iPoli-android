@@ -35,7 +35,8 @@ import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
-import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
+import io.ipoli.android.player.Player;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.shop.adapters.CoinsStoreAdapter;
 import io.ipoli.android.shop.events.BuyCoinsTappedEvent;
 import io.ipoli.android.shop.events.CoinsPurchasedEvent;
@@ -52,7 +53,7 @@ public class CoinsStoreFragment extends BaseFragment {
     private static final String SKU_COINS_1000 = "coins_1000";
     private static final int RC_REQUEST = 10001;
 
-    private Map<String, Integer> skuToValue = new HashMap<String, Integer>(){{
+    private Map<String, Integer> skuToValue = new HashMap<String, Integer>() {{
         put(SKU_COINS_100, 100);
         put(SKU_COINS_300, 300);
         put(SKU_COINS_500, 500);
@@ -82,7 +83,7 @@ public class CoinsStoreFragment extends BaseFragment {
     TextView failureMessage;
 
     @Inject
-    AvatarPersistenceService avatarPersistenceService;
+    PlayerPersistenceService playerPersistenceService;
 
     private Unbinder unbinder;
     private IabHelper iabHelper;
@@ -235,11 +236,10 @@ public class CoinsStoreFragment extends BaseFragment {
     }
 
     private void updateCoins(int coins) {
-        avatarPersistenceService.find(avatar -> {
-            avatar.addCoins(coins);
-            avatarPersistenceService.save(avatar);
-            Snackbar.make(rootLayout, String.format(getString(R.string.coins_bought), coins), Snackbar.LENGTH_SHORT).show();
-        });
+        Player player = playerPersistenceService.get();
+        player.addCoins(coins);
+        playerPersistenceService.save(player);
+        Snackbar.make(rootLayout, String.format(getString(R.string.coins_bought), coins), Snackbar.LENGTH_SHORT).show();
     }
 
     boolean verifyDeveloperPayload(String payload, Purchase p) {

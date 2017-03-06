@@ -15,7 +15,7 @@ import java.util.List;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.avatar.TimeOfDay;
+import io.ipoli.android.app.TimeOfDay;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

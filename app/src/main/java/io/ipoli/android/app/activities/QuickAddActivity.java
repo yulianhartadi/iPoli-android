@@ -7,7 +7,6 @@ import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.TextWatcher;
-import android.text.format.DateFormat;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
@@ -79,7 +78,7 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
     @Inject
     PrettyTimeParser prettyTimeParser;
 
-    enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN}
+    private enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN}
 
     private TextWatcherState textWatcherState = TextWatcherState.GUI_CHANGE;
 
@@ -93,7 +92,7 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
         questParser = new QuestParser(prettyTimeParser);
         String additionalText = getIntent().getStringExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT);
 
-        suggestionsManager = SuggestionsManager.createForQuest(prettyTimeParser, localStorage.readBool(Constants.KEY_24_HOUR_TIME_FORMAT, DateFormat.is24HourFormat(this)));
+        suggestionsManager = SuggestionsManager.createForQuest(prettyTimeParser, shouldUse24HourFormat());
         suggestionsManager.setSuggestionsUpdatedListener(this);
 
         initSuggestions();
@@ -266,7 +265,7 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
     @Override
     public void onSuggestionsUpdated() {
         if (adapter != null) {
-            if(suggestionsManager.getSuggestions().size() > MAX_VISIBLE_SUGGESTION_ITEMS) {
+            if (suggestionsManager.getSuggestions().size() > MAX_VISIBLE_SUGGESTION_ITEMS) {
                 questText.setDropDownHeight((int) ViewUtils.dpToPx(MAX_VISIBLE_SUGGESTION_ITEMS * SUGGESTION_ITEM_HEIGHT_DP, getResources()));
             } else {
                 questText.setDropDownHeight(ViewGroup.LayoutParams.WRAP_CONTENT);

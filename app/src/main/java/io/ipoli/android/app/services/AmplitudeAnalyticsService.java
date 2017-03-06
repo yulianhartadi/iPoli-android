@@ -54,7 +54,7 @@ import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.avatar.events.AvatarCoinsTappedEvent;
+import io.ipoli.android.app.events.AvatarCoinsTappedEvent;
 import io.ipoli.android.challenge.events.AcceptChallengeEvent;
 import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
 import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;

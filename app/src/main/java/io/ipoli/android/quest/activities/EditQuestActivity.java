@@ -697,7 +697,7 @@ public class EditQuestActivity extends BaseActivity implements
     private void populateStartTime(Integer startMinute) {
         if (startMinute != null) {
             populateTimesADay(1);
-            startTimeText.setText(Time.of(startMinute).toString(use24HourFormat));
+            startTimeText.setText(Time.of(startMinute).toString(shouldUse24HourFormat()));
             startTimeText.setTag(startMinute);
         } else {
             startTimeText.setText(R.string.do_not_know);

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -25,6 +24,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Quest;
 
 public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
@@ -40,13 +40,16 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     LocalStorage localStorage;
 
     @Inject
+    PlayerPersistenceService playerPersistenceService;
+
+    @Inject
     Gson gson;
 
     public QuestRemoteViewsFactory(Context context) {
         App.getAppComponent(context).inject(this);
         this.quests = new ArrayList<>();
         this.context = context;
-        use24HourFormat = localStorage.readBool(Constants.KEY_24_HOUR_TIME_FORMAT, DateFormat.is24HourFormat(context));
+        use24HourFormat = playerPersistenceService.get().getUse24HourFormat();
     }
 
     @Override

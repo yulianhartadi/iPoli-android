@@ -197,8 +197,8 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
                 while (enumerator.hasNext()) {
                     Pair<RepeatingQuest, List<Quest>> pair = (Pair<RepeatingQuest, List<Quest>>) enumerator.next().getValue();
                     List<Quest> quests = pair.second;
-                    for(Quest q : quests) {
-                        if(q.isCompleted()) {
+                    for (Quest q : quests) {
+                        if (q.isCompleted()) {
                             q.setRepeatingQuestId(null);
                             questPersistenceService.save(q);
                         } else {

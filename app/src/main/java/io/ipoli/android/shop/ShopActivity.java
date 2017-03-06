@@ -25,8 +25,9 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.ResourceUtils;
-import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
-import io.ipoli.android.pet.persistence.PetPersistenceService;
+import io.ipoli.android.pet.data.Pet;
+import io.ipoli.android.player.Player;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.shop.events.BuyPetRequestEvent;
 import io.ipoli.android.shop.events.PetBoughtEvent;
 import io.ipoli.android.shop.viewmodels.PetViewModel;
@@ -38,10 +39,7 @@ import io.ipoli.android.shop.viewmodels.PetViewModel;
 public class ShopActivity extends BaseActivity {
 
     @Inject
-    PetPersistenceService petPersistenceService;
-
-    @Inject
-    AvatarPersistenceService avatarPersistenceService;
+    PlayerPersistenceService playerPersistenceService;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -62,21 +60,19 @@ public class ShopActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        petPersistenceService.find(pet -> {
-            String[] descriptions = new String[]{"Cute tail", "Fancy ears", "Flying ears", "Crazy teeth", "Chicken invader"};
-            List<PetViewModel> petViewModels = new ArrayList<>();
-            for (int i = 0; i < descriptions.length; i++) {
-                int petIndex = i + 1;
-                String pictureName = "pet_" + petIndex;
-                if (pet.getPicture().equals(pictureName)) {
-                    continue;
-                }
-                petViewModels.add(new PetViewModel(descriptions[i], 500,
-                        ResourceUtils.extractDrawableResource(this, pictureName),
-                        ResourceUtils.extractDrawableResource(this, pictureName + "_happy"), pictureName));
+        String[] descriptions = new String[]{"Cute tail", "Fancy ears", "Flying ears", "Crazy teeth", "Chicken invader"};
+        List<PetViewModel> petViewModels = new ArrayList<>();
+        for (int i = 0; i < descriptions.length; i++) {
+            int petIndex = i + 1;
+            String pictureName = "pet_" + petIndex;
+            if (getPlayer().getPet().getPicture().equals(pictureName)) {
+                continue;
             }
-            viewPager.setAdapter(new ShopPetAdapter(this, petViewModels, eventBus));
-        });
+            petViewModels.add(new PetViewModel(descriptions[i], 500,
+                    ResourceUtils.extractDrawableResource(this, pictureName),
+                    ResourceUtils.extractDrawableResource(this, pictureName + "_happy"), pictureName));
+        }
+        viewPager.setAdapter(new ShopPetAdapter(this, petViewModels, eventBus));
         eventBus.post(new ScreenShownEvent(EventSource.SHOP));
     }
 
@@ -101,32 +97,28 @@ public class ShopActivity extends BaseActivity {
 
     @Subscribe
     public void onBuyPetRequest(BuyPetRequestEvent e) {
-        avatarPersistenceService.find(avatar -> {
-            PetViewModel vm = e.petViewModel;
-            if (avatar.getCoins() < vm.getPrice()) {
-                Toast.makeText(this, R.string.not_enough_coins_to_buy_pet, Toast.LENGTH_SHORT).show();
-                return;
-            }
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setIcon(R.drawable.logo)
-                    .setTitle(R.string.buy_pet_confirm_title)
-                    .setMessage(R.string.buy_pet_confirm_message)
-                    .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
-                        eventBus.post(new PetBoughtEvent(e.petViewModel));
-                        avatar.removeCoins(vm.getPrice());
-                        avatarPersistenceService.save(avatar);
-                        petPersistenceService.find(pet -> {
-                            pet.setPicture(vm.getPictureName());
-                            pet.setHealthPointsPercentage(Constants.DEFAULT_PET_HP);
-                            petPersistenceService.save(pet);
-                            finish();
-                        });
-                    })
-                    .setNegativeButton(R.string.cancel, (dialog, which) -> {
+        Player player = getPlayer();
+        PetViewModel vm = e.petViewModel;
+        if (player.getCoins() < vm.getPrice()) {
+            Toast.makeText(this, R.string.not_enough_coins_to_buy_pet, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setIcon(R.drawable.logo)
+                .setTitle(R.string.buy_pet_confirm_title)
+                .setMessage(R.string.buy_pet_confirm_message)
+                .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
+                    eventBus.post(new PetBoughtEvent(e.petViewModel));
+                    player.removeCoins(vm.getPrice());
+                    Pet pet = player.getPet();
+                    pet.setPicture(vm.getPictureName());
+                    pet.setHealthPointsPercentage(Constants.DEFAULT_PET_HP);
+                    playerPersistenceService.save(player);
+                    finish();
+                })
+                .setNegativeButton(R.string.cancel, (dialog, which) -> {
 
-                    })
-                    .show();
-        });
-
+                })
+                .show();
     }
 }

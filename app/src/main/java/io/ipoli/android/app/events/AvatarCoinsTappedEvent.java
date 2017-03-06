@@ -1,4 +1,4 @@
-package io.ipoli.android.avatar.events;
+package io.ipoli.android.app.events;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

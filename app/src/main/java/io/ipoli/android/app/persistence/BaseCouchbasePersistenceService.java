@@ -89,6 +89,9 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
     }
 
     protected <T> T toObject(Object data, Class<T> clazz) {
+        if (data == null) {
+            return null;
+        }
         return objectMapper.convertValue(data, clazz);
     }
 

@@ -1,7 +1,6 @@
 package io.ipoli.android.quest.generators;
 
-import io.ipoli.android.Constants;
-import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -9,19 +8,19 @@ import io.ipoli.android.app.utils.LocalStorage;
  */
 public abstract class BaseRewardGenerator implements RewardGenerator {
 
-    private final LocalStorage localStorage;
+    private final PlayerPersistenceService playerPersistenceService;
 
-    public BaseRewardGenerator(LocalStorage localStorage) {
-        this.localStorage = localStorage;
+    public BaseRewardGenerator(PlayerPersistenceService playerPersistenceService) {
+        this.playerPersistenceService = playerPersistenceService;
     }
 
     protected double getXpBonusMultiplier() {
-        int xpBonusPercentage = localStorage.readInt(Constants.KEY_XP_BONUS_PERCENTAGE, 0);
+        int xpBonusPercentage = playerPersistenceService.get().getPet().getExperienceBonusPercentage();
         return (xpBonusPercentage + 100) / 100.0;
     }
 
     protected double getCoinsBonusMultiplier() {
-        int coinsBonusPercentage = localStorage.readInt(Constants.KEY_COINS_BONUS_PERCENTAGE, 0);
+        int coinsBonusPercentage = playerPersistenceService.get().getPet().getCoinsBonusPercentage();
         return (coinsBonusPercentage + 100) / 100.0;
     }
 }

@@ -4,7 +4,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 
@@ -17,13 +17,13 @@ public class RewardGeneratorModule {
 
     @Provides
     @Singleton
-    public ExperienceRewardGenerator provideExperienceRewardGenerator(LocalStorage localStorage) {
-        return new ExperienceRewardGenerator(localStorage);
+    public ExperienceRewardGenerator provideExperienceRewardGenerator(PlayerPersistenceService playerPersistenceService) {
+        return new ExperienceRewardGenerator(playerPersistenceService);
     }
 
     @Provides
     @Singleton
-    public CoinsRewardGenerator provideCoinsRewardGenerator(LocalStorage localStorage) {
-        return new CoinsRewardGenerator(localStorage);
+    public CoinsRewardGenerator provideCoinsRewardGenerator(PlayerPersistenceService playerPersistenceService) {
+        return new CoinsRewardGenerator(playerPersistenceService);
     }
 }

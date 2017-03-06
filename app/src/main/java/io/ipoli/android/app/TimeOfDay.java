@@ -1,4 +1,4 @@
-package io.ipoli.android.avatar;
+package io.ipoli.android.app;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

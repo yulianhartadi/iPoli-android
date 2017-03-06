@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import io.ipoli.android.avatar.TimeOfDay;
+import io.ipoli.android.app.TimeOfDay;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -135,8 +135,6 @@ public interface Constants {
     String DEFAULT_PET_BACKGROUND_IMAGE = "pet_background_1";
 
     Integer DEFAULT_PET_HP = 80;
-    String KEY_XP_BONUS_PERCENTAGE = "XP_BONUS";
-    String KEY_COINS_BONUS_PERCENTAGE = "COINS_BONUS";
     double XP_BONUS_PERCENTAGE_OF_HP = 20.0;
     double COINS_BONUS_PERCENTAGE_OF_HP = 10.0;
     int MAX_PET_COIN_BONUS = 10;
@@ -154,15 +152,7 @@ public interface Constants {
     double NO_QUESTS_PENALTY_COEFFICIENT = 0.3;
     double IMPORTANT_QUEST_PENALTY_PERCENT = 5;
 
-    String KEY_AVATAR_WORK_DAYS = "KEY_AVATAR_WORK_DAYS";
-    String KEY_AVATAR_WORK_START_MINUTE = "KEY_AVATAR_WORK_START_MINUTE";
-    String KEY_AVATAR_WORK_END_MINUTE = "KEY_AVATAR_WORK_END_MINUTE";
-    String KEY_AVATAR_SLEEP_START_MINUTE = "KEY_AVATAR_SLEEP_START_MINUTE";
-    String KEY_AVATAR_SLEEP_END_MINUTE = "KEY_AVATAR_SLEEP_END_MINUTE";
-    String KEY_AVATAR_MOST_PRODUCTIVE_TIMES = "KEY_AVATAR_MOST_PRODUCTIVE_TIMES";
-
     String KEY_WIDGET_AGENDA_QUESTS = "widget_agenda_quests";
-    String KEY_24_HOUR_TIME_FORMAT = "24_HOUR_TIME_FORMAT";
 
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);

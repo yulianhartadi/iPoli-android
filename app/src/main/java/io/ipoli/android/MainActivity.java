@@ -33,7 +33,6 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -44,6 +43,7 @@ import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.activities.MigrationActivity;
+import io.ipoli.android.app.events.AvatarCoinsTappedEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.EventSource;
@@ -66,18 +66,17 @@ import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.avatar.Avatar;
-import io.ipoli.android.avatar.events.AvatarCoinsTappedEvent;
-import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.pet.PetActivity;
-import io.ipoli.android.pet.persistence.PetPersistenceService;
+import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
+import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.PickAvatarPictureActivity;
 import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
@@ -125,16 +124,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     QuestPersistenceService questPersistenceService;
 
     @Inject
-    AvatarPersistenceService avatarPersistenceService;
-
-    @Inject
-    PetPersistenceService petPersistenceService;
+    PlayerPersistenceService playerPersistenceService;
 
     Fragment currentFragment;
 
     private boolean isRateDialogShown;
     public ActionBarDrawerToggle actionBarDrawerToggle;
-    private Avatar avatar;
     private MenuItem navigationItemSelected;
 
     @Override
@@ -188,6 +183,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }
         };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
+
+        updatePlayerInDrawer(getPlayer());
     }
 
     private void onItemSelectedFromDrawer() {
@@ -262,21 +259,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        updateAvatarInDrawer();
-        updatePetInDrawer();
-    }
-
-    @Override
-    protected void onStop() {
-        questPersistenceService.removeAllListeners();
-        avatarPersistenceService.removeAllListeners();
-        petPersistenceService.removeAllListeners();
-        super.onStop();
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             drawerLayout.openDrawer(GravityCompat.START);
@@ -285,68 +267,51 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         return super.onOptionsItemSelected(item);
     }
 
-    private void updateAvatarInDrawer() {
-        avatarPersistenceService.listen(avatar -> {
-            this.avatar = avatar;
+    private void updatePlayerInDrawer(Player player) {
 
-            if (localStorage.readInt(Constants.KEY_AVATAR_SLEEP_END_MINUTE, -1) == -1) {
-                saveAvatarSettings(avatar);
-            }
+        View header = navigationView.getHeaderView(0);
+        TextView level = (TextView) header.findViewById(R.id.avatar_level);
+        level.setText(String.format(getString(R.string.nav_header_player_level), player.getLevel()));
 
-            View header = navigationView.getHeaderView(0);
-            TextView level = (TextView) header.findViewById(R.id.avatar_level);
-            level.setText(String.format(getString(R.string.nav_header_player_level), this.avatar.getLevel()));
-
-            TextView coins = (TextView) header.findViewById(R.id.avatar_coins);
-            coins.setText(String.valueOf(this.avatar.getCoins()));
-            coins.setOnClickListener(view -> {
-                changeCurrentFragment(new CoinsStoreFragment());
-                drawerLayout.closeDrawer(GravityCompat.START);
-                navigationView.setCheckedItem(R.id.store);
-                eventBus.post(new AvatarCoinsTappedEvent());
-            });
-
-            ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
-            experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
-            experienceBar.setProgress(getCurrentProgress(this.avatar));
-
-            CircleImageView avatarPictureView = (CircleImageView) header.findViewById(R.id.avatar_picture);
-            avatarPictureView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, this.avatar.getPicture()));
-            avatarPictureView.setOnClickListener(v -> eventBus.post(new PickAvatarRequestEvent(EventSource.NAVIGATION_DRAWER)));
-
-            TextView currentXP = (TextView) header.findViewById(R.id.avatar_current_xp);
-            currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), this.avatar.getExperience()));
+        TextView coins = (TextView) header.findViewById(R.id.avatar_coins);
+        coins.setText(String.valueOf(player.getCoins()));
+        coins.setOnClickListener(view -> {
+            changeCurrentFragment(new CoinsStoreFragment());
+            drawerLayout.closeDrawer(GravityCompat.START);
+            navigationView.setCheckedItem(R.id.store);
+            eventBus.post(new AvatarCoinsTappedEvent());
         });
+
+        ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
+        experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
+        experienceBar.setProgress(getCurrentProgress(player));
+
+        CircleImageView avatarPictureView = (CircleImageView) header.findViewById(R.id.avatar_picture);
+        avatarPictureView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getPicture()));
+        avatarPictureView.setOnClickListener(v -> eventBus.post(new PickAvatarRequestEvent(EventSource.NAVIGATION_DRAWER)));
+
+        TextView currentXP = (TextView) header.findViewById(R.id.avatar_current_xp);
+        currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), player.getExperience()));
+        updatePetInDrawer(player.getPet());
     }
 
-    private void saveAvatarSettings(Avatar avatar) {
-        localStorage.saveStringSet(Constants.KEY_AVATAR_MOST_PRODUCTIVE_TIMES, new HashSet<>(avatar.getMostProductiveTimesOfDay()));
-        localStorage.saveIntSet(Constants.KEY_AVATAR_WORK_DAYS, new HashSet<>(avatar.getWorkDays()));
-        localStorage.saveInt(Constants.KEY_AVATAR_WORK_START_MINUTE, avatar.getWorkStartMinute());
-        localStorage.saveInt(Constants.KEY_AVATAR_WORK_END_MINUTE, avatar.getWorkEndMinute());
-        localStorage.saveInt(Constants.KEY_AVATAR_SLEEP_START_MINUTE, avatar.getSleepStartMinute());
-        localStorage.saveInt(Constants.KEY_AVATAR_SLEEP_END_MINUTE, avatar.getSleepEndMinute());
+    private void updatePetInDrawer(Pet pet) {
+        View header = navigationView.getHeaderView(0);
+
+        CircleImageView petPictureView = (CircleImageView) header.findViewById(R.id.pet_picture);
+        petPictureView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, pet.getPicture() + "_head"));
+        petPictureView.setOnClickListener(v -> startActivity(new Intent(this, PetActivity.class)));
+
+        ImageView petStateView = (ImageView) header.findViewById(R.id.pet_state);
+        GradientDrawable drawable = (GradientDrawable) petStateView.getBackground();
+        drawable.setColor(ContextCompat.getColor(this, pet.getStateColor()));
     }
 
-    private void updatePetInDrawer() {
-        petPersistenceService.listen(pet -> {
-            View header = navigationView.getHeaderView(0);
-
-            CircleImageView petPictureView = (CircleImageView) header.findViewById(R.id.pet_picture);
-            petPictureView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, pet.getPicture() + "_head"));
-            petPictureView.setOnClickListener(v -> startActivity(new Intent(this, PetActivity.class)));
-
-            ImageView petStateView = (ImageView) header.findViewById(R.id.pet_state);
-            GradientDrawable drawable = (GradientDrawable) petStateView.getBackground();
-            drawable.setColor(ContextCompat.getColor(this, pet.getStateColor()));
-        });
-    }
-
-    private int getCurrentProgress(Avatar avatar) {
-        int currentLevel = avatar.getLevel();
+    private int getCurrentProgress(Player player) {
+        int currentLevel = player.getLevel();
         BigInteger requiredXPForCurrentLevel = ExperienceForLevelGenerator.forLevel(currentLevel);
         BigDecimal xpForNextLevel = new BigDecimal(ExperienceForLevelGenerator.forLevel(currentLevel + 1).subtract(requiredXPForCurrentLevel));
-        BigDecimal currentXP = new BigDecimal(new BigInteger(avatar.getExperience()).subtract(requiredXPForCurrentLevel));
+        BigDecimal currentXP = new BigDecimal(new BigInteger(player.getExperience()).subtract(requiredXPForCurrentLevel));
         return (int) (currentXP.divide(xpForNextLevel, 2, RoundingMode.HALF_UP).doubleValue() * PROGRESS_BAR_MAX_VALUE);
     }
 
@@ -536,7 +501,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             message = getString(R.string.quest_moved_to_inbox);
         }
 
-
         Snackbar snackbar = Snackbar.make(contentContainer, message, Snackbar.LENGTH_LONG);
 
         if (isDateChanged && showAction) {
@@ -610,10 +574,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (requestCode == PICK_PLAYER_PICTURE_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             String picture = data.getStringExtra(Constants.PICTURE_NAME_EXTRA_KEY);
             if (!TextUtils.isEmpty(picture)) {
+                Player player = getPlayer();
                 ImageView avatarImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.avatar_picture);
                 avatarImage.setImageResource(ResourceUtils.extractDrawableResource(this, picture));
-                this.avatar.setPicture(picture);
-                avatarPersistenceService.save(this.avatar);
+                player.setPicture(picture);
+                playerPersistenceService.save(player);
             }
         }
 

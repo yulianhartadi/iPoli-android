@@ -28,28 +28,25 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.pet.events.PetRenamedEvent;
 import io.ipoli.android.pet.events.RevivePetRequest;
-import io.ipoli.android.pet.persistence.PetPersistenceService;
+import io.ipoli.android.player.Player;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
-import io.ipoli.android.app.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.shop.ShopActivity;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/23/16.
  */
-public class PetActivity extends BaseActivity implements OnDataChangedListener<Pet>, TextPickerFragment.OnTextPickedListener {
+public class PetActivity extends BaseActivity implements OnDataChangedListener<Player>, TextPickerFragment.OnTextPickedListener {
 
     @Inject
-    PetPersistenceService petPersistenceService;
-
-    @Inject
-    AvatarPersistenceService avatarPersistenceService;
+    PlayerPersistenceService playerPersistenceService;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -78,7 +75,7 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
     @BindView(R.id.revive)
     Button revive;
 
-    private Pet pet;
+    private Player player;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,12 +97,12 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
     @Override
     protected void onStart() {
         super.onStart();
-        petPersistenceService.listen(this);
+        playerPersistenceService.listen(this);
     }
 
     @Override
     protected void onStop() {
-        petPersistenceService.removeAllListeners();
+        playerPersistenceService.removeAllListeners();
         super.onStop();
     }
 
@@ -131,14 +128,14 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
                 startActivity(new Intent(this, ShopActivity.class));
                 return true;
             case R.id.action_help:
-                HelpDialog.newInstance(R.layout.fragment_help_dialog_pet , R.string.help_dialog_pet_title, "pet").show(getSupportFragmentManager());
+                HelpDialog.newInstance(R.layout.fragment_help_dialog_pet, R.string.help_dialog_pet_title, "pet").show(getSupportFragmentManager());
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void showRenamePetDialog() {
-        TextPickerFragment.newInstance(pet.getName(), R.string.rename_your_pet, this).show(getSupportFragmentManager());
+        TextPickerFragment.newInstance(player.getPet().getName(), R.string.rename_your_pet, this).show(getSupportFragmentManager());
     }
 
     @Override
@@ -150,15 +147,16 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
     }
 
     private void renamePet(String name) {
-        pet.setName(name);
-        petPersistenceService.save(pet);
+        player.getPet().setName(name);
+        playerPersistenceService.save(player);
         eventBus.post(new PetRenamedEvent(name));
     }
 
     @Override
-    public void onDataChanged(Pet pet) {
-        this.pet = pet;
-        toolbar.setTitle(pet.getName());
+    public void onDataChanged(Player player) {
+        this.player = player;
+        Pet pet = player.getPet();
+        getSupportActionBar().setTitle(pet.getName());
         picture.setImageDrawable(getDrawable(ResourceUtils.extractDrawableResource(this, pet.getPicture())));
         pictureState.setImageDrawable(getDrawable(ResourceUtils.extractDrawableResource(this, pet.getPicture() + "_" + pet.getStateText())));
         xpBonus.setText("XP: +" + pet.getExperienceBonusPercentage() + "%");
@@ -180,17 +178,15 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
 
     @OnClick(R.id.revive)
     public void onReviveClick(View view) {
-        avatarPersistenceService.find(avatar -> {
-            eventBus.post(new RevivePetRequest(pet.getPicture()));
-            long avatarCoins = avatar.getCoins();
-            if (avatarCoins < Constants.REVIVE_PET_COST) {
-                Toast.makeText(this, "Not enough coins to revive " + pet.getName(), Toast.LENGTH_SHORT).show();
-                return;
-            }
-            avatar.removeCoins(Constants.REVIVE_PET_COST);
-            this.pet.addHealthPoints(Constants.DEFAULT_PET_HP);
-            petPersistenceService.save(pet);
-            avatarPersistenceService.save(avatar);
-        });
+        Pet pet = player.getPet();
+        eventBus.post(new RevivePetRequest(pet.getPicture()));
+        long playerCoins = player.getCoins();
+        if (playerCoins < Constants.REVIVE_PET_COST) {
+            Toast.makeText(this, "Not enough coins to revive " + pet.getName(), Toast.LENGTH_SHORT).show();
+            return;
+        }
+        player.removeCoins(Constants.REVIVE_PET_COST);
+        pet.addHealthPoints(Constants.DEFAULT_PET_HP);
+        playerPersistenceService.save(player);
     }
 }
