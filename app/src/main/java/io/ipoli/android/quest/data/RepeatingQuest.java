@@ -91,6 +91,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
     @Exclude
+    
     public Time getStartTime() {
         if (getStartMinute() == null) {
             return null;

@@ -142,11 +142,6 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
     }
 
     @Override
-    public void save(RepeatingQuest repeatingQuest, List<Quest> quests) {
-
-    }
-
-    @Override
     public void updateChallengeId(List<RepeatingQuest> repeatingQuests) {
 
     }
@@ -157,8 +152,18 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
     }
 
     @Override
-    public void save(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests) {
-
+    public void saveWithQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests) {
+        database.runInTransaction(() -> {
+            for (Map.Entry<RepeatingQuest, List<Quest>> entry : repeatingQuestToScheduledQuests.entrySet()) {
+                RepeatingQuest rq = entry.getKey();
+                save(rq);
+                for (Quest q : entry.getValue()) {
+                    q.setRepeatingQuestId(rq.getId());
+                    questPersistenceService.save(q);
+                }
+            }
+            return true;
+        });
     }
 
     @Override

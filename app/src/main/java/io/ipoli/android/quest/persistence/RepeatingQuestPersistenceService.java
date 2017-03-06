@@ -24,13 +24,11 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     void listenForActive(OnDataChangedListener<List<RepeatingQuest>> listener);
 
-    void save(RepeatingQuest repeatingQuest, List<Quest> quests);
-
     void updateChallengeId(List<RepeatingQuest> repeatingQuests);
 
     void saveScheduledRepeatingQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests);
 
-    void save(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests);
+    void saveWithQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests);
 
     void update(RepeatingQuest repeatingQuest, List<Quest> questsToRemove, List<Quest> questsToCreate);
 

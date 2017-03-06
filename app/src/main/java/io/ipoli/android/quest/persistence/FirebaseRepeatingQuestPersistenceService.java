@@ -93,12 +93,12 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
         );
     }
 
-    @Override
-    public void save(RepeatingQuest repeatingQuest, List<Quest> quests) {
-        Map<String, Object> data = new HashMap<>();
-        populateNewRepeatingQuest(data, repeatingQuest, quests);
-        getPlayerReference().updateChildren(data);
-    }
+//    @Override
+//    public void saveWithQuests(RepeatingQuest repeatingQuest, List<Quest> quests) {
+//        Map<String, Object> data = new HashMap<>();
+//        populateNewRepeatingQuest(data, repeatingQuest, quests);
+//        getPlayerReference().updateChildren(data);
+//    }
 
     @Override
     public void delete(RepeatingQuest repeatingQuest, List<Quest> quests) {
@@ -191,7 +191,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public void save(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests) {
+    public void saveWithQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests) {
         Map<String, Object> data = new HashMap<>();
         for (Map.Entry<RepeatingQuest, List<Quest>> entry : repeatingQuestToScheduledQuests.entrySet()) {
             RepeatingQuest repeatingQuest = entry.getKey();

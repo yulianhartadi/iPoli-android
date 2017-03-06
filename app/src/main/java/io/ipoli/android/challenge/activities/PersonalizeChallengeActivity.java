@@ -571,7 +571,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
             repeatingQuestToScheduledQuests.put(repeatingQuest, scheduledQuests);
         }
 
-        repeatingQuestPersistenceService.save(repeatingQuestToScheduledQuests);
+        repeatingQuestPersistenceService.saveWithQuests(repeatingQuestToScheduledQuests);
         finish();
     }
 }

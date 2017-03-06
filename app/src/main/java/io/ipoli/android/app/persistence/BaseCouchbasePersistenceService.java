@@ -131,7 +131,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
     }
 
 //    @Override
-//    public void save(T obj) {
+//    public void saveWithQuests(T obj) {
 //        DatabaseReference collectionRef = getCollectionReference();
 //        boolean isNew = StringUtils.isEmpty(obj.getId());
 //        if (!isNew) {
