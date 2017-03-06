@@ -20,6 +20,8 @@ import io.ipoli.android.pet.data.Pet;
  */
 public class Player extends PersistedObject {
 
+    public static final String TYPE = "player";
+
     private Integer level;
     private String experience;
     private Long coins;
@@ -55,6 +57,8 @@ public class Player extends PersistedObject {
         setSleepStartMinute(Constants.DEFAULT_PLAYER_SLEEP_START_MINUTE);
         setSleepEndMinute(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE);
         setUse24HourFormat(use24HourFormat);
+
+        type = TYPE;
     }
 
     public List<Pet> getPets() {

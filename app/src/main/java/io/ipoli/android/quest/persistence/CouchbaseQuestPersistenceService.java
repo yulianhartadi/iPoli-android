@@ -40,6 +40,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     private final View questRemindersView;
     private final View startedQuestsView;
     private final View uncompletedQuestsForRepeatingQuestView;
+    private final View completedDayQuestsView;
 
     public CouchbaseQuestPersistenceService(Database database, ObjectMapper objectMapper) {
         super(database, objectMapper);
@@ -68,6 +69,16 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 }
                 LocalDate key = new LocalDate((long) keys.get(0));
                 return new Pair<>(key, quests);
+            }, "1.0");
+        }
+
+        completedDayQuestsView = database.getView("quests/byCompletedDay");
+        if (completedDayQuestsView.getMap() == null) {
+            completedDayQuestsView.setMap((document, emitter) -> {
+                String type = (String) document.get("type");
+                if (Quest.TYPE.equals(type) && document.containsKey("completedAt")) {
+                    emitter.emit(document.get("completedAt"), document);
+                }
             }, "1.0");
         }
 
@@ -177,7 +188,6 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                     result.put(value.first, value.second);
                 }
                 new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
-
             }
         };
 
@@ -186,7 +196,18 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
     @Override
     public void findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
-
+        Query query = completedDayQuestsView.createQuery();
+        List<Quest> result = new ArrayList<>();
+        try {
+            QueryEnumerator enumerator = query.run();
+            while (enumerator.hasNext()) {
+                QueryRow row = enumerator.next();
+                result.add(toObject(row.getValue()));
+            }
+            listener.onDataChanged(result);
+        } catch (CouchbaseLiteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -254,7 +275,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 while (enumerator.hasNext()) {
                     QueryRow queryRow = enumerator.next();
                     Quest quest = toObject(queryRow.getValue());
-                    if(quest.isCompleted()) {
+                    if (quest.isCompleted()) {
                         result.add(quest);
                     }
                 }
@@ -281,7 +302,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 while (enumerator.hasNext()) {
                     QueryRow queryRow = enumerator.next();
                     Quest quest = toObject(queryRow.getValue());
-                    if(!quest.isCompleted()) {
+                    if (!quest.isCompleted()) {
                         result.add(quest);
                     }
                 }
