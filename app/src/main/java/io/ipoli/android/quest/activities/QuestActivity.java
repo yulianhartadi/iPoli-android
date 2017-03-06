@@ -397,10 +397,10 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @Subscribe
     public void onOpenNote(OpenNoteEvent e) {
         Note note = e.note;
-        if (note.getNoteType() == Note.Type.URL) {
+        if (note.getNoteTypeValue() == Note.NoteType.URL) {
             Intent noteLink = new Intent(Intent.ACTION_VIEW, Uri.parse(note.getData()));
             startActivity(noteLink);
-        } else if (note.getNoteType() == Note.Type.INTENT) {
+        } else if (note.getNoteTypeValue() == Note.NoteType.INTENT) {
             String packageName = note.getData();
             try {
                 Intent LaunchIntent = getPackageManager().getLaunchIntentForPackage(packageName);

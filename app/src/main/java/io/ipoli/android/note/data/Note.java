@@ -11,9 +11,9 @@ import io.ipoli.android.app.persistence.PersistedObject;
 
 public class Note extends PersistedObject {
 
-    public enum Type {TEXT, INTENT, URL}
+    public enum NoteType {TEXT, INTENT, URL}
 
-    private String type;
+    private String noteType;
     private String text;
     private String data;
 
@@ -21,14 +21,14 @@ public class Note extends PersistedObject {
 
     }
 
-    public Note(Type type, String text, String data) {
-        this.type = type.name();
+    public Note(NoteType noteType, String text, String data) {
+        this.noteType = noteType.name();
         this.text = text;
         this.data = data;
     }
 
     public Note(String text) {
-        this.type = Type.TEXT.name();
+        this.noteType = NoteType.TEXT.name();
         this.text = text;
         this.data = "";
     }
@@ -62,13 +62,13 @@ public class Note extends PersistedObject {
         return createdAt;
     }
 
-    public String getType() {
-        return type;
+    public String getNoteType() {
+        return noteType;
     }
 
     @Exclude
-    public Type getNoteType() {
-        return Type.valueOf(type);
+    public NoteType getNoteTypeValue() {
+        return NoteType.valueOf(noteType);
     }
 
     public String getText() {
@@ -79,8 +79,8 @@ public class Note extends PersistedObject {
         return data;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setNoteType(String noteType) {
+        this.noteType = noteType;
     }
 
     public void setText(String text) {

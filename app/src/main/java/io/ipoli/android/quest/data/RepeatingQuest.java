@@ -387,7 +387,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     public List<Note> getTextNotes() {
         List<Note> textNotes = new ArrayList<>();
         for (Note note : getNotes()) {
-            if (note.getType().equals(Note.Type.TEXT.name())) {
+            if (note.getType().equals(Note.NoteType.TEXT.name())) {
                 textNotes.add(note);
             }
         }
