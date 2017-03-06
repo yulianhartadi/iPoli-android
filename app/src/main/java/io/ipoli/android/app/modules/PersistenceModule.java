@@ -55,8 +55,8 @@ public class PersistenceModule {
     }
 
     @Provides
-    public ChallengePersistenceService provideChallengePersistenceService(Database database, ObjectMapper objectMapper) {
-        return new CouchbaseChallengePersistenceService(database, objectMapper);
+    public ChallengePersistenceService provideChallengePersistenceService(Database database, ObjectMapper objectMapper, QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
+        return new CouchbaseChallengePersistenceService(database, objectMapper, questPersistenceService, repeatingQuestPersistenceService);
     }
 
     @Provides

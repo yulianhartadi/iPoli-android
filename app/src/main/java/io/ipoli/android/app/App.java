@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 
@@ -765,31 +764,7 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onDeleteChallengeRequest(DeleteChallengeRequestEvent e) {
         Challenge challenge = e.challenge;
-        if (e.shouldDeleteQuests) {
-
-            new Thread(() -> {
-
-                CountDownLatch latch = new CountDownLatch(challenge.getRepeatingQuestIds().size());
-                final List<Quest> quests = new ArrayList<>();
-                for (String repeatingQuestId : challenge.getRepeatingQuestIds().keySet()) {
-                    questPersistenceService.findAllForRepeatingQuest(repeatingQuestId, qs -> {
-                        quests.addAll(qs);
-                        latch.countDown();
-                    });
-                }
-
-                try {
-                    latch.await();
-                } catch (InterruptedException ex) {
-                    eventBus.post(new AppErrorEvent(ex));
-                }
-                quests.addAll(challenge.getChallengeQuests().values());
-                challengePersistenceService.deleteWithQuests(challenge, quests);
-            }).start();
-
-        } else {
-            challengePersistenceService.delete(challenge);
-        }
+        challengePersistenceService.delete(challenge, e.shouldDeleteQuests);
     }
 
     @Subscribe

@@ -11,10 +11,8 @@ import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
-import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
-import io.ipoli.android.reminder.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -54,6 +52,11 @@ public class FirebaseChallengePersistenceService extends BaseFirebasePersistence
     }
 
     @Override
+    public void delete(Challenge challenge, boolean deleteWithQuests) {
+
+    }
+
+    @Override
     public void delete(Challenge challenge) {
         Map<String, Object> data = new HashMap<>();
 
@@ -71,43 +74,6 @@ public class FirebaseChallengePersistenceService extends BaseFirebasePersistence
         Map<String, Boolean> repeatingQuestIds = challenge.getRepeatingQuestIds();
         for (String rqId : repeatingQuestIds.keySet()) {
             data.put("/repeatingQuests/" + rqId + "/challengeId", null);
-        }
-
-        data.put("/challenges/" + challenge.getId(), null);
-
-        getPlayerReference().updateChildren(data);
-    }
-
-    @Override
-    public void deleteWithQuests(Challenge challenge, List<Quest> quests) {
-        Map<String, Object> data = new HashMap<>();
-
-        for (Quest quest : quests) {
-            if (quest.isCompleted()) {
-                quest.setRepeatingQuestId(null);
-                quest.setChallengeId(null);
-                if (quest.getScheduled() != null) {
-                    data.put("/dayQuests/" + quest.getScheduled() + "/" + quest.getId(), quest);
-                } else {
-                    data.put("/inboxQuests/" + quest.getId(), quest);
-                }
-            } else {
-                if (quest.getScheduled() != null) {
-                    data.put("/dayQuests/" + quest.getScheduled() + "/" + quest.getId(), null);
-                } else {
-                    data.put("/inboxQuests/" + quest.getId(), null);
-                }
-
-                for (Reminder reminder : quest.getReminders()) {
-                    data.put("/questReminders/" + String.valueOf(reminder.getStart()) + "/" + quest.getId(), null);
-                }
-
-                data.put("/quests/" + quest.getId(), null);
-            }
-        }
-
-        for (String rqId : challenge.getRepeatingQuestIds().keySet()) {
-            data.put("/repeatingQuests/" + rqId, null);
         }
 
         data.put("/challenges/" + challenge.getId(), null);

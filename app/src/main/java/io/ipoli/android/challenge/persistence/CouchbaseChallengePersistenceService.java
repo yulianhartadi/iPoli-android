@@ -4,8 +4,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
 
+import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.LiveQuery;
+import com.couchbase.lite.Query;
 import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.couchbase.lite.View;
@@ -21,6 +23,8 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -30,11 +34,15 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
 
     private final View allChallengesView;
     private final View challengesWithAllQuestsView;
+    private final QuestPersistenceService questPersistenceService;
+    private final RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
-    public CouchbaseChallengePersistenceService(Database database, ObjectMapper objectMapper) {
+    public CouchbaseChallengePersistenceService(Database database, ObjectMapper objectMapper, QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
         super(database, objectMapper);
 
         allChallengesView = database.getView("challenges/all");
+        this.questPersistenceService = questPersistenceService;
+        this.repeatingQuestPersistenceService = repeatingQuestPersistenceService;
         if (allChallengesView.getMap() == null) {
             allChallengesView.setMap((document, emitter) -> {
                 String type = (String) document.get("type");
@@ -128,8 +136,59 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
     }
 
     @Override
-    public void deleteWithQuests(Challenge challenge, List<Quest> repeatingQuestInstances) {
+    public void delete(Challenge challenge, boolean deleteWithQuests) {
+        database.runInTransaction(() -> {
 
+            Query query = challengesWithAllQuestsView.createQuery();
+            query.setStartKey(challenge.getId());
+            query.setEndKey(challenge.getId());
+            query.setGroupLevel(1);
+            try {
+                QueryEnumerator enumerator = query.run();
+                while (enumerator.hasNext()) {
+                    QueryRow row = enumerator.next();
+                    Pair<Challenge, Pair<List<RepeatingQuest>, List<Quest>>> pair = (Pair<Challenge, Pair<List<RepeatingQuest>, List<Quest>>>) row.getValue();
+                    List<RepeatingQuest> repeatingQuests = pair.second.first;
+                    List<Quest> quests = pair.second.second;
+                    if (deleteWithQuests) {
+                        deleteQuestsForChallenge(repeatingQuests, quests);
+                    } else {
+                        removeChallengeIdFromQuests(repeatingQuests, quests);
+                    }
+                    CouchbaseChallengePersistenceService.super.delete(pair.first);
+                }
+                return true;
+            } catch (CouchbaseLiteException e) {
+                return false;
+            }
+        });
+
+    }
+
+    private void removeChallengeIdFromQuests(List<RepeatingQuest> repeatingQuests, List<Quest> quests) {
+        for (Quest q : quests) {
+            q.setChallengeId(null);
+            questPersistenceService.save(q);
+        }
+        for (RepeatingQuest rq : repeatingQuests) {
+            rq.setChallengeId(null);
+            repeatingQuestPersistenceService.save(rq);
+        }
+    }
+
+    private void deleteQuestsForChallenge(List<RepeatingQuest> repeatingQuests, List<Quest> quests) {
+        for (Quest q : quests) {
+            if (q.isCompleted()) {
+                q.setRepeatingQuestId(null);
+                q.setChallengeId(null);
+                questPersistenceService.save(q);
+            } else {
+                questPersistenceService.delete(q);
+            }
+        }
+        for (RepeatingQuest rq : repeatingQuests) {
+            repeatingQuestPersistenceService.delete(rq);
+        }
     }
 
     @Override
