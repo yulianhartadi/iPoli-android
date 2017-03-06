@@ -642,10 +642,6 @@ public class App extends MultiDexApplication {
             }
             repeatingQuest.getScheduledPeriodEndDates().keySet().removeAll(periodsToDelete);
             List<Quest> questsToCreate = repeatingQuestScheduler.scheduleAhead(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
-//            questPersistenceService.saveWithQuests(questsToCreate);
-//            questPersistenceService.delete(questsToRemove);
-//            repeatingQuestPersistenceService.saveWithQuests(repeatingQuest);
-
             repeatingQuestPersistenceService.update(repeatingQuest, questsToRemove, questsToCreate);
         });
     }
