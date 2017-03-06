@@ -268,7 +268,29 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
     @Override
     public void listenForAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
+        LiveQuery query = dayQuestsView.createQuery().toLiveQuery();
+        query.setMapOnly(true);
+        long date = toStartOfDayUTC(currentDate).getTime();
+        query.setStartKey(date);
+        query.setEndKey(date);
 
+        LiveQuery.ChangeListener changeListener = event -> {
+            if (event.getSource().equals(query)) {
+                List<Quest> result = new ArrayList<>();
+                QueryEnumerator enumerator = event.getRows();
+                while (enumerator.hasNext()) {
+                    QueryRow queryRow = enumerator.next();
+                    Quest quest = toObject(queryRow.getValue());
+                    if(!quest.isCompleted()) {
+                        result.add(quest);
+                    }
+                }
+                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
+
+            }
+        };
+
+        startLiveQuery(query, changeListener);
     }
 
     @Override
