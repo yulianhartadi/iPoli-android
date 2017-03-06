@@ -750,7 +750,7 @@ public class App extends MultiDexApplication {
             List<Quest> quests = repeatingQuestScheduler.scheduleAhead(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
             repeatingQuestToScheduledQuests.put(repeatingQuest, quests);
         }
-        repeatingQuestPersistenceService.saveScheduledRepeatingQuests(repeatingQuestToScheduledQuests);
+        repeatingQuestPersistenceService.saveWithQuests(repeatingQuestToScheduledQuests);
     }
 
     private void scheduleNextReminder() {

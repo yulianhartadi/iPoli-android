@@ -179,16 +179,16 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
         getPlayerReference().updateChildren(data);
     }
 
-    @Override
-    public void saveScheduledRepeatingQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests) {
-        Map<String, Object> data = new HashMap<>();
-        for (Map.Entry<RepeatingQuest, List<Quest>> entry : repeatingQuestToScheduledQuests.entrySet()) {
-            RepeatingQuest repeatingQuest = entry.getKey();
-            List<Quest> quests = entry.getValue();
-            populateUpdateRepeatingQuest(data, repeatingQuest, quests);
-        }
-        getPlayerReference().updateChildren(data);
-    }
+//    @Override
+//    public void saveScheduledRepeatingQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests) {
+//        Map<String, Object> data = new HashMap<>();
+//        for (Map.Entry<RepeatingQuest, List<Quest>> entry : repeatingQuestToScheduledQuests.entrySet()) {
+//            RepeatingQuest repeatingQuest = entry.getKey();
+//            List<Quest> quests = entry.getValue();
+//            populateUpdateRepeatingQuest(data, repeatingQuest, quests);
+//        }
+//        getPlayerReference().updateChildren(data);
+//    }
 
     @Override
     public void saveWithQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests) {

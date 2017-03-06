@@ -26,8 +26,6 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     void updateChallengeId(List<RepeatingQuest> repeatingQuests);
 
-    void saveScheduledRepeatingQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests);
-
     void saveWithQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests);
 
     void saveWithQuests(RepeatingQuest repeatingQuest, List<Quest>quests);
