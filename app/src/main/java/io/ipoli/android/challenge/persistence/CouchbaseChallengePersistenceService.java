@@ -192,7 +192,7 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
                 Map<String, Object> value = (Map<String, Object>) enumerator.next().getValue();
                 String name = value.get("name").toString().toLowerCase();
                 String challengeId = (String) value.get("challengeId");
-                if(challenge.getId().equals(challengeId) || !name.contains(searchQuery.toLowerCase())) {
+                if ((challenge != null && challenge.getId().equals(challengeId)) || !name.contains(searchQuery.toLowerCase())) {
                     continue;
                 }
 
@@ -206,6 +206,11 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
         } catch (CouchbaseLiteException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void findAllQuestsAndRepeatingQuests(String query, OnDataChangedListener<Pair<List<RepeatingQuest>, List<Quest>>> listener) {
+        findAllQuestsAndRepeatingQuestsNotForChallenge(query, null, listener);
     }
 
     private void removeChallengeIdFromQuests(List<RepeatingQuest> repeatingQuests, List<Quest> quests) {

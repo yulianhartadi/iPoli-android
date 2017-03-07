@@ -116,7 +116,7 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
 
     @Override
     public void addToChallenge(List<RepeatingQuest> repeatingQuests, Challenge challenge) {
-        
+
     }
 
     private void populateUpdateRepeatingQuest(RepeatingQuest repeatingQuest, Map<String, Object> data) {

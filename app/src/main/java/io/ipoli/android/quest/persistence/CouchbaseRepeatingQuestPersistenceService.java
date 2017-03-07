@@ -105,6 +105,20 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
     @Override
     public void findAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
+        try {
+            QueryEnumerator enumerator = allRepeatingQuestsView.createQuery().run();
+            List<RepeatingQuest> result = new ArrayList<>();
+            while (enumerator.hasNext()) {
+                QueryRow row = enumerator.next();
+                if (row.getDocumentProperties().containsKey("completedAt")) {
+                    continue;
+                }
+                result.add(toObject(row.getValue()));
+            }
+            listener.onDataChanged(result);
+        } catch (CouchbaseLiteException e) {
+            e.printStackTrace();
+        }
 
     }
 
