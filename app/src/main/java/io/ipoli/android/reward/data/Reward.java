@@ -17,6 +17,8 @@ public class Reward extends PersistedObject {
 
     private Integer price;
 
+    private String playerId;
+
     private Long createdAt;
     private Long updatedAt;
 
@@ -81,5 +83,13 @@ public class Reward extends PersistedObject {
     @Override
     public void setUpdatedAt(Long updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(String playerId) {
+        this.playerId = playerId;
     }
 }

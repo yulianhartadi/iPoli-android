@@ -63,6 +63,8 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     private String challengeId;
 
+    private String playerId;
+
     private Integer timesADay;
 
     private String source;
@@ -518,5 +520,13 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
             return TimePreference.ANY;
         }
         return TimePreference.valueOf(preferredStartTime);
+    }
+
+    public String getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(String playerId) {
+        this.playerId = playerId;
     }
 }

@@ -75,6 +75,8 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     private String challengeId;
 
+    private String playerId;
+
     private Long coins;
     private Long experience;
 
@@ -737,5 +739,13 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
             return TimePreference.ANY;
         }
         return TimePreference.valueOf(preferredStartTime);
+    }
+
+    public String getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(String playerId) {
+        this.playerId = playerId;
     }
 }

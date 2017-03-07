@@ -51,6 +51,8 @@ public class Challenge extends PersistedObject implements RewardProvider {
 
     private Long completedAt;
 
+    private String playerId;
+
     private Long coins;
     private Long experience;
 
@@ -398,5 +400,13 @@ public class Challenge extends PersistedObject implements RewardProvider {
             }
         }
         return count;
+    }
+
+    public String getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(String playerId) {
+        this.playerId = playerId;
     }
 }
