@@ -1,7 +1,6 @@
 package io.ipoli.android.player;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.firebase.database.Exclude;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -165,7 +164,7 @@ public class Player extends PersistedObject {
         return mostProductiveTimesOfDay;
     }
 
-    @Exclude
+
     @JsonIgnore
     public List<TimeOfDay> getMostProductiveTimesOfDayList() {
         List<TimeOfDay> timesOfDay = new ArrayList<>();
@@ -183,7 +182,7 @@ public class Player extends PersistedObject {
         this.mostProductiveTimesOfDay = mostProductiveTimesOfDay;
     }
 
-    @Exclude
+
     @JsonIgnore
     public void setMostProductiveTimesOfDayList(List<TimeOfDay> timesOfDay) {
         mostProductiveTimesOfDay = new ArrayList<>();
@@ -207,7 +206,7 @@ public class Player extends PersistedObject {
         return workStartMinute != null ? workStartMinute : -1;
     }
 
-    @Exclude
+
     @JsonIgnore
     public Time getWorkStartTime() {
         if (getWorkStartMinute() < 0) {
@@ -220,7 +219,7 @@ public class Player extends PersistedObject {
         this.workStartMinute = workStartMinute;
     }
 
-    @Exclude
+
     public void setWorkStartTime(Time startTime) {
         if (startTime != null) {
             setWorkStartMinute(startTime.toMinuteOfDay());
@@ -233,7 +232,7 @@ public class Player extends PersistedObject {
         return workEndMinute != null ? workEndMinute : -1;
     }
 
-    @Exclude
+
     public Time getWorkEndTime() {
         if (getWorkEndMinute() < 0) {
             return null;
@@ -245,7 +244,7 @@ public class Player extends PersistedObject {
         this.workEndMinute = workEndMinute;
     }
 
-    @Exclude
+
     @JsonIgnore
     public void setWorkEndTime(Time endTime) {
         if (endTime != null) {
@@ -259,7 +258,7 @@ public class Player extends PersistedObject {
         return sleepStartMinute != null ? sleepStartMinute : -1;
     }
 
-    @Exclude
+
     @JsonIgnore
     public Time getSleepStartTime() {
         if (getSleepStartMinute() < 0) {
@@ -272,7 +271,6 @@ public class Player extends PersistedObject {
         this.sleepStartMinute = sleepStartMinute;
     }
 
-    @Exclude
     @JsonIgnore
     public void setSleepStartTime(Time startTime) {
         if (startTime != null) {
@@ -286,7 +284,7 @@ public class Player extends PersistedObject {
         return sleepEndMinute != null ? sleepEndMinute : -1;
     }
 
-    @Exclude
+
     @JsonIgnore
     public Time getSleepEndTime() {
         if (getSleepEndMinute() < 0) {
@@ -299,7 +297,7 @@ public class Player extends PersistedObject {
         this.sleepEndMinute = sleepEndMinute;
     }
 
-    @Exclude
+
     @JsonIgnore
     public void setSleepEndTime(Time endTime) {
         if (endTime != null) {

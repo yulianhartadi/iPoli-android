@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.amplitude.api.Amplitude;
 import com.facebook.FacebookSdk;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -46,7 +45,6 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.QuickAddActivity;
-import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.DateChangedEvent;
 import io.ipoli.android.app.events.EventSource;
@@ -55,7 +53,6 @@ import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.StartQuickAddEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
-import io.ipoli.android.app.exceptions.PetNotFoundException;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.services.AnalyticsService;
@@ -170,11 +167,6 @@ public class App extends MultiDexApplication {
     }
 
     private void updatePet(Pet pet, int healthPoints, String tag) {
-        if (pet == null) {
-            eventBus.post(new AppErrorEvent(new PetNotFoundException(playerId, tag)));
-            return;
-        }
-
         if (pet.getState() == Pet.PetState.DEAD) {
             return;
         }
@@ -293,8 +285,6 @@ public class App extends MultiDexApplication {
         FacebookSdk.sdkInitialize(getApplicationContext());
         Amplitude.getInstance().initialize(getApplicationContext(), AnalyticsConstants.AMPLITUDE_KEY).enableForegroundTracking(this);
 
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-
         getAppComponent(this).inject(this);
 
         registerServices();
@@ -385,7 +375,6 @@ public class App extends MultiDexApplication {
     private void initAppStart() {
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
         if (versionCode != BuildConfig.VERSION_CODE) {
-            FirebaseDatabase.getInstance().getReference(Constants.API_VERSION).child("players").child(playerId).keepSynced(true);
             scheduleDailyChallenge();
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
             if (versionCode > 0) {

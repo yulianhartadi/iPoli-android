@@ -2,7 +2,6 @@ package io.ipoli.android.quest.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.firebase.database.Exclude;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
@@ -90,15 +89,15 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     private Integer completedCount;
 
-    @Exclude
+
     @JsonIgnore
     private Long previousScheduledDate;
 
-    @Exclude
+
     @JsonIgnore
     private String previousChallengeId;
 
-    @Exclude
+
     @JsonIgnore
     private transient boolean isPlaceholder;
 
@@ -141,19 +140,19 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.scheduled = scheduled;
     }
 
-    @Exclude
+
     @JsonIgnore
     public void setOriginalScheduledDate(Date originalScheduledDate) {
         originalScheduled = originalScheduledDate != null ? originalScheduledDate.getTime() : null;
     }
 
-    @Exclude
+
     @JsonIgnore
     public Date getOriginalScheduledDate() {
         return originalScheduled != null ? new Date(originalScheduled) : null;
     }
 
-    @Exclude
+
     @JsonIgnore
     public void setScheduledDate(Date scheduledDate) {
         previousScheduledDate = scheduled;
@@ -163,13 +162,13 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         }
     }
 
-    @Exclude
+
     @JsonIgnore
     public Date getScheduledDate() {
         return scheduled != null ? new Date(scheduled) : null;
     }
 
-    @Exclude
+
     @JsonIgnore
     public Time getStartTime() {
         if (getStartMinute() == null) {
@@ -178,7 +177,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return Time.of(getStartMinute());
     }
 
-    @Exclude
+
     @JsonIgnore
     public void setStartTime(Time time) {
         if (time != null) {
@@ -188,25 +187,25 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         }
     }
 
-    @Exclude
+
     @JsonIgnore
     public Category getCategoryType() {
         return Category.valueOf(getCategory());
     }
 
-    @Exclude
+
     @JsonIgnore
     public boolean isCompleted() {
         return getCompletedAtDate() != null;
     }
 
-    @Exclude
+
     @JsonIgnore
     public Long getPreviousScheduledDate() {
         return previousScheduledDate;
     }
 
-    @Exclude
+
     @JsonIgnore
     public void setPreviousScheduledDate(Long previousScheduledDate) {
         this.previousScheduledDate = previousScheduledDate;
@@ -266,7 +265,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.repeatingQuestId = repeatingQuestId;
     }
 
-    @Exclude
+
     @JsonIgnore
     public void addReminderStartTime(long startTime) {
         getReminderStartTimes().add(startTime);
@@ -288,13 +287,13 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.priority = priority;
     }
 
-    @Exclude
+
     @JsonIgnore
     public Date getStartDate() {
         return start != null ? new Date(start) : null;
     }
 
-    @Exclude
+
     @JsonIgnore
     public void setStartDate(Date startDate) {
         start = startDate != null ? startDate.getTime() : null;
@@ -308,31 +307,31 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.start = start;
     }
 
-    @Exclude
+
     @JsonIgnore
     public void setStartDateFromLocal(Date startDate) {
         setStartDate(DateUtils.getDate(startDate));
     }
 
-    @Exclude
+
     @JsonIgnore
     public Date getEndDate() {
         return end != null ? new Date(end) : null;
     }
 
-    @Exclude
+
     @JsonIgnore
     public void setEndDate(Date endDate) {
         setEnd(endDate != null ? endDate.getTime() : null);
     }
 
-    @Exclude
+
     @JsonIgnore
     public void setEndDateFromLocal(Date endDate) {
         setEndDate(DateUtils.getDate(endDate));
     }
 
-    @Exclude
+
     @JsonIgnore
     public void setScheduledDateFromLocal(Date scheduledDate) {
         setScheduledDate(DateUtils.getDate(scheduledDate));
@@ -407,13 +406,13 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return new LocalDate(quest.getScheduled(), DateTimeZone.UTC).toDateTime(new LocalTime(startTime.getHours(), startTime.getMinutes())).toDate();
     }
 
-    @Exclude
+
     @JsonIgnore
     public Date getActualStartDate() {
         return actualStart != null ? new Date(actualStart) : null;
     }
 
-    @Exclude
+
     @JsonIgnore
     public void setActualStartDate(Date actualStartDate) {
         actualStart = actualStartDate != null ? actualStartDate.getTime() : null;
@@ -435,13 +434,13 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.completedAtMinute = completedAtMinute;
     }
 
-    @Exclude
+
     @JsonIgnore
     public Date getCompletedAtDate() {
         return completedAt != null ? new Date(completedAt) : null;
     }
 
-    @Exclude
+
     @JsonIgnore
     public void setCompletedAtDateFromLocal(Date completedAtDate) {
         Date date = DateUtils.getDate(completedAtDate);
@@ -460,25 +459,25 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return quest.getActualStartDate() != null && quest.getCompletedAtDate() == null;
     }
 
-    @Exclude
+
     @JsonIgnore
     public boolean isScheduled() {
         return getScheduled() != null && hasStartTime();
     }
 
-    @Exclude
+
     @JsonIgnore
     public boolean isScheduledForToday() {
         return isScheduledFor(new LocalDate());
     }
 
-    @Exclude
+
     @JsonIgnore
     public boolean isScheduledFor(LocalDate date) {
         return date.isEqual(new LocalDate(getScheduled(), DateTimeZone.UTC));
     }
 
-    @Exclude
+
     @JsonIgnore
     public boolean isScheduledForThePast() {
         return getScheduled() != null && getScheduledDate().before(DateUtils.toStartOfDayUTC(LocalDate.now()));
@@ -496,13 +495,13 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.source = source;
     }
 
-    @Exclude
+
     @JsonIgnore
     public boolean isStarted() {
         return actualStart != null && completedAt == null;
     }
 
-    @Exclude
+
     @JsonIgnore
     public boolean isScheduledForTomorrow() {
         if (getScheduledDate() == null) {
@@ -511,13 +510,13 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return DateUtils.isTomorrowUTC(DateUtils.toStartOfDayUTC(new LocalDate(getScheduledDate(), DateTimeZone.UTC)));
     }
 
-    @Exclude
+
     @JsonIgnore
     public boolean isFromRepeatingQuest() {
         return !StringUtils.isEmpty(getRepeatingQuestId());
     }
 
-    @Exclude
+
     @JsonIgnore
     public boolean isFromChallenge() {
         return !StringUtils.isEmpty(getChallengeId());
@@ -547,13 +546,13 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.experience = experience;
     }
 
-    @Exclude
+
     @JsonIgnore
     public boolean isPlaceholder() {
         return isPlaceholder;
     }
 
-    @Exclude
+
     @JsonIgnore
     public void setPlaceholder(boolean placeholder) {
         isPlaceholder = placeholder;
@@ -568,7 +567,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.challengeId = challengeId;
     }
 
-    @Exclude
+
     @JsonIgnore
     public int getActualDuration() {
         if (this.isCompleted() && getActualStartDate() != null) {
@@ -579,7 +578,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return getDuration();
     }
 
-    @Exclude
+
     @JsonIgnore
     public Integer getActualStartMinute() {
         if (this.isCompleted() && getActualStartDate() != null) {
@@ -599,7 +598,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.notes = notes;
     }
 
-    @Exclude
+
     @JsonIgnore
     public List<Note> getTextNotes() {
         List<Note> textNotes = new ArrayList<>();
@@ -615,20 +614,20 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         getNotes().add(note);
     }
 
-    @Exclude
+
     @JsonIgnore
     public void removeTextNote() {
         List<Note> txtNotes = getTextNotes();
         getNotes().removeAll(txtNotes);
     }
 
-    @Exclude
+
     @JsonIgnore
     public void addSubQuest(SubQuest subQuest) {
         getSubQuests().add(subQuest);
     }
 
-    @Exclude
+
     @JsonIgnore
     public void removeSubQuest(SubQuest subQuest) {
         getSubQuests().remove(subQuest);
@@ -654,19 +653,19 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.timesADay = timesADay;
     }
 
-    @Exclude
+
     @JsonIgnore
     public String getPreviousChallengeId() {
         return previousChallengeId;
     }
 
-    @Exclude
+
     @JsonIgnore
     public void setPreviousChallengeId(String previousChallengeId) {
         this.previousChallengeId = previousChallengeId;
     }
 
-    @Exclude
+
     @JsonIgnore
     public boolean hasStartTime() {
         return getStartMinute() != null;
@@ -680,37 +679,37 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return completedCount;
     }
 
-    @Exclude
+
     @JsonIgnore
     public int getRemainingCount() {
         return getTimesADay() - getCompletedCount();
     }
 
-    @Exclude
+
     @JsonIgnore
     public void increaseCompletedCount() {
         completedCount++;
     }
 
-    @Exclude
+
     @JsonIgnore
     public boolean completedAllTimesForDay() {
         return getRemainingCount() == 0;
     }
 
-    @Exclude
+
     @JsonIgnore
     public boolean shouldBeDoneMultipleTimesPerDay() {
         return getTimesADay() > 1;
     }
 
-    @Exclude
+
     @JsonIgnore
     public void setCategoryType(Category category) {
         this.category = category.name();
     }
 
-    @Exclude
+
     @JsonIgnore
     public void addReminder(Reminder reminder) {
         getReminders().add(reminder);
@@ -724,7 +723,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.preferredStartTime = preferredStartTime;
     }
 
-    @Exclude
+
     @JsonIgnore
     public void setStartTimePreference(TimePreference timePreference) {
         if (timePreference != null) {
@@ -732,7 +731,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         }
     }
 
-    @Exclude
+
     @JsonIgnore
     public TimePreference getStartTimePreference() {
         if (StringUtils.isEmpty(preferredStartTime)) {

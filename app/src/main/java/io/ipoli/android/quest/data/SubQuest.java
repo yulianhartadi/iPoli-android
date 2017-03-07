@@ -1,7 +1,5 @@
 package io.ipoli.android.quest.data;
 
-import com.google.firebase.database.Exclude;
-
 import java.util.Date;
 
 import io.ipoli.android.app.persistence.PersistedObject;
@@ -44,12 +42,12 @@ public class SubQuest extends PersistedObject {
         this.name = name;
     }
 
-    @Exclude
+
     public Date getCompletedAtDate() {
         return completedAt != null ? new Date(completedAt) : null;
     }
 
-    @Exclude
+
     public void setCompletedAtDate(Date completedAtDate) {
         completedAt = completedAtDate != null ? completedAtDate.getTime() : null;
     }
@@ -70,7 +68,7 @@ public class SubQuest extends PersistedObject {
         this.completedAtMinute = completedAtMinute;
     }
 
-    @Exclude
+
     public boolean isCompleted() {
         return getCompletedAtDate() != null;
     }

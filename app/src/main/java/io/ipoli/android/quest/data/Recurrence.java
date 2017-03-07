@@ -1,7 +1,5 @@
 package io.ipoli.android.quest.data;
 
-import com.google.firebase.database.Exclude;
-
 import org.joda.time.LocalDate;
 
 import java.util.Date;
@@ -45,7 +43,7 @@ public class Recurrence extends PersistedObject {
         return recurrence;
     }
 
-    @Exclude
+
     public void setRecurrenceType(RecurrenceType type) {
         this.type = type.name();
     }
@@ -90,12 +88,12 @@ public class Recurrence extends PersistedObject {
         this.exdate = exdate;
     }
 
-    @Exclude
+
     public Date getDtstartDate() {
         return dtstart != null ? new Date(dtstart) : null;
     }
 
-    @Exclude
+
     public void setDtstartDate(Date dtstartDate) {
         dtstart = dtstartDate != null ? dtstartDate.getTime() : null;
     }
@@ -108,12 +106,12 @@ public class Recurrence extends PersistedObject {
         this.dtstart = dtstart;
     }
 
-    @Exclude
+
     public Date getDtendDate() {
         return dtend != null ? new Date(dtend) : null;
     }
 
-    @Exclude
+
     public void setDtendDate(Date dtendDate) {
         dtend = dtendDate != null ? dtendDate.getTime() : null;
     }
@@ -162,12 +160,12 @@ public class Recurrence extends PersistedObject {
         this.flexibleCount = flexibleCount;
     }
 
-    @Exclude
+
     public RecurrenceType getRecurrenceType() {
         return RecurrenceType.valueOf(type);
     }
 
-    @Exclude
+
     public boolean isFlexible() {
         return flexibleCount > 0;
     }

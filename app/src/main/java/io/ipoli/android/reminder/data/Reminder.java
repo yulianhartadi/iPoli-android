@@ -1,7 +1,5 @@
 package io.ipoli.android.reminder.data;
 
-import com.google.firebase.database.Exclude;
-
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -94,12 +92,12 @@ public class Reminder extends PersistedObject {
         start = questStartTime.getTime() + TimeUnit.MINUTES.toMillis(getMinutesFromStart());
     }
 
-    @Exclude
+
     public Date getStartTime() {
         return start != null ? new Date(start) : null;
     }
 
-    @Exclude
+
     public void setStartTime(Date startTime) {
         start = startTime != null ? startTime.getTime() : null;
     }

@@ -1,7 +1,5 @@
 package io.ipoli.android.note.data;
 
-import com.google.firebase.database.Exclude;
-
 import io.ipoli.android.app.persistence.PersistedObject;
 
 /**
@@ -66,7 +64,7 @@ public class Note extends PersistedObject {
         return noteType;
     }
 
-    @Exclude
+
     public NoteType getNoteTypeValue() {
         return NoteType.valueOf(noteType);
     }

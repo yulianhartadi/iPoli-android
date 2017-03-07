@@ -2,8 +2,6 @@ package io.ipoli.android.challenge.data;
 
 import android.support.v4.util.Pair;
 
-import com.google.firebase.database.Exclude;
-
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
@@ -166,17 +164,17 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.difficulty = difficulty;
     }
 
-    @Exclude
+
     public void setDifficultyType(Difficulty difficulty) {
         this.difficulty = difficulty.getValue();
     }
 
-    @Exclude
+
     public Date getEndDate() {
         return end != null ? new Date(end) : null;
     }
 
-    @Exclude
+
     public void setEndDate(Date endDate) {
         end = endDate != null ? endDate.getTime() : null;
     }
@@ -189,12 +187,12 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.end = end;
     }
 
-    @Exclude
+
     public Date getCompletedAtDate() {
         return completedAt != null ? new Date(completedAt) : null;
     }
 
-    @Exclude
+
     public void setCompletedAtDate(Date completedAtDate) {
         completedAt = completedAtDate != null ? completedAtDate.getTime() : null;
     }
@@ -227,12 +225,12 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return category;
     }
 
-    @Exclude
+
     public void setCategoryType(Category category) {
         this.category = category.name();
     }
 
-    @Exclude
+
     public Category getCategoryType() {
         return Category.valueOf(category);
     }
@@ -284,7 +282,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.challengeQuests = challengeQuests;
     }
 
-    @Exclude
+
     public void addChallengeQuest(Quest quest) {
         getChallengeQuests().put(quest.getId(), quest);
     }
@@ -296,7 +294,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return challengeRepeatingQuests;
     }
 
-    @Exclude
+
     public void addChallengeRepeatingQuest(RepeatingQuest repeatingQuest) {
         getChallengeRepeatingQuests().put(repeatingQuest.getId(), repeatingQuest);
     }
@@ -316,7 +314,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.questsData = questsData;
     }
 
-    @Exclude
+
     public void addQuestData(String id, QuestData questData) {
         getQuestsData().put(id, questData);
     }
@@ -332,12 +330,12 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.repeatingQuestIds = repeatingQuestIds;
     }
 
-    @Exclude
+
     public void addRepeatingQuestId(String id) {
         getRepeatingQuestIds().put(id, true);
     }
 
-    @Exclude
+
     public Date getNextScheduledDate(long currentDate) {
         Date nextDate = null;
         for (QuestData qd : questsData.values()) {
@@ -350,7 +348,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return nextDate;
     }
 
-    @Exclude
+
     public int getTotalTimeSpent() {
         int timeSpent = 0;
         for (QuestData questData : getQuestsData().values()) {
@@ -361,7 +359,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return timeSpent;
     }
 
-    @Exclude
+
     public List<PeriodHistory> getPeriodHistories(LocalDate currentDate) {
         List<PeriodHistory> result = new ArrayList<>();
         List<Pair<LocalDate, LocalDate>> pairs =
@@ -386,12 +384,12 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return result;
     }
 
-    @Exclude
+
     public int getTotalQuestCount() {
         return getQuestsData().size();
     }
 
-    @Exclude
+
     public int getCompletedQuestCount() {
         int count = 0;
         for (QuestData questData : getQuestsData().values()) {

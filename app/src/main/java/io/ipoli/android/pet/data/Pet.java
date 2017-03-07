@@ -3,7 +3,6 @@ package io.ipoli.android.pet.data;
 import android.support.annotation.ColorRes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.firebase.database.Exclude;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
@@ -127,20 +126,20 @@ public class Pet extends PersistedObject {
         setExperienceBonusPercentage((int) Math.floor(getHealthPointsPercentage() * Constants.XP_BONUS_PERCENTAGE_OF_HP / 100.0));
     }
 
-    @Exclude
+
     @JsonIgnore
     public String getStateText() {
         return getState().name().toLowerCase();
     }
 
-    @Exclude
+
     @ColorRes
     @JsonIgnore
     public int getStateColor() {
         return getState().color;
     }
 
-    @Exclude
+
     @JsonIgnore
     public PetState getState() {
         if (healthPointsPercentage >= 90) {
