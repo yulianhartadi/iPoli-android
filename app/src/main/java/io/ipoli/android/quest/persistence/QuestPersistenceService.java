@@ -44,8 +44,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void listenForAllIncompleteOrMostImportantForDate(LocalDate now, OnDataChangedListener<List<Quest>> listener);
 
-    void findIncompleteNotRepeatingNotForChallenge(String query, String challengeId, OnDataChangedListener<List<Quest>> listener);
-
     void listenForIncompleteNotRepeating(OnDataChangedListener<List<Quest>> listener);
 
     void populateNewQuestData(Quest quest, Map<String, Object> data);

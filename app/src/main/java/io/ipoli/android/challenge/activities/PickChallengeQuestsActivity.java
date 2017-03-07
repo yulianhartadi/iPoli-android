@@ -116,43 +116,44 @@ public class PickChallengeQuestsActivity extends BaseActivity {
     }
 
     private void filter(String query, FilterListener filterListener) {
-        questPersistenceService.findIncompleteNotRepeatingNotForChallenge(query.trim(), challenge.getId(), quests -> {
-            repeatingQuestPersistenceService.findActiveNotForChallenge(query.trim(), challenge, repeatingQuests -> {
-                List<PickQuestViewModel> viewModels = new ArrayList<>();
-                for (Quest q : quests) {
-                    viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), false));
+        if (query == null) {
+            return;
+        }
+        challengePersistenceService.findAllQuestsAndRepeatingQuestsNotForChallenge(query.trim(), challenge, result -> {
+            List<PickQuestViewModel> viewModels = new ArrayList<>();
+            for (Quest q : result.second) {
+                viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), false));
+            }
+            for (RepeatingQuest rq : result.first) {
+                viewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstartDate(), true));
+            }
+
+            Collections.sort(viewModels, (vm1, vm2) -> {
+                Date d1 = vm1.getStartDate();
+                Date d2 = vm2.getStartDate();
+                if (d1 == null && d2 == null) {
+                    return -1;
                 }
-                for (RepeatingQuest rq : repeatingQuests) {
-                    viewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstartDate(), true));
+
+                if (d1 == null) {
+                    return 1;
                 }
 
-                Collections.sort(viewModels, (vm1, vm2) -> {
-                    Date d1 = vm1.getStartDate();
-                    Date d2 = vm2.getStartDate();
-                    if (d1 == null && d2 == null) {
-                        return -1;
-                    }
+                if (d2 == null) {
+                    return -1;
+                }
 
-                    if (d1 == null) {
-                        return 1;
-                    }
+                if (d2.after(d1)) {
+                    return 1;
+                }
 
-                    if (d2 == null) {
-                        return -1;
-                    }
+                if (d1.after(d2)) {
+                    return -1;
+                }
 
-                    if (d2.after(d1)) {
-                        return 1;
-                    }
-
-                    if (d1.after(d2)) {
-                        return -1;
-                    }
-
-                    return 0;
-                });
-                filterListener.onFilterCompleted(viewModels);
+                return 0;
             });
+            filterListener.onFilterCompleted(viewModels);
         });
     }
 

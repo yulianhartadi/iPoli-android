@@ -15,7 +15,6 @@ import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -72,16 +71,6 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     public void listenForNonFlexibleNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
         Query query = getCollectionReference().orderByChild("recurrence/flexibleCount").equalTo(0);
         listenForListChange(query, listener, createActiveRepeatingQuestPredicate());
-    }
-
-    @Override
-    public void findActiveNotForChallenge(String searchText, Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
-        listenForSingleListChange(getCollectionReference(), listener, rq ->
-                !challenge.getId().equals(rq.getChallengeId()) &&
-                        rq.getName().toLowerCase().contains(searchText.toLowerCase()) &&
-                        (rq.getRecurrence().getDtendDate() == null ||
-                                rq.getRecurrence().getDtendDate().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime())
-        );
     }
 
     @Override

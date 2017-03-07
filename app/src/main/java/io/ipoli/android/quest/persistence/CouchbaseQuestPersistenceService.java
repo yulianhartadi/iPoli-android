@@ -410,11 +410,6 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     }
 
     @Override
-    public void findIncompleteNotRepeatingNotForChallenge(String query, String challengeId, OnDataChangedListener<List<Quest>> listener) {
-
-    }
-
-    @Override
     public void listenForIncompleteNotRepeating(OnDataChangedListener<List<Quest>> listener) {
 
     }

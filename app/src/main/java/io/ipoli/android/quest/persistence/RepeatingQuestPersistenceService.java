@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.PersistenceService;
-import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 
@@ -19,8 +18,6 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
     void listenForAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener);
 
     void listenForNonFlexibleNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener);
-
-    void findActiveNotForChallenge(String query, Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener);
 
     void listenForActive(OnDataChangedListener<List<RepeatingQuest>> listener);
 

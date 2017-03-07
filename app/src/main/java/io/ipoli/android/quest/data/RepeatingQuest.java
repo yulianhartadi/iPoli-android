@@ -57,6 +57,8 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     private List<Reminder> reminders;
     private List<SubQuest> subQuests;
 
+    private Long completedAt;
+
     private Recurrence recurrence;
 
     private List<Note> notes;
@@ -112,6 +114,39 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     public void setScheduledPeriodEndDates(Map<String, Boolean> scheduledPeriodEndDates) {
         this.scheduledPeriodEndDates = scheduledPeriodEndDates;
+    }
+
+    @Exclude
+    @JsonIgnore
+    public Date getCompletedAtDate() {
+        return completedAt != null ? new Date(completedAt) : null;
+    }
+
+    @Exclude
+    @JsonIgnore
+    public void setCompletedAtDate(Date completedAtDate) {
+        completedAt = completedAtDate != null ? completedAtDate.getTime() : null;
+    }
+
+    @Exclude
+    @JsonIgnore
+    public boolean isCompleted() {
+        return getCompletedAtDate() != null;
+    }
+
+    public Long getCompletedAt() {
+        return completedAt;
+    }
+
+    public void setCompletedAt(Long completedAt) {
+        this.completedAt = completedAt;
+    }
+
+    @Exclude
+    @JsonIgnore
+    public boolean shouldBeScheduledAfter(LocalDate date) {
+        return getRecurrence().getDtendDate() == null ||
+                getRecurrence().getDtendDate().getTime() >= toStartOfDayUTC(date).getTime();
     }
 
     @Exclude

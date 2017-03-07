@@ -21,12 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
-import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.RepeatingQuest;
-
-import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -142,8 +139,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
                 QueryEnumerator enumerator = event.getRows();
                 while (enumerator.hasNext()) {
                     RepeatingQuest rq = toObject(enumerator.next().getValue());
-                    if (!rq.isFlexible() && (rq.getRecurrence().getDtendDate() == null ||
-                            rq.getRecurrence().getDtendDate().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime())) {
+                    if (!rq.isFlexible() && !rq.isCompleted() && rq.shouldBeScheduledAfter(LocalDate.now())) {
                         result.add(rq);
                     }
                 }
@@ -151,11 +147,6 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
             }
         };
         startLiveQuery(query, changeListener);
-    }
-
-    @Override
-    public void findActiveNotForChallenge(String query, Challenge challenge, OnDataChangedListener<List<RepeatingQuest>> listener) {
-
     }
 
     @Override

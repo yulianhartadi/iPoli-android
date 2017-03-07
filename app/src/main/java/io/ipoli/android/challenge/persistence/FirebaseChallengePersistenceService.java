@@ -1,5 +1,7 @@
 package io.ipoli.android.challenge.persistence;
 
+import android.util.Pair;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.Query;
@@ -11,7 +13,9 @@ import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestData;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 
 /**
@@ -54,6 +58,11 @@ public class FirebaseChallengePersistenceService extends BaseFirebasePersistence
     @Override
     public void delete(Challenge challenge, boolean deleteWithQuests) {
 
+    }
+
+    @Override
+    public void findAllQuestsAndRepeatingQuestsNotForChallenge(String query, Challenge challenge, OnDataChangedListener<Pair<List<RepeatingQuest>, List<Quest>>> listener) {
+        
     }
 
     @Override

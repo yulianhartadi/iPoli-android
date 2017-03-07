@@ -36,13 +36,15 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
     private final View challengesWithAllQuestsView;
     private final QuestPersistenceService questPersistenceService;
     private final RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+    private final View allQuestsAndRepeatingQuestsForChallengeView;
 
     public CouchbaseChallengePersistenceService(Database database, ObjectMapper objectMapper, QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
         super(database, objectMapper);
 
-        allChallengesView = database.getView("challenges/all");
         this.questPersistenceService = questPersistenceService;
         this.repeatingQuestPersistenceService = repeatingQuestPersistenceService;
+
+        allChallengesView = database.getView("challenges/all");
         if (allChallengesView.getMap() == null) {
             allChallengesView.setMap((document, emitter) -> {
                 String type = (String) document.get("type");
@@ -79,6 +81,17 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
                     }
                 }
                 return new Pair<>(challenge, new Pair<>(repeatingQuests, quests));
+            }, "1.0");
+        }
+
+        allQuestsAndRepeatingQuestsForChallengeView = database.getView("challenges/allQuestsAndRepeatingQuests");
+        if (allQuestsAndRepeatingQuestsForChallengeView.getMap() == null) {
+            allQuestsAndRepeatingQuestsForChallengeView.setMap((document, emitter) -> {
+                String type = (String) document.get("type");
+                if ((Quest.TYPE.equals(type) && !document.containsKey("completedAt") && !document.containsKey("repeatingQuestId")) ||
+                        (RepeatingQuest.TYPE.equals(type) && !document.containsKey("completedAt"))) {
+                    emitter.emit(document.get("challengeId"), document);
+                }
             }, "1.0");
         }
     }
@@ -167,6 +180,32 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
                 return false;
             }
         });
+    }
+
+    @Override
+    public void findAllQuestsAndRepeatingQuestsNotForChallenge(String searchQuery, Challenge challenge, OnDataChangedListener<Pair<List<RepeatingQuest>, List<Quest>>> listener) {
+        try {
+            QueryEnumerator enumerator = allQuestsAndRepeatingQuestsForChallengeView.createQuery().run();
+            List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+            List<Quest> quests = new ArrayList<>();
+            while (enumerator.hasNext()) {
+                Map<String, Object> value = (Map<String, Object>) enumerator.next().getValue();
+                String name = value.get("name").toString().toLowerCase();
+                String challengeId = (String) value.get("challengeId");
+                if(challenge.getId().equals(challengeId) || !name.contains(searchQuery.toLowerCase())) {
+                    continue;
+                }
+
+                if (RepeatingQuest.TYPE.equals(value.get("type"))) {
+                    repeatingQuests.add(toObject(value, RepeatingQuest.class));
+                } else {
+                    quests.add(toObject(value, Quest.class));
+                }
+            }
+            new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(new Pair<>(repeatingQuests, quests)));
+        } catch (CouchbaseLiteException e) {
+            e.printStackTrace();
+        }
     }
 
     private void removeChallengeIdFromQuests(List<RepeatingQuest> repeatingQuests, List<Quest> quests) {
