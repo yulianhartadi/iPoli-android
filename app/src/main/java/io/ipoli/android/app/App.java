@@ -106,7 +106,6 @@ import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.generators.RewardProvider;
-import io.ipoli.android.quest.persistence.OnChangeListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.receivers.CompleteQuestReceiver;
@@ -167,7 +166,6 @@ public class App extends MultiDexApplication {
 
     private void listenForChanges() {
         questPersistenceService.removeAllListeners();
-        listenForReminderChange();
         listenForDailyQuestsChange();
     }
 
@@ -254,7 +252,7 @@ public class App extends MultiDexApplication {
 
     private void listenForDailyQuestsChange() {
         questPersistenceService.listenForAllNonAllDayForDate(LocalDate.now(), quests -> {
-
+            scheduleNextReminder();
             localStorage.saveString(Constants.KEY_WIDGET_AGENDA_QUESTS, gson.toJson(quests));
             requestWidgetUpdate();
 
@@ -285,25 +283,6 @@ public class App extends MultiDexApplication {
         if (!e.isEnabled) {
             NotificationManagerCompat.from(this).cancel(Constants.ONGOING_NOTIFICATION_ID);
         }
-    }
-
-    private void listenForReminderChange() {
-        questPersistenceService.listenForReminderChange(new OnChangeListener() {
-            @Override
-            public void onNew() {
-                scheduleNextReminder();
-            }
-
-            @Override
-            public void onChanged() {
-                scheduleNextReminder();
-            }
-
-            @Override
-            public void onDeleted() {
-                scheduleNextReminder();
-            }
-        });
     }
 
     @Override

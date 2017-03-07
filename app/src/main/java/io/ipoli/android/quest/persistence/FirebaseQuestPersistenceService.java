@@ -22,7 +22,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
-import io.ipoli.android.app.persistence.FirebaseChildEventListener;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestData;
@@ -256,17 +255,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void listenForReminderChange(OnChangeListener onChangeListener) {
-        Query query = getPlayerReference().child("questReminders");
-        FirebaseChildEventListener.listenForChanges(onChangeListener, query, childListeners);
-    }
-
-    @Override
-    public void deleteRemindersAtTime(long startTime) {
-        getPlayerReference().child("questReminders").child(String.valueOf(startTime)).setValue(null);
-    }
-
-    @Override
     public void save(Quest quest) {
         Map<String, Object> data = new HashMap<>();
         populateNewQuestData(quest, data);
@@ -352,7 +340,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         populateDeleteQuestData(quest, data);
         getPlayerReference().updateChildren(data);
     }
-    
+
     private void populateUpdateQuest(Quest quest, Map<String, Object> data) {
         Long lastScheduled = quest.getPreviousScheduledDate();
 

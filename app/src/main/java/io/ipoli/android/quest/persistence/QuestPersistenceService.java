@@ -48,10 +48,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void listenForIncompleteNotRepeating(OnDataChangedListener<List<Quest>> listener);
 
-    void listenForReminderChange(OnChangeListener onChangeListener);
-
-    void deleteRemindersAtTime(long startTime);
-
     void populateNewQuestData(Quest quest, Map<String, Object> data);
 
     void populateDeleteQuestData(Quest quest, Map<String, Object> data);
