@@ -13,6 +13,8 @@ import com.couchbase.lite.QueryRow;
 import com.couchbase.lite.View;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.joda.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +25,8 @@ import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.RepeatingQuest;
+
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -131,7 +135,22 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
     @Override
     public void listenForNonFlexibleNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
-
+        LiveQuery query = allRepeatingQuestsView.createQuery().toLiveQuery();
+        LiveQuery.ChangeListener changeListener = event -> {
+            if (event.getSource().equals(query)) {
+                List<RepeatingQuest> result = new ArrayList<>();
+                QueryEnumerator enumerator = event.getRows();
+                while (enumerator.hasNext()) {
+                    RepeatingQuest rq = toObject(enumerator.next().getValue());
+                    if (!rq.isFlexible() && (rq.getRecurrence().getDtendDate() == null ||
+                            rq.getRecurrence().getDtendDate().getTime() >= toStartOfDayUTC(LocalDate.now()).getTime())) {
+                        result.add(rq);
+                    }
+                }
+                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
+            }
+        };
+        startLiveQuery(query, changeListener);
     }
 
     @Override
