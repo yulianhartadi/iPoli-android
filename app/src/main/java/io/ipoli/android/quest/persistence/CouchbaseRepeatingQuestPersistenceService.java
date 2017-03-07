@@ -234,7 +234,30 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
     }
 
     @Override
-    public void update(RepeatingQuest repeatingQuest) {
+    public void removeFromChallenge(RepeatingQuest repeatingQuest) {
+        repeatingQuest.setChallengeId(null);
+        database.runInTransaction(() -> {
+            Query query = repeatingQuestWithQuestsView.createQuery();
+            query.setStartKey(repeatingQuest.getId());
+            query.setEndKey(repeatingQuest.getId());
+            query.setGroupLevel(1);
+            try {
+                QueryEnumerator enumerator = query.run();
+                while (enumerator.hasNext()) {
+                    Pair<RepeatingQuest, List<Quest>> pair = (Pair<RepeatingQuest, List<Quest>>) enumerator.next().getValue();
+                    List<Quest> quests = pair.second;
+                    for (Quest q : quests) {
+                        q.setChallengeId(null);
+                        questPersistenceService.save(q);
+                    }
+                    save(repeatingQuest);
+                }
+                return true;
+            } catch (CouchbaseLiteException e) {
+                return false;
+            }
+        });
+
 
     }
 

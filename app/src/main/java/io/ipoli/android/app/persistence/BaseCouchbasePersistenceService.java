@@ -81,6 +81,10 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
 
     @Override
     public void findById(String id, OnDataChangedListener<T> listener) {
+        if (StringUtils.isEmpty(id)) {
+            listener.onDataChanged(null);
+            return;
+        }
         listener.onDataChanged(toObject(database.getExistingDocument(id).getProperties()));
     }
 

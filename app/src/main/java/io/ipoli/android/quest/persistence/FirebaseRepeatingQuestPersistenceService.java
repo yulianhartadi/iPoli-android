@@ -120,10 +120,8 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
     }
 
     @Override
-    public void update(RepeatingQuest repeatingQuest) {
-        Map<String, Object> data = new HashMap<>();
-        populateUpdateRepeatingQuest(repeatingQuest, data);
-        getPlayerReference().updateChildren(data);
+    public void removeFromChallenge(RepeatingQuest repeatingQuest) {
+
     }
 
     private void populateUpdateRepeatingQuest(RepeatingQuest repeatingQuest, Map<String, Object> data) {

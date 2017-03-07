@@ -499,8 +499,7 @@ public class App extends MultiDexApplication {
             questPersistenceService.save(q);
         } else {
             RepeatingQuest rq = (RepeatingQuest) bq;
-            rq.setChallengeId(null);
-            repeatingQuestPersistenceService.update(rq);
+            repeatingQuestPersistenceService.removeFromChallenge(rq);
         }
     }
 
