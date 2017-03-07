@@ -23,10 +23,9 @@ import io.ipoli.android.quest.persistence.OnDataChangedListener;
 public abstract class BaseCouchbasePersistenceService<T extends PersistedObject> implements PersistenceService<T> {
 
     protected final Database database;
-    protected final ObjectMapper objectMapper;
-    protected final Map<LiveQuery, LiveQuery.ChangeListener> queryToListener;
-    protected final Map<Document, Document.ChangeListener> documentToListener;
-
+    private final ObjectMapper objectMapper;
+    private final Map<LiveQuery, LiveQuery.ChangeListener> queryToListener;
+    private final Map<Document, Document.ChangeListener> documentToListener;
 
     public BaseCouchbasePersistenceService(Database database, ObjectMapper objectMapper) {
         this.database = database;
