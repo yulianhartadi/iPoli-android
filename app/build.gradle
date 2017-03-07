@@ -73,7 +73,7 @@ dependencies {
     compile 'org.ocpsoft.prettytime:prettytime:4.0.0.Final'
     compile 'org.ocpsoft.prettytime:prettytime-nlp:4.0.0.Final'
     compile 'com.github.paolorotolo:appintro:4.1.0'
-    compile 'net.danlew:android.joda:2.9.5.1'
+    compile 'net.danlew:android.joda:2.9.7'
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.github.PhilJay:MPAndroidChart:v2.2.5'
     compile 'com.github.devlight:infinitecycleviewpager:1.0.2'
