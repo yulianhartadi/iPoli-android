@@ -15,6 +15,7 @@ import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseFirebasePersistenceService;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -113,6 +114,11 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
 
     }
 
+    @Override
+    public void addToChallenge(List<RepeatingQuest> repeatingQuests, Challenge challenge) {
+        
+    }
+
     private void populateUpdateRepeatingQuest(RepeatingQuest repeatingQuest, Map<String, Object> data) {
         populateRepeatingQuestChallenge(repeatingQuest, data);
 
@@ -133,15 +139,6 @@ public class FirebaseRepeatingQuestPersistenceService extends BaseFirebasePersis
             data.put("/quests/" + questId + "/challengeId", challengeId);
         }
         data.put("/repeatingQuests/" + repeatingQuest.getId(), repeatingQuest);
-    }
-
-    @Override
-    public void updateChallengeId(List<RepeatingQuest> repeatingQuests) {
-        Map<String, Object> data = new HashMap<>();
-        for (RepeatingQuest repeatingQuest : repeatingQuests) {
-            populateUpdateRepeatingQuest(repeatingQuest, data);
-        }
-        getPlayerReference().updateChildren(data);
     }
 
 //    @Override

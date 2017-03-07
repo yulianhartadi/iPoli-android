@@ -238,7 +238,7 @@ public class PickChallengeQuestsActivity extends BaseActivity {
             questPersistenceService.save(quests);
         }
         if (!repeatingQuests.isEmpty()) {
-            repeatingQuestPersistenceService.updateChallengeId(repeatingQuests);
+            repeatingQuestPersistenceService.addToChallenge(repeatingQuests, challenge);
         }
         finish();
     }

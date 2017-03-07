@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
+import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -155,11 +156,6 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
     }
 
     @Override
-    public void updateChallengeId(List<RepeatingQuest> repeatingQuests) {
-
-    }
-
-    @Override
     public void saveWithQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests) {
         database.runInTransaction(() -> {
             for (Map.Entry<RepeatingQuest, List<Quest>> entry : repeatingQuestToScheduledQuests.entrySet()) {
@@ -226,8 +222,8 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
     @Override
     public void removeFromChallenge(RepeatingQuest repeatingQuest) {
-        repeatingQuest.setChallengeId(null);
         database.runInTransaction(() -> {
+            repeatingQuest.setChallengeId(null);
             Query query = repeatingQuestWithQuestsView.createQuery();
             query.setStartKey(repeatingQuest.getId());
             query.setEndKey(repeatingQuest.getId());
@@ -250,6 +246,37 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
         });
 
 
+    }
+
+    @Override
+    public void addToChallenge(List<RepeatingQuest> repeatingQuests, Challenge challenge) {
+        database.runInTransaction(() -> {
+            try {
+                for (RepeatingQuest rq : repeatingQuests) {
+                    rq.setChallengeId(challenge.getId());
+
+                    Query query = repeatingQuestWithQuestsView.createQuery();
+                    query.setStartKey(rq.getId());
+                    query.setEndKey(rq.getId());
+                    query.setGroupLevel(1);
+
+                    QueryEnumerator enumerator = query.run();
+                    while (enumerator.hasNext()) {
+                        Pair<RepeatingQuest, List<Quest>> pair = (Pair<RepeatingQuest, List<Quest>>) enumerator.next().getValue();
+                        List<Quest> quests = pair.second;
+                        for (Quest q : quests) {
+                            q.setChallengeId(challenge.getId());
+                            questPersistenceService.save(q);
+                        }
+                        save(rq);
+                    }
+                }
+                return true;
+            } catch (CouchbaseLiteException e) {
+                return false;
+            }
+
+        });
     }
 
     @Override
