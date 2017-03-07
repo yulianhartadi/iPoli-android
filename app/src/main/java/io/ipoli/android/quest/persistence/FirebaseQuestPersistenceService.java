@@ -174,12 +174,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
     }
 
     @Override
-    public void findAllForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
-        Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
-        listenForSingleListChange(query, listener);
-    }
-
-    @Override
     public void findAllUpcomingForRepeatingQuest(LocalDate startDate, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
         Query query = getCollectionReference().orderByChild("repeatingQuestId").equalTo(repeatingQuestId);
         listenForSingleListChange(query, listener, q -> q.getScheduled() == null || !q.getScheduledDate().before(toStartOfDayUTC(startDate)));
@@ -343,15 +337,6 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         getPlayerReference().updateChildren(data);
     }
 
-    @Override
-    public void update(List<Quest> quests) {
-        Map<String, Object> data = new HashMap<>();
-        for (Quest quest : quests) {
-            populateUpdateQuest(quest, data);
-        }
-        getPlayerReference().updateChildren(data);
-    }
-
     @NonNull
     private String createDayQuestKey(LocalDate date) {
         return String.valueOf(toStartOfDayUTC(date).getTime());
@@ -367,15 +352,7 @@ public class FirebaseQuestPersistenceService extends BaseFirebasePersistenceServ
         populateDeleteQuestData(quest, data);
         getPlayerReference().updateChildren(data);
     }
-
-    @Override
-    public void update(Quest quest) {
-        Map<String, Object> data = new HashMap<>();
-
-        populateUpdateQuest(quest, data);
-        getPlayerReference().updateChildren(data);
-    }
-
+    
     private void populateUpdateQuest(Quest quest, Map<String, Object> data) {
         Long lastScheduled = quest.getPreviousScheduledDate();
 

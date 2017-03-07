@@ -315,11 +315,6 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     }
 
     @Override
-    public void findAllForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
-
-    }
-
-    @Override
     public void findAllUpcomingForRepeatingQuest(LocalDate startDate, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
         Query query = uncompletedQuestsForRepeatingQuestView.createQuery();
         query.setGroupLevel(1);
@@ -417,22 +412,12 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     }
 
     @Override
-    public void update(Quest quest) {
-
-    }
-
-    @Override
     public void populateNewQuestData(Quest quest, Map<String, Object> data) {
 
     }
 
     @Override
     public void populateDeleteQuestData(Quest quest, Map<String, Object> data) {
-
-    }
-
-    @Override
-    public void update(List<Quest> quests) {
 
     }
 

@@ -34,8 +34,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void listenForAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener);
 
-    void findAllForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener);
-
     void findAllUpcomingForRepeatingQuest(LocalDate startDate, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener);
 
     void countAllCompletedWithPriorityForDate(int priority, LocalDate date, OnDataChangedListener<Long> listener);
@@ -54,15 +52,11 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void deleteRemindersAtTime(long startTime);
 
-    void update(Quest quest);
-
     void populateNewQuestData(Quest quest, Map<String, Object> data);
 
     void populateDeleteQuestData(Quest quest, Map<String, Object> data);
 
     void save(List<Quest> quests);
-
-    void update(List<Quest> quests);
 
     void populateDeleteQuestDataFromRepeatingQuest(Quest quest, Map<String, Object> data);
 }
