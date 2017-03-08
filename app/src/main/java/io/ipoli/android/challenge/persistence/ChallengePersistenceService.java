@@ -3,6 +3,7 @@ package io.ipoli.android.challenge.persistence;
 import android.util.Pair;
 
 import java.util.List;
+import java.util.Map;
 
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
@@ -22,4 +23,6 @@ public interface ChallengePersistenceService extends PersistenceService<Challeng
     void findAllQuestsAndRepeatingQuestsNotForChallenge(String query, Challenge challenge, OnDataChangedListener<Pair<List<RepeatingQuest>, List<Quest>>> listener);
 
     void findAllQuestsAndRepeatingQuests(String query, OnDataChangedListener<Pair<List<RepeatingQuest>, List<Quest>>> listener);
+
+    void acceptChallenge(Challenge challenge, List<Quest> quests, Map<RepeatingQuest, List<Quest>> repeatingQuestsWithQuests);
 }

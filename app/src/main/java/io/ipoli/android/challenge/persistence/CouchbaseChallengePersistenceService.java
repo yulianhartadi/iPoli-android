@@ -213,6 +213,30 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
         findAllQuestsAndRepeatingQuestsNotForChallenge(query, null, listener);
     }
 
+    @Override
+    public void acceptChallenge(Challenge challenge, List<Quest> quests, Map<RepeatingQuest, List<Quest>> repeatingQuestsWithQuests) {
+        database.runInTransaction(() -> {
+            save(challenge);
+            String challengeId = challenge.getId();
+            for (Quest q : quests) {
+                q.setChallengeId(challengeId);
+                questPersistenceService.save(q);
+            }
+            for (Map.Entry<RepeatingQuest, List<Quest>> entry : repeatingQuestsWithQuests.entrySet()) {
+                RepeatingQuest rq = entry.getKey();
+                rq.setChallengeId(challengeId);
+                repeatingQuestPersistenceService.save(rq);
+                for (Quest q : entry.getValue()) {
+                    q.setRepeatingQuestId(rq.getId());
+                    q.setChallengeId(challengeId);
+                    questPersistenceService.save(q);
+                }
+            }
+            return true;
+        });
+
+    }
+
     private void removeChallengeIdFromQuests(List<RepeatingQuest> repeatingQuests, List<Quest> quests) {
         for (Quest q : quests) {
             q.setChallengeId(null);

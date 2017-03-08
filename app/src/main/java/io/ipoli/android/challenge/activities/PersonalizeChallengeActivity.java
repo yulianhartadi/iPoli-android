@@ -547,31 +547,25 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         view.setVisibility(View.GONE);
         eventBus.post(new AcceptChallengeEvent(predefinedChallenge.challenge.getName()));
         Toast.makeText(this, R.string.challenge_accepted, Toast.LENGTH_SHORT).show();
-        challengePersistenceService.save(predefinedChallenge.challenge);
-        String challengeId = predefinedChallenge.challenge.getId();
         List<Quest> quests = new ArrayList<>();
         List<RepeatingQuest> repeatingQuests = new ArrayList<>();
         List<BaseQuest> selectedQuests = predefinedChallengeQuestAdapter.getSelectedQuests();
         for (BaseQuest bq : selectedQuests) {
             if (bq instanceof Quest) {
                 Quest q = (Quest) bq;
-                q.setChallengeId(challengeId);
                 quests.add(q);
             } else {
                 RepeatingQuest rq = (RepeatingQuest) bq;
-                rq.setChallengeId(challengeId);
                 repeatingQuests.add(rq);
             }
         }
-        questPersistenceService.save(quests);
-
         Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests = new HashMap<>();
         for (RepeatingQuest repeatingQuest : repeatingQuests) {
             List<Quest> scheduledQuests = repeatingQuestScheduler.scheduleAhead(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
             repeatingQuestToScheduledQuests.put(repeatingQuest, scheduledQuests);
         }
 
-        repeatingQuestPersistenceService.saveWithQuests(repeatingQuestToScheduledQuests);
+        challengePersistenceService.acceptChallenge(predefinedChallenge.challenge, quests, repeatingQuestToScheduledQuests);
         finish();
     }
 }
