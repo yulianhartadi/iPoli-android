@@ -20,8 +20,6 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     void listenForNonFlexibleNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener);
 
-    void listenForActive(OnDataChangedListener<List<RepeatingQuest>> listener);
-
     void saveWithQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests);
 
     void saveWithQuests(RepeatingQuest repeatingQuest, List<Quest> quests);

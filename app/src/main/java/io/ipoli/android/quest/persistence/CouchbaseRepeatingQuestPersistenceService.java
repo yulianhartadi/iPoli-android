@@ -165,11 +165,6 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
     }
 
     @Override
-    public void listenForActive(OnDataChangedListener<List<RepeatingQuest>> listener) {
-
-    }
-
-    @Override
     public void saveWithQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests) {
         database.runInTransaction(() -> {
             for (Map.Entry<RepeatingQuest, List<Quest>> entry : repeatingQuestToScheduledQuests.entrySet()) {
