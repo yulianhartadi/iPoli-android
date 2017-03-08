@@ -420,7 +420,29 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     }
 
     @Override
-    public void listenForAllIncompleteOrMostImportantForDate(LocalDate now, OnDataChangedListener<List<Quest>> listener) {
-        
+    public void listenForAllIncompleteOrMostImportantForDate(LocalDate date, OnDataChangedListener<List<Quest>> listener) {
+        LiveQuery query = dayQuestsView.createQuery().toLiveQuery();
+        query.setMapOnly(true);
+        long key = toStartOfDayUTC(date).getTime();
+        query.setStartKey(key);
+        query.setEndKey(key);
+
+        LiveQuery.ChangeListener changeListener = event -> {
+            if (event.getSource().equals(query)) {
+                List<Quest> result = new ArrayList<>();
+                QueryEnumerator enumerator = event.getRows();
+                while (enumerator.hasNext()) {
+                    QueryRow queryRow = enumerator.next();
+                    Quest quest = toObject(queryRow.getValue());
+                    if (!quest.isCompleted() || quest.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
+                        result.add(quest);
+                    }
+                }
+                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
+
+            }
+        };
+
+        startLiveQuery(query, changeListener);
     }
 }
