@@ -408,15 +408,9 @@ public class App extends MultiDexApplication {
         repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests(this::scheduleRepeatingQuests);
     }
 
-    private void moveIncompleteQuestsToInbox() {
-        questPersistenceService.findAllIncompleteToDosBefore(new LocalDate(), quests -> {
+    private void clearIncompleteQuests() {
+        questPersistenceService.findAllIncompleteFor(new LocalDate().minusDays(1), quests -> {
             for (Quest q : quests) {
-                if (q.isStarted()) {
-                    q.setScheduledDateFromLocal(new Date());
-                    q.setStartMinute(0);
-                } else {
-                    q.setScheduledDate(null);
-                }
                 if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
                     q.setPriority(null);
                 }
@@ -777,7 +771,7 @@ public class App extends MultiDexApplication {
         questPersistenceService.findAllNonAllDayForDate(LocalDate.now().minusDays(1), quests -> {
             savePet(-getDecreasePercentage(quests), "date_change");
             scheduleQuestsFor4WeeksAhead();
-            moveIncompleteQuestsToInbox();
+            clearIncompleteQuests();
             scheduleDateChanged();
             listenForChanges();
             eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.DATE_CHANGE));

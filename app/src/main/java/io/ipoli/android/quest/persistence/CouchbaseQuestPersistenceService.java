@@ -227,8 +227,26 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     }
 
     @Override
-    public void findAllIncompleteToDosBefore(LocalDate date, OnDataChangedListener<List<Quest>> listener) {
-
+    public void findAllIncompleteFor(LocalDate date, OnDataChangedListener<List<Quest>> listener) {
+        try {
+            Query query = dayQuestsView.createQuery();
+            query.setMapOnly(true);
+            long key = toStartOfDayUTC(date).getTime();
+            query.setStartKey(key);
+            query.setEndKey(key);
+            QueryEnumerator enumerator = query.run();
+            List<Quest> result = new ArrayList<>();
+            while (enumerator.hasNext()) {
+                QueryRow row = enumerator.next();
+                Quest q = toObject(row.getValue());
+                if (!q.isCompleted()) {
+                    result.add(q);
+                }
+            }
+            listener.onDataChanged(result);
+        } catch (CouchbaseLiteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -426,7 +444,6 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
         long key = toStartOfDayUTC(date).getTime();
         query.setStartKey(key);
         query.setEndKey(key);
-
         LiveQuery.ChangeListener changeListener = event -> {
             if (event.getSource().equals(query)) {
                 List<Quest> result = new ArrayList<>();
@@ -439,7 +456,6 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                     }
                 }
                 new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
-
             }
         };
 
