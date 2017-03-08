@@ -31,7 +31,6 @@ import io.ipoli.android.app.tutorial.PickQuestViewModel;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.adapters.ChallengePickQuestListAdapter;
-import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.ui.events.QuestsPickedForChallengeEvent;
 import io.ipoli.android.quest.data.BaseQuest;
@@ -70,7 +69,9 @@ public class PickChallengeQuestsActivity extends BaseActivity {
     EmptyStateRecyclerView questList;
 
     private ChallengePickQuestListAdapter adapter;
-    private Challenge challenge;
+    private String challengeId;
+    private List<PickQuestViewModel> allViewModels;
+    private SearchView searchView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,19 +89,37 @@ public class PickChallengeQuestsActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        challengePersistenceService.findById(getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY), challenge -> {
-            this.challenge = challenge;
-            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-            questList.setLayoutManager(layoutManager);
-            questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
-            filter("", viewModels -> {
-                adapter = new ChallengePickQuestListAdapter(PickChallengeQuestsActivity.this, eventBus, viewModels, true);
-                questList.setAdapter(adapter);
-            });
+        challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
 
-            eventBus.post(new ScreenShownEvent(EventSource.PICK_CHALLENGE_QUESTS));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        questList.setLayoutManager(layoutManager);
+        questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
+        adapter = new ChallengePickQuestListAdapter(this, eventBus, new ArrayList<>(), true);
+        questList.setAdapter(adapter);
+
+        eventBus.post(new ScreenShownEvent(EventSource.PICK_CHALLENGE_QUESTS));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        challengePersistenceService.listenForAllQuestsAndRepeatingQuestsNotForChallenge(challengeId, result -> {
+            allViewModels = new ArrayList<>();
+            for (Quest q : result.second) {
+                allViewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), false));
+            }
+            for (RepeatingQuest rq : result.first) {
+                allViewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstartDate(), true));
+            }
+
+            String searchQuery = searchView != null ? searchView.getQuery().toString() : "";
+            updateAdapter(searchQuery);
         });
+    }
+
+    private void updateAdapter(String query) {
+        filter(query, vms -> adapter.setViewModels(vms));
     }
 
     @Override
@@ -119,49 +138,44 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         if (query == null) {
             return;
         }
-        challengePersistenceService.findAllQuestsAndRepeatingQuestsNotForChallenge(query.trim(), challenge, result -> {
-            List<PickQuestViewModel> viewModels = new ArrayList<>();
-            for (Quest q : result.second) {
-                viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), false));
+        List<PickQuestViewModel> viewModels = new ArrayList<>();
+        for (PickQuestViewModel vm : allViewModels) {
+            if (vm.getText().toLowerCase().contains(query.toLowerCase())) {
+                viewModels.add(vm);
             }
-            for (RepeatingQuest rq : result.first) {
-                viewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstartDate(), true));
+        }
+
+        Collections.sort(viewModels, (vm1, vm2) -> {
+            Date d1 = vm1.getStartDate();
+            Date d2 = vm2.getStartDate();
+            if (d1 == null && d2 == null) {
+                return -1;
             }
 
-            Collections.sort(viewModels, (vm1, vm2) -> {
-                Date d1 = vm1.getStartDate();
-                Date d2 = vm2.getStartDate();
-                if (d1 == null && d2 == null) {
-                    return -1;
-                }
+            if (d1 == null) {
+                return 1;
+            }
 
-                if (d1 == null) {
-                    return 1;
-                }
+            if (d2 == null) {
+                return -1;
+            }
 
-                if (d2 == null) {
-                    return -1;
-                }
+            if (d2.after(d1)) {
+                return 1;
+            }
 
-                if (d2.after(d1)) {
-                    return 1;
-                }
+            if (d1.after(d2)) {
+                return -1;
+            }
 
-                if (d1.after(d2)) {
-                    return -1;
-                }
-
-                return 0;
-            });
-            filterListener.onFilterCompleted(viewModels);
+            return 0;
         });
+        filterListener.onFilterCompleted(viewModels);
     }
 
     @Override
     protected void onStop() {
         challengePersistenceService.removeAllListeners();
-        questPersistenceService.removeAllListeners();
-        repeatingQuestPersistenceService.removeAllListeners();
         super.onStop();
     }
 
@@ -177,7 +191,7 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.pick_challenge_quests_menu, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -225,12 +239,10 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         for (BaseQuest bq : baseQuests) {
             if (bq instanceof Quest) {
                 Quest q = (Quest) bq;
-                q.setChallengeId(challenge.getId());
+                q.setChallengeId(challengeId);
                 quests.add(q);
             } else {
-                RepeatingQuest rq = (RepeatingQuest) bq;
-                rq.setChallengeId(challenge.getId());
-                repeatingQuests.add(rq);
+                repeatingQuests.add((RepeatingQuest) bq);
             }
         }
 
@@ -238,7 +250,7 @@ public class PickChallengeQuestsActivity extends BaseActivity {
             questPersistenceService.save(quests);
         }
         if (!repeatingQuests.isEmpty()) {
-            repeatingQuestPersistenceService.addToChallenge(repeatingQuests, challenge);
+            repeatingQuestPersistenceService.addToChallenge(repeatingQuests, challengeId);
         }
         finish();
     }

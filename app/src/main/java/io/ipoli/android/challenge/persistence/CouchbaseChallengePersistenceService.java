@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestData;
@@ -90,7 +91,7 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
                 String type = (String) document.get("type");
                 if ((Quest.TYPE.equals(type) && !document.containsKey("completedAt") && !document.containsKey("repeatingQuestId")) ||
                         (RepeatingQuest.TYPE.equals(type) && !document.containsKey("completedAt"))) {
-                    emitter.emit(document.get("challengeId"), document);
+                    emitter.emit(document.get("_id"), document);
                 }
             }, "1.0");
         }
@@ -183,37 +184,6 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
     }
 
     @Override
-    public void findAllQuestsAndRepeatingQuestsNotForChallenge(String searchQuery, Challenge challenge, OnDataChangedListener<Pair<List<RepeatingQuest>, List<Quest>>> listener) {
-        try {
-            QueryEnumerator enumerator = allQuestsAndRepeatingQuestsForChallengeView.createQuery().run();
-            List<RepeatingQuest> repeatingQuests = new ArrayList<>();
-            List<Quest> quests = new ArrayList<>();
-            while (enumerator.hasNext()) {
-                Map<String, Object> value = (Map<String, Object>) enumerator.next().getValue();
-                String name = value.get("name").toString().toLowerCase();
-                String challengeId = (String) value.get("challengeId");
-                if ((challenge != null && challenge.getId().equals(challengeId)) || !name.contains(searchQuery.toLowerCase())) {
-                    continue;
-                }
-
-                if (RepeatingQuest.TYPE.equals(value.get("type"))) {
-                    repeatingQuests.add(toObject(value, RepeatingQuest.class));
-                } else {
-                    quests.add(toObject(value, Quest.class));
-                }
-            }
-            new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(new Pair<>(repeatingQuests, quests)));
-        } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void findAllQuestsAndRepeatingQuests(String query, OnDataChangedListener<Pair<List<RepeatingQuest>, List<Quest>>> listener) {
-        findAllQuestsAndRepeatingQuestsNotForChallenge(query, null, listener);
-    }
-
-    @Override
     public void acceptChallenge(Challenge challenge, List<Quest> quests, Map<RepeatingQuest, List<Quest>> repeatingQuestsWithQuests) {
         database.runInTransaction(() -> {
             save(challenge);
@@ -235,6 +205,38 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
             return true;
         });
 
+    }
+
+    @Override
+    public void listenForAllQuestsAndRepeatingQuests(OnDataChangedListener<Pair<List<RepeatingQuest>, List<Quest>>> listener) {
+        listenForAllQuestsAndRepeatingQuestsNotForChallenge(null, listener);
+    }
+
+    @Override
+    public void listenForAllQuestsAndRepeatingQuestsNotForChallenge(String challengeId, OnDataChangedListener<Pair<List<RepeatingQuest>, List<Quest>>> listener) {
+        LiveQuery query = allQuestsAndRepeatingQuestsForChallengeView.createQuery().toLiveQuery();
+        LiveQuery.ChangeListener changeListener = event -> {
+            if (event.getSource().equals(query)) {
+                QueryEnumerator enumerator = event.getRows();
+                List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+                List<Quest> quests = new ArrayList<>();
+                while (enumerator.hasNext()) {
+                    Map<String, Object> value = (Map<String, Object>) enumerator.next().getValue();
+                    String chId = (String) value.get("challengeId");
+                    if ((!StringUtils.isEmpty(challengeId) && challengeId.equals(chId))) {
+                        continue;
+                    }
+
+                    if (RepeatingQuest.TYPE.equals(value.get("type"))) {
+                        repeatingQuests.add(toObject(value, RepeatingQuest.class));
+                    } else {
+                        quests.add(toObject(value, Quest.class));
+                    }
+                }
+                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(new Pair<>(repeatingQuests, quests)));
+            }
+        };
+        startLiveQuery(query, changeListener);
     }
 
     private void removeChallengeIdFromQuests(List<RepeatingQuest> repeatingQuests, List<Quest> quests) {

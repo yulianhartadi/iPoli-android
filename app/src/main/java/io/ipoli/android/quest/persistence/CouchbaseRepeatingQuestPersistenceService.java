@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
-import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -258,11 +257,11 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
     }
 
     @Override
-    public void addToChallenge(List<RepeatingQuest> repeatingQuests, Challenge challenge) {
+    public void addToChallenge(List<RepeatingQuest> repeatingQuests, String challengeId) {
         database.runInTransaction(() -> {
             try {
                 for (RepeatingQuest rq : repeatingQuests) {
-                    rq.setChallengeId(challenge.getId());
+                    rq.setChallengeId(challengeId);
 
                     Query query = repeatingQuestWithQuestsView.createQuery();
                     query.setStartKey(rq.getId());
@@ -274,7 +273,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
                         Pair<RepeatingQuest, List<Quest>> pair = (Pair<RepeatingQuest, List<Quest>>) enumerator.next().getValue();
                         List<Quest> quests = pair.second;
                         for (Quest q : quests) {
-                            q.setChallengeId(challenge.getId());
+                            q.setChallengeId(challengeId);
                             questPersistenceService.save(q);
                         }
                         save(rq);

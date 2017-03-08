@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.PersistenceService;
-import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 
@@ -28,5 +27,5 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     void removeFromChallenge(RepeatingQuest repeatingQuest);
 
-    void addToChallenge(List<RepeatingQuest> repeatingQuests, Challenge challenge);
+    void addToChallenge(List<RepeatingQuest> repeatingQuests, String challengeId);
 }
