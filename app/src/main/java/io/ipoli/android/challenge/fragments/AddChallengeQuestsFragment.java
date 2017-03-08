@@ -109,8 +109,6 @@ public class AddChallengeQuestsFragment extends BaseFragment {
             updateAdapter(searchQuery);
         });
 
-        updateAdapter("");
-
         return view;
     }
 

@@ -20,11 +20,9 @@ public interface ChallengePersistenceService extends PersistenceService<Challeng
 
     void delete(Challenge challenge, boolean deleteWithQuests);
 
-    void findAllQuestsAndRepeatingQuestsNotForChallenge(String query, Challenge challenge, OnDataChangedListener<Pair<List<RepeatingQuest>, List<Quest>>> listener);
-    
     void acceptChallenge(Challenge challenge, List<Quest> quests, Map<RepeatingQuest, List<Quest>> repeatingQuestsWithQuests);
 
-    void listenForAllQuestsAndRepeatingQuests(Challenge challenge, OnDataChangedListener<Pair<List<RepeatingQuest>, List<Quest>>> listener);
+    void listenForAllQuestsAndRepeatingQuestsNotForChallenge(String challengeId, OnDataChangedListener<Pair<List<RepeatingQuest>, List<Quest>>> listener);
 
     void listenForAllQuestsAndRepeatingQuests(OnDataChangedListener<Pair<List<RepeatingQuest>, List<Quest>>> listener);
 }
