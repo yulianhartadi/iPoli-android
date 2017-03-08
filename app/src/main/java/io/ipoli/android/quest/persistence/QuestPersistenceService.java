@@ -3,7 +3,6 @@ package io.ipoli.android.quest.persistence;
 import org.joda.time.LocalDate;
 
 import java.util.List;
-import java.util.Map;
 import java.util.SortedMap;
 
 import io.ipoli.android.app.persistence.PersistenceService;
@@ -44,13 +43,5 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void listenForAllIncompleteOrMostImportantForDate(LocalDate now, OnDataChangedListener<List<Quest>> listener);
 
-    void listenForIncompleteNotRepeating(OnDataChangedListener<List<Quest>> listener);
-
-    void populateNewQuestData(Quest quest, Map<String, Object> data);
-
-    void populateDeleteQuestData(Quest quest, Map<String, Object> data);
-
     void save(List<Quest> quests);
-
-    void populateDeleteQuestDataFromRepeatingQuest(Quest quest, Map<String, Object> data);
 }

@@ -408,24 +408,4 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     public void listenForAllIncompleteOrMostImportantForDate(LocalDate now, OnDataChangedListener<List<Quest>> listener) {
 
     }
-
-    @Override
-    public void listenForIncompleteNotRepeating(OnDataChangedListener<List<Quest>> listener) {
-
-    }
-
-    @Override
-    public void populateNewQuestData(Quest quest, Map<String, Object> data) {
-
-    }
-
-    @Override
-    public void populateDeleteQuestData(Quest quest, Map<String, Object> data) {
-
-    }
-
-    @Override
-    public void populateDeleteQuestDataFromRepeatingQuest(Quest quest, Map<String, Object> data) {
-
-    }
 }
