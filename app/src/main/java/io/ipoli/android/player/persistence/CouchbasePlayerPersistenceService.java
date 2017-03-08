@@ -14,6 +14,7 @@ import io.ipoli.android.quest.persistence.OnDataChangedListener;
  * on 3/6/17.
  */
 public class CouchbasePlayerPersistenceService extends BaseCouchbasePersistenceService<Player> implements PlayerPersistenceService {
+
     private final String playerId;
 
     public CouchbasePlayerPersistenceService(Database database, ObjectMapper objectMapper, LocalStorage localStorage) {

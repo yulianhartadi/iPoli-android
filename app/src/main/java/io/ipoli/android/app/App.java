@@ -16,6 +16,9 @@ import android.support.v7.app.NotificationCompat;
 import android.widget.Toast;
 
 import com.amplitude.api.Amplitude;
+import com.couchbase.lite.Database;
+import com.couchbase.lite.auth.PasswordAuthorizer;
+import com.couchbase.lite.replicator.Replication;
 import com.facebook.FacebookSdk;
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
@@ -27,6 +30,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
 import java.math.BigInteger;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,6 +44,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import io.ipoli.android.AnalyticsConstants;
+import io.ipoli.android.ApiConstants;
 import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
@@ -133,6 +138,9 @@ public class App extends MultiDexApplication {
 
     @Inject
     LocalStorage localStorage;
+
+    @Inject
+    Database database;
 
     @Inject
     RepeatingQuestScheduler repeatingQuestScheduler;
@@ -385,6 +393,25 @@ public class App extends MultiDexApplication {
         scheduleDateChanged();
         scheduleNextReminder();
         listenForChanges();
+        syncData();
+    }
+
+    private void syncData() {
+        try {
+            URL syncURL = new URL(ApiConstants.URL);
+            Replication pull = database.createPullReplication(syncURL);
+            pull.setAuthenticator(new PasswordAuthorizer(ApiConstants.USERNAME, ApiConstants.PASSWORD));
+            pull.setContinuous(true);
+
+            Replication push = database.createPushReplication(syncURL);
+            push.setAuthenticator(new PasswordAuthorizer(ApiConstants.USERNAME, ApiConstants.PASSWORD));
+            push.setContinuous(true);
+
+            pull.start();
+            push.start();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void scheduleDailyChallenge() {
