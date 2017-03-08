@@ -257,7 +257,22 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
     @Override
     public void findAllNonAllDayForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
-
+        try {
+            Query query = dayQuestsView.createQuery();
+            query.setMapOnly(true);
+            long date = toStartOfDayUTC(currentDate).getTime();
+            query.setStartKey(date);
+            query.setEndKey(date);
+            QueryEnumerator enumerator = query.run();
+            List<Quest> result = new ArrayList<>();
+            while (enumerator.hasNext()) {
+                QueryRow row = enumerator.next();
+                result.add(toObject(row.getValue()));
+            }
+            listener.onDataChanged(result);
+        } catch (CouchbaseLiteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -406,6 +421,6 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
     @Override
     public void listenForAllIncompleteOrMostImportantForDate(LocalDate now, OnDataChangedListener<List<Quest>> listener) {
-
+        
     }
 }
