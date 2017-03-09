@@ -116,7 +116,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 for (Object v : values) {
                     questReminders.add(toObject(v, QuestReminder.class));
                 }
-                Long key = (Long) keys.get(0);
+                Long key = Long.valueOf(keys.get(0).toString());
                 return new Pair<>(key, questReminders);
             }, "1.0");
         }
@@ -430,7 +430,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
             }
             while (enumerator.hasNext()) {
                 QueryRow row = enumerator.next();
-                listener.onDataChanged((Long) row.getKey());
+                listener.onDataChanged(Long.valueOf(row.getKey().toString()));
             }
         } catch (CouchbaseLiteException e) {
             e.printStackTrace();
