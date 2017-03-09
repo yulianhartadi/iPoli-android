@@ -430,9 +430,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
         List<Reminder> reminders = quest.getReminders();
         List<Reminder> newReminders = new ArrayList<>();
-        int notificationId = new Random().nextInt();
+        long notificationId = System.currentTimeMillis();
         for (Reminder r : reminders) {
-            newReminders.add(new Reminder(r.getMinutesFromStart(), notificationId));
+            newReminders.add(new Reminder(r.getMinutesFromStart(), String.valueOf(notificationId)));
         }
         quest.setReminders(newReminders);
         eventBus.post(new NewQuestEvent(quest, EventSource.CALENDAR));

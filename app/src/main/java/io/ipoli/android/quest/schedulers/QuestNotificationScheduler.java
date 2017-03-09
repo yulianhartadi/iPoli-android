@@ -80,7 +80,7 @@ public class QuestNotificationScheduler {
     public static void cancelReminders(List<Reminder> reminders, Context context) {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         for (Reminder reminder : reminders) {
-            notificationManagerCompat.cancel(reminder.getNotificationId());
+            notificationManagerCompat.cancel(reminder.getNotificationNum());
         }
     }
 

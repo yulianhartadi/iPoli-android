@@ -150,7 +150,7 @@ public class EditReminderFragment extends DialogFragment {
 
                     minutes = -minutes;
                     if (reminder == null) {
-                        reminder = new Reminder(minutes, new Random().nextInt());
+                        reminder = new Reminder(minutes, String.valueOf(new Random().nextInt()));
                     } else {
                         reminder.setMessage(message);
                         reminder.setMinutesFromStart(minutes);

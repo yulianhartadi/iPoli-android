@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -520,7 +519,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         Quest q = new Quest(name, endDate);
         q.setCategory(category.name());
         List<Reminder> reminders = new ArrayList<>();
-        reminders.add(new Reminder(0, new Random().nextInt()));
+        reminders.add(new Reminder(0));
         q.setReminders(reminders);
         return q;
     }
@@ -531,7 +530,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         rq.setDuration(duration);
         rq.setCategory(category.name());
         List<Reminder> reminders = new ArrayList<>();
-        reminders.add(new Reminder(0, new Random().nextInt()));
+        reminders.add(new Reminder(0));
         rq.setReminders(reminders);
         return rq;
     }

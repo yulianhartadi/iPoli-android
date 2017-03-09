@@ -100,7 +100,7 @@ public class PickTutorialQuestsFragment extends BaseTutorialPickQuestsFragment<Q
         q.setCategory(category.name());
         q.setRawText(name + " today");
         List<Reminder> reminders = new ArrayList<>();
-        reminders.add(new Reminder(0, new Random().nextInt()));
+        reminders.add(new Reminder(0, String.valueOf(new Random().nextInt())));
         q.setReminders(reminders);
         return q;
     }

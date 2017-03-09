@@ -323,7 +323,7 @@ public class RepeatingQuestScheduler {
         List<Reminder> questReminders = new ArrayList<>();
         if (repeatingQuest.getReminders() != null) {
             for (Reminder r : repeatingQuest.getReminders()) {
-                Reminder questReminder = new Reminder(r.getMinutesFromStart(), r.getNotificationId());
+                Reminder questReminder = new Reminder(r.getMinutesFromStart(), String.valueOf(r.getNotificationNum()));
                 questReminder.setMessage(r.getMessage());
                 questReminders.add(questReminder);
             }

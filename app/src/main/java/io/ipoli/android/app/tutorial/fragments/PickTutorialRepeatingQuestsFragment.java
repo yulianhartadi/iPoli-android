@@ -9,17 +9,16 @@ import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import javax.inject.Inject;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.tutorial.PickQuestViewModel;
+import io.ipoli.android.app.tutorial.adapters.PickTutorialRepeatingQuestsAdapter;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.reminder.data.Reminder;
-import io.ipoli.android.app.tutorial.PickQuestViewModel;
-import io.ipoli.android.app.tutorial.adapters.PickTutorialRepeatingQuestsAdapter;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -76,7 +75,7 @@ public class PickTutorialRepeatingQuestsFragment extends BaseTutorialPickQuestsF
         RepeatingQuest rq = new RepeatingQuest(text);
         rq.setCategory(category.name());
         List<Reminder> reminders = new ArrayList<>();
-        reminders.add(new Reminder(0, new Random().nextInt()));
+        reminders.add(new Reminder(0));
         rq.setReminders(reminders);
         viewModels.add(new PickQuestViewModel(rq, text, isSelected, true));
     }

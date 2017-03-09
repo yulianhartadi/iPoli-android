@@ -3,6 +3,7 @@ package io.ipoli.android.reminder.data;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Date;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.quest.data.Quest;
@@ -17,16 +18,20 @@ public class Reminder {
 
     private Long minutesFromStart;
 
-    private Integer notificationId;
+    private String notificationId;
 
     private Long start;
 
     public Reminder() {
     }
 
-    public Reminder(long minutesFromStart, int notificationId) {
-        this.notificationId = notificationId;
+    public Reminder(long minutesFromStart) {
+        this(minutesFromStart, String.valueOf(new Random().nextInt()));
+    }
+
+    public Reminder(long minutesFromStart, String notificationId) {
         this.minutesFromStart = minutesFromStart;
+        this.notificationId = notificationId;
     }
 
     public long getMinutesFromStart() {
@@ -45,12 +50,17 @@ public class Reminder {
         return message;
     }
 
-    public Integer getNotificationId() {
+    public String getNotificationId() {
         return notificationId;
     }
 
-    public void setNotificationId(int notificationId) {
+    public void setNotificationId(String notificationId) {
         this.notificationId = notificationId;
+    }
+
+    @JsonIgnore
+    public int getNotificationNum() {
+        return Integer.valueOf(notificationId);
     }
 
     @JsonIgnore

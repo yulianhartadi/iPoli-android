@@ -18,7 +18,6 @@ import com.squareup.otto.Subscribe;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -155,7 +154,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     public void onNameAndCategoryPicked(NameAndCategoryPickedEvent e) {
         quest = new Quest(e.name);
         quest.setDuration(Constants.QUEST_MIN_DURATION);
-        quest.addReminder(new Reminder(0, new Random().nextInt()));
+        quest.addReminder(new Reminder(0));
         quest.setCategoryType(e.category);
         KeyboardUtils.hideKeyboard(this);
         goToNextPage();
