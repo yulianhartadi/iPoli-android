@@ -22,14 +22,14 @@ import dagger.Provides;
 @Module
 public class ObjectMapperModule {
 
-    public class LongSerializer extends StdSerializer<Long> {
+    public class LongSerializer extends StdSerializer<Number> {
 
-        public LongSerializer(Class<Long> t) {
+        public LongSerializer(Class<Number> t) {
             super(t);
         }
 
         @Override
-        public void serialize(Long value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+        public void serialize(Number value, JsonGenerator gen, SerializerProvider provider) throws IOException {
             gen.writeString(String.valueOf(value));
         }
     }

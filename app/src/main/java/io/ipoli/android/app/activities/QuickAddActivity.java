@@ -23,7 +23,6 @@ import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -163,7 +162,7 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
             return;
         }
 
-        Reminder reminder = new Reminder(0, new Random().nextInt());
+        Reminder reminder = new Reminder(0);
         List<Reminder> reminders = new ArrayList<>();
         reminders.add(reminder);
 

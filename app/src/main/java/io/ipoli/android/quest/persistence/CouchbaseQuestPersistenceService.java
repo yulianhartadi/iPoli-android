@@ -106,7 +106,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                                 (String) document.get("_id"),
                                 Long.valueOf(r.get("minutesFromStart").toString()),
                                 Long.valueOf(r.get("start").toString()),
-                                (Integer) r.get("notificationId"),
+                                Integer.valueOf(r.get("notificationId").toString()),
                                 (String) r.get("message"));
                         emitter.emit(Long.valueOf(r.get("start").toString()), qReminder);
                     }

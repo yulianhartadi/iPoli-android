@@ -30,7 +30,7 @@ public class StartQuestCommand {
     public Quest execute() {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         for (Reminder r : quest.getReminders()) {
-            notificationManagerCompat.cancel(r.getNotificationId());
+            notificationManagerCompat.cancel(r.getNotificationNum());
         }
 
         quest.setActualStartDate(DateUtils.nowUTC());

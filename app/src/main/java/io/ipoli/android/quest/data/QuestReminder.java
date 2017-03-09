@@ -36,7 +36,7 @@ public class QuestReminder {
         setQuestName(quest.getName());
         setQuestId(quest.getId());
         setMinutesFromStart(reminder.getMinutesFromStart());
-        setNotificationId(reminder.getNotificationId());
+        setNotificationId(reminder.getNotificationNum());
         setStart(reminder.getStart());
         setMessage(reminder.getMessage());
     }

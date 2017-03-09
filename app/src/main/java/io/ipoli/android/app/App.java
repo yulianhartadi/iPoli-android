@@ -402,6 +402,9 @@ public class App extends MultiDexApplication {
             Replication pull = database.createPullReplication(syncURL);
             pull.setAuthenticator(new PasswordAuthorizer(ApiConstants.USERNAME, ApiConstants.PASSWORD));
             pull.setContinuous(true);
+            List<String> channels = new ArrayList<>();
+            channels.add(playerId);
+            pull.setChannels(channels);
 
             Replication push = database.createPushReplication(syncURL);
             push.setAuthenticator(new PasswordAuthorizer(ApiConstants.USERNAME, ApiConstants.PASSWORD));
