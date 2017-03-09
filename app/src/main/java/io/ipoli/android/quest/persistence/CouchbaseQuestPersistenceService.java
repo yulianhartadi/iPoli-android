@@ -60,7 +60,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
             dayQuestsView.setMapReduce((document, emitter) -> {
                 String type = (String) document.get("type");
                 if (Quest.TYPE.equals(type) && document.containsKey("scheduled")) {
-                    emitter.emit(document.get("scheduled"), document);
+                    emitter.emit(Long.valueOf(document.get("scheduled").toString()), document);
                 }
             }, (keys, values, rereduce) -> {
                 List<Quest> quests = new ArrayList<>();
@@ -77,7 +77,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
             completedDayQuestsView.setMap((document, emitter) -> {
                 String type = (String) document.get("type");
                 if (Quest.TYPE.equals(type) && document.containsKey("completedAt")) {
-                    emitter.emit(document.get("completedAt"), document);
+                    emitter.emit(Long.valueOf(document.get("completedAt").toString()), document);
                 }
             }, "1.0");
         }
