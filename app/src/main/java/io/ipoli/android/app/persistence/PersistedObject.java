@@ -11,22 +11,47 @@ import io.ipoli.android.app.utils.DateUtils;
 public abstract class PersistedObject {
 
     @JsonProperty(value = "_id")
-    protected String id;
-    protected String type;
-    protected Long createdAt;
-    protected Long updatedAt;
+    private String id;
+    private String type;
+    private Long createdAt;
+    private Long updatedAt;
+    private String playerId;
 
-    public abstract void setId(String id);
+    public PersistedObject(String type) {
+        this.type = type;
+    }
 
-    public abstract String getId();
+    public String getId() {
+        return id;
+    }
 
-    public abstract void setCreatedAt(Long createdAt);
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    public abstract void setUpdatedAt(Long updatedAt);
+    public Long getCreatedAt() {
+        return createdAt;
+    }
 
-    public abstract Long getCreatedAt();
+    public void setCreatedAt(Long createdAt) {
+        this.createdAt = createdAt;
+    }
 
-    public abstract Long getUpdatedAt();
+    public Long getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Long updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(String playerId) {
+        this.playerId = playerId;
+    }
 
     public String getType() {
         return type;

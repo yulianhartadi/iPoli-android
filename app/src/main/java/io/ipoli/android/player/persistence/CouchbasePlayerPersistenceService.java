@@ -3,9 +3,8 @@ package io.ipoli.android.player.persistence;
 import com.couchbase.lite.Database;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
-import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 
@@ -15,21 +14,27 @@ import io.ipoli.android.quest.persistence.OnDataChangedListener;
  */
 public class CouchbasePlayerPersistenceService extends BaseCouchbasePersistenceService<Player> implements PlayerPersistenceService {
 
-    private final String playerId;
-
-    public CouchbasePlayerPersistenceService(Database database, ObjectMapper objectMapper, LocalStorage localStorage) {
+    public CouchbasePlayerPersistenceService(Database database, ObjectMapper objectMapper) {
         super(database, objectMapper);
-        playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
+    }
+
+    @Override
+    protected String getPlayerId(Player obj) {
+        String playerId = super.getPlayerId(obj);
+        if (StringUtils.isEmpty(playerId) && obj != null) {
+            return obj.getId();
+        }
+        return playerId;
     }
 
     @Override
     public Player get() {
-        return toObject(database.getExistingDocument(playerId).getProperties());
+        return toObject(database.getExistingDocument(getPlayerId()).getProperties());
     }
 
     @Override
     public void listen(OnDataChangedListener<Player> listener) {
-        listenById(playerId, listener);
+        listenById(getPlayerId(), listener);
     }
 
     @Override

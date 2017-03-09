@@ -17,7 +17,7 @@ public class FrequencyTextFormatter {
 
     public static String formatInterval(int frequency, Recurrence recurrence) {
         String frequencyText = frequency == 1 ? "Once " : frequency + " times ";
-        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
+        if (recurrence.getRecurrenceType() == Recurrence.RepeatType.MONTHLY) {
             return frequencyText + "a month";
         }
         return frequencyText + "a week";

@@ -1,13 +1,10 @@
 package io.ipoli.android.note.data;
 
-import io.ipoli.android.app.persistence.PersistedObject;
-
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 9/21/16.
  */
-
-public class Note extends PersistedObject {
+public class Note {
 
     public enum NoteType {TEXT, INTENT, URL}
 
@@ -31,39 +28,9 @@ public class Note extends PersistedObject {
         this.data = "";
     }
 
-    public Long getUpdatedAt() {
-        return updatedAt;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setCreatedAt(Long createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    @Override
-    public void setUpdatedAt(Long updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public Long getCreatedAt() {
-        return createdAt;
-    }
-
     public String getNoteType() {
         return noteType;
     }
-
 
     public NoteType getNoteTypeValue() {
         return NoteType.valueOf(noteType);

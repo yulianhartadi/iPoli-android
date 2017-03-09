@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import dagger.Module;
 import dagger.Provides;
-import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.CouchbaseChallengePersistenceService;
 import io.ipoli.android.player.persistence.CouchbasePlayerPersistenceService;
@@ -35,8 +34,8 @@ public class PersistenceModule {
     }
 
     @Provides
-    public PlayerPersistenceService providePlayerPersistenceService(Database database, ObjectMapper objectMapper, LocalStorage localStorage) {
-        return new CouchbasePlayerPersistenceService(database, objectMapper, localStorage);
+    public PlayerPersistenceService providePlayerPersistenceService(Database database, ObjectMapper objectMapper) {
+        return new CouchbasePlayerPersistenceService(database, objectMapper);
     }
 
     @Provides

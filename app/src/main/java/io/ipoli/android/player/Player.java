@@ -36,9 +36,11 @@ public class Player extends PersistedObject {
     private Integer schemaVersion;
 
     public Player() {
+        super(TYPE);
     }
 
     public Player(String experience, int level, long coins, String picture, boolean use24HourFormat, Pet pet) {
+        super(TYPE);
         pets = new ArrayList<>();
         pets.add(pet);
         this.schemaVersion = Constants.SCHEMA_VERSION;
@@ -56,8 +58,6 @@ public class Player extends PersistedObject {
         setSleepStartMinute(Constants.DEFAULT_PLAYER_SLEEP_START_MINUTE);
         setSleepEndMinute(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE);
         setUse24HourFormat(use24HourFormat);
-
-        type = TYPE;
     }
 
     public List<Pet> getPets() {
@@ -67,32 +67,6 @@ public class Player extends PersistedObject {
     @JsonIgnore
     public Pet getPet() {
         return getPets().get(0);
-    }
-
-    public Long getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Long updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    public void setCreatedAt(Long createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Long getCreatedAt() {
-        return createdAt;
     }
 
     public Integer getSchemaVersion() {
@@ -163,7 +137,6 @@ public class Player extends PersistedObject {
         }
         return mostProductiveTimesOfDay;
     }
-
 
     @JsonIgnore
     public List<TimeOfDay> getMostProductiveTimesOfDayList() {

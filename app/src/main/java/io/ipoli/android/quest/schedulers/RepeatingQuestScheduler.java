@@ -50,15 +50,15 @@ public class RepeatingQuestScheduler {
     public List<Quest> scheduleAhead(RepeatingQuest repeatingQuest, java.util.Date startDate) {
         LocalDate currentDate = new LocalDate(startDate, DateTimeZone.UTC);
         List<Quest> quests = new ArrayList<>();
-        Recurrence.RecurrenceType recurrenceType = repeatingQuest.getRecurrence().getRecurrenceType();
+        Recurrence.RepeatType repeatType = repeatingQuest.getRecurrence().getRecurrenceType();
         if (repeatingQuest.isFlexible()) {
-            if (recurrenceType == Recurrence.RecurrenceType.MONTHLY) {
+            if (repeatType == Recurrence.RepeatType.MONTHLY) {
                 quests.addAll(scheduleFlexibleForMonth(repeatingQuest, currentDate));
-            } else if (recurrenceType == Recurrence.RecurrenceType.WEEKLY) {
+            } else if (repeatType == Recurrence.RepeatType.WEEKLY) {
                 quests.addAll(scheduleFlexibleFor4WeeksAhead(currentDate, repeatingQuest));
             }
         } else {
-            if (recurrenceType == Recurrence.RecurrenceType.MONTHLY) {
+            if (repeatType == Recurrence.RepeatType.MONTHLY) {
                 quests.addAll(scheduleFixedForMonth(repeatingQuest, currentDate));
             } else {
                 quests.addAll(scheduleFor4WeeksAhead(repeatingQuest, currentDate));
@@ -132,7 +132,7 @@ public class RepeatingQuestScheduler {
 
     private List<Quest> scheduleFlexibleQuest(RepeatingQuest repeatingQuest, java.util.Date startDate) {
         Recurrence recurrence = repeatingQuest.getRecurrence();
-        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.WEEKLY) {
+        if (recurrence.getRecurrenceType() == Recurrence.RepeatType.WEEKLY) {
             return scheduleWeeklyFlexibleQuest(repeatingQuest, startDate);
         }
         return scheduleMonthlyFlexibleQuest(repeatingQuest, startDate);

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.ipoli.android.app.App;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 
@@ -53,6 +54,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
                 Document document = database.createDocument();
                 document.putProperties(data);
                 obj.setId(document.getId());
+                obj.setPlayerId(getPlayerId(obj));
             } catch (CouchbaseLiteException e) {
                 e.printStackTrace();
             }
@@ -66,6 +68,14 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
                 e.printStackTrace();
             }
         }
+    }
+
+    protected String getPlayerId(T obj) {
+        return App.getPlayerId();
+    }
+
+    protected String getPlayerId() {
+        return getPlayerId(null);
     }
 
     @Override

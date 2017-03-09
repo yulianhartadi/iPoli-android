@@ -306,7 +306,7 @@ public class RepeatingQuestActivity extends BaseActivity {
 
     private List<String> getXValues(List<PeriodHistory> periodHistories) {
         List<String> xValues = new ArrayList<>();
-        if (repeatingQuest.getRecurrence().getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
+        if (repeatingQuest.getRecurrence().getRecurrenceType() == Recurrence.RepeatType.MONTHLY) {
             xValues.add(getMonthText(periodHistories.get(0).getStart()));
             xValues.add(getMonthText(periodHistories.get(1).getStart()));
             xValues.add(getMonthText(periodHistories.get(2).getStart()));

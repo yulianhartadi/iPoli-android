@@ -6,16 +6,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.app.persistence.PersistedObject;
-import io.ipoli.android.app.utils.DateUtils;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/24/16.
  */
-public class Pet extends PersistedObject {
-
-    public static final String TYPE = "pet";
+public class Pet {
 
     private String name;
     private Integer healthPointsPercentage;
@@ -33,9 +29,6 @@ public class Pet extends PersistedObject {
         this.picture = picture;
         this.backgroundPicture = backgroundPicture;
         setHealthPointsPercentage(healthPointsPercentage);
-        setCreatedAt(DateUtils.nowUTC().getTime());
-        setUpdatedAt(DateUtils.nowUTC().getTime());
-        type = TYPE;
     }
 
     public String getPicture() {
@@ -52,32 +45,6 @@ public class Pet extends PersistedObject {
 
     public void setBackgroundPicture(String backgroundPicture) {
         this.backgroundPicture = backgroundPicture;
-    }
-
-    public Long getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Long updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Long getCreatedAt() {
-        return createdAt;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    public void setCreatedAt(Long createdAt) {
-        this.createdAt = createdAt;
     }
 
     public String getName() {

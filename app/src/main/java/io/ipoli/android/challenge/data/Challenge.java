@@ -49,8 +49,6 @@ public class Challenge extends PersistedObject implements RewardProvider {
 
     private Long completedAt;
 
-    private String playerId;
-
     private Long coins;
     private Long experience;
 
@@ -58,28 +56,20 @@ public class Challenge extends PersistedObject implements RewardProvider {
     private Map<String, RepeatingQuest> challengeRepeatingQuests;
 
     private Map<String, QuestData> questsData;
-    private Map<String, Boolean> repeatingQuestIds;
 
     private String source;
 
     public Challenge() {
+        super(TYPE);
     }
 
     public Challenge(String name) {
+        super(TYPE);
         this.name = name;
         this.category = Category.PERSONAL.name();
         this.source = Constants.API_RESOURCE_SOURCE;
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
-        type = TYPE;
-    }
-
-    public Long getCreatedAt() {
-        return createdAt;
-    }
-
-    public Long getUpdatedAt() {
-        return updatedAt;
     }
 
     public String getName() {
@@ -251,26 +241,6 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.source = source;
     }
 
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setCreatedAt(Long createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    @Override
-    public void setUpdatedAt(Long updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
     public Map<String, Quest> getChallengeQuests() {
         if (challengeQuests == null) {
             challengeQuests = new HashMap<>();
@@ -310,31 +280,9 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return questsData;
     }
 
-    public void setQuestsData(Map<String, QuestData> questsData) {
-        this.questsData = questsData;
-    }
-
-
     public void addQuestData(String id, QuestData questData) {
         getQuestsData().put(id, questData);
     }
-
-    public Map<String, Boolean> getRepeatingQuestIds() {
-        if (repeatingQuestIds == null) {
-            repeatingQuestIds = new HashMap<>();
-        }
-        return repeatingQuestIds;
-    }
-
-    public void setRepeatingQuestIds(Map<String, Boolean> repeatingQuestIds) {
-        this.repeatingQuestIds = repeatingQuestIds;
-    }
-
-
-    public void addRepeatingQuestId(String id) {
-        getRepeatingQuestIds().put(id, true);
-    }
-
 
     public Date getNextScheduledDate(long currentDate) {
         Date nextDate = null;
@@ -398,13 +346,5 @@ public class Challenge extends PersistedObject implements RewardProvider {
             }
         }
         return count;
-    }
-
-    public String getPlayerId() {
-        return playerId;
-    }
-
-    public void setPlayerId(String playerId) {
-        this.playerId = playerId;
     }
 }

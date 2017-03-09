@@ -734,7 +734,7 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onOpenNote(OpenNoteEvent e) {
         log("open_note", EventParams.create()
-                .add("type", e.note.getType())
+                .add("type", e.note.getNoteType())
                 .add("data", e.note.getData()));
     }
 

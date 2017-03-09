@@ -194,7 +194,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     }
 
     private void initWeekDays() {
-        if (recurrence.getRecurrenceType() != Recurrence.RecurrenceType.WEEKLY) {
+        if (recurrence.getRecurrenceType() != Recurrence.RepeatType.WEEKLY) {
             return;
         }
         initDays();
@@ -221,7 +221,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
             daysOfMonth.add(String.valueOf(i));
         }
         dayOfMonth.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, daysOfMonth));
-        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY && recurrence.getRrule() != null) {
+        if (recurrence.getRecurrenceType() == Recurrence.RepeatType.MONTHLY && recurrence.getRrule() != null) {
             setSelectedDayOfMonth();
         }
     }
@@ -318,27 +318,27 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         if (isFlexible) {
             switch (position) {
                 case FLEXIBLE_FREQUENCY_WEEKLY:
-                    recurrenceFrequency.setTag(Recurrence.RecurrenceType.WEEKLY);
+                    recurrenceFrequency.setTag(Recurrence.RepeatType.WEEKLY);
                     break;
                 case FLEXIBLE_FREQUENCY_MONTHLY:
-                    recurrenceFrequency.setTag(Recurrence.RecurrenceType.MONTHLY);
+                    recurrenceFrequency.setTag(Recurrence.RepeatType.MONTHLY);
                     break;
             }
             initFlexibleCount();
         } else {
             switch (position) {
                 case FREQUENCY_DAILY:
-                    recurrenceFrequency.setTag(Recurrence.RecurrenceType.DAILY);
+                    recurrenceFrequency.setTag(Recurrence.RepeatType.DAILY);
                     dayOfWeekContainer.setVisibility(View.GONE);
                     dayOfMonthContainer.setVisibility(View.GONE);
                     break;
                 case FREQUENCY_WEEKLY:
-                    recurrenceFrequency.setTag(Recurrence.RecurrenceType.WEEKLY);
+                    recurrenceFrequency.setTag(Recurrence.RepeatType.WEEKLY);
                     dayOfWeekContainer.setVisibility(View.VISIBLE);
                     dayOfMonthContainer.setVisibility(View.GONE);
                     break;
                 case FREQUENCY_MONTHLY:
-                    recurrenceFrequency.setTag(Recurrence.RecurrenceType.MONTHLY);
+                    recurrenceFrequency.setTag(Recurrence.RepeatType.MONTHLY);
                     dayOfWeekContainer.setVisibility(View.GONE);
                     dayOfMonthContainer.setVisibility(View.VISIBLE);
                     break;
@@ -366,11 +366,11 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     }
 
     private void onDialogDone(View view) {
-        Recurrence.RecurrenceType recurrenceType = (Recurrence.RecurrenceType) recurrenceFrequency.getTag();
+        Recurrence.RepeatType repeatType = (Recurrence.RepeatType) recurrenceFrequency.getTag();
         if (isFlexible) {
-            setFlexibleValues(recurrenceType);
+            setFlexibleValues(repeatType);
         } else {
-            setRrule(recurrenceType);
+            setRrule(repeatType);
             recurrence.setFlexibleCount(0);
         }
 
@@ -383,16 +383,16 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         recurrencePickerListener.onRecurrencePicked(recurrence);
     }
 
-    private void setFlexibleValues(Recurrence.RecurrenceType recurrenceType) {
+    private void setFlexibleValues(Recurrence.RepeatType repeatType) {
         Recur recur = new Recur(Recur.WEEKLY, null);
-        switch (recurrenceType) {
+        switch (repeatType) {
             case WEEKLY:
                 recur.setFrequency(Recur.WEEKLY);
-                recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+                recurrence.setRecurrenceType(Recurrence.RepeatType.WEEKLY);
                 break;
             case MONTHLY:
                 recur.setFrequency(Recur.MONTHLY);
-                recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
+                recurrence.setRecurrenceType(Recurrence.RepeatType.MONTHLY);
                 break;
         }
 
@@ -406,9 +406,9 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         recurrence.setRrule(recur.toString());
     }
 
-    private void setRrule(Recurrence.RecurrenceType recurrenceType) {
+    private void setRrule(Recurrence.RepeatType repeatType) {
         Recur recur = new Recur(Recur.DAILY, null);
-        switch (recurrenceType) {
+        switch (repeatType) {
             case DAILY:
                 recur.getDayList().add(WeekDay.MO);
                 recur.getDayList().add(WeekDay.TU);
@@ -418,7 +418,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
                 recur.getDayList().add(WeekDay.SA);
                 recur.getDayList().add(WeekDay.SU);
                 recur.setFrequency(Recur.WEEKLY);
-                recurrence.setRecurrenceType(Recurrence.RecurrenceType.DAILY);
+                recurrence.setRecurrenceType(Recurrence.RepeatType.DAILY);
                 break;
             case WEEKLY:
                 for (Map.Entry<WeekDay, Integer> entry : weekDayToCheckBoxId.entrySet()) {
@@ -427,12 +427,12 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
                     }
                 }
                 recur.setFrequency(Recur.WEEKLY);
-                recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+                recurrence.setRecurrenceType(Recurrence.RepeatType.WEEKLY);
                 break;
             case MONTHLY:
                 recur.setFrequency(Recur.MONTHLY);
                 recur.getMonthDayList().add(dayOfMonth.getSelectedItemPosition() + 1);
-                recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
+                recurrence.setRecurrenceType(Recurrence.RepeatType.MONTHLY);
                 break;
         }
         recurrence.setRrule(recur.toString());

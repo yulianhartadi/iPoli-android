@@ -74,8 +74,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     private String challengeId;
 
-    private String playerId;
-
     private Long coins;
     private Long experience;
 
@@ -102,6 +100,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     private transient boolean isPlaceholder;
 
     public Quest() {
+        super(TYPE);
     }
 
     public Quest(String name) {
@@ -109,6 +108,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     public Quest(String name, Date endDate) {
+        super(TYPE);
         this.name = name;
         setEndDateFromLocal(endDate);
         setStartDateFromLocal(endDate);
@@ -121,7 +121,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.setCompletedCount(0);
         this.setTimesADay(1);
         this.allDay = false;
-        type = TYPE;
     }
 
     public Long getOriginalScheduled() {
@@ -157,7 +156,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     public void setScheduledDate(Date scheduledDate) {
         previousScheduledDate = scheduled;
         setScheduled(scheduledDate != null ? scheduledDate.getTime() : null);
-        if(getOriginalScheduledDate() == null) {
+        if (getOriginalScheduledDate() == null) {
             setOriginalScheduledDate(getScheduledDate());
         }
     }
@@ -360,34 +359,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    public void setCreatedAt(Long createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    @Override
-    public void setUpdatedAt(Long updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    @Override
-    public Long getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public Long getCreatedAt() {
-        return createdAt;
     }
 
     public String getCategory() {
@@ -603,7 +574,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     public List<Note> getTextNotes() {
         List<Note> textNotes = new ArrayList<>();
         for (Note note : getNotes()) {
-            if (note.getType().equals(Note.NoteType.TEXT.name())) {
+            if (note.getNoteType().equals(Note.NoteType.TEXT.name())) {
                 textNotes.add(note);
             }
         }
@@ -738,13 +709,5 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
             return TimePreference.ANY;
         }
         return TimePreference.valueOf(preferredStartTime);
-    }
-
-    public String getPlayerId() {
-        return playerId;
-    }
-
-    public void setPlayerId(String playerId) {
-        this.playerId = playerId;
     }
 }

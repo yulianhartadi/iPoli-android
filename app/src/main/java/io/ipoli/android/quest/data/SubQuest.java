@@ -1,15 +1,14 @@
 package io.ipoli.android.quest.data;
 
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import io.ipoli.android.app.persistence.PersistedObject;
-import io.ipoli.android.app.utils.DateUtils;
+import java.util.Date;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/26/16.
  */
-public class SubQuest extends PersistedObject {
+public class SubQuest {
 
     private String name;
 
@@ -22,16 +21,6 @@ public class SubQuest extends PersistedObject {
 
     public SubQuest(String name) {
         this.name = name;
-        setCreatedAt(DateUtils.nowUTC().getTime());
-        setUpdatedAt(DateUtils.nowUTC().getTime());
-    }
-
-    public Long getCreatedAt() {
-        return createdAt;
-    }
-
-    public Long getUpdatedAt() {
-        return updatedAt;
     }
 
     public String getName() {
@@ -42,12 +31,12 @@ public class SubQuest extends PersistedObject {
         this.name = name;
     }
 
-
+    @JsonIgnore
     public Date getCompletedAtDate() {
         return completedAt != null ? new Date(completedAt) : null;
     }
 
-
+    @JsonIgnore
     public void setCompletedAtDate(Date completedAtDate) {
         completedAt = completedAtDate != null ? completedAtDate.getTime() : null;
     }
@@ -68,28 +57,8 @@ public class SubQuest extends PersistedObject {
         this.completedAtMinute = completedAtMinute;
     }
 
-
+    @JsonIgnore
     public boolean isCompleted() {
         return getCompletedAtDate() != null;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setCreatedAt(Long createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    @Override
-    public void setUpdatedAt(Long updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

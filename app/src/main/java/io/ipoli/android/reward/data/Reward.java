@@ -17,28 +17,16 @@ public class Reward extends PersistedObject {
 
     private Integer price;
 
-    private String playerId;
-
-    private Long createdAt;
-    private Long updatedAt;
-
     public Reward() {
+        super(TYPE);
     }
 
     public Reward(String name, Integer price) {
+        super(TYPE);
         this.name = name;
         this.price = price;
-        this.type = TYPE;
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
-    }
-
-    public Long getCreatedAt() {
-        return createdAt;
-    }
-
-    public Long getUpdatedAt() {
-        return updatedAt;
     }
 
     public String getName() {
@@ -63,33 +51,5 @@ public class Reward extends PersistedObject {
 
     public void setPrice(Integer price) {
         this.price = price;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setCreatedAt(Long createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    @Override
-    public void setUpdatedAt(Long updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getPlayerId() {
-        return playerId;
-    }
-
-    public void setPlayerId(String playerId) {
-        this.playerId = playerId;
     }
 }

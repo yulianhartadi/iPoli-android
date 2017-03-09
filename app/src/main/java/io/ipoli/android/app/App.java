@@ -410,6 +410,7 @@ public class App extends MultiDexApplication {
             pull.start();
             push.start();
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
