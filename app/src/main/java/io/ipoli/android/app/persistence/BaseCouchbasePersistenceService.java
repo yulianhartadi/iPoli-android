@@ -54,7 +54,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
                 Document document = database.createDocument();
                 document.putProperties(data);
                 obj.setId(document.getId());
-                obj.setChannel(getPlayerId(obj));
+                obj.addChannel(getPlayerId(obj));
             } catch (CouchbaseLiteException e) {
                 e.printStackTrace();
             }

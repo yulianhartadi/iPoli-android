@@ -70,12 +70,6 @@ public abstract class PersistedObject {
     }
 
     @JsonIgnore
-    public void setChannel(String channel) {
-        channels = new ArrayList<>();
-        channels.add(channel);
-    }
-
-    @JsonIgnore
     public void addChannel(String channel) {
         getChannels().add(channel);
     }
