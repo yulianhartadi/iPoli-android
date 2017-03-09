@@ -1,6 +1,10 @@
 package io.ipoli.android.app.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.ipoli.android.app.utils.DateUtils;
 
@@ -15,7 +19,7 @@ public abstract class PersistedObject {
     private String type;
     private Long createdAt;
     private Long updatedAt;
-    private String playerId;
+    private List<String> channels;
 
     public PersistedObject(String type) {
         this.type = type;
@@ -45,14 +49,6 @@ public abstract class PersistedObject {
         this.updatedAt = updatedAt;
     }
 
-    public String getPlayerId() {
-        return playerId;
-    }
-
-    public void setPlayerId(String playerId) {
-        this.playerId = playerId;
-    }
-
     public String getType() {
         return type;
     }
@@ -63,5 +59,29 @@ public abstract class PersistedObject {
 
     public void markUpdated() {
         setUpdatedAt(DateUtils.nowUTC().getTime());
+    }
+
+    public List<String> getChannels() {
+        return channels != null ? channels : new ArrayList<>();
+    }
+
+    public void setChannels(List<String> channels) {
+        this.channels = channels;
+    }
+
+    @JsonIgnore
+    public void setChannel(String channel) {
+        channels = new ArrayList<>();
+        channels.add(channel);
+    }
+
+    @JsonIgnore
+    public void addChannel(String channel) {
+        getChannels().add(channel);
+    }
+
+    @JsonIgnore
+    public void removeChannel(String channel) {
+        getChannels().remove(channel);
     }
 }
