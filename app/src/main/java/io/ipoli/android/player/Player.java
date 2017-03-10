@@ -34,6 +34,7 @@ public class Player extends PersistedObject {
     private Integer sleepEndMinute;
     private Boolean use24HourFormat;
     private Integer schemaVersion;
+    private Integer completeDailyQuestsEndMinute;
 
     public Player() {
         super(TYPE);
@@ -57,6 +58,7 @@ public class Player extends PersistedObject {
         setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE);
         setSleepStartMinute(Constants.DEFAULT_PLAYER_SLEEP_START_MINUTE);
         setSleepEndMinute(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE);
+        setCompleteDailyQuestsEndMinute(Constants.DEFAULT_PLAYER_COMPLETE_DAILY_QUESTS_MINUTE);
         setUse24HourFormat(use24HourFormat);
     }
 
@@ -192,7 +194,7 @@ public class Player extends PersistedObject {
         this.workStartMinute = workStartMinute;
     }
 
-
+    @JsonIgnore
     public void setWorkStartTime(Time startTime) {
         if (startTime != null) {
             setWorkStartMinute(startTime.toMinuteOfDay());
@@ -205,7 +207,7 @@ public class Player extends PersistedObject {
         return workEndMinute != null ? workEndMinute : -1;
     }
 
-
+    @JsonIgnore
     public Time getWorkEndTime() {
         if (getWorkEndMinute() < 0) {
             return null;
@@ -286,5 +288,22 @@ public class Player extends PersistedObject {
 
     public void setUse24HourFormat(Boolean use24HourFormat) {
         this.use24HourFormat = use24HourFormat;
+    }
+
+    public Integer getCompleteDailyQuestsEndMinute() {
+        return completeDailyQuestsEndMinute;
+    }
+
+    public void setCompleteDailyQuestsEndMinute(Integer completeDailyQuestsEndMinute) {
+        this.completeDailyQuestsEndMinute = completeDailyQuestsEndMinute;
+    }
+
+    @JsonIgnore
+    public void setCompleteDailyQuestsEndTime(Time completeDailyQuestsEndTime) {
+        if (completeDailyQuestsEndTime != null) {
+            setCompleteDailyQuestsEndMinute(completeDailyQuestsEndTime.toMinuteOfDay());
+        } else {
+            setCompleteDailyQuestsEndMinute(null);
+        }
     }
 }

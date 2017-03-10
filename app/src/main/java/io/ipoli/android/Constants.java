@@ -88,6 +88,7 @@ public interface Constants {
     int DEFAULT_PLAYER_WORK_END_MINUTE = 18 * 60;
     int DEFAULT_PLAYER_SLEEP_START_MINUTE = 0;
     int DEFAULT_PLAYER_SLEEP_END_MINUTE = 8 * 60;
+    int DEFAULT_PLAYER_COMPLETE_DAILY_QUESTS_MINUTE = 0;
 
     List<Integer> DEFAULT_PLAYER_WORK_DAYS = new ArrayList<>(Arrays.asList(new Integer[]{
             DaysOfWeek.MONDAY.getIsoOrder(),
