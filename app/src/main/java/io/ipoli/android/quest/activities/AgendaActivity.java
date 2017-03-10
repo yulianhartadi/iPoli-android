@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -159,5 +160,13 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
     public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
         selectedDate = new LocalDate(year, month + 1, dayOfMonth);
         showQuestsForDate(selectedDate);
+    }
+
+    @Override
+    public void finish() {
+        Intent data = new Intent();
+        data.putExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, selectedDate.toDate().getTime());
+        setResult(RESULT_OK, data);
+        super.finish();
     }
 }
