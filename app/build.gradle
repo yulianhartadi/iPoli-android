@@ -39,11 +39,11 @@ android {
             }
         }
 
-        debug {
-            ndk {
-                abiFilter 'x86_64'
-            }
-        }
+//        debug {
+//            ndk {
+//                abiFilter 'x86_64'
+//            }
+//        }
     }
 
     packagingOptions {
@@ -87,6 +87,8 @@ dependencies {
     compile 'com.lnikkila:extendedtouchview:0.1.0'
     compile 'com.couchbase.lite:couchbase-lite-android:1.4.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.0.pr1'
+    compile 'com.google.android.gms:play-services-auth:10.2.0'
+    compile 'com.squareup.okhttp3:okhttp:3.6.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

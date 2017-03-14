@@ -39,10 +39,8 @@ import java.util.Random;
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.app.activities.BaseActivity;
-import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.events.AvatarCoinsTappedEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
@@ -64,7 +62,6 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
-import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.pet.PetActivity;
@@ -138,53 +135,53 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         appComponent().inject(this);
 
-        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
+//        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
             startActivity(new Intent(this, SignInActivity.class));
             finish();
             return;
-        }
+//        }
 
-        int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
-        if (schemaVersion != Constants.SCHEMA_VERSION) {
-            // should migrate
-            startActivity(new Intent(this, MigrationActivity.class));
-            finish();
-            return;
-        }
-
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-
-        localStorage.increment(Constants.KEY_APP_RUN_COUNT);
-
-        if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
-            localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
-            startTutorial();
-        }
-
-        isRateDialogShown = false;
-
-        navigationView.setNavigationItemSelectedListener(this);
-
-        startCalendar();
-        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                navigationItemSelected = null;
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                if (navigationItemSelected == null) {
-                    return;
-                }
-                onItemSelectedFromDrawer();
-            }
-        };
-        drawerLayout.addDrawerListener(actionBarDrawerToggle);
-
-        updatePlayerInDrawer(getPlayer());
+//        int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
+//        if (schemaVersion != Constants.SCHEMA_VERSION) {
+//            // should migrate
+//            startActivity(new Intent(this, MigrationActivity.class));
+//            finish();
+//            return;
+//        }
+//
+//        setContentView(R.layout.activity_main);
+//        ButterKnife.bind(this);
+//
+//        localStorage.increment(Constants.KEY_APP_RUN_COUNT);
+//
+//        if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
+//            localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
+//            startTutorial();
+//        }
+//
+//        isRateDialogShown = false;
+//
+//        navigationView.setNavigationItemSelectedListener(this);
+//
+//        startCalendar();
+//        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
+//
+//            @Override
+//            public void onDrawerOpened(View drawerView) {
+//                navigationItemSelected = null;
+//            }
+//
+//            @Override
+//            public void onDrawerClosed(View drawerView) {
+//                if (navigationItemSelected == null) {
+//                    return;
+//                }
+//                onItemSelectedFromDrawer();
+//            }
+//        };
+//        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+//
+//        updatePlayerInDrawer(getPlayer());
     }
 
     private void onItemSelectedFromDrawer() {
