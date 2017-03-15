@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -119,28 +118,45 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     }
 
     private void handleGoogleSignInResult(GoogleSignInResult result) {
-        boolean success = false;
-        String errorMessage = null;
-
         if (result.isSuccess()) {
+
             GoogleSignInAccount acct = result.getSignInAccount();
+            String username = "accounts.google.com_" + acct.getId();
 
-            String idToken = acct.getIdToken();
-            if (idToken != null) {
-                loginWithGoogleSignIn(idToken, acct.getId());
-                success = true;
-            } else
-                errorMessage = "Google Sign-in failed : No ID Token returned";
+            checkUserStatus(username, new UserStatusListener() {
+                @Override
+                public void onUserExists() {
+                    loginWithGoogle(acct);
+                }
 
-//            setLogInWithGoogleSignIn(true);
-        } else
-            errorMessage = "Google Sign-in failed: (" +
+                @Override
+                public void onUserDoesNotExist() {
+                    //create player
+                    Log.d("AAA player", "Should create new player");
+                    loginWithGoogle(acct);
+                }
+
+                @Override
+                public void onFailure(Exception e) {
+                    showMessage("Failed to get user : " + username, e);
+                }
+            });
+
+        } else {
+            String errorMessage = "Google Sign-in failed: (" +
                     result.getStatus().getStatusCode() + ") " +
                     result.getStatus().getStatusMessage();
+            showMessage(errorMessage, null);
+        }
 
-        if (!success) {
-//            Application application = (Application) getApplication();
-//            application.showMessage(errorMessage, null);
+    }
+
+    private void loginWithGoogle(GoogleSignInAccount account) {
+        String idToken = account.getIdToken();
+        if (idToken != null) {
+            loginWithGoogleSignIn(idToken);
+        } else {
+            showMessage("Google Sign-in failed : No ID Token returned", null);
         }
     }
 
@@ -162,19 +178,32 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     }
 
-    public void loginWithGoogleSignIn(final String idToken, final String userId) {
+    private void checkUserStatus(String username, UserStatusListener listener) {
+        Request request = new Request.Builder()
+                .url(getServerAdminDbUserUrl(username))
+                .get()
+                .build();
 
-        // Send POST _session with the idToken to create a new SGW session:
+        httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                listener.onFailure(e);
+            }
 
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    listener.onUserExists();
+                } else if (response.code() == 404) {
+                    listener.onUserDoesNotExist();
+                }
+            }
+        });
+    }
+
+    public void loginWithGoogleSignIn(final String idToken) {
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
-        RequestBody body = RequestBody.create(JSON,
-                gson.toJson(new HashMap<String, String>(){{
-                    put("name", "123");
-                }}));
-
-//        RequestBody body = RequestBody.create(JSON, "{}");
-
+        RequestBody body = RequestBody.create(JSON, "{}");
         Request request = new Request.Builder()
                 .url(getServerDbSessionUrl())
                 .header("Authorization", "Bearer " + idToken)
@@ -238,25 +267,22 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         }
     }
 
-    private URL getServerAdminSessionUrl() {
+    private URL getServerAdminDbUserUrl(String username) {
         String serverUrl = SERVER_ADMIN_DB_URL;
         if (!serverUrl.endsWith("/"))
             serverUrl = serverUrl + "/";
         try {
-            return new URL(serverUrl + "_session");
+            return new URL(serverUrl + "_user/" + username);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private URL getServerAdminDbUserUrl() {
-        String serverUrl = SERVER_ADMIN_DB_URL;
-        if (!serverUrl.endsWith("/"))
-            serverUrl = serverUrl + "/";
-        try {
-            return new URL(serverUrl + "_user/");
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+    interface UserStatusListener {
+        void onUserExists();
+
+        void onUserDoesNotExist();
+
+        void onFailure(Exception e);
     }
 }
