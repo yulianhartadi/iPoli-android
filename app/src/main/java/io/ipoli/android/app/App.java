@@ -19,7 +19,6 @@ import com.amplitude.api.Amplitude;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.auth.PasswordAuthorizer;
 import com.couchbase.lite.replicator.Replication;
-import com.facebook.FacebookSdk;
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -290,7 +289,6 @@ public class App extends MultiDexApplication {
         super.onCreate();
 
         JodaTimeAndroid.init(this);
-        FacebookSdk.sdkInitialize(getApplicationContext());
         Amplitude.getInstance().initialize(getApplicationContext(), AnalyticsConstants.AMPLITUDE_KEY).enableForegroundTracking(this);
 
         getAppComponent(this).inject(this);

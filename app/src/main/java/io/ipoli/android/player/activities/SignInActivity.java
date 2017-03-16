@@ -12,7 +12,6 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
@@ -45,12 +44,12 @@ import io.ipoli.android.ApiConstants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Cookie;
 import okhttp3.HttpUrl;
-import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -90,19 +89,16 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         App.getAppComponent(this).inject(this);
         ButterKnife.bind(this);
 
-        httpClient = new OkHttpClient().newBuilder().addInterceptor(new Interceptor() {
-            @Override
-            public Response intercept(Chain chain) throws IOException {
-                Log.i("REQUEST INFO", chain.request().url().toString());
-                Log.i("REQUEST INFO", chain.request().headers().toString());
+        httpClient = new OkHttpClient().newBuilder().addInterceptor(chain -> {
+            Log.i("REQUEST INFO", chain.request().url().toString());
+            Log.i("REQUEST INFO", chain.request().headers().toString());
 
-                Response response = chain.proceed(chain.request());
-                Log.i("RESPONSE INFO", response.toString());
-                Log.i("RESPONSE INFO", response.body().toString());
-                Log.i("RESPONSE INFO", response.message());
+            Response response = chain.proceed(chain.request());
+            Log.i("RESPONSE INFO", response.toString());
+            Log.i("RESPONSE INFO", response.body().toString());
+            Log.i("RESPONSE INFO", response.message());
 
-                return chain.proceed(chain.request());
-            }
+            return chain.proceed(chain.request());
         }).build();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -135,12 +131,11 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
                     @Override
                     public void onCancel() {
-                        // App code
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
-                        // App code   
+                        eventBus.post(new AppErrorEvent(exception));
                     }
                 });
 
@@ -158,18 +153,14 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     public void getUserDetailsFromFB(AccessToken accessToken) {
 
-        GraphRequest req = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
-            @Override
-            public void onCompleted(JSONObject object, GraphResponse response) {
-                Toast.makeText(getApplicationContext(), "graph request completed", Toast.LENGTH_SHORT).show();
-                try {
-                    String email = object.getString("email");
-                    loginWithFacebook(accessToken, email);
-                } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(), "graph request error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-
+        GraphRequest req = GraphRequest.newMeRequest(accessToken, (object, response) -> {
+            try {
+                String email = object.getString("email");
+                loginWithFacebook(accessToken, email);
+            } catch (JSONException e) {
+                eventBus.post(new AppErrorEvent(e));
             }
+
         });
         Bundle parameters = new Bundle();
         parameters.putString("fields", "email,name");
