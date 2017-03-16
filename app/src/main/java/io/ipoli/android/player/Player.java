@@ -318,6 +318,9 @@ public class Player extends PersistedObject {
     }
 
     public List<LoginProvider> getLoginProviders() {
+        if(loginProviders == null) {
+            loginProviders = new ArrayList<>();
+        }
         return loginProviders;
     }
 

@@ -15,6 +15,14 @@ public class LoginProvider {
     private String id;
     private String provider;
 
+    public LoginProvider() {
+    }
+
+    public LoginProvider(String id, Provider provider) {
+        this.id = id;
+        setProviderType(provider);
+    }
+
     public String getId() {
         return id;
     }
