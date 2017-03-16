@@ -5,9 +5,16 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -18,10 +25,15 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Arrays;
+
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +50,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Cookie;
 import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -51,9 +64,6 @@ import okhttp3.Response;
 public class SignInActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
     private static final int RC_GOOGLE_SIGN_IN = 9001;
-
-    private static final String DATABASE_NAME = "sync_gateway";
-    private static final String USER_LOCAL_DOC_ID = "user";
     private static final String SERVER_DB_URL = "http://10.0.2.2:4984/sync_gateway/";
     private static final String SERVER_ADMIN_DB_URL = "http://10.0.2.2:4985/sync_gateway/";
 
@@ -64,10 +74,14 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     PlayerPersistenceService playerPersistenceService;
 
     @BindView(R.id.google_sign_in)
-    SignInButton signInButton;
+    SignInButton googleSignInButton;
+
+    @BindView(R.id.facebook_login)
+    LoginButton fbLoginButton;
 
     private GoogleApiClient googleApiClient;
-    private OkHttpClient httpClient = new OkHttpClient();
+    private OkHttpClient httpClient;
+    private CallbackManager callbackManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,6 +89,21 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         setContentView(R.layout.activity_sign_in);
         App.getAppComponent(this).inject(this);
         ButterKnife.bind(this);
+
+        httpClient = new OkHttpClient().newBuilder().addInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Log.i("REQUEST INFO", chain.request().url().toString());
+                Log.i("REQUEST INFO", chain.request().headers().toString());
+
+                Response response = chain.proceed(chain.request());
+                Log.i("RESPONSE INFO", response.toString());
+                Log.i("RESPONSE INFO", response.body().toString());
+                Log.i("RESPONSE INFO", response.message());
+
+                return chain.proceed(chain.request());
+            }
+        }).build();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(ApiConstants.WEB_SERVER_GOOGLE_PLUS_CLIENT_ID)
@@ -87,14 +116,33 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-        signInButton.setSize(SignInButton.SIZE_STANDARD);
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-                startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
-            }
+        googleSignInButton.setSize(SignInButton.SIZE_STANDARD);
+        googleSignInButton.setOnClickListener(v -> {
+            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+            startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
         });
+
+
+        fbLoginButton.setReadPermissions(Arrays.asList(new String[]{"email"}));
+        callbackManager = CallbackManager.Factory.create();
+        fbLoginButton.registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        Log.d("AAAA FB: ", loginResult.getAccessToken().getToken());
+                        getUserDetailsFromFB(loginResult.getAccessToken());
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // App code
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        // App code   
+                    }
+                });
 
 //        Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR, Constants.DEFAULT_PET_BACKGROUND_IMAGE, Constants.DEFAULT_PET_HP);
 //        Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP),
@@ -108,12 +156,35 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 //        finish();
     }
 
+    public void getUserDetailsFromFB(AccessToken accessToken) {
+
+        GraphRequest req = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
+            @Override
+            public void onCompleted(JSONObject object, GraphResponse response) {
+                Toast.makeText(getApplicationContext(), "graph request completed", Toast.LENGTH_SHORT).show();
+                try {
+                    String email = object.getString("email");
+                    loginWithFacebook(accessToken, email);
+                } catch (JSONException e) {
+                    Toast.makeText(getApplicationContext(), "graph request error : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "email,name");
+        req.setParameters(parameters);
+        req.executeAsync();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_GOOGLE_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleGoogleSignInResult(result);
+        } else {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -201,6 +272,43 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         });
     }
 
+    public void loginWithFacebook(final AccessToken accessToken, String email) {
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        Map<String, String> params = new HashMap<>();
+        params.put("access_token", accessToken.getToken());
+        params.put("email", email);
+        params.put("remote_url", "http://localhost:4984");
+        JSONObject jsonObject = new JSONObject(params);
+        RequestBody body = RequestBody.create(JSON, jsonObject.toString());
+        Request request = new Request.Builder()
+                .url(getServerDbFacebookUrl())
+                .post(body)
+                .build();
+
+        httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                showMessage("Failed to create a new SGW session with IDToken : " + accessToken, e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    Type type = new TypeToken<Map<String, Object>>() {
+                    }.getType();
+                    Map<String, Object> session = gson.fromJson(response.body().charStream(), type);
+                    Map<String, Object> userInfo = (Map<String, Object>) session.get("userCtx");
+                    final String username = (userInfo != null ? (String) userInfo.get("name") : null);
+                    final List<Cookie> cookies =
+                            Cookie.parseAll(HttpUrl.get(getServerDbUrl()), response.headers());
+//                    if (login(username, cookies)) {
+//                        completeLogin();
+//                    }
+                }
+            }
+        });
+    }
+
     public void loginWithGoogleSignIn(final String idToken) {
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         RequestBody body = RequestBody.create(JSON, "{}");
@@ -251,6 +359,17 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     public URL getServerDbUrl() {
         try {
             return new URL(SERVER_DB_URL);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public URL getServerDbFacebookUrl() {
+        String serverUrl = SERVER_DB_URL;
+        if (!serverUrl.endsWith("/"))
+            serverUrl = serverUrl + "/";
+        try {
+            return new URL(serverUrl + "_facebook");
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
