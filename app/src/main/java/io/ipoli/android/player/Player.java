@@ -21,6 +21,7 @@ public class Player extends PersistedObject {
 
     public static final String TYPE = "player";
 
+    private String email;
     private Integer level;
     private String experience;
     private Long coins;
@@ -326,5 +327,18 @@ public class Player extends PersistedObject {
 
     public void setAuthProviders(List<AuthProvider> authProviders) {
         this.authProviders = authProviders;
+    }
+
+    @JsonIgnore
+    public boolean isAuthenticated() {
+        return currentAuthProvider != null;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

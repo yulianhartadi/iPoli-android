@@ -13,11 +13,11 @@ import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.amplitude.api.Amplitude;
 import com.couchbase.lite.Database;
-import com.couchbase.lite.auth.PasswordAuthorizer;
 import com.couchbase.lite.replicator.Replication;
 import com.google.gson.Gson;
 import com.squareup.otto.Bus;
@@ -84,11 +84,13 @@ import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
+import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.LevelUpActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
+import io.ipoli.android.player.events.StartReplicationEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.BaseQuest;
@@ -118,6 +120,7 @@ import io.ipoli.android.quest.schedulers.QuestScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
+import okhttp3.Cookie;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -303,7 +306,6 @@ public class App extends MultiDexApplication {
         if (schemaVersion != Constants.SCHEMA_VERSION) {
             return;
         }
-
         initAppStart();
     }
 
@@ -391,21 +393,51 @@ public class App extends MultiDexApplication {
         scheduleDateChanged();
         scheduleNextReminder();
         listenForChanges();
-        syncData();
+        if(getPlayer().isAuthenticated()) {
+            if(getPlayer().getCurrentAuthProvider().getProviderType() == AuthProvider.Provider.GOOGLE) {
+                new GoogleAuthService().getIdToken(this, idToken -> {
+                    Log.d("AAAA", idToken);
+                });
+            }
+//            syncData();
+        }
     }
 
-    private void syncData() {
+    @Subscribe
+    public void onStartReplication(StartReplicationEvent e) {
+        if(e.shouldCleanDatabase) {
+//            stopReplication(false);
+//            try {
+//                database.delete();
+//            } catch (CouchbaseLiteException exc) {
+//                eventBus.post(new AppErrorEvent(exc));
+//            }
+//            database = null;
+
+        }
+        syncData(e.cookies);
+    }
+
+    private void syncData(List<Cookie> cookies) {
         try {
             URL syncURL = new URL(ApiConstants.URL);
             Replication pull = database.createPullReplication(syncURL);
-            pull.setAuthenticator(new PasswordAuthorizer(ApiConstants.USERNAME, ApiConstants.PASSWORD));
+//            pull.setAuthenticator(new PasswordAuthorizer(ApiConstants.USERNAME, ApiConstants.PASSWORD));
+            for (Cookie cookie : cookies) {
+                pull.setCookie(cookie.name(), cookie.value(), cookie.path(),
+                        new Date(cookie.expiresAt()), cookie.secure(), cookie.httpOnly());
+            }
             pull.setContinuous(true);
             List<String> channels = new ArrayList<>();
             channels.add(playerId);
             pull.setChannels(channels);
 
             Replication push = database.createPushReplication(syncURL);
-            push.setAuthenticator(new PasswordAuthorizer(ApiConstants.USERNAME, ApiConstants.PASSWORD));
+//            push.setAuthenticator(new PasswordAuthorizer(ApiConstants.USERNAME, ApiConstants.PASSWORD));
+            for (Cookie cookie : cookies) {
+                push.setCookie(cookie.name(), cookie.value(), cookie.path(),
+                        new Date(cookie.expiresAt()), cookie.secure(), cookie.httpOnly());
+            }
             push.setContinuous(true);
 
             pull.start();

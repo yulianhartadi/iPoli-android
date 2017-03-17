@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -51,10 +50,9 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.Player;
+import io.ipoli.android.player.events.StartReplicationEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import okhttp3.Cookie;
-import okhttp3.OkHttpClient;
-import okhttp3.Response;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -83,7 +81,6 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     Button anonymousButton;
 
     private GoogleApiClient googleApiClient;
-    private OkHttpClient httpClient;
     private CallbackManager callbackManager;
 
     @Override
@@ -92,18 +89,6 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         setContentView(R.layout.activity_sign_in);
         App.getAppComponent(this).inject(this);
         ButterKnife.bind(this);
-
-        httpClient = new OkHttpClient().newBuilder().addInterceptor(chain -> {
-            Log.i("REQUEST INFO", chain.request().url().toString());
-            Log.i("REQUEST INFO", chain.request().headers().toString());
-
-            Response response = chain.proceed(chain.request());
-            Log.i("RESPONSE INFO", response.toString());
-            Log.i("RESPONSE INFO", response.body().toString());
-            Log.i("RESPONSE INFO", response.message());
-
-            return chain.proceed(chain.request());
-        }).build();
 
         initGoogleSingIn();
         initFBLogin();
@@ -135,6 +120,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                         eventBus.post(new AppErrorEvent(exception));
                     }
                 });
+
     }
 
     private void initGoogleSingIn() {
@@ -220,13 +206,16 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     private void login(AuthProvider authProvider, Map<String, String> params, String authHeader) {
         api.testCreateSession(authProvider, params, authHeader, new Api.SessionResponseListener() {
             @Override
-            public void onSuccess(String username, List<Cookie> cookies, boolean userExists) {
-
+            public void onSuccess(String username, String email, List<Cookie> cookies, boolean newUserCreated) {
+                if(newUserCreated) {
+                    createPlayer(authProvider, email);
+                }
+                eventBus.post(new StartReplicationEvent(cookies, newUserCreated));
             }
 
             @Override
             public void onError(Exception e) {
-
+                eventBus.post(new AppErrorEvent(e));
             }
         });
     }
@@ -250,16 +239,17 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     }
 
     private void createPlayer() {
-        createPlayer(null);
+        createPlayer(null, null);
     }
 
-    private void createPlayer(AuthProvider authProvider) {
+    private void createPlayer(AuthProvider authProvider, String email) {
         Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR, Constants.DEFAULT_PET_BACKGROUND_IMAGE, Constants.DEFAULT_PET_HP);
         Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP),
                 Constants.DEFAULT_AVATAR_LEVEL,
                 Constants.DEFAULT_PLAYER_COINS,
                 Constants.DEFAULT_PLAYER_PICTURE,
                 DateFormat.is24HourFormat(this), pet);
+        player.setEmail(email);
         if (authProvider != null) {
             player.setCurrentAuthProvider(authProvider);
             player.getAuthProviders().add(authProvider);

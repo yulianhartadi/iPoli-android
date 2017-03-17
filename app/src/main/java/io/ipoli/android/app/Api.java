@@ -58,12 +58,6 @@ public class Api {
         }).build();
     }
 
-    public interface SessionResponseListener {
-        void onSuccess(String username, List<Cookie> cookies, boolean userExists);
-
-        void onError(Exception e);
-    }
-
     public void createSession(AuthProvider authProvider, Map<String, String> params, String authHeader, SessionResponseListener responseListener) {
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         if(params == null) {
@@ -94,9 +88,10 @@ public class Api {
                     };
                     Map<String, Object> session = objectMapper.convertValue(response.body().charStream(), mapTypeReference);
                     String username = (String) session.get("username");
+                    String email = (String) session.get("email");
                     List<Cookie> cookies = Cookie.parseAll(HttpUrl.get(getUrl(ApiConstants.URL)), response.headers());
-                    boolean userExists = (boolean) session.get("userExists");
-                    responseListener.onSuccess(username, cookies, userExists);
+                    boolean newUserCreated = (boolean) session.get("newUserCreated");
+                    responseListener.onSuccess(username, email, cookies, newUserCreated);
                 }
             }
         });
@@ -119,9 +114,9 @@ public class Api {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                boolean userExists = false;
+                boolean newUserCreated = true;
                 if (response.isSuccessful()) {
-                    userExists = true;
+                    newUserCreated = false;
                 }
 
                 MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -146,7 +141,7 @@ public class Api {
                     builder.addHeader("Authorization", authHeader);
                 }
 
-                boolean finalUserExists = userExists;
+                boolean finalNewUserCreated = newUserCreated;
                 httpClient.newCall(builder.build()).enqueue(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
@@ -165,8 +160,9 @@ public class Api {
                             Map<String, Object> session = gson.fromJson(response.body().charStream(), type);
                             Map<String, Object> userInfo = (Map<String, Object>) session.get("userCtx");
                             String username = (userInfo != null ? (String) userInfo.get("name") : null);
+                            String email = (userInfo != null ? (String) userInfo.get("email") : null);
                             List<Cookie> cookies = Cookie.parseAll(HttpUrl.get(getUrl(gatewayUrl)), response.headers());
-                            responseListener.onSuccess(username, cookies, finalUserExists);
+                            responseListener.onSuccess(username, email, cookies, finalNewUserCreated);
                         }
                     }
                 });
@@ -182,5 +178,11 @@ public class Api {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public interface SessionResponseListener {
+        void onSuccess(String username, String email, List<Cookie> cookies, boolean newUserCreated);
+
+        void onError(Exception e);
     }
 }
