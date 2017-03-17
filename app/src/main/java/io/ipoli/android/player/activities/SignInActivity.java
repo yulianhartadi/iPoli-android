@@ -171,7 +171,11 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             try {
                 String id = object.getString("id");
                 String email = object.getString("email");
-                loginWithFacebook(id, email, accessToken);
+                Map<String, String> params = new HashMap<>();
+                params.put("access_token", accessToken.getToken());
+                params.put("email", email);
+                params.put("remote_url", "");
+                login(new AuthProvider(id, AuthProvider.Provider.FACEBOOK), params, null);
 
             } catch (JSONException e) {
                 eventBus.post(new AppErrorEvent(e));
@@ -182,6 +186,23 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         parameters.putString("fields", "email,id");
         req.setParameters(parameters);
         req.executeAsync();
+    }
+
+
+    private void handleGoogleSignInResult(GoogleSignInResult result) {
+        if (result.isSuccess()) {
+            GoogleSignInAccount account = result.getSignInAccount();
+            String idToken = account.getIdToken();
+            if (idToken == null) {
+                return;
+            }
+            login(new AuthProvider(getGoogleId(account), AuthProvider.Provider.GOOGLE), null, "Bearer " + idToken);
+        }
+    }
+
+    @NonNull
+    private String getGoogleId(GoogleSignInAccount account) {
+        return "accounts.google.com_" + account.getId();
     }
 
 
@@ -196,24 +217,8 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         }
     }
 
-    private void handleGoogleSignInResult(GoogleSignInResult result) {
-        if (result.isSuccess()) {
-            GoogleSignInAccount account = result.getSignInAccount();
-            loginWithGoogle(account);
-        }
-    }
-
-    @NonNull
-    private String getGoogleId(GoogleSignInAccount account) {
-        return "accounts.google.com_" + account.getId();
-    }
-
-    private void loginWithGoogle(GoogleSignInAccount account) {
-        String idToken = account.getIdToken();
-        if (idToken == null) {
-            return;
-        }
-        api.testCreateSession(new AuthProvider(getGoogleId(account), AuthProvider.Provider.GOOGLE), null, "Bearer " + idToken, new Api.SessionResponseListener() {
+    private void login(AuthProvider authProvider, Map<String, String> params, String authHeader) {
+        api.testCreateSession(authProvider, params, authHeader, new Api.SessionResponseListener() {
             @Override
             public void onSuccess(String username, List<Cookie> cookies, boolean userExists) {
 
@@ -242,24 +247,6 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     @Override
     public void onConnectionSuspended(int i) {
 
-    }
-
-    public void loginWithFacebook(String id, String email, AccessToken accessToken) {
-        Map<String, String> params = new HashMap<>();
-        params.put("access_token", accessToken.getToken());
-        params.put("email", email);
-        params.put("remote_url", "");
-        api.testCreateSession(new AuthProvider(id, AuthProvider.Provider.FACEBOOK), params, null, new Api.SessionResponseListener() {
-            @Override
-            public void onSuccess(String username, List<Cookie> cookies, boolean userExists) {
-
-            }
-
-            @Override
-            public void onError(Exception e) {
-
-            }
-        });
     }
 
     private void createPlayer() {
