@@ -145,6 +145,9 @@ public class App extends MultiDexApplication {
     Database database;
 
     @Inject
+    Api api;
+
+    @Inject
     RepeatingQuestScheduler repeatingQuestScheduler;
 
     @Inject
@@ -393,14 +396,33 @@ public class App extends MultiDexApplication {
         scheduleDateChanged();
         scheduleNextReminder();
         listenForChanges();
+
         if(getPlayer().isAuthenticated()) {
-            if(getPlayer().getCurrentAuthProvider().getProviderType() == AuthProvider.Provider.GOOGLE) {
+            AuthProvider.Provider authProvider = getPlayer().getCurrentAuthProvider().getProviderType();
+            if(authProvider == AuthProvider.Provider.GOOGLE) {
                 new GoogleAuthService().getIdToken(this, idToken -> {
-                    Log.d("AAAA", idToken);
+                    Log.d("AAAA google", idToken);
+                    api.testCreateSession(getPlayer().getCurrentAuthProvider(), null, idToken, new Api.SessionResponseListener() {
+                        @Override
+                        public void onSuccess(String username, String email, List<Cookie> cookies, boolean newUserCreated) {
+
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+
+                        }
+                    });
                 });
+            } else if(authProvider == AuthProvider.Provider.FACEBOOK) {
+                Log.d("AAAA facebook", new FacebookAuthService().getAccessToken());
             }
 //            syncData();
         }
+    }
+
+    private void getCookies() {
+
     }
 
     @Subscribe
@@ -422,7 +444,6 @@ public class App extends MultiDexApplication {
         try {
             URL syncURL = new URL(ApiConstants.URL);
             Replication pull = database.createPullReplication(syncURL);
-//            pull.setAuthenticator(new PasswordAuthorizer(ApiConstants.USERNAME, ApiConstants.PASSWORD));
             for (Cookie cookie : cookies) {
                 pull.setCookie(cookie.name(), cookie.value(), cookie.path(),
                         new Date(cookie.expiresAt()), cookie.secure(), cookie.httpOnly());
@@ -433,7 +454,6 @@ public class App extends MultiDexApplication {
             pull.setChannels(channels);
 
             Replication push = database.createPushReplication(syncURL);
-//            push.setAuthenticator(new PasswordAuthorizer(ApiConstants.USERNAME, ApiConstants.PASSWORD));
             for (Cookie cookie : cookies) {
                 push.setCookie(cookie.name(), cookie.value(), cookie.path(),
                         new Date(cookie.expiresAt()), cookie.secure(), cookie.httpOnly());

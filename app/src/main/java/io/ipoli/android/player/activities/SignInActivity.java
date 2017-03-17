@@ -13,6 +13,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
@@ -101,7 +102,7 @@ public class SignInActivity extends BaseActivity {
     private void initFBLogin() {
         fbLoginButton.setReadPermissions(Arrays.asList(new String[]{"email"}));
         callbackManager = CallbackManager.Factory.create();
-        fbLoginButton.registerCallback(callbackManager,
+        LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
@@ -167,7 +168,7 @@ public class SignInActivity extends BaseActivity {
             if (idToken == null) {
                 return;
             }
-            login(new AuthProvider(getGoogleId(account), AuthProvider.Provider.GOOGLE), null, "Bearer " + idToken);
+            login(new AuthProvider(getGoogleId(account), AuthProvider.Provider.GOOGLE), null, idToken);
         }
     }
 

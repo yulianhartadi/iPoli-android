@@ -71,7 +71,7 @@ public class Api {
         Request.Builder builder = new Request.Builder();
         builder.url(ApiConstants.URL).post(body);
         if (!StringUtils.isEmpty(authHeader)) {
-            builder.addHeader("Authorization", authHeader);
+            builder.addHeader("Authorization", "Bearer " + authHeader);
         }
 
         httpClient.newCall(builder.build()).enqueue(new Callback() {
@@ -138,7 +138,7 @@ public class Api {
                 Request.Builder builder = new Request.Builder();
                 builder.url(url).post(body);
                 if (!StringUtils.isEmpty(authHeader)) {
-                    builder.addHeader("Authorization", authHeader);
+                    builder.addHeader("Authorization", "Bearer " + authHeader);
                 }
 
                 boolean finalNewUserCreated = newUserCreated;
