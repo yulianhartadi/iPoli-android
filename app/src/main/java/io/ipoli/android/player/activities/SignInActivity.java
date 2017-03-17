@@ -25,16 +25,10 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Arrays;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +42,7 @@ import io.ipoli.android.ApiConstants;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
+import io.ipoli.android.app.Api;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.AppErrorEvent;
@@ -57,14 +52,8 @@ import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.Cookie;
-import okhttp3.HttpUrl;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
@@ -74,8 +63,9 @@ import okhttp3.Response;
 public class SignInActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
     private static final int RC_GOOGLE_SIGN_IN = 9001;
-    private static final String SERVER_DB_URL = "http://10.0.2.2:4984/sync_gateway/";
-    private static final String SERVER_ADMIN_DB_URL = "http://10.0.2.2:4985/sync_gateway/";
+
+    @Inject
+    Api api;
 
     @Inject
     Gson gson;
@@ -181,18 +171,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             try {
                 String id = object.getString("id");
                 String email = object.getString("email");
-                checkUserStatus(id, new UserStatusListener() {
-                    @Override
-                    public void onComplete(boolean userCreated) {
-                        loginWithFacebook(email, accessToken, userCreated);
-                    }
-
-                    @Override
-                    public void onFailure(Exception e) {
-
-                    }
-                });
-
+                loginWithFacebook(id, email, accessToken);
 
             } catch (JSONException e) {
                 eventBus.post(new AppErrorEvent(e));
@@ -219,22 +198,8 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     private void handleGoogleSignInResult(GoogleSignInResult result) {
         if (result.isSuccess()) {
-
             GoogleSignInAccount account = result.getSignInAccount();
-            String username = getGoogleId(account);
-
-            checkUserStatus(username, new UserStatusListener() {
-                @Override
-                public void onComplete(boolean userCreated) {
-                    loginWithGoogle(account, userCreated);
-                }
-
-                @Override
-                public void onFailure(Exception e) {
-                    showMessage("Failed to get user : " + username, e);
-                }
-            });
-
+            loginWithGoogle(account);
         }
     }
 
@@ -243,42 +208,20 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         return "accounts.google.com_" + account.getId();
     }
 
-    private void loginWithGoogle(GoogleSignInAccount account, boolean userCreated) {
+    private void loginWithGoogle(GoogleSignInAccount account) {
         String idToken = account.getIdToken();
         if (idToken == null) {
             return;
         }
-        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-        RequestBody body = RequestBody.create(JSON, "{}");
-        Request request = new Request.Builder()
-                .url(getServerDbSessionUrl())
-                .header("Authorization", "Bearer " + idToken)
-                .post(body)
-                .build();
-
-        httpClient.newCall(request).enqueue(new Callback() {
+        api.testCreateSession(new AuthProvider(getGoogleId(account), AuthProvider.Provider.GOOGLE), null, "Bearer " + idToken, new Api.SessionResponseListener() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                showMessage("Failed to create a new SGW session with IDToken : " + idToken, e);
+            public void onSuccess(String username, List<Cookie> cookies, boolean userExists) {
+
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    Type type = new TypeToken<Map<String, Object>>() {
-                    }.getType();
-                    Map<String, Object> session = gson.fromJson(response.body().charStream(), type);
-                    Map<String, Object> userInfo = (Map<String, Object>) session.get("userCtx");
-                    if (!userCreated) {
-                        String username = (userInfo != null ? (String) userInfo.get("name") : null);
-                        createPlayer(new AuthProvider(username, AuthProvider.Provider.GOOGLE));
-                    }
-                    final List<Cookie> cookies =
-                            Cookie.parseAll(HttpUrl.get(getServerDbUrl()), response.headers());
-//                    if (login(username, cookies)) {
-//                        completeLogin();
-//                    }
-                }
+            public void onError(Exception e) {
+
             }
         });
     }
@@ -301,122 +244,22 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     }
 
-    private void checkUserStatus(String username, UserStatusListener listener) {
-        Request request = new Request.Builder()
-                .url(getServerAdminDbUserUrl(username))
-                .get()
-                .build();
-
-        httpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                listener.onFailure(e);
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    listener.onComplete(true);
-                } else if (response.code() == 404) {
-                    listener.onComplete(false);
-                }
-            }
-        });
-    }
-
-    public void loginWithFacebook(String email, AccessToken accessToken, boolean userCreated) {
-        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    public void loginWithFacebook(String id, String email, AccessToken accessToken) {
         Map<String, String> params = new HashMap<>();
         params.put("access_token", accessToken.getToken());
         params.put("email", email);
-        params.put("remote_url", "http://localhost:4984");
-        JSONObject jsonObject = new JSONObject(params);
-        RequestBody body = RequestBody.create(JSON, jsonObject.toString());
-        Request request = new Request.Builder()
-                .url(getServerDbFacebookUrl())
-                .post(body)
-                .build();
-
-        httpClient.newCall(request).enqueue(new Callback() {
+        params.put("remote_url", "");
+        api.testCreateSession(new AuthProvider(id, AuthProvider.Provider.FACEBOOK), params, null, new Api.SessionResponseListener() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                showMessage("Failed to create a new SGW session with IDToken : " + accessToken, e);
+            public void onSuccess(String username, List<Cookie> cookies, boolean userExists) {
+
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful()) {
-                    Type type = new TypeToken<Map<String, Object>>() {
-                    }.getType();
-                    Map<String, Object> session = gson.fromJson(response.body().charStream(), type);
-                    Map<String, Object> userInfo = (Map<String, Object>) session.get("userCtx");
-                    if (!userCreated) {
-                        String username = (userInfo != null ? (String) userInfo.get("name") : null);
-                        createPlayer(new AuthProvider(username, AuthProvider.Provider.FACEBOOK));
-                    }
-                    final List<Cookie> cookies =
-                            Cookie.parseAll(HttpUrl.get(getServerDbUrl()), response.headers());
-//                    if (login(username, cookies)) {
-//                        completeLogin();
-//                    }
-                }
+            public void onError(Exception e) {
+
             }
         });
-    }
-
-    public void showMessage(final String message, final Throwable throwable) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                StringBuilder sb = new StringBuilder(message);
-                if (throwable != null) {
-                    sb.append(": " + throwable);
-                    Log.e("AAA", message, throwable);
-                }
-                Toast.makeText(getApplicationContext(), sb.toString(), Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    public URL getServerDbUrl() {
-        try {
-            return new URL(SERVER_DB_URL);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public URL getServerDbFacebookUrl() {
-        String serverUrl = SERVER_DB_URL;
-        if (!serverUrl.endsWith("/"))
-            serverUrl = serverUrl + "/";
-        try {
-            return new URL(serverUrl + "_facebook");
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private URL getServerDbSessionUrl() {
-        String serverUrl = SERVER_DB_URL;
-        if (!serverUrl.endsWith("/"))
-            serverUrl = serverUrl + "/";
-        try {
-            return new URL(serverUrl + "_session");
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private URL getServerAdminDbUserUrl(String username) {
-        String serverUrl = SERVER_ADMIN_DB_URL;
-        if (!serverUrl.endsWith("/"))
-            serverUrl = serverUrl + "/";
-        try {
-            return new URL(serverUrl + "_user/" + username);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private void createPlayer() {
@@ -437,11 +280,5 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
         playerPersistenceService.save(player);
         eventBus.post(new PlayerCreatedEvent(player.getId()));
-    }
-
-    interface UserStatusListener {
-        void onComplete(boolean userCreated);
-
-        void onFailure(Exception e);
     }
 }

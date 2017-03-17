@@ -9,6 +9,7 @@ import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.modules.AnalyticsModule;
+import io.ipoli.android.app.modules.ApiModule;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.CouchbaseModule;
@@ -92,7 +93,8 @@ import io.ipoli.android.shop.fragments.CoinsStoreFragment;
                 AnalyticsModule.class,
                 RewardGeneratorModule.class,
                 SchedulerModule.class,
-                TimeParserModule.class
+                TimeParserModule.class,
+                ApiModule.class
         }
 )
 public interface AppComponent {
