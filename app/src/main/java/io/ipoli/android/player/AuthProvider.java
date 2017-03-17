@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * on 3/16/17.
  */
 
-public class LoginProvider {
+public class AuthProvider {
     public enum Provider {
         FACEBOOK, GOOGLE;
     }
@@ -15,10 +15,10 @@ public class LoginProvider {
     private String id;
     private String provider;
 
-    public LoginProvider() {
+    public AuthProvider() {
     }
 
-    public LoginProvider(String id, Provider provider) {
+    public AuthProvider(String id, Provider provider) {
         this.id = id;
         setProviderType(provider);
     }

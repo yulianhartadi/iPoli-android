@@ -35,8 +35,8 @@ public class Player extends PersistedObject {
     private Boolean use24HourFormat;
     private Integer schemaVersion;
     private Integer completeDailyQuestsEndMinute;
-    private LoginProvider currentLoginProvider;
-    private List<LoginProvider> loginProviders;
+    private AuthProvider currentAuthProvider;
+    private List<AuthProvider> authProviders;
 
     public Player() {
         super(TYPE);
@@ -309,22 +309,22 @@ public class Player extends PersistedObject {
         }
     }
 
-    public LoginProvider getCurrentLoginProvider() {
-        return currentLoginProvider;
+    public AuthProvider getCurrentAuthProvider() {
+        return currentAuthProvider;
     }
 
-    public void setCurrentLoginProvider(LoginProvider currentLoginProvider) {
-        this.currentLoginProvider = currentLoginProvider;
+    public void setCurrentAuthProvider(AuthProvider currentAuthProvider) {
+        this.currentAuthProvider = currentAuthProvider;
     }
 
-    public List<LoginProvider> getLoginProviders() {
-        if(loginProviders == null) {
-            loginProviders = new ArrayList<>();
+    public List<AuthProvider> getAuthProviders() {
+        if(authProviders == null) {
+            authProviders = new ArrayList<>();
         }
-        return loginProviders;
+        return authProviders;
     }
 
-    public void setLoginProviders(List<LoginProvider> loginProviders) {
-        this.loginProviders = loginProviders;
+    public void setAuthProviders(List<AuthProvider> authProviders) {
+        this.authProviders = authProviders;
     }
 }

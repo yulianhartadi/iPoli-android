@@ -54,7 +54,7 @@ import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.pet.data.Pet;
-import io.ipoli.android.player.LoginProvider;
+import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import okhttp3.Call;
@@ -271,7 +271,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                     Map<String, Object> userInfo = (Map<String, Object>) session.get("userCtx");
                     if (!userCreated) {
                         String username = (userInfo != null ? (String) userInfo.get("name") : null);
-                        createPlayer(new LoginProvider(username, LoginProvider.Provider.GOOGLE));
+                        createPlayer(new AuthProvider(username, AuthProvider.Provider.GOOGLE));
                     }
                     final List<Cookie> cookies =
                             Cookie.parseAll(HttpUrl.get(getServerDbUrl()), response.headers());
@@ -352,7 +352,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                     Map<String, Object> userInfo = (Map<String, Object>) session.get("userCtx");
                     if (!userCreated) {
                         String username = (userInfo != null ? (String) userInfo.get("name") : null);
-                        createPlayer(new LoginProvider(username, LoginProvider.Provider.FACEBOOK));
+                        createPlayer(new AuthProvider(username, AuthProvider.Provider.FACEBOOK));
                     }
                     final List<Cookie> cookies =
                             Cookie.parseAll(HttpUrl.get(getServerDbUrl()), response.headers());
@@ -423,16 +423,16 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         createPlayer(null);
     }
 
-    private void createPlayer(LoginProvider loginProvider) {
+    private void createPlayer(AuthProvider authProvider) {
         Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR, Constants.DEFAULT_PET_BACKGROUND_IMAGE, Constants.DEFAULT_PET_HP);
         Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP),
                 Constants.DEFAULT_AVATAR_LEVEL,
                 Constants.DEFAULT_PLAYER_COINS,
                 Constants.DEFAULT_PLAYER_PICTURE,
                 DateFormat.is24HourFormat(this), pet);
-        if (loginProvider != null) {
-            player.setCurrentLoginProvider(loginProvider);
-            player.getLoginProviders().add(loginProvider);
+        if (authProvider != null) {
+            player.setCurrentAuthProvider(authProvider);
+            player.getAuthProviders().add(authProvider);
         }
 
         playerPersistenceService.save(player);
