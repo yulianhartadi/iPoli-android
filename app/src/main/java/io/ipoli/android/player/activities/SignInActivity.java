@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -18,9 +17,7 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.Gson;
@@ -37,12 +34,12 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.ipoli.android.ApiConstants;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.Api;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.GoogleAuthService;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
@@ -58,7 +55,7 @@ import okhttp3.Cookie;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/1/16.
  */
-public class SignInActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
+public class SignInActivity extends BaseActivity {
 
     private static final int RC_GOOGLE_SIGN_IN = 9001;
 
@@ -124,24 +121,12 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     }
 
     private void initGoogleSingIn() {
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(ApiConstants.WEB_SERVER_GOOGLE_PLUS_CLIENT_ID)
-                .requestEmail()
-                .build();
-
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, this)
-                .addConnectionCallbacks(this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-
         googleSignInButton.setSize(SignInButton.SIZE_STANDARD);
     }
 
     @OnClick(R.id.google_sign_in)
     public void onGoogleSignIn(View v) {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-        startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
+        startActivityForResult(new GoogleAuthService().getSignInIntent(this), RC_GOOGLE_SIGN_IN);
     }
 
     @OnClick(R.id.anonymous_login)
@@ -218,24 +203,6 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                 eventBus.post(new AppErrorEvent(e));
             }
         });
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult result) {
-        String errorMessage = "Google Sign-in connection failed: (" +
-                result.getErrorCode() + ") " +
-                result.getErrorMessage();
-        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
     }
 
     private void createPlayer() {
