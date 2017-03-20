@@ -1,11 +1,9 @@
 package io.ipoli.android.app;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.google.android.gms.auth.api.Auth;
@@ -46,16 +44,6 @@ public class GoogleAuthService implements GoogleApiClient.OnConnectionFailedList
             tokenListener.onIdTokenReceived(googleSignInResult.getSignInAccount().getIdToken());
             googleApiClient.disconnect();
         });
-    }
-
-    public Intent getSignInIntent(AppCompatActivity activity) {
-        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(activity)
-                .enableAutoManage(activity, this)
-                .addConnectionCallbacks(this)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-
-        return Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
     }
 
     @Override

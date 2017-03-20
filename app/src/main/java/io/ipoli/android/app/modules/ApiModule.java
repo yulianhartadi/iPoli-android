@@ -1,6 +1,7 @@
 package io.ipoli.android.app.modules;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import javax.inject.Singleton;
 
@@ -17,7 +18,7 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    public Api provideApi(ObjectMapper objectMapper) {
-        return new Api(objectMapper);
+    public Api provideApi(ObjectMapper objectMapper, Gson gson) {
+        return new Api(objectMapper, gson);
     }
 }

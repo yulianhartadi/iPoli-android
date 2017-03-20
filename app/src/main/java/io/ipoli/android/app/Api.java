@@ -2,12 +2,14 @@ package io.ipoli.android.app;
 
 import android.util.Log;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -34,11 +36,13 @@ import okhttp3.Response;
 public class Api {
 
     private final ObjectMapper objectMapper;
+    private final Gson gson;
     private OkHttpClient httpClient;
 
 
-    public Api(ObjectMapper objectMapper) {
+    public Api(ObjectMapper objectMapper, Gson gson) {
         this.objectMapper = objectMapper;
+        this.gson = gson;
         httpClient = new OkHttpClient().newBuilder().addInterceptor(chain -> {
             Log.i("REQUEST INFO", chain.request().url().toString());
             Log.i("REQUEST INFO", chain.request().headers().toString());
@@ -65,7 +69,7 @@ public class Api {
         RequestBody body = RequestBody.create(JSON, jsonObject.toString());
 
         Request.Builder builder = new Request.Builder();
-        builder.url(ApiConstants.URL).post(body);
+        builder.url(ApiConstants.URL + "users/").post(body);
 
         httpClient.newCall(builder.build()).enqueue(new Callback() {
             @Override
@@ -77,14 +81,17 @@ public class Api {
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
 
-                    TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {
-                    };
-                    Map<String, Object> session = objectMapper.convertValue(response.body().charStream(), mapTypeReference);
-                    String username = (String) session.get("username");
+//                    TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {
+//                    };
+//                    Map<String, Object> session = objectMapper.convertValue(response.body().charStream(), mapTypeReference);
+                    Type type = new TypeToken<Map<String, Object>>() {
+                    }.getType();
+                    Map<String, Object> session = gson.fromJson(response.body().charStream(), type);
+                    String authId = (String) session.get("auth_id");
                     String email = (String) session.get("email");
+                    String playerId = (String) session.get("player_id");
                     List<Cookie> cookies = Cookie.parseAll(HttpUrl.get(getUrl(ApiConstants.URL)), response.headers());
-                    boolean newUserCreated = (boolean) session.get("is_new");
-                    responseListener.onSuccess(username, email, cookies, newUserCreated);
+                    responseListener.onSuccess(authId, email, cookies, playerId);
                 }
             }
         });
@@ -99,7 +106,7 @@ public class Api {
     }
 
     public interface SessionResponseListener {
-        void onSuccess(String username, String email, List<Cookie> cookies, boolean newUserCreated);
+        void onSuccess(String username, String email, List<Cookie> cookies, String playerId);
 
         void onError(Exception e);
     }

@@ -13,4 +13,6 @@ public interface PlayerPersistenceService extends PersistenceService<Player> {
     Player get();
 
     void listen(OnDataChangedListener<Player> listener);
+
+    void deletePlayer();
 }

@@ -28,6 +28,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -405,12 +406,12 @@ public class App extends MultiDexApplication {
             return;
         }
         AccessTokenListener listener = accessToken -> {
-            if(StringUtils.isEmpty(accessToken)) {
+            if (StringUtils.isEmpty(accessToken)) {
                 return;
             }
             api.createSession(player.getCurrentAuthProvider(), accessToken, player.getEmail(), new Api.SessionResponseListener() {
                 @Override
-                public void onSuccess(String username, String email, List<Cookie> cookies, boolean newUserCreated) {
+                public void onSuccess(String username, String email, List<Cookie> cookies, String playerId) {
                     syncData(cookies);
                 }
 
@@ -430,15 +431,38 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onStartReplication(StartReplicationEvent e) {
-        if (e.shouldCleanDatabase) {
-//            stopReplication(false);
-//            try {
-//                database.delete();
-//            } catch (CouchbaseLiteException exc) {
-//                eventBus.post(new AppErrorEvent(exc));
-//            }
-//            database = null;
+        if (!StringUtils.isEmpty(e.playerId)) {
+            //stop replication
+            List<Replication> replications = database.getAllReplications();
+            for(Replication replication : replications) {
+                replication.stop();
+                replication.clearAuthenticationStores();
+            }
+            //clean DB
+            playerPersistenceService.deletePlayer();
 
+            // single pull for playerId
+            URL syncURL = null;
+            try {
+                syncURL = new URL(ApiConstants.URL);
+            } catch (MalformedURLException e1) {
+                e1.printStackTrace();
+            }
+            Replication pull = database.createPullReplication(syncURL);
+            for (Cookie cookie : e.cookies) {
+                pull.setCookie(cookie.name(), cookie.value(), cookie.path(),
+                        new Date(cookie.expiresAt()), cookie.secure(), cookie.httpOnly());
+            }
+            pull.setContinuous(false);
+            List<String> channels = new ArrayList<>();
+            channels.add(playerId);
+            pull.setChannels(channels);
+            pull.addChangeListener(event -> {
+                if(event.getStatus() != Replication.ReplicationStatus.REPLICATION_STOPPED) {
+                    //replication finished ???
+                }
+            });
+            pull.start();
         }
         syncData(e.cookies);
     }

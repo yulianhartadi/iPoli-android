@@ -11,10 +11,10 @@ import okhttp3.Cookie;
 
 public class StartReplicationEvent {
     public final List<Cookie> cookies;
-    public final boolean shouldCleanDatabase;
+    public final String playerId;
 
-    public StartReplicationEvent(List<Cookie> cookies, boolean shouldCleanDatabase) {
+    public StartReplicationEvent(List<Cookie> cookies, String playerId) {
         this.cookies = cookies;
-        this.shouldCleanDatabase = shouldCleanDatabase;
+        this.playerId = playerId;
     }
 }

@@ -1,6 +1,9 @@
 package io.ipoli.android.player.persistence;
 
+import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
+import com.couchbase.lite.Query;
+import com.couchbase.lite.QueryEnumerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
@@ -35,6 +38,19 @@ public class CouchbasePlayerPersistenceService extends BaseCouchbasePersistenceS
     @Override
     public void listen(OnDataChangedListener<Player> listener) {
         listenById(getPlayerId(), listener);
+    }
+
+    @Override
+    public void deletePlayer() {
+        Query query = database.createAllDocumentsQuery();
+        try {
+            QueryEnumerator enumerator = query.run();
+            while (enumerator.hasNext()) {
+                enumerator.next().getDocument().purge();
+            }
+        } catch (CouchbaseLiteException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
