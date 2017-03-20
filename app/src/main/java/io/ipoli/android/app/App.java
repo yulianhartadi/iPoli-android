@@ -402,17 +402,6 @@ public class App extends MultiDexApplication {
             if(authProvider == AuthProvider.Provider.GOOGLE) {
                 new GoogleAuthService().getIdToken(this, idToken -> {
                     Log.d("AAAA google", idToken);
-                    api.testCreateSession(getPlayer().getCurrentAuthProvider(), null, idToken, new Api.SessionResponseListener() {
-                        @Override
-                        public void onSuccess(String username, String email, List<Cookie> cookies, boolean newUserCreated) {
-
-                        }
-
-                        @Override
-                        public void onError(Exception e) {
-
-                        }
-                    });
                 });
             } else if(authProvider == AuthProvider.Provider.FACEBOOK) {
                 Log.d("AAAA facebook", new FacebookAuthService().getAccessToken());
