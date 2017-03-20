@@ -4,13 +4,10 @@ import android.util.Log;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -37,13 +34,11 @@ import okhttp3.Response;
 public class Api {
 
     private final ObjectMapper objectMapper;
-    private final Gson gson;
     private OkHttpClient httpClient;
 
 
-    public Api(ObjectMapper objectMapper, Gson gson) {
+    public Api(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        this.gson = gson;
         httpClient = new OkHttpClient().newBuilder().addInterceptor(chain -> {
             Log.i("REQUEST INFO", chain.request().url().toString());
             Log.i("REQUEST INFO", chain.request().headers().toString());
@@ -93,82 +88,6 @@ public class Api {
                 }
             }
         });
-    }
-
-    public void testCreateSession(AuthProvider authProvider, String accessToken, String email, SessionResponseListener responseListener) {
-        String gatewayUrl = "http://10.0.2.2:4984/sync_gateway/";
-        String gatewayAdminUrl = "http://10.0.2.2:4984/sync_gateway/";
-
-        Request request = new Request.Builder()
-                .url(getUrl(gatewayAdminUrl + "_user/" + authProvider.getId()))
-                .get()
-                .build();
-
-        httpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                responseListener.onError(e);
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                boolean newUserCreated = true;
-                if (response.isSuccessful()) {
-                    newUserCreated = false;
-                }
-
-                MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-                Map<String, String> bodyParams = new HashMap<>();
-                if(authProvider.getProviderType() == AuthProvider.Provider.FACEBOOK) {
-                    bodyParams.put("access_token", accessToken);
-                    bodyParams.put("email", email);
-                }
-
-                JSONObject jsonObject = new JSONObject(bodyParams);
-                RequestBody body = RequestBody.create(JSON, jsonObject.toString());
-
-                String url = gatewayUrl;
-                if(authProvider.getProviderType() == AuthProvider.Provider.FACEBOOK) {
-                    url += "_facebook";
-                } else {
-                    url += "_session";
-                }
-
-                Request.Builder builder = new Request.Builder();
-                builder.url(url).post(body);
-                if (authProvider.getProviderType() == AuthProvider.Provider.GOOGLE) {
-                    builder.addHeader("Authorization", "Bearer " + accessToken);
-                }
-
-                boolean finalNewUserCreated = newUserCreated;
-                httpClient.newCall(builder.build()).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        responseListener.onError(e);
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        if (response.isSuccessful()) {
-
-//                            TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {
-//                            };
-//                            Map<String, Object> session = objectMapper.convertValue(response.body().charStream(), mapTypeReference);
-                            Type type = new TypeToken<Map<String, Object>>() {
-                            }.getType();
-                            Map<String, Object> session = gson.fromJson(response.body().charStream(), type);
-                            Map<String, Object> userInfo = (Map<String, Object>) session.get("userCtx");
-                            String username = (userInfo != null ? (String) userInfo.get("name") : null);
-                            String email = (userInfo != null ? (String) userInfo.get("email") : null);
-                            List<Cookie> cookies = Cookie.parseAll(HttpUrl.get(getUrl(gatewayUrl)), response.headers());
-                            responseListener.onSuccess(username, email, cookies, finalNewUserCreated);
-                        }
-                    }
-                });
-            }
-        });
-
-
     }
 
     private URL getUrl(String url) {

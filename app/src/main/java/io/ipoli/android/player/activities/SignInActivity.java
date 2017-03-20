@@ -19,12 +19,12 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Arrays;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -75,7 +75,6 @@ public class SignInActivity extends BaseActivity {
     @BindView(R.id.anonymous_login)
     Button anonymousButton;
 
-    private GoogleApiClient googleApiClient;
     private CallbackManager callbackManager;
 
     @Override
@@ -177,13 +176,22 @@ public class SignInActivity extends BaseActivity {
     }
 
     private void login(AuthProvider authProvider, String accessToken, String email) {
-        api.testCreateSession(authProvider, accessToken, email, new Api.SessionResponseListener() {
+        api.createSession(authProvider, accessToken, email, new Api.SessionResponseListener() {
             @Override
             public void onSuccess(String username, String email, List<Cookie> cookies, boolean newUserCreated) {
-                if(newUserCreated) {
+                Player player = getPlayer();
+                boolean shouldEmptyDB = false;
+                if(newUserCreated && player == null) {
                     createPlayer(authProvider, email);
+                } else if(newUserCreated){
+                    player.setCurrentAuthProvider(authProvider);
+                    List<AuthProvider> authProviders = new ArrayList<>();
+                    authProviders.add(authProvider);
+                    player.setAuthProviders(authProviders);
+                    playerPersistenceService.save(player);
+                    shouldEmptyDB = true;
                 }
-                eventBus.post(new StartReplicationEvent(cookies, newUserCreated));
+                eventBus.post(new StartReplicationEvent(cookies, shouldEmptyDB));
             }
 
             @Override
