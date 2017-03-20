@@ -41,16 +41,11 @@ public class GoogleAuthService implements GoogleApiClient.OnConnectionFailedList
 
         googleApiClient.connect();
 
-        OptionalPendingResult<GoogleSignInResult> i = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
-        if (i.isDone()) {
-            tokenListener.onIdTokenReceived(i.get().getSignInAccount().getIdToken());
+        OptionalPendingResult<GoogleSignInResult> pendingResult = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
+        pendingResult.setResultCallback(googleSignInResult -> {
+            tokenListener.onIdTokenReceived(googleSignInResult.getSignInAccount().getIdToken());
             googleApiClient.disconnect();
-        } else {
-            i.setResultCallback(googleSignInResult -> {
-                tokenListener.onIdTokenReceived(googleSignInResult.getSignInAccount().getIdToken());
-                googleApiClient.disconnect();
-            });
-        }
+        });
     }
 
     public Intent getSignInIntent(AppCompatActivity activity) {

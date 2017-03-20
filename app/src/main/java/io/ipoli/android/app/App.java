@@ -13,7 +13,6 @@ import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.amplitude.api.Amplitude;
@@ -49,6 +48,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.QuickAddActivity;
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.DateChangedEvent;
 import io.ipoli.android.app.events.EventSource;
@@ -396,27 +396,41 @@ public class App extends MultiDexApplication {
         scheduleDateChanged();
         scheduleNextReminder();
         listenForChanges();
-
-        if(getPlayer().isAuthenticated()) {
-            AuthProvider.Provider authProvider = getPlayer().getCurrentAuthProvider().getProviderType();
-            if(authProvider == AuthProvider.Provider.GOOGLE) {
-                new GoogleAuthService().getIdToken(this, idToken -> {
-                    Log.d("AAAA google", idToken);
-                });
-            } else if(authProvider == AuthProvider.Provider.FACEBOOK) {
-                Log.d("AAAA facebook", new FacebookAuthService().getAccessToken());
-            }
-//            syncData();
-        }
+        initReplication();
     }
 
-    private void getCookies() {
+    private void initReplication() {
+        Player player = getPlayer();
+        if (!player.isAuthenticated()) {
+            return;
+        }
+        AccessTokenListener listener = accessToken -> {
+            if(StringUtils.isEmpty(accessToken)) {
+                return;
+            }
+            api.createSession(player.getCurrentAuthProvider(), accessToken, player.getEmail(), new Api.SessionResponseListener() {
+                @Override
+                public void onSuccess(String username, String email, List<Cookie> cookies, boolean newUserCreated) {
+                    syncData(cookies);
+                }
 
+                @Override
+                public void onError(Exception e) {
+                    eventBus.post(new AppErrorEvent(e));
+                }
+            });
+        };
+        AuthProvider.Provider authProvider = player.getCurrentAuthProvider().getProviderType();
+        if (authProvider == AuthProvider.Provider.GOOGLE) {
+            new GoogleAuthService().getIdToken(this, idToken -> listener.onAccessTokenReceived(idToken));
+        } else if (authProvider == AuthProvider.Provider.FACEBOOK) {
+            listener.onAccessTokenReceived(new FacebookAuthService().getAccessToken());
+        }
     }
 
     @Subscribe
     public void onStartReplication(StartReplicationEvent e) {
-        if(e.shouldCleanDatabase) {
+        if (e.shouldCleanDatabase) {
 //            stopReplication(false);
 //            try {
 //                database.delete();
@@ -953,5 +967,9 @@ public class App extends MultiDexApplication {
         challenges.add(new PredefinedChallenge(c, "Connect with your friends and family", R.drawable.challenge_08, R.drawable.challenge_expanded_08));
 
         return challenges;
+    }
+
+    interface AccessTokenListener {
+        void onAccessTokenReceived(String accessToken);
     }
 }
