@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.ApiConstants;
-import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.player.AuthProvider;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -58,21 +57,18 @@ public class Api {
         }).build();
     }
 
-    public void createSession(AuthProvider authProvider, Map<String, String> params, String authHeader, SessionResponseListener responseListener) {
+    public void createSession(AuthProvider authProvider, Map<String, String> params, SessionResponseListener responseListener) {
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         if(params == null) {
             params = new HashMap<>();
         }
         params.put("auth_provider", authProvider.getProvider());
-        params.put("username", authProvider.getId());
+        params.put("auth_id", authProvider.getId());
         JSONObject jsonObject = new JSONObject(params);
         RequestBody body = RequestBody.create(JSON, jsonObject.toString());
 
         Request.Builder builder = new Request.Builder();
         builder.url(ApiConstants.URL).post(body);
-        if (!StringUtils.isEmpty(authHeader)) {
-            builder.addHeader("Authorization", "Bearer " + authHeader);
-        }
 
         httpClient.newCall(builder.build()).enqueue(new Callback() {
             @Override
@@ -90,14 +86,14 @@ public class Api {
                     String username = (String) session.get("username");
                     String email = (String) session.get("email");
                     List<Cookie> cookies = Cookie.parseAll(HttpUrl.get(getUrl(ApiConstants.URL)), response.headers());
-                    boolean newUserCreated = (boolean) session.get("newUserCreated");
+                    boolean newUserCreated = (boolean) session.get("is_new");
                     responseListener.onSuccess(username, email, cookies, newUserCreated);
                 }
             }
         });
     }
 
-    public void testCreateSession(AuthProvider authProvider, final Map<String, String> params, String authHeader, SessionResponseListener responseListener) {
+    public void testCreateSession(AuthProvider authProvider, final Map<String, String> params, SessionResponseListener responseListener) {
         String gatewayUrl = "http://10.0.2.2:4984/sync_gateway/";
         String gatewayAdminUrl = "http://10.0.2.2:4984/sync_gateway/";
 
@@ -137,8 +133,8 @@ public class Api {
 
                 Request.Builder builder = new Request.Builder();
                 builder.url(url).post(body);
-                if (!StringUtils.isEmpty(authHeader)) {
-                    builder.addHeader("Authorization", "Bearer " + authHeader);
+                if (params.containsKey("id_token")) {
+                    builder.addHeader("Authorization", "Bearer " + params.get("id_token"));
                 }
 
                 boolean finalNewUserCreated = newUserCreated;

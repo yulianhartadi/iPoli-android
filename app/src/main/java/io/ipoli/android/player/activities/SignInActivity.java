@@ -146,8 +146,7 @@ public class SignInActivity extends BaseActivity {
                 Map<String, String> params = new HashMap<>();
                 params.put("access_token", accessToken.getToken());
                 params.put("email", email);
-                params.put("remote_url", "");
-                login(new AuthProvider(id, AuthProvider.Provider.FACEBOOK), params, null);
+                login(new AuthProvider(id, AuthProvider.Provider.FACEBOOK), params);
 
             } catch (JSONException e) {
                 eventBus.post(new AppErrorEvent(e));
@@ -168,7 +167,9 @@ public class SignInActivity extends BaseActivity {
             if (idToken == null) {
                 return;
             }
-            login(new AuthProvider(getGoogleId(account), AuthProvider.Provider.GOOGLE), null, idToken);
+            Map<String, String> params = new HashMap<>();
+            params.put("id_token", idToken);
+            login(new AuthProvider(getGoogleId(account), AuthProvider.Provider.GOOGLE), params);
         }
     }
 
@@ -189,8 +190,8 @@ public class SignInActivity extends BaseActivity {
         }
     }
 
-    private void login(AuthProvider authProvider, Map<String, String> params, String authHeader) {
-        api.testCreateSession(authProvider, params, authHeader, new Api.SessionResponseListener() {
+    private void login(AuthProvider authProvider, Map<String, String> params) {
+        api.testCreateSession(authProvider, params, new Api.SessionResponseListener() {
             @Override
             public void onSuccess(String username, String email, List<Cookie> cookies, boolean newUserCreated) {
                 if(newUserCreated) {
