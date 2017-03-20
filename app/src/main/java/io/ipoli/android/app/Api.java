@@ -57,13 +57,15 @@ public class Api {
         }).build();
     }
 
-    public void createSession(AuthProvider authProvider, Map<String, String> params, SessionResponseListener responseListener) {
+    public void createSession(AuthProvider authProvider, String accessToken, String email, SessionResponseListener responseListener) {
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-        if(params == null) {
-            params = new HashMap<>();
-        }
+
+        Map<String, String> params = new HashMap<>();
         params.put("auth_provider", authProvider.getProvider());
         params.put("auth_id", authProvider.getId());
+        params.put("access_token", accessToken);
+        params.put("email", email);
+
         JSONObject jsonObject = new JSONObject(params);
         RequestBody body = RequestBody.create(JSON, jsonObject.toString());
 
@@ -93,7 +95,7 @@ public class Api {
         });
     }
 
-    public void testCreateSession(AuthProvider authProvider, final Map<String, String> params, SessionResponseListener responseListener) {
+    public void testCreateSession(AuthProvider authProvider, String accessToken, String email, SessionResponseListener responseListener) {
         String gatewayUrl = "http://10.0.2.2:4984/sync_gateway/";
         String gatewayAdminUrl = "http://10.0.2.2:4984/sync_gateway/";
 
@@ -116,11 +118,12 @@ public class Api {
                 }
 
                 MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-                Map<String, String> bodyParams = params;
-                if(bodyParams == null) {
-                    bodyParams = new HashMap<>();
+                Map<String, String> bodyParams = new HashMap<>();
+                if(authProvider.getProviderType() == AuthProvider.Provider.FACEBOOK) {
+                    bodyParams.put("access_token", accessToken);
+                    bodyParams.put("email", email);
                 }
-                bodyParams.put("auth_provider", authProvider.getProvider());
+
                 JSONObject jsonObject = new JSONObject(bodyParams);
                 RequestBody body = RequestBody.create(JSON, jsonObject.toString());
 
@@ -133,8 +136,8 @@ public class Api {
 
                 Request.Builder builder = new Request.Builder();
                 builder.url(url).post(body);
-                if (params.containsKey("id_token")) {
-                    builder.addHeader("Authorization", "Bearer " + params.get("id_token"));
+                if (authProvider.getProviderType() == AuthProvider.Provider.GOOGLE) {
+                    builder.addHeader("Authorization", "Bearer " + accessToken);
                 }
 
                 boolean finalNewUserCreated = newUserCreated;

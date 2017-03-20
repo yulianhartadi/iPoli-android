@@ -26,9 +26,7 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Arrays;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -143,10 +141,7 @@ public class SignInActivity extends BaseActivity {
             try {
                 String id = object.getString("id");
                 String email = object.getString("email");
-                Map<String, String> params = new HashMap<>();
-                params.put("access_token", accessToken.getToken());
-                params.put("email", email);
-                login(new AuthProvider(id, AuthProvider.Provider.FACEBOOK), params);
+                login(new AuthProvider(id, AuthProvider.Provider.FACEBOOK), accessToken.getToken(), email);
 
             } catch (JSONException e) {
                 eventBus.post(new AppErrorEvent(e));
@@ -167,9 +162,7 @@ public class SignInActivity extends BaseActivity {
             if (idToken == null) {
                 return;
             }
-            Map<String, String> params = new HashMap<>();
-            params.put("id_token", idToken);
-            login(new AuthProvider(getGoogleId(account), AuthProvider.Provider.GOOGLE), params);
+            login(new AuthProvider(getGoogleId(account), AuthProvider.Provider.GOOGLE), idToken, account.getEmail());
         }
     }
 
@@ -190,8 +183,8 @@ public class SignInActivity extends BaseActivity {
         }
     }
 
-    private void login(AuthProvider authProvider, Map<String, String> params) {
-        api.testCreateSession(authProvider, params, new Api.SessionResponseListener() {
+    private void login(AuthProvider authProvider, String accessToken, String email) {
+        api.testCreateSession(authProvider, accessToken, email, new Api.SessionResponseListener() {
             @Override
             public void onSuccess(String username, String email, List<Cookie> cookies, boolean newUserCreated) {
                 if(newUserCreated) {
