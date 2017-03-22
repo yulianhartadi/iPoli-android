@@ -2,6 +2,7 @@ package io.ipoli.android.player.persistence;
 
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
+import com.couchbase.lite.Document;
 import com.couchbase.lite.Query;
 import com.couchbase.lite.QueryEnumerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,7 +33,8 @@ public class CouchbasePlayerPersistenceService extends BaseCouchbasePersistenceS
 
     @Override
     public Player get() {
-        return toObject(database.getExistingDocument(getPlayerId()).getProperties());
+        Document player = database.getExistingDocument(getPlayerId());
+        return player != null ? toObject(player.getProperties()) : null;
     }
 
     @Override

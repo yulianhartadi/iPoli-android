@@ -43,20 +43,12 @@ public class Api {
     public Api(ObjectMapper objectMapper, Gson gson) {
         this.objectMapper = objectMapper;
         this.gson = gson;
-        httpClient = new OkHttpClient().newBuilder().addInterceptor(chain -> {
-            Log.i("REQUEST INFO", chain.request().url().toString());
-            Log.i("REQUEST INFO", chain.request().headers().toString());
+        httpClient = new OkHttpClient().newBuilder().retryOnConnectionFailure(false).build();
 
-            Response response = chain.proceed(chain.request());
-            Log.i("RESPONSE INFO", response.toString());
-            Log.i("RESPONSE INFO", response.body().toString());
-            Log.i("RESPONSE INFO", response.message());
-
-            return chain.proceed(chain.request());
-        }).build();
     }
 
     public void createSession(AuthProvider authProvider, String accessToken, String email, SessionResponseListener responseListener) {
+        Log.d("AAAA", "session");
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
         Map<String, String> params = new HashMap<>();
@@ -69,7 +61,7 @@ public class Api {
         RequestBody body = RequestBody.create(JSON, jsonObject.toString());
 
         Request.Builder builder = new Request.Builder();
-        builder.url(ApiConstants.URL + "users/").post(body);
+        builder.url(ApiConstants.IPOLI_SERVER_URL + "users/").post(body);
 
         httpClient.newCall(builder.build()).enqueue(new Callback() {
             @Override
@@ -79,6 +71,7 @@ public class Api {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                Log.d("AAAAA", "response");
                 if (response.isSuccessful()) {
 
 //                    TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {
@@ -90,7 +83,7 @@ public class Api {
                     String authId = (String) session.get("auth_id");
                     String email = (String) session.get("email");
                     String playerId = (String) session.get("player_id");
-                    List<Cookie> cookies = Cookie.parseAll(HttpUrl.get(getUrl(ApiConstants.URL)), response.headers());
+                    List<Cookie> cookies = Cookie.parseAll(HttpUrl.get(getUrl(ApiConstants.IPOLI_SERVER_URL)), response.headers());
                     responseListener.onSuccess(authId, email, cookies, playerId);
                 }
             }

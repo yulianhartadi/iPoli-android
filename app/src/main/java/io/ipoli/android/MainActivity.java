@@ -62,6 +62,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.pet.PetActivity;
@@ -135,11 +136,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         appComponent().inject(this);
 
-//        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
+        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
             startActivity(new Intent(this, SignInActivity.class));
             finish();
             return;
-//        }
+        }
 
 //        int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
 //        if (schemaVersion != Constants.SCHEMA_VERSION) {

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -192,6 +193,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     }
 
     private void login(AuthProvider authProvider, String accessToken, String email) {
+        Log.d("AAAA", "login");
         api.createSession(authProvider, accessToken, email, new Api.SessionResponseListener() {
             @Override
             public void onSuccess(String username, String email, List<Cookie> cookies, String playerId) {

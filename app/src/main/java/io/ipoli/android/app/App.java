@@ -302,7 +302,7 @@ public class App extends MultiDexApplication {
 
         registerServices();
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
-        if (StringUtils.isEmpty(playerId)) {
+        if (getPlayer() == null) {
             return;
         }
 
@@ -444,7 +444,7 @@ public class App extends MultiDexApplication {
             // single pull for playerId
             URL syncURL = null;
             try {
-                syncURL = new URL(ApiConstants.URL);
+                syncURL = new URL(ApiConstants.IPOLI_SYNC_URL);
             } catch (MalformedURLException e1) {
                 e1.printStackTrace();
             }
@@ -469,7 +469,7 @@ public class App extends MultiDexApplication {
 
     private void syncData(List<Cookie> cookies) {
         try {
-            URL syncURL = new URL(ApiConstants.URL);
+            URL syncURL = new URL(ApiConstants.IPOLI_SYNC_URL);
             Replication pull = database.createPullReplication(syncURL);
             for (Cookie cookie : cookies) {
                 pull.setCookie(cookie.name(), cookie.value(), cookie.path(),
@@ -546,7 +546,7 @@ public class App extends MultiDexApplication {
         localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
         localStorage.saveString(Constants.KEY_PLAYER_ID, e.playerId);
         playerId = e.playerId;
-        initAppStart();
+//        initAppStart();
     }
 
     @Subscribe
@@ -630,7 +630,9 @@ public class App extends MultiDexApplication {
     }
 
     private Player getPlayer() {
-        return playerPersistenceService.get();
+        Player player = playerPersistenceService.get();
+        playerId = player != null ? player.getId() : null;
+        return player;
     }
 
     private boolean shouldIncreaseLevel(Player player) {
