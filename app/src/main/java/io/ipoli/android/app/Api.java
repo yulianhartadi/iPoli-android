@@ -1,7 +1,5 @@
 package io.ipoli.android.app;
 
-import android.util.Log;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -48,7 +46,6 @@ public class Api {
     }
 
     public void createSession(AuthProvider authProvider, String accessToken, String email, SessionResponseListener responseListener) {
-        Log.d("AAAA", "session");
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
         Map<String, String> params = new HashMap<>();
@@ -71,7 +68,6 @@ public class Api {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Log.d("AAAAA", "response");
                 if (response.isSuccessful()) {
 
 //                    TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {

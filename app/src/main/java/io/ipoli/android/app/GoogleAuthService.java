@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -53,7 +52,6 @@ public class GoogleAuthService implements GoogleApiClient.OnConnectionFailedList
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.d("AAAA", "on connected");
     }
 
     @Override

@@ -39,7 +39,9 @@ import java.util.Random;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.AvatarCoinsTappedEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
@@ -55,14 +57,12 @@ import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.rate.RateDialogConstants;
 import io.ipoli.android.app.settings.SettingsFragment;
 import io.ipoli.android.app.share.ShareQuestDialog;
-import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
-import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.pet.PetActivity;
@@ -70,7 +70,6 @@ import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.PickAvatarPictureActivity;
-import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
@@ -133,11 +132,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         appComponent().inject(this);
 
-        if (StringUtils.isEmpty(localStorage.readString(Constants.KEY_PLAYER_ID))) {
-            startActivity(new Intent(this, SignInActivity.class));
+        if(!App.hasPlayer()){
             finish();
             return;
         }
@@ -149,40 +146,41 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 //            finish();
 //            return;
 //        }
-//
-//        setContentView(R.layout.activity_main);
-//        ButterKnife.bind(this);
-//
-//        localStorage.increment(Constants.KEY_APP_RUN_COUNT);
-//
-//        if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
-//            localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
-//            startTutorial();
-//        }
-//
-//        isRateDialogShown = false;
-//
-//        navigationView.setNavigationItemSelectedListener(this);
-//
-//        startCalendar();
-//        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
-//
-//            @Override
-//            public void onDrawerOpened(View drawerView) {
-//                navigationItemSelected = null;
-//            }
-//
-//            @Override
-//            public void onDrawerClosed(View drawerView) {
-//                if (navigationItemSelected == null) {
-//                    return;
-//                }
-//                onItemSelectedFromDrawer();
-//            }
-//        };
-//        drawerLayout.addDrawerListener(actionBarDrawerToggle);
-//
-//        updatePlayerInDrawer(getPlayer());
+
+        setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+
+        localStorage.increment(Constants.KEY_APP_RUN_COUNT);
+
+        isRateDialogShown = false;
+
+        navigationView.setNavigationItemSelectedListener(this);
+
+        startCalendar();
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                navigationItemSelected = null;
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                if (navigationItemSelected == null) {
+                    return;
+                }
+                onItemSelectedFromDrawer();
+            }
+        };
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        updatePlayerInDrawer(getPlayer());
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        eventBus.register(this);
     }
 
     private void onItemSelectedFromDrawer() {
@@ -315,12 +313,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     public void startCalendar() {
         changeCurrentFragment(new CalendarFragment());
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        eventBus.register(this);
     }
 
     @Override
@@ -543,12 +535,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         navigationItemSelected = item;
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    private void startTutorial() {
-        Intent intent = new Intent(this, TutorialActivity.class);
-        intent.putExtra(TutorialActivity.SHOW_PICK_CHALLENGES, true);
-        startActivity(intent);
     }
 
     private void inviteFriends() {

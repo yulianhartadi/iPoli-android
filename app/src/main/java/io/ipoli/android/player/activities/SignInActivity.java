@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -39,7 +38,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.ipoli.android.ApiConstants;
 import io.ipoli.android.Constants;
-import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.Api;
 import io.ipoli.android.app.App;
@@ -50,6 +48,7 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.Player;
+import io.ipoli.android.app.events.FinishSignInActivityEvent;
 import io.ipoli.android.player.events.StartReplicationEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import okhttp3.Cookie;
@@ -83,12 +82,16 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     private CallbackManager callbackManager;
     private GoogleApiClient googleApiClient;
 
+    private boolean showPickChallenges;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
         App.getAppComponent(this).inject(this);
         ButterKnife.bind(this);
+
+        showPickChallenges = playerPersistenceService.get() == null;
 
         initGoogleSingIn();
         initFBLogin();
@@ -146,7 +149,6 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     @OnClick(R.id.anonymous_login)
     public void onAnonymousLogin(View v) {
         createPlayer();
-        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 
@@ -193,12 +195,10 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     }
 
     private void login(AuthProvider authProvider, String accessToken, String email) {
-        Log.d("AAAA", "login");
         api.createSession(authProvider, accessToken, email, new Api.SessionResponseListener() {
             @Override
             public void onSuccess(String username, String email, List<Cookie> cookies, String playerId) {
                 Player player = getPlayer();
-                boolean shouldEmptyDB = false;
                 boolean newUserCreated = StringUtils.isEmpty(playerId);
                 if (newUserCreated && player == null) {
                     createPlayer(authProvider, email);
@@ -210,6 +210,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                     playerPersistenceService.save(player);
                 }
                 eventBus.post(new StartReplicationEvent(cookies, playerId));
+                finish();
             }
 
             @Override
@@ -253,5 +254,11 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     @Override
     public void onConnectionSuspended(int i) {
 
+    }
+
+    @Override
+    public void finish() {
+        eventBus.post(new FinishSignInActivityEvent());
+        super.finish();
     }
 }

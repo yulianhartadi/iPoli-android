@@ -13,6 +13,7 @@ import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.amplitude.api.Amplitude;
@@ -53,6 +54,8 @@ import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.DateChangedEvent;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.FinishSignInActivityEvent;
+import io.ipoli.android.app.events.FinishTutorialActivityEvent;
 import io.ipoli.android.app.events.InitAppEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.StartQuickAddEvent;
@@ -63,6 +66,7 @@ import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
+import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IntentUtils;
@@ -71,6 +75,7 @@ import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.activities.ChallengeCompleteActivity;
+import io.ipoli.android.challenge.activities.PickChallengeActivity;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.data.Difficulty;
 import io.ipoli.android.challenge.data.PredefinedChallenge;
@@ -89,6 +94,7 @@ import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.LevelUpActivity;
+import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.events.StartReplicationEvent;
@@ -302,7 +308,15 @@ public class App extends MultiDexApplication {
 
         registerServices();
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
-        if (getPlayer() == null) {
+        if (!hasPlayer()) {
+            Log.d("AAAAAAA", "start");
+            if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
+                localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
+                startActivity(new Intent(this, TutorialActivity.class));
+                return;
+            } else {
+                startActivity(new Intent(this, SignInActivity.class));
+            }
             return;
         }
 
@@ -310,7 +324,27 @@ public class App extends MultiDexApplication {
         if (schemaVersion != Constants.SCHEMA_VERSION) {
             return;
         }
+        initReplication();
         initAppStart();
+    }
+
+    @Subscribe
+    public void onFinishTutorialActivity(FinishTutorialActivityEvent e) {
+        if (!hasPlayer()) {
+            startActivity(new Intent(this, SignInActivity.class));
+        }
+    }
+
+    @Subscribe
+    public void onFinishSignInActivity(FinishSignInActivityEvent e) {
+        if (hasPlayer()) {
+            startActivity(new Intent(this, MainActivity.class));
+            Intent intent = new Intent(this, PickChallengeActivity.class);
+            intent.putExtra(PickChallengeActivity.TITLE, getString(R.string.pick_challenge_to_start));
+            startActivity(intent);
+        } else {
+            System.exit(0);
+        }
     }
 
     private void updateOngoingNotification(Quest quest, int completedCount, int totalCount) {
@@ -397,7 +431,6 @@ public class App extends MultiDexApplication {
         scheduleDateChanged();
         scheduleNextReminder();
         listenForChanges();
-        initReplication();
     }
 
     private void initReplication() {
@@ -434,7 +467,7 @@ public class App extends MultiDexApplication {
         if (!StringUtils.isEmpty(e.playerId)) {
             //stop replication
             List<Replication> replications = database.getAllReplications();
-            for(Replication replication : replications) {
+            for (Replication replication : replications) {
                 replication.stop();
                 replication.clearAuthenticationStores();
             }
@@ -458,7 +491,7 @@ public class App extends MultiDexApplication {
             channels.add(playerId);
             pull.setChannels(channels);
             pull.addChangeListener(event -> {
-                if(event.getStatus() != Replication.ReplicationStatus.REPLICATION_STOPPED) {
+                if (event.getStatus() != Replication.ReplicationStatus.REPLICATION_STOPPED) {
                     //replication finished ???
                 }
             });
@@ -546,7 +579,7 @@ public class App extends MultiDexApplication {
         localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
         localStorage.saveString(Constants.KEY_PLAYER_ID, e.playerId);
         playerId = e.playerId;
-//        initAppStart();
+        initAppStart();
     }
 
     @Subscribe
@@ -890,6 +923,10 @@ public class App extends MultiDexApplication {
 
     public static String getPlayerId() {
         return playerId;
+    }
+
+    public static boolean hasPlayer() {
+        return !StringUtils.isEmpty(playerId);
     }
 
     public static List<PredefinedChallenge> getPredefinedChallenges() {
