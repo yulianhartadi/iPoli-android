@@ -1,5 +1,7 @@
 package io.ipoli.android.app.api;
 
+import android.util.Log;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -116,8 +118,7 @@ public class Api {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
-
-                    Type type = new TypeToken<Map<String, Object>>() {
+                    Type type = new TypeToken<Map<String, List<Object>>>() {
                     }.getType();
                     Map<String, List<Object>> documents = gson.fromJson(response.body().charStream(), type);
                     responseListener.onSuccess(documents);

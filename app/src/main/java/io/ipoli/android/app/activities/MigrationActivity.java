@@ -15,6 +15,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.events.AppErrorEvent;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -25,6 +26,9 @@ public class MigrationActivity extends BaseActivity {
 
     @Inject
     Api api;
+
+    @Inject
+    PlayerPersistenceService playerPersistenceService;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,7 +50,7 @@ public class MigrationActivity extends BaseActivity {
         api.migratePlayer(firebasePlayerId, new Api.PlayerMigratedListener() {
             @Override
             public void onSuccess(Map<String, List<Object>> documents) {
-
+                finish();
             }
 
             @Override
