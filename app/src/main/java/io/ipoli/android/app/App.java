@@ -49,6 +49,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.QuickAddActivity;
+import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.DateChangedEvent;
@@ -65,7 +66,6 @@ import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
-import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IntentUtils;
@@ -307,16 +307,16 @@ public class App extends MultiDexApplication {
 
         registerServices();
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
-        if (!hasPlayer()) {
-            if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
-                localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
-                startActivity(new Intent(this, TutorialActivity.class));
-                return;
-            } else {
-                startActivity(new Intent(this, SignInActivity.class));
-            }
-            return;
-        }
+//        if (!hasPlayer()) {
+//            if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
+//                localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
+//                startActivity(new Intent(this, TutorialActivity.class));
+//                return;
+//            } else {
+//                startActivity(new Intent(this, SignInActivity.class));
+//            }
+//            return;
+//        }
 
         int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
         if (schemaVersion != Constants.SCHEMA_VERSION) {

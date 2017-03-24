@@ -7,7 +7,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.ipoli.android.app.Api;
+import io.ipoli.android.app.api.Api;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

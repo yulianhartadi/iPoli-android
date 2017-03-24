@@ -39,7 +39,7 @@ import butterknife.OnClick;
 import io.ipoli.android.ApiConstants;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.app.Api;
+import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.AppErrorEvent;

@@ -1,4 +1,4 @@
-package io.ipoli.android.app;
+package io.ipoli.android.app.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.ApiConstants;
+import io.ipoli.android.app.api.exceptions.ApiResponseException;
 import io.ipoli.android.player.AuthProvider;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -81,6 +82,8 @@ public class Api {
                     String playerId = (String) session.get("player_id");
                     List<Cookie> cookies = Cookie.parseAll(HttpUrl.get(getUrl(ApiConstants.IPOLI_SERVER_URL)), response.headers());
                     responseListener.onSuccess(authId, email, cookies, playerId);
+                } else {
+                    responseListener.onError(new ApiResponseException(call.request().url().toString(), response.code(), response.message()));
                 }
             }
         });
@@ -92,6 +95,43 @@ public class Api {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void migratePlayer(String firebasePlayerId, PlayerMigratedListener responseListener) {
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        Map<String, String> params = new HashMap<>();
+        params.put("player_id", firebasePlayerId);
+        JSONObject jsonObject = new JSONObject(params);
+        RequestBody body = RequestBody.create(JSON, jsonObject.toString());
+
+        Request.Builder builder = new Request.Builder();
+        builder.url(ApiConstants.IPOLI_SERVER_URL + "migration/").post(body);
+
+        httpClient.newCall(builder.build()).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                responseListener.onError(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+
+                    Type type = new TypeToken<Map<String, Object>>() {
+                    }.getType();
+                    Map<String, List<Object>> documents = gson.fromJson(response.body().charStream(), type);
+                    responseListener.onSuccess(documents);
+                } else {
+                    responseListener.onError(new ApiResponseException(call.request().url().toString(), response.code(), response.message()));
+                }
+            }
+        });
+    }
+
+    public interface PlayerMigratedListener {
+        void onSuccess(Map<String, List<Object>> documents);
+
+        void onError(Exception e);
     }
 
     public interface SessionResponseListener {
