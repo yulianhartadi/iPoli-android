@@ -6,4 +6,9 @@ package io.ipoli.android.app.events;
  */
 
 public class FinishSignInActivityEvent {
+    public final boolean isNewPlayer;
+
+    public FinishSignInActivityEvent(boolean isNewPlayer) {
+        this.isNewPlayer = isNewPlayer;
+    }
 }

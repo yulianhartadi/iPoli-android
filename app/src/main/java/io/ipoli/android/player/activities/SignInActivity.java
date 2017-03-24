@@ -82,7 +82,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     private CallbackManager callbackManager;
     private GoogleApiClient googleApiClient;
 
-    private boolean showPickChallenges;
+    private boolean isNewPlayer;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,7 +91,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         App.getAppComponent(this).inject(this);
         ButterKnife.bind(this);
 
-        showPickChallenges = playerPersistenceService.get() == null;
+        isNewPlayer = playerPersistenceService.get() == null;
 
         initGoogleSingIn();
         initFBLogin();
@@ -258,7 +258,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @Override
     public void finish() {
-        eventBus.post(new FinishSignInActivityEvent());
+        eventBus.post(new FinishSignInActivityEvent(isNewPlayer));
         super.finish();
     }
 }

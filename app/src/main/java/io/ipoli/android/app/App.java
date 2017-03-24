@@ -13,7 +13,6 @@ import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.NotificationCompat;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.amplitude.api.Amplitude;
@@ -309,7 +308,6 @@ public class App extends MultiDexApplication {
         registerServices();
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
         if (!hasPlayer()) {
-            Log.d("AAAAAAA", "start");
             if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
                 localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
                 startActivity(new Intent(this, TutorialActivity.class));
@@ -337,12 +335,12 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onFinishSignInActivity(FinishSignInActivityEvent e) {
-        if (hasPlayer()) {
+        if (hasPlayer() && e.isNewPlayer) {
             startActivity(new Intent(this, MainActivity.class));
             Intent intent = new Intent(this, PickChallengeActivity.class);
             intent.putExtra(PickChallengeActivity.TITLE, getString(R.string.pick_challenge_to_start));
             startActivity(intent);
-        } else {
+        } else if(!hasPlayer()){
             System.exit(0);
         }
     }

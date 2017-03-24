@@ -39,11 +39,11 @@ android {
             }
         }
 
-//        debug {
-//            ndk {
-//                abiFilter 'x86_64'
-//            }
-//        }
+        debug {
+            ndk {
+                abiFilter 'x86_64'
+            }
+        }
     }
 
     packagingOptions {

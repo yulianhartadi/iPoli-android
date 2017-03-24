@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -70,6 +71,7 @@ import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.PickAvatarPictureActivity;
+import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
@@ -289,6 +291,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         TextView currentXP = (TextView) header.findViewById(R.id.avatar_current_xp);
         currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), player.getExperience()));
         updatePetInDrawer(player.getPet());
+
+
+        Button signIn = (Button) header.findViewById(R.id.sign_in);
+        if(player.isAuthenticated()) {
+            signIn.setVisibility(View.GONE);
+            signIn.setOnClickListener(null);
+        } else {
+            signIn.setVisibility(View.VISIBLE);
+            signIn.setOnClickListener(v -> startActivity(new Intent(this, SignInActivity.class)));
+        }
     }
 
     private void updatePetInDrawer(Pet pet) {
