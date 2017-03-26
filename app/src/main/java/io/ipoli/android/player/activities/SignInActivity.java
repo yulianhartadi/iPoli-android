@@ -39,16 +39,16 @@ import butterknife.OnClick;
 import io.ipoli.android.ApiConstants;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.events.AppErrorEvent;
+import io.ipoli.android.app.events.FinishSignInActivityEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.Player;
-import io.ipoli.android.app.events.FinishSignInActivityEvent;
 import io.ipoli.android.player.events.StartReplicationEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import okhttp3.Cookie;
@@ -197,19 +197,18 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     private void login(AuthProvider authProvider, String accessToken, String email) {
         api.createSession(authProvider, accessToken, email, new Api.SessionResponseListener() {
             @Override
-            public void onSuccess(String username, String email, List<Cookie> cookies, String playerId) {
-                Player player = getPlayer();
-                boolean newUserCreated = StringUtils.isEmpty(playerId);
-                if (newUserCreated && player == null) {
-                    createPlayer(authProvider, email);
-                } else if (newUserCreated) {
+            public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
+                if (shouldCreatePlayer) {
+                    createPlayer(playerId, authProvider, email);
+                } else {
+                    Player player = getPlayer();
                     player.setCurrentAuthProvider(authProvider);
                     List<AuthProvider> authProviders = new ArrayList<>();
                     authProviders.add(authProvider);
                     player.setAuthProviders(authProviders);
                     playerPersistenceService.save(player);
                 }
-                eventBus.post(new StartReplicationEvent(cookies, playerId));
+                eventBus.post(new StartReplicationEvent(cookies, !isNew));
                 finish();
             }
 
@@ -221,10 +220,10 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     }
 
     private void createPlayer() {
-        createPlayer(null, null);
+        createPlayer(null, null, null);
     }
 
-    private void createPlayer(AuthProvider authProvider, String email) {
+    private void createPlayer(String playerId, AuthProvider authProvider, String email) {
         Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR, Constants.DEFAULT_PET_BACKGROUND_IMAGE, Constants.DEFAULT_PET_HP);
         Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP),
                 Constants.DEFAULT_AVATAR_LEVEL,
@@ -237,7 +236,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             player.getAuthProviders().add(authProvider);
         }
 
-        playerPersistenceService.save(player);
+        playerPersistenceService.save(player, playerId);
         eventBus.post(new PlayerCreatedEvent(player.getId()));
     }
 

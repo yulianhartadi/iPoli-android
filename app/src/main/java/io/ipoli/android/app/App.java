@@ -66,6 +66,7 @@ import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
+import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IntentUtils;
@@ -307,21 +308,27 @@ public class App extends MultiDexApplication {
 
         registerServices();
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
-//        if (!hasPlayer()) {
-//            if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
-//                localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
-//                startActivity(new Intent(this, TutorialActivity.class));
-//                return;
-//            } else {
-//                startActivity(new Intent(this, SignInActivity.class));
-//            }
-//            return;
+
+        //test migration
+//        if(StringUtils.isEmpty(playerId)) {
+//            playerId = "-KRiVjXZpn3xHtTMKHGj";
 //        }
 
         int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
-        if (schemaVersion != Constants.SCHEMA_VERSION) {
+        if (hasPlayer() && schemaVersion != Constants.SCHEMA_VERSION) {
             return;
         }
+        if (!hasPlayer()) {
+            if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
+                localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
+                startActivity(new Intent(this, TutorialActivity.class));
+                return;
+            } else {
+                startActivity(new Intent(this, SignInActivity.class));
+            }
+            return;
+        }
+
         initReplication();
         initAppStart();
     }
@@ -442,7 +449,7 @@ public class App extends MultiDexApplication {
             }
             api.createSession(player.getCurrentAuthProvider(), accessToken, player.getEmail(), new Api.SessionResponseListener() {
                 @Override
-                public void onSuccess(String username, String email, List<Cookie> cookies, String playerId) {
+                public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
                     syncData(cookies);
                 }
 
@@ -462,7 +469,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onStartReplication(StartReplicationEvent e) {
-        if (!StringUtils.isEmpty(e.playerId)) {
+        if (e.shouldPullPlayerData) {
             //stop replication
             List<Replication> replications = database.getAllReplications();
             for (Replication replication : replications) {
@@ -472,7 +479,7 @@ public class App extends MultiDexApplication {
             //clean DB
             playerPersistenceService.deletePlayer();
 
-            // single pull for playerId
+            // single pull for shouldPullPlayerData
             URL syncURL = null;
             try {
                 syncURL = new URL(ApiConstants.IPOLI_SYNC_URL);

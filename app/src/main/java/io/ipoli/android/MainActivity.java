@@ -42,6 +42,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.events.AvatarCoinsTappedEvent;
@@ -136,19 +137,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         super.onCreate(savedInstanceState);
         appComponent().inject(this);
 
-//        if(!App.hasPlayer()){
-//            finish();
-//            return;
-//        }
-
         int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
-        if (schemaVersion != Constants.SCHEMA_VERSION) {
+        if (App.hasPlayer() && schemaVersion != Constants.SCHEMA_VERSION) {
             // should migrate
             startActivity(new Intent(this, MigrationActivity.class));
             finish();
             return;
         }
 
+        if(!App.hasPlayer()){
+            finish();
+            return;
+        }
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 

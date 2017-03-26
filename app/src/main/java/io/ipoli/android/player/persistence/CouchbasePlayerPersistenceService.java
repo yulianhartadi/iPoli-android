@@ -5,7 +5,10 @@ import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
 import com.couchbase.lite.Query;
 import com.couchbase.lite.QueryEnumerator;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
 import io.ipoli.android.app.utils.StringUtils;
@@ -53,6 +56,27 @@ public class CouchbasePlayerPersistenceService extends BaseCouchbasePersistenceS
         } catch (CouchbaseLiteException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void save(Player player, String playerId) {
+        if (StringUtils.isEmpty(playerId)) {
+            super.save(player);
+            return;
+        }
+        player.setId(playerId);
+        player.setOwner(playerId);
+
+        TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {
+        };
+        Map<String, Object> data = objectMapper.convertValue(player, mapTypeReference);
+        try {
+            Document document = database.getDocument(playerId);
+            document.putProperties(data);
+        } catch (CouchbaseLiteException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override

@@ -24,9 +24,9 @@ import io.ipoli.android.quest.persistence.OnDataChangedListener;
 public abstract class BaseCouchbasePersistenceService<T extends PersistedObject> implements PersistenceService<T> {
 
     protected final Database database;
-    private final ObjectMapper objectMapper;
-    private final Map<LiveQuery, LiveQuery.ChangeListener> queryToListener;
-    private final Map<Document, Document.ChangeListener> documentToListener;
+    protected final ObjectMapper objectMapper;
+    protected final Map<LiveQuery, LiveQuery.ChangeListener> queryToListener;
+    protected final Map<Document, Document.ChangeListener> documentToListener;
 
     public BaseCouchbasePersistenceService(Database database, ObjectMapper objectMapper) {
         this.database = database;
@@ -47,19 +47,21 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
     public void save(T obj) {
         TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {
         };
-        Map<String, Object> data = objectMapper.convertValue(obj, mapTypeReference);
+        Map<String, Object> data;
 
         if (StringUtils.isEmpty(obj.getId())) {
+            obj.setOwner(getPlayerId(obj));
+            data = objectMapper.convertValue(obj, mapTypeReference);
             try {
                 Document document = database.createDocument();
                 document.putProperties(data);
                 obj.setId(document.getId());
-                obj.setOwner(getPlayerId(obj));
             } catch (CouchbaseLiteException e) {
                 e.printStackTrace();
             }
         } else {
             obj.markUpdated();
+            data = objectMapper.convertValue(obj, mapTypeReference);
             UnsavedRevision revision = database.getExistingDocument(obj.getId()).createRevision();
             revision.setProperties(data);
             try {

@@ -1,7 +1,5 @@
 package io.ipoli.android.app.api;
 
-import android.util.Log;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -17,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.ApiConstants;
+import io.ipoli.android.app.App;
 import io.ipoli.android.app.api.exceptions.ApiResponseException;
 import io.ipoli.android.player.AuthProvider;
 import okhttp3.Call;
@@ -56,6 +55,7 @@ public class Api {
         params.put("auth_id", authProvider.getId());
         params.put("access_token", accessToken);
         params.put("email", email);
+        params.put("player_id", App.getPlayerId());
 
         JSONObject jsonObject = new JSONObject(params);
         RequestBody body = RequestBody.create(JSON, jsonObject.toString());
@@ -82,8 +82,10 @@ public class Api {
                     String authId = (String) session.get("auth_id");
                     String email = (String) session.get("email");
                     String playerId = (String) session.get("player_id");
+                    boolean isNew = (boolean) session.get("is_new");
+                    boolean shouldCreatePlayer = (boolean) session.get("should_create_player");
                     List<Cookie> cookies = Cookie.parseAll(HttpUrl.get(getUrl(ApiConstants.IPOLI_SERVER_URL)), response.headers());
-                    responseListener.onSuccess(authId, email, cookies, playerId);
+                    responseListener.onSuccess(authId, email, cookies, playerId, isNew, shouldCreatePlayer);
                 } else {
                     responseListener.onError(new ApiResponseException(call.request().url().toString(), response.code(), response.message()));
                 }
@@ -118,9 +120,9 @@ public class Api {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    Type type = new TypeToken<Map<String, List<Object>>>() {
+                    Type type = new TypeToken<Map<String, List<Map<String, Object>>>>() {
                     }.getType();
-                    Map<String, List<Object>> documents = gson.fromJson(response.body().charStream(), type);
+                    Map<String, List<Map<String, Object>>> documents = gson.fromJson(response.body().charStream(), type);
                     responseListener.onSuccess(documents);
                 } else {
                     responseListener.onError(new ApiResponseException(call.request().url().toString(), response.code(), response.message()));
@@ -130,13 +132,13 @@ public class Api {
     }
 
     public interface PlayerMigratedListener {
-        void onSuccess(Map<String, List<Object>> documents);
+        void onSuccess(Map<String, List<Map<String, Object>>> documents);
 
         void onError(Exception e);
     }
 
     public interface SessionResponseListener {
-        void onSuccess(String username, String email, List<Cookie> cookies, String playerId);
+        void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer);
 
         void onError(Exception e);
     }
