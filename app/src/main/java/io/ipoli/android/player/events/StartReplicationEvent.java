@@ -11,10 +11,8 @@ import okhttp3.Cookie;
 
 public class StartReplicationEvent {
     public final List<Cookie> cookies;
-    public final boolean shouldPullPlayerData;
 
-    public StartReplicationEvent(List<Cookie> cookies, boolean shouldPullPlayerData) {
+    public StartReplicationEvent(List<Cookie> cookies) {
         this.cookies = cookies;
-        this.shouldPullPlayerData = shouldPullPlayerData;
     }
 }

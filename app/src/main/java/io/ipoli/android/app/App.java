@@ -28,7 +28,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
 import java.math.BigInteger;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -97,6 +96,7 @@ import io.ipoli.android.player.activities.LevelUpActivity;
 import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
+import io.ipoli.android.player.events.PlayerUpdatedEvent;
 import io.ipoli.android.player.events.StartReplicationEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.activities.QuestActivity;
@@ -469,39 +469,6 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onStartReplication(StartReplicationEvent e) {
-        if (e.shouldPullPlayerData) {
-            //stop replication
-            List<Replication> replications = database.getAllReplications();
-            for (Replication replication : replications) {
-                replication.stop();
-                replication.clearAuthenticationStores();
-            }
-            //clean DB
-            playerPersistenceService.deletePlayer();
-
-            // single pull for shouldPullPlayerData
-            URL syncURL = null;
-            try {
-                syncURL = new URL(ApiConstants.IPOLI_SYNC_URL);
-            } catch (MalformedURLException e1) {
-                e1.printStackTrace();
-            }
-            Replication pull = database.createPullReplication(syncURL);
-            for (Cookie cookie : e.cookies) {
-                pull.setCookie(cookie.name(), cookie.value(), cookie.path(),
-                        new Date(cookie.expiresAt()), cookie.secure(), cookie.httpOnly());
-            }
-            pull.setContinuous(false);
-            List<String> channels = new ArrayList<>();
-            channels.add(playerId);
-            pull.setChannels(channels);
-            pull.addChangeListener(event -> {
-                if (event.getStatus() != Replication.ReplicationStatus.REPLICATION_STOPPED) {
-                    //replication finished ???
-                }
-            });
-            pull.start();
-        }
         syncData(e.cookies);
     }
 
@@ -585,6 +552,13 @@ public class App extends MultiDexApplication {
         localStorage.saveString(Constants.KEY_PLAYER_ID, e.playerId);
         playerId = e.playerId;
         initAppStart();
+    }
+
+    @Subscribe
+    public void onPlayerUpdated(PlayerUpdatedEvent e) {
+        localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
+        localStorage.saveString(Constants.KEY_PLAYER_ID, e.playerId);
+        playerId = e.playerId;
     }
 
     @Subscribe

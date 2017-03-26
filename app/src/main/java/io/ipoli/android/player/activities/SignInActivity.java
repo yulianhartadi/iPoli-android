@@ -8,6 +8,8 @@ import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Button;
 
+import com.couchbase.lite.Database;
+import com.couchbase.lite.replicator.Replication;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -28,7 +30,10 @@ import com.google.gson.Gson;
 import org.json.JSONException;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Arrays;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -49,6 +54,7 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.Player;
+import io.ipoli.android.player.events.PlayerUpdatedEvent;
 import io.ipoli.android.player.events.StartReplicationEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import okhttp3.Cookie;
@@ -66,6 +72,9 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @Inject
     Gson gson;
+
+    @Inject
+    Database database;
 
     @Inject
     PlayerPersistenceService playerPersistenceService;
@@ -200,7 +209,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
                 if (shouldCreatePlayer) {
                     createPlayer(playerId, authProvider, email);
-                } else {
+                } else if(isNew){
                     Player player = getPlayer();
                     player.setCurrentAuthProvider(authProvider);
                     List<AuthProvider> authProviders = new ArrayList<>();
@@ -208,8 +217,44 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                     player.setAuthProviders(authProviders);
                     playerPersistenceService.save(player);
                 }
-                eventBus.post(new StartReplicationEvent(cookies, !isNew));
-                finish();
+                if (!isNew) {
+                    //stop replication
+                    List<Replication> replications = database.getAllReplications();
+                    for (Replication replication : replications) {
+                        replication.stop();
+                        replication.clearAuthenticationStores();
+                    }
+                    //clean DB
+                    playerPersistenceService.deletePlayer();
+
+                    // single pull for shouldPullPlayerData
+                    URL syncURL = null;
+                    try {
+                        syncURL = new URL(ApiConstants.IPOLI_SYNC_URL);
+                    } catch (MalformedURLException e1) {
+                        e1.printStackTrace();
+                    }
+                    Replication pull = database.createPullReplication(syncURL);
+                    for (Cookie cookie : cookies) {
+                        pull.setCookie(cookie.name(), cookie.value(), cookie.path(),
+                                new Date(cookie.expiresAt()), cookie.secure(), cookie.httpOnly());
+                    }
+                    pull.setContinuous(false);
+                    List<String> channels = new ArrayList<>();
+                    channels.add(playerId);
+                    pull.setChannels(channels);
+                    pull.addChangeListener(event -> {
+                        if (event.getStatus() != Replication.ReplicationStatus.REPLICATION_STOPPED) {
+                            eventBus.post(new PlayerUpdatedEvent(playerId));
+                            eventBus.post(new StartReplicationEvent(cookies));
+                            finish();
+                        }
+                    });
+                    pull.start();
+                } else {
+                    eventBus.post(new StartReplicationEvent(cookies));
+                    finish();
+                }
             }
 
             @Override
