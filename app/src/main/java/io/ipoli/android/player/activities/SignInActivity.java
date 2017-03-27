@@ -4,9 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.view.View;
-import android.widget.Button;
 
 import com.couchbase.lite.Database;
 import com.couchbase.lite.replicator.Replication;
@@ -17,7 +18,6 @@ import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -28,11 +28,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
-import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Arrays;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -57,6 +57,7 @@ import io.ipoli.android.player.Player;
 import io.ipoli.android.player.events.PlayerUpdatedEvent;
 import io.ipoli.android.player.events.StartReplicationEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import mehdi.sakout.fancybuttons.FancyButton;
 import okhttp3.Cookie;
 
 /**
@@ -83,13 +84,16 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     SignInButton googleSignInButton;
 
     @BindView(R.id.facebook_login)
-    LoginButton fbLoginButton;
+    FancyButton fbLoginButton;
 
-    @BindView(R.id.anonymous_login)
-    Button anonymousButton;
+    @BindView(R.id.guest_login)
+    FancyButton guestButton;
 
     private CallbackManager callbackManager;
     private GoogleApiClient googleApiClient;
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     private boolean isNewPlayer;
 
@@ -100,21 +104,31 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         App.getAppComponent(this).inject(this);
         ButterKnife.bind(this);
 
+        setSupportActionBar(toolbar);
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setDisplayHomeAsUpEnabled(false);
+        }
+
         isNewPlayer = playerPersistenceService.get() == null;
 
         initGoogleSingIn();
         initFBLogin();
-        initAnonymousLogin();
+        initGuestLogin();
     }
 
-    private void initAnonymousLogin() {
+    @Override
+    protected boolean useParentOptionsMenu() {
+        return false;
+    }
+
+    private void initGuestLogin() {
         if (!StringUtils.isEmpty(App.getPlayerId())) {
-            anonymousButton.setVisibility(View.GONE);
+            guestButton.setVisibility(View.GONE);
         }
     }
 
     private void initFBLogin() {
-        fbLoginButton.setReadPermissions(Arrays.asList(new String[]{"email"}));
         callbackManager = CallbackManager.Factory.create();
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
@@ -146,7 +160,12 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                 .addConnectionCallbacks(this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-        googleSignInButton.setSize(SignInButton.SIZE_STANDARD);
+        googleSignInButton.setSize(SignInButton.SIZE_ICON_ONLY);
+    }
+
+    @OnClick(R.id.facebook_login)
+    public void onFacebookSignIn(View v) {
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email"));
     }
 
     @OnClick(R.id.google_sign_in)
@@ -155,8 +174,8 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
     }
 
-    @OnClick(R.id.anonymous_login)
-    public void onAnonymousLogin(View v) {
+    @OnClick(R.id.guest_login)
+    public void onGuestLogin(View v) {
         createPlayer();
         finish();
     }
@@ -209,7 +228,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
                 if (shouldCreatePlayer) {
                     createPlayer(playerId, authProvider, email);
-                } else if(isNew){
+                } else if (isNew) {
                     Player player = getPlayer();
                     player.setCurrentAuthProvider(authProvider);
                     List<AuthProvider> authProviders = new ArrayList<>();
