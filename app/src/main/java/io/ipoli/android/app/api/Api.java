@@ -114,7 +114,6 @@ public class Api {
                     TypeReference<Map<String, List<Map<String, Object>>>> mapTypeReference = new TypeReference<Map<String, List<Map<String, Object>>>>() {
                     };
                     Map<String, List<Map<String, Object>>> documents = objectMapper.readValue(response.body().charStream(), mapTypeReference);
-                    Log.d("AAAA docs", documents.toString());
                     responseListener.onSuccess(documents);
                 } else {
                     responseListener.onError(new ApiResponseException(call.request().url().toString(), response.code(), response.message()));
