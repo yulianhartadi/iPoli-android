@@ -2,6 +2,8 @@ package io.ipoli.android.challenge.data;
 
 import android.support.v4.util.Pair;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
@@ -52,9 +54,13 @@ public class Challenge extends PersistedObject implements RewardProvider {
     private Long coins;
     private Long experience;
 
+    @JsonIgnore
     private Map<String, Quest> challengeQuests;
+
+    @JsonIgnore
     private Map<String, RepeatingQuest> challengeRepeatingQuests;
 
+    @JsonIgnore
     private Map<String, QuestData> questsData;
 
     private String source;
@@ -215,12 +221,12 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return category;
     }
 
-
+    @JsonIgnore
     public void setCategoryType(Category category) {
         this.category = category.name();
     }
 
-
+    @JsonIgnore
     public Category getCategoryType() {
         return Category.valueOf(category);
     }
@@ -229,6 +235,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.category = category;
     }
 
+    @JsonIgnore
     public static Category getCategory(Challenge challenge) {
         return Category.valueOf(challenge.getCategory());
     }
@@ -241,6 +248,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.source = source;
     }
 
+    @JsonIgnore
     public Map<String, Quest> getChallengeQuests() {
         if (challengeQuests == null) {
             challengeQuests = new HashMap<>();
@@ -248,15 +256,17 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return challengeQuests;
     }
 
+    @JsonIgnore
     public void setChallengeQuests(Map<String, Quest> challengeQuests) {
         this.challengeQuests = challengeQuests;
     }
 
-
+    @JsonIgnore
     public void addChallengeQuest(Quest quest) {
         getChallengeQuests().put(quest.getId(), quest);
     }
 
+    @JsonIgnore
     public Map<String, RepeatingQuest> getChallengeRepeatingQuests() {
         if (challengeRepeatingQuests == null) {
             challengeRepeatingQuests = new HashMap<>();
@@ -264,15 +274,17 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return challengeRepeatingQuests;
     }
 
-
+    @JsonIgnore
     public void addChallengeRepeatingQuest(RepeatingQuest repeatingQuest) {
         getChallengeRepeatingQuests().put(repeatingQuest.getId(), repeatingQuest);
     }
 
+    @JsonIgnore
     public void setChallengeRepeatingQuests(Map<String, RepeatingQuest> challengeRepeatingQuests) {
         this.challengeRepeatingQuests = challengeRepeatingQuests;
     }
 
+    @JsonIgnore
     public Map<String, QuestData> getQuestsData() {
         if (questsData == null) {
             questsData = new HashMap<>();
@@ -280,10 +292,12 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return questsData;
     }
 
+    @JsonIgnore
     public void addQuestData(String id, QuestData questData) {
         getQuestsData().put(id, questData);
     }
 
+    @JsonIgnore
     public Date getNextScheduledDate(long currentDate) {
         Date nextDate = null;
         for (QuestData qd : questsData.values()) {
@@ -296,7 +310,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return nextDate;
     }
 
-
+    @JsonIgnore
     public int getTotalTimeSpent() {
         int timeSpent = 0;
         for (QuestData questData : getQuestsData().values()) {
@@ -307,7 +321,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return timeSpent;
     }
 
-
+    @JsonIgnore
     public List<PeriodHistory> getPeriodHistories(LocalDate currentDate) {
         List<PeriodHistory> result = new ArrayList<>();
         List<Pair<LocalDate, LocalDate>> pairs =
@@ -332,12 +346,13 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return result;
     }
 
-
+    @JsonIgnore
     public int getTotalQuestCount() {
         return getQuestsData().size();
     }
 
 
+    @JsonIgnore
     public int getCompletedQuestCount() {
         int count = 0;
         for (QuestData questData : getQuestsData().values()) {

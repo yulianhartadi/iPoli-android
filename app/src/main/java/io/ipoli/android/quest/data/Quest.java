@@ -710,4 +710,5 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         }
         return TimePreference.valueOf(preferredStartTime);
     }
+
 }

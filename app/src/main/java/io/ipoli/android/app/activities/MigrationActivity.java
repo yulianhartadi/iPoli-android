@@ -1,6 +1,5 @@
 package io.ipoli.android.app.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -17,12 +16,10 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.events.AppErrorEvent;
-import io.ipoli.android.app.events.PlayerCreatedEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -75,8 +72,8 @@ public class MigrationActivity extends BaseActivity {
                         reward.put("owner", playerId);
                         save(reward);
                     }
-                    eventBus.post(new PlayerCreatedEvent(playerId));
-                    startActivity(new Intent(MigrationActivity.this, MainActivity.class));
+//                    eventBus.post(new PlayerCreatedEvent(playerId));
+//                    startActivity(new Intent(MigrationActivity.this, MainActivity.class));
                     finish();
                     return true;
                 });
