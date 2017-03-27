@@ -6,7 +6,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.widget.Button;
 
 import io.ipoli.android.R;
 
@@ -14,7 +13,7 @@ import io.ipoli.android.R;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/26/16.
  */
-public class IconButton extends Button {
+public class IconButton extends android.support.v7.widget.AppCompatButton {
     protected int drawableWidth;
     protected DrawablePositions drawablePosition;
     protected int iconPadding;
