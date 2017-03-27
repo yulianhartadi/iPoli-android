@@ -175,14 +175,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }
         };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
-        updatePlayerInDrawer(getPlayer());
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
         eventBus.register(this);
+        updatePlayerInDrawer(getPlayer());
     }
 
     private void onItemSelectedFromDrawer() {

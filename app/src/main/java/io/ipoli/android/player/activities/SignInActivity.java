@@ -244,7 +244,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                     channels.add(playerId);
                     pull.setChannels(channels);
                     pull.addChangeListener(event -> {
-                        if (event.getStatus() != Replication.ReplicationStatus.REPLICATION_STOPPED) {
+                        if (event.getStatus() == Replication.ReplicationStatus.REPLICATION_STOPPED) {
                             eventBus.post(new PlayerUpdatedEvent(playerId));
                             eventBus.post(new StartReplicationEvent(cookies));
                             finish();
