@@ -8,11 +8,11 @@ import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.otto.Bus;
 
-import java.lang.reflect.Type;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     PlayerPersistenceService playerPersistenceService;
 
     @Inject
-    Gson gson;
+    ObjectMapper objectMapper;
 
     public QuestRemoteViewsFactory(Context context) {
         App.getAppComponent(context).inject(this);
@@ -59,18 +59,23 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     @Override
     public void onDataSetChanged() {
-        Type type = new TypeToken<List<Quest>>() {
-        }.getType();
-        List<Quest> allQuests = gson.fromJson(localStorage.readString(Constants.KEY_WIDGET_AGENDA_QUESTS), type);
-        quests = new ArrayList<>();
-        if (allQuests == null) {
-            return;
-        }
-        for (Quest q : allQuests) {
-            if (!q.isCompleted()) {
-                quests.add(q);
+        TypeReference<List<Quest>> type = new TypeReference<List<Quest>>() {
+        };
+        try {
+            List<Quest> allQuests = objectMapper.readValue(localStorage.readString(Constants.KEY_WIDGET_AGENDA_QUESTS), type);
+            quests = new ArrayList<>();
+            if (allQuests == null) {
+                return;
             }
+            for (Quest q : allQuests) {
+                if (!q.isCompleted()) {
+                    quests.add(q);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Cant read JSON for Widget : " + localStorage.readString(Constants.KEY_WIDGET_AGENDA_QUESTS), e);
         }
+
     }
 
     @Override

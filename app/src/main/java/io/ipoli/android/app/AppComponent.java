@@ -13,7 +13,6 @@ import io.ipoli.android.app.modules.ApiModule;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.BusModule;
 import io.ipoli.android.app.modules.CouchbaseModule;
-import io.ipoli.android.app.modules.JsonModule;
 import io.ipoli.android.app.modules.LocalStorageModule;
 import io.ipoli.android.app.modules.ObjectMapperModule;
 import io.ipoli.android.app.modules.PersistenceModule;
@@ -85,7 +84,6 @@ import io.ipoli.android.shop.fragments.CoinsStoreFragment;
         modules = {
                 AppModule.class,
                 BusModule.class,
-                JsonModule.class,
                 CouchbaseModule.class,
                 ObjectMapperModule.class,
                 LocalStorageModule.class,

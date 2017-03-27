@@ -18,8 +18,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -31,8 +34,8 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.ui.formatters.ReminderTimeFormatter;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
@@ -46,9 +49,6 @@ import static io.ipoli.android.Constants.REMINDER_PREDEFINED_MINUTES;
 public class EditReminderFragment extends DialogFragment {
     private static final String TAG = "edit-reminder-dialog";
     private static final String REMINDER = "reminder";
-
-    @Inject
-    Gson gson;
 
     @BindView(R.id.reminder_message)
     TextInputEditText messageView;
@@ -75,6 +75,9 @@ public class EditReminderFragment extends DialogFragment {
 
     private EditMode editMode;
 
+    @Inject
+    ObjectMapper objectMapper;
+
     public interface OnReminderEditedListener {
         void onReminderEdited(Reminder reminder, EditMode editMode);
     }
@@ -87,7 +90,11 @@ public class EditReminderFragment extends DialogFragment {
         EditReminderFragment fragment = new EditReminderFragment();
         Bundle args = new Bundle();
         if (reminder != null) {
-            args.putString(REMINDER, new Gson().toJson(reminder));
+            try {
+                args.putString(REMINDER, new ObjectMapper().writeValueAsString(reminder));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Can't write Reminder as JSON", e);
+            }
         }
         fragment.setArguments(args);
         fragment.reminderCreatedListener = reminderCreatedListener;
@@ -101,7 +108,13 @@ public class EditReminderFragment extends DialogFragment {
         if (getArguments() != null) {
             String reminderJson = getArguments().getString(REMINDER);
             if (!TextUtils.isEmpty(reminderJson)) {
-                reminder = gson.fromJson(reminderJson, Reminder.class);
+                try {
+                    reminder = objectMapper.readValue(reminderJson, new TypeReference<Reminder>() {
+
+                    });
+                } catch (IOException e) {
+                    throw new RuntimeException("Can't convert JSON to Reminder " + reminderJson, e);
+                }
                 editMode = EditMode.EDIT;
             } else {
                 editMode = EditMode.CREATE;
