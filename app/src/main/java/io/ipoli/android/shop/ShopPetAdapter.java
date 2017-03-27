@@ -13,9 +13,9 @@ import com.squareup.otto.Bus;
 import java.util.List;
 
 import io.ipoli.android.R;
-import io.ipoli.android.app.ui.IconButton;
 import io.ipoli.android.shop.events.BuyPetRequestEvent;
 import io.ipoli.android.shop.viewmodels.PetViewModel;
+import mehdi.sakout.fancybuttons.FancyButton;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -48,7 +48,7 @@ public class ShopPetAdapter extends PagerAdapter {
         TextView petDescription = (TextView) view.findViewById(R.id.pet_description);
         ImageView petPicture = (ImageView) view.findViewById(R.id.pet_picture);
         ImageView petStatePicture = (ImageView) view.findViewById(R.id.pet_picture_state);
-        IconButton petPrice = (IconButton) view.findViewById(R.id.pet_price);
+        FancyButton petPrice = (FancyButton) view.findViewById(R.id.pet_price);
 
         petDescription.setText(vm.getDescription());
 

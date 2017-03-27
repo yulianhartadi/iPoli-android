@@ -19,7 +19,9 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.otto.Bus;
 
 import org.joda.time.DateTimeZone;
@@ -27,6 +29,7 @@ import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.WeekDay;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,10 +50,11 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
-import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.app.ui.formatters.FlexibleTimesFormatter;
+import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.quest.data.Recurrence;
+import io.ipoli.android.reminder.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -88,7 +92,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     Bus eventBus;
     
     @Inject
-    Gson gson;
+    ObjectMapper objectMapper;
 
     @BindView(R.id.recurrence_flexibility)
     Switch flexibleRecurrence;
@@ -131,7 +135,11 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         fragment.recurrencePickerListener = listener;
         Bundle args = new Bundle();
         if (recurrence != null) {
-            args.putString(RECURRENCE, new Gson().toJson(recurrence));
+            try {
+                args.putString(RECURRENCE, new ObjectMapper().writeValueAsString(recurrence));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Can't write Recurrence as JSON", e);
+            }
         }
         fragment.setArguments(args);
         return fragment;
@@ -144,7 +152,13 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         Bundle args = getArguments();
         String recurrenceJson = args.getString(RECURRENCE);
         if (!TextUtils.isEmpty(recurrenceJson)) {
-            recurrence = gson.fromJson(recurrenceJson, Recurrence.class);
+            try {
+                recurrence = objectMapper.readValue(recurrenceJson, new TypeReference<Reminder>() {
+
+                });
+            } catch (IOException e) {
+                throw new RuntimeException("Can't convert JSON to Recurrence " + recurrenceJson, e);
+            }
         } else {
             recurrence = Recurrence.create();
         }

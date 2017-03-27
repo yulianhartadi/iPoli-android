@@ -25,7 +25,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.gson.Gson;
 
 import org.json.JSONException;
 
@@ -70,9 +69,6 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @Inject
     Api api;
-
-    @Inject
-    Gson gson;
 
     @Inject
     Database database;

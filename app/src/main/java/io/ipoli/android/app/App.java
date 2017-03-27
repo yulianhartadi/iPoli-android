@@ -18,7 +18,8 @@ import android.widget.Toast;
 import com.amplitude.api.Amplitude;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.replicator.Replication;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -143,7 +144,7 @@ public class App extends MultiDexApplication {
     Bus eventBus;
 
     @Inject
-    Gson gson;
+    ObjectMapper objectMapper;
 
     @Inject
     LocalStorage localStorage;
@@ -265,7 +266,11 @@ public class App extends MultiDexApplication {
     private void listenForDailyQuestsChange() {
         questPersistenceService.listenForAllNonAllDayForDate(LocalDate.now(), quests -> {
             scheduleNextReminder();
-            localStorage.saveString(Constants.KEY_WIDGET_AGENDA_QUESTS, gson.toJson(quests));
+            try {
+                localStorage.saveString(Constants.KEY_WIDGET_AGENDA_QUESTS, objectMapper.writeValueAsString(quests));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Cant save quests for Widget", e);
+            }
             requestWidgetUpdate();
 
             if (quests.isEmpty()) {
@@ -347,7 +352,7 @@ public class App extends MultiDexApplication {
             Intent intent = new Intent(this, PickChallengeActivity.class);
             intent.putExtra(PickChallengeActivity.TITLE, getString(R.string.pick_challenge_to_start));
             startActivity(intent);
-        } else if(!hasPlayer()){
+        } else if (!hasPlayer()) {
             System.exit(0);
         }
     }
