@@ -75,6 +75,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     @JsonIgnore
     private String previousChallengeId;
 
+    @JsonIgnore
     private Map<String, QuestData> questsData;
 
     public RepeatingQuest() {
@@ -146,7 +147,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
                 getRecurrence().getDtendDate().getTime() >= toStartOfDayUTC(date).getTime();
     }
 
-
+    @JsonIgnore
     public int getStreak() {
         Recurrence recurrence = getRecurrence();
         List<QuestData> questsData = new ArrayList<>(getQuestsData().values());
@@ -158,7 +159,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         }
     }
 
-
+    @JsonIgnore
     public int getFrequency() {
         Recurrence recurrence = getRecurrence();
         if (recurrence.isFlexible()) {
@@ -178,6 +179,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         }
     }
 
+    @JsonIgnore
     private int getFixedStreak(List<QuestData> questsData) {
         int streak = 0;
         for (QuestData qd : questsData) {
@@ -198,7 +200,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return streak;
     }
 
-
+    @JsonIgnore
     private int getFlexibleStreak(Recurrence.RepeatType repeatType, List<QuestData> questsData) {
         int streak = 0;
         for (QuestData qd : questsData) {
@@ -231,7 +233,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return streak;
     }
 
-
+    @JsonIgnore
     public Date getNextScheduledDate(LocalDate currentDate) {
         Date nextDate = null;
         for (QuestData qd : getQuestsData().values()) {
@@ -371,7 +373,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.preferredStartTime = preferredStartTime;
     }
 
-
+    @JsonIgnore
     public void addScheduledPeriodEndDate(Date date) {
         getScheduledPeriodEndDates().put(String.valueOf(date.getTime()), true);
     }
@@ -393,6 +395,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return !getScheduledPeriodEndDates().containsKey(String.valueOf(periodEnd.getTime()));
     }
 
+    @JsonIgnore
     public List<Note> getTextNotes() {
         List<Note> textNotes = new ArrayList<>();
         for (Note note : getNotes()) {
@@ -413,6 +416,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         getNotes().removeAll(txtNotes);
     }
 
+    @JsonIgnore
     public List<PeriodHistory> getPeriodHistories(LocalDate currentDate) {
         List<PeriodHistory> result = new ArrayList<>();
         int frequency = getFrequency();
@@ -443,6 +447,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return result;
     }
 
+    @JsonIgnore
     public Map<String, QuestData> getQuestsData() {
         if (questsData == null) {
             questsData = new HashMap<>();
@@ -450,26 +455,30 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return questsData;
     }
 
+    @JsonIgnore
     public void setQuestsData(Map<String, QuestData> questsData) {
         this.questsData = questsData;
     }
 
 
+    @JsonIgnore
     public void addQuestData(String id, QuestData questData) {
         getQuestsData().put(id, questData);
     }
 
-
+    @JsonIgnore
     public String getPreviousChallengeId() {
         return previousChallengeId;
     }
 
 
+    @JsonIgnore
     public void setPreviousChallengeId(String previousChallengeId) {
         this.previousChallengeId = previousChallengeId;
     }
 
 
+    @JsonIgnore
     public int getTotalTimeSpent() {
         int timeSpent = 0;
         for (QuestData questData : getQuestsData().values()) {
@@ -481,6 +490,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
 
+    @JsonIgnore
     public boolean isScheduledForDate(LocalDate date) {
         for (String dateString : getScheduledPeriodEndDates().keySet()) {
             LocalDate periodEnd = new LocalDate(Long.valueOf(dateString));

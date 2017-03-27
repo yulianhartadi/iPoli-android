@@ -309,7 +309,7 @@ public class App extends MultiDexApplication {
         registerServices();
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
 
-        //test migration
+//        test migration
 //        if(StringUtils.isEmpty(playerId)) {
 //            playerId = "-KRiVjXZpn3xHtTMKHGj";
 //        }
