@@ -3,6 +3,7 @@ package io.ipoli.android.app.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -11,8 +12,14 @@ import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
 import com.squareup.otto.Bus;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -23,6 +30,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
+import io.ipoli.android.app.utils.Time;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -91,6 +99,18 @@ public class MigrationActivity extends BaseActivity {
                     if(documents.containsKey("quests")) {
                         List<Map<String, Object>> quests = documents.get("quests");
                         for (Map<String, Object> q : quests) {
+                            if(q.containsKey("scheduled") && q.containsKey("startMinute") && q.containsKey("reminders")) {
+                                List<Map<String, Object>> reminders = (List<Map<String, Object>>) q.get("reminders");
+                                for(Map<String, Object> reminder : reminders) {
+                                    if(reminder.containsKey("start")) {
+                                        continue;
+                                    }
+                                    Time startTime = Time.of((Integer) q.get("startMinute"));
+                                    Date questStartTime = new LocalDate(Long.valueOf((String) q.get("scheduled")), DateTimeZone.UTC).toDateTime(new LocalTime(startTime.getHours(), startTime.getMinutes())).toDate();
+                                    Long start = questStartTime.getTime() + TimeUnit.MINUTES.toMillis(Long.valueOf((String) reminder.get("minutesFromStart")));
+                                    reminder.put("start", Long.toString(start));
+                                }
+                            }
                             save(q);
                         }
                     }
