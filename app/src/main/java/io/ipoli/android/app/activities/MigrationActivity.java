@@ -3,7 +3,6 @@ package io.ipoli.android.app.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -30,6 +29,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
+import io.ipoli.android.app.events.PlayerMigratedEvent;
 import io.ipoli.android.app.utils.Time;
 
 /**
@@ -115,7 +115,9 @@ public class MigrationActivity extends BaseActivity {
                         }
                     }
 
-                    eventBus.post(new PlayerCreatedEvent((String) player.get("id")));
+                    String playerId = (String) player.get("id");
+                    eventBus.post(new PlayerCreatedEvent(playerId));
+                    eventBus.post(new PlayerMigratedEvent(firebasePlayerId, playerId));
                     startActivity(new Intent(MigrationActivity.this, MainActivity.class));
                     finish();
                     return true;

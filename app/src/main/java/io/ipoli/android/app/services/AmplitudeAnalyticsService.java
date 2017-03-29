@@ -18,6 +18,7 @@ import io.ipoli.android.app.events.InviteFriendsEvent;
 import io.ipoli.android.app.events.InviteFriendsCanceledEvent;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
+import io.ipoli.android.app.events.PlayerMigratedEvent;
 import io.ipoli.android.app.events.QuestShareProviderPickedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.StartAppWithNoInternetEvent;
@@ -857,6 +858,13 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
         log("sleep_hours_changed", EventParams.create()
                 .add("start", e.startTime.toString())
                 .add("end", e.endTime.toString()));
+    }
+
+    @Subscribe
+    public void onPlayerMigrated(PlayerMigratedEvent e) {
+        log("player_migrated", EventParams.create()
+                .add("firebase_id", e.firebasePlayerId)
+                .add("couchbase_id", e.playerId));
     }
 
     @Subscribe

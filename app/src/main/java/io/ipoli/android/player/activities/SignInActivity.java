@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.widget.Toast;
 
 import com.couchbase.lite.Database;
 import com.couchbase.lite.replicator.Replication;
@@ -54,6 +55,7 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.Player;
+import io.ipoli.android.player.SignInException;
 import io.ipoli.android.player.events.PlayerUpdatedEvent;
 import io.ipoli.android.player.events.StartReplicationEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
@@ -183,7 +185,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     public void onGuestLogin(View v) {
         createLoadingDialog();
         createPlayer();
-        finish();
+        onFinish();
     }
 
     public void getUserDetailsFromFB(AccessToken accessToken) {
@@ -211,6 +213,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             GoogleSignInAccount account = result.getSignInAccount();
             String idToken = account.getIdToken();
             if (idToken == null) {
+                showErrorMessage(new SignInException("Google id token is null"));
                 return;
             }
             login(new AuthProvider(account.getId(), AuthProvider.Provider.GOOGLE), idToken, account.getEmail());
@@ -235,58 +238,67 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                 if (shouldCreatePlayer) {
                     createPlayer(playerId, authProvider, email);
                 } else if (isNew) {
-                    Player player = getPlayer();
-                    player.setCurrentAuthProvider(authProvider);
-                    List<AuthProvider> authProviders = new ArrayList<>();
-                    authProviders.add(authProvider);
-                    player.setAuthProviders(authProviders);
-                    playerPersistenceService.save(player);
+                    updatePlayerWithAuthProvider(authProvider);
                 }
                 if (!isNew) {
-                    //stop replication
-                    List<Replication> replications = database.getAllReplications();
-                    for (Replication replication : replications) {
-                        replication.stop();
-                        replication.clearAuthenticationStores();
-                    }
-                    //clean DB
-                    playerPersistenceService.deletePlayer();
+                    pullPlayerDocs(cookies, playerId);
 
-                    // single pull for shouldPullPlayerData
-                    URL syncURL = null;
-                    try {
-                        syncURL = new URL(ApiConstants.IPOLI_SYNC_URL);
-                    } catch (MalformedURLException e1) {
-                        e1.printStackTrace();
-                    }
-                    Replication pull = database.createPullReplication(syncURL);
-                    for (Cookie cookie : cookies) {
-                        pull.setCookie(cookie.name(), cookie.value(), cookie.path(),
-                                new Date(cookie.expiresAt()), cookie.secure(), cookie.httpOnly());
-                    }
-                    pull.setContinuous(false);
-                    List<String> channels = new ArrayList<>();
-                    channels.add(playerId);
-                    pull.setChannels(channels);
-                    pull.addChangeListener(event -> {
-                        if (event.getStatus() == Replication.ReplicationStatus.REPLICATION_STOPPED) {
-                            eventBus.post(new PlayerUpdatedEvent(playerId));
-                            eventBus.post(new StartReplicationEvent(cookies));
-                            finish();
-                        }
-                    });
-                    pull.start();
                 } else {
                     eventBus.post(new StartReplicationEvent(cookies));
-                    finish();
+                    onFinish();
                 }
             }
 
             @Override
             public void onError(Exception e) {
-                eventBus.post(new AppErrorEvent(e));
+                showErrorMessage(e);
             }
         });
+    }
+
+    private void pullPlayerDocs(List<Cookie> cookies, String playerId) {
+        //stop replication
+        List<Replication> replications = database.getAllReplications();
+        for (Replication replication : replications) {
+            replication.stop();
+            replication.clearAuthenticationStores();
+        }
+        //clean DB
+        playerPersistenceService.deletePlayer();
+
+        // single pull for shouldPullPlayerData
+        URL syncURL = null;
+        try {
+            syncURL = new URL(ApiConstants.IPOLI_SYNC_URL);
+        } catch (MalformedURLException e1) {
+            e1.printStackTrace();
+        }
+        Replication pull = database.createPullReplication(syncURL);
+        for (Cookie cookie : cookies) {
+            pull.setCookie(cookie.name(), cookie.value(), cookie.path(),
+                    new Date(cookie.expiresAt()), cookie.secure(), cookie.httpOnly());
+        }
+        pull.setContinuous(false);
+        List<String> channels = new ArrayList<>();
+        channels.add(playerId);
+        pull.setChannels(channels);
+        pull.addChangeListener(event -> {
+            if (event.getStatus() == Replication.ReplicationStatus.REPLICATION_STOPPED) {
+                eventBus.post(new PlayerUpdatedEvent(playerId));
+                eventBus.post(new StartReplicationEvent(cookies));
+                onFinish();
+            }
+        });
+        pull.start();
+    }
+
+    private void updatePlayerWithAuthProvider(AuthProvider authProvider) {
+        Player player = getPlayer();
+        player.setCurrentAuthProvider(authProvider);
+        List<AuthProvider> authProviders = new ArrayList<>();
+        authProviders.add(authProvider);
+        player.setAuthProviders(authProviders);
+        playerPersistenceService.save(player);
     }
 
     private void createPlayer() {
@@ -312,7 +324,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        showErrorMessage(new SignInException("Google connection failed: " + connectionResult.getErrorMessage()));
     }
 
     @Override
@@ -322,15 +334,28 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @Override
     public void onConnectionSuspended(int i) {
+        showErrorMessage(new SignInException("Google connection suspended " + i));
 
     }
 
-    @Override
-    public void finish() {
-        if(dialog != null) {
+    private void showErrorMessage(Exception e) {
+        eventBus.post(new AppErrorEvent(e));
+        runOnUiThread(() -> {
+            closeDialog();
+            Toast.makeText(this, R.string.something_went_wrong, Toast.LENGTH_LONG).show();
+        });
+    }
+
+    private void closeDialog() {
+        if (dialog != null) {
             dialog.dismiss();
+            dialog = null;
         }
+    }
+
+    private void onFinish() {
+        closeDialog();
         eventBus.post(new FinishSignInActivityEvent(isNewPlayer));
-        super.finish();
+        finish();
     }
 }
