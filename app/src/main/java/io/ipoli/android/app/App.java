@@ -315,9 +315,9 @@ public class App extends MultiDexApplication {
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
 
 //        test migration
-//        if(StringUtils.isEmpty(playerId)) {
-//            playerId = "-KRiVjXZpn3xHtTMKHGj";
-//        }
+        if(StringUtils.isEmpty(playerId)) {
+            playerId = "-KRiVjXZpn3xHtTMKHGj";
+        }
 
         int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
         if (hasPlayer() && schemaVersion != Constants.SCHEMA_VERSION) {
@@ -466,9 +466,9 @@ public class App extends MultiDexApplication {
         };
         AuthProvider.Provider authProvider = player.getCurrentAuthProvider().getProviderType();
         if (authProvider == AuthProvider.Provider.GOOGLE) {
-            new GoogleAuthService().getIdToken(this, idToken -> listener.onAccessTokenReceived(idToken));
+            new GoogleAuthService(eventBus).getIdToken(this, idToken -> listener.onAccessTokenReceived(idToken));
         } else if (authProvider == AuthProvider.Provider.FACEBOOK) {
-            listener.onAccessTokenReceived(new FacebookAuthService().getAccessToken());
+            listener.onAccessTokenReceived(new FacebookAuthService(eventBus).getAccessToken());
         }
     }
 
