@@ -1,9 +1,10 @@
 package io.ipoli.android.app.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
@@ -16,10 +17,12 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.events.AppErrorEvent;
+import io.ipoli.android.app.events.PlayerCreatedEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -57,23 +60,43 @@ public class MigrationActivity extends BaseActivity {
             @Override
             public void onSuccess(Map<String, List<Map<String, Object>>> documents) {
                 database.runInTransaction(() -> {
+                    if (!documents.containsKey("player")) {
+                        Toast.makeText(MigrationActivity.this, R.string.something_went_wrong, Toast.LENGTH_LONG).show();
+                        finish();
+                    }
                     Map<String, Object> player = documents.get("player").get(0);
-                    Document document = database.createDocument();
-                    String playerId = document.getId();
-                    player.put("owner", playerId);
-                    Log.d("AAAAA players Id", playerId);
-                    try {
-                        document.putProperties(player);
-                    } catch (CouchbaseLiteException e) {
-                        e.printStackTrace();
+                    save(player);
+
+                    if (documents.containsKey("rewards")) {
+                        List<Map<String, Object>> rewards = documents.get("rewards");
+                        for (Map<String, Object> reward : rewards) {
+                            save(reward);
+                        }
                     }
-                    List<Map<String, Object>> rewards = documents.get("rewards");
-                    for(Map<String, Object> reward : rewards) {
-                        reward.put("owner", playerId);
-                        save(reward);
+
+                    if(documents.containsKey("challenges")) {
+                        List<Map<String, Object>> challenges = documents.get("challenges");
+                        for (Map<String, Object> challenge : challenges) {
+                            save(challenge);
+                        }
                     }
-//                    eventBus.post(new PlayerCreatedEvent(playerId));
-//                    startActivity(new Intent(MigrationActivity.this, MainActivity.class));
+
+                    if(documents.containsKey("repeating_quests")) {
+                        List<Map<String, Object>> repeatingQuests = documents.get("repeating_quests");
+                        for (Map<String, Object> rq : repeatingQuests) {
+                            save(rq);
+                        }
+                    }
+
+                    if(documents.containsKey("quests")) {
+                        List<Map<String, Object>> quests = documents.get("quests");
+                        for (Map<String, Object> q : quests) {
+                            save(q);
+                        }
+                    }
+
+                    eventBus.post(new PlayerCreatedEvent((String) player.get("id")));
+                    startActivity(new Intent(MigrationActivity.this, MainActivity.class));
                     finish();
                     return true;
                 });
@@ -93,7 +116,7 @@ public class MigrationActivity extends BaseActivity {
 
     private void save(Map<String, Object> obj) {
         try {
-            Document document = database.createDocument();
+            Document document = database.getDocument((String) obj.get("id"));
             document.putProperties(obj);
         } catch (CouchbaseLiteException e) {
             e.printStackTrace();

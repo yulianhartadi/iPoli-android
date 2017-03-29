@@ -64,7 +64,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     private List<Reminder> reminders;
     private List<SubQuest> subQuests;
-    private List<Long> reminderStartTimes;
     private Integer difficulty;
 
     private Long completedAt;
@@ -262,12 +261,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     public void setRepeatingQuestId(String repeatingQuestId) {
         this.repeatingQuestId = repeatingQuestId;
-    }
-
-
-    @JsonIgnore
-    public void addReminderStartTime(long startTime) {
-        getReminderStartTimes().add(startTime);
     }
 
     public Boolean isAllDay() {
@@ -602,17 +595,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @JsonIgnore
     public void removeSubQuest(SubQuest subQuest) {
         getSubQuests().remove(subQuest);
-    }
-
-    public List<Long> getReminderStartTimes() {
-        if (reminderStartTimes == null) {
-            reminderStartTimes = new ArrayList<>();
-        }
-        return reminderStartTimes;
-    }
-
-    public void setReminderStartTimes(List<Long> reminderStartTimes) {
-        this.reminderStartTimes = reminderStartTimes;
     }
 
     public Integer getTimesADay() {
