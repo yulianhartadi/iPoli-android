@@ -10,7 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -38,6 +37,7 @@ import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.shop.ShopActivity;
+import mehdi.sakout.fancybuttons.FancyButton;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -73,7 +73,7 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
     ProgressBar hp;
 
     @BindView(R.id.revive)
-    Button revive;
+    FancyButton revive;
 
     private Player player;
 
