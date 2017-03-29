@@ -452,7 +452,7 @@ public class App extends MultiDexApplication {
             if (StringUtils.isEmpty(accessToken)) {
                 return;
             }
-            api.createSession(player.getCurrentAuthProvider(), accessToken, player.getEmail(), new Api.SessionResponseListener() {
+            api.createSession(player.getCurrentAuthProvider(), accessToken, new Api.SessionResponseListener() {
                 @Override
                 public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
                     syncData(cookies);

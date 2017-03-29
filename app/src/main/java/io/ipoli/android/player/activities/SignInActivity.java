@@ -17,6 +17,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
+import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.Auth;
@@ -135,6 +136,8 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
+                        Profile profile = Profile.getCurrentProfile();
+//                        Log.d("AAA url: ", String.valueOf(profile.getProfilePictureUri(50, 50)));
                         getUserDetailsFromFB(loginResult.getAccessToken());
                     }
 
@@ -194,7 +197,17 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             try {
                 String id = object.getString("id");
                 String email = object.getString("email");
-                login(new AuthProvider(id, AuthProvider.Provider.FACEBOOK), accessToken.getToken(), email);
+                String firstName = object.getString("firstname");
+                String lastName = object.getString("lastname");
+                String username = firstName;
+                String picture = object.getJSONObject("picture").getJSONObject("data").getString("url");
+                AuthProvider authProvider = new AuthProvider(id, AuthProvider.Provider.FACEBOOK);
+                authProvider.setEmail(email);
+                authProvider.setFirstName(firstName);
+                authProvider.setLastName(lastName);
+                authProvider.setPicture(picture);
+                authProvider.setEmail(email);
+                login(authProvider, accessToken.getToken());
 
             } catch (JSONException e) {
                 showErrorMessage(e);
@@ -202,7 +215,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
         });
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "email,id");
+        parameters.putString("fields", "email,id,firstname,lastname,picture");
         req.setParameters(parameters);
         req.executeAsync();
     }
@@ -216,7 +229,13 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                 showErrorMessage(new SignInException("Google id token is null"));
                 return;
             }
-            login(new AuthProvider(account.getId(), AuthProvider.Provider.GOOGLE), idToken, account.getEmail());
+            AuthProvider authProvider = new AuthProvider(account.getId(), AuthProvider.Provider.GOOGLE);
+            authProvider.setFirstName(account.getGivenName());
+            authProvider.setLastName(account.getFamilyName());
+            authProvider.setEmail(account.getEmail());
+            authProvider.setUsername(account.getDisplayName());
+            authProvider.setPicture(account.getPhotoUrl().toString());
+            login(authProvider, idToken);
         }
     }
 
@@ -231,12 +250,12 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         }
     }
 
-    private void login(AuthProvider authProvider, String accessToken, String email) {
-        api.createSession(authProvider, accessToken, email, new Api.SessionResponseListener() {
+    private void login(AuthProvider authProvider, String accessToken) {
+        api.createSession(authProvider, accessToken, new Api.SessionResponseListener() {
             @Override
             public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
                 if (shouldCreatePlayer) {
-                    createPlayer(playerId, authProvider, email);
+                    createPlayer(playerId, authProvider);
                 } else if (isNew) {
                     updatePlayerWithAuthProvider(authProvider);
                 }
@@ -302,17 +321,16 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     }
 
     private void createPlayer() {
-        createPlayer(null, null, null);
+        createPlayer(null, null);
     }
 
-    private void createPlayer(String playerId, AuthProvider authProvider, String email) {
+    private void createPlayer(String playerId, AuthProvider authProvider) {
         Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR, Constants.DEFAULT_PET_BACKGROUND_IMAGE, Constants.DEFAULT_PET_HP);
         Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP),
                 Constants.DEFAULT_AVATAR_LEVEL,
                 Constants.DEFAULT_PLAYER_COINS,
                 Constants.DEFAULT_PLAYER_PICTURE,
                 DateFormat.is24HourFormat(this), pet);
-        player.setEmail(email);
         if (authProvider != null) {
             player.setCurrentAuthProvider(authProvider);
             player.getAuthProviders().add(authProvider);
@@ -341,12 +359,12 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     private void showErrorMessage(Exception e) {
         eventBus.post(new AppErrorEvent(e));
         runOnUiThread(() -> {
-            closeDialog();
+            closeLoadingDialog();
             Toast.makeText(this, R.string.something_went_wrong, Toast.LENGTH_LONG).show();
         });
     }
 
-    private void closeDialog() {
+    private void closeLoadingDialog() {
         if (dialog != null) {
             dialog.dismiss();
             dialog = null;
@@ -354,7 +372,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     }
 
     private void onFinish() {
-        closeDialog();
+        closeLoadingDialog();
         eventBus.post(new FinishSignInActivityEvent(isNewPlayer));
         finish();
     }

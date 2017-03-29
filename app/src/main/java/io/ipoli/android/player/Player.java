@@ -21,7 +21,6 @@ public class Player extends PersistedObject {
 
     public static final String TYPE = "player";
 
-    private String email;
     private Integer level;
     private String experience;
     private Long coins;
@@ -319,7 +318,7 @@ public class Player extends PersistedObject {
     }
 
     public List<AuthProvider> getAuthProviders() {
-        if(authProviders == null) {
+        if (authProviders == null) {
             authProviders = new ArrayList<>();
         }
         return authProviders;
@@ -334,11 +333,4 @@ public class Player extends PersistedObject {
         return currentAuthProvider != null;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }

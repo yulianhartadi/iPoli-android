@@ -1,7 +1,5 @@
 package io.ipoli.android.app.api;
 
-import android.util.Log;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -45,14 +43,14 @@ public class Api {
 
     }
 
-    public void createSession(AuthProvider authProvider, String accessToken, String email, SessionResponseListener responseListener) {
+    public void createSession(AuthProvider authProvider, String accessToken, SessionResponseListener responseListener) {
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
         Map<String, String> params = new HashMap<>();
         params.put("auth_provider", authProvider.getProvider());
         params.put("auth_id", authProvider.getId());
         params.put("access_token", accessToken);
-        params.put("email", email);
+        params.put("email", authProvider.getEmail());
         params.put("player_id", App.getPlayerId());
 
         JSONObject jsonObject = new JSONObject(params);

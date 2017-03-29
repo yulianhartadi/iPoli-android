@@ -14,6 +14,11 @@ public class AuthProvider {
 
     private String id;
     private String provider;
+    private String firstName;
+    private String lastName;
+    private String username;
+    private String email;
+    private String picture;
 
     public AuthProvider() {
     }
@@ -37,6 +42,46 @@ public class AuthProvider {
 
     public void setProvider(String provider) {
         this.provider = provider;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @JsonIgnore
