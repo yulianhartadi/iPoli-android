@@ -2,10 +2,12 @@ package io.ipoli.android.shop;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -49,6 +51,8 @@ public class ShopPetAdapter extends PagerAdapter {
         ImageView petPicture = (ImageView) view.findViewById(R.id.pet_picture);
         ImageView petStatePicture = (ImageView) view.findViewById(R.id.pet_picture_state);
         FancyButton petPrice = (FancyButton) view.findViewById(R.id.pet_price);
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) petPrice.getIconImageObject().getLayoutParams();
+        params.gravity = Gravity.CENTER_VERTICAL;
 
         petDescription.setText(vm.getDescription());
 
