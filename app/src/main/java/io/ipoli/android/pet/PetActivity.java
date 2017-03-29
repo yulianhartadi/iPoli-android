@@ -6,11 +6,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -161,6 +163,9 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
         pictureState.setImageDrawable(getDrawable(ResourceUtils.extractDrawableResource(this, pet.getPicture() + "_" + pet.getStateText())));
         xpBonus.setText("XP: +" + pet.getExperienceBonusPercentage() + "%");
         coinsBonus.setText("Coins: +" + pet.getCoinsBonusPercentage() + "%");
+
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) revive.getIconImageObject().getLayoutParams();
+        params.gravity = Gravity.CENTER_VERTICAL;
 
         if (pet.getState() == Pet.PetState.DEAD) {
             revive.setText(Constants.REVIVE_PET_COST + "");
