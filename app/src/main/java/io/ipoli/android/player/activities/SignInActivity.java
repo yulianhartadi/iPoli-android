@@ -144,7 +144,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
                     @Override
                     public void onError(FacebookException exception) {
-                        eventBus.post(new AppErrorEvent(exception));
+                        showErrorMessage(exception);
                     }
                 });
 
@@ -197,7 +197,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                 login(new AuthProvider(id, AuthProvider.Provider.FACEBOOK), accessToken.getToken(), email);
 
             } catch (JSONException e) {
-                eventBus.post(new AppErrorEvent(e));
+                showErrorMessage(e);
             }
 
         });
