@@ -49,6 +49,7 @@ import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.FinishSignInActivityEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
+import io.ipoli.android.app.ui.dialogs.LoadingDialog;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
@@ -92,6 +93,8 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     Toolbar toolbar;
 
     private boolean isNewPlayer;
+
+    private LoadingDialog dialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -161,17 +164,24 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @OnClick(R.id.facebook_login)
     public void onFacebookSignIn(View v) {
+        createLoadingDialog();
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email"));
+    }
+
+    protected void createLoadingDialog() {
+        dialog = LoadingDialog.show(this, "Letting you in", "I hope that this will be quick and painless");
     }
 
     @OnClick(R.id.google_sign_in)
     public void onGoogleSignIn(View v) {
+        createLoadingDialog();
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
         startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
     }
 
     @OnClick(R.id.guest_login)
     public void onGuestLogin(View v) {
+        createLoadingDialog();
         createPlayer();
         finish();
     }
@@ -317,6 +327,9 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @Override
     public void finish() {
+        if(dialog != null) {
+            dialog.dismiss();
+        }
         eventBus.post(new FinishSignInActivityEvent(isNewPlayer));
         super.finish();
     }
