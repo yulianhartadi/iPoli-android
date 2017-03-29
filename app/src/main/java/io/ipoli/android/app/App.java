@@ -315,9 +315,9 @@ public class App extends MultiDexApplication {
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
 
 //        test migration
-        if(StringUtils.isEmpty(playerId)) {
-            playerId = "-KRiVjXZpn3xHtTMKHGj";
-        }
+//        if(StringUtils.isEmpty(playerId)) {
+//            playerId = "-KRiVjXZpn3xHtTMKHGj";
+//        }
 
         int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
         if (hasPlayer() && schemaVersion != Constants.SCHEMA_VERSION) {
