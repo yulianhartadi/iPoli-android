@@ -48,8 +48,10 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.events.AppErrorEvent;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FinishSignInActivityEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.ui.dialogs.LoadingDialog;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
@@ -57,6 +59,7 @@ import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.SignInException;
+import io.ipoli.android.player.events.PlayerSignedInEvent;
 import io.ipoli.android.player.events.PlayerUpdatedEvent;
 import io.ipoli.android.player.events.StartReplicationEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
@@ -117,6 +120,8 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         initGoogleSingIn();
         initFBLogin();
         initGuestLogin();
+
+        eventBus.post(new ScreenShownEvent(EventSource.SIGN_IN));
     }
 
     @Override
@@ -198,6 +203,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     public void onGuestLogin(View v) {
         createLoadingDialog();
         createPlayer();
+        eventBus.post(new PlayerSignedInEvent("GUEST", true));
         onFinish();
     }
 
@@ -265,6 +271,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         api.createSession(authProvider, accessToken, new Api.SessionResponseListener() {
             @Override
             public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
+                eventBus.post(new PlayerSignedInEvent(authProvider.getProvider(), isNew));
                 if (shouldCreatePlayer) {
                     createPlayer(playerId, authProvider);
                 } else if (isNew) {

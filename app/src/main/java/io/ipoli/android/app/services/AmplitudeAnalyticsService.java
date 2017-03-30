@@ -76,6 +76,7 @@ import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
+import io.ipoli.android.player.events.PlayerSignedInEvent;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.AgendaWidgetDisabledEvent;
@@ -865,6 +866,13 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
         log("player_migrated", EventParams.create()
                 .add("firebase_id", e.firebasePlayerId)
                 .add("couchbase_id", e.playerId));
+    }
+
+    @Subscribe
+    public void onPlayerSignedIn(PlayerSignedInEvent e) {
+        log("player_signed_in", EventParams.create()
+                .add("provider", e.provider)
+                .add("is_new", String.valueOf(e.isNew)));
     }
 
     @Subscribe
