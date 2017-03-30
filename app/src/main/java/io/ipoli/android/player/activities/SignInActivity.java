@@ -29,8 +29,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.json.JSONException;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -47,6 +45,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.api.Api;
+import io.ipoli.android.app.api.UrlProvider;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.FinishSignInActivityEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
@@ -78,6 +77,9 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @Inject
     PlayerPersistenceService playerPersistenceService;
+
+    @Inject
+    UrlProvider urlProvider;
 
     @BindView(R.id.google_sign_in)
     SignInButton googleSignInButton;
@@ -267,13 +269,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         playerPersistenceService.deletePlayer();
 
         // single pull for shouldPullPlayerData
-        URL syncURL = null;
-        try {
-            syncURL = new URL(ApiConstants.IPOLI_SYNC_URL);
-        } catch (MalformedURLException e1) {
-            e1.printStackTrace();
-        }
-        Replication pull = database.createPullReplication(syncURL);
+        Replication pull = database.createPullReplication(urlProvider.sync());
         for (Cookie cookie : cookies) {
             pull.setCookie(cookie.name(), cookie.value(), cookie.path(),
                     new Date(cookie.expiresAt()), cookie.secure(), cookie.httpOnly());
@@ -335,7 +331,6 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     @Override
     public void onConnectionSuspended(int i) {
         showErrorMessage(new SignInException("Google connection suspended " + i));
-
     }
 
     private void showErrorMessage(Exception e) {
