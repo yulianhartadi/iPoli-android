@@ -49,6 +49,8 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.api.UrlProvider;
+import io.ipoli.android.app.auth.FacebookAuthService;
+import io.ipoli.android.app.auth.GoogleAuthService;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.DateChangedEvent;
