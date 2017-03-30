@@ -1,8 +1,5 @@
 package io.ipoli.android.reward.persistence;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import com.couchbase.lite.Database;
 import com.couchbase.lite.LiveQuery;
 import com.couchbase.lite.QueryEnumerator;
@@ -12,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 import io.ipoli.android.reward.data.Reward;
@@ -34,7 +32,7 @@ public class CouchbaseRewardPersistenceService extends BaseCouchbasePersistenceS
                 if (Reward.TYPE.equals(type)) {
                     emitter.emit(document.get("_id"), document);
                 }
-            }, "1.0");
+            }, Constants.DEFAULT_VIEW_VERSION);
         }
 
     }
@@ -54,7 +52,7 @@ public class CouchbaseRewardPersistenceService extends BaseCouchbasePersistenceS
                 while (enumerator.hasNext()) {
                     result.add(toObject(enumerator.next().getValue()));
                 }
-                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
+                postResult(listener, result);
             }
         };
         startLiveQuery(query, changeListener);

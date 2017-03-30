@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.data.Challenge;
@@ -52,7 +53,7 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
                 if (Challenge.TYPE.equals(type)) {
                     emitter.emit(document.get("_id"), document);
                 }
-            }, "1.0");
+            }, Constants.DEFAULT_VIEW_VERSION);
         }
 
         challengesWithAllQuestsView = database.getView("challenges/withAllQuests");
@@ -82,7 +83,7 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
                     }
                 }
                 return new Pair<>(challenge, new Pair<>(repeatingQuests, quests));
-            }, "1.0");
+            }, Constants.DEFAULT_VIEW_VERSION);
         }
 
         allQuestsAndRepeatingQuestsForChallengeView = database.getView("challenges/allQuestsAndRepeatingQuests");
@@ -93,7 +94,7 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
                         (RepeatingQuest.TYPE.equals(type) && !document.containsKey("completedAt"))) {
                     emitter.emit(document.get("_id"), document);
                 }
-            }, "1.0");
+            }, Constants.DEFAULT_VIEW_VERSION);
         }
     }
 
@@ -143,7 +144,7 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
                 while (enumerator.hasNext()) {
                     result.add(toObject(enumerator.next().getValue()));
                 }
-                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
+                postResult(listener, result);
             }
         };
         startLiveQuery(query, changeListener);
@@ -233,7 +234,7 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
                         quests.add(toObject(value, Quest.class));
                     }
                 }
-                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(new Pair<>(repeatingQuests, quests)));
+                postResult(listener, new Pair<>(repeatingQuests, quests));
             }
         };
         startLiveQuery(query, changeListener);

@@ -1,5 +1,8 @@
 package io.ipoli.android.app.persistence;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
@@ -25,8 +28,8 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
 
     protected final Database database;
     protected final ObjectMapper objectMapper;
-    protected final Map<LiveQuery, LiveQuery.ChangeListener> queryToListener;
-    protected final Map<Document, Document.ChangeListener> documentToListener;
+    private final Map<LiveQuery, LiveQuery.ChangeListener> queryToListener;
+    private final Map<Document, Document.ChangeListener> documentToListener;
 
     public BaseCouchbasePersistenceService(Database database, ObjectMapper objectMapper) {
         this.database = database;
@@ -103,7 +106,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
         return toObject(data, getModelClass());
     }
 
-    protected <T> T toObject(Object data, Class<T> clazz) {
+    protected <E> E toObject(Object data, Class<E> clazz) {
         if (data == null) {
             return null;
         }
@@ -146,5 +149,9 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
         doc.addChangeListener(changeListener);
         documentToListener.put(doc, changeListener);
         listener.onDataChanged(toObject(doc.getProperties()));
+    }
+
+    protected <E> void postResult(OnDataChangedListener<E> listener, E result) {
+        new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
     }
 }
