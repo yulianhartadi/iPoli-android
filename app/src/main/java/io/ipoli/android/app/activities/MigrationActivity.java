@@ -64,7 +64,7 @@ public class MigrationActivity extends BaseActivity {
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         getWindow().getDecorView().setSystemUiVisibility(flags);
 
-        if(!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             Toast.makeText(this, R.string.migration_no_internet, Toast.LENGTH_LONG).show();
             finish();
             return;

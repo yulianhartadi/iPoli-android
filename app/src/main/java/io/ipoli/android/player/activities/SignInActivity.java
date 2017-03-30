@@ -167,7 +167,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @OnClick(R.id.facebook_login)
     public void onFacebookSignIn(View v) {
-        if(!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             showNoInternetMessage();
             return;
         }
@@ -185,7 +185,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @OnClick(R.id.google_sign_in)
     public void onGoogleSignIn(View v) {
-        if(!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             showNoInternetMessage();
             return;
         }
