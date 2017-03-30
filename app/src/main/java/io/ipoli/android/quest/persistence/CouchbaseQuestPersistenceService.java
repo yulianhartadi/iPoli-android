@@ -1,7 +1,5 @@
 package io.ipoli.android.quest.persistence;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Pair;
 
 import com.couchbase.lite.CouchbaseLiteException;
@@ -12,6 +10,7 @@ import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.couchbase.lite.View;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
 
@@ -21,6 +20,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestReminder;
@@ -42,8 +42,8 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     private final View uncompletedQuestsForRepeatingQuestView;
     private final View completedDayQuestsView;
 
-    public CouchbaseQuestPersistenceService(Database database, ObjectMapper objectMapper) {
-        super(database, objectMapper);
+    public CouchbaseQuestPersistenceService(Database database, ObjectMapper objectMapper, Bus eventBus) {
+        super(database, objectMapper, eventBus);
 
         startedQuestsView = database.getView("quests/started");
         if (startedQuestsView.getMap() == null) {
@@ -52,7 +52,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 if (Quest.TYPE.equals(type) && document.containsKey("actualStart") && !document.containsKey("completedAt")) {
                     emitter.emit(document.get("_id"), document);
                 }
-            }, "1.0");
+            }, Constants.DEFAULT_VIEW_VERSION);
         }
 
         dayQuestsView = database.getView("quests/byDay");
@@ -69,7 +69,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 }
                 LocalDate key = new LocalDate((long) keys.get(0));
                 return new Pair<>(key, quests);
-            }, "1.0");
+            }, Constants.DEFAULT_VIEW_VERSION);
         }
 
         completedDayQuestsView = database.getView("quests/byCompletedDay");
@@ -79,7 +79,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 if (Quest.TYPE.equals(type) && document.containsKey("completedAt")) {
                     emitter.emit(Long.valueOf(document.get("completedAt").toString()), document);
                 }
-            }, "1.0");
+            }, Constants.DEFAULT_VIEW_VERSION);
         }
 
         inboxQuestsView = database.getView("quests/inbox");
@@ -89,7 +89,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 if (Quest.TYPE.equals(type) && !document.containsKey("scheduled")) {
                     emitter.emit(document.get("_id"), document);
                 }
-            }, "1.0");
+            }, Constants.DEFAULT_VIEW_VERSION);
         }
 
         questRemindersView = database.getView("quests/reminders");
@@ -118,7 +118,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 }
                 Long key = Long.valueOf(keys.get(0).toString());
                 return new Pair<>(key, questReminders);
-            }, "1.0");
+            }, Constants.DEFAULT_VIEW_VERSION);
         }
 
         uncompletedQuestsForRepeatingQuestView = database.getView("quests/uncompletedForRepeatingQuest");
@@ -134,7 +134,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                     quests.add(toObject(v));
                 }
                 return quests;
-            }, "1.0");
+            }, Constants.DEFAULT_VIEW_VERSION);
         }
     }
 
@@ -157,12 +157,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
         LiveQuery.ChangeListener changeListener = event -> {
             if (event.getSource().equals(query)) {
-                List<Quest> result = new ArrayList<>();
-                QueryEnumerator enumerator = event.getRows();
-                while (enumerator.hasNext()) {
-                    result.add(toObject(enumerator.next().getValue()));
-                }
-                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
+                postResult(listener, getResult(event));
             }
         };
 
@@ -185,7 +180,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                     Pair<LocalDate, List<Quest>> value = (Pair<LocalDate, List<Quest>>) queryRow.getValue();
                     result.put(value.first, value.second);
                 }
-                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
+                postResult(listener, result);
             }
         };
 
@@ -197,33 +192,12 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
         Query query = completedDayQuestsView.createQuery();
         query.setStartKey(toStartOfDayUTC(startDate).getTime());
         query.setEndKey(toStartOfDayUTC(endDate).getTime());
-        List<Quest> result = new ArrayList<>();
-        try {
-            QueryEnumerator enumerator = query.run();
-            while (enumerator.hasNext()) {
-                QueryRow row = enumerator.next();
-                result.add(toObject(row.getValue()));
-            }
-            listener.onDataChanged(result);
-        } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
-        }
+        runQuery(query, listener);
     }
 
     @Override
     public void findAllPlannedAndStarted(OnDataChangedListener<List<Quest>> listener) {
-        Query query = startedQuestsView.createQuery();
-        List<Quest> result = new ArrayList<>();
-        try {
-            QueryEnumerator enumerator = query.run();
-            while (enumerator.hasNext()) {
-                QueryRow row = enumerator.next();
-                result.add(toObject(row.getValue()));
-            }
-            listener.onDataChanged(result);
-        } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
-        }
+        runQuery(startedQuestsView, listener);
     }
 
     @Override
@@ -259,14 +233,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
         LiveQuery.ChangeListener changeListener = event -> {
             if (event.getSource().equals(query)) {
-                List<Quest> result = new ArrayList<>();
-                QueryEnumerator enumerator = event.getRows();
-                while (enumerator.hasNext()) {
-                    QueryRow queryRow = enumerator.next();
-                    result.add(toObject(queryRow.getValue()));
-                }
-                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
-
+                postResult(listener, getResult(event));
             }
         };
 
@@ -275,22 +242,12 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
     @Override
     public void findAllNonAllDayForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
-        try {
-            Query query = dayQuestsView.createQuery();
-            query.setMapOnly(true);
-            long date = toStartOfDayUTC(currentDate).getTime();
-            query.setStartKey(date);
-            query.setEndKey(date);
-            QueryEnumerator enumerator = query.run();
-            List<Quest> result = new ArrayList<>();
-            while (enumerator.hasNext()) {
-                QueryRow row = enumerator.next();
-                result.add(toObject(row.getValue()));
-            }
-            listener.onDataChanged(result);
-        } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
-        }
+        Query query = dayQuestsView.createQuery();
+        query.setMapOnly(true);
+        long date = toStartOfDayUTC(currentDate).getTime();
+        query.setStartKey(date);
+        query.setEndKey(date);
+        runQuery(query, listener);
     }
 
     @Override
@@ -312,7 +269,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                         result.add(quest);
                     }
                 }
-                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
+                postResult(listener, result);
 
             }
         };
@@ -339,8 +296,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                         result.add(quest);
                     }
                 }
-                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
-
+                postResult(listener, result);
             }
         };
 
@@ -455,7 +411,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                         result.add(quest);
                     }
                 }
-                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
+                postResult(listener, result);
             }
         };
 

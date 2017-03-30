@@ -1,7 +1,5 @@
 package io.ipoli.android.quest.persistence;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Pair;
 
 import com.couchbase.lite.CouchbaseLiteException;
@@ -12,6 +10,7 @@ import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.couchbase.lite.View;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
 
@@ -20,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestData;
@@ -36,8 +36,8 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
     private final QuestPersistenceService questPersistenceService;
     private final View repeatingQuestWithQuestsView;
 
-    public CouchbaseRepeatingQuestPersistenceService(Database database, ObjectMapper objectMapper, QuestPersistenceService questPersistenceService) {
-        super(database, objectMapper);
+    public CouchbaseRepeatingQuestPersistenceService(Database database, ObjectMapper objectMapper, QuestPersistenceService questPersistenceService, Bus eventBus) {
+        super(database, objectMapper, eventBus);
 
         this.questPersistenceService = questPersistenceService;
 
@@ -48,7 +48,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
                 if (RepeatingQuest.TYPE.equals(type)) {
                     emitter.emit(document.get("_id"), document);
                 }
-            }, "1.0");
+            }, Constants.DEFAULT_VIEW_VERSION);
         }
 
         repeatingQuestWithQuestsView = database.getView("repeatingQuests/withQuests");
@@ -73,7 +73,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
                 }
                 return new Pair<>(repeatingQuest, quests);
-            }, "1.0");
+            }, Constants.DEFAULT_VIEW_VERSION);
         }
     }
 
@@ -96,7 +96,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
                     }
                 }
                 final RepeatingQuest result = rq;
-                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
+                postResult(listener, result);
             }
         };
         startLiveQuery(query, changeListener);
@@ -138,7 +138,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
                     }
                     result.add(rq);
                 }
-                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
+                postResult(listener, result);
             }
         };
         startLiveQuery(query, changeListener);
@@ -157,7 +157,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
                         result.add(rq);
                     }
                 }
-                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
+                postResult(listener, result);
             }
         };
         startLiveQuery(query, changeListener);

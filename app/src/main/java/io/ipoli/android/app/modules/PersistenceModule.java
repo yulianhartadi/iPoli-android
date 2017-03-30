@@ -2,6 +2,7 @@ package io.ipoli.android.app.modules;
 
 import com.couchbase.lite.Database;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.otto.Bus;
 
 import dagger.Module;
 import dagger.Provides;
@@ -24,27 +25,27 @@ import io.ipoli.android.reward.persistence.RewardPersistenceService;
 public class PersistenceModule {
 
     @Provides
-    public QuestPersistenceService provideQuestPersistenceService(Database database, ObjectMapper objectMapper) {
-        return new CouchbaseQuestPersistenceService(database, objectMapper);
+    public QuestPersistenceService provideQuestPersistenceService(Database database, ObjectMapper objectMapper, Bus eventBus) {
+        return new CouchbaseQuestPersistenceService(database, objectMapper, eventBus);
     }
 
     @Provides
-    public RepeatingQuestPersistenceService provideRepeatingQuestPersistenceService(Database database, ObjectMapper objectMapper, QuestPersistenceService questPersistenceService) {
-        return new CouchbaseRepeatingQuestPersistenceService(database, objectMapper, questPersistenceService);
+    public RepeatingQuestPersistenceService provideRepeatingQuestPersistenceService(Database database, ObjectMapper objectMapper, QuestPersistenceService questPersistenceService, Bus eventBus) {
+        return new CouchbaseRepeatingQuestPersistenceService(database, objectMapper, questPersistenceService, eventBus);
     }
 
     @Provides
-    public PlayerPersistenceService providePlayerPersistenceService(Database database, ObjectMapper objectMapper) {
-        return new CouchbasePlayerPersistenceService(database, objectMapper);
+    public PlayerPersistenceService providePlayerPersistenceService(Database database, ObjectMapper objectMapper, Bus eventBus) {
+        return new CouchbasePlayerPersistenceService(database, objectMapper, eventBus);
     }
 
     @Provides
-    public ChallengePersistenceService provideChallengePersistenceService(Database database, ObjectMapper objectMapper, QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
-        return new CouchbaseChallengePersistenceService(database, objectMapper, questPersistenceService, repeatingQuestPersistenceService);
+    public ChallengePersistenceService provideChallengePersistenceService(Database database, ObjectMapper objectMapper, QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService, Bus eventBus) {
+        return new CouchbaseChallengePersistenceService(database, objectMapper, questPersistenceService, repeatingQuestPersistenceService, eventBus);
     }
 
     @Provides
-    public RewardPersistenceService provideRewardPersistenceService(Database database, ObjectMapper objectMapper) {
-        return new CouchbaseRewardPersistenceService(database, objectMapper);
+    public RewardPersistenceService provideRewardPersistenceService(Database database, ObjectMapper objectMapper, Bus eventBus) {
+        return new CouchbaseRewardPersistenceService(database, objectMapper, eventBus);
     }
 }

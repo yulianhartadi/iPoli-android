@@ -81,7 +81,6 @@ public interface Constants {
     long DEFAULT_PLAYER_COINS = 10;
     String DEFAULT_PLAYER_PICTURE = "avatar_12";
     List<TimeOfDay> DEFAULT_PLAYER_PRODUCTIVE_TIME = new ArrayList<>(Collections.singletonList(TimeOfDay.MORNING));
-    Set<String> DEFAULT_PLAYER_PRODUCTIVE_TIME_NAMES = new HashSet<>(Collections.singletonList(TimeOfDay.MORNING.name()));
     int DEFAULT_PLAYER_WORK_START_MINUTE = 10 * 60;
     int DEFAULT_PLAYER_WORK_END_MINUTE = 18 * 60;
     int DEFAULT_PLAYER_SLEEP_START_MINUTE = 0;
@@ -153,6 +152,7 @@ public interface Constants {
 
     String KEY_WIDGET_AGENDA_QUESTS = "widget_agenda_quests";
     int API_READ_TIMEOUT_SECONDS = 30;
+    String DEFAULT_VIEW_VERSION = "1.0";
 
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);
