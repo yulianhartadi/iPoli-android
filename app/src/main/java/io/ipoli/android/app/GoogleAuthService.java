@@ -11,8 +11,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
+import com.squareup.otto.Bus;
 
 import io.ipoli.android.ApiConstants;
+import io.ipoli.android.app.events.AppErrorEvent;
+import io.ipoli.android.player.SignInException;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -22,8 +25,10 @@ import io.ipoli.android.ApiConstants;
 public class GoogleAuthService implements GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
     private final GoogleSignInOptions gso;
+    private final Bus eventBus;
 
-    public GoogleAuthService() {
+    public GoogleAuthService(Bus eventBus) {
+        this.eventBus = eventBus;
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(ApiConstants.WEB_SERVER_GOOGLE_PLUS_CLIENT_ID)
                 .requestEmail()
@@ -40,22 +45,26 @@ public class GoogleAuthService implements GoogleApiClient.OnConnectionFailedList
 
         OptionalPendingResult<GoogleSignInResult> pendingResult = Auth.GoogleSignInApi.silentSignIn(googleApiClient);
         pendingResult.setResultCallback(googleSignInResult -> {
-            tokenListener.onIdTokenReceived(googleSignInResult.getSignInAccount().getIdToken());
+            if(googleSignInResult.isSuccess()) {
+                tokenListener.onIdTokenReceived(googleSignInResult.getSignInAccount().getIdToken());
+            }
             googleApiClient.disconnect();
         });
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        eventBus.post(new AppErrorEvent(new SignInException("Google silent connection failed: " + connectionResult.getErrorMessage())));
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+
     }
 
     @Override
     public void onConnectionSuspended(int i) {
+        eventBus.post(new AppErrorEvent(new SignInException("Google silent connection suspended " + i)));
 
     }
 

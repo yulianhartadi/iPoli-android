@@ -328,10 +328,10 @@ public class App extends MultiDexApplication {
         if (!hasPlayer()) {
             if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
                 localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
-                startActivity(new Intent(this, TutorialActivity.class));
+                startNewActivity(TutorialActivity.class);
                 return;
             } else {
-                startActivity(new Intent(this, SignInActivity.class));
+                startNewActivity(SignInActivity.class);
             }
             return;
         }
@@ -343,20 +343,27 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onFinishTutorialActivity(FinishTutorialActivityEvent e) {
         if (!hasPlayer()) {
-            startActivity(new Intent(this, SignInActivity.class));
+            startNewActivity(SignInActivity.class);
         }
     }
 
     @Subscribe
     public void onFinishSignInActivity(FinishSignInActivityEvent e) {
         if (hasPlayer() && e.isNewPlayer) {
-            startActivity(new Intent(this, MainActivity.class));
+            startNewActivity(MainActivity.class);
             Intent intent = new Intent(this, PickChallengeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra(PickChallengeActivity.TITLE, getString(R.string.pick_challenge_to_start));
             startActivity(intent);
         } else if (!hasPlayer()) {
             System.exit(0);
         }
+    }
+
+    private void startNewActivity(Class clazz) {
+        Intent intent = new Intent(this, clazz);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     private void updateOngoingNotification(Quest quest, int completedCount, int totalCount) {
@@ -454,7 +461,7 @@ public class App extends MultiDexApplication {
             if (StringUtils.isEmpty(accessToken)) {
                 return;
             }
-            api.createSession(player.getCurrentAuthProvider(), accessToken, player.getEmail(), new Api.SessionResponseListener() {
+            api.createSession(player.getCurrentAuthProvider(), accessToken, new Api.SessionResponseListener() {
                 @Override
                 public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
                     syncData(cookies);
@@ -468,9 +475,9 @@ public class App extends MultiDexApplication {
         };
         AuthProvider.Provider authProvider = player.getCurrentAuthProvider().getProviderType();
         if (authProvider == AuthProvider.Provider.GOOGLE) {
-            new GoogleAuthService().getIdToken(this, idToken -> listener.onAccessTokenReceived(idToken));
+            new GoogleAuthService(eventBus).getIdToken(this, idToken -> listener.onAccessTokenReceived(idToken));
         } else if (authProvider == AuthProvider.Provider.FACEBOOK) {
-            listener.onAccessTokenReceived(new FacebookAuthService().getAccessToken());
+            listener.onAccessTokenReceived(new FacebookAuthService(eventBus).getAccessToken());
         }
     }
 

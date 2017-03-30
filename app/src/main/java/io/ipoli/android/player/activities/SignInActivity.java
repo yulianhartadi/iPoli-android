@@ -50,6 +50,7 @@ import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.FinishSignInActivityEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.ui.dialogs.LoadingDialog;
+import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
@@ -146,7 +147,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
                     @Override
                     public void onError(FacebookException exception) {
-                        eventBus.post(new AppErrorEvent(exception));
+                        showErrorMessage(exception);
                     }
                 });
 
@@ -168,16 +169,28 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @OnClick(R.id.facebook_login)
     public void onFacebookSignIn(View v) {
+        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+            showNoInternetMessage();
+            return;
+        }
         createLoadingDialog();
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email"));
     }
 
+    private void showNoInternetMessage() {
+        Toast.makeText(this, R.string.sign_in_internet, Toast.LENGTH_LONG).show();
+    }
+
     protected void createLoadingDialog() {
-        dialog = LoadingDialog.show(this, "Letting you in", "I hope that this will be quick and painless");
+        dialog = LoadingDialog.show(this, getString(R.string.sign_in_loading_dialog_title), getString(R.string.sign_in_loading_dialog_message));
     }
 
     @OnClick(R.id.google_sign_in)
     public void onGoogleSignIn(View v) {
+        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+            showNoInternetMessage();
+            return;
+        }
         createLoadingDialog();
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
         startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
@@ -196,15 +209,26 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             try {
                 String id = object.getString("id");
                 String email = object.getString("email");
-                login(new AuthProvider(id, AuthProvider.Provider.FACEBOOK), accessToken.getToken(), email);
+                String firstName = object.getString("firstname");
+                String lastName = object.getString("lastname");
+                String username = firstName;
+                String picture = object.getJSONObject("picture").getJSONObject("data").getString("url");
+                AuthProvider authProvider = new AuthProvider(id, AuthProvider.Provider.FACEBOOK);
+                authProvider.setEmail(email);
+                authProvider.setFirstName(firstName);
+                authProvider.setLastName(lastName);
+                authProvider.setUsername(username);
+                authProvider.setPicture(picture);
+                authProvider.setEmail(email);
+                login(authProvider, accessToken.getToken());
 
             } catch (JSONException e) {
-                eventBus.post(new AppErrorEvent(e));
+                showErrorMessage(e);
             }
 
         });
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "email,id");
+        parameters.putString("fields", "email,id,firstname,lastname,picture");
         req.setParameters(parameters);
         req.executeAsync();
     }
@@ -218,7 +242,13 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                 showErrorMessage(new SignInException("Google id token is null"));
                 return;
             }
-            login(new AuthProvider(account.getId(), AuthProvider.Provider.GOOGLE), idToken, account.getEmail());
+            AuthProvider authProvider = new AuthProvider(account.getId(), AuthProvider.Provider.GOOGLE);
+            authProvider.setFirstName(account.getGivenName());
+            authProvider.setLastName(account.getFamilyName());
+            authProvider.setUsername(account.getDisplayName());
+            authProvider.setEmail(account.getEmail());
+            authProvider.setPicture(account.getPhotoUrl().toString());
+            login(authProvider, idToken);
         }
     }
 
@@ -233,12 +263,12 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         }
     }
 
-    private void login(AuthProvider authProvider, String accessToken, String email) {
-        api.createSession(authProvider, accessToken, email, new Api.SessionResponseListener() {
+    private void login(AuthProvider authProvider, String accessToken) {
+        api.createSession(authProvider, accessToken, new Api.SessionResponseListener() {
             @Override
             public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
                 if (shouldCreatePlayer) {
-                    createPlayer(playerId, authProvider, email);
+                    createPlayer(playerId, authProvider);
                 } else if (isNew) {
                     updatePlayerWithAuthProvider(authProvider);
                 }
@@ -298,17 +328,16 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     }
 
     private void createPlayer() {
-        createPlayer(null, null, null);
+        createPlayer(null, null);
     }
 
-    private void createPlayer(String playerId, AuthProvider authProvider, String email) {
+    private void createPlayer(String playerId, AuthProvider authProvider) {
         Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR, Constants.DEFAULT_PET_BACKGROUND_IMAGE, Constants.DEFAULT_PET_HP);
         Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP),
                 Constants.DEFAULT_AVATAR_LEVEL,
                 Constants.DEFAULT_PLAYER_COINS,
                 Constants.DEFAULT_PLAYER_PICTURE,
                 DateFormat.is24HourFormat(this), pet);
-        player.setEmail(email);
         if (authProvider != null) {
             player.setCurrentAuthProvider(authProvider);
             player.getAuthProviders().add(authProvider);
@@ -336,12 +365,12 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     private void showErrorMessage(Exception e) {
         eventBus.post(new AppErrorEvent(e));
         runOnUiThread(() -> {
-            closeDialog();
+            closeLoadingDialog();
             Toast.makeText(this, R.string.something_went_wrong, Toast.LENGTH_LONG).show();
         });
     }
 
-    private void closeDialog() {
+    private void closeLoadingDialog() {
         if (dialog != null) {
             dialog.dismiss();
             dialog = null;
@@ -349,7 +378,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     }
 
     private void onFinish() {
-        closeDialog();
+        closeLoadingDialog();
         eventBus.post(new FinishSignInActivityEvent(isNewPlayer));
         finish();
     }

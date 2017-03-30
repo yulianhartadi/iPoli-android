@@ -30,6 +30,7 @@ import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.PlayerMigratedEvent;
+import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.Time;
 
 /**
@@ -63,6 +64,12 @@ public class MigrationActivity extends BaseActivity {
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         getWindow().getDecorView().setSystemUiVisibility(flags);
 
+        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+            Toast.makeText(this, R.string.migration_no_internet, Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         String firebasePlayerId = App.getPlayerId();
         api.migratePlayer(firebasePlayerId, new Api.PlayerMigratedListener() {
             @Override
@@ -82,27 +89,27 @@ public class MigrationActivity extends BaseActivity {
                         }
                     }
 
-                    if(documents.containsKey("challenges")) {
+                    if (documents.containsKey("challenges")) {
                         List<Map<String, Object>> challenges = documents.get("challenges");
                         for (Map<String, Object> challenge : challenges) {
                             save(challenge);
                         }
                     }
 
-                    if(documents.containsKey("repeating_quests")) {
+                    if (documents.containsKey("repeating_quests")) {
                         List<Map<String, Object>> repeatingQuests = documents.get("repeating_quests");
                         for (Map<String, Object> rq : repeatingQuests) {
                             save(rq);
                         }
                     }
 
-                    if(documents.containsKey("quests")) {
+                    if (documents.containsKey("quests")) {
                         List<Map<String, Object>> quests = documents.get("quests");
                         for (Map<String, Object> q : quests) {
-                            if(q.containsKey("scheduled") && q.containsKey("startMinute") && q.containsKey("reminders")) {
+                            if (q.containsKey("scheduled") && q.containsKey("startMinute") && q.containsKey("reminders")) {
                                 List<Map<String, Object>> reminders = (List<Map<String, Object>>) q.get("reminders");
-                                for(Map<String, Object> reminder : reminders) {
-                                    if(reminder.containsKey("start")) {
+                                for (Map<String, Object> reminder : reminders) {
+                                    if (reminder.containsKey("start")) {
                                         continue;
                                     }
                                     Time startTime = Time.of((Integer) q.get("startMinute"));
@@ -126,10 +133,19 @@ public class MigrationActivity extends BaseActivity {
 
             @Override
             public void onError(Exception e) {
-                eventBus.post(new AppErrorEvent(e));
+                showErrorMessage(e);
             }
         });
     }
+
+    private void showErrorMessage(Exception e) {
+        eventBus.post(new AppErrorEvent(e));
+        runOnUiThread(() -> {
+            Toast.makeText(this, R.string.something_went_wrong, Toast.LENGTH_LONG).show();
+            finish();
+        });
+    }
+
 
     @Override
     public void onBackPressed() {
