@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.api.exceptions.ApiResponseException;
 import io.ipoli.android.player.AuthProvider;
@@ -36,8 +38,7 @@ public class Api {
     public Api(ObjectMapper objectMapper, UrlProvider urlProvider) {
         this.objectMapper = objectMapper;
         this.urlProvider = urlProvider;
-        httpClient = new OkHttpClient().newBuilder().retryOnConnectionFailure(false).build();
-
+        httpClient = new OkHttpClient().newBuilder().readTimeout(Constants.API_READ_TIMEOUT, TimeUnit.SECONDS).retryOnConnectionFailure(false).build();
     }
 
     public void createSession(AuthProvider authProvider, String accessToken, SessionResponseListener responseListener) {

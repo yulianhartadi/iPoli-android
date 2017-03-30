@@ -173,10 +173,8 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     public void listenForPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<SortedMap<LocalDate, List<Quest>>> listener) {
         LiveQuery query = dayQuestsView.createQuery().toLiveQuery();
         query.setGroupLevel(1);
-        long start = toStartOfDayUTC(startDate).getTime();
-        long end = toStartOfDayUTC(endDate).getTime();
-        query.setStartKey(start);
-        query.setEndKey(end);
+        query.setStartKey(toStartOfDayUTC(startDate).getTime());
+        query.setEndKey(toStartOfDayUTC(endDate).getTime());
 
         LiveQuery.ChangeListener changeListener = event -> {
             if (event.getSource().equals(query)) {
@@ -197,6 +195,8 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     @Override
     public void findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
         Query query = completedDayQuestsView.createQuery();
+        query.setStartKey(toStartOfDayUTC(startDate).getTime());
+        query.setEndKey(toStartOfDayUTC(endDate).getTime());
         List<Quest> result = new ArrayList<>();
         try {
             QueryEnumerator enumerator = query.run();

@@ -217,13 +217,12 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                 String email = object.getString("email");
                 String firstName = object.getString("firstname");
                 String lastName = object.getString("lastname");
-                String username = firstName;
                 String picture = object.getJSONObject("picture").getJSONObject("data").getString("url");
                 AuthProvider authProvider = new AuthProvider(id, AuthProvider.Provider.FACEBOOK);
                 authProvider.setEmail(email);
                 authProvider.setFirstName(firstName);
                 authProvider.setLastName(lastName);
-                authProvider.setUsername(username);
+                authProvider.setUsername(firstName);
                 authProvider.setPicture(picture);
                 authProvider.setEmail(email);
                 login(authProvider, accessToken.getToken());

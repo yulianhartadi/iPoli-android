@@ -477,7 +477,7 @@ public class App extends MultiDexApplication {
         };
         AuthProvider.Provider authProvider = player.getCurrentAuthProvider().getProviderType();
         if (authProvider == AuthProvider.Provider.GOOGLE) {
-            new GoogleAuthService(eventBus).getIdToken(this, idToken -> listener.onAccessTokenReceived(idToken));
+            new GoogleAuthService(eventBus).getIdToken(this, listener::onAccessTokenReceived);
         } else if (authProvider == AuthProvider.Provider.FACEBOOK) {
             listener.onAccessTokenReceived(new FacebookAuthService(eventBus).getAccessToken());
         }
