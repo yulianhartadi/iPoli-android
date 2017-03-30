@@ -216,22 +216,4 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
     protected interface Predicate<T> {
         boolean shouldInclude(T obj);
     }
-
-    private static class QueryFilter<T> {
-
-        public static <T> List<T> filter(List<T> data, Predicate<T> predicate) {
-            QueryFilter<T> queryFilter = new QueryFilter<>();
-            return queryFilter.filterData(data, predicate);
-        }
-
-        private List<T> filterData(List<T> data, Predicate<T> predicate) {
-            List<T> result = new ArrayList<>();
-            for (T obj : data) {
-                if (predicate.shouldInclude(obj)) {
-                    result.add(obj);
-                }
-            }
-            return result;
-        }
-    }
 }
