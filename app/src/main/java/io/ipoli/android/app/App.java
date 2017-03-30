@@ -326,10 +326,10 @@ public class App extends MultiDexApplication {
         if (!hasPlayer()) {
             if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
                 localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
-                startActivity(new Intent(this, TutorialActivity.class));
+                startNewActivity(TutorialActivity.class);
                 return;
             } else {
-                startActivity(new Intent(this, SignInActivity.class));
+                startNewActivity(SignInActivity.class);
             }
             return;
         }
@@ -341,20 +341,27 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onFinishTutorialActivity(FinishTutorialActivityEvent e) {
         if (!hasPlayer()) {
-            startActivity(new Intent(this, SignInActivity.class));
+            startNewActivity(SignInActivity.class);
         }
     }
 
     @Subscribe
     public void onFinishSignInActivity(FinishSignInActivityEvent e) {
         if (hasPlayer() && e.isNewPlayer) {
-            startActivity(new Intent(this, MainActivity.class));
+            startNewActivity(MainActivity.class);
             Intent intent = new Intent(this, PickChallengeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra(PickChallengeActivity.TITLE, getString(R.string.pick_challenge_to_start));
             startActivity(intent);
         } else if (!hasPlayer()) {
             System.exit(0);
         }
+    }
+
+    private void startNewActivity(Class clazz) {
+        Intent intent = new Intent(this, clazz);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     private void updateOngoingNotification(Quest quest, int completedCount, int totalCount) {
