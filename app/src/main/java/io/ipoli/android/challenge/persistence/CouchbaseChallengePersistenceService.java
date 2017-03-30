@@ -1,7 +1,5 @@
 package io.ipoli.android.challenge.persistence;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Pair;
 
 import com.couchbase.lite.CouchbaseLiteException;
@@ -12,6 +10,7 @@ import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.couchbase.lite.View;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +39,8 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
     private final RepeatingQuestPersistenceService repeatingQuestPersistenceService;
     private final View allQuestsAndRepeatingQuestsForChallengeView;
 
-    public CouchbaseChallengePersistenceService(Database database, ObjectMapper objectMapper, QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
-        super(database, objectMapper);
+    public CouchbaseChallengePersistenceService(Database database, ObjectMapper objectMapper, QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService, Bus eventBus) {
+        super(database, objectMapper, eventBus);
 
         this.questPersistenceService = questPersistenceService;
         this.repeatingQuestPersistenceService = repeatingQuestPersistenceService;
@@ -128,7 +127,7 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
                     }
                 }
                 final Challenge result = ch;
-                new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
+                postResult(listener, result);
             }
         };
         startLiveQuery(query, changeListener);
@@ -139,12 +138,7 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
         LiveQuery query = allChallengesView.createQuery().toLiveQuery();
         LiveQuery.ChangeListener changeListener = event -> {
             if (event.getSource().equals(query)) {
-                List<Challenge> result = new ArrayList<>();
-                QueryEnumerator enumerator = event.getRows();
-                while (enumerator.hasNext()) {
-                    result.add(toObject(enumerator.next().getValue()));
-                }
-                postResult(listener, result);
+                postResult(listener, getResult(event));
             }
         };
         startLiveQuery(query, changeListener);

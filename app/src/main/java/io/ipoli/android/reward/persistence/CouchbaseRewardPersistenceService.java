@@ -2,11 +2,10 @@ package io.ipoli.android.reward.persistence;
 
 import com.couchbase.lite.Database;
 import com.couchbase.lite.LiveQuery;
-import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.View;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.otto.Bus;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.Constants;
@@ -22,8 +21,8 @@ public class CouchbaseRewardPersistenceService extends BaseCouchbasePersistenceS
 
     private final View allRewardsView;
 
-    public CouchbaseRewardPersistenceService(Database database, ObjectMapper objectMapper) {
-        super(database, objectMapper);
+    public CouchbaseRewardPersistenceService(Database database, ObjectMapper objectMapper, Bus eventBus) {
+        super(database, objectMapper, eventBus);
 
         allRewardsView = database.getView("rewards/all");
         if (allRewardsView.getMap() == null) {
@@ -47,12 +46,7 @@ public class CouchbaseRewardPersistenceService extends BaseCouchbasePersistenceS
         LiveQuery query = allRewardsView.createQuery().toLiveQuery();
         LiveQuery.ChangeListener changeListener = event -> {
             if (event.getSource().equals(query)) {
-                List<Reward> result = new ArrayList<>();
-                QueryEnumerator enumerator = event.getRows();
-                while (enumerator.hasNext()) {
-                    result.add(toObject(enumerator.next().getValue()));
-                }
-                postResult(listener, result);
+                postResult(listener, getResult(event));
             }
         };
         startLiveQuery(query, changeListener);

@@ -10,6 +10,7 @@ import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.couchbase.lite.View;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
 
@@ -41,8 +42,8 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     private final View uncompletedQuestsForRepeatingQuestView;
     private final View completedDayQuestsView;
 
-    public CouchbaseQuestPersistenceService(Database database, ObjectMapper objectMapper) {
-        super(database, objectMapper);
+    public CouchbaseQuestPersistenceService(Database database, ObjectMapper objectMapper, Bus eventBus) {
+        super(database, objectMapper, eventBus);
 
         startedQuestsView = database.getView("quests/started");
         if (startedQuestsView.getMap() == null) {
@@ -156,12 +157,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
         LiveQuery.ChangeListener changeListener = event -> {
             if (event.getSource().equals(query)) {
-                List<Quest> result = new ArrayList<>();
-                QueryEnumerator enumerator = event.getRows();
-                while (enumerator.hasNext()) {
-                    result.add(toObject(enumerator.next().getValue()));
-                }
-                postResult(listener, result);
+                postResult(listener, getResult(event));
             }
         };
 
@@ -196,33 +192,12 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
         Query query = completedDayQuestsView.createQuery();
         query.setStartKey(toStartOfDayUTC(startDate).getTime());
         query.setEndKey(toStartOfDayUTC(endDate).getTime());
-        List<Quest> result = new ArrayList<>();
-        try {
-            QueryEnumerator enumerator = query.run();
-            while (enumerator.hasNext()) {
-                QueryRow row = enumerator.next();
-                result.add(toObject(row.getValue()));
-            }
-            listener.onDataChanged(result);
-        } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
-        }
+        runQuery(query, listener);
     }
 
     @Override
     public void findAllPlannedAndStarted(OnDataChangedListener<List<Quest>> listener) {
-        Query query = startedQuestsView.createQuery();
-        List<Quest> result = new ArrayList<>();
-        try {
-            QueryEnumerator enumerator = query.run();
-            while (enumerator.hasNext()) {
-                QueryRow row = enumerator.next();
-                result.add(toObject(row.getValue()));
-            }
-            listener.onDataChanged(result);
-        } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
-        }
+        runQuery(startedQuestsView, listener);
     }
 
     @Override
@@ -258,14 +233,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
         LiveQuery.ChangeListener changeListener = event -> {
             if (event.getSource().equals(query)) {
-                List<Quest> result = new ArrayList<>();
-                QueryEnumerator enumerator = event.getRows();
-                while (enumerator.hasNext()) {
-                    QueryRow queryRow = enumerator.next();
-                    result.add(toObject(queryRow.getValue()));
-                }
-                postResult(listener, result);
-
+                postResult(listener, getResult(event));
             }
         };
 
@@ -274,22 +242,12 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
     @Override
     public void findAllNonAllDayForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener) {
-        try {
-            Query query = dayQuestsView.createQuery();
-            query.setMapOnly(true);
-            long date = toStartOfDayUTC(currentDate).getTime();
-            query.setStartKey(date);
-            query.setEndKey(date);
-            QueryEnumerator enumerator = query.run();
-            List<Quest> result = new ArrayList<>();
-            while (enumerator.hasNext()) {
-                QueryRow row = enumerator.next();
-                result.add(toObject(row.getValue()));
-            }
-            listener.onDataChanged(result);
-        } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
-        }
+        Query query = dayQuestsView.createQuery();
+        query.setMapOnly(true);
+        long date = toStartOfDayUTC(currentDate).getTime();
+        query.setStartKey(date);
+        query.setEndKey(date);
+        runQuery(query, listener);
     }
 
     @Override

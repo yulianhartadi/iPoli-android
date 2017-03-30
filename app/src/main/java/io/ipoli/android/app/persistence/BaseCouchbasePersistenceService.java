@@ -8,15 +8,22 @@ import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
 import com.couchbase.lite.DocumentChange;
 import com.couchbase.lite.LiveQuery;
+import com.couchbase.lite.Query;
+import com.couchbase.lite.QueryEnumerator;
+import com.couchbase.lite.QueryRow;
 import com.couchbase.lite.UnsavedRevision;
+import com.couchbase.lite.View;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.otto.Bus;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
 
@@ -28,12 +35,14 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
 
     protected final Database database;
     protected final ObjectMapper objectMapper;
+    private final Bus eventBus;
     private final Map<LiveQuery, LiveQuery.ChangeListener> queryToListener;
     private final Map<Document, Document.ChangeListener> documentToListener;
 
-    public BaseCouchbasePersistenceService(Database database, ObjectMapper objectMapper) {
+    public BaseCouchbasePersistenceService(Database database, ObjectMapper objectMapper, Bus eventBus) {
         this.database = database;
         this.objectMapper = objectMapper;
+        this.eventBus = eventBus;
         this.queryToListener = new HashMap<>();
         this.documentToListener = new HashMap<>();
     }
@@ -42,6 +51,36 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
         query.addChangeListener(changeListener);
         query.start();
         queryToListener.put(query, changeListener);
+    }
+
+    protected void runQuery(View view, OnDataChangedListener<List<T>> listener) {
+        listener.onDataChanged(getQueryResult(view.createQuery()));
+    }
+
+    protected void runQuery(Query query, OnDataChangedListener<List<T>> listener) {
+        listener.onDataChanged(getQueryResult(query));
+    }
+
+    protected List<T> getQueryResult(Query query) {
+        try {
+            return getResult(query.run());
+        } catch (CouchbaseLiteException e) {
+            eventBus.post(new AppErrorEvent(e));
+            return new ArrayList<>();
+        }
+    }
+
+    protected List<T> getResult(LiveQuery.ChangeEvent event) {
+        return getResult(event.getRows());
+    }
+
+    protected List<T> getResult(QueryEnumerator enumerator) {
+        List<T> result = new ArrayList<>();
+        while (enumerator.hasNext()) {
+            QueryRow row = enumerator.next();
+            result.add(toObject(row.getValue()));
+        }
+        return result;
     }
 
     protected abstract Class<T> getModelClass();

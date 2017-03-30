@@ -10,6 +10,7 @@ import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
 import com.couchbase.lite.View;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.otto.Bus;
 
 import org.joda.time.LocalDate;
 
@@ -35,8 +36,8 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
     private final QuestPersistenceService questPersistenceService;
     private final View repeatingQuestWithQuestsView;
 
-    public CouchbaseRepeatingQuestPersistenceService(Database database, ObjectMapper objectMapper, QuestPersistenceService questPersistenceService) {
-        super(database, objectMapper);
+    public CouchbaseRepeatingQuestPersistenceService(Database database, ObjectMapper objectMapper, QuestPersistenceService questPersistenceService, Bus eventBus) {
+        super(database, objectMapper, eventBus);
 
         this.questPersistenceService = questPersistenceService;
 

@@ -7,6 +7,7 @@ import com.couchbase.lite.Query;
 import com.couchbase.lite.QueryEnumerator;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.otto.Bus;
 
 import java.util.Map;
 
@@ -21,8 +22,8 @@ import io.ipoli.android.quest.persistence.OnDataChangedListener;
  */
 public class CouchbasePlayerPersistenceService extends BaseCouchbasePersistenceService<Player> implements PlayerPersistenceService {
 
-    public CouchbasePlayerPersistenceService(Database database, ObjectMapper objectMapper) {
-        super(database, objectMapper);
+    public CouchbasePlayerPersistenceService(Database database, ObjectMapper objectMapper, Bus eventBus) {
+        super(database, objectMapper, eventBus);
     }
 
     @Override
