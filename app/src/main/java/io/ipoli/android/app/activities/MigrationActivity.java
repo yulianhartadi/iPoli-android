@@ -30,6 +30,7 @@ import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.PlayerMigratedEvent;
+import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.Time;
 
 /**
@@ -62,6 +63,12 @@ public class MigrationActivity extends BaseActivity {
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         getWindow().getDecorView().setSystemUiVisibility(flags);
+
+        if(!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+            Toast.makeText(this, R.string.migration_no_internet, Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
 
         String firebasePlayerId = App.getPlayerId();
         api.migratePlayer(firebasePlayerId, new Api.PlayerMigratedListener() {

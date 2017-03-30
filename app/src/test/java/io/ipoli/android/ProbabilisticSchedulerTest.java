@@ -10,6 +10,7 @@ import io.ipoli.android.app.scheduling.DiscreteDistribution;
 import io.ipoli.android.app.scheduling.ProbabilisticTaskScheduler;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.TimeBlock;
+import io.ipoli.android.app.utils.Time;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;

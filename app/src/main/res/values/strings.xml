@@ -303,7 +303,7 @@
     <string name="pick_date">Pick date</string>
     <string name="quest_snoozed">Quest snoozed</string>
     <string name="quest_moved_to_inbox">Quest moved to Inbox</string>
-    <string name="turn_on_internet">Sorry, you need an internet connection to play with iPoli</string>
+    <string name="migration_no_internet">iPoli needs a little bit of internet, just this time!</string>
     <string name="title_no_internet">No internet</string>
     <string name="help_dialog_calendar_quick_add">Long tap on any free time slot to use quick add</string>
     <string name="ongoing_notification_no_quests_text">Start your day with a smile</string>
