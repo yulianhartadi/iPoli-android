@@ -116,7 +116,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
             }
             listener.onDataChanged(result);
         } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
+            postError(e);
         }
 
     }
@@ -223,6 +223,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
                 }
                 return true;
             } catch (CouchbaseLiteException e) {
+                postError(e);
                 return false;
             }
         });
@@ -249,6 +250,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
                 }
                 return true;
             } catch (CouchbaseLiteException e) {
+                postError(e);
                 return false;
             }
         });
@@ -281,6 +283,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
                 }
                 return true;
             } catch (CouchbaseLiteException e) {
+                postError(e);
                 return false;
             }
 

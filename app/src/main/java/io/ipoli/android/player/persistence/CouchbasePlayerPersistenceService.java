@@ -55,7 +55,7 @@ public class CouchbasePlayerPersistenceService extends BaseCouchbasePersistenceS
                 enumerator.next().getDocument().purge();
             }
         } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
+            postError(e);
         }
     }
 
@@ -75,7 +75,7 @@ public class CouchbasePlayerPersistenceService extends BaseCouchbasePersistenceS
             Document document = database.getDocument(playerId);
             document.putProperties(data);
         } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
+            postError(e);
         }
 
     }

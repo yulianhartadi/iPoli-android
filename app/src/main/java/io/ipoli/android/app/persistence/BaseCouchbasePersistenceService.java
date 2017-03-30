@@ -65,7 +65,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
         try {
             return getResult(query.run());
         } catch (CouchbaseLiteException e) {
-            eventBus.post(new AppErrorEvent(e));
+            postError(e);
             return new ArrayList<>();
         }
     }
@@ -99,7 +99,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
                 document.putProperties(data);
                 obj.setId(document.getId());
             } catch (CouchbaseLiteException e) {
-                e.printStackTrace();
+                postError(e);
             }
         } else {
             obj.markUpdated();
@@ -109,7 +109,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
             try {
                 revision.save();
             } catch (CouchbaseLiteException e) {
-                e.printStackTrace();
+                postError(e);
             }
         }
     }
@@ -157,7 +157,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
         try {
             database.getExistingDocument(object.getId()).delete();
         } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
+            postError(e);
         }
     }
 
@@ -192,5 +192,9 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
 
     protected <E> void postResult(OnDataChangedListener<E> listener, E result) {
         new Handler(Looper.getMainLooper()).post(() -> listener.onDataChanged(result));
+    }
+
+    protected void postError(Exception e) {
+        eventBus.post(new AppErrorEvent(e));
     }
 }

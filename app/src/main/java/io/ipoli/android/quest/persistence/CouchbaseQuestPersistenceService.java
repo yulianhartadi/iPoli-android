@@ -219,7 +219,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
             }
             listener.onDataChanged(result);
         } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
+            postError(e);
         }
     }
 
@@ -323,7 +323,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
             }
             listener.onDataChanged(result);
         } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
+            postError(e);
         }
     }
 
@@ -346,6 +346,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
             }
             listener.onDataChanged(count);
         } catch (CouchbaseLiteException e) {
+            postError(e);
             listener.onDataChanged(-1L);
         }
     }
@@ -368,7 +369,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 listener.onDataChanged(pair.second);
             }
         } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
+            postError(e);
         }
     }
 
@@ -389,7 +390,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 listener.onDataChanged(Long.valueOf(row.getKey().toString()));
             }
         } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
+            postError(e);
         }
     }
 

@@ -157,7 +157,7 @@ public class MigrationActivity extends BaseActivity {
             Document document = database.getDocument((String) obj.get("id"));
             document.putProperties(obj);
         } catch (CouchbaseLiteException e) {
-            e.printStackTrace();
+            eventBus.post(new AppErrorEvent(e));
         }
     }
 }

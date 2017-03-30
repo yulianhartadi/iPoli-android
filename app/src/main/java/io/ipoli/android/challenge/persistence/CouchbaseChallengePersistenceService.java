@@ -173,6 +173,7 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
                 }
                 return true;
             } catch (CouchbaseLiteException e) {
+                postError(e);
                 return false;
             }
         });
