@@ -1,4 +1,4 @@
-package io.ipoli.android.app;
+package io.ipoli.android.app.auth;
 
 import com.facebook.AccessToken;
 import com.squareup.otto.Bus;

@@ -29,7 +29,6 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 
 import java.math.BigInteger;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,13 +42,15 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import io.ipoli.android.AnalyticsConstants;
-import io.ipoli.android.ApiConstants;
 import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.api.Api;
+import io.ipoli.android.app.api.UrlProvider;
+import io.ipoli.android.app.auth.FacebookAuthService;
+import io.ipoli.android.app.auth.GoogleAuthService;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.DateChangedEvent;
@@ -181,6 +182,9 @@ public class App extends MultiDexApplication {
 
     @Inject
     CoinsRewardGenerator coinsRewardGenerator;
+
+    @Inject
+    UrlProvider urlProvider;
 
     private void listenForChanges() {
         questPersistenceService.removeAllListeners();
@@ -486,8 +490,7 @@ public class App extends MultiDexApplication {
 
     private void syncData(List<Cookie> cookies) {
         try {
-            URL syncURL = new URL(ApiConstants.IPOLI_SYNC_URL);
-            Replication pull = database.createPullReplication(syncURL);
+            Replication pull = database.createPullReplication(urlProvider.sync());
             for (Cookie cookie : cookies) {
                 pull.setCookie(cookie.name(), cookie.value(), cookie.path(),
                         new Date(cookie.expiresAt()), cookie.secure(), cookie.httpOnly());
@@ -497,7 +500,7 @@ public class App extends MultiDexApplication {
             channels.add(playerId);
             pull.setChannels(channels);
 
-            Replication push = database.createPushReplication(syncURL);
+            Replication push = database.createPushReplication(urlProvider.sync());
             for (Cookie cookie : cookies) {
                 push.setCookie(cookie.name(), cookie.value(), cookie.path(),
                         new Date(cookie.expiresAt()), cookie.secure(), cookie.httpOnly());

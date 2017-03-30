@@ -1,4 +1,4 @@
-package io.ipoli.android.app;
+package io.ipoli.android.app.auth;
 
 import android.content.Context;
 import android.os.Bundle;

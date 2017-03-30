@@ -19,6 +19,7 @@ import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.RewardGeneratorModule;
 import io.ipoli.android.app.modules.SchedulerModule;
 import io.ipoli.android.app.modules.TimeParserModule;
+import io.ipoli.android.app.modules.UrlProviderModule;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.settings.SettingsFragment;
@@ -92,7 +93,8 @@ import io.ipoli.android.shop.fragments.CoinsStoreFragment;
                 RewardGeneratorModule.class,
                 SchedulerModule.class,
                 TimeParserModule.class,
-                ApiModule.class
+                ApiModule.class,
+                UrlProviderModule.class
         }
 )
 public interface AppComponent {
