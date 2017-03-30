@@ -202,25 +202,12 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
     @Override
     public void findAllIncompleteFor(LocalDate date, OnDataChangedListener<List<Quest>> listener) {
-        try {
-            Query query = dayQuestsView.createQuery();
-            query.setMapOnly(true);
-            long key = toStartOfDayUTC(date).getTime();
-            query.setStartKey(key);
-            query.setEndKey(key);
-            QueryEnumerator enumerator = query.run();
-            List<Quest> result = new ArrayList<>();
-            while (enumerator.hasNext()) {
-                QueryRow row = enumerator.next();
-                Quest q = toObject(row.getValue());
-                if (!q.isCompleted()) {
-                    result.add(q);
-                }
-            }
-            listener.onDataChanged(result);
-        } catch (CouchbaseLiteException e) {
-            postError(e);
-        }
+        Query query = dayQuestsView.createQuery();
+        query.setMapOnly(true);
+        long key = toStartOfDayUTC(date).getTime();
+        query.setStartKey(key);
+        query.setEndKey(key);
+        runQuery(query, listener, q -> !q.isCompleted());
     }
 
     @Override
@@ -260,17 +247,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
         LiveQuery.ChangeListener changeListener = event -> {
             if (event.getSource().equals(query)) {
-                List<Quest> result = new ArrayList<>();
-                QueryEnumerator enumerator = event.getRows();
-                while (enumerator.hasNext()) {
-                    QueryRow queryRow = enumerator.next();
-                    Quest quest = toObject(queryRow.getValue());
-                    if (quest.isCompleted()) {
-                        result.add(quest);
-                    }
-                }
-                postResult(listener, result);
-
+                postResult(listener, getResult(event, Quest::isCompleted));
             }
         };
 
@@ -287,16 +264,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
         LiveQuery.ChangeListener changeListener = event -> {
             if (event.getSource().equals(query)) {
-                List<Quest> result = new ArrayList<>();
-                QueryEnumerator enumerator = event.getRows();
-                while (enumerator.hasNext()) {
-                    QueryRow queryRow = enumerator.next();
-                    Quest quest = toObject(queryRow.getValue());
-                    if (!quest.isCompleted()) {
-                        result.add(quest);
-                    }
-                }
-                postResult(listener, result);
+                postResult(listener, getResult(event, q -> !q.isCompleted()));
             }
         };
 
@@ -309,22 +277,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
         query.setGroupLevel(1);
         query.setStartKey(repeatingQuestId);
         query.setEndKey(repeatingQuestId);
-        try {
-            QueryEnumerator enumerator = query.run();
-            List<Quest> result = new ArrayList<>();
-            while (enumerator.hasNext()) {
-                QueryRow row = enumerator.next();
-                List<Quest> quests = (List<Quest>) row.getValue();
-                for (Quest q : quests) {
-                    if (!q.getScheduledDate().before(toStartOfDayUTC(startDate)) || q.getScheduled() == null) {
-                        result.add(q);
-                    }
-                }
-            }
-            listener.onDataChanged(result);
-        } catch (CouchbaseLiteException e) {
-            postError(e);
-        }
+        runQuery(query, listener, q -> !q.getScheduledDate().before(toStartOfDayUTC(startDate)) || q.getScheduled() == null);
     }
 
     @Override
@@ -403,16 +356,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
         query.setEndKey(key);
         LiveQuery.ChangeListener changeListener = event -> {
             if (event.getSource().equals(query)) {
-                List<Quest> result = new ArrayList<>();
-                QueryEnumerator enumerator = event.getRows();
-                while (enumerator.hasNext()) {
-                    QueryRow queryRow = enumerator.next();
-                    Quest quest = toObject(queryRow.getValue());
-                    if (!quest.isCompleted() || quest.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
-                        result.add(quest);
-                    }
-                }
-                postResult(listener, result);
+                postResult(listener, getResult(event, q -> !q.isCompleted() || q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY));
             }
         };
 

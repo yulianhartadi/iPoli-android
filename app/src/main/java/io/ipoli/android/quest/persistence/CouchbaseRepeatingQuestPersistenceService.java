@@ -104,21 +104,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
     @Override
     public void findAllNonAllDayActiveRepeatingQuests(OnDataChangedListener<List<RepeatingQuest>> listener) {
-        try {
-            QueryEnumerator enumerator = allRepeatingQuestsView.createQuery().run();
-            List<RepeatingQuest> result = new ArrayList<>();
-            while (enumerator.hasNext()) {
-                QueryRow row = enumerator.next();
-                if (row.getDocumentProperties().containsKey("completedAt")) {
-                    continue;
-                }
-                result.add(toObject(row.getValue()));
-            }
-            listener.onDataChanged(result);
-        } catch (CouchbaseLiteException e) {
-            postError(e);
-        }
-
+        runQuery(allRepeatingQuestsView, listener, rq -> rq.getCompletedAt() != null);
     }
 
     @Override
@@ -149,15 +135,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
         LiveQuery query = allRepeatingQuestsView.createQuery().toLiveQuery();
         LiveQuery.ChangeListener changeListener = event -> {
             if (event.getSource().equals(query)) {
-                List<RepeatingQuest> result = new ArrayList<>();
-                QueryEnumerator enumerator = event.getRows();
-                while (enumerator.hasNext()) {
-                    RepeatingQuest rq = toObject(enumerator.next().getValue());
-                    if (!rq.isFlexible() && !rq.isCompleted() && rq.shouldBeScheduledAfter(LocalDate.now())) {
-                        result.add(rq);
-                    }
-                }
-                postResult(listener, result);
+                postResult(listener, getResult(event, rq -> !rq.isFlexible() && !rq.isCompleted() && rq.shouldBeScheduledAfter(LocalDate.now())));
             }
         };
         startLiveQuery(query, changeListener);
