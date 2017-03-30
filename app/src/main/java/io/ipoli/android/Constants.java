@@ -73,8 +73,6 @@ public interface Constants {
 
     String KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL";
 
-    String KEY_SCHEMA_VERSION = "SCHEMA_VERSION";
-
     String IPOLI_EMAIL = "hi@ipoli.io";
 
     String API_RESOURCE_SOURCE = "ipoli-android";

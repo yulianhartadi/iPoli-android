@@ -137,18 +137,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         super.onCreate(savedInstanceState);
         appComponent().inject(this);
 
-        int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
-        if (App.hasPlayer() && schemaVersion != Constants.SCHEMA_VERSION) {
+        if(!App.hasPlayer()){
+            finish();
+            return;
+        }
+
+        if (App.hasPlayer() && getPlayer().getSchemaVersion() != Constants.SCHEMA_VERSION) {
             // should migrate
             startActivity(new Intent(this, MigrationActivity.class));
             finish();
             return;
         }
 
-        if(!App.hasPlayer()){
-            finish();
-            return;
-        }
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
