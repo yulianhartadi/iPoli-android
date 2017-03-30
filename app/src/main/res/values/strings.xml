@@ -430,4 +430,7 @@
     <string name="continue_as_guest">Continue as Guest*</string>
     <string name="sign_in_slogan">Join more than 16,000 heroes!</string>
     <string name="guest_sign_up_warning">* When using Guest login your data is NOT guaranteed to be safely stored. Also, synchronization between your devices will not work! Use other sign up options if you want cloud-based, multi-device synchronization!</string>
+    <string name="sign_in_internet">iPoli needs internet to sign you in!</string>
+    <string name="sign_in_loading_dialog_title">Letting you in</string>
+    <string name="sign_in_loading_dialog_message">I hope that this will be quick and painless</string>
 </resources>

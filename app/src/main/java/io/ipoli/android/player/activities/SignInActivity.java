@@ -17,7 +17,6 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
-import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.Auth;
@@ -52,6 +51,7 @@ import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.FinishSignInActivityEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.ui.dialogs.LoadingDialog;
+import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
@@ -136,8 +136,6 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        Profile profile = Profile.getCurrentProfile();
-//                        Log.d("AAA url: ", String.valueOf(profile.getProfilePictureUri(50, 50)));
                         getUserDetailsFromFB(loginResult.getAccessToken());
                     }
 
@@ -169,16 +167,28 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @OnClick(R.id.facebook_login)
     public void onFacebookSignIn(View v) {
+        if(!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+            showNoInternetMessage();
+            return;
+        }
         createLoadingDialog();
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email"));
     }
 
+    private void showNoInternetMessage() {
+        Toast.makeText(this, R.string.sign_in_internet, Toast.LENGTH_LONG).show();
+    }
+
     protected void createLoadingDialog() {
-        dialog = LoadingDialog.show(this, "Letting you in", "I hope that this will be quick and painless");
+        dialog = LoadingDialog.show(this, getString(R.string.sign_in_loading_dialog_title), getString(R.string.sign_in_loading_dialog_message));
     }
 
     @OnClick(R.id.google_sign_in)
     public void onGoogleSignIn(View v) {
+        if(!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+            showNoInternetMessage();
+            return;
+        }
         createLoadingDialog();
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
         startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
@@ -205,6 +215,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                 authProvider.setEmail(email);
                 authProvider.setFirstName(firstName);
                 authProvider.setLastName(lastName);
+                authProvider.setUsername(username);
                 authProvider.setPicture(picture);
                 authProvider.setEmail(email);
                 login(authProvider, accessToken.getToken());
@@ -232,8 +243,8 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             AuthProvider authProvider = new AuthProvider(account.getId(), AuthProvider.Provider.GOOGLE);
             authProvider.setFirstName(account.getGivenName());
             authProvider.setLastName(account.getFamilyName());
-            authProvider.setEmail(account.getEmail());
             authProvider.setUsername(account.getDisplayName());
+            authProvider.setEmail(account.getEmail());
             authProvider.setPicture(account.getPhotoUrl().toString());
             login(authProvider, idToken);
         }
