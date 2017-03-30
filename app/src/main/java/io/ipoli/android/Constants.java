@@ -154,7 +154,7 @@ public interface Constants {
     double IMPORTANT_QUEST_PENALTY_PERCENT = 5;
 
     String KEY_WIDGET_AGENDA_QUESTS = "widget_agenda_quests";
-    int API_READ_TIMEOUT = 30;
+    int API_READ_TIMEOUT_SECONDS = 30;
 
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);
