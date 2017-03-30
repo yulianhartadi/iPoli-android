@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
+import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -80,6 +81,7 @@ public class MigrationActivity extends BaseActivity {
                         finish();
                     }
                     Map<String, Object> player = documents.get("player").get(0);
+                    player.put("schemaVersion", Constants.SCHEMA_VERSION);
                     save(player);
 
                     if (documents.containsKey("rewards")) {
