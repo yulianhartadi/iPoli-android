@@ -75,12 +75,12 @@ public class MigrationActivity extends BaseActivity {
         api.migratePlayer(firebasePlayerId, new Api.PlayerMigratedListener() {
             @Override
             public void onSuccess(Map<String, List<Map<String, Object>>> documents) {
+                if (!documents.containsKey("player")) {
+                    showErrorMessage(new Exception("Player with firebase id:" + firebasePlayerId + " not found"));
+                    return;
+                }
+                Map<String, Object> player = documents.get("player").get(0);
                 database.runInTransaction(() -> {
-                    if (!documents.containsKey("player")) {
-                        Toast.makeText(MigrationActivity.this, R.string.something_went_wrong, Toast.LENGTH_LONG).show();
-                        finish();
-                    }
-                    Map<String, Object> player = documents.get("player").get(0);
                     player.put("schemaVersion", Constants.SCHEMA_VERSION);
                     save(player);
 
@@ -123,14 +123,13 @@ public class MigrationActivity extends BaseActivity {
                             save(q);
                         }
                     }
-
-                    String playerId = (String) player.get("id");
-                    eventBus.post(new PlayerCreatedEvent(playerId));
-                    eventBus.post(new PlayerMigratedEvent(firebasePlayerId, playerId));
-                    startActivity(new Intent(MigrationActivity.this, MainActivity.class));
-                    finish();
                     return true;
                 });
+                String playerId = (String) player.get("id");
+                eventBus.post(new PlayerCreatedEvent(playerId));
+                eventBus.post(new PlayerMigratedEvent(firebasePlayerId, playerId));
+                startActivity(new Intent(MigrationActivity.this, MainActivity.class));
+                finish();
             }
 
             @Override
