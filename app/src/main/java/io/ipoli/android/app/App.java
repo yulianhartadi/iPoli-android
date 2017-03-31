@@ -317,7 +317,9 @@ public class App extends MultiDexApplication {
 
         registerServices();
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
-        if (hasPlayer() && getPlayer().getSchemaVersion() != Constants.SCHEMA_VERSION) {
+
+        int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
+        if (hasPlayer() && schemaVersion != Constants.SCHEMA_VERSION) {
             return;
         }
         if (!hasPlayer()) {
@@ -555,6 +557,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onPlayerCreated(PlayerCreatedEvent e) {
+        localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
         localStorage.saveString(Constants.KEY_PLAYER_ID, e.playerId);
         playerId = e.playerId;
         initAppStart();
@@ -562,6 +565,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onPlayerUpdated(PlayerUpdatedEvent e) {
+        localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
         localStorage.saveString(Constants.KEY_PLAYER_ID, e.playerId);
         playerId = e.playerId;
     }

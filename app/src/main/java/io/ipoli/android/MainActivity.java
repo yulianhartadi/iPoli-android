@@ -142,7 +142,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             return;
         }
 
-        if (App.hasPlayer() && getPlayer().getSchemaVersion() != Constants.SCHEMA_VERSION) {
+        int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
+        if (App.hasPlayer() && schemaVersion != Constants.SCHEMA_VERSION) {
             // should migrate
             startActivity(new Intent(this, MigrationActivity.class));
             finish();
