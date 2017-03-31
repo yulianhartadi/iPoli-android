@@ -7,9 +7,8 @@ import org.joda.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
-import io.ipoli.android.avatar.TimeOfDay;
+import io.ipoli.android.app.TimeOfDay;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 
@@ -212,8 +211,8 @@ public class PosteriorEstimator {
             return mostProductiveTimesOfDay;
         }
 
-        public PosteriorSettings setMostProductiveTimesOfDay(Set<String> mostProductiveTimesOfDay) {
-            this.mostProductiveTimesOfDay = new ArrayList<>(mostProductiveTimesOfDay);
+        public PosteriorSettings setMostProductiveTimesOfDay(List<String> mostProductiveTimesOfDay) {
+            this.mostProductiveTimesOfDay = mostProductiveTimesOfDay;
             return this;
         }
 
@@ -221,8 +220,8 @@ public class PosteriorEstimator {
             return workDays;
         }
 
-        public PosteriorSettings setWorkDays(Set<Integer> workDays) {
-            this.workDays = new ArrayList<>(workDays);
+        public PosteriorSettings setWorkDays(List<Integer> workDays) {
+            this.workDays = workDays;
             return this;
         }
 

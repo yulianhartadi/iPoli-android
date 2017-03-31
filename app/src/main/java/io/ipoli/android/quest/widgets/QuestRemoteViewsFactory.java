@@ -4,16 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.otto.Bus;
 
-import java.lang.reflect.Type;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +24,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Quest;
 
 public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
@@ -40,13 +40,16 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     LocalStorage localStorage;
 
     @Inject
-    Gson gson;
+    PlayerPersistenceService playerPersistenceService;
+
+    @Inject
+    ObjectMapper objectMapper;
 
     public QuestRemoteViewsFactory(Context context) {
         App.getAppComponent(context).inject(this);
         this.quests = new ArrayList<>();
         this.context = context;
-        use24HourFormat = localStorage.readBool(Constants.KEY_24_HOUR_TIME_FORMAT, DateFormat.is24HourFormat(context));
+        use24HourFormat = playerPersistenceService.get().getUse24HourFormat();
     }
 
     @Override
@@ -56,18 +59,23 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
 
     @Override
     public void onDataSetChanged() {
-        Type type = new TypeToken<List<Quest>>() {
-        }.getType();
-        List<Quest> allQuests = gson.fromJson(localStorage.readString(Constants.KEY_WIDGET_AGENDA_QUESTS), type);
-        quests = new ArrayList<>();
-        if (allQuests == null) {
-            return;
-        }
-        for (Quest q : allQuests) {
-            if (!q.isCompleted()) {
-                quests.add(q);
+        TypeReference<List<Quest>> type = new TypeReference<List<Quest>>() {
+        };
+        try {
+            List<Quest> allQuests = objectMapper.readValue(localStorage.readString(Constants.KEY_WIDGET_AGENDA_QUESTS), type);
+            quests = new ArrayList<>();
+            if (allQuests == null) {
+                return;
             }
+            for (Quest q : allQuests) {
+                if (!q.isCompleted()) {
+                    quests.add(q);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Cant read JSON for Widget : " + localStorage.readString(Constants.KEY_WIDGET_AGENDA_QUESTS), e);
         }
+
     }
 
     @Override

@@ -9,14 +9,17 @@ import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.modules.AnalyticsModule;
+import io.ipoli.android.app.modules.ApiModule;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.BusModule;
-import io.ipoli.android.app.modules.JsonModule;
+import io.ipoli.android.app.modules.CouchbaseModule;
 import io.ipoli.android.app.modules.LocalStorageModule;
+import io.ipoli.android.app.modules.ObjectMapperModule;
 import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.RewardGeneratorModule;
 import io.ipoli.android.app.modules.SchedulerModule;
 import io.ipoli.android.app.modules.TimeParserModule;
+import io.ipoli.android.app.modules.UrlProviderModule;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.settings.SettingsFragment;
@@ -47,13 +50,13 @@ import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.RepeatingQuestActivity;
 import io.ipoli.android.quest.fragments.AddNameFragment;
+import io.ipoli.android.quest.fragments.AddQuestDateFragment;
 import io.ipoli.android.quest.fragments.AddQuestSummaryFragment;
+import io.ipoli.android.quest.fragments.AddQuestTimeFragment;
 import io.ipoli.android.quest.fragments.CalendarFragment;
 import io.ipoli.android.quest.fragments.DayViewFragment;
 import io.ipoli.android.quest.fragments.InboxFragment;
 import io.ipoli.android.quest.fragments.OverviewFragment;
-import io.ipoli.android.quest.fragments.AddQuestDateFragment;
-import io.ipoli.android.quest.fragments.AddQuestTimeFragment;
 import io.ipoli.android.quest.fragments.RepeatingQuestListFragment;
 import io.ipoli.android.quest.receivers.CompleteQuestReceiver;
 import io.ipoli.android.quest.receivers.RemindStartQuestReceiver;
@@ -82,13 +85,16 @@ import io.ipoli.android.shop.fragments.CoinsStoreFragment;
         modules = {
                 AppModule.class,
                 BusModule.class,
-                JsonModule.class,
+                CouchbaseModule.class,
+                ObjectMapperModule.class,
                 LocalStorageModule.class,
                 PersistenceModule.class,
                 AnalyticsModule.class,
                 RewardGeneratorModule.class,
                 SchedulerModule.class,
-                TimeParserModule.class
+                TimeParserModule.class,
+                ApiModule.class,
+                UrlProviderModule.class
         }
 )
 public interface AppComponent {

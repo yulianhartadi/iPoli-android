@@ -2,20 +2,16 @@ package io.ipoli.android.pet.data;
 
 import android.support.annotation.ColorRes;
 
-import com.google.firebase.database.Exclude;
-import com.google.firebase.database.IgnoreExtraProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.app.persistence.PersistedObject;
-import io.ipoli.android.app.utils.DateUtils;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/24/16.
  */
-@IgnoreExtraProperties
-public class Pet extends PersistedObject {
+public class Pet {
 
     private String name;
     private Integer healthPointsPercentage;
@@ -33,8 +29,6 @@ public class Pet extends PersistedObject {
         this.picture = picture;
         this.backgroundPicture = backgroundPicture;
         setHealthPointsPercentage(healthPointsPercentage);
-        setCreatedAt(DateUtils.nowUTC().getTime());
-        setUpdatedAt(DateUtils.nowUTC().getTime());
     }
 
     public String getPicture() {
@@ -51,32 +45,6 @@ public class Pet extends PersistedObject {
 
     public void setBackgroundPicture(String backgroundPicture) {
         this.backgroundPicture = backgroundPicture;
-    }
-
-    public Long getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Long updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Long getCreatedAt() {
-        return createdAt;
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    public void setCreatedAt(Long createdAt) {
-        this.createdAt = createdAt;
     }
 
     public String getName() {
@@ -113,30 +81,35 @@ public class Pet extends PersistedObject {
         this.coinsBonusPercentage = Math.max(0, Math.min(Constants.MAX_PET_COIN_BONUS, coinsBonusPercentage));
     }
 
+    @JsonIgnore
     public void addHealthPoints(int healthPoints) {
         setHealthPointsPercentage(getHealthPointsPercentage() + healthPoints);
     }
 
+    @JsonIgnore
     private void updateCoinsBonusPercentage() {
         setCoinsBonusPercentage((int) Math.floor(getHealthPointsPercentage() * Constants.COINS_BONUS_PERCENTAGE_OF_HP / 100.0));
     }
 
+    @JsonIgnore
     private void updateExperienceBonusPercentage() {
         setExperienceBonusPercentage((int) Math.floor(getHealthPointsPercentage() * Constants.XP_BONUS_PERCENTAGE_OF_HP / 100.0));
     }
 
-    @Exclude
+    @JsonIgnore
     public String getStateText() {
         return getState().name().toLowerCase();
     }
 
-    @Exclude
+
     @ColorRes
+    @JsonIgnore
     public int getStateColor() {
         return getState().color;
     }
 
-    @Exclude
+
+    @JsonIgnore
     public PetState getState() {
         if (healthPointsPercentage >= 90) {
             return PetState.AWESOME;

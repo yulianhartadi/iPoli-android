@@ -645,7 +645,7 @@ public class EditQuestActivity extends BaseActivity implements
 
     @Override
     public void onTimePicked(Time time) {
-        populateStartTime(time == null ? -1 : time.toMinuteOfDay());
+        populateStartTime(time == null ? null : time.toMinuteOfDay());
         eventBus.post(new QuestStartTimePickedEvent(editMode.name().toLowerCase()));
     }
 
@@ -690,14 +690,14 @@ public class EditQuestActivity extends BaseActivity implements
         timesADayText.setText(TimesADayFormatter.formatReadable(timesADay));
         timesADayText.setTag(timesADay);
         if (timesADay > 1) {
-            populateStartTime(-1);
+            populateStartTime(null);
         }
     }
 
-    private void populateStartTime(int startMinute) {
-        if (startMinute >= 0) {
+    private void populateStartTime(Integer startMinute) {
+        if (startMinute != null) {
             populateTimesADay(1);
-            startTimeText.setText(Time.of(startMinute).toString(use24HourFormat));
+            startTimeText.setText(Time.of(startMinute).toString(shouldUse24HourFormat()));
             startTimeText.setTag(startMinute);
         } else {
             startTimeText.setText(R.string.do_not_know);

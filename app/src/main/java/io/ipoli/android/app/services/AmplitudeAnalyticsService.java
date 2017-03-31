@@ -18,6 +18,7 @@ import io.ipoli.android.app.events.InviteFriendsEvent;
 import io.ipoli.android.app.events.InviteFriendsCanceledEvent;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
+import io.ipoli.android.app.events.PlayerMigratedEvent;
 import io.ipoli.android.app.events.QuestShareProviderPickedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.StartAppWithNoInternetEvent;
@@ -54,7 +55,7 @@ import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.avatar.events.AvatarCoinsTappedEvent;
+import io.ipoli.android.app.events.AvatarCoinsTappedEvent;
 import io.ipoli.android.challenge.events.AcceptChallengeEvent;
 import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
 import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
@@ -75,6 +76,7 @@ import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
+import io.ipoli.android.player.events.PlayerSignedInEvent;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.AgendaWidgetDisabledEvent;
@@ -734,7 +736,7 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onOpenNote(OpenNoteEvent e) {
         log("open_note", EventParams.create()
-                .add("type", e.note.getType())
+                .add("type", e.note.getNoteType())
                 .add("data", e.note.getData()));
     }
 
@@ -857,6 +859,20 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
         log("sleep_hours_changed", EventParams.create()
                 .add("start", e.startTime.toString())
                 .add("end", e.endTime.toString()));
+    }
+
+    @Subscribe
+    public void onPlayerMigrated(PlayerMigratedEvent e) {
+        log("player_migrated", EventParams.create()
+                .add("firebase_id", e.firebasePlayerId)
+                .add("couchbase_id", e.playerId));
+    }
+
+    @Subscribe
+    public void onPlayerSignedIn(PlayerSignedInEvent e) {
+        log("player_signed_in", EventParams.create()
+                .add("provider", e.provider)
+                .add("is_new", String.valueOf(e.isNew)));
     }
 
     @Subscribe

@@ -9,6 +9,10 @@ public class StringUtils {
         return text == null || text.trim().isEmpty();
     }
 
+    public static boolean isNotEmpty(String text) {
+        return !isEmpty(text);
+    }
+
     public static String cut(String text, int startIdx, int endIdx) {
         return text.substring(0, startIdx) + (endIdx + 1 >= text.length() ? "" : text.substring(endIdx + 1));
     }

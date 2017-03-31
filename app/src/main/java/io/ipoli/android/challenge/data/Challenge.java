@@ -2,7 +2,7 @@ package io.ipoli.android.challenge.data;
 
 import android.support.v4.util.Pair;
 
-import com.google.firebase.database.Exclude;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.joda.time.LocalDate;
 
@@ -31,6 +31,8 @@ import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
  */
 public class Challenge extends PersistedObject implements RewardProvider {
 
+    public static final String TYPE = "challenge";
+
     private String name;
 
     private String category;
@@ -52,31 +54,28 @@ public class Challenge extends PersistedObject implements RewardProvider {
     private Long coins;
     private Long experience;
 
+    @JsonIgnore
     private Map<String, Quest> challengeQuests;
+
+    @JsonIgnore
     private Map<String, RepeatingQuest> challengeRepeatingQuests;
 
+    @JsonIgnore
     private Map<String, QuestData> questsData;
-    private Map<String, Boolean> repeatingQuestIds;
 
     private String source;
 
     public Challenge() {
+        super(TYPE);
     }
 
     public Challenge(String name) {
+        super(TYPE);
         this.name = name;
         this.category = Category.PERSONAL.name();
         this.source = Constants.API_RESOURCE_SOURCE;
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
-    }
-
-    public Long getCreatedAt() {
-        return createdAt;
-    }
-
-    public Long getUpdatedAt() {
-        return updatedAt;
     }
 
     public String getName() {
@@ -161,17 +160,17 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.difficulty = difficulty;
     }
 
-    @Exclude
+
     public void setDifficultyType(Difficulty difficulty) {
         this.difficulty = difficulty.getValue();
     }
 
-    @Exclude
+    @JsonIgnore
     public Date getEndDate() {
         return end != null ? new Date(end) : null;
     }
 
-    @Exclude
+    @JsonIgnore
     public void setEndDate(Date endDate) {
         end = endDate != null ? endDate.getTime() : null;
     }
@@ -184,12 +183,12 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.end = end;
     }
 
-    @Exclude
+    @JsonIgnore
     public Date getCompletedAtDate() {
         return completedAt != null ? new Date(completedAt) : null;
     }
 
-    @Exclude
+    @JsonIgnore
     public void setCompletedAtDate(Date completedAtDate) {
         completedAt = completedAtDate != null ? completedAtDate.getTime() : null;
     }
@@ -222,12 +221,12 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return category;
     }
 
-    @Exclude
+    @JsonIgnore
     public void setCategoryType(Category category) {
         this.category = category.name();
     }
 
-    @Exclude
+    @JsonIgnore
     public Category getCategoryType() {
         return Category.valueOf(category);
     }
@@ -236,6 +235,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.category = category;
     }
 
+    @JsonIgnore
     public static Category getCategory(Challenge challenge) {
         return Category.valueOf(challenge.getCategory());
     }
@@ -248,26 +248,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.source = source;
     }
 
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setCreatedAt(Long createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    @Override
-    public void setUpdatedAt(Long updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
+    @JsonIgnore
     public Map<String, Quest> getChallengeQuests() {
         if (challengeQuests == null) {
             challengeQuests = new HashMap<>();
@@ -275,15 +256,17 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return challengeQuests;
     }
 
+    @JsonIgnore
     public void setChallengeQuests(Map<String, Quest> challengeQuests) {
         this.challengeQuests = challengeQuests;
     }
 
-    @Exclude
+    @JsonIgnore
     public void addChallengeQuest(Quest quest) {
         getChallengeQuests().put(quest.getId(), quest);
     }
 
+    @JsonIgnore
     public Map<String, RepeatingQuest> getChallengeRepeatingQuests() {
         if (challengeRepeatingQuests == null) {
             challengeRepeatingQuests = new HashMap<>();
@@ -291,15 +274,17 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return challengeRepeatingQuests;
     }
 
-    @Exclude
+    @JsonIgnore
     public void addChallengeRepeatingQuest(RepeatingQuest repeatingQuest) {
         getChallengeRepeatingQuests().put(repeatingQuest.getId(), repeatingQuest);
     }
 
+    @JsonIgnore
     public void setChallengeRepeatingQuests(Map<String, RepeatingQuest> challengeRepeatingQuests) {
         this.challengeRepeatingQuests = challengeRepeatingQuests;
     }
 
+    @JsonIgnore
     public Map<String, QuestData> getQuestsData() {
         if (questsData == null) {
             questsData = new HashMap<>();
@@ -307,32 +292,12 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return questsData;
     }
 
-    public void setQuestsData(Map<String, QuestData> questsData) {
-        this.questsData = questsData;
-    }
-
-    @Exclude
+    @JsonIgnore
     public void addQuestData(String id, QuestData questData) {
         getQuestsData().put(id, questData);
     }
 
-    public Map<String, Boolean> getRepeatingQuestIds() {
-        if (repeatingQuestIds == null) {
-            repeatingQuestIds = new HashMap<>();
-        }
-        return repeatingQuestIds;
-    }
-
-    public void setRepeatingQuestIds(Map<String, Boolean> repeatingQuestIds) {
-        this.repeatingQuestIds = repeatingQuestIds;
-    }
-
-    @Exclude
-    public void addRepeatingQuestId(String id) {
-        getRepeatingQuestIds().put(id, true);
-    }
-
-    @Exclude
+    @JsonIgnore
     public Date getNextScheduledDate(long currentDate) {
         Date nextDate = null;
         for (QuestData qd : questsData.values()) {
@@ -345,7 +310,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return nextDate;
     }
 
-    @Exclude
+    @JsonIgnore
     public int getTotalTimeSpent() {
         int timeSpent = 0;
         for (QuestData questData : getQuestsData().values()) {
@@ -356,7 +321,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return timeSpent;
     }
 
-    @Exclude
+    @JsonIgnore
     public List<PeriodHistory> getPeriodHistories(LocalDate currentDate) {
         List<PeriodHistory> result = new ArrayList<>();
         List<Pair<LocalDate, LocalDate>> pairs =
@@ -381,12 +346,13 @@ public class Challenge extends PersistedObject implements RewardProvider {
         return result;
     }
 
-    @Exclude
+    @JsonIgnore
     public int getTotalQuestCount() {
         return getQuestsData().size();
     }
 
-    @Exclude
+
+    @JsonIgnore
     public int getCompletedQuestCount() {
         int count = 0;
         for (QuestData questData : getQuestsData().values()) {

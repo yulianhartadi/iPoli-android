@@ -5,10 +5,11 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.lang.reflect.Type;
+import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -18,15 +19,15 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class LocalStorage {
     private final SharedPreferences sharedPreferences;
-    private final Gson gson;
+    private final ObjectMapper objectMapper;
 
-    private LocalStorage(SharedPreferences sharedPreferences, Gson gson) {
+    private LocalStorage(SharedPreferences sharedPreferences, ObjectMapper objectMapper) {
         this.sharedPreferences = sharedPreferences;
-        this.gson = gson;
+        this.objectMapper = objectMapper;
     }
 
-    public static LocalStorage of(Context context, Gson gson) {
-        return new LocalStorage(PreferenceManager.getDefaultSharedPreferences(context), gson);
+    public static LocalStorage of(Context context, ObjectMapper objectMapper) {
+        return new LocalStorage(PreferenceManager.getDefaultSharedPreferences(context), objectMapper);
     }
 
     public void saveInt(String key, int value) {
@@ -41,26 +42,12 @@ public class LocalStorage {
         return sharedPreferences.getLong(key, 0);
     }
 
-    public void saveStringSet(String key, Set<String> values) {
-        editor().putString(key, gson.toJson(values)).apply();
-    }
-
     public void saveIntSet(String key, Set<Integer> values) {
-        editor().putString(key, gson.toJson(values)).apply();
-    }
-
-    public Set<String> readStringSet(String key) {
-        return readStringSet(key, new CopyOnWriteArraySet<>());
-    }
-
-    public Set<String> readStringSet(String key, Set<String> defaultValue) {
-        String json = sharedPreferences.getString(key, "");
-        if (TextUtils.isEmpty(json)) {
-            return defaultValue;
+        try {
+            editor().putString(key, objectMapper.writeValueAsString(values)).apply();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Can't convert int set to JSON string", e);
         }
-        Type typeToken = new TypeToken<CopyOnWriteArraySet<String>>() {
-        }.getType();
-        return gson.fromJson(json, typeToken);
     }
 
     public Set<Integer> readIntSet(String key, Set<Integer> defaultValue) {
@@ -68,9 +55,13 @@ public class LocalStorage {
         if (TextUtils.isEmpty(json)) {
             return defaultValue;
         }
-        Type typeToken = new TypeToken<CopyOnWriteArraySet<Integer>>() {
-        }.getType();
-        return gson.fromJson(json, typeToken);
+        TypeReference typeReference = new TypeReference<CopyOnWriteArraySet<Integer>>() {
+        };
+        try {
+            return objectMapper.readValue(json, typeReference);
+        } catch (IOException e) {
+            throw new RuntimeException("Can't create int set from JSON: " + json, e);
+        }
     }
 
     public int readInt(String key) {

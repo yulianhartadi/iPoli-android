@@ -1,23 +1,22 @@
 package io.ipoli.android.quest.data;
 
-import com.google.firebase.database.Exclude;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.joda.time.LocalDate;
 
 import java.util.Date;
 
-import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 4/8/16.
  */
-public class Recurrence extends PersistedObject {
+public class Recurrence {
 
     public static final String RRULE_EVERY_DAY = "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR,SA,SU";
 
-    public enum RecurrenceType {DAILY, WEEKLY, MONTHLY;}
+    public enum RepeatType {DAILY, WEEKLY, MONTHLY;}
 
     private int flexibleCount;
 
@@ -29,7 +28,7 @@ public class Recurrence extends PersistedObject {
     private String exdate;
     private Long dtstart;
     private Long dtend;
-    private String type;
+    private String repeatType;
 
     public Recurrence() {
 
@@ -37,25 +36,23 @@ public class Recurrence extends PersistedObject {
 
     public static Recurrence create() {
         Recurrence recurrence = new Recurrence();
-        recurrence.setCreatedAt(DateUtils.nowUTC().getTime());
-        recurrence.setUpdatedAt(DateUtils.nowUTC().getTime());
-        recurrence.setRecurrenceType(RecurrenceType.DAILY);
+        recurrence.setRecurrenceType(RepeatType.DAILY);
         recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now()));
         recurrence.setFlexibleCount(0);
         return recurrence;
     }
 
-    @Exclude
-    public void setRecurrenceType(RecurrenceType type) {
-        this.type = type.name();
+    @JsonIgnore
+    public void setRecurrenceType(RepeatType type) {
+        this.repeatType = type.name();
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setRepeatType(String repeatType) {
+        this.repeatType = repeatType;
     }
 
-    public String getType() {
-        return type;
+    public String getRepeatType() {
+        return repeatType;
     }
 
     public String getRrule() {
@@ -90,12 +87,12 @@ public class Recurrence extends PersistedObject {
         this.exdate = exdate;
     }
 
-    @Exclude
+    @JsonIgnore
     public Date getDtstartDate() {
         return dtstart != null ? new Date(dtstart) : null;
     }
 
-    @Exclude
+    @JsonIgnore
     public void setDtstartDate(Date dtstartDate) {
         dtstart = dtstartDate != null ? dtstartDate.getTime() : null;
     }
@@ -108,12 +105,12 @@ public class Recurrence extends PersistedObject {
         this.dtstart = dtstart;
     }
 
-    @Exclude
+    @JsonIgnore
     public Date getDtendDate() {
         return dtend != null ? new Date(dtend) : null;
     }
 
-    @Exclude
+    @JsonIgnore
     public void setDtendDate(Date dtendDate) {
         dtend = dtendDate != null ? dtendDate.getTime() : null;
     }
@@ -126,34 +123,6 @@ public class Recurrence extends PersistedObject {
         this.dtend = dtend;
     }
 
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setCreatedAt(Long createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    @Override
-    public void setUpdatedAt(Long updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Long getCreatedAt() {
-        return createdAt;
-    }
-
-    public Long getUpdatedAt() {
-        return updatedAt;
-    }
-
     public int getFlexibleCount() {
         return flexibleCount;
     }
@@ -162,12 +131,12 @@ public class Recurrence extends PersistedObject {
         this.flexibleCount = flexibleCount;
     }
 
-    @Exclude
-    public RecurrenceType getRecurrenceType() {
-        return RecurrenceType.valueOf(type);
+    @JsonIgnore
+    public RepeatType getRecurrenceType() {
+        return RepeatType.valueOf(repeatType);
     }
 
-    @Exclude
+    @JsonIgnore
     public boolean isFlexible() {
         return flexibleCount > 0;
     }

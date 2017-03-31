@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -91,11 +92,11 @@
                     android:scaleType="fitXY" />
 
                 <ImageView
-                    android:adjustViewBounds="true"
                     android:id="@+id/pet_picture_state"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
+                    android:adjustViewBounds="true"
                     android:scaleType="fitXY" />
             </RelativeLayout>
 
@@ -125,7 +126,7 @@
                     android:max="100"
                     android:scaleY="3" />
 
-                <io.ipoli.android.app.ui.IconButton
+                <mehdi.sakout.fancybuttons.FancyButton
                     android:id="@+id/revive"
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="220dp"
@@ -133,9 +134,11 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="70dp"
-                    android:drawableLeft="@drawable/ic_life_coin_white_24dp"
-                    android:visibility="gone"
-                    app:iconPadding="8dp" />
+                    fancy:fb_defaultColor="@color/colorAccent"
+                    fancy:fb_focusColor="@color/colorAccentDark"
+                    fancy:fb_iconPaddingLeft="16dp"
+                    fancy:fb_iconResource="@drawable/ic_life_coin_white_24dp"
+                    fancy:fb_textSize="18sp" />
             </RelativeLayout>
         </LinearLayout>
     </RelativeLayout>

@@ -20,7 +20,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
     private final int dragBackgroundColor;
     private final Quest quest;
     private boolean shouldDisplayAsProposedSlot;
-    private int startMinute;
+    private Integer startMinute;
     private List<TimeBlock> proposedSlots;
 
     public QuestCalendarViewModel(Quest quest) {
@@ -42,7 +42,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
     }
 
     @Override
-    public int getStartMinute() {
+    public Integer getStartMinute() {
         return startMinute;
     }
 
@@ -52,7 +52,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
     }
 
     @Override
-    public void setStartMinute(int startMinute) {
+    public void setStartMinute(Integer startMinute) {
         this.startMinute = startMinute;
     }
 

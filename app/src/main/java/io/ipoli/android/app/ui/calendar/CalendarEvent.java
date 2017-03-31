@@ -7,11 +7,11 @@ import android.support.annotation.ColorRes;
  * on 2/17/16.
  */
 public interface CalendarEvent {
-    int getStartMinute();
+    Integer getStartMinute();
 
     int getDuration();
 
-    void setStartMinute(int startMinute);
+    void setStartMinute(Integer startMinute);
 
     @ColorRes
     int getBackgroundColor();

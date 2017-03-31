@@ -40,11 +40,11 @@ public class SnoozeQuestReceiver extends BroadcastReceiver {
 
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
             for (Reminder r : q.getReminders()) {
-                notificationManagerCompat.cancel(r.getNotificationId());
+                notificationManagerCompat.cancel(r.getNotificationNum());
             }
 
             q.setStartMinute(q.getStartMinute() + Constants.DEFAULT_SNOOZE_TIME_MINUTES);
-            questPersistenceService.update(q);
+            questPersistenceService.save(q);
             eventBus.post(new QuestSnoozedEvent(q));
             result.finish();
         });

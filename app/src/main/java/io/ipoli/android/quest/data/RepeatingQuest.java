@@ -2,7 +2,7 @@ package io.ipoli.android.quest.data;
 
 import android.support.v4.util.Pair;
 
-import com.google.firebase.database.Exclude;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
@@ -37,6 +37,7 @@ import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
  */
 public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
+    public static final String TYPE = "repeatingQuest";
     private String rawText;
 
     private String name;
@@ -55,6 +56,8 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     private List<Reminder> reminders;
     private List<SubQuest> subQuests;
 
+    private Long completedAt;
+
     private Recurrence recurrence;
 
     private List<Note> notes;
@@ -69,15 +72,18 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     private Map<String, Boolean> scheduledPeriodEndDates;
 
-    @Exclude
+    @JsonIgnore
     private String previousChallengeId;
 
+    @JsonIgnore
     private Map<String, QuestData> questsData;
 
     public RepeatingQuest() {
+        super(TYPE);
     }
 
     public RepeatingQuest(String rawText) {
+        super(TYPE);
         this.rawText = rawText;
         setCreatedAt(nowUTC().getTime());
         setUpdatedAt(nowUTC().getTime());
@@ -86,14 +92,16 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.source = Constants.API_RESOURCE_SOURCE;
     }
 
-    @Exclude
+
+    @JsonIgnore
     public Time getStartTime() {
-        if (getStartMinute() < 0) {
+        if (getStartMinute() == null) {
             return null;
         }
         return Time.of(getStartMinute());
     }
 
+    @JsonIgnore
     public void setStartTime(Time time) {
         if (time != null) {
             setStartMinute(time.toMinuteOfDay());
@@ -106,7 +114,39 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.scheduledPeriodEndDates = scheduledPeriodEndDates;
     }
 
-    @Exclude
+
+    @JsonIgnore
+    public Date getCompletedAtDate() {
+        return completedAt != null ? new Date(completedAt) : null;
+    }
+
+
+    @JsonIgnore
+    public void setCompletedAtDate(Date completedAtDate) {
+        completedAt = completedAtDate != null ? completedAtDate.getTime() : null;
+    }
+
+
+    @JsonIgnore
+    public boolean isCompleted() {
+        return getCompletedAtDate() != null;
+    }
+
+    public Long getCompletedAt() {
+        return completedAt;
+    }
+
+    public void setCompletedAt(Long completedAt) {
+        this.completedAt = completedAt;
+    }
+
+    @JsonIgnore
+    public boolean shouldBeScheduledAfter(LocalDate date) {
+        return getRecurrence().getDtendDate() == null ||
+                getRecurrence().getDtendDate().getTime() >= toStartOfDayUTC(date).getTime();
+    }
+
+    @JsonIgnore
     public int getStreak() {
         Recurrence recurrence = getRecurrence();
         List<QuestData> questsData = new ArrayList<>(getQuestsData().values());
@@ -118,16 +158,16 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         }
     }
 
-    @Exclude
+    @JsonIgnore
     public int getFrequency() {
         Recurrence recurrence = getRecurrence();
         if (recurrence.isFlexible()) {
             return recurrence.getFlexibleCount();
         }
-        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.DAILY) {
+        if (recurrence.getRecurrenceType() == Recurrence.RepeatType.DAILY) {
             return 7;
         }
-        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
+        if (recurrence.getRecurrenceType() == Recurrence.RepeatType.MONTHLY) {
             return 1;
         }
         try {
@@ -138,6 +178,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         }
     }
 
+    @JsonIgnore
     private int getFixedStreak(List<QuestData> questsData) {
         int streak = 0;
         for (QuestData qd : questsData) {
@@ -158,8 +199,8 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return streak;
     }
 
-
-    private int getFlexibleStreak(Recurrence.RecurrenceType recurrenceType, List<QuestData> questsData) {
+    @JsonIgnore
+    private int getFlexibleStreak(Recurrence.RepeatType repeatType, List<QuestData> questsData) {
         int streak = 0;
         for (QuestData qd : questsData) {
 
@@ -173,7 +214,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
             LocalDate periodStart = null;
             LocalDate periodEnd = null;
-            if (recurrenceType == Recurrence.RecurrenceType.MONTHLY) {
+            if (repeatType == Recurrence.RepeatType.MONTHLY) {
                 periodStart = new LocalDate(qd.getOriginalScheduledDate()).dayOfMonth().withMinimumValue();
                 periodEnd = periodStart.dayOfMonth().withMaximumValue();
             } else {
@@ -191,7 +232,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return streak;
     }
 
-    @Exclude
+    @JsonIgnore
     public Date getNextScheduledDate(LocalDate currentDate) {
         Date nextDate = null;
         for (QuestData qd : getQuestsData().values()) {
@@ -243,22 +284,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.name = name;
     }
 
-    public void setCreatedAt(Long createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Long getCreatedAt() {
-        return createdAt;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getCategory() {
         return category;
     }
@@ -267,8 +292,8 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.category = category;
     }
 
-    public int getStartMinute() {
-        return startMinute != null ? startMinute : -1;
+    public Integer getStartMinute() {
+        return startMinute;
     }
 
     public List<SubQuest> getSubQuests() {
@@ -277,14 +302,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
 
     public void setSubQuests(List<SubQuest> subQuests) {
         this.subQuests = subQuests;
-    }
-
-    public Long getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Long updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public Recurrence getRecurrence() {
@@ -355,12 +372,12 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.preferredStartTime = preferredStartTime;
     }
 
-    @Exclude
+    @JsonIgnore
     public void addScheduledPeriodEndDate(Date date) {
         getScheduledPeriodEndDates().put(String.valueOf(date.getTime()), true);
     }
 
-    @Exclude
+    @JsonIgnore
     public boolean isFlexible() {
         return getRecurrence().isFlexible();
     }
@@ -372,16 +389,16 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return scheduledPeriodEndDates;
     }
 
-    @Exclude
+    @JsonIgnore
     public boolean shouldBeScheduledForPeriod(Date periodEnd) {
         return !getScheduledPeriodEndDates().containsKey(String.valueOf(periodEnd.getTime()));
     }
 
-    @Exclude
+    @JsonIgnore
     public List<Note> getTextNotes() {
         List<Note> textNotes = new ArrayList<>();
         for (Note note : getNotes()) {
-            if (note.getType().equals(Note.Type.TEXT.name())) {
+            if (note.getNoteType().equals(Note.NoteType.TEXT.name())) {
                 textNotes.add(note);
             }
         }
@@ -392,16 +409,17 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         getNotes().add(note);
     }
 
-    @Exclude
+    @JsonIgnore
     public void removeTextNote() {
         List<Note> txtNotes = getTextNotes();
         getNotes().removeAll(txtNotes);
     }
 
+    @JsonIgnore
     public List<PeriodHistory> getPeriodHistories(LocalDate currentDate) {
         List<PeriodHistory> result = new ArrayList<>();
         int frequency = getFrequency();
-        List<Pair<LocalDate, LocalDate>> pairs = recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY ?
+        List<Pair<LocalDate, LocalDate>> pairs = recurrence.getRecurrenceType() == Recurrence.RepeatType.MONTHLY ?
                 DateUtils.getBoundsFor4MonthsInThePast(currentDate) :
                 DateUtils.getBoundsFor4WeeksInThePast(currentDate);
 
@@ -428,6 +446,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return result;
     }
 
+    @JsonIgnore
     public Map<String, QuestData> getQuestsData() {
         if (questsData == null) {
             questsData = new HashMap<>();
@@ -435,26 +454,30 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return questsData;
     }
 
+    @JsonIgnore
     public void setQuestsData(Map<String, QuestData> questsData) {
         this.questsData = questsData;
     }
 
-    @Exclude
+
+    @JsonIgnore
     public void addQuestData(String id, QuestData questData) {
         getQuestsData().put(id, questData);
     }
 
-    @Exclude
+    @JsonIgnore
     public String getPreviousChallengeId() {
         return previousChallengeId;
     }
 
-    @Exclude
+
+    @JsonIgnore
     public void setPreviousChallengeId(String previousChallengeId) {
         this.previousChallengeId = previousChallengeId;
     }
 
-    @Exclude
+
+    @JsonIgnore
     public int getTotalTimeSpent() {
         int timeSpent = 0;
         for (QuestData questData : getQuestsData().values()) {
@@ -465,7 +488,8 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return timeSpent;
     }
 
-    @Exclude
+
+    @JsonIgnore
     public boolean isScheduledForDate(LocalDate date) {
         for (String dateString : getScheduledPeriodEndDates().keySet()) {
             LocalDate periodEnd = new LocalDate(Long.valueOf(dateString));
@@ -485,12 +509,12 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return timesADay;
     }
 
-    @Exclude
+    @JsonIgnore
     public Category getCategoryType() {
         return Category.valueOf(getCategory());
     }
 
-    @Exclude
+    @JsonIgnore
     public void setCategoryType(Category category) {
         setCategory(category.name());
     }
@@ -499,14 +523,14 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         getReminders().add(reminder);
     }
 
-    @Exclude
+    @JsonIgnore
     public void setStartTimePreference(TimePreference timePreference) {
         if (timePreference != null) {
             this.preferredStartTime = timePreference.name();
         }
     }
 
-    @Exclude
+    @JsonIgnore
     public TimePreference getStartTimePreference() {
         if (StringUtils.isEmpty(preferredStartTime)) {
             return TimePreference.ANY;

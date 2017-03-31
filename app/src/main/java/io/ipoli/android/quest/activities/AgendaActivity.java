@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -61,6 +62,7 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
     TextView journeyText;
 
     private LocalDate selectedDate;
+    private boolean use24HourFormat;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,6 +86,8 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         }
+
+        use24HourFormat = shouldUse24HourFormat();
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         questList.setLayoutManager(layoutManager);
@@ -156,5 +160,13 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
     public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
         selectedDate = new LocalDate(year, month + 1, dayOfMonth);
         showQuestsForDate(selectedDate);
+    }
+
+    @Override
+    public void finish() {
+        Intent data = new Intent();
+        data.putExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, selectedDate.toDate().getTime());
+        setResult(RESULT_OK, data);
+        super.finish();
     }
 }

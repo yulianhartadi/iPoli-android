@@ -275,7 +275,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             return EMPTY_NOTE_HINT_VIEW_TYPE;
         }
         Note note = (Note) item;
-        if (note.getNoteType() == Note.Type.TEXT) {
+        if (note.getNoteTypeValue() == Note.NoteType.TEXT) {
             return NOTE_ITEM_VIEW_TYPE;
         }
         return NOTE_LINK_ITEM_VIEW_TYPE;

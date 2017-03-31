@@ -16,9 +16,10 @@ import android.support.v7.app.NotificationCompat;
 import android.widget.Toast;
 
 import com.amplitude.api.Amplitude;
-import com.facebook.FacebookSdk;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.gson.Gson;
+import com.couchbase.lite.Database;
+import com.couchbase.lite.replicator.Replication;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
@@ -37,7 +38,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 
@@ -47,21 +47,27 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.QuickAddActivity;
+import io.ipoli.android.app.api.Api;
+import io.ipoli.android.app.api.UrlProvider;
+import io.ipoli.android.app.auth.FacebookAuthService;
+import io.ipoli.android.app.auth.GoogleAuthService;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.DateChangedEvent;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.FinishSignInActivityEvent;
+import io.ipoli.android.app.events.FinishTutorialActivityEvent;
 import io.ipoli.android.app.events.InitAppEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.StartQuickAddEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
-import io.ipoli.android.app.exceptions.PetNotFoundException;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
+import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IntentUtils;
@@ -69,9 +75,8 @@ import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.avatar.Avatar;
-import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
 import io.ipoli.android.challenge.activities.ChallengeCompleteActivity;
+import io.ipoli.android.challenge.activities.PickChallengeActivity;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.data.Difficulty;
 import io.ipoli.android.challenge.data.PredefinedChallenge;
@@ -86,11 +91,16 @@ import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
-import io.ipoli.android.pet.persistence.PetPersistenceService;
+import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
+import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.LevelUpActivity;
+import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
+import io.ipoli.android.player.events.PlayerUpdatedEvent;
+import io.ipoli.android.player.events.StartReplicationEvent;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Category;
@@ -108,7 +118,6 @@ import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.generators.RewardProvider;
-import io.ipoli.android.quest.persistence.OnChangeListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.receivers.CompleteQuestReceiver;
@@ -120,6 +129,7 @@ import io.ipoli.android.quest.schedulers.QuestScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
+import okhttp3.Cookie;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -135,10 +145,16 @@ public class App extends MultiDexApplication {
     Bus eventBus;
 
     @Inject
-    Gson gson;
+    ObjectMapper objectMapper;
 
     @Inject
     LocalStorage localStorage;
+
+    @Inject
+    Database database;
+
+    @Inject
+    Api api;
 
     @Inject
     RepeatingQuestScheduler repeatingQuestScheduler;
@@ -159,10 +175,7 @@ public class App extends MultiDexApplication {
     ChallengePersistenceService challengePersistenceService;
 
     @Inject
-    AvatarPersistenceService avatarPersistenceService;
-
-    @Inject
-    PetPersistenceService petPersistenceService;
+    PlayerPersistenceService playerPersistenceService;
 
     @Inject
     ExperienceRewardGenerator experienceRewardGenerator;
@@ -170,34 +183,34 @@ public class App extends MultiDexApplication {
     @Inject
     CoinsRewardGenerator coinsRewardGenerator;
 
+    @Inject
+    UrlProvider urlProvider;
+
     private void listenForChanges() {
         questPersistenceService.removeAllListeners();
-        listenForReminderChange();
         listenForDailyQuestsChange();
     }
 
-    private void updatePet(int healthPoints, String tag) {
-        petPersistenceService.find(pet -> {
+    private void updatePet(Pet pet, int healthPoints) {
+        if (pet.getState() == Pet.PetState.DEAD) {
+            return;
+        }
 
-            if (pet == null) {
-                eventBus.post(new AppErrorEvent(new PetNotFoundException(playerId, tag)));
-                return;
-            }
+        Pet.PetState initialState = pet.getState();
+        pet.addHealthPoints(healthPoints);
 
-            if (pet.getState() == Pet.PetState.DEAD) {
-                return;
-            }
+        Pet.PetState currentState = pet.getState();
 
-            Pet.PetState initialState = pet.getState();
-            pet.addHealthPoints(healthPoints);
+        if (healthPoints < 0 && initialState != currentState && (currentState == Pet.PetState.DEAD || currentState == Pet.PetState.SAD)) {
+            notifyPetStateChanged(pet);
+        }
+    }
 
-            Pet.PetState currentState = pet.getState();
-
-            if (healthPoints < 0 && initialState != currentState && (currentState == Pet.PetState.DEAD || currentState == Pet.PetState.SAD)) {
-                notifyPetStateChanged(pet);
-            }
-            petPersistenceService.save(pet);
-        });
+    private void savePet(int healthPoints) {
+        Player player = getPlayer();
+        Pet pet = player.getPet();
+        updatePet(pet, healthPoints);
+        playerPersistenceService.save(player);
     }
 
     private void notifyPetStateChanged(Pet pet) {
@@ -256,8 +269,12 @@ public class App extends MultiDexApplication {
 
     private void listenForDailyQuestsChange() {
         questPersistenceService.listenForAllNonAllDayForDate(LocalDate.now(), quests -> {
-
-            localStorage.saveString(Constants.KEY_WIDGET_AGENDA_QUESTS, gson.toJson(quests));
+            scheduleNextReminder();
+            try {
+                localStorage.saveString(Constants.KEY_WIDGET_AGENDA_QUESTS, objectMapper.writeValueAsString(quests));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Cant save quests for Widget", e);
+            }
             requestWidgetUpdate();
 
             if (quests.isEmpty()) {
@@ -289,49 +306,60 @@ public class App extends MultiDexApplication {
         }
     }
 
-    private void listenForReminderChange() {
-        questPersistenceService.listenForReminderChange(new OnChangeListener() {
-            @Override
-            public void onNew() {
-                scheduleNextReminder();
-            }
-
-            @Override
-            public void onChanged() {
-                scheduleNextReminder();
-            }
-
-            @Override
-            public void onDeleted() {
-                scheduleNextReminder();
-            }
-        });
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
 
         JodaTimeAndroid.init(this);
-        FacebookSdk.sdkInitialize(getApplicationContext());
         Amplitude.getInstance().initialize(getApplicationContext(), AnalyticsConstants.AMPLITUDE_KEY).enableForegroundTracking(this);
-
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         getAppComponent(this).inject(this);
 
         registerServices();
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
-        if (StringUtils.isEmpty(playerId)) {
+
+        if (hasPlayer() && getPlayer().getSchemaVersion() != Constants.SCHEMA_VERSION) {
+            return;
+        }
+        if (!hasPlayer()) {
+            if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
+                localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
+                startNewActivity(TutorialActivity.class);
+                return;
+            } else {
+                startNewActivity(SignInActivity.class);
+            }
             return;
         }
 
-        int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
-        if (schemaVersion != Constants.SCHEMA_VERSION) {
-            return;
-        }
-
+        initReplication();
         initAppStart();
+    }
+
+    @Subscribe
+    public void onFinishTutorialActivity(FinishTutorialActivityEvent e) {
+        if (!hasPlayer()) {
+            startNewActivity(SignInActivity.class);
+        }
+    }
+
+    @Subscribe
+    public void onFinishSignInActivity(FinishSignInActivityEvent e) {
+        if (hasPlayer() && e.isNewPlayer) {
+            startNewActivity(MainActivity.class);
+            Intent intent = new Intent(this, PickChallengeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(PickChallengeActivity.TITLE, getString(R.string.pick_challenge_to_start));
+            startActivity(intent);
+        } else if (!hasPlayer()) {
+            System.exit(0);
+        }
+    }
+
+    private void startNewActivity(Class clazz) {
+        Intent intent = new Intent(this, clazz);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     private void updateOngoingNotification(Quest quest, int completedCount, int totalCount) {
@@ -408,7 +436,6 @@ public class App extends MultiDexApplication {
     private void initAppStart() {
         int versionCode = localStorage.readInt(Constants.KEY_APP_VERSION_CODE);
         if (versionCode != BuildConfig.VERSION_CODE) {
-            FirebaseDatabase.getInstance().getReference(Constants.API_VERSION).child("players").child(playerId).keepSynced(true);
             scheduleDailyChallenge();
             localStorage.saveInt(Constants.KEY_APP_VERSION_CODE, BuildConfig.VERSION_CODE);
             if (versionCode > 0) {
@@ -419,6 +446,66 @@ public class App extends MultiDexApplication {
         scheduleDateChanged();
         scheduleNextReminder();
         listenForChanges();
+    }
+
+    private void initReplication() {
+        Player player = getPlayer();
+        if (!player.isAuthenticated()) {
+            return;
+        }
+        AccessTokenListener listener = accessToken -> {
+            if (StringUtils.isEmpty(accessToken)) {
+                return;
+            }
+            api.createSession(player.getCurrentAuthProvider(), accessToken, new Api.SessionResponseListener() {
+                @Override
+                public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
+                    syncData(cookies);
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    eventBus.post(new AppErrorEvent(e));
+                }
+            });
+        };
+        AuthProvider.Provider authProvider = player.getCurrentAuthProvider().getProviderType();
+        if (authProvider == AuthProvider.Provider.GOOGLE) {
+            new GoogleAuthService(eventBus).getIdToken(this, listener::onAccessTokenReceived);
+        } else if (authProvider == AuthProvider.Provider.FACEBOOK) {
+            listener.onAccessTokenReceived(new FacebookAuthService(eventBus).getAccessToken());
+        }
+    }
+
+    @Subscribe
+    public void onStartReplication(StartReplicationEvent e) {
+        syncData(e.cookies);
+    }
+
+    private void syncData(List<Cookie> cookies) {
+        try {
+            Replication pull = database.createPullReplication(urlProvider.sync());
+            for (Cookie cookie : cookies) {
+                pull.setCookie(cookie.name(), cookie.value(), cookie.path(),
+                        new Date(cookie.expiresAt()), cookie.secure(), cookie.httpOnly());
+            }
+            pull.setContinuous(true);
+            List<String> channels = new ArrayList<>();
+            channels.add(playerId);
+            pull.setChannels(channels);
+
+            Replication push = database.createPushReplication(urlProvider.sync());
+            for (Cookie cookie : cookies) {
+                push.setCookie(cookie.name(), cookie.value(), cookie.path(),
+                        new Date(cookie.expiresAt()), cookie.secure(), cookie.httpOnly());
+            }
+            push.setContinuous(true);
+
+            pull.start();
+            push.start();
+        } catch (Exception e) {
+            eventBus.post(new AppErrorEvent(e));
+        }
     }
 
     private void scheduleDailyChallenge() {
@@ -442,20 +529,14 @@ public class App extends MultiDexApplication {
         repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests(this::scheduleRepeatingQuests);
     }
 
-    private void moveIncompleteQuestsToInbox() {
-        questPersistenceService.findAllIncompleteToDosBefore(new LocalDate(), quests -> {
+    private void clearIncompleteQuests() {
+        questPersistenceService.findAllIncompleteFor(new LocalDate().minusDays(1), quests -> {
             for (Quest q : quests) {
-                if (q.isStarted()) {
-                    q.setScheduledDateFromLocal(new Date());
-                    q.setStartMinute(0);
-                } else {
-                    q.setScheduledDate(null);
-                }
                 if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
                     q.setPriority(null);
                 }
             }
-            questPersistenceService.update(quests);
+            questPersistenceService.save(quests);
         });
     }
 
@@ -475,10 +556,15 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onPlayerCreated(PlayerCreatedEvent e) {
-        localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
         localStorage.saveString(Constants.KEY_PLAYER_ID, e.playerId);
         playerId = e.playerId;
         initAppStart();
+    }
+
+    @Subscribe
+    public void onPlayerUpdated(PlayerUpdatedEvent e) {
+        localStorage.saveString(Constants.KEY_PLAYER_ID, e.playerId);
+        playerId = e.playerId;
     }
 
     @Subscribe
@@ -505,10 +591,10 @@ public class App extends MultiDexApplication {
             q.setCompletedAtMinute(Time.now().toMinuteOfDay());
             q.setExperience(experienceRewardGenerator.generate(q));
             q.setCoins(coinsRewardGenerator.generate(q));
-            questPersistenceService.update(q);
+            questPersistenceService.save(q);
             onQuestComplete(q, e.source);
         } else {
-            questPersistenceService.update(q);
+            questPersistenceService.save(q);
             Toast.makeText(this, R.string.quest_complete, Toast.LENGTH_SHORT).show();
         }
     }
@@ -519,11 +605,10 @@ public class App extends MultiDexApplication {
         if (bq instanceof Quest) {
             Quest q = (Quest) bq;
             q.setChallengeId(null);
-            questPersistenceService.update(q);
+            questPersistenceService.save(q);
         } else {
             RepeatingQuest rq = (RepeatingQuest) bq;
-            rq.setChallengeId(null);
-            repeatingQuestPersistenceService.update(rq);
+            repeatingQuestPersistenceService.removeFromChallenge(rq);
         }
     }
 
@@ -544,30 +629,36 @@ public class App extends MultiDexApplication {
         Long coins = quest.getCoins();
         quest.setExperience(null);
         quest.setCoins(null);
-        questPersistenceService.update(quest);
-        avatarPersistenceService.find(avatar -> {
-            avatar.removeExperience(xp);
-            if (shouldDecreaseLevel(avatar)) {
-                avatar.setLevel(Math.max(Constants.DEFAULT_AVATAR_LEVEL, avatar.getLevel() - 1));
-                while (shouldDecreaseLevel(avatar)) {
-                    avatar.setLevel(Math.max(Constants.DEFAULT_AVATAR_LEVEL, avatar.getLevel() - 1));
-                }
-                eventBus.post(new LevelDownEvent(avatar.getLevel()));
-            }
-            avatar.removeCoins(coins);
-            avatarPersistenceService.save(avatar);
-        });
+        questPersistenceService.save(quest);
 
-        updatePet((int) -Math.floor(xp / Constants.XP_TO_PET_HP_RATIO), "undo_quest");
+        Player player = getPlayer();
+        player.removeExperience(xp);
+        if (shouldDecreaseLevel(player)) {
+            player.setLevel(Math.max(Constants.DEFAULT_AVATAR_LEVEL, player.getLevel() - 1));
+            while (shouldDecreaseLevel(player)) {
+                player.setLevel(Math.max(Constants.DEFAULT_AVATAR_LEVEL, player.getLevel() - 1));
+            }
+            eventBus.post(new LevelDownEvent(player.getLevel()));
+        }
+        player.removeCoins(coins);
+
+        updatePet(player.getPet(), (int) -Math.floor(xp / Constants.XP_TO_PET_HP_RATIO));
+        playerPersistenceService.save(player);
         eventBus.post(new UndoCompletedQuestEvent(quest, xp, coins));
     }
 
-    private boolean shouldIncreaseLevel(Avatar avatar) {
-        return new BigInteger(avatar.getExperience()).compareTo(ExperienceForLevelGenerator.forLevel(avatar.getLevel() + 1)) >= 0;
+    private Player getPlayer() {
+        Player player = playerPersistenceService.get();
+        playerId = player != null ? player.getId() : null;
+        return player;
     }
 
-    private boolean shouldDecreaseLevel(Avatar avatar) {
-        return new BigInteger(avatar.getExperience()).compareTo(ExperienceForLevelGenerator.forLevel(avatar.getLevel())) < 0;
+    private boolean shouldIncreaseLevel(Player player) {
+        return new BigInteger(player.getExperience()).compareTo(ExperienceForLevelGenerator.forLevel(player.getLevel() + 1)) >= 0;
+    }
+
+    private boolean shouldDecreaseLevel(Player player) {
+        return new BigInteger(player.getExperience()).compareTo(ExperienceForLevelGenerator.forLevel(player.getLevel())) < 0;
     }
 
     @Subscribe
@@ -608,7 +699,7 @@ public class App extends MultiDexApplication {
             quest.setExperience(experienceRewardGenerator.generate(quest));
             quest.setCoins(coinsRewardGenerator.generate(quest));
         }
-        questPersistenceService.update(quest);
+        questPersistenceService.save(quest);
         if (quest.isCompleted()) {
             onQuestComplete(quest, e.source);
         }
@@ -628,7 +719,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onUpdateRepeatingQuest(UpdateRepeatingQuestEvent e) {
-        RepeatingQuest repeatingQuest = e.repeatingQuest;
+        final RepeatingQuest repeatingQuest = e.repeatingQuest;
         questPersistenceService.findAllUpcomingForRepeatingQuest(new LocalDate(), repeatingQuest.getId(), questsToRemove -> {
             for (Quest quest : questsToRemove) {
                 QuestNotificationScheduler.cancelAll(quest, this);
@@ -656,7 +747,7 @@ public class App extends MultiDexApplication {
     private void onQuestComplete(Quest quest, EventSource source) {
         checkForDailyChallengeCompletion(quest);
         updateAvatar(quest);
-        updatePet((int) (Math.ceil(quest.getExperience() / Constants.XP_TO_PET_HP_RATIO)), "quest_complete");
+        savePet((int) (Math.ceil(quest.getExperience() / Constants.XP_TO_PET_HP_RATIO)));
         eventBus.post(new QuestCompletedEvent(quest, source));
     }
 
@@ -702,26 +793,25 @@ public class App extends MultiDexApplication {
     }
 
     private void updateAvatar(RewardProvider rewardProvider) {
-        avatarPersistenceService.find(avatar -> {
-            Long experience = rewardProvider.getExperience();
-            avatar.addExperience(experience);
-            increaseAvatarLevelIfNeeded(avatar);
-            avatar.addCoins(rewardProvider.getCoins());
-            avatarPersistenceService.save(avatar);
-        });
+        Player player = getPlayer();
+        Long experience = rewardProvider.getExperience();
+        player.addExperience(experience);
+        increasePlayerLevelIfNeeded(player);
+        player.addCoins(rewardProvider.getCoins());
+        playerPersistenceService.save(player);
     }
 
-    private void increaseAvatarLevelIfNeeded(Avatar avatar) {
-        if (shouldIncreaseLevel(avatar)) {
-            avatar.setLevel(avatar.getLevel() + 1);
-            while (shouldIncreaseLevel(avatar)) {
-                avatar.setLevel(avatar.getLevel() + 1);
+    private void increasePlayerLevelIfNeeded(Player player) {
+        if (shouldIncreaseLevel(player)) {
+            player.setLevel(player.getLevel() + 1);
+            while (shouldIncreaseLevel(player)) {
+                player.setLevel(player.getLevel() + 1);
             }
             Intent intent = new Intent(this, LevelUpActivity.class);
-            intent.putExtra(LevelUpActivity.LEVEL, avatar.getLevel());
+            intent.putExtra(LevelUpActivity.LEVEL, player.getLevel());
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-            eventBus.post(new LevelUpEvent(avatar.getLevel()));
+            eventBus.post(new LevelUpEvent(player.getLevel()));
         }
     }
 
@@ -729,18 +819,13 @@ public class App extends MultiDexApplication {
     public void onNewRepeatingQuest(NewRepeatingQuestEvent e) {
         RepeatingQuest repeatingQuest = e.repeatingQuest;
         repeatingQuest.setDuration(Math.max(repeatingQuest.getDuration(), Constants.QUEST_MIN_DURATION));
-
         List<Quest> quests = repeatingQuestScheduler.scheduleAhead(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
-
-        repeatingQuestPersistenceService.save(repeatingQuest, quests);
+        repeatingQuestPersistenceService.saveWithQuests(repeatingQuest, quests);
     }
 
     @Subscribe
     public void onDeleteRepeatingQuestRequest(final DeleteRepeatingQuestRequestEvent e) {
-        final RepeatingQuest repeatingQuest = e.repeatingQuest;
-        questPersistenceService.findAllNotCompletedForRepeatingQuest(repeatingQuest.getId(), quests -> {
-            repeatingQuestPersistenceService.delete(repeatingQuest, quests);
-        });
+        repeatingQuestPersistenceService.delete(e.repeatingQuest);
     }
 
     private void scheduleRepeatingQuests(List<RepeatingQuest> repeatingQuests) {
@@ -749,7 +834,7 @@ public class App extends MultiDexApplication {
             List<Quest> quests = repeatingQuestScheduler.scheduleAhead(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
             repeatingQuestToScheduledQuests.put(repeatingQuest, quests);
         }
-        repeatingQuestPersistenceService.saveScheduledRepeatingQuests(repeatingQuestToScheduledQuests);
+        repeatingQuestPersistenceService.saveWithQuests(repeatingQuestToScheduledQuests);
     }
 
     private void scheduleNextReminder() {
@@ -759,31 +844,7 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onDeleteChallengeRequest(DeleteChallengeRequestEvent e) {
         Challenge challenge = e.challenge;
-        if (e.shouldDeleteQuests) {
-
-            new Thread(() -> {
-
-                CountDownLatch latch = new CountDownLatch(challenge.getRepeatingQuestIds().size());
-                final List<Quest> quests = new ArrayList<>();
-                for (String repeatingQuestId : challenge.getRepeatingQuestIds().keySet()) {
-                    questPersistenceService.findAllForRepeatingQuest(repeatingQuestId, qs -> {
-                        quests.addAll(qs);
-                        latch.countDown();
-                    });
-                }
-
-                try {
-                    latch.await();
-                } catch (InterruptedException ex) {
-                    eventBus.post(new AppErrorEvent(ex));
-                }
-                quests.addAll(challenge.getChallengeQuests().values());
-                challengePersistenceService.deleteWithQuests(challenge, quests);
-            }).start();
-
-        } else {
-            challengePersistenceService.delete(challenge);
-        }
+        challengePersistenceService.delete(challenge, e.shouldDeleteQuests);
     }
 
     @Subscribe
@@ -798,7 +859,7 @@ public class App extends MultiDexApplication {
 
     private void onChallengeComplete(Challenge challenge, EventSource source) {
         updateAvatar(challenge);
-        updatePet((int) (Math.floor(challenge.getExperience() / Constants.XP_TO_PET_HP_RATIO)), "challenge_complete");
+        savePet((int) (Math.floor(challenge.getExperience() / Constants.XP_TO_PET_HP_RATIO)));
         showChallengeCompleteDialog(getString(R.string.challenge_complete, challenge.getName()), challenge.getExperience(), challenge.getCoins());
         eventBus.post(new ChallengeCompletedEvent(challenge, source));
     }
@@ -836,9 +897,9 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onDateChanged(DateChangedEvent e) {
         questPersistenceService.findAllNonAllDayForDate(LocalDate.now().minusDays(1), quests -> {
-            updatePet(-getDecreasePercentage(quests), "date_change");
+            savePet(-getDecreasePercentage(quests));
             scheduleQuestsFor4WeeksAhead();
-            moveIncompleteQuestsToInbox();
+            clearIncompleteQuests();
             scheduleDateChanged();
             listenForChanges();
             eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.DATE_CHANGE));
@@ -847,6 +908,10 @@ public class App extends MultiDexApplication {
 
     public static String getPlayerId() {
         return playerId;
+    }
+
+    public static boolean hasPlayer() {
+        return !StringUtils.isEmpty(playerId);
     }
 
     public static List<PredefinedChallenge> getPredefinedChallenges() {
@@ -950,5 +1015,9 @@ public class App extends MultiDexApplication {
         challenges.add(new PredefinedChallenge(c, "Connect with your friends and family", R.drawable.challenge_08, R.drawable.challenge_expanded_08));
 
         return challenges;
+    }
+
+    interface AccessTokenListener {
+        void onAccessTokenReceived(String accessToken);
     }
 }

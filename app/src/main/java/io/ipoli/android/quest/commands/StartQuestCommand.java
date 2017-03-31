@@ -30,11 +30,11 @@ public class StartQuestCommand {
     public Quest execute() {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         for (Reminder r : quest.getReminders()) {
-            notificationManagerCompat.cancel(r.getNotificationId());
+            notificationManagerCompat.cancel(r.getNotificationNum());
         }
 
         quest.setActualStartDate(DateUtils.nowUTC());
-        questPersistenceService.update(quest);
+        questPersistenceService.save(quest);
         stopOtherRunningQuests(quest);
 
         if (quest.getDuration() > 0) {
@@ -52,7 +52,7 @@ public class StartQuestCommand {
                     cq.setActualStartDate(null);
                 }
             }
-            questPersistenceService.update(quests);
+            questPersistenceService.save(quests);
         });
     }
 }

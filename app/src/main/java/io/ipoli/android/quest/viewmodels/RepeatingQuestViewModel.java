@@ -109,7 +109,7 @@ public class RepeatingQuestViewModel {
         }
 
         Recurrence recurrence = repeatingQuest.getRecurrence();
-        if (recurrence.getRecurrenceType() == Recurrence.RecurrenceType.MONTHLY) {
+        if (recurrence.getRecurrenceType() == Recurrence.RepeatType.MONTHLY) {
             return remainingCount + " more this month";
         }
 

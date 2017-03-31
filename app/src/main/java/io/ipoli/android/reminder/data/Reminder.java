@@ -1,64 +1,37 @@
 package io.ipoli.android.reminder.data;
 
-import com.google.firebase.database.Exclude;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.Date;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import io.ipoli.android.app.persistence.PersistedObject;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/26/16.
  */
-public class Reminder extends PersistedObject {
+public class Reminder {
 
     private String message;
 
     private Long minutesFromStart;
 
-    private Integer notificationId;
+    private String notificationId;
 
     private Long start;
 
     public Reminder() {
     }
 
-    public Reminder(long minutesFromStart, int notificationId) {
-        this.notificationId = notificationId;
+    public Reminder(long minutesFromStart) {
+        this(minutesFromStart, String.valueOf(new Random().nextInt()));
+    }
+
+    public Reminder(long minutesFromStart, String notificationId) {
         this.minutesFromStart = minutesFromStart;
-        setCreatedAt(DateUtils.nowUTC().getTime());
-        setUpdatedAt(DateUtils.nowUTC().getTime());
-    }
-
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public void setCreatedAt(Long createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    @Override
-    public void setUpdatedAt(Long updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Long getCreatedAt() {
-        return createdAt;
-    }
-
-    public Long getUpdatedAt() {
-        return updatedAt;
+        this.notificationId = notificationId;
     }
 
     public long getMinutesFromStart() {
@@ -77,14 +50,20 @@ public class Reminder extends PersistedObject {
         return message;
     }
 
-    public Integer getNotificationId() {
+    public String getNotificationId() {
         return notificationId;
     }
 
-    public void setNotificationId(int notificationId) {
+    public void setNotificationId(String notificationId) {
         this.notificationId = notificationId;
     }
 
+    @JsonIgnore
+    public int getNotificationNum() {
+        return Integer.valueOf(notificationId);
+    }
+
+    @JsonIgnore
     public void calculateStartTime(Quest quest) {
         Date questStartTime = Quest.getStartDateTime(quest);
         if (questStartTime == null) {
@@ -94,12 +73,12 @@ public class Reminder extends PersistedObject {
         start = questStartTime.getTime() + TimeUnit.MINUTES.toMillis(getMinutesFromStart());
     }
 
-    @Exclude
+    @JsonIgnore
     public Date getStartTime() {
         return start != null ? new Date(start) : null;
     }
 
-    @Exclude
+    @JsonIgnore
     public void setStartTime(Date startTime) {
         start = startTime != null ? startTime.getTime() : null;
     }

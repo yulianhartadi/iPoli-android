@@ -91,7 +91,7 @@ public class AddRepeatingQuestRecurrenceFragment extends BaseFragment {
         Recurrence recurrence = Recurrence.create();
         Recur recur = new Recur(Recur.WEEKLY, null);
         recurrence.setRrule(recur.toString());
-        recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+        recurrence.setRecurrenceType(Recurrence.RepeatType.WEEKLY);
         recurrence.setFlexibleCount(flexibleCount);
         return recurrence;
     }
@@ -101,7 +101,7 @@ public class AddRepeatingQuestRecurrenceFragment extends BaseFragment {
         Recurrence recurrence = Recurrence.create();
         Recur recur = new Recur(Recur.MONTHLY, null);
         recurrence.setRrule(recur.toString());
-        recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
+        recurrence.setRecurrenceType(Recurrence.RepeatType.MONTHLY);
         recurrence.setFlexibleCount(flexibleCount);
         return recurrence;
     }
@@ -118,7 +118,7 @@ public class AddRepeatingQuestRecurrenceFragment extends BaseFragment {
         recur.getDayList().add(WeekDay.SA);
         recur.getDayList().add(WeekDay.SU);
         recur.setFrequency(Recur.WEEKLY);
-        recurrence.setRecurrenceType(Recurrence.RecurrenceType.DAILY);
+        recurrence.setRecurrenceType(Recurrence.RepeatType.DAILY);
         recurrence.setRrule(recur.toString());
         recurrence.setFlexibleCount(0);
         return recurrence;

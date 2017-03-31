@@ -101,7 +101,7 @@ public class ChallengePickerFragment extends DialogFragment {
 
     public void show(FragmentManager fragmentManager) {
         App.getAppComponent(getContext()).inject(this);
-        challengePersistenceService.findAllNotCompleted(challenges -> {
+        challengePersistenceService.listenForAll(challenges -> {
             this.challenges = challenges;
             show(fragmentManager, TAG);
         });

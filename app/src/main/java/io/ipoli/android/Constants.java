@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import io.ipoli.android.avatar.TimeOfDay;
+import io.ipoli.android.app.TimeOfDay;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -73,8 +73,6 @@ public interface Constants {
 
     String KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL";
 
-    String KEY_SCHEMA_VERSION = "SCHEMA_VERSION";
-
     String IPOLI_EMAIL = "hi@ipoli.io";
 
     String API_RESOURCE_SOURCE = "ipoli-android";
@@ -83,11 +81,11 @@ public interface Constants {
     long DEFAULT_PLAYER_COINS = 10;
     String DEFAULT_PLAYER_PICTURE = "avatar_12";
     List<TimeOfDay> DEFAULT_PLAYER_PRODUCTIVE_TIME = new ArrayList<>(Collections.singletonList(TimeOfDay.MORNING));
-    Set<String> DEFAULT_PLAYER_PRODUCTIVE_TIME_NAMES = new HashSet<>(Collections.singletonList(TimeOfDay.MORNING.name()));
     int DEFAULT_PLAYER_WORK_START_MINUTE = 10 * 60;
     int DEFAULT_PLAYER_WORK_END_MINUTE = 18 * 60;
     int DEFAULT_PLAYER_SLEEP_START_MINUTE = 0;
     int DEFAULT_PLAYER_SLEEP_END_MINUTE = 8 * 60;
+    int DEFAULT_PLAYER_COMPLETE_DAILY_QUESTS_MINUTE = 0;
 
     List<Integer> DEFAULT_PLAYER_WORK_DAYS = new ArrayList<>(Arrays.asList(new Integer[]{
             DaysOfWeek.MONDAY.getIsoOrder(),
@@ -135,8 +133,6 @@ public interface Constants {
     String DEFAULT_PET_BACKGROUND_IMAGE = "pet_background_1";
 
     Integer DEFAULT_PET_HP = 80;
-    String KEY_XP_BONUS_PERCENTAGE = "XP_BONUS";
-    String KEY_COINS_BONUS_PERCENTAGE = "COINS_BONUS";
     double XP_BONUS_PERCENTAGE_OF_HP = 20.0;
     double COINS_BONUS_PERCENTAGE_OF_HP = 10.0;
     int MAX_PET_COIN_BONUS = 10;
@@ -148,21 +144,15 @@ public interface Constants {
     String PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index";
     int RANDOM_SEED = 42; // duh!
     int MAX_TIMES_A_DAY_COUNT = 8;
-    int SCHEMA_VERSION = 2;
+    int SCHEMA_VERSION = 3;
 
     double MAX_PENALTY_COEFFICIENT = 0.5;
     double NO_QUESTS_PENALTY_COEFFICIENT = 0.3;
     double IMPORTANT_QUEST_PENALTY_PERCENT = 5;
 
-    String KEY_AVATAR_WORK_DAYS = "KEY_AVATAR_WORK_DAYS";
-    String KEY_AVATAR_WORK_START_MINUTE = "KEY_AVATAR_WORK_START_MINUTE";
-    String KEY_AVATAR_WORK_END_MINUTE = "KEY_AVATAR_WORK_END_MINUTE";
-    String KEY_AVATAR_SLEEP_START_MINUTE = "KEY_AVATAR_SLEEP_START_MINUTE";
-    String KEY_AVATAR_SLEEP_END_MINUTE = "KEY_AVATAR_SLEEP_END_MINUTE";
-    String KEY_AVATAR_MOST_PRODUCTIVE_TIMES = "KEY_AVATAR_MOST_PRODUCTIVE_TIMES";
-
     String KEY_WIDGET_AGENDA_QUESTS = "widget_agenda_quests";
-    String KEY_24_HOUR_TIME_FORMAT = "24_HOUR_TIME_FORMAT";
+    int API_READ_TIMEOUT_SECONDS = 30;
+    String DEFAULT_VIEW_VERSION = "1.0";
 
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);

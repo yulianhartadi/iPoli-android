@@ -51,6 +51,6 @@ public class SnoozeQuestItemsHelper {
     }
 
     private static boolean isQuestScheduledForTime(Quest quest) {
-        return quest.getStartMinute() >= 0;
+        return quest.getStartMinute() != null;
     }
 }

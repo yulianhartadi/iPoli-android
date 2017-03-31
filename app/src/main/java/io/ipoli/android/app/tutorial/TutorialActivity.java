@@ -1,6 +1,5 @@
 package io.ipoli.android.app.tutorial;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,27 +14,21 @@ import javax.inject.Inject;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.FinishTutorialActivityEvent;
 import io.ipoli.android.app.tutorial.events.TutorialSkippedEvent;
 import io.ipoli.android.app.tutorial.fragments.TutorialFragment;
-import io.ipoli.android.app.utils.IntentUtils;
-import io.ipoli.android.challenge.activities.PickChallengeActivity;
 
 public class TutorialActivity extends AppIntro2 {
 
-    public static final String SHOW_PICK_CHALLENGES = "show_pick_challenges";
     @Inject
     Bus eventBus;
 
-    private boolean showPickChallenges = false;
+    private boolean showSignIn = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         App.getAppComponent(this).inject(this);
-
-        if (IntentUtils.hasExtra(getIntent(), SHOW_PICK_CHALLENGES)) {
-            showPickChallenges = getIntent().getBooleanExtra(SHOW_PICK_CHALLENGES, false);
-        }
 
         getWindow().setNavigationBarColor(Color.BLACK);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -77,11 +70,7 @@ public class TutorialActivity extends AppIntro2 {
 
     @Override
     public void finish() {
-        if (showPickChallenges) {
-            Intent intent = new Intent(this, PickChallengeActivity.class);
-            intent.putExtra(PickChallengeActivity.TITLE, getString(R.string.pick_challenge_to_start));
-            startActivity(intent);
-        }
+        eventBus.post(new FinishTutorialActivityEvent());
         super.finish();
     }
 }

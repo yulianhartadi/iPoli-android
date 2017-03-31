@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -136,7 +134,7 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
         }
         final String toastMessage = toast;
         q.setScheduledDateFromLocal(endDate);
-        questPersistenceService.update(q);
+        questPersistenceService.save(q);
         Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
     }
 
@@ -147,7 +145,7 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
         for (Map.Entry<LocalDate, List<Quest>> entry : dateToQuests.entrySet()) {
             List<QuestViewModel> vms = new ArrayList<>();
             for (Quest quest : entry.getValue()) {
-                vms.add(new QuestViewModel(getContext(), quest, use24HourFormat));
+                vms.add(new QuestViewModel(getContext(), quest, shouldUse24HourFormat()));
             }
             viewModels.put(entry.getKey(), vms);
         }

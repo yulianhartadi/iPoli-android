@@ -148,10 +148,10 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
         }
 
         if(!quests.isEmpty()) {
-            questPersistenceService.update(quests);
+            questPersistenceService.save(quests);
         }
         if(!repeatingQuests.isEmpty()) {
-            repeatingQuestPersistenceService.updateChallengeId(repeatingQuests);
+            repeatingQuestPersistenceService.addToChallenge(repeatingQuests, challengeId);
         }
 
         Toast.makeText(this, R.string.challenge_saved, Toast.LENGTH_SHORT).show();

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.format.DateFormat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -26,6 +25,8 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.challenge.activities.PickDailyChallengeQuestsActivity;
+import io.ipoli.android.player.Player;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -39,7 +40,8 @@ public class BaseActivity extends AppCompatActivity {
     @Inject
     protected LocalStorage localStorage;
 
-    protected boolean use24HourFormat;
+    @Inject
+    PlayerPersistenceService playerPersistenceService;
 
     protected AppComponent appComponent() {
         return App.getAppComponent(this);
@@ -49,12 +51,11 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         appComponent().inject(this);
-        use24HourFormat = localStorage.readBool(Constants.KEY_24_HOUR_TIME_FORMAT, DateFormat.is24HourFormat(this));
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if(useParentOptionsMenu()) {
+        if (useParentOptionsMenu()) {
             Date todayUtc = DateUtils.toStartOfDayUTC(LocalDate.now());
             Date lastCompleted = new Date(localStorage.readLong(Constants.KEY_DAILY_CHALLENGE_LAST_COMPLETED));
             boolean isCompletedForToday = todayUtc.equals(lastCompleted);
@@ -70,7 +71,7 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if(useParentOptionsMenu()) {
+        if (useParentOptionsMenu()) {
             getMenuInflater().inflate(R.menu.main_menu, menu);
         }
         return true;
@@ -99,5 +100,13 @@ public class BaseActivity extends AppCompatActivity {
 
     protected boolean useParentOptionsMenu() {
         return true;
+    }
+
+    protected Player getPlayer() {
+        return playerPersistenceService.get();
+    }
+
+    protected boolean shouldUse24HourFormat() {
+        return getPlayer().getUse24HourFormat();
     }
 }

@@ -51,7 +51,6 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
             for (QuestReminder qr : questReminders) {
                 showNotification(context, qr);
             }
-            questPersistenceService.deleteRemindersAtTime(startTime);
             context.sendBroadcast(new Intent(ScheduleNextRemindersReceiver.ACTION_SCHEDULE_REMINDERS));
             result.finish();
         });

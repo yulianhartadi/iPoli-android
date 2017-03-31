@@ -139,8 +139,4 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
         i.putExtra(Constants.REPEATING_QUEST_ID_EXTRA_KEY, e.repeatingQuest.getId());
         startActivity(i);
     }
-
-    private interface ViewModelListener {
-        void onViewModelCreated(RepeatingQuestViewModel viewModel);
-    }
 }

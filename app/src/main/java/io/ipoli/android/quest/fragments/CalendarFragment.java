@@ -39,14 +39,19 @@ import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
+import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.activities.AgendaActivity;
 import io.ipoli.android.quest.events.ScrollToTimeEvent;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 4/29/16.
  */
 public class CalendarFragment extends BaseFragment implements View.OnClickListener {
+    public static final int SHOW_AGENDA_REQUEST_CODE = 100;
 
     public static final int MID_POSITION = 49;
     public static final int MAX_VISIBLE_DAYS = 100;
@@ -172,14 +177,21 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
         if (e.source == CalendarDayChangedEvent.Source.SWIPE) {
             return;
         }
+        changeCurrentDay(e.date, e.time);
+    }
 
-        currentMidDate = e.date;
+    private void changeCurrentDay(LocalDate date) {
+        changeCurrentDay(date, null);
+    }
+
+    private void changeCurrentDay(LocalDate date, Time time) {
+        currentMidDate = date;
         changeTitle(currentMidDate);
         adapter.notifyDataSetChanged();
 
         calendarPager.setCurrentItem(MID_POSITION, false);
-        if (e.time != null) {
-            eventBus.post(new ScrollToTimeEvent(e.time));
+        if (time != null) {
+            eventBus.post(new ScrollToTimeEvent(time));
         }
     }
 
@@ -214,8 +226,18 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
         LocalDate currentDate = currentMidDate.plusDays(calendarPager.getCurrentItem() - MID_POSITION);
         Intent i = new Intent(getContext(), AgendaActivity.class);
         i.putExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, currentDate.toDate().getTime());
-        startActivity(i);
+        startActivityForResult(i, SHOW_AGENDA_REQUEST_CODE);
         getActivity().overridePendingTransition(R.anim.slide_in_top, android.R.anim.fade_out);
         eventBus.post(new ToolbarCalendarTapEvent());
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SHOW_AGENDA_REQUEST_CODE && resultCode == RESULT_OK &&
+                data != null && data.hasExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY)) {
+            Long date = data.getLongExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, DateUtils.toStartOfDayUTC(LocalDate.now()).getTime());
+            changeCurrentDay(new LocalDate(date));
+        }
     }
 }

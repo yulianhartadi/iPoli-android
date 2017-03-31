@@ -2,7 +2,7 @@ package io.ipoli.android.app.modules;
 
 import android.content.Context;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.inject.Singleton;
 
@@ -19,8 +19,8 @@ public class LocalStorageModule {
 
     @Provides
     @Singleton
-    public LocalStorage provideLocalStorage(Context context, Gson gson) {
-        return LocalStorage.of(context, gson);
+    public LocalStorage provideLocalStorage(Context context, ObjectMapper objectMapper) {
+        return LocalStorage.of(context, objectMapper);
     }
 
 }

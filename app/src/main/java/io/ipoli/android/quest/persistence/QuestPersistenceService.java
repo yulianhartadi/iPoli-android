@@ -3,7 +3,6 @@ package io.ipoli.android.quest.persistence;
 import org.joda.time.LocalDate;
 
 import java.util.List;
-import java.util.Map;
 import java.util.SortedMap;
 
 import io.ipoli.android.app.persistence.PersistenceService;
@@ -24,7 +23,7 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void findAllPlannedAndStarted(OnDataChangedListener<List<Quest>> listener);
 
-    void findAllIncompleteToDosBefore(LocalDate date, OnDataChangedListener<List<Quest>> listener);
+    void findAllIncompleteFor(LocalDate date, OnDataChangedListener<List<Quest>> listener);
 
     void listenForAllNonAllDayForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener);
 
@@ -33,10 +32,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     void listenForAllNonAllDayCompletedForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener);
 
     void listenForAllNonAllDayIncompleteForDate(LocalDate currentDate, OnDataChangedListener<List<Quest>> listener);
-
-    void findAllForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener);
-
-    void findAllNotCompletedForRepeatingQuest(String repeatingQuestId, OnDataChangedListener<List<Quest>> listener);
 
     void findAllUpcomingForRepeatingQuest(LocalDate startDate, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener);
 
@@ -48,25 +43,5 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void listenForAllIncompleteOrMostImportantForDate(LocalDate now, OnDataChangedListener<List<Quest>> listener);
 
-    void findIncompleteNotRepeatingNotForChallenge(String query, String challengeId, OnDataChangedListener<List<Quest>> listener);
-
-    void listenForIncompleteNotRepeating(OnDataChangedListener<List<Quest>> listener);
-
-    void listenForReminderChange(OnChangeListener onChangeListener);
-
-    void deleteRemindersAtTime(long startTime);
-
-    void update(Quest quest);
-
-    void populateNewQuestData(Quest quest, Map<String, Object> data);
-
-    void populateDeleteQuestData(Quest quest, Map<String, Object> data);
-
     void save(List<Quest> quests);
-
-    void update(List<Quest> quests);
-
-    void listenForDayQuestChange(LocalDate date, OnChangeListener onChangeListener);
-
-    void populateDeleteQuestDataFromRepeatingQuest(Quest quest, Map<String, Object> data);
 }

@@ -101,7 +101,7 @@ public class QuestParser {
         int duration = durationPair.first;
 
         Pair<Integer, String> startTimePair = parseQuestPart(durationPair.second, startTimeMatcher);
-        int startTime = startTimePair.first;
+        Integer startTime = startTimePair.first;
 
         Pair<Date, String> dueDatePair = parseQuestPart(startTimePair.second, endDateMatcher);
         Date dueDate = dueDatePair.first;
@@ -170,20 +170,20 @@ public class QuestParser {
         Recurrence recurrence = Recurrence.create();
         if (everyDayRecur != null) {
             recurrence.setRrule(everyDayRecur.toString());
-            recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+            recurrence.setRecurrenceType(Recurrence.RepeatType.WEEKLY);
         } else if (dayOfWeekRecur != null) {
             recurrence.setRrule(dayOfWeekRecur.toString());
-            recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+            recurrence.setRecurrenceType(Recurrence.RepeatType.WEEKLY);
         } else if (dayOfMonthRecur != null) {
             recurrence.setRrule(dayOfMonthRecur.toString());
-            recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
+            recurrence.setRecurrenceType(Recurrence.RepeatType.MONTHLY);
         } else if (timesAWeek > 0) {
-            recurrence.setRecurrenceType(Recurrence.RecurrenceType.WEEKLY);
+            recurrence.setRecurrenceType(Recurrence.RepeatType.WEEKLY);
             recurrence.setFlexibleCount(timesAWeek);
             Recur recur = new Recur(Recur.WEEKLY, null);
             recurrence.setRrule(recur.toString());
         } else if (timesAMonth > 0) {
-            recurrence.setRecurrenceType(Recurrence.RecurrenceType.MONTHLY);
+            recurrence.setRecurrenceType(Recurrence.RepeatType.MONTHLY);
             recurrence.setFlexibleCount(timesAMonth);
             Recur recur = new Recur(Recur.MONTHLY, null);
             recurrence.setRrule(recur.toString());

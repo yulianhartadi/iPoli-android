@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -34,6 +33,7 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.TimeOfDay;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.TimeFormatChangedEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeDaysOfWeekChangedEvent;
@@ -53,11 +53,9 @@ import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.avatar.Avatar;
-import io.ipoli.android.avatar.TimeOfDay;
-import io.ipoli.android.avatar.persistence.AvatarPersistenceService;
+import io.ipoli.android.player.Player;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
-import io.ipoli.android.quest.persistence.OnDataChangedListener;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -66,7 +64,7 @@ import io.ipoli.android.quest.persistence.OnDataChangedListener;
 public class SettingsFragment extends BaseFragment implements
         TimeOfDayPickerFragment.OnTimesOfDayPickedListener,
         TimePickerFragment.OnTimePickedListener,
-        DaysOfWeekPickerFragment.OnDaysOfWeekPickedListener, OnDataChangedListener<Avatar> {
+        DaysOfWeekPickerFragment.OnDaysOfWeekPickedListener {
 
     @Inject
     Bus eventBus;
@@ -75,7 +73,7 @@ public class SettingsFragment extends BaseFragment implements
     LocalStorage localStorage;
 
     @Inject
-    AvatarPersistenceService avatarPersistenceService;
+    PlayerPersistenceService playerPersistenceService;
 
     @BindView(R.id.root_container)
     ViewGroup rootContainer;
@@ -120,7 +118,6 @@ public class SettingsFragment extends BaseFragment implements
     TextView appVersion;
 
     private Unbinder unbinder;
-    private Avatar avatar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -132,7 +129,12 @@ public class SettingsFragment extends BaseFragment implements
 
         ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_fragment_settings);
 
-        avatarPersistenceService.listen(this);
+        Player player = getPlayer();
+
+        populateMostProductiveTimesOfDay(player.getMostProductiveTimesOfDayList());
+        populateDaysOfWeekText(workDays, player.getWorkDays());
+        populateTimeInterval(workHours, player.getWorkStartTime(), player.getWorkEndTime());
+        populateTimeInterval(sleepHours, player.getSleepStartTime(), player.getSleepEndTime());
 
         ongoingNotification.setChecked(localStorage.readBool(Constants.KEY_ONGOING_NOTIFICATION_ENABLED, Constants.DEFAULT_ONGOING_NOTIFICATION_ENABLED));
         ongoingNotification.setOnCheckedChangeListener((compoundButton, b) -> {
@@ -140,17 +142,13 @@ public class SettingsFragment extends BaseFragment implements
             eventBus.post(new OngoingNotificationChangeEvent(ongoingNotification.isChecked()));
         });
 
-        boolean use24HourFormat = localStorage.readBool(Constants.KEY_24_HOUR_TIME_FORMAT, DateFormat.is24HourFormat(getContext()));
-        currentTime.setText(Time.now().toString(use24HourFormat));
-        timeFormat.setChecked(use24HourFormat);
+        currentTime.setText(Time.now().toString(player.getUse24HourFormat()));
+        timeFormat.setChecked(player.getUse24HourFormat());
         timeFormat.setOnCheckedChangeListener((buttonView, isChecked) -> {
             currentTime.setText(Time.now().toString(isChecked));
-            localStorage.saveBool(Constants.KEY_24_HOUR_TIME_FORMAT, isChecked);
             eventBus.post(new TimeFormatChangedEvent(isChecked));
-            if(avatar != null) {
-                avatar.setUse24HourFormat(isChecked);
-                avatarPersistenceService.save(avatar);
-            }
+            player.setUse24HourFormat(isChecked);
+            playerPersistenceService.save(player);
         });
 
 
@@ -179,7 +177,7 @@ public class SettingsFragment extends BaseFragment implements
 
     @Override
     public void onDestroyView() {
-        avatarPersistenceService.removeAllListeners();
+        playerPersistenceService.removeAllListeners();
         unbinder.unbind();
         super.onDestroyView();
     }
@@ -213,46 +211,45 @@ public class SettingsFragment extends BaseFragment implements
 
     @OnClick(R.id.most_productive_time_container)
     public void onMostProductiveTimeClicked(View view) {
-        TimeOfDayPickerFragment fragment = TimeOfDayPickerFragment.newInstance(R.string.time_of_day_picker_title, avatar.getMostProductiveTimesOfDayList(), this);
+        Player player = getPlayer();
+        TimeOfDayPickerFragment fragment = TimeOfDayPickerFragment.newInstance(R.string.time_of_day_picker_title, player.getMostProductiveTimesOfDayList(), this);
         fragment.show(getFragmentManager());
     }
 
     @OnClick(R.id.work_days_container)
     public void onWorkDaysClicked(View view) {
-        DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(R.string.work_days_picker_title, new HashSet<>(avatar.getWorkDays()),
+        Player player = getPlayer();
+        DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(R.string.work_days_picker_title, new HashSet<>(player.getWorkDays()),
                 selectedDays -> {
                     eventBus.post(new WorkDaysChangedEvent(selectedDays));
-                    avatar.setWorkDays(new ArrayList<>(selectedDays));
-                    localStorage.saveIntSet(Constants.KEY_AVATAR_WORK_DAYS, new HashSet<>(avatar.getWorkDays()));
-                    avatarPersistenceService.save(avatar);
+                    player.setWorkDays(new ArrayList<>(selectedDays));
+                    playerPersistenceService.save(player);
                 });
         fragment.show(getFragmentManager());
     }
 
     @OnClick(R.id.work_hours_container)
     public void onWorkHoursClicked(View view) {
+        Player player = getPlayer();
         TimeIntervalPickerFragment fragment = TimeIntervalPickerFragment.newInstance(R.string.work_hours_dialog_title,
-                avatar.getWorkStartTime(), avatar.getWorkEndTime(), (startTime, endTime) -> {
+                player.getWorkStartTime(), player.getWorkEndTime(), (startTime, endTime) -> {
                     eventBus.post(new WorkHoursChangedEvent(startTime, endTime));
-                    avatar.setWorkStartTime(startTime);
-                    avatar.setWorkEndTime(endTime);
-                    localStorage.saveInt(Constants.KEY_AVATAR_WORK_START_MINUTE, avatar.getWorkStartMinute());
-                    localStorage.saveInt(Constants.KEY_AVATAR_WORK_END_MINUTE, avatar.getWorkEndMinute());
-                    avatarPersistenceService.save(avatar);
+                    player.setWorkStartTime(startTime);
+                    player.setWorkEndTime(endTime);
+                    playerPersistenceService.save(player);
                 });
         fragment.show(getFragmentManager());
     }
 
     @OnClick(R.id.sleep_hours_container)
     public void onSleepHoursClicked(View view) {
+        Player player = getPlayer();
         TimeIntervalPickerFragment fragment = TimeIntervalPickerFragment.newInstance(R.string.sleep_hours_dialog_title,
-                avatar.getSleepStartTime(), avatar.getSleepEndTime(), (startTime, endTime) -> {
+                player.getSleepStartTime(), player.getSleepEndTime(), (startTime, endTime) -> {
                     eventBus.post(new SleepHoursChangedEvent(startTime, endTime));
-                    avatar.setSleepStartTime(startTime);
-                    avatar.setSleepEndTime(endTime);
-                    localStorage.saveInt(Constants.KEY_AVATAR_SLEEP_START_MINUTE, avatar.getSleepStartMinute());
-                    localStorage.saveInt(Constants.KEY_AVATAR_SLEEP_END_MINUTE, avatar.getSleepEndMinute());
-                    avatarPersistenceService.save(avatar);
+                    player.setSleepStartTime(startTime);
+                    player.setSleepEndTime(endTime);
+                    playerPersistenceService.save(player);
                 });
         fragment.show(getFragmentManager());
     }
@@ -299,13 +296,13 @@ public class SettingsFragment extends BaseFragment implements
 
     @Override
     public void onTimesOfDayPicked(List<TimeOfDay> selectedTimes) {
+        Player player = getPlayer();
         eventBus.post(new MostProductiveTimesChangedEvent(selectedTimes));
-        if(selectedTimes.contains(TimeOfDay.ANY_TIME) || selectedTimes.isEmpty()) {
+        if (selectedTimes.contains(TimeOfDay.ANY_TIME) || selectedTimes.isEmpty()) {
             selectedTimes = new ArrayList<>(Arrays.asList(TimeOfDay.ANY_TIME));
         }
-        avatar.setMostProductiveTimesOfDayList(selectedTimes);
-        localStorage.saveStringSet(Constants.KEY_AVATAR_MOST_PRODUCTIVE_TIMES, new HashSet<>(avatar.getMostProductiveTimesOfDay()));
-        avatarPersistenceService.save(avatar);
+        player.setMostProductiveTimesOfDayList(selectedTimes);
+        playerPersistenceService.save(player);
     }
 
     private void populateMostProductiveTimesOfDay(List<TimeOfDay> selectedTimes) {
@@ -349,16 +346,5 @@ public class SettingsFragment extends BaseFragment implements
         Uri uri = Uri.parse("market://details?id=" + getActivity().getPackageName());
         Intent linkToMarket = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(linkToMarket);
-    }
-
-
-    @Override
-    public void onDataChanged(Avatar avatar) {
-        this.avatar = avatar;
-        populateMostProductiveTimesOfDay(avatar.getMostProductiveTimesOfDayList());
-        populateDaysOfWeekText(workDays, avatar.getWorkDays());
-        populateTimeInterval(workHours, avatar.getWorkStartTime(), avatar.getWorkEndTime());
-        populateTimeInterval(sleepHours, avatar.getSleepStartTime(), avatar.getSleepEndTime());
-        rootContainer.setVisibility(View.VISIBLE);
     }
 }

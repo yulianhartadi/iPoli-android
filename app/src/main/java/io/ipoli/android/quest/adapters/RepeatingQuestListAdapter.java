@@ -13,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
@@ -70,6 +71,7 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
                         return true;
                     case R.id.delete_repeating_quest:
                         eventBus.post(new DeleteRepeatingQuestRequestEvent(rq, EventSource.REPEATING_QUESTS));
+                        Toast.makeText(context, R.string.repeating_quest_deleted, Toast.LENGTH_SHORT).show();
                         return true;
                 }
                 return false;

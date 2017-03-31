@@ -17,7 +17,6 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -149,7 +148,7 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
     public void onNewQuestNameAndCategoryPicked(NameAndCategoryPickedEvent e) {
         repeatingQuest = new RepeatingQuest(e.name);
         repeatingQuest.setName(e.name);
-        repeatingQuest.addReminder(new Reminder(0, new Random().nextInt()));
+        repeatingQuest.addReminder(new Reminder(0));
         repeatingQuest.setCategoryType(e.category);
         KeyboardUtils.hideKeyboard(this);
         goToNextPage();

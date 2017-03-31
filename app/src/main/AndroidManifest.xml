@@ -48,6 +48,7 @@
             android:theme="@style/Theme.iPoli.DialogActivity" />
         <activity
             android:name=".player.activities.SignInActivity"
+            android:label="@string/title_sign_in_activity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".quest.activities.AddQuestActivity"

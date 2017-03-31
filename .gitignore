@@ -14,3 +14,5 @@ app/google-services_prod.json
 app/google-services_dev.json
 *BillingConstants.java
 *AnalyticsConstants.java
+app/fabric.properties
+*ApiConstants.java

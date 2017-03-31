@@ -33,6 +33,7 @@ import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.adapters.ChallengePickQuestListAdapter;
 import io.ipoli.android.challenge.events.NewChallengeQuestsPickedEvent;
+import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -56,6 +57,9 @@ public class AddChallengeQuestsFragment extends BaseFragment {
     @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
+    @Inject
+    ChallengePersistenceService challengePersistenceService;
+
     @BindView(R.id.root_container)
     CoordinatorLayout rootContainer;
 
@@ -66,8 +70,6 @@ public class AddChallengeQuestsFragment extends BaseFragment {
 
     private List<Quest> selectedQuests = new ArrayList<>();
     private List<RepeatingQuest> selectedRepeatingQuests = new ArrayList<>();
-    private List<Quest> quests = new ArrayList<>();
-    private List<RepeatingQuest> repeatingQuests = new ArrayList<>();
     private List<PickQuestViewModel> allViewModels = new ArrayList<>();
     private SearchView searchView;
 
@@ -93,29 +95,21 @@ public class AddChallengeQuestsFragment extends BaseFragment {
         adapter = new ChallengePickQuestListAdapter(getContext(), eventBus, new ArrayList<>(), true);
         questList.setAdapter(adapter);
 
-        questPersistenceService.listenForIncompleteNotRepeating(quests -> {
-            this.quests = quests;
-            questsUpdated();
-        });
-        repeatingQuestPersistenceService.listenForActive(repeatingQuests -> {
-            this.repeatingQuests = repeatingQuests;
-            questsUpdated();
+        challengePersistenceService.listenForAllQuestsAndRepeatingQuests(result -> {
+
+            allViewModels = new ArrayList<>();
+            for (Quest q : result.second) {
+                allViewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), isSelected(q), false));
+            }
+            for (RepeatingQuest rq : result.first) {
+                allViewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstartDate(), isSelected(rq), true));
+            }
+
+            String searchQuery = searchView != null ? searchView.getQuery().toString() : "";
+            updateAdapter(searchQuery);
         });
 
         return view;
-    }
-
-    private void questsUpdated() {
-        List<PickQuestViewModel> viewModels = new ArrayList<>();
-        for (Quest q : quests) {
-            viewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), isSelected(q), false));
-        }
-        for (RepeatingQuest rq : repeatingQuests) {
-            viewModels.add(new PickQuestViewModel(rq, rq.getName(), rq.getRecurrence().getDtstartDate(), isSelected(rq), true));
-        }
-        allViewModels = new ArrayList<>(viewModels);
-        String searchQuery = searchView != null ? searchView.getQuery().toString() : "";
-        updateAdapter(searchQuery);
     }
 
     private void updateAdapter(String query) {
@@ -124,6 +118,7 @@ public class AddChallengeQuestsFragment extends BaseFragment {
 
     @Override
     public void onDestroyView() {
+        challengePersistenceService.removeAllListeners();
         unbinder.unbind();
         super.onDestroyView();
     }
@@ -141,39 +136,40 @@ public class AddChallengeQuestsFragment extends BaseFragment {
     }
 
     private void filter(String query, FilterListener filterListener) {
-                List<PickQuestViewModel> viewModels = new ArrayList<>();
-                for(PickQuestViewModel vm : allViewModels) {
-                    if(vm.getText().toLowerCase().contains(query.toLowerCase())) {
-                        viewModels.add(vm);
-                    }
-                }
 
-                Collections.sort(viewModels, (vm1, vm2) -> {
-                    Date d1 = vm1.getStartDate();
-                    Date d2 = vm2.getStartDate();
-                    if (d1 == null && d2 == null) {
-                        return -1;
-                    }
+        List<PickQuestViewModel> viewModels = new ArrayList<>();
+        for (PickQuestViewModel vm : allViewModels) {
+            if (vm.getText().toLowerCase().contains(query.toLowerCase())) {
+                viewModels.add(vm);
+            }
+        }
 
-                    if (d1 == null) {
-                        return 1;
-                    }
+        Collections.sort(viewModels, (vm1, vm2) -> {
+            Date d1 = vm1.getStartDate();
+            Date d2 = vm2.getStartDate();
+            if (d1 == null && d2 == null) {
+                return -1;
+            }
 
-                    if (d2 == null) {
-                        return -1;
-                    }
+            if (d1 == null) {
+                return 1;
+            }
 
-                    if (d2.after(d1)) {
-                        return 1;
-                    }
+            if (d2 == null) {
+                return -1;
+            }
 
-                    if (d1.after(d2)) {
-                        return -1;
-                    }
+            if (d2.after(d1)) {
+                return 1;
+            }
 
-                    return 0;
-                });
-                filterListener.onFilterCompleted(viewModels);
+            if (d1.after(d2)) {
+                return -1;
+            }
+
+            return 0;
+        });
+        filterListener.onFilterCompleted(viewModels);
     }
 
     private boolean isSelected(Quest quest) {
@@ -229,8 +225,8 @@ public class AddChallengeQuestsFragment extends BaseFragment {
             case R.id.action_next:
                 List<Quest> quests = new ArrayList<>();
                 List<RepeatingQuest> repeatingQuests = new ArrayList<>();
-                for(PickQuestViewModel vm : allViewModels) {
-                    if(vm.isSelected()) {
+                for (PickQuestViewModel vm : allViewModels) {
+                    if (vm.isSelected()) {
                         BaseQuest bq = vm.getBaseQuest();
                         if (bq instanceof Quest) {
                             quests.add((Quest) bq);

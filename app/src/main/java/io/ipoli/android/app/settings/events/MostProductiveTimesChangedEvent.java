@@ -3,7 +3,7 @@ package io.ipoli.android.app.settings.events;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.ipoli.android.avatar.TimeOfDay;
+import io.ipoli.android.app.TimeOfDay;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

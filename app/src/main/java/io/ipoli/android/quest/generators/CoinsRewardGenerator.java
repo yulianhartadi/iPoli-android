@@ -2,8 +2,8 @@ package io.ipoli.android.quest.generators;
 
 import java.util.Random;
 
-import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.challenge.data.Challenge;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Quest;
 
 /**
@@ -12,8 +12,8 @@ import io.ipoli.android.quest.data.Quest;
  */
 public class CoinsRewardGenerator extends BaseRewardGenerator {
 
-    public CoinsRewardGenerator(LocalStorage localStorage) {
-        super(localStorage);
+    public CoinsRewardGenerator(PlayerPersistenceService playerPersistenceService) {
+        super(playerPersistenceService);
     }
 
     @Override

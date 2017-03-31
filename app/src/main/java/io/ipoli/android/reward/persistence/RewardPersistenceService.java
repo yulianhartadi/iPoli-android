@@ -12,5 +12,5 @@ import io.ipoli.android.reward.data.Reward;
  */
 public interface RewardPersistenceService extends PersistenceService<Reward> {
 
-    void findAll(OnDataChangedListener<List<Reward>> listener);
+    void listenForAll(OnDataChangedListener<List<Reward>> listener);
 }

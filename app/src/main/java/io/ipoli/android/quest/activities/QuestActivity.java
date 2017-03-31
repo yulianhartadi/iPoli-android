@@ -280,7 +280,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
                 quest.addNote(new Note(text));
             }
         }
-        questPersistenceService.update(quest);
+        questPersistenceService.save(quest);
     }
 
     private void initUI() {
@@ -370,37 +370,37 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     @Subscribe
     public void onNewSubQuestEvent(NewSubQuestEvent e) {
         quest.addSubQuest(e.subQuest);
-        questPersistenceService.update(quest);
+        questPersistenceService.save(quest);
     }
 
     @Subscribe
     public void onUpdateSubQuestEvent(UpdateSubQuestNameEvent e) {
-        questPersistenceService.update(quest);
+        questPersistenceService.save(quest);
     }
 
     @Subscribe
     public void onDeleteSubQuestEvent(DeleteSubQuestEvent e) {
         quest.removeSubQuest(e.subQuest);
-        questPersistenceService.update(quest);
+        questPersistenceService.save(quest);
     }
 
     @Subscribe
     public void onCompleteSubQuest(CompleteSubQuestEvent e) {
-        questPersistenceService.update(quest);
+        questPersistenceService.save(quest);
     }
 
     @Subscribe
     public void onUndoCompleteSubQuest(UndoCompleteSubQuestEvent e) {
-        questPersistenceService.update(quest);
+        questPersistenceService.save(quest);
     }
 
     @Subscribe
     public void onOpenNote(OpenNoteEvent e) {
         Note note = e.note;
-        if (note.getNoteType() == Note.Type.URL) {
+        if (note.getNoteTypeValue() == Note.NoteType.URL) {
             Intent noteLink = new Intent(Intent.ACTION_VIEW, Uri.parse(note.getData()));
             startActivity(noteLink);
-        } else if (note.getNoteType() == Note.Type.INTENT) {
+        } else if (note.getNoteTypeValue() == Note.NoteType.INTENT) {
             String packageName = note.getData();
             try {
                 Intent LaunchIntent = getPackageManager().getLaunchIntentForPackage(packageName);

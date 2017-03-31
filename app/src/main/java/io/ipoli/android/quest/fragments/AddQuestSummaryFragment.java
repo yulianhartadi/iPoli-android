@@ -134,6 +134,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
     TextView noteText;
 
     private EditQuestSubQuestListAdapter subQuestListAdapter;
+    private boolean use24HourFormat;
 
     @Nullable
     @Override
@@ -142,6 +143,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_wizard_quest_summary, container, false);
         unbinder = ButterKnife.bind(this, view);
 
+        use24HourFormat = shouldUse24HourFormat();
         initSubQuestsUI();
 
         return view;
