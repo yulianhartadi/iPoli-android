@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -24,6 +25,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Quest;
 
@@ -49,7 +51,12 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
         App.getAppComponent(context).inject(this);
         this.quests = new ArrayList<>();
         this.context = context;
-        use24HourFormat = playerPersistenceService.get().getUse24HourFormat();
+        Player player = playerPersistenceService.get();
+        if (player != null && player.getUse24HourFormat() != null) {
+            use24HourFormat = player.getUse24HourFormat();
+        } else {
+            use24HourFormat = DateFormat.is24HourFormat(context);
+        }
     }
 
     @Override

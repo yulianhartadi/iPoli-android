@@ -54,7 +54,6 @@ import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.app.ui.formatters.FlexibleTimesFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Recurrence;
-import io.ipoli.android.reminder.data.Reminder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -90,7 +89,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
 
     @Inject
     Bus eventBus;
-    
+
     @Inject
     ObjectMapper objectMapper;
 
@@ -153,7 +152,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         String recurrenceJson = args.getString(RECURRENCE);
         if (!TextUtils.isEmpty(recurrenceJson)) {
             try {
-                recurrence = objectMapper.readValue(recurrenceJson, new TypeReference<Reminder>() {
+                recurrence = objectMapper.readValue(recurrenceJson, new TypeReference<Recurrence>() {
 
                 });
             } catch (IOException e) {
