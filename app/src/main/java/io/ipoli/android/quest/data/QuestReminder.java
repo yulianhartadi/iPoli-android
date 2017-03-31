@@ -6,19 +6,6 @@ import io.ipoli.android.reminder.data.Reminder;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 12/24/16.
  */
-
-/**
- * {
- * "12398172381789": [{
- * "minutesFromStart": 10,
- * "questId": 10,
- * },
- * {
- * "minutesFromStart": 10,
- * "questId": 10,
- * }]
- * }
- */
 public class QuestReminder {
 
     private Long minutesFromStart;
