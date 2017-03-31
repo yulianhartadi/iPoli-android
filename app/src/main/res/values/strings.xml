@@ -433,4 +433,5 @@
     <string name="sign_in_internet">iPoli needs internet to sign you in!</string>
     <string name="sign_in_loading_dialog_title">Letting you in</string>
     <string name="sign_in_loading_dialog_message">I hope that this will be quick and painless</string>
+    <string name="title_sign_in_activity">Sign Up</string>
 </resources>
