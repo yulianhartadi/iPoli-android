@@ -148,6 +148,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
                     @Override
                     public void onCancel() {
+                        closeLoadingDialog();
                     }
 
                     @Override
