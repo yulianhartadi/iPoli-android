@@ -151,8 +151,7 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
 
     @Override
     public void delete(Challenge challenge, boolean deleteWithQuests) {
-        database.runInTransaction(() -> {
-
+        runAsyncTransaction(() -> {
             Query query = challengesWithAllQuestsView.createQuery();
             query.setStartKey(challenge.getId());
             query.setEndKey(challenge.getId());
@@ -181,21 +180,21 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
 
     @Override
     public void acceptChallenge(Challenge challenge, List<Quest> quests, Map<RepeatingQuest, List<Quest>> repeatingQuestsWithQuests) {
-        runInTransaction(db -> {
-            save(challenge, db);
+        runAsyncTransaction(() -> {
+            save(challenge);
             String challengeId = challenge.getId();
             for (Quest q : quests) {
                 q.setChallengeId(challengeId);
-                questPersistenceService.save(q, db);
+                questPersistenceService.save(q);
             }
             for (Map.Entry<RepeatingQuest, List<Quest>> entry : repeatingQuestsWithQuests.entrySet()) {
                 RepeatingQuest rq = entry.getKey();
                 rq.setChallengeId(challengeId);
-                repeatingQuestPersistenceService.save(rq, db);
+                repeatingQuestPersistenceService.save(rq);
                 for (Quest q : entry.getValue()) {
                     q.setRepeatingQuestId(rq.getId());
                     q.setChallengeId(challengeId);
-                    questPersistenceService.save(q, db);
+                    questPersistenceService.save(q);
                 }
             }
             return true;

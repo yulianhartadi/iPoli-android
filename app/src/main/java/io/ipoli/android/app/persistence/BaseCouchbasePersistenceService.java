@@ -101,7 +101,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
     protected abstract Class<T> getModelClass();
 
     @Override
-    public void save(T obj, Database db) {
+    public void save(T obj) {
         TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {
         };
         Map<String, Object> data;
@@ -110,7 +110,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
             obj.setOwner(getPlayerId(obj));
             data = objectMapper.convertValue(obj, mapTypeReference);
             try {
-                Document document = db.createDocument();
+                Document document = database.createDocument();
                 document.putProperties(data);
                 obj.setId(document.getId());
             } catch (CouchbaseLiteException e) {
@@ -119,7 +119,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
         } else {
             obj.markUpdated();
             data = objectMapper.convertValue(obj, mapTypeReference);
-            UnsavedRevision revision = db.getExistingDocument(obj.getId()).createRevision();
+            UnsavedRevision revision = database.getExistingDocument(obj.getId()).createRevision();
             revision.setProperties(data);
             try {
                 revision.save();
@@ -127,11 +127,6 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
                 postError(e);
             }
         }
-    }
-
-    @Override
-    public void save(T obj) {
-        save(obj, database);
     }
 
     protected String getPlayerId(T obj) {
@@ -144,7 +139,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
 
     @Override
     public void save(List<T> objects) {
-        database.runInTransaction(() -> {
+        runAsyncTransaction(() -> {
             for (T o : objects) {
                 save(o);
             }
@@ -218,12 +213,12 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
         eventBus.post(new AppErrorEvent(e));
     }
 
-    protected void runInTransaction(Transaction transaction) {
-        database.runAsync(db -> db.runInTransaction(() -> transaction.run(db)));
+    protected void runAsyncTransaction(Transaction transaction) {
+        database.runAsync(db -> db.runInTransaction(transaction::run));
     }
 
     protected interface Transaction {
-        boolean run(Database db);
+        boolean run();
     }
 
     protected interface Predicate<T> {

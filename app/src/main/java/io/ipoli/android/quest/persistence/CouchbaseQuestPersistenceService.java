@@ -139,11 +139,11 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     }
 
     @Override
-    public void save(Quest obj, Database database) {
+    public void save(Quest obj) {
         for (Reminder reminder : obj.getReminders()) {
             reminder.calculateStartTime(obj);
         }
-        super.save(obj, database);
+        super.save(obj);
     }
 
     @Override
