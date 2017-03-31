@@ -165,12 +165,12 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.difficulty = difficulty.getValue();
     }
 
-
+    @JsonIgnore
     public Date getEndDate() {
         return end != null ? new Date(end) : null;
     }
 
-
+    @JsonIgnore
     public void setEndDate(Date endDate) {
         end = endDate != null ? endDate.getTime() : null;
     }
@@ -183,12 +183,12 @@ public class Challenge extends PersistedObject implements RewardProvider {
         this.end = end;
     }
 
-
+    @JsonIgnore
     public Date getCompletedAtDate() {
         return completedAt != null ? new Date(completedAt) : null;
     }
 
-
+    @JsonIgnore
     public void setCompletedAtDate(Date completedAtDate) {
         completedAt = completedAtDate != null ? completedAtDate.getTime() : null;
     }
