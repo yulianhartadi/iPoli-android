@@ -191,7 +191,7 @@ public class App extends MultiDexApplication {
         listenForDailyQuestsChange();
     }
 
-    private void updatePet(Pet pet, int healthPoints, String tag) {
+    private void updatePet(Pet pet, int healthPoints) {
         if (pet.getState() == Pet.PetState.DEAD) {
             return;
         }
@@ -206,10 +206,10 @@ public class App extends MultiDexApplication {
         }
     }
 
-    private void savePet(int healthPoints, String tag) {
+    private void savePet(int healthPoints) {
         Player player = getPlayer();
         Pet pet = player.getPet();
-        updatePet(pet, healthPoints, tag);
+        updatePet(pet, healthPoints);
         playerPersistenceService.save(player);
     }
 
@@ -642,7 +642,7 @@ public class App extends MultiDexApplication {
         }
         player.removeCoins(coins);
 
-        updatePet(player.getPet(), (int) -Math.floor(xp / Constants.XP_TO_PET_HP_RATIO), "undo_quest");
+        updatePet(player.getPet(), (int) -Math.floor(xp / Constants.XP_TO_PET_HP_RATIO));
         playerPersistenceService.save(player);
         eventBus.post(new UndoCompletedQuestEvent(quest, xp, coins));
     }
@@ -747,7 +747,7 @@ public class App extends MultiDexApplication {
     private void onQuestComplete(Quest quest, EventSource source) {
         checkForDailyChallengeCompletion(quest);
         updateAvatar(quest);
-        savePet((int) (Math.ceil(quest.getExperience() / Constants.XP_TO_PET_HP_RATIO)), "quest_complete");
+        savePet((int) (Math.ceil(quest.getExperience() / Constants.XP_TO_PET_HP_RATIO)));
         eventBus.post(new QuestCompletedEvent(quest, source));
     }
 
@@ -859,7 +859,7 @@ public class App extends MultiDexApplication {
 
     private void onChallengeComplete(Challenge challenge, EventSource source) {
         updateAvatar(challenge);
-        savePet((int) (Math.floor(challenge.getExperience() / Constants.XP_TO_PET_HP_RATIO)), "challenge_complete");
+        savePet((int) (Math.floor(challenge.getExperience() / Constants.XP_TO_PET_HP_RATIO)));
         showChallengeCompleteDialog(getString(R.string.challenge_complete, challenge.getName()), challenge.getExperience(), challenge.getCoins());
         eventBus.post(new ChallengeCompletedEvent(challenge, source));
     }
@@ -897,7 +897,7 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onDateChanged(DateChangedEvent e) {
         questPersistenceService.findAllNonAllDayForDate(LocalDate.now().minusDays(1), quests -> {
-            savePet(-getDecreasePercentage(quests), "date_change");
+            savePet(-getDecreasePercentage(quests));
             scheduleQuestsFor4WeeksAhead();
             clearIncompleteQuests();
             scheduleDateChanged();

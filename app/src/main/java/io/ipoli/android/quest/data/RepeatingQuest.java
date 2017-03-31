@@ -140,7 +140,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         this.completedAt = completedAt;
     }
 
-
     @JsonIgnore
     public boolean shouldBeScheduledAfter(LocalDate date) {
         return getRecurrence().getDtendDate() == null ||
@@ -378,7 +377,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         getScheduledPeriodEndDates().put(String.valueOf(date.getTime()), true);
     }
 
-
+    @JsonIgnore
     public boolean isFlexible() {
         return getRecurrence().isFlexible();
     }
@@ -390,7 +389,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return scheduledPeriodEndDates;
     }
 
-
+    @JsonIgnore
     public boolean shouldBeScheduledForPeriod(Date periodEnd) {
         return !getScheduledPeriodEndDates().containsKey(String.valueOf(periodEnd.getTime()));
     }
@@ -410,7 +409,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         getNotes().add(note);
     }
 
-
+    @JsonIgnore
     public void removeTextNote() {
         List<Note> txtNotes = getTextNotes();
         getNotes().removeAll(txtNotes);
@@ -510,12 +509,12 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         return timesADay;
     }
 
-
+    @JsonIgnore
     public Category getCategoryType() {
         return Category.valueOf(getCategory());
     }
 
-
+    @JsonIgnore
     public void setCategoryType(Category category) {
         setCategory(category.name());
     }
@@ -524,14 +523,14 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         getReminders().add(reminder);
     }
 
-
+    @JsonIgnore
     public void setStartTimePreference(TimePreference timePreference) {
         if (timePreference != null) {
             this.preferredStartTime = timePreference.name();
         }
     }
 
-
+    @JsonIgnore
     public TimePreference getStartTimePreference() {
         if (StringUtils.isEmpty(preferredStartTime)) {
             return TimePreference.ANY;
