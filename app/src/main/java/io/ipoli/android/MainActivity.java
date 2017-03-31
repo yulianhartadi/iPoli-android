@@ -137,7 +137,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         super.onCreate(savedInstanceState);
         appComponent().inject(this);
 
-        if(!App.hasPlayer()){
+        if (!App.hasPlayer()) {
             finish();
             return;
         }
@@ -293,7 +293,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
 
         Button signIn = (Button) header.findViewById(R.id.sign_in);
-        if(player.isAuthenticated()) {
+        if (player.isAuthenticated()) {
             signIn.setVisibility(View.GONE);
             signIn.setOnClickListener(null);
         } else {
@@ -431,7 +431,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
         List<Reminder> reminders = quest.getReminders();
         List<Reminder> newReminders = new ArrayList<>();
-        long notificationId = System.currentTimeMillis();
+        int notificationId = new Random().nextInt();
         for (Reminder r : reminders) {
             newReminders.add(new Reminder(r.getMinutesFromStart(), String.valueOf(notificationId)));
         }
