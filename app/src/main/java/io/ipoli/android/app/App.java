@@ -318,12 +318,6 @@ public class App extends MultiDexApplication {
         registerServices();
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
 
-//        test migration
-//        if(StringUtils.isEmpty(playerId)) {
-//            playerId = "";
-//            return;
-//        }
-
         if (hasPlayer() && getPlayer().getSchemaVersion() != Constants.SCHEMA_VERSION) {
             return;
         }
