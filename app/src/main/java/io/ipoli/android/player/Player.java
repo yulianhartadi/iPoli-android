@@ -103,10 +103,12 @@ public class Player extends PersistedObject {
         this.experience = newXP.toString();
     }
 
+    @JsonIgnore
     public void addCoins(long coins) {
         this.coins += coins;
     }
 
+    @JsonIgnore
     public void removeCoins(long coins) {
         this.coins = Math.max(0, this.coins - coins);
     }
@@ -180,9 +182,8 @@ public class Player extends PersistedObject {
     }
 
     public Integer getWorkStartMinute() {
-        return workStartMinute != null ? workStartMinute : -1;
+        return workStartMinute;
     }
-
 
     @JsonIgnore
     public Time getWorkStartTime() {
@@ -206,7 +207,7 @@ public class Player extends PersistedObject {
     }
 
     public Integer getWorkEndMinute() {
-        return workEndMinute != null ? workEndMinute : -1;
+        return workEndMinute;
     }
 
     @JsonIgnore
