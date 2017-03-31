@@ -277,7 +277,22 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
         query.setGroupLevel(1);
         query.setStartKey(repeatingQuestId);
         query.setEndKey(repeatingQuestId);
-        runQuery(query, listener, q -> !q.getScheduledDate().before(toStartOfDayUTC(startDate)) || q.getScheduled() == null);
+        try {
+            QueryEnumerator enumerator = query.run();
+            List<Quest> result = new ArrayList<>();
+            while (enumerator.hasNext()) {
+                QueryRow row = enumerator.next();
+                List<Quest> quests = (List<Quest>) row.getValue();
+                for (Quest q : quests) {
+                    if (!q.getScheduledDate().before(toStartOfDayUTC(startDate)) || q.getScheduled() == null) {
+                        result.add(q);
+                    }
+                }
+            }
+            listener.onDataChanged(result);
+        } catch (CouchbaseLiteException e) {
+            postError(e);
+        }
     }
 
     @Override
