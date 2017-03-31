@@ -181,7 +181,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         posteriorEstimator = new PosteriorEstimator(posteriorSettings, currentDate, new Random(Constants.RANDOM_SEED));
 
-        if (!currentDate.isEqual(new LocalDate())) {
+        if (!currentDate.isEqual(LocalDate.now())) {
             calendarDayView.hideTimeLine();
         }
 

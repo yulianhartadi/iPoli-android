@@ -91,7 +91,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
         while (enumerator.hasNext()) {
             QueryRow row = enumerator.next();
             T obj = toObject(row.getValue());
-            if (predicate != null && predicate.shouldInclude(obj)) {
+            if (predicate == null || predicate.shouldInclude(obj)) {
                 result.add(obj);
             }
         }
