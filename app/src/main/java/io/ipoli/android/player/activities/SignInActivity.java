@@ -212,11 +212,15 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     public void getUserDetailsFromFB(AccessToken accessToken) {
 
         GraphRequest req = GraphRequest.newMeRequest(accessToken, (object, response) -> {
+            if(object == null) {
+                showErrorMessage(new Exception("Failed to get fields from Facebook"));
+                return;
+            }
             try {
                 String id = object.getString("id");
                 String email = object.getString("email");
-                String firstName = object.getString("firstname");
-                String lastName = object.getString("lastname");
+                String firstName = object.getString("first_name");
+                String lastName = object.getString("last_name");
                 String picture = object.getJSONObject("picture").getJSONObject("data").getString("url");
                 AuthProvider authProvider = new AuthProvider(id, AuthProvider.Provider.FACEBOOK);
                 authProvider.setEmail(email);
@@ -233,7 +237,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
         });
         Bundle parameters = new Bundle();
-        parameters.putString("fields", "email,id,firstname,lastname,picture");
+        parameters.putString("fields", "email,id,first_name,last_name,picture");
         req.setParameters(parameters);
         req.executeAsync();
     }
