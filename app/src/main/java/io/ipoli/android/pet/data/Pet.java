@@ -81,18 +81,20 @@ public class Pet {
         this.coinsBonusPercentage = Math.max(0, Math.min(Constants.MAX_PET_COIN_BONUS, coinsBonusPercentage));
     }
 
+    @JsonIgnore
     public void addHealthPoints(int healthPoints) {
         setHealthPointsPercentage(getHealthPointsPercentage() + healthPoints);
     }
 
+    @JsonIgnore
     private void updateCoinsBonusPercentage() {
         setCoinsBonusPercentage((int) Math.floor(getHealthPointsPercentage() * Constants.COINS_BONUS_PERCENTAGE_OF_HP / 100.0));
     }
 
+    @JsonIgnore
     private void updateExperienceBonusPercentage() {
         setExperienceBonusPercentage((int) Math.floor(getHealthPointsPercentage() * Constants.XP_BONUS_PERCENTAGE_OF_HP / 100.0));
     }
-
 
     @JsonIgnore
     public String getStateText() {
