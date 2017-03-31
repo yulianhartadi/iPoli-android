@@ -1,5 +1,7 @@
 package io.ipoli.android.app.api;
 
+import android.support.annotation.NonNull;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -78,10 +80,23 @@ public class Api {
                     List<Cookie> cookies = Cookie.parseAll(HttpUrl.get(urlProvider.api()), response.headers());
                     responseListener.onSuccess(authId, email, cookies, playerId, isNew, shouldCreatePlayer);
                 } else {
-                    responseListener.onError(new ApiResponseException(call.request().url().toString(), response.code(), response.message()));
+                    responseListener.onError(getApiResponseException(call, response));
                 }
             }
         });
+    }
+
+    @NonNull
+    private ApiResponseException getApiResponseException(Call call, Response response) {
+        String message = response.message();
+        if(response.body() != null) {
+            try {
+                message += " " + response.body().string();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return new ApiResponseException(call.request().url().toString(), response.code(), message);
     }
 
     public void migratePlayer(String firebasePlayerId, PlayerMigratedListener responseListener) {
@@ -104,7 +119,7 @@ public class Api {
                     Map<String, List<Map<String, Object>>> documents = objectMapper.readValue(response.body().charStream(), mapTypeReference);
                     responseListener.onSuccess(documents);
                 } else {
-                    responseListener.onError(new ApiResponseException(call.request().url().toString(), response.code(), response.message()));
+                    responseListener.onError(getApiResponseException(call, response));
                 }
             }
         });
