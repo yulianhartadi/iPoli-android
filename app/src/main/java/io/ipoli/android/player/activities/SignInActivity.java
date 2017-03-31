@@ -265,6 +265,11 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode != RESULT_OK && requestCode == RC_GOOGLE_SIGN_IN) {
+            closeLoadingDialog();
+            return;
+        }
+
         if (requestCode == RC_GOOGLE_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleGoogleSignInResult(result);
