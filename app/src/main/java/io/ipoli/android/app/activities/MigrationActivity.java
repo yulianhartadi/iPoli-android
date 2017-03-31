@@ -76,8 +76,7 @@ public class MigrationActivity extends BaseActivity {
             @Override
             public void onSuccess(Map<String, List<Map<String, Object>>> documents) {
                 if (!documents.containsKey("player")) {
-                    Toast.makeText(MigrationActivity.this, R.string.something_went_wrong, Toast.LENGTH_LONG).show();
-                    finish();
+                    showErrorMessage(new Exception("Player with firebase id:" + firebasePlayerId + " not found"));
                     return;
                 }
                 database.runInTransaction(() -> {
