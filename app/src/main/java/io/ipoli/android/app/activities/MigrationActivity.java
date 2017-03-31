@@ -75,11 +75,13 @@ public class MigrationActivity extends BaseActivity {
         api.migratePlayer(firebasePlayerId, new Api.PlayerMigratedListener() {
             @Override
             public void onSuccess(Map<String, List<Map<String, Object>>> documents) {
+                if (!documents.containsKey("player")) {
+                    Toast.makeText(MigrationActivity.this, R.string.something_went_wrong, Toast.LENGTH_LONG).show();
+                    finish();
+                    return;
+                }
                 database.runInTransaction(() -> {
-                    if (!documents.containsKey("player")) {
-                        Toast.makeText(MigrationActivity.this, R.string.something_went_wrong, Toast.LENGTH_LONG).show();
-                        finish();
-                    }
+
                     Map<String, Object> player = documents.get("player").get(0);
                     player.put("schemaVersion", Constants.SCHEMA_VERSION);
                     save(player);
