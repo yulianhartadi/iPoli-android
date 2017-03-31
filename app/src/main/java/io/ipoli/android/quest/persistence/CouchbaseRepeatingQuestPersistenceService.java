@@ -143,7 +143,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
     @Override
     public void saveWithQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests) {
-        database.runInTransaction(() -> {
+        runAsyncTransaction(() -> {
             for (Map.Entry<RepeatingQuest, List<Quest>> entry : repeatingQuestToScheduledQuests.entrySet()) {
                 RepeatingQuest rq = entry.getKey();
                 save(rq);
@@ -165,7 +165,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
     @Override
     public void update(RepeatingQuest repeatingQuest, List<Quest> questsToRemove, List<Quest> questsToCreate) {
-        database.runInTransaction(() -> {
+        runAsyncTransaction(() -> {
             for (Quest q : questsToRemove) {
                 questPersistenceService.delete(q);
             }
@@ -179,7 +179,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
     @Override
     public void delete(RepeatingQuest repeatingQuest) {
-        database.runInTransaction(() -> {
+        runAsyncTransaction(() -> {
             Query query = repeatingQuestWithQuestsView.createQuery();
             query.setStartKey(repeatingQuest.getId());
             query.setEndKey(repeatingQuest.getId());
@@ -209,7 +209,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
     @Override
     public void removeFromChallenge(RepeatingQuest repeatingQuest) {
-        database.runInTransaction(() -> {
+        runAsyncTransaction(() -> {
             repeatingQuest.setChallengeId(null);
             Query query = repeatingQuestWithQuestsView.createQuery();
             query.setStartKey(repeatingQuest.getId());
@@ -238,7 +238,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
     @Override
     public void addToChallenge(List<RepeatingQuest> repeatingQuests, String challengeId) {
-        database.runInTransaction(() -> {
+        runAsyncTransaction(() -> {
             try {
                 for (RepeatingQuest rq : repeatingQuests) {
                     rq.setChallengeId(challengeId);
