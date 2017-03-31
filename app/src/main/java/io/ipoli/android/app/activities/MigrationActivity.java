@@ -79,9 +79,8 @@ public class MigrationActivity extends BaseActivity {
                     showErrorMessage(new Exception("Player with firebase id:" + firebasePlayerId + " not found"));
                     return;
                 }
+                Map<String, Object> player = documents.get("player").get(0);
                 database.runInTransaction(() -> {
-
-                    Map<String, Object> player = documents.get("player").get(0);
                     player.put("schemaVersion", Constants.SCHEMA_VERSION);
                     save(player);
 
@@ -124,14 +123,13 @@ public class MigrationActivity extends BaseActivity {
                             save(q);
                         }
                     }
-
-                    String playerId = (String) player.get("id");
-                    eventBus.post(new PlayerCreatedEvent(playerId));
-                    eventBus.post(new PlayerMigratedEvent(firebasePlayerId, playerId));
-                    startActivity(new Intent(MigrationActivity.this, MainActivity.class));
-                    finish();
                     return true;
                 });
+                String playerId = (String) player.get("id");
+                eventBus.post(new PlayerCreatedEvent(playerId));
+                eventBus.post(new PlayerMigratedEvent(firebasePlayerId, playerId));
+                startActivity(new Intent(MigrationActivity.this, MainActivity.class));
+                finish();
             }
 
             @Override
