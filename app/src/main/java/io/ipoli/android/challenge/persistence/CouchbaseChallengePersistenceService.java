@@ -181,26 +181,25 @@ public class CouchbaseChallengePersistenceService extends BaseCouchbasePersisten
 
     @Override
     public void acceptChallenge(Challenge challenge, List<Quest> quests, Map<RepeatingQuest, List<Quest>> repeatingQuestsWithQuests) {
-        database.runInTransaction(() -> {
-            save(challenge);
+        runInTransaction(db -> {
+            save(challenge, db);
             String challengeId = challenge.getId();
             for (Quest q : quests) {
                 q.setChallengeId(challengeId);
-                questPersistenceService.save(q);
+                questPersistenceService.save(q, db);
             }
             for (Map.Entry<RepeatingQuest, List<Quest>> entry : repeatingQuestsWithQuests.entrySet()) {
                 RepeatingQuest rq = entry.getKey();
                 rq.setChallengeId(challengeId);
-                repeatingQuestPersistenceService.save(rq);
+                repeatingQuestPersistenceService.save(rq, db);
                 for (Quest q : entry.getValue()) {
                     q.setRepeatingQuestId(rq.getId());
                     q.setChallengeId(challengeId);
-                    questPersistenceService.save(q);
+                    questPersistenceService.save(q, db);
                 }
             }
             return true;
         });
-
     }
 
     @Override

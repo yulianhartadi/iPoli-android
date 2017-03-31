@@ -1,5 +1,7 @@
 package io.ipoli.android.app.persistence;
 
+import com.couchbase.lite.Database;
+
 import java.util.List;
 
 import io.ipoli.android.quest.persistence.OnDataChangedListener;
@@ -11,6 +13,8 @@ import io.ipoli.android.quest.persistence.OnDataChangedListener;
 public interface PersistenceService<T extends PersistedObject> {
 
     void save(T obj);
+
+    void save(T obj, Database database);
 
     void save(List<T> objects);
 

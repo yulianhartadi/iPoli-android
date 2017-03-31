@@ -101,7 +101,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
     protected abstract Class<T> getModelClass();
 
     @Override
-    public void save(T obj) {
+    public void save(T obj, Database db) {
         TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {
         };
         Map<String, Object> data;
@@ -110,7 +110,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
             obj.setOwner(getPlayerId(obj));
             data = objectMapper.convertValue(obj, mapTypeReference);
             try {
-                Document document = database.createDocument();
+                Document document = db.createDocument();
                 document.putProperties(data);
                 obj.setId(document.getId());
             } catch (CouchbaseLiteException e) {
@@ -119,7 +119,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
         } else {
             obj.markUpdated();
             data = objectMapper.convertValue(obj, mapTypeReference);
-            UnsavedRevision revision = database.getExistingDocument(obj.getId()).createRevision();
+            UnsavedRevision revision = db.getExistingDocument(obj.getId()).createRevision();
             revision.setProperties(data);
             try {
                 revision.save();
@@ -127,6 +127,11 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
                 postError(e);
             }
         }
+    }
+
+    @Override
+    public void save(T obj) {
+        save(obj, database);
     }
 
     protected String getPlayerId(T obj) {
@@ -211,6 +216,14 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
 
     protected void postError(Exception e) {
         eventBus.post(new AppErrorEvent(e));
+    }
+
+    protected void runInTransaction(Transaction transaction) {
+        database.runAsync(db -> db.runInTransaction(() -> transaction.run(db)));
+    }
+
+    protected interface Transaction {
+        boolean run(Database db);
     }
 
     protected interface Predicate<T> {
