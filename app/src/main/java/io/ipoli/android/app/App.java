@@ -651,9 +651,7 @@ public class App extends MultiDexApplication {
     }
 
     private Player getPlayer() {
-        Player player = playerPersistenceService.get();
-        playerId = player != null ? player.getId() : null;
-        return player;
+        return playerPersistenceService.get();
     }
 
     private boolean shouldIncreaseLevel(Player player) {
