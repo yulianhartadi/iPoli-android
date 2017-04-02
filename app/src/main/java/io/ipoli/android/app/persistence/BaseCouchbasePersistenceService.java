@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,22 +55,42 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
     }
 
     protected void runQuery(View view, OnDataChangedListener<List<T>> listener) {
-        runQuery(view.createQuery(), listener, null);
+        runQuery(view.createQuery(), listener, null, null);
+    }
+
+    protected void runQuery(View view, OnDataChangedListener<List<T>> listener, QuerySort<T> querySort) {
+        runQuery(view.createQuery(), listener, null, querySort);
     }
 
     protected void runQuery(View view, OnDataChangedListener<List<T>> listener, Predicate<T> predicate) {
-        runQuery(view.createQuery(), listener, predicate);
+        runQuery(view.createQuery(), listener, predicate, null);
+    }
+
+    protected void runQuery(View view, OnDataChangedListener<List<T>> listener, Predicate<T> predicate, QuerySort<T> querySort) {
+        runQuery(view.createQuery(), listener, predicate, querySort);
     }
 
     protected void runQuery(Query query, OnDataChangedListener<List<T>> listener) {
-        runQuery(query, listener, null);
+        runQuery(query, listener, null, null);
+    }
+
+    protected void runQuery(Query query, OnDataChangedListener<List<T>> listener, QuerySort<T> querySort) {
+        runQuery(query, listener, null, querySort);
     }
 
     protected void runQuery(Query query, OnDataChangedListener<List<T>> listener, Predicate<T> predicate) {
         listener.onDataChanged(getQueryResult(query, predicate));
     }
 
+    protected void runQuery(Query query, OnDataChangedListener<List<T>> listener, Predicate<T> predicate, QuerySort<T> querySort) {
+        listener.onDataChanged(getQueryResult(query, predicate));
+    }
+
     protected List<T> getQueryResult(Query query, Predicate<T> predicate) {
+        return getQueryResult(query, predicate, null);
+    }
+
+    protected List<T> getQueryResult(Query query, Predicate<T> predicate, QuerySort<T> querySort) {
         try {
             return getResult(query.run(), predicate);
         } catch (CouchbaseLiteException e) {
@@ -79,14 +100,26 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
     }
 
     protected List<T> getResult(LiveQuery.ChangeEvent event) {
-        return getResult(event, null);
+        return getResult(event, null, null);
     }
 
     protected List<T> getResult(LiveQuery.ChangeEvent event, Predicate<T> predicate) {
-        return getResult(event.getRows(), predicate);
+        return getResult(event.getRows(), predicate, null);
+    }
+
+    protected List<T> getResult(LiveQuery.ChangeEvent event, QuerySort<T> querySort) {
+        return getResult(event.getRows(), null, querySort);
     }
 
     protected List<T> getResult(QueryEnumerator enumerator, Predicate<T> predicate) {
+        return getResult(enumerator, predicate, null);
+    }
+
+    protected List<T> getResult(LiveQuery.ChangeEvent event, Predicate<T> predicate, QuerySort<T> querySort) {
+        return getResult(event.getRows(), predicate, querySort);
+    }
+
+    protected List<T> getResult(QueryEnumerator enumerator, Predicate<T> predicate, QuerySort<T> querySort) {
         List<T> result = new ArrayList<>();
         while (enumerator.hasNext()) {
             QueryRow row = enumerator.next();
@@ -94,6 +127,9 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
             if (predicate == null || predicate.shouldInclude(obj)) {
                 result.add(obj);
             }
+        }
+        if(querySort != null) {
+            Collections.sort(result, querySort::sort);
         }
         return result;
     }
@@ -223,5 +259,9 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
 
     protected interface Predicate<T> {
         boolean shouldInclude(T obj);
+    }
+
+    protected interface QuerySort<T> {
+        int sort(T obj1, T obj2);
     }
 }
