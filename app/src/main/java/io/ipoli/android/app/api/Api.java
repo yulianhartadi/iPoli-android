@@ -40,7 +40,9 @@ public class Api {
     public Api(ObjectMapper objectMapper, UrlProvider urlProvider) {
         this.objectMapper = objectMapper;
         this.urlProvider = urlProvider;
-        httpClient = new OkHttpClient().newBuilder().readTimeout(Constants.API_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS).retryOnConnectionFailure(false).build();
+        httpClient = new OkHttpClient().newBuilder()
+                .readTimeout(Constants.API_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(false).build();
     }
 
     public void createSession(AuthProvider authProvider, String accessToken, SessionResponseListener responseListener) {

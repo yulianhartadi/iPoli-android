@@ -187,7 +187,7 @@ public class Player extends PersistedObject {
 
     @JsonIgnore
     public Time getWorkStartTime() {
-        if (getWorkStartMinute() < 0) {
+        if (getWorkStartMinute() == null) {
             return null;
         }
         return Time.of(getWorkStartMinute());
@@ -212,7 +212,7 @@ public class Player extends PersistedObject {
 
     @JsonIgnore
     public Time getWorkEndTime() {
-        if (getWorkEndMinute() < 0) {
+        if (getWorkEndMinute() == null) {
             return null;
         }
         return Time.of(getWorkEndMinute());
@@ -233,13 +233,13 @@ public class Player extends PersistedObject {
     }
 
     public Integer getSleepStartMinute() {
-        return sleepStartMinute != null ? sleepStartMinute : -1;
+        return sleepStartMinute;
     }
 
 
     @JsonIgnore
     public Time getSleepStartTime() {
-        if (getSleepStartMinute() < 0) {
+        if (getSleepStartMinute() == null) {
             return null;
         }
         return Time.of(getSleepStartMinute());
@@ -259,13 +259,13 @@ public class Player extends PersistedObject {
     }
 
     public Integer getSleepEndMinute() {
-        return sleepEndMinute != null ? sleepEndMinute : -1;
+        return sleepEndMinute;
     }
 
 
     @JsonIgnore
     public Time getSleepEndTime() {
-        if (getSleepEndMinute() < 0) {
+        if (getSleepEndMinute() == 0) {
             return null;
         }
         return Time.of(getSleepEndMinute());

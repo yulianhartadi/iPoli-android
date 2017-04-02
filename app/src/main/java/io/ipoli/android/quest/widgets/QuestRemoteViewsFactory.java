@@ -22,8 +22,10 @@ import javax.inject.Inject;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
@@ -68,21 +70,22 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     public void onDataSetChanged() {
         TypeReference<List<Quest>> type = new TypeReference<List<Quest>>() {
         };
+        String questsJSON = localStorage.readString(Constants.KEY_WIDGET_AGENDA_QUESTS);
+        quests = new ArrayList<>();
+        if (StringUtils.isEmpty(questsJSON)) {
+            return;
+        }
         try {
-            List<Quest> allQuests = objectMapper.readValue(localStorage.readString(Constants.KEY_WIDGET_AGENDA_QUESTS), type);
-            quests = new ArrayList<>();
-            if (allQuests == null) {
-                return;
-            }
+            List<Quest> allQuests = objectMapper.readValue(questsJSON, type);
             for (Quest q : allQuests) {
                 if (!q.isCompleted()) {
                     quests.add(q);
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("Cant read JSON for Widget : " + localStorage.readString(Constants.KEY_WIDGET_AGENDA_QUESTS), e);
+            e.printStackTrace();
+            eventBus.post(new AppErrorEvent(new RuntimeException("Cant read JSON for Widget : " + questsJSON, e)));
         }
-
     }
 
     @Override
