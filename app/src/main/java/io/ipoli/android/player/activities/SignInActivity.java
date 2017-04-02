@@ -216,7 +216,10 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             }
             try {
                 String id = object.getString("id");
-                String email = object.getString("email");
+                String email = "";
+                if(object.has("email")) {
+                   email = object.getString("email");
+                }
                 String firstName = object.getString("first_name");
                 String lastName = object.getString("last_name");
                 String picture = object.getJSONObject("picture").getJSONObject("data").getString("url");
@@ -279,6 +282,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         api.createSession(authProvider, accessToken, new Api.SessionResponseListener() {
             @Override
             public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
+                authProvider.setEmail(email);
                 eventBus.post(new PlayerSignedInEvent(authProvider.getProvider(), isNew));
                 if (shouldCreatePlayer) {
                     createPlayer(playerId, authProvider);
