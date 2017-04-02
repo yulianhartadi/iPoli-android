@@ -1,5 +1,7 @@
 package io.ipoli.android;
 
+import com.google.android.gms.common.api.Scope;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -155,6 +157,7 @@ public interface Constants {
     String KEY_WIDGET_AGENDA_QUESTS = "widget_agenda_quests";
     int API_READ_TIMEOUT_SECONDS = 30;
     String DEFAULT_VIEW_VERSION = "1.0";
+    Scope GOOGLE_SCOPE_CALENDAR = new Scope("https://www.googleapis.com/auth/calendar");
 
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);
