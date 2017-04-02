@@ -204,16 +204,13 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @OnClick(R.id.guest_login)
     public void onGuestLogin(View v) {
-        createLoadingDialog();
-        createPlayer();
-        eventBus.post(new PlayerSignedInEvent("GUEST", true));
-        onFinish();
+        signUpAsGuest();
     }
 
     public void getUserDetailsFromFB(AccessToken accessToken) {
 
         GraphRequest req = GraphRequest.newMeRequest(accessToken, (object, response) -> {
-            if(object == null) {
+            if (object == null) {
                 showErrorMessage(new Exception("Failed to get fields from Facebook"));
                 return;
             }
@@ -268,7 +265,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode != RESULT_OK && requestCode == RC_GOOGLE_SIGN_IN) {
+        if (resultCode != RESULT_OK && requestCode == RC_GOOGLE_SIGN_IN) {
             closeLoadingDialog();
             return;
         }
@@ -395,6 +392,19 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             dialog.dismiss();
             dialog = null;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        signUpAsGuest();
+    }
+
+    protected void signUpAsGuest() {
+        createLoadingDialog();
+        createPlayer();
+        eventBus.post(new PlayerSignedInEvent("GUEST", true));
+        Toast.makeText(this, R.string.using_as_guest, Toast.LENGTH_SHORT).show();
+        onFinish();
     }
 
     private void onFinish() {

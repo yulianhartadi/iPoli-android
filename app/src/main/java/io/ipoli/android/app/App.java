@@ -326,7 +326,6 @@ public class App extends MultiDexApplication {
             if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
                 localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
                 startNewActivity(TutorialActivity.class);
-                return;
             } else {
                 startNewActivity(SignInActivity.class);
             }
