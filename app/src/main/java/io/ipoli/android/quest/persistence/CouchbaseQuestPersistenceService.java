@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.persistence;
 
+import android.support.annotation.NonNull;
 import android.util.Pair;
 
 import com.couchbase.lite.CouchbaseLiteException;
@@ -15,6 +16,7 @@ import com.squareup.otto.Bus;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -178,7 +180,9 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 while (enumerator.hasNext()) {
                     QueryRow queryRow = enumerator.next();
                     Pair<LocalDate, List<Quest>> value = (Pair<LocalDate, List<Quest>>) queryRow.getValue();
-                    result.put(value.first, value.second);
+                    List<Quest> questsForDate = value.second;
+                    Collections.sort(questsForDate, createDefaultQuestSortQuery()::sort);
+                    result.put(value.first, questsForDate);
                 }
                 postResult(listener, result);
             }
@@ -220,7 +224,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
         LiveQuery.ChangeListener changeListener = event -> {
             if (event.getSource().equals(query)) {
-                postResult(listener, getResult(event));
+                postResult(listener, getResult(event, createDefaultQuestSortQuery()));
             }
         };
 
@@ -234,7 +238,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
         long date = toStartOfDayUTC(currentDate).getTime();
         query.setStartKey(date);
         query.setEndKey(date);
-        runQuery(query, listener);
+        runQuery(query, listener, createDefaultQuestSortQuery());
     }
 
     @Override
@@ -376,5 +380,23 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
         };
 
         startLiveQuery(query, changeListener);
+    }
+
+    @NonNull
+    private QuerySort<Quest> createDefaultQuestSortQuery() {
+        return (q1, q2) -> {
+            if (q1.shouldBeDoneMultipleTimesPerDay() || q2.shouldBeDoneMultipleTimesPerDay()) {
+                return Integer.compare(q1.getTimesADay(), q2.getTimesADay());
+            }
+            Integer q1Start = q1.getStartMinute();
+            if (q1Start == null) {
+                return -1;
+            }
+            Integer q2Start = q2.getStartMinute();
+            if (q2Start == null) {
+                return 1;
+            }
+            return Integer.compare(q1Start, q2Start);
+        };
     }
 }
