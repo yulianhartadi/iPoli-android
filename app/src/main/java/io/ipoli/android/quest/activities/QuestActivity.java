@@ -191,6 +191,10 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             finish();
             return;
         }
+        if (quest.isCompleted()) {
+            finish();
+            return;
+        }
 
         name.setText(quest.getName());
         if (getSupportActionBar() != null) {
