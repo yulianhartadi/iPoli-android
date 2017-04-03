@@ -98,7 +98,9 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
         if (questRemindersView.getMap() == null) {
             questRemindersView.setMapReduce((document, emitter) -> {
                 String type = (String) document.get("type");
-                if (Quest.TYPE.equals(type) && document.containsKey("scheduled") && document.containsKey("startMinute") && document.containsKey("reminders")) {
+                if (Quest.TYPE.equals(type) && !document.containsKey("completedAt")
+                        && !document.containsKey("actualStart") && document.containsKey("scheduled")
+                        && document.containsKey("startMinute") && document.containsKey("reminders")) {
                     List<Map<String, Object>> reminders = (List<Map<String, Object>>) document.get("reminders");
                     if (reminders.size() == 0) {
                         return;
