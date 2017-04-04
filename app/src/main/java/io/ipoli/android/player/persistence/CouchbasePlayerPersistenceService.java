@@ -27,15 +27,6 @@ public class CouchbasePlayerPersistenceService extends BaseCouchbasePersistenceS
     }
 
     @Override
-    protected String getPlayerId(Player obj) {
-        String playerId = super.getPlayerId(obj);
-        if (StringUtils.isEmpty(playerId) && obj != null) {
-            return obj.getId();
-        }
-        return playerId;
-    }
-
-    @Override
     public Player get() {
         Document player = database.getExistingDocument(getPlayerId());
         return player != null ? toObject(player.getProperties()) : null;
@@ -61,19 +52,16 @@ public class CouchbasePlayerPersistenceService extends BaseCouchbasePersistenceS
 
     @Override
     public void save(Player player, String playerId) {
-        if (StringUtils.isEmpty(playerId)) {
-            super.save(player);
-            return;
-        }
-        player.setId(playerId);
-        player.setOwner(playerId);
+        Document playerDoc = StringUtils.isEmpty(playerId) ? database.createDocument() : database.getDocument(playerId);
+
+        player.setId(playerDoc.getId());
+        player.setOwner(playerDoc.getId());
 
         TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {
         };
         Map<String, Object> data = objectMapper.convertValue(player, mapTypeReference);
         try {
-            Document document = database.getDocument(playerId);
-            document.putProperties(data);
+            playerDoc.putProperties(data);
         } catch (CouchbaseLiteException e) {
             postError(e);
         }
