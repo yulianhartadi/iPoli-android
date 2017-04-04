@@ -150,7 +150,7 @@ public interface Constants {
     double NO_QUESTS_PENALTY_COEFFICIENT = 0.3;
     double IMPORTANT_QUEST_PENALTY_PERCENT = 5;
 
-    String KEY_WIDGET_AGENDA_QUESTS = "widget_agenda_quests";
+    String KEY_WIDGET_AGENDA_QUEST_LIST = "widget_agenda_quest_list";
     int API_READ_TIMEOUT_SECONDS = 30;
     String DEFAULT_VIEW_VERSION = "1.0";
 
