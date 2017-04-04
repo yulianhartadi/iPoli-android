@@ -396,7 +396,9 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @Override
     public void onBackPressed() {
-        signUpAsGuest();
+        if(!App.hasPlayer()) {
+            signUpAsGuest();
+        }
     }
 
     protected void signUpAsGuest() {
