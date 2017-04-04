@@ -35,7 +35,7 @@ public class QuestParser {
         public String rawText;
         public String name;
         public int duration;
-        public int startMinute;
+        public Integer startMinute;
         public Date endDate;
         public int timesAWeek;
         public int timesAMonth;
