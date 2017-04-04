@@ -27,6 +27,7 @@ import io.ipoli.android.app.settings.SettingsFragment;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.tutorial.fragments.PickTutorialQuestsFragment;
 import io.ipoli.android.app.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
+import io.ipoli.android.app.tutorial.fragments.SyncAndroidCalendarFragment;
 import io.ipoli.android.challenge.activities.AddChallengeActivity;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
@@ -225,5 +226,7 @@ public interface AppComponent {
     void inject(AddChallengeQuestsFragment addChallengeQuestsFragment);
 
     void inject(BootCompleteReceiver bootCompleteReceiver);
+
+    void inject(SyncAndroidCalendarFragment syncAndroidCalendarFragment);
 }
 

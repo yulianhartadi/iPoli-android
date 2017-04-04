@@ -158,6 +158,7 @@ public interface Constants {
     int API_READ_TIMEOUT_SECONDS = 30;
     String DEFAULT_VIEW_VERSION = "1.0";
     Scope GOOGLE_SCOPE_CALENDAR = new Scope("https://www.googleapis.com/auth/calendar");
+    int READ_CALENDAR_PERMISSION_REQUEST_CODE = 100;
 
     enum DaysOfWeek {
         SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);
