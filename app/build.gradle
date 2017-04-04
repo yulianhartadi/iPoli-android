@@ -90,6 +90,7 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.0.pr2'
     compile 'com.squareup.okhttp3:okhttp:3.6.0'
     compile 'com.github.medyo:fancybuttons:1.8.3'
+    compile 'me.everything:providers-android:1.0.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

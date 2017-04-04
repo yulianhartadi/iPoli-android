@@ -21,6 +21,7 @@ import io.ipoli.android.app.modules.SchedulerModule;
 import io.ipoli.android.app.modules.TimeParserModule;
 import io.ipoli.android.app.modules.UrlProviderModule;
 import io.ipoli.android.app.rate.RateDialog;
+import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
 import io.ipoli.android.app.receivers.BootCompleteReceiver;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.settings.SettingsFragment;
@@ -228,5 +229,7 @@ public interface AppComponent {
     void inject(BootCompleteReceiver bootCompleteReceiver);
 
     void inject(SyncAndroidCalendarFragment syncAndroidCalendarFragment);
+
+    void inject(AndroidCalendarEventChangedReceiver androidCalendarEventChangedReceiver);
 }
 
