@@ -25,6 +25,9 @@ public class DateChangedReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         App.getAppComponent(context).inject(this);
+        if (!App.hasPlayer()) {
+            return;
+        }
         eventBus.post(new DateChangedEvent());
     }
 }
