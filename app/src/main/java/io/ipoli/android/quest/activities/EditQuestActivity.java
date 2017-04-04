@@ -738,7 +738,8 @@ public class EditQuestActivity extends BaseActivity implements
 
     private boolean reminderWithSameTimeExists(Reminder reminder) {
         for (Reminder r : getReminders()) {
-            if (reminder.getMinutesFromStart() == r.getMinutesFromStart()) {
+            if (!reminder.getNotificationId().equals(r.getNotificationId())
+                    && reminder.getMinutesFromStart() == r.getMinutesFromStart()) {
                 return true;
             }
         }
