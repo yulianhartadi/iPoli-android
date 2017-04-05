@@ -5,7 +5,6 @@ import java.util.List;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 
 /**
@@ -15,10 +14,15 @@ import io.ipoli.android.app.ui.formatters.DurationFormatter;
 public class DurationSuggestionsProvider extends BaseSuggestionsProvider {
 
     public DurationSuggestionsProvider() {
+        createSuggestions();
+        createSuggestionItems();
+    }
+
+    private void createSuggestions() {
         for (int d : Constants.DURATIONS) {
             String visibleText = DurationFormatter.formatReadableShort(d);
             String text = d == Constants.QUEST_MIN_DURATION ? DurationFormatter.formatShort(d) : visibleText;
-            defaultSuggestionItems.add(new SuggestionDropDownItem(getIcon(), visibleText, getMatchingStartWord() + text));
+            suggestionToVisibleText.put(text, visibleText);
         }
     }
 

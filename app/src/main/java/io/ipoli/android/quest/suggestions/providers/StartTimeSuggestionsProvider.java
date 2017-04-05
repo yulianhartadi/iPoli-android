@@ -6,6 +6,7 @@ import org.joda.time.LocalTime;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.ui.formatters.StartTimeFormatter;
@@ -21,8 +22,14 @@ public class StartTimeSuggestionsProvider extends BaseSuggestionsProvider {
 
     public StartTimeSuggestionsProvider(boolean use24HourFormat) {
         this.use24HourFormat = use24HourFormat;
-        for(String s : createSuggestions()) {
-            defaultSuggestionItems.add(new SuggestionDropDownItem(getIcon(), s, getMatchingStartWord() + s));
+        createSuggestions();
+        createSuggestionItems();
+    }
+
+    @Override
+    protected void createSuggestionItems() {
+        for(Map.Entry<String, String> entry : suggestionToVisibleText.entrySet()) {
+            defaultSuggestionItems.add(new SuggestionDropDownItem(getIcon(), entry.getValue(), getMatchingStartWord() + entry.getKey()));
         }
     }
 
@@ -36,8 +43,7 @@ public class StartTimeSuggestionsProvider extends BaseSuggestionsProvider {
     }
 
     @NonNull
-    private List<String> createSuggestions() {
-        List<String> suggestions = new ArrayList<>();
+    private void createSuggestions() {
         int interval = 15;
 
         LocalTime now = LocalTime.now();
@@ -46,10 +52,10 @@ public class StartTimeSuggestionsProvider extends BaseSuggestionsProvider {
 
         int count = 24 * (60 / interval);
         for (int i = 1; i <= count; i++) {
-            suggestions.add(StartTimeFormatter.formatShort(now.toDateTimeToday().toDate(), use24HourFormat));
+            String text = StartTimeFormatter.formatShort(now.toDateTimeToday().toDate(), use24HourFormat);
+            suggestionToVisibleText.put(text, text);
             now = now.plusMinutes(interval);
         }
-        return suggestions;
     }
 
     @Override
