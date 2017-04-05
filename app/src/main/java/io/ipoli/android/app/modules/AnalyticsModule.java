@@ -1,6 +1,7 @@
 package io.ipoli.android.app.modules;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.amplitude.api.Amplitude;
 
@@ -28,8 +29,8 @@ public class AnalyticsModule {
         if (!TextUtils.isEmpty(playerId)) {
             Amplitude.getInstance().setUserId(playerId);
         }
-        Amplitude.getInstance().setLogLevel(0);
         if (BuildConfig.DEBUG) {
+            Amplitude.getInstance().setLogLevel(Log.VERBOSE);
             Amplitude.getInstance().setOptOut(true);
         }
         return new AmplitudeAnalyticsService();

@@ -271,7 +271,7 @@ public class App extends MultiDexApplication {
         questPersistenceService.listenForAllNonAllDayForDate(LocalDate.now(), quests -> {
             scheduleNextReminder();
             try {
-                localStorage.saveString(Constants.KEY_WIDGET_AGENDA_QUESTS, objectMapper.writeValueAsString(quests));
+                localStorage.saveString(Constants.KEY_WIDGET_AGENDA_QUEST_LIST, objectMapper.writeValueAsString(quests));
             } catch (JsonProcessingException e) {
                 throw new RuntimeException("Cant save quests for Widget", e);
             }

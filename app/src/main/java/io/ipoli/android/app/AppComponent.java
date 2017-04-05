@@ -22,7 +22,6 @@ import io.ipoli.android.app.modules.TimeParserModule;
 import io.ipoli.android.app.modules.UrlProviderModule;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
-import io.ipoli.android.app.receivers.BootCompleteReceiver;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.settings.SettingsFragment;
 import io.ipoli.android.app.tutorial.TutorialActivity;
@@ -225,8 +224,6 @@ public interface AppComponent {
     void inject(AddChallengeReasonsFragment addChallengeReasonsFragment);
 
     void inject(AddChallengeQuestsFragment addChallengeQuestsFragment);
-
-    void inject(BootCompleteReceiver bootCompleteReceiver);
 
     void inject(SyncAndroidCalendarFragment syncAndroidCalendarFragment);
 

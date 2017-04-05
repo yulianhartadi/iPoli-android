@@ -307,14 +307,16 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
         long key = toStartOfDayUTC(date).getTime();
         query.setStartKey(key);
         query.setEndKey(key);
+        query.setMapOnly(true);
         try {
             QueryEnumerator enumerator = null;
             enumerator = query.run();
             long count = 0;
             while (enumerator.hasNext()) {
                 QueryRow row = enumerator.next();
-                Map<String, Object> docProperties = row.getDocumentProperties();
-                if (docProperties.containsKey("priority") && Integer.valueOf(docProperties.get("priority").toString()) == priority) {
+                Map<String, Object> questDoc = (Map<String, Object>) row.getValue();
+                if (questDoc.containsKey("priority") &&
+                        Integer.valueOf(questDoc.get("priority").toString()) == priority && questDoc.containsKey("completedAt")) {
                     count++;
                 }
             }

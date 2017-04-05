@@ -1,7 +1,5 @@
 package io.ipoli.android;
 
-import com.google.android.gms.common.api.Scope;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,8 +14,6 @@ import io.ipoli.android.app.TimeOfDay;
  * on 6/15/15.
  */
 public interface Constants {
-
-    String API_VERSION = "v1";
 
     String FACEBOOK_APP_LINK = "https://fb.me/1609677589354576";
     String IPOLI_LOGO_URL = "https://i.imgur.com/Gz3rUi1.png";
@@ -154,10 +150,9 @@ public interface Constants {
     double NO_QUESTS_PENALTY_COEFFICIENT = 0.3;
     double IMPORTANT_QUEST_PENALTY_PERCENT = 5;
 
-    String KEY_WIDGET_AGENDA_QUESTS = "widget_agenda_quests";
+    String KEY_WIDGET_AGENDA_QUEST_LIST = "widget_agenda_quest_list";
     int API_READ_TIMEOUT_SECONDS = 30;
     String DEFAULT_VIEW_VERSION = "1.0";
-    Scope GOOGLE_SCOPE_CALENDAR = new Scope("https://www.googleapis.com/auth/calendar");
     int READ_CALENDAR_PERMISSION_REQUEST_CODE = 100;
 
     enum DaysOfWeek {

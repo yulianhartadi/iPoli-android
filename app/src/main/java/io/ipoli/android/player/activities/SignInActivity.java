@@ -163,7 +163,6 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(ApiConstants.WEB_SERVER_GOOGLE_PLUS_CLIENT_ID)
                 .requestEmail()
-                .requestScopes(Constants.GOOGLE_SCOPE_CALENDAR)
                 .build();
 
         googleApiClient = new GoogleApiClient.Builder(this)
@@ -397,7 +396,9 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @Override
     public void onBackPressed() {
-        signUpAsGuest();
+        if(!App.hasPlayer()) {
+            signUpAsGuest();
+        }
     }
 
     protected void signUpAsGuest() {

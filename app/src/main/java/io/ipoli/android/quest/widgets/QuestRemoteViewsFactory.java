@@ -70,7 +70,7 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
     public void onDataSetChanged() {
         TypeReference<List<Quest>> type = new TypeReference<List<Quest>>() {
         };
-        String questsJSON = localStorage.readString(Constants.KEY_WIDGET_AGENDA_QUESTS);
+        String questsJSON = localStorage.readString(Constants.KEY_WIDGET_AGENDA_QUEST_LIST);
         quests = new ArrayList<>();
         if (StringUtils.isEmpty(questsJSON)) {
             return;

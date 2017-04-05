@@ -551,7 +551,7 @@ public class EditQuestActivity extends BaseActivity implements
     @OnClick(R.id.quest_start_time_container)
     public void onStartTimeClick(View view) {
         Time time = Time.now();
-        if (startTimeText.getTag() != null && (int) startTimeText.getTag() > -1) {
+        if (startTimeText.getTag() != null) {
             time = Time.of((int) startTimeText.getTag());
         }
         TimePickerFragment f = TimePickerFragment.newInstance(time, this);
@@ -738,7 +738,8 @@ public class EditQuestActivity extends BaseActivity implements
 
     private boolean reminderWithSameTimeExists(Reminder reminder) {
         for (Reminder r : getReminders()) {
-            if (reminder.getMinutesFromStart() == r.getMinutesFromStart()) {
+            if (!reminder.getNotificationId().equals(r.getNotificationId())
+                    && reminder.getMinutesFromStart() == r.getMinutesFromStart()) {
                 return true;
             }
         }

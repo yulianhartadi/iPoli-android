@@ -143,7 +143,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
         Map<String, Object> data;
 
         if (StringUtils.isEmpty(obj.getId())) {
-            obj.setOwner(getPlayerId(obj));
+            obj.setOwner(getPlayerId());
             data = objectMapper.convertValue(obj, mapTypeReference);
             try {
                 Document document = database.createDocument();
@@ -165,12 +165,8 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
         }
     }
 
-    protected String getPlayerId(T obj) {
-        return App.getPlayerId();
-    }
-
     protected String getPlayerId() {
-        return getPlayerId(null);
+        return App.getPlayerId();
     }
 
     @Override

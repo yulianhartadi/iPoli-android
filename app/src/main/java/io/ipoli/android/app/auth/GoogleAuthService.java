@@ -14,7 +14,6 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.squareup.otto.Bus;
 
 import io.ipoli.android.ApiConstants;
-import io.ipoli.android.Constants;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.player.SignInException;
 
@@ -32,7 +31,6 @@ public class GoogleAuthService implements GoogleApiClient.OnConnectionFailedList
         this.eventBus = eventBus;
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(ApiConstants.WEB_SERVER_GOOGLE_PLUS_CLIENT_ID)
-                .requestScopes(Constants.GOOGLE_SCOPE_CALENDAR)
                 .requestEmail()
                 .build();
     }
