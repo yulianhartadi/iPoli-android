@@ -3,7 +3,9 @@ package io.ipoli.android.quest.suggestions.providers;
 import android.support.annotation.DrawableRes;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 
@@ -12,13 +14,19 @@ import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
  * on 4/14/16.
  */
 public abstract class BaseSuggestionsProvider implements SuggestionsProvider {
-    protected final List<String> suggestions;
+    protected Map<String, String> suggestionToVisibleText = new LinkedHashMap<>();
     protected List<SuggestionDropDownItem> defaultSuggestionItems = new ArrayList<>();
 
     public BaseSuggestionsProvider() {
-        suggestions = getSuggestions();
-        for(String s : suggestions) {
-            defaultSuggestionItems.add(new SuggestionDropDownItem(getIcon(), s, getMatchingStartWord() + s));
+        for(String s : getSuggestions()) {
+            suggestionToVisibleText.put(s, s);
+        }
+        createSuggestionItems();
+    }
+
+    protected void createSuggestionItems() {
+        for(Map.Entry<String, String> entry : suggestionToVisibleText.entrySet()) {
+            defaultSuggestionItems.add(new SuggestionDropDownItem(getIcon(), entry.getValue(), getMatchingStartWord() + entry.getKey()));
         }
     }
 
@@ -44,9 +52,9 @@ public abstract class BaseSuggestionsProvider implements SuggestionsProvider {
 
     protected List<SuggestionDropDownItem> applyFilters(String text) {
         List<SuggestionDropDownItem> suggestionItems = new ArrayList<>();
-        for(String s: suggestions) {
-            if(s.toLowerCase().startsWith(text.toLowerCase())) {
-                suggestionItems.add(new SuggestionDropDownItem(getIcon(), s, getMatchingStartWord() + s));
+        for(Map.Entry<String, String> entry : suggestionToVisibleText.entrySet()) {
+            if(entry.getKey().toLowerCase().startsWith(text.toLowerCase())) {
+                suggestionItems.add(new SuggestionDropDownItem(getIcon(), entry.getValue(), getMatchingStartWord() + entry.getKey()));
             }
         }
         return suggestionItems;
