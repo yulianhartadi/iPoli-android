@@ -6,11 +6,13 @@ import android.util.Log;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.Manager;
 import com.couchbase.lite.android.AndroidContext;
+import com.google.firebase.crash.FirebaseCrash;
 
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.ipoli.android.BuildConfig;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -24,10 +26,13 @@ public class CouchbaseModule {
     public Database provideDatabase(Context context) {
         try {
             Manager manager = new Manager(new AndroidContext(context), Manager.DEFAULT_OPTIONS);
-            Manager.enableLogging("CouchDb", Log.VERBOSE);
+            if (BuildConfig.DEBUG) {
+                Manager.enableLogging("CouchDb", Log.VERBOSE);
+            }
             return manager.getDatabase("ipoli_db");
         } catch (Exception e) {
             e.printStackTrace();
+            FirebaseCrash.report(new RuntimeException("Unable to create/get database", e));
             return null;
         }
     }
