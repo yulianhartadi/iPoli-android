@@ -54,6 +54,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.player.GrowthException;
 import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
@@ -129,7 +130,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private void showCharts(int dayCount) {
-        questPersistenceService.findAllCompletedNonAllDayBetween(new LocalDate().minusDays(dayCount - 1), new LocalDate().plusDays(1), quests -> {
+        questPersistenceService.findAllCompletedNonAllDayBetween(new LocalDate().minusDays(dayCount - 1), new LocalDate(), quests -> {
             if (quests.isEmpty()) {
                 chartContainer.setVisibility(View.GONE);
                 emptyViewContainer.setVisibility(View.VISIBLE);
@@ -218,7 +219,18 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         for (Quest q : quests) {
             Date dateKey = new LocalDate(q.getCompletedAtDate().getTime()).toDate();
-            groupedByDate.get(dateKey).add(q);
+            try {
+                groupedByDate.get(dateKey).add(q);
+            } catch (Exception e) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("CompletedAt date with time ").append(q.getCompletedAtDate().getTime())
+                        .append(" of quest with id ").append(q.getId())
+                        .append(" was not present in generated dates for ").append(dayCount).append(" days: ");
+                for(Date d : groupedByDate.keySet()) {
+                    sb.append(d.getTime()).append(" ");
+                }
+                eventBus.post(new GrowthException(sb.toString(), e));
+            }
         }
 
         ArrayList<BarEntry> yVals1 = new ArrayList<>();
