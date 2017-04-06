@@ -3,6 +3,9 @@ package io.ipoli.android.app;
 import android.content.Context;
 import android.provider.CalendarContract;
 
+import java.util.List;
+
+import me.everything.providers.android.calendar.Calendar;
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
 import me.everything.providers.core.Data;
@@ -32,8 +35,9 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
         return getContentTableData(Event.uri, selection, selectionArgs, null, Event.class);
     }
 
-    public void getAndroidCalendars() {
-//        getCalendars()
+    public List<Calendar> getAndroidCalendars() {
+        List<Calendar> calendars = getCalendars().getList();
+        return calendars;
     }
 
 }
