@@ -35,6 +35,10 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
         return getContentTableData(Event.uri, selection, selectionArgs, null, Event.class);
     }
 
+    public List<Event> getCalendarEvents(long calendarId) {
+        return getEvents(calendarId).getList();
+    }
+
     public List<Calendar> getAndroidCalendars() {
         List<Calendar> calendars = getCalendars().getList();
         return calendars;

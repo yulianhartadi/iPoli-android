@@ -6,8 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import com.squareup.otto.Bus;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -16,6 +19,7 @@ import io.ipoli.android.app.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import me.everything.providers.android.calendar.Event;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -43,6 +47,7 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.d("AAAA", "receive");
         if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.READ_CALENDAR)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -51,6 +56,10 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
 
         App.getAppComponent(context).inject(this);
         SyncAndroidCalendarProvider provider = new SyncAndroidCalendarProvider(context);
+        List<Event> dirtyEvents = provider.getDirtyEvents(1).getList();
+        for(Event e : dirtyEvents) {
+            Log.d("AAAA event", e.title);
+        }
 //        Set<String> calendarIds = localStorage.readStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS);
 //        List<Event> dirtyEvents = new ArrayList<>();
 //        List<Event> deletedEvents = new ArrayList<>();

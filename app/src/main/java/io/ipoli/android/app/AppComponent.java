@@ -9,6 +9,7 @@ import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.modules.AnalyticsModule;
+import io.ipoli.android.app.modules.AndroidCalendarParserModule;
 import io.ipoli.android.app.modules.ApiModule;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.BusModule;
@@ -96,7 +97,8 @@ import io.ipoli.android.shop.fragments.CoinsStoreFragment;
                 SchedulerModule.class,
                 TimeParserModule.class,
                 ApiModule.class,
-                UrlProviderModule.class
+                UrlProviderModule.class,
+                AndroidCalendarParserModule.class
         }
 )
 public interface AppComponent {
