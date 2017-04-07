@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.DateChangedEvent;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -22,10 +23,13 @@ public class DateChangedReceiver extends BroadcastReceiver {
     @Inject
     Bus eventBus;
 
+    @Inject
+    PlayerPersistenceService playerPersistenceService;
+
     @Override
     public void onReceive(Context context, Intent intent) {
         App.getAppComponent(context).inject(this);
-        if (!App.hasPlayer()) {
+        if (playerPersistenceService.get() == null) {
             return;
         }
         eventBus.post(new DateChangedEvent());
