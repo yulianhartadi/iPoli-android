@@ -35,7 +35,7 @@ public class SuggestionManagerTest {
 
     @Before
     public void beforeEach() {
-        sm = SuggestionsManager.createForQuest(parser);
+        sm = SuggestionsManager.createForQuest(parser, false);
     }
 
     @Test

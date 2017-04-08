@@ -123,6 +123,10 @@ public class RepeatingQuestScheduler {
         return weekBounds;
     }
 
+    public List<Quest> schedule(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate) {
+        return schedule(repeatingQuest, toStartOfDayUTC(startDate), toStartOfDayUTC(endDate));
+    }
+
     public List<Quest> schedule(RepeatingQuest repeatingQuest, java.util.Date startDate, java.util.Date endDate) {
         if (repeatingQuest.isFlexible()) {
             return scheduleFlexibleQuest(repeatingQuest, startDate);
@@ -330,32 +334,5 @@ public class RepeatingQuestScheduler {
             quest.setReminders(questReminders);
         }
         return quest;
-    }
-
-    public List<Quest> scheduleForDateRange(RepeatingQuest repeatingQuest, java.util.Date from, java.util.Date to) {
-        Recurrence recurrence = repeatingQuest.getRecurrence();
-        String rruleStr = recurrence.getRrule();
-        List<Quest> res = new ArrayList<>();
-        if (rruleStr == null || rruleStr.isEmpty()) {
-            return res;
-        }
-        Recur recur;
-        try {
-            recur = new Recur(rruleStr);
-        } catch (ParseException e) {
-            return res;
-        }
-        if (recur.getFrequency().equals(Recur.YEARLY)) {
-            return res;
-        }
-        DateList dates = recur.getDates(new Date(recurrence.getDtstartDate()),
-                new Date(from),
-                getPeriodEnd(to), Value.DATE);
-
-
-        for (Object obj : dates) {
-            res.add(createQuestFromRepeating(repeatingQuest, toJavaDate((Date) obj)));
-        }
-        return res;
     }
 }
