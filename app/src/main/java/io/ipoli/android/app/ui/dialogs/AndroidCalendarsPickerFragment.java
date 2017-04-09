@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -15,7 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -183,8 +184,7 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
 
             Category category = vm.category;
 
-            CategoryAdapter adapter = new CategoryAdapter(getContext(), Category.values());
-//            adapter.setDropDownViewResource(R.layout.growth_spinner_dropdown_item);
+            CategoryAdapter adapter = new CategoryAdapter(getContext(), R.layout.category_spinner_item, Category.values());
             holder.categories.setAdapter(adapter);
             holder.categories.setSelection(category.ordinal(), false);
             holder.categories.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -237,50 +237,47 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
         }
     }
 
-    private class CategoryAdapter extends BaseAdapter {
+    private class CategoryAdapter extends ArrayAdapter<Category> {
 
-        @NonNull
-        private final Context context;
         @NonNull
         private final Category[] categories;
 
-        public CategoryAdapter(@NonNull Context context, @NonNull Category[] categories) {
-            this.context = context;
+
+
+        public CategoryAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull Category[] categories) {
+            super(context, resource, categories);
             this.categories = categories;
-        }
-
-        @Override
-        public int getCount() {
-            return categories.length;
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return categories[position];
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
         }
 
         @NonNull
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            return populateView(categories[position], convertView, false);
+        }
+
+        @Override
+        public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+           return populateView(categories[position], convertView, true);
+        }
+
+        @NonNull
+        private View populateView(Category category, @Nullable View convertView, boolean isNameVisible) {
             View view = convertView;
             if (view == null) {
-                LayoutInflater layoutInflater = LayoutInflater.from(context);
+                LayoutInflater layoutInflater = LayoutInflater.from(getContext());
                 view = layoutInflater.inflate(R.layout.category_spinner_item, null);
             }
 
-            Category category = categories[position];
-
             TextView name = (TextView) view.findViewById(R.id.category_name);
+            if(isNameVisible) {
+                name.setVisibility(View.VISIBLE);
+                name.setText(StringUtils.capitalize(category.name()));
+            } else {
+                name.setVisibility(View.GONE);
+            }
+
             ImageView image = (ImageView) view.findViewById(R.id.category_image);
-
-            name.setText(StringUtils.capitalize(category.name()));
             image.setImageResource(category.colorfulImage);
-
             return view;
         }
     }
