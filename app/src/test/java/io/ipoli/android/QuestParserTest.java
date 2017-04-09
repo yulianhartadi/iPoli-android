@@ -3,7 +3,6 @@ package io.ipoli.android;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.Month;
@@ -12,6 +11,7 @@ import org.threeten.bp.temporal.TemporalAdjusters;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.ipoli.android.app.parsers.DateTimeParser;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestParser;
@@ -30,12 +30,12 @@ import static org.junit.Assert.assertTrue;
 public class QuestParserTest {
 
     private static QuestParser questParser;
-    private static PrettyTimeParser parser;
+    private static DateTimeParser parser;
     private static LocalDate today;
 
     @BeforeClass
     public static void setUp() {
-        parser = new PrettyTimeParser();
+        parser = new DateTimeParser();
         questParser = new QuestParser(parser);
         today = LocalDate.now();
     }

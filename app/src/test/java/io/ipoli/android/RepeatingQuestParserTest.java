@@ -1,11 +1,12 @@
 package io.ipoli.android;
 
+import net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.WeekDay;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.WeekDay;
 
+import io.ipoli.android.app.parsers.DateTimeParser;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -25,7 +26,7 @@ public class RepeatingQuestParserTest {
 
     @BeforeClass
     public static void setUp() {
-        PrettyTimeParser parser = new PrettyTimeParser();
+        DateTimeParser parser = new DateTimeParser();
         questParser = new QuestParser(parser);
     }
 

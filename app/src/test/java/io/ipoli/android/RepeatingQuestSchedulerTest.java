@@ -2,10 +2,11 @@ package io.ipoli.android;
 
 import android.support.annotation.NonNull;
 
+import net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.WeekDay;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.WeekDay;
 import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
 
