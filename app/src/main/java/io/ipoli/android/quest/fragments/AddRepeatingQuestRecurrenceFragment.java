@@ -11,8 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.WeekDay;
+import net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.WeekDay;
 
 import java.util.ArrayList;
 import java.util.List;

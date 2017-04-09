@@ -17,8 +17,8 @@ android {
         multiDexEnabled true
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 150
-        versionName "1.10.12"
+        versionCode 151
+        versionName "1.10.13"
     }
 
     compileOptions {
@@ -61,7 +61,9 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.hamcrest:hamcrest-library:1.3'
-    testCompile 'joda-time:joda-time:2.9.4'
+    testCompile ('org.threeten:threetenbp:1.3.3'){
+        exclude group:'com.jakewharton.threetenabp', module:'threetenabp'
+    }
     compile 'com.google.firebase:firebase-crash:10.2.1'
     compile 'com.google.firebase:firebase-invites:10.2.1'
     compile 'com.google.android.gms:play-services-auth:10.2.1'
@@ -78,10 +80,8 @@ dependencies {
     compile 'com.jakewharton:butterknife:8.5.1'
     compile 'com.squareup:otto:1.3.8'
     compile 'com.google.dagger:dagger:2.10'
-    compile 'org.ocpsoft.prettytime:prettytime:4.0.0.Final'
-    compile 'org.ocpsoft.prettytime:prettytime-nlp:4.0.0.Final'
     compile 'com.github.paolorotolo:appintro:4.1.0'
-    compile 'net.danlew:android.joda:2.9.9'
+    compile 'com.jakewharton.threetenabp:threetenabp:1.0.5'
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.github.PhilJay:MPAndroidChart:v2.2.5'
     compile 'com.github.devlight:infinitecycleviewpager:1.0.2'
@@ -92,6 +92,12 @@ dependencies {
     compile 'com.github.medyo:fancybuttons:1.8.3'
     compile 'me.everything:providers-android:1.0.1'
     compile 'pub.devrel:easypermissions:0.3.0'
+    compile 'org.mnode.ical4j:ical4j:2.0.0'
+    compile ('com.joestelmach:natty:0.13') {
+        ['commons-logging', 'org.mnode.ical4j'].each {
+            exclude group: it
+        }
+    }
 }
 
 apply plugin: 'com.google.gms.google-services'

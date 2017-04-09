@@ -28,11 +28,9 @@ import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -95,7 +93,6 @@ import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
 
 import static io.ipoli.android.app.events.EventSource.EDIT_QUEST;
-import static io.ipoli.android.app.utils.DateUtils.toStartOfDay;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -267,7 +264,7 @@ public class EditQuestActivity extends BaseActivity implements
             populateTimesADay(quest.getTimesADay());
             populatePriority(quest.getPriority());
             if (quest.getScheduled() != null) {
-                populateEndDate(toStartOfDay(new LocalDate(quest.getScheduled(), DateTimeZone.UTC)));
+                populateEndDate(quest.getScheduledDate());
             } else {
                 populateEndDate(null);
             }
@@ -419,7 +416,6 @@ public class EditQuestActivity extends BaseActivity implements
                     questPersistenceService.findById(questId, quest -> {
                         d.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_it), (dialogInterface, i) -> {
                             eventBus.post(new DeleteQuestRequestEvent(quest, EDIT_QUEST));
-                            Toast.makeText(this, R.string.quest_deleted, Toast.LENGTH_SHORT).show();
                             setResult(Constants.RESULT_REMOVED);
                             finish();
                         });
@@ -464,7 +460,7 @@ public class EditQuestActivity extends BaseActivity implements
         String questId = getIntent().getStringExtra(Constants.QUEST_ID_EXTRA_KEY);
         questPersistenceService.findById(questId, q -> {
             q.setName(name);
-            q.setScheduledDateFromLocal((Date) endDateText.getTag());
+            q.setScheduledDate((LocalDate) endDateText.getTag());
             q.setDuration((int) durationText.getTag());
             q.setPriority((int) priorityText.getTag());
             q.setStartMinute(startTimeText.getTag() != null ? (int) startTimeText.getTag() : null);
@@ -544,7 +540,7 @@ public class EditQuestActivity extends BaseActivity implements
 
     @OnClick(R.id.quest_end_date_container)
     public void onEndDateClick(View view) {
-        DatePickerFragment f = DatePickerFragment.newInstance((Date) endDateText.getTag(), this);
+        DatePickerFragment f = DatePickerFragment.newInstance((LocalDate) endDateText.getTag(), this);
         f.show(this.getSupportFragmentManager());
     }
 
@@ -614,7 +610,7 @@ public class EditQuestActivity extends BaseActivity implements
     }
 
     @Override
-    public void onDatePicked(Date date) {
+    public void onDatePicked(LocalDate date) {
         if (date != null) {
             setFrequencyText(null);
         }
@@ -678,7 +674,7 @@ public class EditQuestActivity extends BaseActivity implements
         }
     }
 
-    private void populateEndDate(Date date) {
+    private void populateEndDate(LocalDate date) {
         if (date != null) {
             setFrequencyText(null);
         }

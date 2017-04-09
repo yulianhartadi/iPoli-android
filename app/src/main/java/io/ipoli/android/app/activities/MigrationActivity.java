@@ -11,11 +11,6 @@ import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
 import com.squareup.otto.Bus;
 
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
-
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -115,9 +110,9 @@ public class MigrationActivity extends BaseActivity {
                                         continue;
                                     }
                                     Time startTime = Time.of((Integer) q.get("startMinute"));
-                                    Date questStartTime = new LocalDate(Long.valueOf((String) q.get("scheduled")), DateTimeZone.UTC).toDateTime(new LocalTime(startTime.getHours(), startTime.getMinutes())).toDate();
-                                    Long start = questStartTime.getTime() + TimeUnit.MINUTES.toMillis(Long.valueOf((String) reminder.get("minutesFromStart")));
-                                    reminder.put("start", Long.toString(start));
+                                    long questStart = Long.valueOf((String) q.get("scheduled")) + startTime.toMillisOfDay();
+                                    Long reminderStart = questStart + TimeUnit.MINUTES.toMillis(Long.valueOf((String) reminder.get("minutesFromStart")));
+                                    reminder.put("start", String.valueOf(reminderStart));
                                 }
                             }
                             save(q);

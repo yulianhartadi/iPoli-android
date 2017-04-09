@@ -65,12 +65,12 @@ public class Reminder {
 
     @JsonIgnore
     public void calculateStartTime(Quest quest) {
-        Date questStartTime = Quest.getStartDateTime(quest);
+        Long questStartTime = Quest.getStartDateTimeMillis(quest);
         if (questStartTime == null) {
             start = null;
             return;
         }
-        start = questStartTime.getTime() + TimeUnit.MINUTES.toMillis(getMinutesFromStart());
+        start = questStartTime + TimeUnit.MINUTES.toMillis(getMinutesFromStart());
     }
 
     @JsonIgnore

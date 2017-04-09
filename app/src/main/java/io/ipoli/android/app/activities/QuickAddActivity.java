@@ -19,8 +19,6 @@ import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
-import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +32,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.parsers.DateTimeParser;
 import io.ipoli.android.app.ui.CategoryView;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
@@ -75,7 +74,7 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
     private SuggestionsAdapter adapter;
 
     @Inject
-    PrettyTimeParser prettyTimeParser;
+    DateTimeParser prettyTimeParser;
 
     private enum TextWatcherState {GUI_CHANGE, FROM_DELETE, AFTER_DELETE, FROM_DROP_DOWN}
 

@@ -1,6 +1,6 @@
 package io.ipoli.android.quest.ui.menus;
 
-import java.util.Date;
+import org.threeten.bp.LocalDate;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -8,9 +8,9 @@ import java.util.Date;
  */
 public class DuplicateDateItem {
     public String title;
-    public Date date;
+    public LocalDate date;
 
-    public DuplicateDateItem(String title, Date date) {
+    public DuplicateDateItem(String title, LocalDate date) {
         this.title = title;
         this.date = date;
     }

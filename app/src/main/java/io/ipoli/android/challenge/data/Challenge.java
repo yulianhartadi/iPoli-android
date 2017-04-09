@@ -4,7 +4,7 @@ import android.support.v4.util.Pair;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -166,13 +166,13 @@ public class Challenge extends PersistedObject implements RewardProvider {
     }
 
     @JsonIgnore
-    public Date getEndDate() {
-        return end != null ? new Date(end) : null;
+    public LocalDate getEndDate() {
+        return end != null ? DateUtils.fromMillis(end) : null;
     }
 
     @JsonIgnore
-    public void setEndDate(Date endDate) {
-        end = endDate != null ? endDate.getTime() : null;
+    public void setEndDate(LocalDate endDate) {
+        end = endDate != null ? DateUtils.toMillis(endDate) : null;
     }
 
     public Long getEnd() {
@@ -298,12 +298,12 @@ public class Challenge extends PersistedObject implements RewardProvider {
     }
 
     @JsonIgnore
-    public Date getNextScheduledDate(long currentDate) {
-        Date nextDate = null;
+    public LocalDate getNextScheduledDate(long currentDate) {
+        LocalDate nextDate = null;
         for (QuestData qd : questsData.values()) {
             if (!qd.isComplete() && qd.getScheduledDate() != null && qd.getScheduledDate() >= currentDate) {
-                if (nextDate == null || nextDate.getTime() > qd.getScheduledDate()) {
-                    nextDate = new Date(qd.getScheduledDate());
+                if (nextDate == null || nextDate.isAfter(DateUtils.fromMillis(qd.getScheduledDate()))) {
+                    nextDate = DateUtils.fromMillis(qd.getScheduledDate());
                 }
             }
         }

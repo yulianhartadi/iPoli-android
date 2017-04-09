@@ -1,7 +1,8 @@
 package io.ipoli.android.app.ui.formatters;
 
+import org.threeten.bp.LocalDate;
+
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -16,7 +17,7 @@ public class DateFormatter {
     private static SimpleDateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("dd MMM yy", Locale.getDefault());
     private static SimpleDateFormat DATE_NO_YEAR_FORMAT = new SimpleDateFormat("dd MMM", Locale.getDefault());
 
-    public static String format(Date date) {
+    public static String format(LocalDate date) {
         if (date == null) {
             return DEFAULT_EMPTY_VALUE;
         }
@@ -26,10 +27,10 @@ public class DateFormatter {
         if (DateUtils.isTomorrow(date)) {
             return "Tomorrow";
         }
-        return DEFAULT_DATE_FORMAT.format(date);
+        return DEFAULT_DATE_FORMAT.format(DateUtils.toStartOfDay(date));
     }
 
-    public static String formatWithoutYear(Date date, String emptyValue) {
+    public static String formatWithoutYear(LocalDate date, String emptyValue) {
         if (date == null) {
             return emptyValue;
         }
@@ -43,10 +44,10 @@ public class DateFormatter {
             return "Yesterday";
         }
         DATE_NO_YEAR_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return DATE_NO_YEAR_FORMAT.format(date);
+        return DATE_NO_YEAR_FORMAT.format(DateUtils.toStartOfDay(date));
     }
 
-    public static String formatWithoutYear(Date date) {
+    public static String formatWithoutYear(LocalDate date) {
         return formatWithoutYear(date, DEFAULT_EMPTY_VALUE);
     }
 }

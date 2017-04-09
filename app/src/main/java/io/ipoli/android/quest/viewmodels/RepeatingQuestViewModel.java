@@ -3,21 +3,19 @@ package io.ipoli.android.quest.viewmodels;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.PeriodHistory;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.app.ui.formatters.DurationFormatter;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -26,7 +24,7 @@ import io.ipoli.android.app.ui.formatters.DurationFormatter;
 public class RepeatingQuestViewModel {
 
     private final RepeatingQuest repeatingQuest;
-    private final Date nextDate;
+    private final LocalDate nextDate;
     private final int scheduledCount;
     private final int completedCount;
     private final int remainingScheduledCount;
@@ -77,7 +75,7 @@ public class RepeatingQuestViewModel {
             } else if (DateUtils.isTomorrowUTC(nextDate)) {
                 nextText = "Tomorrow";
             } else {
-                nextText = new SimpleDateFormat("dd MMM", Locale.getDefault()).format(new LocalDate(nextDate, DateTimeZone.UTC).toDate());
+                nextText = new SimpleDateFormat("dd MMM", Locale.getDefault()).format(DateUtils.toStartOfDay(nextDate));
             }
         }
 

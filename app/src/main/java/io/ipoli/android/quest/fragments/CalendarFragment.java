@@ -19,7 +19,7 @@ import android.widget.TextView;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -97,7 +97,7 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
 
         toolbarExpandContainer.setOnClickListener(this);
 
-        currentMidDate = new LocalDate();
+        currentMidDate = LocalDate.now();
 
         changeTitle(currentMidDate);
 
@@ -125,7 +125,7 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_today:
-                eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.MENU));
+                eventBus.post(new CalendarDayChangedEvent(LocalDate.now(), CalendarDayChangedEvent.Source.MENU));
                 return true;
 
         }
@@ -156,17 +156,17 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
 
     private void changeTitle(LocalDate date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(getToolbarText(date)), Locale.getDefault());
-        toolbarTitle.setText(simpleDateFormat.format(date.toDate()));
+        toolbarTitle.setText(simpleDateFormat.format(DateUtils.toStartOfDay(date)));
     }
 
     private int getToolbarText(LocalDate date) {
-        if (date.isEqual(new LocalDate().minusDays(1))) {
+        if (date.isEqual(LocalDate.now().minusDays(1))) {
             return R.string.yesterday_calendar_format;
         }
-        if (date.isEqual(new LocalDate())) {
+        if (date.isEqual(LocalDate.now())) {
             return R.string.today_calendar_format;
         }
-        if (date.isEqual(new LocalDate().plusDays(1))) {
+        if (date.isEqual(LocalDate.now().plusDays(1))) {
             return R.string.tomorrow_calendar_format;
         }
         return R.string.calendar_format;
@@ -225,7 +225,7 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
     public void onClick(View v) {
         LocalDate currentDate = currentMidDate.plusDays(calendarPager.getCurrentItem() - MID_POSITION);
         Intent i = new Intent(getContext(), AgendaActivity.class);
-        i.putExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, currentDate.toDate().getTime());
+        i.putExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, DateUtils.toMillis(currentDate));
         startActivityForResult(i, SHOW_AGENDA_REQUEST_CODE);
         getActivity().overridePendingTransition(R.anim.slide_in_top, android.R.anim.fade_out);
         eventBus.post(new ToolbarCalendarTapEvent());
@@ -236,8 +236,8 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == SHOW_AGENDA_REQUEST_CODE && resultCode == RESULT_OK &&
                 data != null && data.hasExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY)) {
-            Long date = data.getLongExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, DateUtils.toStartOfDayUTC(LocalDate.now()).getTime());
-            changeCurrentDay(new LocalDate(date));
+            Long dateMillis = data.getLongExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, DateUtils.toMillis(LocalDate.now()));
+            changeCurrentDay(DateUtils.fromMillis(dateMillis));
         }
     }
 }

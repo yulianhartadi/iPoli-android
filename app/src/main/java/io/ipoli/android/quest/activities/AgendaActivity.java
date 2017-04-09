@@ -11,11 +11,12 @@ import android.view.ViewGroup;
 import android.widget.CalendarView;
 import android.widget.TextView;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -97,13 +98,13 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
 
         calendar.setDate(selectedDateMillis, true, true);
         calendar.setOnDateChangeListener(this);
-        selectedDate = new LocalDate(selectedDateMillis);
+        selectedDate = DateUtils.fromMillis(selectedDateMillis);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        showQuestsForDate(new LocalDate(selectedDate));
+        showQuestsForDate(selectedDate);
     }
 
     @Override
@@ -128,12 +129,13 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
     private void showQuestsForDate(LocalDate date) {
         eventBus.post(new CalendarDayChangedEvent(date, CalendarDayChangedEvent.Source.AGENDA_CALENDAR));
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(getToolbarText(date)), Locale.getDefault());
+        Date startOfDayDate = DateUtils.toStartOfDay(date);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(simpleDateFormat.format(date.toDate()));
+            getSupportActionBar().setTitle(simpleDateFormat.format(startOfDayDate));
         }
         String dayNumberSuffix = DateUtils.getDayNumberSuffix(date.getDayOfMonth());
         DateFormat dateFormat = new SimpleDateFormat(getString(R.string.agenda_daily_journey_format, dayNumberSuffix));
-        journeyText.setText(getString(R.string.agenda_daily_journey, dateFormat.format(date.toDate())));
+        journeyText.setText(getString(R.string.agenda_daily_journey, dateFormat.format(startOfDayDate)));
         questPersistenceService.findAllNonAllDayForDate(date, quests -> {
             List<AgendaViewModel> vms = new ArrayList<>();
             for (Quest quest : quests) {
@@ -144,13 +146,13 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
     }
 
     private int getToolbarText(LocalDate date) {
-        if (date.isEqual(new LocalDate().minusDays(1))) {
+        if (date.isEqual(LocalDate.now().minusDays(1))) {
             return R.string.yesterday_calendar_format;
         }
-        if (date.isEqual(new LocalDate())) {
+        if (date.isEqual(LocalDate.now())) {
             return R.string.today_calendar_format;
         }
-        if (date.isEqual(new LocalDate().plusDays(1))) {
+        if (date.isEqual(LocalDate.now().plusDays(1))) {
             return R.string.tomorrow_calendar_format;
         }
         return R.string.agenda_calendar_format;
@@ -158,14 +160,14 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
 
     @Override
     public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-        selectedDate = new LocalDate(year, month + 1, dayOfMonth);
+        selectedDate = LocalDate.of(year, month + 1, dayOfMonth);
         showQuestsForDate(selectedDate);
     }
 
     @Override
     public void finish() {
         Intent data = new Intent();
-        data.putExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, selectedDate.toDate().getTime());
+        data.putExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, DateUtils.toMillis(selectedDate));
         setResult(RESULT_OK, data);
         super.finish();
     }

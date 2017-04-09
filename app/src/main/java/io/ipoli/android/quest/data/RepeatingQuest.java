@@ -4,8 +4,11 @@ import android.support.v4.util.Pair;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import org.joda.time.LocalDate;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.Recur;
+
+import org.threeten.bp.DayOfWeek;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.temporal.TemporalAdjusters;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -26,8 +29,6 @@ import io.ipoli.android.note.data.Note;
 import io.ipoli.android.reminder.data.Reminder;
 
 import static io.ipoli.android.app.utils.DateUtils.isBetween;
-import static io.ipoli.android.app.utils.DateUtils.isSameDay;
-import static io.ipoli.android.app.utils.DateUtils.isTodayUTC;
 import static io.ipoli.android.app.utils.DateUtils.nowUTC;
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 
@@ -143,7 +144,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     @JsonIgnore
     public boolean shouldBeScheduledAfter(LocalDate date) {
         return getRecurrence().getDtendDate() == null ||
-                getRecurrence().getDtendDate().getTime() >= toStartOfDayUTC(date).getTime();
+                getRecurrence().getDtend() >= toStartOfDayUTC(date).getTime();
     }
 
     @JsonIgnore
@@ -186,11 +187,11 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
                 continue;
             }
 
-            if (isTodayUTC(new Date(qd.getOriginalScheduledDate())) && !qd.isComplete()) {
+            if (DateUtils.isToday(DateUtils.fromMillis(qd.getOriginalScheduledDate())) && !qd.isComplete()) {
                 continue;
             }
 
-            if (qd.isComplete() && isSameDay(new Date(qd.getScheduledDate()), new Date(qd.getOriginalScheduledDate()))) {
+            if (qd.isComplete() && qd.getScheduledDate().equals(qd.getOriginalScheduledDate())) {
                 streak++;
             } else {
                 break;
@@ -204,22 +205,23 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         int streak = 0;
         for (QuestData qd : questsData) {
 
-            if (new Date(qd.getOriginalScheduledDate()).after(DateUtils.toStartOfDayUTC(LocalDate.now()))) {
+            LocalDate originalScheduledDate = DateUtils.fromMillis(qd.getOriginalScheduledDate());
+            if (originalScheduledDate.isAfter(LocalDate.now())) {
                 continue;
             }
 
-            if (isTodayUTC(new Date(qd.getOriginalScheduledDate())) && !qd.isComplete()) {
+            if (DateUtils.isToday(originalScheduledDate) && !qd.isComplete()) {
                 continue;
             }
 
-            LocalDate periodStart = null;
-            LocalDate periodEnd = null;
+            LocalDate periodStart;
+            LocalDate periodEnd;
             if (repeatType == Recurrence.RepeatType.MONTHLY) {
-                periodStart = new LocalDate(qd.getOriginalScheduledDate()).dayOfMonth().withMinimumValue();
-                periodEnd = periodStart.dayOfMonth().withMaximumValue();
+                periodStart = originalScheduledDate.with(TemporalAdjusters.firstDayOfMonth());
+                periodEnd = periodStart.with(TemporalAdjusters.lastDayOfMonth());
             } else {
-                periodStart = new LocalDate(qd.getOriginalScheduledDate()).dayOfWeek().withMinimumValue();
-                periodEnd = periodStart.dayOfWeek().withMaximumValue();
+                periodStart = originalScheduledDate.with(DayOfWeek.MONDAY);
+                periodEnd = periodStart.with(DayOfWeek.SUNDAY);
             }
 
             if (qd.isComplete()
@@ -233,12 +235,12 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
     @JsonIgnore
-    public Date getNextScheduledDate(LocalDate currentDate) {
-        Date nextDate = null;
+    public LocalDate getNextScheduledDate(LocalDate currentDate) {
+        LocalDate nextDate = null;
         for (QuestData qd : getQuestsData().values()) {
             if (!qd.isComplete() && qd.getScheduledDate() != null && qd.getScheduledDate() >= DateUtils.toStartOfDayUTC(currentDate).getTime()) {
-                if (nextDate == null || nextDate.getTime() > qd.getScheduledDate()) {
-                    nextDate = new Date(qd.getScheduledDate());
+                if (nextDate == null || nextDate.isAfter(DateUtils.fromMillis(qd.getScheduledDate()))) {
+                    nextDate = DateUtils.fromMillis(qd.getScheduledDate());
                 }
             }
         }
@@ -492,9 +494,9 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     @JsonIgnore
     public boolean isScheduledForDate(LocalDate date) {
         for (String dateString : getScheduledPeriodEndDates().keySet()) {
-            LocalDate periodEnd = new LocalDate(Long.valueOf(dateString));
+            LocalDate periodEnd = DateUtils.fromMillis(Long.valueOf(dateString));
 
-            if (date.isBefore(periodEnd) || date.equals(periodEnd)) {
+            if (date.isBefore(periodEnd) || date.isEqual(periodEnd)) {
                 return true;
             }
         }

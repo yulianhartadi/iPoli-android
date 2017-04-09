@@ -13,8 +13,9 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.threeten.bp.LocalDate;
+
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -119,7 +120,7 @@ public class InboxFragment extends BaseFragment implements OnDataChangedListener
     @Subscribe
     public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
         Quest q = e.quest;
-        q.setScheduledDateFromLocal(new Date());
+        q.setScheduledDate(LocalDate.now());
         questPersistenceService.save(q);
         Toast.makeText(getContext(), "Quest scheduled for today", Toast.LENGTH_SHORT).show();
     }

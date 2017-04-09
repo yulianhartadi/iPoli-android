@@ -1,6 +1,6 @@
 package io.ipoli.android.quest.ui.menus;
 
-import java.util.Date;
+import org.threeten.bp.LocalDate;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -9,7 +9,7 @@ import java.util.Date;
 public class SnoozeTimeItem {
     public String title;
     public int minutes;
-    public Date date;
+    public LocalDate date;
     public boolean pickTime;
     public boolean pickDate;
 
@@ -19,7 +19,7 @@ public class SnoozeTimeItem {
         this.date = null;
     }
 
-    public SnoozeTimeItem(String title, Date date) {
+    public SnoozeTimeItem(String title, LocalDate date) {
         this.title = title;
         this.date = date;
         this.minutes = -1;

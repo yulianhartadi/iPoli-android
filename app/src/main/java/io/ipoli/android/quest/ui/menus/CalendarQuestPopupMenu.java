@@ -8,13 +8,14 @@ import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
+import org.threeten.bp.LocalDate;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DuplicateQuestRequestEvent;
@@ -29,13 +30,12 @@ import io.ipoli.android.quest.events.StopQuestRequestEvent;
  * on 8/13/16.
  */
 public class CalendarQuestPopupMenu {
-    private static Context context;
     private static Map<Integer, SnoozeTimeItem> itemIdToSnoozeTimeItem;
     private static Map<Integer, DuplicateDateItem> itemIdToDuplicateDateItem;
 
     public static void show(View view, Quest quest, Bus eventBus, EventSource source) {
         eventBus.post(new ItemActionsShownEvent(source));
-        context = view.getContext();
+        Context context = view.getContext();
         PopupMenu pm = new PopupMenu(context, view);
         boolean isCompleted = quest.isCompleted();
         int menuRes = isCompleted ? R.menu.calendar_completed_quest_menu : R.menu.calendar_quest_menu;
@@ -78,14 +78,13 @@ public class CalendarQuestPopupMenu {
                     }
                     return true;
                 case R.id.quest_snooze_for_tomorrow:
-                    eventBus.post(new SnoozeQuestRequestEvent(quest, DateUtils.getTomorrow(), source));
+                    eventBus.post(new SnoozeQuestRequestEvent(quest, LocalDate.now().plusDays(1), source));
                     return true;
                 case R.id.quest_edit:
                     eventBus.post(new EditQuestRequestEvent(quest.getId(), source));
                     return true;
                 case R.id.quest_delete:
                     eventBus.post(new DeleteQuestRequestEvent(quest, source));
-                    Toast.makeText(context, R.string.quest_deleted, Toast.LENGTH_SHORT).show();
                     return true;
                 case R.id.quest_share:
                     eventBus.post(new ShareQuestEvent(quest, source));

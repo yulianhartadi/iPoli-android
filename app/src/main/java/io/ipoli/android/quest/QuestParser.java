@@ -2,14 +2,12 @@ package io.ipoli.android.quest;
 
 import android.support.v4.util.Pair;
 
-import org.joda.time.LocalDate;
-import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.Recur;
 
-import java.util.Date;
+import org.threeten.bp.LocalDate;
 
 import io.ipoli.android.Constants;
-import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.parsers.DateTimeParser;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -36,7 +34,7 @@ public class QuestParser {
         public String name;
         public int duration;
         public Integer startMinute;
-        public Date endDate;
+        public LocalDate endDate;
         public int timesAWeek;
         public int timesAMonth;
         public Recur everyDayRecurrence;
@@ -52,8 +50,7 @@ public class QuestParser {
     private final RecurrenceDayOfMonthMatcher dayOfMonthMatcher = new RecurrenceDayOfMonthMatcher();
     private final TimesAWeekMatcher timesAWeekMatcher = new TimesAWeekMatcher();
     private final TimesAMonthMatcher timesAMonthMatcher = new TimesAMonthMatcher();
-
-    public QuestParser(PrettyTimeParser timeParser) {
+    public QuestParser(DateTimeParser timeParser) {
         startTimeMatcher = new StartTimeMatcher(timeParser);
         endDateMatcher = new EndDateMatcher(timeParser);
     }
@@ -68,9 +65,9 @@ public class QuestParser {
         Pair<Integer, String> startTimePair = parseQuestPart(durationPair.second, startTimeMatcher);
         result.startMinute = startTimePair.first;
 
-        Pair<Date, String> dueDatePair = parseQuestPart(startTimePair.second, endDateMatcher);
+        Pair<LocalDate, String> dueDatePair = parseQuestPart(startTimePair.second, endDateMatcher);
         if (dueDatePair.first != null) {
-            result.endDate = DateUtils.toStartOfDayUTC(new LocalDate(dueDatePair.first));
+            result.endDate = dueDatePair.first;
         }
 
         Pair<Integer, String> timesAWeekPair = parseQuestPart(dueDatePair.second, timesAWeekMatcher);
@@ -103,8 +100,8 @@ public class QuestParser {
         Pair<Integer, String> startTimePair = parseQuestPart(durationPair.second, startTimeMatcher);
         Integer startTime = startTimePair.first;
 
-        Pair<Date, String> dueDatePair = parseQuestPart(startTimePair.second, endDateMatcher);
-        Date dueDate = dueDatePair.first;
+        Pair<LocalDate, String> dueDatePair = parseQuestPart(startTimePair.second, endDateMatcher);
+        LocalDate dueDate = dueDatePair.first;
         text = dueDatePair.second;
 
         String name = text.trim();
@@ -116,9 +113,9 @@ public class QuestParser {
         Quest q = new Quest(name);
         q.setRawText(rawText);
         q.setDuration(duration);
-        q.setScheduledDateFromLocal(dueDate);
-        q.setEndDateFromLocal(dueDate);
-        q.setStartDateFromLocal(dueDate);
+        q.setScheduledDate(dueDate);
+        q.setEndDate(dueDate);
+        q.setStartDate(dueDate);
         q.setStartMinute(startTime);
         return q;
     }
@@ -153,7 +150,7 @@ public class QuestParser {
         text = dayOfMonthPair.second;
 
         if (everyDayRecur == null && dayOfWeekRecur == null && dayOfMonthRecur == null) {
-            Pair<Date, String> dueDatePair = parseQuestPart(text, endDateMatcher);
+            Pair<LocalDate, String> dueDatePair = parseQuestPart(text, endDateMatcher);
             text = dueDatePair.second;
         }
 
@@ -195,15 +192,6 @@ public class QuestParser {
         rq.setRecurrence(recurrence);
 
         return rq;
-    }
-
-    public boolean isRepeatingQuest(String text) {
-        for (QuestTextMatcher matcher : new QuestTextMatcher[]{everyDayMatcher, dayOfWeekMatcher, dayOfMonthMatcher, timesAWeekMatcher, timesAMonthMatcher}) {
-            if (matcher.match(text) != null) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private <T> Pair<T, String> parseQuestPart(String text, QuestTextMatcher<T> matcher) {

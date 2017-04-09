@@ -24,7 +24,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.data.Difficulty;
@@ -202,7 +201,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
 
     @Subscribe
     public void onNewChallengeEndDatePicked(NewChallengeEndDatePickedEvent e) {
-        challenge.setEndDate(DateUtils.toStartOfDayUTC(e.date));
+        challenge.setEndDate(e.date);
         goToNextPage();
     }
 

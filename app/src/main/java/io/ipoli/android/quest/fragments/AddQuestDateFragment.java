@@ -10,10 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.DayOfWeek;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.temporal.TemporalAdjusters;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -55,14 +56,14 @@ public class AddQuestDateFragment extends BaseFragment {
         List<Pair<String, View.OnClickListener>> options = new ArrayList<>();
 
         options.add(new Pair<>(getString(R.string.by_the_end_of_week), v ->
-                postEvent(new NewQuestDatePickedEvent(LocalDate.now(), LocalDate.now().dayOfWeek().withMaximumValue()))));
+                postEvent(new NewQuestDatePickedEvent(LocalDate.now(), LocalDate.now().with(DayOfWeek.SUNDAY)))));
 
         options.add(new Pair<>(getString(R.string.by_the_end_of_month), v ->
-                postEvent(new NewQuestDatePickedEvent(LocalDate.now(), LocalDate.now().dayOfMonth().withMaximumValue()))));
+                postEvent(new NewQuestDatePickedEvent(LocalDate.now(), LocalDate.now().with(TemporalAdjusters.lastDayOfMonth())))));
 
         options.add(new Pair<>(getString(R.string.someday_by), v -> {
-            DatePickerFragment fragment = DatePickerFragment.newInstance(new Date(), true, false,
-                    date -> postEvent(new NewQuestDatePickedEvent(LocalDate.now(), new LocalDate(date.getTime()))));
+            DatePickerFragment fragment = DatePickerFragment.newInstance(LocalDate.now(), true, false,
+                    date -> postEvent(new NewQuestDatePickedEvent(LocalDate.now(), date)));
             fragment.show(getFragmentManager());
         }));
 
@@ -73,10 +74,9 @@ public class AddQuestDateFragment extends BaseFragment {
                 postEvent(new NewQuestDatePickedEvent(LocalDate.now().plusDays(1), LocalDate.now().plusDays(1)))));
 
         options.add(new Pair<>(getString(R.string.on), v -> {
-            DatePickerFragment fragment = DatePickerFragment.newInstance(new Date(), true, false,
+            DatePickerFragment fragment = DatePickerFragment.newInstance(LocalDate.now(), true, false,
                     date -> {
-                        LocalDate onDate = new LocalDate(date.getTime());
-                        postEvent(new NewQuestDatePickedEvent(onDate, onDate));
+                        postEvent(new NewQuestDatePickedEvent(date, date));
                     });
             fragment.show(getFragmentManager());
         }));

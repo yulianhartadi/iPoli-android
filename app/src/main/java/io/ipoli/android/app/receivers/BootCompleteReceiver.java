@@ -4,8 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import javax.inject.Inject;
+
 import io.ipoli.android.app.App;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.receivers.ScheduleNextRemindersReceiver;
 
 /**
@@ -14,9 +17,13 @@ import io.ipoli.android.quest.receivers.ScheduleNextRemindersReceiver;
  */
 public class BootCompleteReceiver extends BroadcastReceiver {
 
+    @Inject
+    PlayerPersistenceService playerPersistenceService;
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (!App.hasPlayer()) {
+        App.getAppComponent(context).inject(this);
+        if (playerPersistenceService.get() == null) {
             return;
         }
         context.sendBroadcast(new Intent(ScheduleNextRemindersReceiver.ACTION_SCHEDULE_REMINDERS));

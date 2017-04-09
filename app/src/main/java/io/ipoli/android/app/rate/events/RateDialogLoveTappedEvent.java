@@ -1,6 +1,6 @@
 package io.ipoli.android.app.rate.events;
 
-import org.joda.time.LocalDateTime;
+import org.threeten.bp.LocalDateTime;
 
 import io.ipoli.android.app.rate.DialogAnswer;
 
@@ -16,6 +16,6 @@ public class RateDialogLoveTappedEvent {
     public RateDialogLoveTappedEvent(int appRun, DialogAnswer answer) {
         this.appRun = appRun;
         this.answer = answer;
-        dateTime = new LocalDateTime();
+        dateTime = LocalDateTime.now();
     }
 }

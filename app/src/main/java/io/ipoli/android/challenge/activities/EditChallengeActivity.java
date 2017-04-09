@@ -20,11 +20,10 @@ import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
-import org.joda.time.LocalDate;
-import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Arrays;
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -41,7 +40,6 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.ui.CategoryView;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.app.ui.formatters.DateFormatter;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.data.Difficulty;
@@ -153,7 +151,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         showKeyboard();
         populateExpectedResults(new ArrayList<>());
         populateReasons(new ArrayList<>());
-        populateEndDate(LocalDate.now().plusDays(Constants.DEFAULT_CHALLENGE_DEADLINE_DAY_DURATION).toDateTimeAtStartOfDay().toDate());
+        populateEndDate(LocalDate.now().plusDays(Constants.DEFAULT_CHALLENGE_DEADLINE_DAY_DURATION));
         populateDifficulty(Difficulty.NORMAL);
     }
 
@@ -290,7 +288,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         challenge.setReason2((String) reasonTextViews.get(1).getTag());
         challenge.setReason3((String) reasonTextViews.get(2).getTag());
 
-        challenge.setEndDate(DateUtils.getDate((Date) endDateText.getTag()));
+        challenge.setEndDate((LocalDate) endDateText.getTag());
         challenge.setDifficulty(((Difficulty) difficultyText.getTag()).getValue());
     }
 
@@ -344,7 +342,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
 
     @OnClick(R.id.challenge_end_date_container)
     public void onEndDateClicked(View view) {
-        DatePickerFragment f = DatePickerFragment.newInstance((Date) endDateText.getTag(), true, false, this);
+        DatePickerFragment f = DatePickerFragment.newInstance((LocalDate) endDateText.getTag(), true, false, this);
         f.show(this.getSupportFragmentManager());
     }
 
@@ -355,11 +353,11 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     }
 
     @Override
-    public void onDatePicked(Date date) {
+    public void onDatePicked(LocalDate date) {
         populateEndDate(date);
     }
 
-    private void populateEndDate(Date date) {
+    private void populateEndDate(LocalDate date) {
         endDateText.setText(DateFormatter.format(date));
         endDateText.setTag(date);
     }
