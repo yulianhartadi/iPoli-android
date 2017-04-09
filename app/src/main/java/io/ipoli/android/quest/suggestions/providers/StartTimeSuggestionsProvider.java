@@ -2,9 +2,13 @@ package io.ipoli.android.quest.suggestions.providers;
 
 import android.support.annotation.NonNull;
 
-import org.joda.time.LocalTime;
+import org.threeten.bp.Instant;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalTime;
+import org.threeten.bp.ZoneId;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -47,12 +51,13 @@ public class StartTimeSuggestionsProvider extends BaseSuggestionsProvider {
         int interval = 15;
 
         LocalTime now = LocalTime.now();
-        int nextClosestRoundMinute = ((now.getMinuteOfHour() / interval) + 1) * interval;
-        now = now.plusMinutes(nextClosestRoundMinute - now.getMinuteOfHour());
+        int nextClosestRoundMinute = ((now.getMinute() / interval) + 1) * interval;
+        now = now.plusMinutes(nextClosestRoundMinute - now.getMinute());
 
         int count = 24 * (60 / interval);
         for (int i = 1; i <= count; i++) {
-            String text = StartTimeFormatter.formatShort(now.toDateTimeToday().toDate(), use24HourFormat);
+            Instant timeInstant = now.atDate(LocalDate.now()).atZone(ZoneId.systemDefault()).toInstant();
+            String text = StartTimeFormatter.formatShort(new Date(timeInstant.toEpochMilli()), use24HourFormat);
             suggestionToVisibleText.put(text, text);
             now = now.plusMinutes(interval);
         }

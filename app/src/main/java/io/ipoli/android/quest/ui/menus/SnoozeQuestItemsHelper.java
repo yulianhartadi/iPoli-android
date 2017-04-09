@@ -4,13 +4,14 @@ import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.threeten.bp.LocalDate;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 
 /**
@@ -39,7 +40,7 @@ public class SnoozeQuestItemsHelper {
             snoozeTimeItems.add(new SnoozeTimeItem("30 min", 30));
             snoozeTimeItems.add(new SnoozeTimeItem("1 hour", 60));
         }
-        snoozeTimeItems.add(new SnoozeTimeItem("Tomorrow", DateUtils.getTomorrow()));
+        snoozeTimeItems.add(new SnoozeTimeItem("Tomorrow", LocalDate.now().plusDays(1)));
         snoozeTimeItems.add(new SnoozeTimeItem("Move to inbox", null));
         SnoozeTimeItem pickTime = new SnoozeTimeItem("Pick time");
         pickTime.pickTime = true;

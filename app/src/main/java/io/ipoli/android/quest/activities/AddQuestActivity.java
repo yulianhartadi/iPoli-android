@@ -16,7 +16,6 @@ import android.widget.Toast;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -163,10 +162,8 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     @Subscribe
     public void onNewQuestDatePicked(NewQuestDatePickedEvent e) {
         if (e.end != null && e.start != null) {
-            Date startDate = e.start.toDate();
-            Date endDate = e.end.toDate();
-            quest.setStartDateFromLocal(startDate);
-            quest.setEndDateFromLocal(endDate);
+            quest.setStartDate(e.start);
+            quest.setEndDate(e.end);
         }
         goToNextPage();
     }

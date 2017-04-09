@@ -27,10 +27,9 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -46,6 +45,7 @@ import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.ui.formatters.FrequencyTextFormatter;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.data.Category;
@@ -53,6 +53,8 @@ import io.ipoli.android.quest.data.PeriodHistory;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+
+import static io.ipoli.android.app.utils.DateUtils.getMonthShortName;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -215,13 +217,13 @@ public class RepeatingQuestActivity extends BaseActivity {
 
         frequencyInterval.setText(FrequencyTextFormatter.formatInterval(repeatingQuest.getFrequency(), repeatingQuest.getRecurrence()));
 
-        Date scheduledDate = repeatingQuest.getNextScheduledDate(LocalDate.now());
+        LocalDate nextScheduledDate = repeatingQuest.getNextScheduledDate(LocalDate.now());
 
         String nextScheduledDateText = DateFormatter.formatWithoutYear(
-                scheduledDate,
+                nextScheduledDate,
                 getString(R.string.unscheduled)
         );
-        nextScheduledDate.setText(nextScheduledDateText);
+        this.nextScheduledDate.setText(nextScheduledDateText);
         streakText.setText(String.valueOf(repeatingQuest.getStreak()));
     }
 
@@ -352,22 +354,18 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private String getMonthText(long date) {
-        return getMonthText(new LocalDate(date));
-    }
-
-    private String getMonthText(LocalDate date) {
-        return date.monthOfYear().getAsShortText();
+        return getMonthShortName(DateUtils.fromMillis(date));
     }
 
     private String getWeekRangeText(long weekStart, long weekEnd) {
-        return getWeekRangeText(new LocalDate(weekStart), new LocalDate(weekEnd));
+        return getWeekRangeText(DateUtils.fromMillis(weekStart), DateUtils.fromMillis(weekEnd));
     }
 
     private String getWeekRangeText(LocalDate weekStart, LocalDate weekEnd) {
-        if (weekStart.getMonthOfYear() == weekEnd.getMonthOfYear()) {
-            return weekStart.getDayOfMonth() + " - " + weekEnd.getDayOfMonth() + " " + weekEnd.monthOfYear().getAsShortText();
+        if (weekStart.getMonth().equals(weekEnd.getMonth())) {
+            return weekStart.getDayOfMonth() + " - " + weekEnd.getDayOfMonth() + " " + getMonthShortName(weekEnd);
         } else {
-            return weekStart.getDayOfMonth() + " " + weekStart.monthOfYear().getAsShortText() + " - " + weekEnd.getDayOfMonth() + " " + weekEnd.monthOfYear().getAsShortText();
+            return weekStart.getDayOfMonth() + " " + getMonthShortName(weekStart) + " - " + weekEnd.getDayOfMonth() + " " + getMonthShortName(weekEnd);
         }
     }
 

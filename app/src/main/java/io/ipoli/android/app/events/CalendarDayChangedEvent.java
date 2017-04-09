@@ -1,6 +1,6 @@
 package io.ipoli.android.app.events;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import io.ipoli.android.app.utils.Time;
 

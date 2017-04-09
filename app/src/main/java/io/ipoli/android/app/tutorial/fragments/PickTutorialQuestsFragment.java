@@ -9,6 +9,8 @@ import android.support.v4.content.ContextCompat;
 import com.github.paolorotolo.appintro.ISlideBackgroundColorHolder;
 import com.squareup.otto.Bus;
 
+import org.threeten.bp.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -18,13 +20,12 @@ import javax.inject.Inject;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.tutorial.PickQuestViewModel;
+import io.ipoli.android.app.tutorial.adapters.PickTutorialQuestsAdapter;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.reminder.data.Reminder;
-import io.ipoli.android.app.tutorial.PickQuestViewModel;
-import io.ipoli.android.app.tutorial.adapters.PickTutorialQuestsAdapter;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -96,7 +97,7 @@ public class PickTutorialQuestsFragment extends BaseTutorialPickQuestsFragment<Q
 
     @NonNull
     private Quest makeQuest(String name, Category category) {
-        Quest q = new Quest(name, DateUtils.now());
+        Quest q = new Quest(name, LocalDate.now());
         q.setCategory(category.name());
         q.setRawText(name + " today");
         List<Reminder> reminders = new ArrayList<>();

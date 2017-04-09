@@ -24,16 +24,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.otto.Bus;
 
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.WeekDay;
+import org.threeten.bp.LocalDate;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -251,7 +249,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
 
     private void initUntilDate() {
         if (recurrence.getDtendDate() != null) {
-            Date dtend = DateUtils.toStartOfDay(new LocalDate(recurrence.getDtendDate(), DateTimeZone.UTC));
+            LocalDate dtend = DateUtils.fromMillis(recurrence.getDtend());
             until.setText(DateUtils.isToday(dtend) ? getString(R.string.today) : DateFormatter.format(dtend));
             until.setTag(dtend);
         }
@@ -308,7 +306,6 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     }
 
     private int getNotFlexibleFrequencySelection() {
-        int selection = FREQUENCY_DAILY;
         switch (recurrence.getRecurrenceType()) {
             case DAILY:
                 return FREQUENCY_DAILY;
@@ -317,7 +314,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
             case MONTHLY:
                 return FREQUENCY_MONTHLY;
         }
-        return selection;
+        return FREQUENCY_DAILY;
     }
 
     @OnCheckedChanged(R.id.recurrence_flexibility)
@@ -362,14 +359,14 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     @OnClick(R.id.recurrence_until)
     public void onUntilTapped() {
         if (until.getTag() != null) {
-            DatePickerFragment.newInstance((Date) until.getTag(), true, this).show(getFragmentManager());
+            DatePickerFragment.newInstance((LocalDate) until.getTag(), true, this).show(getFragmentManager());
         } else {
             DatePickerFragment.newInstance(true, this).show(getFragmentManager());
         }
     }
 
     @Override
-    public void onDatePicked(Date date) {
+    public void onDatePicked(LocalDate date) {
         String text = getString(R.string.end_of_time);
         if (date != null) {
             text = DateUtils.isToday(date) ? getString(R.string.today) : DateFormatter.format(date);
@@ -388,8 +385,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         }
 
         if (until.getTag() != null) {
-            Date dtEnd = DateUtils.toStartOfDayUTC(new LocalDate((Date) until.getTag()));
-            recurrence.setDtendDate(dtEnd);
+            recurrence.setDtendDate((LocalDate) until.getTag());
         } else {
             recurrence.setDtend(null);
         }

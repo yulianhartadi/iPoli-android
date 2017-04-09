@@ -20,13 +20,11 @@ import com.couchbase.lite.Database;
 import com.couchbase.lite.replicator.Replication;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import net.danlew.android.joda.JodaTimeAndroid;
-
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -310,7 +308,7 @@ public class App extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
-        JodaTimeAndroid.init(this);
+        AndroidThreeTen.init(this);
         Amplitude.getInstance().initialize(getApplicationContext(), AnalyticsConstants.AMPLITUDE_KEY).enableForegroundTracking(this);
 
         getAppComponent(this).inject(this);
@@ -378,7 +376,7 @@ public class App extends MultiDexApplication {
 
         String text = totalCount == 0 ? getString(R.string.ongoing_notification_no_quests_text) : getString(R.string.ongoing_notification_progress_text, completedCount, totalCount);
         boolean showWhen = quest != null && quest.isScheduled();
-        long when = showWhen ? Quest.getStartDateTime(quest).getTime() : 0;
+        long when = showWhen ? Quest.getStartDateTimeMillis(quest) : 0;
         String contentInfo = quest == null ? "" : "for " + DurationFormatter.format(this, quest.getDuration());
         int smallIcon = quest == null ? R.drawable.ic_notification_small : quest.getCategoryType().whiteImage;
         int iconColor = quest == null ? R.color.md_grey_500 : quest.getCategoryType().color500;
@@ -530,7 +528,7 @@ public class App extends MultiDexApplication {
     }
 
     private void clearIncompleteQuests() {
-        questPersistenceService.findAllIncompleteFor(new LocalDate().minusDays(1), quests -> {
+        questPersistenceService.findAllIncompleteFor(LocalDate.now().minusDays(1), quests -> {
             for (Quest q : quests) {
                 if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
                     q.setPriority(null);
@@ -588,8 +586,8 @@ public class App extends MultiDexApplication {
         q.increaseCompletedCount();
         if (q.completedAllTimesForDay()) {
             QuestNotificationScheduler.cancelAll(q, this);
-            q.setScheduledDateFromLocal(new Date());
-            q.setCompletedAtDateFromLocal(new Date());
+            q.setScheduledDate(LocalDate.now());
+            q.setCompletedAtDateFromLocal(LocalDate.now());
             q.setCompletedAtMinute(Time.now().toMinuteOfDay());
             q.setExperience(experienceRewardGenerator.generate(q));
             q.setCoins(coinsRewardGenerator.generate(q));
@@ -677,7 +675,7 @@ public class App extends MultiDexApplication {
         }
 
         if (quest.isScheduledForThePast()) {
-            setQuestCompletedAt(quest);
+            completeAtScheduledDate(quest);
         }
         if (quest.isCompleted()) {
             quest.setExperience(experienceRewardGenerator.generate(quest));
@@ -693,7 +691,7 @@ public class App extends MultiDexApplication {
     public void onUpdateQuest(UpdateQuestEvent e) {
         Quest quest = e.quest;
         if (quest.isScheduledForThePast() && !quest.isCompleted()) {
-            setQuestCompletedAt(quest);
+            completeAtScheduledDate(quest);
         }
         if (quest.isCompleted()) {
             quest.setExperience(experienceRewardGenerator.generate(quest));
@@ -705,14 +703,13 @@ public class App extends MultiDexApplication {
         }
     }
 
-    private void setQuestCompletedAt(Quest quest) {
+    private void completeAtScheduledDate(Quest quest) {
         int completedAtMinute = Time.now().toMinuteOfDay();
         if (quest.hasStartTime()) {
             completedAtMinute = quest.getStartMinute();
         }
 
-        Date completedAt = new LocalDate(quest.getScheduledDate(), DateTimeZone.UTC).toDate();
-        quest.setCompletedAtDateFromLocal(completedAt);
+        quest.setCompletedAt(quest.getScheduled());
         quest.setCompletedAtMinute(completedAtMinute);
         quest.increaseCompletedCount();
     }
@@ -720,7 +717,7 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onUpdateRepeatingQuest(UpdateRepeatingQuestEvent e) {
         final RepeatingQuest repeatingQuest = e.repeatingQuest;
-        questPersistenceService.findAllUpcomingForRepeatingQuest(new LocalDate(), repeatingQuest.getId(), questsToRemove -> {
+        questPersistenceService.findAllUpcomingForRepeatingQuest(LocalDate.now(), repeatingQuest.getId(), questsToRemove -> {
             for (Quest quest : questsToRemove) {
                 QuestNotificationScheduler.cancelAll(quest, this);
             }
@@ -733,7 +730,7 @@ public class App extends MultiDexApplication {
                 }
             }
             repeatingQuest.getScheduledPeriodEndDates().keySet().removeAll(periodsToDelete);
-            List<Quest> questsToCreate = repeatingQuestScheduler.scheduleAhead(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
+            List<Quest> questsToCreate = repeatingQuestScheduler.scheduleAhead(repeatingQuest, LocalDate.now());
             repeatingQuestPersistenceService.update(repeatingQuest, questsToRemove, questsToCreate);
         });
     }
@@ -742,6 +739,7 @@ public class App extends MultiDexApplication {
     public void onDeleteQuestRequest(DeleteQuestRequestEvent e) {
         QuestNotificationScheduler.cancelAll(e.quest, this);
         questPersistenceService.delete(e.quest);
+        Toast.makeText(this, R.string.quest_deleted, Toast.LENGTH_SHORT).show();
     }
 
     private void onQuestComplete(Quest quest, EventSource source) {
@@ -762,7 +760,7 @@ public class App extends MultiDexApplication {
             return;
         }
         Set<Integer> challengeDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
-        int currentDayOfWeek = LocalDate.now().getDayOfWeek();
+        int currentDayOfWeek = LocalDate.now().getDayOfWeek().getValue();
         if (!challengeDays.contains(currentDayOfWeek)) {
             return;
         }
@@ -819,7 +817,7 @@ public class App extends MultiDexApplication {
     public void onNewRepeatingQuest(NewRepeatingQuestEvent e) {
         RepeatingQuest repeatingQuest = e.repeatingQuest;
         repeatingQuest.setDuration(Math.max(repeatingQuest.getDuration(), Constants.QUEST_MIN_DURATION));
-        List<Quest> quests = repeatingQuestScheduler.scheduleAhead(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
+        List<Quest> quests = repeatingQuestScheduler.scheduleAhead(repeatingQuest, LocalDate.now());
         repeatingQuestPersistenceService.saveWithQuests(repeatingQuest, quests);
     }
 
@@ -831,7 +829,7 @@ public class App extends MultiDexApplication {
     private void scheduleRepeatingQuests(List<RepeatingQuest> repeatingQuests) {
         Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests = new HashMap<>();
         for (RepeatingQuest repeatingQuest : repeatingQuests) {
-            List<Quest> quests = repeatingQuestScheduler.scheduleAhead(repeatingQuest, DateUtils.toStartOfDayUTC(LocalDate.now()));
+            List<Quest> quests = repeatingQuestScheduler.scheduleAhead(repeatingQuest, LocalDate.now());
             repeatingQuestToScheduledQuests.put(repeatingQuest, quests);
         }
         repeatingQuestPersistenceService.saveWithQuests(repeatingQuestToScheduledQuests);
@@ -902,7 +900,7 @@ public class App extends MultiDexApplication {
             clearIncompleteQuests();
             scheduleDateChanged();
             listenForChanges();
-            eventBus.post(new CalendarDayChangedEvent(new LocalDate(), CalendarDayChangedEvent.Source.DATE_CHANGE));
+            eventBus.post(new CalendarDayChangedEvent(LocalDate.now(), CalendarDayChangedEvent.Source.DATE_CHANGE));
         });
     }
 
@@ -920,7 +918,7 @@ public class App extends MultiDexApplication {
         Challenge c = new Challenge("Stress-Free Mind");
         c.setCategoryType(Category.WELLNESS);
         c.setDifficultyType(Difficulty.HARD);
-        c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
+        c.setEndDate(LocalDate.now().plusWeeks(2));
         c.setReason1("Be more focused");
         c.setReason2("Be relaxed");
         c.setReason3("Be healthy");
@@ -932,7 +930,7 @@ public class App extends MultiDexApplication {
         c = new Challenge("Weight Cutter");
         c.setCategoryType(Category.WELLNESS);
         c.setDifficultyType(Difficulty.HARD);
-        c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
+        c.setEndDate(LocalDate.now().plusWeeks(2));
         c.setReason1("Feel great");
         c.setReason2("Become more confident");
         c.setReason3("Become healthier");
@@ -945,7 +943,7 @@ public class App extends MultiDexApplication {
         c = new Challenge("Healthy & Fit");
         c.setCategoryType(Category.WELLNESS);
         c.setDifficultyType(Difficulty.HARD);
-        c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
+        c.setEndDate(LocalDate.now().plusWeeks(2));
         c.setReason1("Be healthier");
         c.setReason2("Stay fit");
         c.setReason3("Feel great");
@@ -957,7 +955,7 @@ public class App extends MultiDexApplication {
         c = new Challenge("English Jedi");
         c.setCategoryType(Category.LEARNING);
         c.setDifficultyType(Difficulty.HARD);
-        c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
+        c.setEndDate(LocalDate.now().plusWeeks(2));
         c.setReason1("Learn to read great books");
         c.setReason2("Participate in conversations");
         c.setReason3("Meet & speak with new people");
@@ -969,7 +967,7 @@ public class App extends MultiDexApplication {
         c = new Challenge("Programming Ninja");
         c.setCategoryType(Category.LEARNING);
         c.setDifficultyType(Difficulty.HARD);
-        c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
+        c.setEndDate(LocalDate.now().plusWeeks(2));
         c.setReason1("Learn to command my computer");
         c.setReason2("Understand technologies better");
         c.setReason3("Find new job");
@@ -981,7 +979,7 @@ public class App extends MultiDexApplication {
         c = new Challenge("Master Presenter");
         c.setCategoryType(Category.WORK);
         c.setDifficultyType(Difficulty.HARD);
-        c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
+        c.setEndDate(LocalDate.now().plusWeeks(2));
         c.setReason1("Better present my ideas");
         c.setReason2("Become more confident");
         c.setReason3("Explain better");
@@ -993,7 +991,7 @@ public class App extends MultiDexApplication {
         c = new Challenge("Famous writer");
         c.setCategoryType(Category.WORK);
         c.setDifficultyType(Difficulty.HARD);
-        c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
+        c.setEndDate(LocalDate.now().plusWeeks(2));
         c.setReason1("Better present my ideas");
         c.setReason2("Become more confident");
         c.setReason3("Meet new people");
@@ -1005,7 +1003,7 @@ public class App extends MultiDexApplication {
         c = new Challenge("Friends & Family time");
         c.setCategoryType(Category.PERSONAL);
         c.setDifficultyType(Difficulty.NORMAL);
-        c.setEndDate(DateUtils.toStartOfDayUTC(LocalDate.now().plusWeeks(2)));
+        c.setEndDate(LocalDate.now().plusWeeks(2));
         c.setReason1("Feel more connected to others");
         c.setReason2("Have more fun");
         c.setReason3("Stay close with family");

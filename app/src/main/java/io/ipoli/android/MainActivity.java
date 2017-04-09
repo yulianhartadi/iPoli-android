@@ -27,7 +27,7 @@ import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -61,7 +61,6 @@ import io.ipoli.android.app.settings.SettingsFragment;
 import io.ipoli.android.app.share.ShareQuestDialog;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
@@ -407,7 +406,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onDuplicateQuestRequest(DuplicateQuestRequestEvent e) {
         boolean showAction = e.source != EventSource.OVERVIEW;
         if (e.date == null) {
-            DatePickerFragment fragment = DatePickerFragment.newInstance(new Date(), true,
+            DatePickerFragment fragment = DatePickerFragment.newInstance(LocalDate.now(), true,
                     date -> duplicateQuest(e.quest, date, showAction));
             fragment.show(getSupportFragmentManager());
         } else {
@@ -415,15 +414,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
-    private void duplicateQuest(Quest quest, Date date, boolean showAction) {
-        boolean isForSameDay = DateUtils.isSameDay(quest.getScheduledDate(), date);
+    private void duplicateQuest(Quest quest, LocalDate scheduledDate, boolean showAction) {
+        boolean isForSameDay = quest.getScheduledDate().isEqual(scheduledDate);
         quest.setId(null);
         quest.setCreatedAt(new Date().getTime());
         quest.setUpdatedAt(new Date().getTime());
         quest.setActualStartDate(null);
-        quest.setStartDateFromLocal(date);
-        quest.setEndDateFromLocal(date);
-        quest.setScheduledDateFromLocal(date);
+        quest.setStartDate(scheduledDate);
+        quest.setEndDate(scheduledDate);
+        quest.setScheduledDate(scheduledDate);
         quest.setCompletedAtMinute(null);
         quest.setCompletedAtDateFromLocal(null);
         quest.setCompletedCount(0);
@@ -447,7 +446,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if (quest.getStartMinute() != null) {
                     scrollToTime = Time.of(quest.getStartMinute());
                 }
-                eventBus.post(new CalendarDayChangedEvent(new LocalDate(date.getTime()), scrollToTime, CalendarDayChangedEvent.Source.DUPLICATE_QUEST_SNACKBAR));
+                eventBus.post(new CalendarDayChangedEvent(scheduledDate, scrollToTime, CalendarDayChangedEvent.Source.DUPLICATE_QUEST_SNACKBAR));
             });
         }
 
@@ -468,14 +467,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 int newMinutes = quest.getStartMinute() + e.minutes;
                 if (newMinutes >= Time.MINUTES_IN_A_DAY) {
                     newMinutes = newMinutes % Time.MINUTES_IN_A_DAY;
-                    quest.setScheduledDateFromLocal(new LocalDate(quest.getScheduled()).plusDays(1).toDate());
+                    quest.setScheduledDate(quest.getScheduledDate().plusDays(1));
                     isDateChanged = true;
                 }
                 quest.setStartMinute(newMinutes);
 
             } else {
                 isDateChanged = true;
-                quest.setScheduledDateFromLocal(e.date);
+                quest.setScheduledDate(e.date);
             }
             saveSnoozedQuest(quest, isDateChanged, showAction);
         }
@@ -490,8 +489,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void pickDateAndSnoozeQuest(Quest quest, boolean showAction) {
-        DatePickerFragment.newInstance(new Date(), true, date -> {
-            quest.setScheduledDateFromLocal(date);
+        DatePickerFragment.newInstance(LocalDate.now(), true, date -> {
+            quest.setScheduledDate(date);
             saveSnoozedQuest(quest, true, showAction);
         }).show(getSupportFragmentManager());
     }
@@ -514,7 +513,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     if (quest.getStartMinute() != null) {
                         scrollToTime = Time.of(quest.getStartMinute());
                     }
-                    eventBus.post(new CalendarDayChangedEvent(new LocalDate(quest.getScheduled()), scrollToTime, CalendarDayChangedEvent.Source.SNOOZE_QUEST_SNACKBAR));
+                    eventBus.post(new CalendarDayChangedEvent(quest.getScheduledDate(), scrollToTime, CalendarDayChangedEvent.Source.SNOOZE_QUEST_SNACKBAR));
                 }
             });
         }

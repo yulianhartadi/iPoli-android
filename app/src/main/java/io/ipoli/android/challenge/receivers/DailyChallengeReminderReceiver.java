@@ -9,7 +9,7 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.util.Date;
 import java.util.Set;
@@ -50,7 +50,7 @@ public class DailyChallengeReminderReceiver extends BroadcastReceiver {
             return;
         }
 
-        int currentDayOfWeek = LocalDate.now().getDayOfWeek();
+        int currentDayOfWeek = LocalDate.now().getDayOfWeek().getValue();
         Set<Integer> challengeDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
         if (!challengeDays.contains(currentDayOfWeek)) {
             return;

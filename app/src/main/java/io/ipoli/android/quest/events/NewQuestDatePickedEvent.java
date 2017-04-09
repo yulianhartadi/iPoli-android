@@ -1,6 +1,6 @@
 package io.ipoli.android.quest.events;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

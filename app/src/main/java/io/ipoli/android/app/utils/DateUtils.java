@@ -3,56 +3,49 @@ package io.ipoli.android.app.utils;
 import android.support.annotation.NonNull;
 import android.support.v4.util.Pair;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
+import org.threeten.bp.DayOfWeek;
+import org.threeten.bp.Instant;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.Month;
+import org.threeten.bp.ZoneId;
+import org.threeten.bp.ZonedDateTime;
+import org.threeten.bp.format.TextStyle;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
+
+import static org.threeten.bp.temporal.TemporalAdjusters.firstDayOfMonth;
+import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth;
 
 public class DateUtils {
 
-    public static Calendar getTodayAtMidnight() {
-        return getTodayAtMidnightWithTimeZone(TimeZone.getDefault());
+    public static final ZoneId ZONE_UTC = ZoneId.of("UTC");
+
+    public static LocalDate fromMillis(long dateMillis) {
+        return Instant.ofEpochMilli(dateMillis).atZone(DateUtils.ZONE_UTC).toLocalDate();
     }
 
-    private static Calendar getTodayAtMidnightWithTimeZone(TimeZone timeZone) {
-        Calendar c = Calendar.getInstance(timeZone);
-        c.set(Calendar.MILLISECOND, 0);
-        c.set(Calendar.SECOND, 0);
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.HOUR_OF_DAY, 0);
-        return c;
+    public static String getShortName(Month month) {
+        return month.getDisplayName(TextStyle.SHORT, Locale.getDefault());
+    }
+
+    public static String getMonthShortName(LocalDate date) {
+        return getShortName(date.getMonth());
     }
 
     public static Date now() {
         return Calendar.getInstance().getTime();
     }
 
-    public static boolean isSameDay(Date d1, Date d2) {
-        if (d1 == null || d2 == null) {
-            return false;
-        }
-
-        Calendar c1 = Calendar.getInstance();
-        c1.setTime(d1);
-        Calendar c2 = Calendar.getInstance();
-        c2.setTime(d2);
-        return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) &&
-                c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR);
+    public static boolean isToday(LocalDate date) {
+        return LocalDate.now().isEqual(date);
     }
 
-    public static boolean isToday(Date date) {
-        return isSameDay(date, new Date());
-    }
-
-    public static boolean isTomorrow(Date date) {
-        return isSameDay(date, getTomorrow());
+    public static boolean isTomorrow(LocalDate date) {
+        return LocalDate.now().plusDays(1).isEqual(date);
     }
 
     public static Date getTomorrow() {
@@ -61,81 +54,36 @@ public class DateUtils {
         return c.getTime();
     }
 
-    public static Date getYesterday() {
-        Calendar c = Calendar.getInstance();
-        c.add(Calendar.DAY_OF_YEAR, -1);
-        return c.getTime();
-    }
-
-    public static Date getDate(Date dueDate) {
-        if (dueDate == null) {
-            return null;
-        }
-        return toStartOfDayUTC(new LocalDate(dueDate));
-    }
-
-    public static String toDateStringUSFormat(Date date) {
-        return toDateStringUSFormat(date, TimeZone.getDefault());
-    }
-
-    public static String toDateStringUSFormat(Date date, TimeZone timeZone) {
-        if (date == null) {
-            return "";
-        }
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-        formatter.setTimeZone(timeZone);
-        return formatter.format(date);
-    }
-
-    public static List<String> getNext7Days() {
-        List<String> dates = new ArrayList<>();
-        Calendar c = Calendar.getInstance();
-        dates.add(toDateStringUSFormat(c.getTime()));
-        for (int i = 1; i < 7; i++) {
-            c.add(Calendar.DAY_OF_YEAR, 1);
-            dates.add(toDateStringUSFormat(c.getTime()));
-        }
-
-        return dates;
-    }
-
     public static Date nowUTC() {
         return new Date(System.currentTimeMillis());
     }
 
     public static Date toStartOfDayUTC(LocalDate localDate) {
-        return localDate.toDateTimeAtStartOfDay(DateTimeZone.UTC).toDate();
+        return fromZonedDateTime(localDate.atStartOfDay(ZONE_UTC));
     }
 
     public static Date toStartOfDay(LocalDate localDate) {
-        return localDate.toDateTimeAtStartOfDay().toDate();
+        return fromZonedDateTime(localDate.atStartOfDay(ZoneId.systemDefault()));
+    }
+
+    public static long toMillis(LocalDate localDate) {
+        return toStartOfDayUTC(localDate).getTime();
+    }
+
+    private static Date fromZonedDateTime(ZonedDateTime dateTime) {
+        return new Date(dateTime.toInstant().toEpochMilli());
     }
 
     public static boolean isTodayUTC(LocalDate localDate) {
-        return localDate.isEqual(toStartOfDayUTCLocalDate(new LocalDate()));
+        return localDate.isEqual(toStartOfDayUTCLocalDate(LocalDate.now()));
     }
 
     public static boolean isTomorrowUTC(LocalDate localDate) {
-        return localDate.isEqual(toStartOfDayUTCLocalDate(new LocalDate().plusDays(1)));
+        return localDate.isEqual(toStartOfDayUTCLocalDate(LocalDate.now().plusDays(1)));
     }
 
     private static LocalDate toStartOfDayUTCLocalDate(LocalDate localDate) {
-        return localDate.toDateTimeAtStartOfDay(DateTimeZone.UTC).toLocalDate();
-    }
-
-    public static boolean isTodayUTC(Date date) {
-        return isTodayUTC(new LocalDate(date, DateTimeZone.UTC));
-    }
-
-    public static boolean isTomorrowUTC(Date date) {
-        return isTomorrowUTC(new LocalDate(date, DateTimeZone.UTC));
-    }
-
-    public static Date UTCToLocalDate(Date date) {
-        if (date == null) {
-            return null;
-        }
-        return new DateTime(date, DateTimeZone.UTC).toLocalDate().toDate();
+        return localDate.atStartOfDay(ZONE_UTC).toLocalDate();
     }
 
     public static boolean isBetween(Date date, Date start, Date end) {
@@ -146,30 +94,15 @@ public class DateUtils {
     }
 
     @NonNull
-    public static List<Pair<LocalDate, LocalDate>> getBoundsForWeeksInThePast(LocalDate currentDate, int weeks) {
-        LocalDate weekStart = currentDate.minusWeeks(weeks - 1).dayOfWeek().withMinimumValue();
-        LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
-
-        List<Pair<LocalDate, LocalDate>> weekBounds = new ArrayList<>();
-        weekBounds.add(new Pair<>(weekStart, weekEnd));
-        for (int i = 0; i < weeks - 1; i++) {
-            weekStart = weekStart.plusWeeks(1);
-            weekEnd = weekStart.dayOfWeek().withMaximumValue();
-            weekBounds.add(new Pair<>(weekStart, weekEnd));
-        }
-        return weekBounds;
-    }
-
-    @NonNull
     public static List<Pair<LocalDate, LocalDate>> getBoundsFor4MonthsInThePast(LocalDate currentDate) {
-        LocalDate monthStart = currentDate.minusMonths(3).dayOfMonth().withMinimumValue();
-        LocalDate monthEnd = monthStart.dayOfMonth().withMaximumValue();
+        LocalDate monthStart = currentDate.minusMonths(3).with(firstDayOfMonth());
+        LocalDate monthEnd = monthStart.with(lastDayOfMonth());
 
         List<Pair<LocalDate, LocalDate>> monthBounds = new ArrayList<>();
         monthBounds.add(new Pair<>(monthStart, monthEnd));
         for (int i = 0; i < 3; i++) {
             monthStart = monthStart.plusMonths(1);
-            monthEnd = monthStart.dayOfMonth().withMaximumValue();
+            monthEnd = monthStart.with(lastDayOfMonth());
             monthBounds.add(new Pair<>(monthStart, monthEnd));
         }
         return monthBounds;
@@ -177,21 +110,21 @@ public class DateUtils {
 
     @NonNull
     public static List<Pair<LocalDate, LocalDate>> getBoundsFor4WeeksInThePast(LocalDate currentDate) {
-        LocalDate weekStart = currentDate.minusWeeks(3).dayOfWeek().withMinimumValue();
-        LocalDate weekEnd = weekStart.dayOfWeek().withMaximumValue();
+        LocalDate weekStart = currentDate.minusWeeks(3).with(DayOfWeek.MONDAY);
+        LocalDate weekEnd = weekStart.with(DayOfWeek.SUNDAY);
 
         List<Pair<LocalDate, LocalDate>> weekBounds = new ArrayList<>();
         weekBounds.add(new Pair<>(weekStart, weekEnd));
         for (int i = 0; i < 3; i++) {
             weekStart = weekStart.plusWeeks(1);
-            weekEnd = weekStart.dayOfWeek().withMaximumValue();
+            weekEnd = weekStart.with(DayOfWeek.SUNDAY);
             weekBounds.add(new Pair<>(weekStart, weekEnd));
         }
         return weekBounds;
     }
 
-    public static boolean isYesterday(Date date) {
-        return isSameDay(date, getYesterday());
+    public static boolean isYesterday(LocalDate date) {
+        return LocalDate.now().minusDays(1).isEqual(date);
     }
 
     public static String getDayNumberSuffix(int day) {

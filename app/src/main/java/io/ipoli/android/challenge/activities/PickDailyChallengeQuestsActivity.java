@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -15,7 +15,8 @@ import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.DayOfWeek;
+import org.threeten.bp.LocalDate;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -67,6 +68,8 @@ import io.ipoli.android.quest.ui.dialogs.TimesADayPickerFragment;
 import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
+
+import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -410,16 +413,16 @@ public class AddQuestSummaryFragment extends BaseFragment {
         if (Objects.equals(quest.getStart(), quest.getEnd())) {
             scheduledDate.setText(DateFormatter.formatWithoutYear(quest.getEndDate()));
         } else {
-            LocalDate byDate = new LocalDate(quest.getEnd());
+            LocalDate byDate = quest.getEndDate();
             LocalDate today = LocalDate.now();
-            if (byDate.equals(today.dayOfWeek().withMaximumValue())) {
+            if (byDate.equals(today.with(DayOfWeek.SUNDAY))) {
                 scheduledDate.setText(R.string.by_end_of_week);
-            } else if (byDate.equals(today.dayOfMonth().withMaximumValue())) {
+            } else if (byDate.equals(today.with(lastDayOfMonth()))) {
                 scheduledDate.setText(R.string.by_end_of_month);
             } else {
                 String dayNumberSuffix = DateUtils.getDayNumberSuffix(byDate.getDayOfMonth());
                 DateFormat dateFormat = new SimpleDateFormat(getString(R.string.agenda_daily_journey_format, dayNumberSuffix));
-                scheduledDate.setText(getString(R.string.add_quest_by_date, dateFormat.format(byDate.toDate())));
+                scheduledDate.setText(getString(R.string.add_quest_by_date, dateFormat.format(DateUtils.toStartOfDay(byDate))));
             }
         }
     }

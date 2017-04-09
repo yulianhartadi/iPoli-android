@@ -13,7 +13,7 @@ import com.couchbase.lite.View;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.otto.Bus;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +24,7 @@ import java.util.TreeMap;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestReminder;
 import io.ipoli.android.reminder.data.Reminder;
@@ -69,7 +70,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 for (Object v : values) {
                     quests.add(toObject(v));
                 }
-                LocalDate key = new LocalDate((long) keys.get(0));
+                LocalDate key = DateUtils.fromMillis((long) keys.get(0));
                 return new Pair<>(key, quests);
             }, Constants.DEFAULT_VIEW_VERSION);
         }
@@ -290,7 +291,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 QueryRow row = enumerator.next();
                 List<Quest> quests = (List<Quest>) row.getValue();
                 for (Quest q : quests) {
-                    if (!q.getScheduledDate().before(toStartOfDayUTC(startDate)) || q.getScheduled() == null) {
+                    if (q.getScheduled() == null || !q.getScheduledDate().isBefore(startDate)) {
                         result.add(q);
                     }
                 }

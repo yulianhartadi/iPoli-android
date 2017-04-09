@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -203,10 +203,10 @@ public class AddChallengeSummaryFragment extends BaseFragment {
     }
 
     private void showEndDate(Challenge challenge) {
-        LocalDate byDate = new LocalDate(challenge.getEnd());
+        LocalDate byDate = challenge.getEndDate();
         String dayNumberSuffix = DateUtils.getDayNumberSuffix(byDate.getDayOfMonth());
         DateFormat dateFormat = new SimpleDateFormat(getString(R.string.agenda_daily_journey_format, dayNumberSuffix));
-        endDate.setText(getString(R.string.add_quest_by_date, dateFormat.format(byDate.toDate())));
+        endDate.setText(getString(R.string.add_quest_by_date, dateFormat.format(DateUtils.toStartOfDay(byDate))));
     }
 
     private void showDifficulty(Difficulty difficulty) {

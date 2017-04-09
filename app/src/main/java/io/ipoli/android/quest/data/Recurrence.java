@@ -2,9 +2,7 @@ package io.ipoli.android.quest.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import org.joda.time.LocalDate;
-
-import java.util.Date;
+import org.threeten.bp.LocalDate;
 
 import io.ipoli.android.app.utils.DateUtils;
 
@@ -37,7 +35,7 @@ public class Recurrence {
     public static Recurrence create() {
         Recurrence recurrence = new Recurrence();
         recurrence.setRecurrenceType(RepeatType.DAILY);
-        recurrence.setDtstartDate(DateUtils.toStartOfDayUTC(LocalDate.now()));
+        recurrence.setDtstartDate(LocalDate.now());
         recurrence.setFlexibleCount(0);
         return recurrence;
     }
@@ -88,13 +86,13 @@ public class Recurrence {
     }
 
     @JsonIgnore
-    public Date getDtstartDate() {
-        return dtstart != null ? new Date(dtstart) : null;
+    public LocalDate getDtstartDate() {
+        return dtstart != null ? DateUtils.fromMillis(dtstart) : null;
     }
 
     @JsonIgnore
-    public void setDtstartDate(Date dtstartDate) {
-        dtstart = dtstartDate != null ? dtstartDate.getTime() : null;
+    public void setDtstartDate(LocalDate dtstartDate) {
+        dtstart = dtstartDate != null ? DateUtils.toMillis(dtstartDate) : null;
     }
 
     public Long getDtstart() {
@@ -106,13 +104,13 @@ public class Recurrence {
     }
 
     @JsonIgnore
-    public Date getDtendDate() {
-        return dtend != null ? new Date(dtend) : null;
+    public LocalDate getDtendDate() {
+        return dtend != null ? DateUtils.fromMillis(dtend) : null;
     }
 
     @JsonIgnore
-    public void setDtendDate(Date dtendDate) {
-        dtend = dtendDate != null ? dtendDate.getTime() : null;
+    public void setDtendDate(LocalDate dtendDate) {
+        dtend = dtendDate != null ? DateUtils.toMillis(dtendDate) : null;
     }
 
     public Long getDtend() {

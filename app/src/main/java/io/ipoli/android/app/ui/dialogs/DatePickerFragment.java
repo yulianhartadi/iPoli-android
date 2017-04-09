@@ -9,11 +9,11 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.widget.DatePicker;
 
+import org.threeten.bp.LocalDate;
+
 import java.util.Calendar;
-import java.util.Date;
 
 import io.ipoli.android.R;
-import io.ipoli.android.app.utils.DateUtils;
 
 
 public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener, DialogInterface.OnClickListener {
@@ -28,19 +28,16 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
     private OnDatePickedListener datePickedListener;
 
-    public static DatePickerFragment newInstance(Date date, boolean disablePastDaySelection, boolean enableUnknownDateSelection, OnDatePickedListener onDatePickedListener) {
-        final Calendar c = Calendar.getInstance();
-        if (date != null) {
-            c.setTime(date);
+    public static DatePickerFragment newInstance(LocalDate date, boolean disablePastDaySelection, boolean enableUnknownDateSelection, OnDatePickedListener onDatePickedListener) {
+        LocalDate currentDate = date;
+        if(currentDate == null) {
+            currentDate = LocalDate.now();
         }
-        int year = c.get(Calendar.YEAR);
-        int month = c.get(Calendar.MONTH);
-        int day = c.get(Calendar.DAY_OF_MONTH);
-        return newInstance(year, month, day, disablePastDaySelection, enableUnknownDateSelection, onDatePickedListener);
+        return newInstance(currentDate.getYear(), currentDate.getMonthValue(), currentDate.getDayOfMonth(), disablePastDaySelection, enableUnknownDateSelection, onDatePickedListener);
     }
 
     public interface OnDatePickedListener {
-        void onDatePicked(Date date);
+        void onDatePicked(LocalDate date);
     }
 
     public static DatePickerFragment newInstance(boolean disablePastDateSelection, OnDatePickedListener onDatePickedListener) {
@@ -49,10 +46,6 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
         return newInstance(year, month, day, disablePastDateSelection, true, onDatePickedListener);
-    }
-
-    public static DatePickerFragment newInstance(OnDatePickedListener onDatePickedListener) {
-        return newInstance(false, onDatePickedListener);
     }
 
     public static DatePickerFragment newInstance(int year, int month, int day, boolean disablePastDaySelection, boolean enableUnknownDateSelection, OnDatePickedListener onDatePickedListener) {
@@ -68,11 +61,11 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         return fragment;
     }
 
-    public static DatePickerFragment newInstance(Date date, boolean disablePastDaySelection, OnDatePickedListener onDatePickedListener) {
+    public static DatePickerFragment newInstance(LocalDate date, boolean disablePastDaySelection, OnDatePickedListener onDatePickedListener) {
         return newInstance(date, disablePastDaySelection, true, onDatePickedListener);
     }
 
-    public static DatePickerFragment newInstance(Date date, OnDatePickedListener onDatePickedListener) {
+    public static DatePickerFragment newInstance(LocalDate date, OnDatePickedListener onDatePickedListener) {
         return newInstance(date, false, onDatePickedListener);
     }
 
@@ -98,12 +91,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int day) {
-        final Calendar c = Calendar.getInstance();
-        c.setTime(DateUtils.getTodayAtMidnight().getTime());
-        c.set(Calendar.YEAR, year);
-        c.set(Calendar.MONTH, month);
-        c.set(Calendar.DAY_OF_MONTH, day);
-        datePickedListener.onDatePicked(c.getTime());
+        datePickedListener.onDatePicked(LocalDate.of(year, month, day));
     }
 
     @Override

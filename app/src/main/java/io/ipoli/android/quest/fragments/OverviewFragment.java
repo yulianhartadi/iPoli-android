@@ -13,10 +13,9 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -36,7 +35,6 @@ import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.adapters.OverviewAdapter;
 import io.ipoli.android.quest.data.Quest;
@@ -126,14 +124,14 @@ public class OverviewFragment extends BaseFragment implements OnDataChangedListe
     @Subscribe
     public void onScheduleQuestForToday(ScheduleQuestForTodayEvent e) {
         Quest q = e.quest;
-        Date endDate = new Date();
+        LocalDate scheduledDate = LocalDate.now();
         String toast = getString(R.string.quest_scheduled_for_today);
         if (e.quest.isScheduledForToday()) {
             toast = getString(R.string.quest_scheduled_for_tomorrow);
-            endDate = DateUtils.getTomorrow();
+            scheduledDate = scheduledDate.plusDays(1);
         }
         final String toastMessage = toast;
-        q.setScheduledDateFromLocal(endDate);
+        q.setScheduledDate(scheduledDate);
         questPersistenceService.save(q);
         Toast.makeText(getContext(), toastMessage, Toast.LENGTH_SHORT).show();
     }
