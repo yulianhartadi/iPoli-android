@@ -142,4 +142,8 @@ public class DateUtils {
                 return "th";
         }
     }
+
+    public static LocalDate fromUserZoneToLocalDate(Date date) {
+        return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+    }
 }

@@ -72,7 +72,6 @@ public class EndDateMatcher extends BaseMatcher<LocalDate> {
         Matcher tmm = dueThisMonthPattern.matcher(text);
         if (tmm.find()) {
             int day = Integer.parseInt(tmm.group(1));
-            Calendar c = Calendar.getInstance();
             LocalDate today = LocalDate.now();
             int lastDayOfMonth = today.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth();
             if (day > lastDayOfMonth) {
@@ -88,7 +87,7 @@ public class EndDateMatcher extends BaseMatcher<LocalDate> {
                 if (dueResult.size() != 1) {
                     return null;
                 }
-                return DateUtils.fromMillis(dueResult.get(0).getTime());
+                return DateUtils.fromUserZoneToLocalDate(dueResult.get(0));
             }
         }
         return null;
