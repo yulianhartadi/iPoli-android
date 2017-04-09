@@ -10,10 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -75,11 +74,8 @@ public class AddChallengeEndDateFragment extends BaseFragment {
                 v -> postEvent(new NewChallengeEndDatePickedEvent(today.plusDays(15)))));
 
         options.add(new Pair<>(getString(R.string.exact_date), v -> {
-            DatePickerFragment fragment = DatePickerFragment.newInstance(new Date(), true, false,
-                    date -> {
-                        LocalDate onDate = new LocalDate(date.getTime());
-                        postEvent(new NewChallengeEndDatePickedEvent(onDate));
-                    });
+            DatePickerFragment fragment = DatePickerFragment.newInstance(LocalDate.now(), true, false,
+                    date -> postEvent(new NewChallengeEndDatePickedEvent(date)));
             fragment.show(getFragmentManager());
         }));
 

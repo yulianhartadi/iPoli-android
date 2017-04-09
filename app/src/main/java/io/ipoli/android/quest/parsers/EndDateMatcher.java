@@ -1,6 +1,8 @@
 package io.ipoli.android.quest.parsers;
 
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.temporal.TemporalAdjusters;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.suggestions.MatcherType;
 import io.ipoli.android.quest.suggestions.TextEntityType;
 import io.ipoli.android.quest.suggestions.providers.DueDateSuggestionsProvider;
@@ -16,7 +19,7 @@ import io.ipoli.android.quest.suggestions.providers.DueDateSuggestionsProvider;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 2/19/16.
  */
-public class EndDateMatcher extends BaseMatcher<Date> {
+public class EndDateMatcher extends BaseMatcher<LocalDate> {
 
     private static final String DUE_TODAY_TOMORROW_PATTERN = "(?:^|\\s)(today|tomorrow)(?:$|\\s)";
     private static final String DUE_MONTH_PATTERN = "(?:^|\\s)on\\s(\\d){1,2}(\\s)?(st|th|nd|rd)?\\s(of\\s)?(next month|this month|January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec){1}(?:$|\\s)";
@@ -65,17 +68,17 @@ public class EndDateMatcher extends BaseMatcher<Date> {
     }
 
     @Override
-    public Date parse(String text) {
+    public LocalDate parse(String text) {
         Matcher tmm = dueThisMonthPattern.matcher(text);
         if (tmm.find()) {
             int day = Integer.parseInt(tmm.group(1));
             Calendar c = Calendar.getInstance();
-            int maxDaysInMoth = c.getActualMaximum(Calendar.DAY_OF_MONTH);
-            if (day > maxDaysInMoth) {
+            LocalDate today = LocalDate.now();
+            int lastDayOfMonth = today.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth();
+            if (day > lastDayOfMonth) {
                 return null;
             }
-            c.set(Calendar.DAY_OF_MONTH, day);
-            return c.getTime();
+            return today.withDayOfMonth(day);
         }
 
         for (Pattern p : dueDatePatterns) {
@@ -85,7 +88,7 @@ public class EndDateMatcher extends BaseMatcher<Date> {
                 if (dueResult.size() != 1) {
                     return null;
                 }
-                return dueResult.get(0);
+                return DateUtils.fromMillis(dueResult.get(0).getTime());
             }
         }
         return null;

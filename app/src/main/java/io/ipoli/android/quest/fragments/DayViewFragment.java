@@ -17,7 +17,7 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -121,7 +121,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     public static DayViewFragment newInstance(LocalDate date) {
         DayViewFragment fragment = new DayViewFragment();
         Bundle args = new Bundle();
-        args.putLong(CURRENT_DATE, date.toDate().getTime());
+        args.putLong(CURRENT_DATE, DateUtils.toMillis(date));
         fragment.setArguments(args);
         return fragment;
     }
@@ -136,9 +136,9 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            currentDate = new LocalDate(getArguments().getLong(CURRENT_DATE));
+            currentDate = DateUtils.fromMillis(getArguments().getLong(CURRENT_DATE));
         } else {
-            currentDate = new LocalDate();
+            currentDate = LocalDate.now();
         }
     }
 
@@ -206,7 +206,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     }
 
     private boolean currentDateIsInThePast() {
-        return currentDate.isBefore(new LocalDate());
+        return currentDate.isBefore(LocalDate.now());
     }
 
     private List<Quest> getPlaceholderQuestsFromRepeatingQuests(List<RepeatingQuest> repeatingQuests) {
@@ -214,8 +214,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         for (RepeatingQuest rq : repeatingQuests) {
             if (!rq.isScheduledForDate(currentDate)) {
                 List<Quest> questsToCreate = repeatingQuestScheduler.schedule(rq,
-                        DateUtils.toStartOfDayUTC(currentDate),
-                        DateUtils.toStartOfDayUTC(currentDate));
+                        currentDate,
+                        currentDate);
                 for (Quest quest : questsToCreate) {
                     quest.setPlaceholder(true);
                 }
@@ -252,7 +252,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
             if (q.getCompletedAtDate() != null) {
                 QuestCalendarViewModel event = new QuestCalendarViewModel(q);
-                if (hasNoStartTime(q) || new LocalDate().isBefore(new LocalDate(q.getScheduled()))) {
+                if (hasNoStartTime(q) || LocalDate.now().isBefore(q.getScheduledDate())) {
                     event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinuteOfDay());
                 }
 
@@ -481,7 +481,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     }
 
     private boolean currentDateIsInTheFuture() {
-        return currentDate.isAfter(new LocalDate());
+        return currentDate.isAfter(LocalDate.now());
     }
 
     @Subscribe
@@ -507,7 +507,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         } else if (currentDate.isEqual(LocalDate.now().plusDays(1))) {
             dateText = "tomorrow";
         } else {
-            dateText = "on " + DateFormatter.formatWithoutYear(DateUtils.toStartOfDayUTC(currentDate));
+            dateText = "on " + DateFormatter.formatWithoutYear(currentDate);
         }
 
         eventBus.post(new StartQuickAddEvent(" at " + atTime.toString() + " " + dateText));

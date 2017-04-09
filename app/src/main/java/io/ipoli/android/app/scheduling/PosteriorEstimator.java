@@ -2,7 +2,7 @@ package io.ipoli.android.app.scheduling;
 
 import android.support.annotation.NonNull;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
 import java.util.List;

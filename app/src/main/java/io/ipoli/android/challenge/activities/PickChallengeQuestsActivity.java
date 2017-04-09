@@ -13,9 +13,10 @@ import android.view.MenuItem;
 
 import com.squareup.otto.Bus;
 
+import org.threeten.bp.LocalDate;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -146,8 +147,8 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         }
 
         Collections.sort(viewModels, (vm1, vm2) -> {
-            Date d1 = vm1.getStartDate();
-            Date d2 = vm2.getStartDate();
+            LocalDate d1 = vm1.getStartDate();
+            LocalDate d2 = vm2.getStartDate();
             if (d1 == null && d2 == null) {
                 return -1;
             }
@@ -160,11 +161,11 @@ public class PickChallengeQuestsActivity extends BaseActivity {
                 return -1;
             }
 
-            if (d2.after(d1)) {
+            if (d2.isAfter(d1)) {
                 return 1;
             }
 
-            if (d1.after(d2)) {
+            if (d1.isAfter(d2)) {
                 return -1;
             }
 

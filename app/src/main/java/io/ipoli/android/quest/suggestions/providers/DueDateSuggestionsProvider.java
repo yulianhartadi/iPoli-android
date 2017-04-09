@@ -2,7 +2,7 @@ package io.ipoli.android.quest.suggestions.providers;
 
 import android.text.TextUtils;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 
 import io.ipoli.android.R;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 
 /**
@@ -25,7 +26,7 @@ public class DueDateSuggestionsProvider extends BaseSuggestionsProvider {
 
     public DueDateSuggestionsProvider() {
         SimpleDateFormat dayMonthFormatter = new SimpleDateFormat("dd MMM", Locale.getDefault());
-        String after3days = dayMonthFormatter.format(LocalDate.now().plusDays(3).toDate());
+        String after3days = dayMonthFormatter.format(DateUtils.toStartOfDay(LocalDate.now().plusDays(3)));
         defaultSuggestionItems.add(new SuggestionDropDownItem(getIcon(), "today"));
         defaultSuggestionItems.add(new SuggestionDropDownItem(getIcon(), "tomorrow"));
         defaultSuggestionItems.add(new SuggestionDropDownItem(getIcon(), "after 2 days"));

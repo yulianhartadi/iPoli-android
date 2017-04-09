@@ -3,9 +3,7 @@ package io.ipoli.android.quest.data;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -106,12 +104,12 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this(name, null);
     }
 
-    public Quest(String name, Date endDate) {
+    public Quest(String name, LocalDate endDate) {
         super(TYPE);
         this.name = name;
-        setEndDateFromLocal(endDate);
-        setStartDateFromLocal(endDate);
-        setScheduledDateFromLocal(endDate);
+        setEndDate(endDate);
+        setStartDate(endDate);
+        setScheduledDate(endDate);
         setStartMinute(null);
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
@@ -139,8 +137,8 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     @JsonIgnore
-    public void setOriginalScheduledDate(Date originalScheduledDate) {
-        originalScheduled = originalScheduledDate != null ? originalScheduledDate.getTime() : null;
+    public void setOriginalScheduledDate(LocalDate originalScheduledDate) {
+        originalScheduled = originalScheduledDate != null ? DateUtils.toMillis(originalScheduledDate) : null;
     }
 
     @JsonIgnore
@@ -149,17 +147,8 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     @JsonIgnore
-    public void setScheduledDate(Date scheduledDate) {
-        previousScheduledDate = scheduled;
-        setScheduled(scheduledDate != null ? scheduledDate.getTime() : null);
-        if (getOriginalScheduledDate() == null) {
-            setOriginalScheduledDate(getScheduledDate());
-        }
-    }
-
-    @JsonIgnore
-    public Date getScheduledDate() {
-        return scheduled != null ? new Date(scheduled) : null;
+    public LocalDate getScheduledDate() {
+        return scheduled != null ? DateUtils.fromMillis(scheduled) : null;
     }
 
     @JsonIgnore
@@ -270,13 +259,8 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     @JsonIgnore
-    public Date getStartDate() {
-        return start != null ? new Date(start) : null;
-    }
-
-    @JsonIgnore
-    public void setStartDate(Date startDate) {
-        start = startDate != null ? startDate.getTime() : null;
+    public LocalDate getStartDate() {
+        return start != null ? DateUtils.fromMillis(start) : null;
     }
 
     public Long getStart() {
@@ -288,28 +272,36 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     @JsonIgnore
-    public void setStartDateFromLocal(Date startDate) {
-        setStartDate(DateUtils.getDate(startDate));
+    public void setStartDate(LocalDate startDate) {
+        if(startDate == null) {
+            setStart(null);
+            return;
+        }
+        setStart(DateUtils.toMillis(startDate));
     }
 
     @JsonIgnore
-    public Date getEndDate() {
-        return end != null ? new Date(end) : null;
+    public LocalDate getEndDate() {
+        return end != null ? DateUtils.fromMillis(end) : null;
     }
 
     @JsonIgnore
-    public void setEndDate(Date endDate) {
-        setEnd(endDate != null ? endDate.getTime() : null);
+    public void setEndDate(LocalDate endDate) {
+        if(endDate == null) {
+            setEnd(null);
+            return;
+        }
+        setEnd(DateUtils.toMillis(endDate));
     }
 
     @JsonIgnore
-    public void setEndDateFromLocal(Date endDate) {
-        setEndDate(DateUtils.getDate(endDate));
-    }
+    public void setScheduledDate(LocalDate scheduledDate) {
+        previousScheduledDate = scheduled;
+        setScheduled(scheduledDate != null ? DateUtils.toMillis(scheduledDate) : null);
+        if (getOriginalScheduledDate() == null) {
+            setOriginalScheduledDate(getScheduledDate());
+        }
 
-    @JsonIgnore
-    public void setScheduledDateFromLocal(Date scheduledDate) {
-        setScheduledDate(DateUtils.getDate(scheduledDate));
     }
 
     public Long getEnd() {
@@ -350,7 +342,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
             return null;
         }
         Time startTime = Time.of(quest.getStartMinute());
-        return new LocalDate(quest.getScheduled(), DateTimeZone.UTC).toDateTime(new LocalTime(startTime.getHours(), startTime.getMinutes())).toDate();
+        return new Date(quest.getScheduled() + startTime.toMillisOfDay());
     }
 
     @JsonIgnore
@@ -380,14 +372,13 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     @JsonIgnore
-    public Date getCompletedAtDate() {
-        return completedAt != null ? new Date(completedAt) : null;
+    public LocalDate getCompletedAtDate() {
+        return completedAt != null ? DateUtils.fromMillis(completedAt) : null;
     }
 
     @JsonIgnore
-    public void setCompletedAtDateFromLocal(Date completedAtDate) {
-        Date date = DateUtils.getDate(completedAtDate);
-        setCompletedAt(date == null ? null : date.getTime());
+    public void setCompletedAtDateFromLocal(LocalDate completedAtDate) {
+        setCompletedAt(completedAtDate == null ? null : DateUtils.toMillis(completedAtDate));
     }
 
     public Long getCompletedAt() {
@@ -409,17 +400,18 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @JsonIgnore
     public boolean isScheduledForToday() {
-        return isScheduledFor(new LocalDate());
+        return isScheduledFor(LocalDate.now());
     }
 
     @JsonIgnore
     public boolean isScheduledFor(LocalDate date) {
-        return date.isEqual(new LocalDate(getScheduled(), DateTimeZone.UTC));
+        return date.isEqual(DateUtils.fromMillis(getScheduled()));
+
     }
 
     @JsonIgnore
     public boolean isScheduledForThePast() {
-        return getScheduled() != null && getScheduledDate().before(DateUtils.toStartOfDayUTC(LocalDate.now()));
+        return getScheduled() != null && getScheduledDate().isBefore(LocalDate.now());
     }
 
     public Integer getStartMinute() {
@@ -441,10 +433,11 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @JsonIgnore
     public boolean isScheduledForTomorrow() {
-        if (getScheduledDate() == null) {
+        if (getScheduled() == null) {
             return false;
         }
-        return DateUtils.isTomorrowUTC(DateUtils.toStartOfDayUTC(new LocalDate(getScheduledDate(), DateTimeZone.UTC)));
+        LocalDate tomorrow = LocalDate.now().plusDays(1);
+        return tomorrow.isEqual(DateUtils.fromMillis(getScheduled()));
     }
 
     @JsonIgnore
@@ -503,9 +496,8 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @JsonIgnore
     public int getActualDuration() {
         if (this.isCompleted() && getActualStartDate() != null) {
-            long completedAtMillis = TimeUnit.MINUTES.toMillis(getCompletedAtMinute());
-            long completedAtDateMillis = new LocalDate(getCompletedAt(), DateTimeZone.UTC).toDate().getTime();
-            return (int) TimeUnit.MILLISECONDS.toMinutes(completedAtDateMillis + completedAtMillis - actualStart);
+            long completedAtMinutes = TimeUnit.MINUTES.toMillis(getCompletedAtMinute());
+            return (int) TimeUnit.MILLISECONDS.toMinutes(getCompletedAt() + completedAtMinutes - actualStart);
         }
         return getDuration();
     }

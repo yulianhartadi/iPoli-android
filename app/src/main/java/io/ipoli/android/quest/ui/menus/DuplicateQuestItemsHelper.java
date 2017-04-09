@@ -5,15 +5,15 @@ import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.threeten.bp.LocalDate;
+
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import io.ipoli.android.R;
-import io.ipoli.android.app.utils.DateUtils;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -37,8 +37,8 @@ public class DuplicateQuestItemsHelper {
     @NonNull
     private static List<DuplicateDateItem> getDuplicateDates(Context context) {
         List<DuplicateDateItem> duplicateDateItems = new ArrayList<>();
-        duplicateDateItems.add(new DuplicateDateItem(context.getString(R.string.today), new Date()));
-        duplicateDateItems.add(new DuplicateDateItem(context.getString(R.string.tomorrow), DateUtils.getTomorrow()));
+        duplicateDateItems.add(new DuplicateDateItem(context.getString(R.string.today), LocalDate.now()));
+        duplicateDateItems.add(new DuplicateDateItem(context.getString(R.string.tomorrow), LocalDate.now().plusDays(1)));
         duplicateDateItems.add(new DuplicateDateItem(context.getString(R.string.pick_date), null));
         return duplicateDateItems;
     }

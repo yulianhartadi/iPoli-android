@@ -32,7 +32,7 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.squareup.otto.Bus;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +59,8 @@ import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.PeriodHistory;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
+
+import static io.ipoli.android.app.utils.DateUtils.getMonthShortName;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -281,7 +283,7 @@ public class ChallengeActivity extends BaseActivity {
         categoryImage.setImageResource(category.whiteImage);
 
         String nextScheduledDateText = DateFormatter.formatWithoutYear(
-                challenge.getNextScheduledDate(DateUtils.toStartOfDayUTC(LocalDate.now()).getTime()),
+                challenge.getNextScheduledDate(DateUtils.toMillis(LocalDate.now())),
                 getString(R.string.unscheduled)
         );
         nextScheduledDate.setText(nextScheduledDateText);
@@ -366,14 +368,14 @@ public class ChallengeActivity extends BaseActivity {
     }
 
     private String getWeekRangeText(long weekStart, long weekEnd) {
-        return getWeekRangeText(new LocalDate(weekStart), new LocalDate(weekEnd));
+        return getWeekRangeText(DateUtils.fromMillis(weekStart), DateUtils.fromMillis(weekEnd));
     }
 
     private String getWeekRangeText(LocalDate weekStart, LocalDate weekEnd) {
-        if (weekStart.getMonthOfYear() == weekEnd.getMonthOfYear()) {
-            return weekStart.getDayOfMonth() + " - " + weekEnd.getDayOfMonth() + " " + weekEnd.monthOfYear().getAsShortText();
+        if (weekStart.getMonth().equals(weekEnd.getMonth())) {
+            return weekStart.getDayOfMonth() + " - " + weekEnd.getDayOfMonth() + " " + getMonthShortName(weekEnd);
         } else {
-            return weekStart.getDayOfMonth() + " " + weekStart.monthOfYear().getAsShortText() + " - " + weekEnd.getDayOfMonth() + " " + weekEnd.monthOfYear().getAsShortText();
+            return weekStart.getDayOfMonth() + " " + getMonthShortName(weekStart) + " - " + weekEnd.getDayOfMonth() + " " + getMonthShortName(weekEnd);
         }
     }
 

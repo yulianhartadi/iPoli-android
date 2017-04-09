@@ -6,8 +6,6 @@ import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
 import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.WeekDay;
 
-import java.util.Calendar;
-
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -15,7 +13,6 @@ import io.ipoli.android.quest.data.RepeatingQuest;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -119,11 +116,5 @@ public class RepeatingQuestParserTest {
         Recur recur = new Recur(Recur.MONTHLY, null);
         recur.getMonthDayList().add(21);
         assertThat(rq.getRecurrence().getRrule(), is(recur.toString()));
-    }
-
-    private void assertStartDate(RepeatingQuest rq, Calendar expected) {
-        Calendar dueC = Calendar.getInstance();
-        dueC.setTime(rq.getRecurrence().getDtstartDate());
-        assertTrue(expected.get(Calendar.DAY_OF_YEAR) == dueC.get(Calendar.DAY_OF_YEAR));
     }
 }

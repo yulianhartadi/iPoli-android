@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.util.Date;
 import java.util.Set;
@@ -61,7 +61,7 @@ public class BaseActivity extends AppCompatActivity {
             boolean isCompletedForToday = todayUtc.equals(lastCompleted);
 
             Set<Integer> challengeDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
-            int currentDayOfWeek = LocalDate.now().getDayOfWeek();
+            int currentDayOfWeek = LocalDate.now().getDayOfWeek().getValue();
             if (isCompletedForToday || !challengeDays.contains(currentDayOfWeek)) {
                 menu.findItem(R.id.action_pick_daily_challenge_quests).setVisible(false);
             }

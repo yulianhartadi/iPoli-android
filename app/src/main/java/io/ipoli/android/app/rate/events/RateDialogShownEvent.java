@@ -1,6 +1,7 @@
 package io.ipoli.android.app.rate.events;
 
-import org.joda.time.LocalDateTime;
+
+import org.threeten.bp.LocalDateTime;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -13,6 +14,6 @@ public class RateDialogShownEvent {
 
     public RateDialogShownEvent(int appRun) {
         this.appRun = appRun;
-        this.dateTime = new LocalDateTime();
+        this.dateTime = LocalDateTime.now();
     }
 }

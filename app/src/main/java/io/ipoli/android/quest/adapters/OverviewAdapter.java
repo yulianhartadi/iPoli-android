@@ -17,11 +17,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -318,7 +317,6 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     return true;
                 case R.id.delete_quest:
                     eventBus.post(new DeleteQuestRequestEvent(quest, EventSource.OVERVIEW));
-                    Toast.makeText(context, R.string.quest_deleted, Toast.LENGTH_SHORT).show();
                     return true;
             }
             return false;

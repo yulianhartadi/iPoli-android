@@ -1,6 +1,7 @@
 package io.ipoli.android.challenge.events;
 
-import org.joda.time.LocalDate;
+
+import org.threeten.bp.LocalDate;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

@@ -32,10 +32,9 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.Utils;
 import com.squareup.otto.Bus;
 
-import org.joda.time.LocalDate;
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,6 +52,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.player.GrowthException;
 import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
@@ -130,7 +130,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private void showCharts(int dayCount) {
-        questPersistenceService.findAllCompletedNonAllDayBetween(new LocalDate().minusDays(dayCount - 1), new LocalDate(), quests -> {
+        questPersistenceService.findAllCompletedNonAllDayBetween(LocalDate.now().minusDays(dayCount - 1), LocalDate.now(), quests -> {
             if (quests.isEmpty()) {
                 chartContainer.setVisibility(View.GONE);
                 emptyViewContainer.setVisibility(View.VISIBLE);
@@ -211,23 +211,23 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         for (int i = 0; i < dayCount; i++) {
             xVals.add(String.valueOf(i + 1));
         }
-        TreeMap<Date, List<Quest>> groupedByDate = new TreeMap<>();
+        TreeMap<LocalDate, List<Quest>> groupedByDate = new TreeMap<>();
 
-        for (LocalDate date = new LocalDate().minusDays(dayCount - 1); date.isBefore(new LocalDate().plusDays(1)); date = date.plusDays(1)) {
-            groupedByDate.put(date.toDate(), new ArrayList<>());
+        for (LocalDate date = LocalDate.now().minusDays(dayCount - 1); date.isBefore(LocalDate.now().plusDays(1)); date = date.plusDays(1)) {
+            groupedByDate.put(date, new ArrayList<>());
         }
 
         for (Quest q : quests) {
-            Date dateKey = new LocalDate(q.getCompletedAtDate().getTime()).toDate();
+            LocalDate dateKey = q.getCompletedAtDate();
             try {
                 groupedByDate.get(dateKey).add(q);
             } catch (Exception e) {
                 StringBuilder sb = new StringBuilder();
-                sb.append("CompletedAt date with time ").append(q.getCompletedAtDate().getTime())
+                sb.append("CompletedAt date with time ").append(DateUtils.toMillis(q.getCompletedAtDate()))
                         .append(" of quest with id ").append(q.getId())
                         .append(" was not present in generated dates for ").append(dayCount).append(" days: ");
-                for(Date d : groupedByDate.keySet()) {
-                    sb.append(d.getTime()).append(" ");
+                for(LocalDate d : groupedByDate.keySet()) {
+                    sb.append(DateUtils.toMillis(d)).append(" ");
                 }
                 eventBus.post(new GrowthException(sb.toString(), e));
             }
@@ -236,7 +236,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         ArrayList<BarEntry> yVals1 = new ArrayList<>();
 
         int index = 0;
-        for (Map.Entry<Date, List<Quest>> pair : groupedByDate.entrySet()) {
+        for (Map.Entry<LocalDate, List<Quest>> pair : groupedByDate.entrySet()) {
             int total = 0;
             for (Quest q : pair.getValue()) {
                 total += q.getExperience();

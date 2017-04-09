@@ -4,8 +4,11 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
+import org.threeten.bp.DayOfWeek;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.Month;
+import org.threeten.bp.temporal.TemporalAdjusters;
 
-import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,7 +18,7 @@ import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.data.Quest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -28,11 +31,13 @@ public class QuestParserTest {
 
     private static QuestParser questParser;
     private static PrettyTimeParser parser;
+    private static LocalDate today;
 
     @BeforeClass
     public static void setUp() {
         parser = new PrettyTimeParser();
         questParser = new QuestParser(parser);
+        today = LocalDate.now();
     }
 
     private Quest parse(String text) {
@@ -158,17 +163,14 @@ public class QuestParserTest {
     public void addQuestDueToday() {
         Quest q = parse("Workout today");
         assertThat(q.getName(), is("Workout"));
-        Calendar expected = Calendar.getInstance();
-        assertDueDate(q, expected);
+        assertDueDate(q, today);
     }
 
     @Test
     public void addQuestDueTomorrow() {
         Quest q = parse("Workout todays tomorrow");
         assertThat(q.getName(), is("Workout todays"));
-        Calendar expected = Calendar.getInstance();
-        expected.add(Calendar.DAY_OF_YEAR, 1);
-        assertDueDate(q, expected);
+        assertDueDate(q, today.plusDays(1));
     }
 
     @Test
@@ -176,10 +178,7 @@ public class QuestParserTest {
     public void addQuestDue21stNextMonth() {
         Quest q = parse("Workout on 21st next month");
         assertThat(q.getName(), is("Workout"));
-        Calendar expected = Calendar.getInstance();
-        expected.add(Calendar.MONTH, 1);
-        expected.set(Calendar.DAY_OF_MONTH, 21);
-        assertDueDate(q, expected);
+        assertDueDate(q, today.plusMonths(1).withDayOfMonth(21));
     }
 
     @Test
@@ -187,108 +186,85 @@ public class QuestParserTest {
     public void addQuestDue21stOfJuly() {
         Quest q = parse("Workout on 21st of July");
         assertThat(q.getName(), is("Workout"));
-        Calendar expected = Calendar.getInstance();
-        expected.set(Calendar.MONTH, Calendar.JULY);
-        expected.set(Calendar.DAY_OF_MONTH, 21);
-        assertDueDate(q, expected);
+        assertDueDate(q, today.with(Month.JULY).withDayOfMonth(21));
     }
 
     @Test
     public void addQuestDue15Feb() {
         Quest q = parse("Workout on 15 Feb");
         assertThat(q.getName(), is("Workout"));
-        Calendar expected = Calendar.getInstance();
-        expected.set(Calendar.MONTH, Calendar.FEBRUARY);
-        expected.set(Calendar.DAY_OF_MONTH, 15);
-        assertDueDate(q, expected);
+        assertDueDate(q, today.with(Month.FEBRUARY).withDayOfMonth(15));
     }
 
     @Test
     public void addQuestForTomorrow() {
         Quest q = parse("Workout tomorrow");
         assertThat(q.getName(), is("Workout"));
-        Calendar tomorrow = Calendar.getInstance();
-        tomorrow.add(Calendar.DAY_OF_YEAR, 1);
-        assertDueDate(q, tomorrow);
+        assertDueDate(q, today.plusDays(1));
     }
 
     @Test
     public void addQuestAfter3Days() {
         Quest q = parse("Workout after 3 days");
         assertThat(q.getName(), is("Workout"));
-        Calendar tomorrow = Calendar.getInstance();
-        tomorrow.add(Calendar.DAY_OF_YEAR, 3);
-        assertDueDate(q, tomorrow);
+        assertDueDate(q, today.plusDays(3));
     }
 
     @Test
     public void addQuestInTwoMonths() {
         Quest q = parse("Workout in two month");
         assertThat(q.getName(), is("Workout"));
-        Calendar expected = Calendar.getInstance();
-        expected.add(Calendar.MONTH, 2);
-        assertDueDate(q, expected);
+        assertDueDate(q, today.plusMonths(2));
     }
 
-//    @Test
-//    public void addQuestNextFriday() {
-//        Quest q = parseQuest("Workout next Friday");
-//        assertThat(q.getName(), is("Workout"));
-//        Calendar expected = getNextDayOfWeek(Calendar.FRIDAY);
-//        assertDueDate(q, expected);
-//    }
+    @Test
+    @Ignore("PrettyTime not parsing next date properly")
+    public void addQuestNextFriday() {
+        Quest q = parse("Workout next Friday");
+        assertThat(q.getName(), is("Workout"));
+        assertDueDate(q, today.with(TemporalAdjusters.nextOrSame(DayOfWeek.FRIDAY)));
+    }
 
     @Test
     public void addQuestThisFriday() {
         Quest q = parse("Workout this Friday");
         assertThat(q.getName(), is("Workout"));
-        Calendar expected = getNextDayOfWeek(Calendar.FRIDAY);
-        assertDueDate(q, expected);
+        assertDueDate(q, today.with(TemporalAdjusters.nextOrSame(DayOfWeek.FRIDAY)));
     }
 
     @Test
     public void addQuest3DaysFromNow() {
         Quest q = parse("Workout 3 days from now");
         assertThat(q.getName(), is("Workout"));
-        Calendar tomorrow = Calendar.getInstance();
-        tomorrow.add(Calendar.DAY_OF_YEAR, 3);
-        assertDueDate(q, tomorrow);
+        assertDueDate(q, today.plusDays(3));
     }
 
     @Test
     public void addQuestThreeDayFromNow() {
         Quest q = parse("Workout three day from now");
         assertThat(q.getName(), is("Workout"));
-        Calendar tomorrow = Calendar.getInstance();
-        tomorrow.add(Calendar.DAY_OF_YEAR, 3);
-        assertDueDate(q, tomorrow);
+        assertDueDate(q, today.plusDays(3));
     }
 
     @Test
     public void addQuest1MonthFromNow() {
         Quest q = parse("Workout 1 month from now");
         assertThat(q.getName(), is("Workout"));
-        Calendar tomorrow = Calendar.getInstance();
-        tomorrow.add(Calendar.MONTH, 1);
-        assertDueDate(q, tomorrow);
+        assertDueDate(q, today.plusMonths(1));
     }
 
     @Test
     public void addQuestFourYearsFromNow() {
         Quest q = parse("Workout 4 years from now");
         assertThat(q.getName(), is("Workout"));
-        Calendar tomorrow = Calendar.getInstance();
-        tomorrow.add(Calendar.YEAR, 4);
-        assertDueDate(q, tomorrow);
+        assertDueDate(q, today.plusYears(4));
     }
 
     @Test
     public void addQuestOn21st() {
         Quest q = parse("Workout on 21st");
         assertThat(q.getName(), is("Workout"));
-        Calendar tomorrow = Calendar.getInstance();
-        tomorrow.set(Calendar.DAY_OF_MONTH, 21);
-        assertDueDate(q, tomorrow);
+        assertDueDate(q, today.withDayOfMonth(21));
     }
 
     @Test
@@ -318,23 +294,7 @@ public class QuestParserTest {
         assertTrue(m.hitEnd());
     }
 
-    public Calendar getNextDayOfWeek(int dayOfWeek) {
-        Calendar today = Calendar.getInstance();
-        int currDayOfWeek = today.get(Calendar.DAY_OF_WEEK);
-        int daysUntilNextWeekOfDay = 7;
-        if (currDayOfWeek > dayOfWeek) {
-            daysUntilNextWeekOfDay = 7 - currDayOfWeek + 1;
-        } else if (currDayOfWeek < dayOfWeek) {
-            daysUntilNextWeekOfDay = dayOfWeek - currDayOfWeek;
-        }
-        Calendar nextDayOfWeek = (Calendar) today.clone();
-        nextDayOfWeek.add(Calendar.DAY_OF_YEAR, daysUntilNextWeekOfDay);
-        return nextDayOfWeek;
-    }
-
-    private void assertDueDate(Quest q, Calendar expected) {
-        Calendar dueC = Calendar.getInstance();
-        dueC.setTime(q.getEndDate());
-        assertTrue(expected.get(Calendar.DAY_OF_YEAR) == dueC.get(Calendar.DAY_OF_YEAR));
+    private void assertDueDate(Quest q, LocalDate expected) {
+        assertTrue(q.getEndDate().isEqual(expected));
     }
 }
