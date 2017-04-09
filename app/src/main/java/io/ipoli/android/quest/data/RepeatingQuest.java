@@ -4,7 +4,8 @@ import android.support.v4.util.Pair;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.Recur;
+
 import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.temporal.TemporalAdjusters;

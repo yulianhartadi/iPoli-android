@@ -24,8 +24,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.otto.Bus;
 
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.WeekDay;
+import net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.WeekDay;
+
 import org.threeten.bp.LocalDate;
 
 import java.io.IOException;

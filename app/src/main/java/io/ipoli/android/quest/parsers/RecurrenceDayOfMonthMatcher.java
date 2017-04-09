@@ -1,6 +1,6 @@
 package io.ipoli.android.quest.parsers;
 
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.Recur;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

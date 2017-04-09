@@ -1,6 +1,5 @@
 package io.ipoli.android.quest.parsers;
 
-import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.temporal.TemporalAdjusters;
 
@@ -10,6 +9,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.ipoli.android.app.parsers.DateTimeParser;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.suggestions.MatcherType;
 import io.ipoli.android.quest.suggestions.TextEntityType;
@@ -37,9 +37,9 @@ public class EndDateMatcher extends BaseMatcher<LocalDate> {
     };
 
     private static final Pattern dueThisMonthPattern = Pattern.compile(DUE_THIS_MONTH_PATTERN, Pattern.CASE_INSENSITIVE);
-    private final PrettyTimeParser parser;
+    private final DateTimeParser parser;
 
-    public EndDateMatcher(PrettyTimeParser parser) {
+    public EndDateMatcher(DateTimeParser parser) {
         super(new DueDateSuggestionsProvider());
         this.parser = parser;
     }

@@ -15,7 +15,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.Recur;
+
 import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
