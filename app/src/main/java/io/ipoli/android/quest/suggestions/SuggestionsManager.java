@@ -2,11 +2,9 @@ package io.ipoli.android.quest.suggestions;
 
 import android.support.annotation.NonNull;
 
-import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
-import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import io.ipoli.android.app.parsers.DateTimeParser;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.parsers.DurationMatcher;
 import io.ipoli.android.quest.parsers.EndDateMatcher;
@@ -50,15 +49,15 @@ public class SuggestionsManager {
 
     private Set<TextEntityType> excludedTypes = new HashSet<>();
 
-    public static SuggestionsManager createForQuest(PrettyTimeParser parser, boolean use24HourFormat) {
+    public static SuggestionsManager createForQuest(DateTimeParser parser, boolean use24HourFormat) {
         return new SuggestionsManager(parser, true, use24HourFormat);
     }
 
-    public static SuggestionsManager createForRepeatingQuest(PrettyTimeParser parser, boolean use24HourFormat) {
+    public static SuggestionsManager createForRepeatingQuest(DateTimeParser parser, boolean use24HourFormat) {
         return new SuggestionsManager(parser, false, use24HourFormat);
     }
 
-    private SuggestionsManager(PrettyTimeParser parser, boolean disableRepeating, boolean use24HourFormat) {
+    private SuggestionsManager(DateTimeParser parser, boolean disableRepeating, boolean use24HourFormat) {
         Set<TextEntityType> disabledEntityTypes = new HashSet<>();
         if(disableRepeating) {
             disabledEntityTypes.add(TextEntityType.RECURRENT);

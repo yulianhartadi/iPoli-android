@@ -3,13 +3,14 @@ package io.ipoli.android.quest.schedulers;
 import android.support.annotation.NonNull;
 import android.support.v4.util.Pair;
 
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Date;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.DateList;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.DateTime;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.WeekDay;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.WeekDayList;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.parameter.Value;
+import net.fortuna.ical4j.model.Date;
+import net.fortuna.ical4j.model.DateList;
+import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.WeekDay;
+import net.fortuna.ical4j.model.WeekDayList;
+import net.fortuna.ical4j.model.parameter.Value;
+
 import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.TextStyle;

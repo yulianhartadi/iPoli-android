@@ -2,11 +2,12 @@ package io.ipoli.android.quest;
 
 import android.support.v4.util.Pair;
 
-import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
-import org.ocpsoft.prettytime.shade.net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.Recur;
+
 import org.threeten.bp.LocalDate;
 
 import io.ipoli.android.Constants;
+import io.ipoli.android.app.parsers.DateTimeParser;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -49,8 +50,7 @@ public class QuestParser {
     private final RecurrenceDayOfMonthMatcher dayOfMonthMatcher = new RecurrenceDayOfMonthMatcher();
     private final TimesAWeekMatcher timesAWeekMatcher = new TimesAWeekMatcher();
     private final TimesAMonthMatcher timesAMonthMatcher = new TimesAMonthMatcher();
-
-    public QuestParser(PrettyTimeParser timeParser) {
+    public QuestParser(DateTimeParser timeParser) {
         startTimeMatcher = new StartTimeMatcher(timeParser);
         endDateMatcher = new EndDateMatcher(timeParser);
     }
