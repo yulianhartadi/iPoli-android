@@ -337,12 +337,12 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         this.category = category;
     }
 
-    public static Date getStartDateTime(Quest quest) {
+    public static Long getStartDateTimeMillis(Quest quest) {
         if (quest.getStartMinute() == null || quest.getScheduled() == null) {
             return null;
         }
         Time startTime = Time.of(quest.getStartMinute());
-        return new Date(quest.getScheduled() + startTime.toMillisOfDay());
+        return DateUtils.toStartOfDay(quest.getScheduledDate()).getTime() + startTime.toMillisOfDay();
     }
 
     @JsonIgnore
