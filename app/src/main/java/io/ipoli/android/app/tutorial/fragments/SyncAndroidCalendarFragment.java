@@ -15,6 +15,7 @@ import com.github.paolorotolo.appintro.ISlideBackgroundColorHolder;
 import com.squareup.otto.Bus;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -26,6 +27,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.AndroidCalendarEventParser;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -79,7 +81,7 @@ public class SyncAndroidCalendarFragment extends Fragment implements ISlideBackg
     private void getCalendars() {
         AndroidCalendarsPickerFragment fragment = AndroidCalendarsPickerFragment.newInstance(R.string.fragment_calendar_title, new AndroidCalendarsPickerFragment.OnCalendarsPickedListener() {
             @Override
-            public void onCalendarsPicked() {
+            public void onCalendarsPicked(Map<Long, Category> selectedCalendars) {
 
             }
         });

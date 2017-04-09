@@ -23,7 +23,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -35,15 +37,14 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.data.Category;
+import me.everything.providers.android.calendar.Calendar;
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
- * on 6/17/16.
+ * Created by Polina Zhelyazkova <polina@ipoli.io>
  */
 public class AndroidCalendarsPickerFragment extends DialogFragment {
 
     private static final String TAG = "android-calendars-picker-dialog";
-    private static final String SELECTED_CALENDARS = "selected_calendars";
     private static final String TITLE = "title";
 
     @Inject
@@ -54,36 +55,34 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
 
     private OnCalendarsPickedListener calendarsPickedListener;
 
-    //    private List<CalendarViewModel> preSelectedCalendars;
-    private AlertDialog alertDialog;
+    private Map<Long, Category> preSelectedCalendars;
 
     @StringRes
     private int title;
     private Unbinder unbinder;
 
     public static AndroidCalendarsPickerFragment newInstance(@StringRes int title, OnCalendarsPickedListener listener) {
-        return newInstance(title, new ArrayList<>(), listener);
+        return newInstance(title, new HashMap<>(), listener);
     }
 
-    public static AndroidCalendarsPickerFragment newInstance(@StringRes int title, List selectedCalendars, OnCalendarsPickedListener listener) {
+    public static AndroidCalendarsPickerFragment newInstance(@StringRes int title, Map<Long, Category> selectedCalendars, OnCalendarsPickedListener listener) {
         AndroidCalendarsPickerFragment fragment = new AndroidCalendarsPickerFragment();
         Bundle args = new Bundle();
-//        args.putStringArrayList(SELECTED_CALENDARS, selectedCalendars);
         args.putInt(TITLE, title);
         fragment.setArguments(args);
+        fragment.preSelectedCalendars = selectedCalendars;
         fragment.calendarsPickedListener = listener;
         return fragment;
     }
 
     public interface OnCalendarsPickedListener {
-        void onCalendarsPicked();
+        void onCalendarsPicked(Map<Long, Category> selectedCalendars);
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         App.getAppComponent(getContext()).inject(this);
-//        preSelectedCalendars = getArguments().getStringArrayList(SELECTED_CALENDARS);
         title = getArguments().getInt(TITLE);
     }
 
@@ -99,10 +98,16 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
         viewModels.add(new CalendarViewModel(2L, "Vihar calendar", Category.PERSONAL, false));
         viewModels.add(new CalendarViewModel(3L, "Holidays", Category.PERSONAL, false));
         viewModels.add(new CalendarViewModel(4L, "Birthdays", Category.PERSONAL, false));
-//        List<Calendar> calendars = syncAndroidCalendarProvider.getAndroidCalendars();
-//        for (Calendar c : calendars) {
-//            viewModels.add(new CalendarViewModel(c.id, c.displayName, Category.PERSONAL, false));
-//        }
+        List<Calendar> calendars = syncAndroidCalendarProvider.getAndroidCalendars();
+        for (Calendar c : calendars) {
+            boolean selected = false;
+            Category category = Category.PERSONAL;
+            if (preSelectedCalendars.containsKey(c.id)) {
+                selected = true;
+                category = preSelectedCalendars.get(c.id);
+            }
+            viewModels.add(new CalendarViewModel(c.id, c.displayName, category, selected));
+        }
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -115,20 +120,17 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
                 .setView(view)
                 .setTitle(title)
                 .setPositiveButton(R.string.help_dialog_ok, (dialog, which) -> {
-//                    SparseBooleanArray selectedPositions = alertDialog.getListView().getCheckedItemPositions();
-//                    List<TimeOfDay> selectedTimes = new ArrayList<>();
-//                    for (int i = 0; i < alertDialog.getListView().getAdapter().getCount(); i++) {
-//                        if (selectedPositions.get(i)) {
-//                            selectedTimes.add(TimeOfDay.values()[i]);
-//                        }
-//                    }
-//                    calendarsPickedListener.onTimesOfDayPicked(selectedTimes);
+                    List<CalendarViewModel> selectedCalendarViewModels = adapter.getSelectedCalendars();
+                    Map<Long, Category> selectedCalendars = new HashMap<>();
+                    for (CalendarViewModel vm : selectedCalendarViewModels) {
+                        selectedCalendars.put(vm.id, vm.category);
+                    }
+                    calendarsPickedListener.onCalendarsPicked(selectedCalendars);
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
 
                 });
-        alertDialog = builder.create();
-        return alertDialog;
+        return builder.create();
     }
 
     @Override
@@ -190,7 +192,7 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
             holder.categories.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+                    vm.category = Category.values()[position];
                 }
 
                 @Override
@@ -220,6 +222,16 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
             return viewModels.size();
         }
 
+        public List<CalendarViewModel> getSelectedCalendars() {
+            List<CalendarViewModel> selectedCalendars = new ArrayList<>();
+            for (CalendarViewModel vm : viewModels) {
+                if (vm.isSelected) {
+                    selectedCalendars.add(vm);
+                }
+            }
+            return selectedCalendars;
+        }
+
         class ViewHolder extends RecyclerView.ViewHolder {
             @BindView(R.id.calendar_check)
             CheckBox check;
@@ -243,7 +255,6 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
         private final Category[] categories;
 
 
-
         public CategoryAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull Category[] categories) {
             super(context, resource, categories);
             this.categories = categories;
@@ -257,7 +268,7 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
 
         @Override
         public View getDropDownView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-           return populateView(categories[position], convertView, true);
+            return populateView(categories[position], convertView, true);
         }
 
         @NonNull
@@ -269,7 +280,7 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
             }
 
             TextView name = (TextView) view.findViewById(R.id.category_name);
-            if(isNameVisible) {
+            if (isNameVisible) {
                 name.setVisibility(View.VISIBLE);
                 name.setText(StringUtils.capitalize(category.name()));
             } else {
