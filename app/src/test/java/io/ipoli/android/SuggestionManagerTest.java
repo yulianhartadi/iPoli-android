@@ -3,11 +3,11 @@ package io.ipoli.android;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
 import java.util.List;
 import java.util.Set;
 
+import io.ipoli.android.app.parsers.DateTimeParser;
 import io.ipoli.android.quest.suggestions.MatcherType;
 import io.ipoli.android.quest.suggestions.ParsedPart;
 import io.ipoli.android.quest.suggestions.SuggestionsManager;
@@ -25,12 +25,12 @@ import static org.junit.Assert.assertTrue;
  * on 4/4/16.
  */
 public class SuggestionManagerTest {
-    private static PrettyTimeParser parser;
+    private static DateTimeParser parser;
     private static SuggestionsManager sm;
 
     @BeforeClass
     public static void setUp() {
-        parser = new PrettyTimeParser();
+        parser = new DateTimeParser();
     }
 
     @Before
