@@ -9,7 +9,7 @@ import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.modules.AnalyticsModule;
-import io.ipoli.android.app.modules.AndroidCalendarParserModule;
+import io.ipoli.android.app.modules.AndroidCalendarModule;
 import io.ipoli.android.app.modules.ApiModule;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.BusModule;
@@ -29,6 +29,7 @@ import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.tutorial.fragments.PickTutorialQuestsFragment;
 import io.ipoli.android.app.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
 import io.ipoli.android.app.tutorial.fragments.SyncAndroidCalendarFragment;
+import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
 import io.ipoli.android.challenge.activities.AddChallengeActivity;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
@@ -98,7 +99,7 @@ import io.ipoli.android.shop.fragments.CoinsStoreFragment;
                 TimeParserModule.class,
                 ApiModule.class,
                 UrlProviderModule.class,
-                AndroidCalendarParserModule.class
+                AndroidCalendarModule.class
         }
 )
 public interface AppComponent {
@@ -230,5 +231,7 @@ public interface AppComponent {
     void inject(SyncAndroidCalendarFragment syncAndroidCalendarFragment);
 
     void inject(AndroidCalendarEventChangedReceiver androidCalendarEventChangedReceiver);
+
+    void inject(AndroidCalendarsPickerFragment androidCalendarsPickerFragment);
 }
 

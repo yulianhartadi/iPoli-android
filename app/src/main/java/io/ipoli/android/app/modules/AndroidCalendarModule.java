@@ -1,8 +1,13 @@
 package io.ipoli.android.app.modules;
 
+import android.content.Context;
+
+import javax.inject.Singleton;
+
 import dagger.Module;
 import dagger.Provides;
 import io.ipoli.android.app.AndroidCalendarEventParser;
+import io.ipoli.android.app.SyncAndroidCalendarProvider;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 
@@ -12,10 +17,17 @@ import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
  */
 
 @Module
-public class AndroidCalendarParserModule {
+public class AndroidCalendarModule {
 
     @Provides
+    @Singleton
     public AndroidCalendarEventParser providedAndroidCalendarEventParser(ExperienceRewardGenerator experienceRewardGenerator, CoinsRewardGenerator coinsRewardGenerator) {
         return new AndroidCalendarEventParser(experienceRewardGenerator, coinsRewardGenerator);
+    }
+
+    @Provides
+    @Singleton
+    public SyncAndroidCalendarProvider provideSyncAndroidCalendarProvider(Context context) {
+        return new SyncAndroidCalendarProvider(context);
     }
 }

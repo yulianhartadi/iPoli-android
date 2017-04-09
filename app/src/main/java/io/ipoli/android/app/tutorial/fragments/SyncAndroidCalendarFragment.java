@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +14,6 @@ import android.widget.CheckBox;
 import com.github.paolorotolo.appintro.ISlideBackgroundColorHolder;
 import com.squareup.otto.Bus;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -28,13 +25,9 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.AndroidCalendarEventParser;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.SyncAndroidCalendarProvider;
-import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
-import me.everything.providers.android.calendar.Calendar;
-import me.everything.providers.android.calendar.Event;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -84,28 +77,35 @@ public class SyncAndroidCalendarFragment extends Fragment implements ISlideBackg
     }
 
     private void getCalendars() {
-        SyncAndroidCalendarProvider calendarProvider = new SyncAndroidCalendarProvider(getContext());
-        List<Calendar> calendars = calendarProvider.getAndroidCalendars();
-        List<Long> chosenCalendarIds = new ArrayList<>();
-        for (Calendar c : calendars) {
-            if (c.syncEvents == 1) {
-                Log.d("AAA", c.displayName);
-                chosenCalendarIds.add(c.id);
+        AndroidCalendarsPickerFragment fragment = AndroidCalendarsPickerFragment.newInstance(R.string.fragment_calendar_title, new AndroidCalendarsPickerFragment.OnCalendarsPickedListener() {
+            @Override
+            public void onCalendarsPicked() {
+
             }
-        }
-
-        List<Quest> quests = new ArrayList<>();
-        List<RepeatingQuest> repeatingQuests = new ArrayList<>();
-
-        for (long id : chosenCalendarIds) {
-            List<Event> events = calendarProvider.getCalendarEvents(id);
-            Pair<List<Quest>, List<RepeatingQuest>> result = eventParser.parse(events);
-            quests.addAll(result.first);
-            repeatingQuests.addAll(result.second);
-        }
-
-        Log.d("AAA", "single " + quests.size());
-        Log.d("AAA", "repeating " + repeatingQuests.size());
+        });
+        fragment.show(getFragmentManager());
+//        SyncAndroidCalendarProvider calendarProvider = new SyncAndroidCalendarProvider(getContext());
+//        List<Calendar> calendars = calendarProvider.getAndroidCalendars();
+//        List<Long> chosenCalendarIds = new ArrayList<>();
+//        for (Calendar c : calendars) {
+//            if (c.syncEvents == 1) {
+//                Log.d("AAA", c.displayName);
+//                chosenCalendarIds.add(c.id);
+//            }
+//        }
+//
+//        List<Quest> quests = new ArrayList<>();
+//        List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+//
+//        for (long id : chosenCalendarIds) {
+//            List<Event> events = calendarProvider.getCalendarEvents(id);
+//            Pair<List<Quest>, List<RepeatingQuest>> result = eventParser.parse(events);
+//            quests.addAll(result.first);
+//            repeatingQuests.addAll(result.second);
+//        }
+//
+//        Log.d("AAA", "single " + quests.size());
+//        Log.d("AAA", "repeating " + repeatingQuests.size());
     }
 
     @Override
