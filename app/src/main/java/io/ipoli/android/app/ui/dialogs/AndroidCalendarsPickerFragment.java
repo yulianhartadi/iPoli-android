@@ -3,21 +3,22 @@ package io.ipoli.android.app.ui.dialogs;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -31,8 +32,8 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.SyncAndroidCalendarProvider;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.data.Category;
-import me.everything.providers.android.calendar.Calendar;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -50,7 +51,7 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
     @BindView(R.id.calendar_list)
     RecyclerView calendarList;
 
-    private OnCalendarsPickedListener calednarsPickedListener;
+    private OnCalendarsPickedListener calendarsPickedListener;
 
     //    private List<CalendarViewModel> preSelectedCalendars;
     private AlertDialog alertDialog;
@@ -69,7 +70,7 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
 //        args.putStringArrayList(SELECTED_CALENDARS, selectedCalendars);
         args.putInt(TITLE, title);
         fragment.setArguments(args);
-        fragment.calednarsPickedListener = listener;
+        fragment.calendarsPickedListener = listener;
         return fragment;
     }
 
@@ -92,16 +93,20 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_calendar_picker, null);
         unbinder = ButterKnife.bind(this, view);
 
-        List<Calendar> calendars = syncAndroidCalendarProvider.getAndroidCalendars();
         List<CalendarViewModel> viewModels = new ArrayList<>();
-        for (Calendar c : calendars) {
-            viewModels.add(new CalendarViewModel(c.id, c.displayName, Category.PERSONAL, false));
-        }
+        viewModels.add(new CalendarViewModel(1L, "Polina Zhelyazkova", Category.PERSONAL, true));
+        viewModels.add(new CalendarViewModel(2L, "Vihar calendar", Category.PERSONAL, false));
+        viewModels.add(new CalendarViewModel(3L, "Holidays", Category.PERSONAL, false));
+        viewModels.add(new CalendarViewModel(4L, "Birthdays", Category.PERSONAL, false));
+//        List<Calendar> calendars = syncAndroidCalendarProvider.getAndroidCalendars();
+//        for (Calendar c : calendars) {
+//            viewModels.add(new CalendarViewModel(c.id, c.displayName, Category.PERSONAL, false));
+//        }
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         calendarList.setLayoutManager(layoutManager);
-        CalendarAdapter adapter = new CalendarAdapter(getContext(), viewModels);
+        CalendarAdapter adapter = new CalendarAdapter(viewModels);
         calendarList.setAdapter(adapter);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -116,7 +121,7 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
 //                            selectedTimes.add(TimeOfDay.values()[i]);
 //                        }
 //                    }
-//                    calednarsPickedListener.onTimesOfDayPicked(selectedTimes);
+//                    calendarsPickedListener.onTimesOfDayPicked(selectedTimes);
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
 
@@ -158,11 +163,9 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
     }
 
     public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHolder> {
-        private Context context;
         private List<CalendarViewModel> viewModels;
 
-        public CalendarAdapter(Context context, List<CalendarViewModel> viewModels) {
-            this.context = context;
+        public CalendarAdapter(List<CalendarViewModel> viewModels) {
             this.viewModels = viewModels;
         }
 
@@ -176,12 +179,25 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
         public void onBindViewHolder(CalendarAdapter.ViewHolder holder, int position) {
             final CalendarViewModel vm = viewModels.get(holder.getAdapterPosition());
 
-            Category category = vm.category;
-            GradientDrawable drawable = (GradientDrawable) holder.categoryIndicatorBackground.getBackground();
-            drawable.setColor(ContextCompat.getColor(context, category.color500));
-            holder.categoryIndicatorImage.setImageResource(category.whiteImage);
-
             holder.name.setText(vm.name);
+
+            Category category = vm.category;
+
+            CategoryAdapter adapter = new CategoryAdapter(getContext(), Category.values());
+//            adapter.setDropDownViewResource(R.layout.growth_spinner_dropdown_item);
+            holder.categories.setAdapter(adapter);
+            holder.categories.setSelection(category.ordinal(), false);
+            holder.categories.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
 
             holder.check.setOnCheckedChangeListener(null);
             holder.check.setChecked(vm.isSelected);
@@ -211,16 +227,61 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
             @BindView(R.id.calendar_name)
             TextView name;
 
-            @BindView(R.id.calendar_category_indicator_background)
-            View categoryIndicatorBackground;
-
-            @BindView(R.id.calendar_category_indicator_image)
-            ImageView categoryIndicatorImage;
+            @BindView(R.id.calendar_category_container)
+            Spinner categories;
 
             public ViewHolder(View v) {
                 super(v);
                 ButterKnife.bind(this, v);
             }
+        }
+    }
+
+    private class CategoryAdapter extends BaseAdapter {
+
+        @NonNull
+        private final Context context;
+        @NonNull
+        private final Category[] categories;
+
+        public CategoryAdapter(@NonNull Context context, @NonNull Category[] categories) {
+            this.context = context;
+            this.categories = categories;
+        }
+
+        @Override
+        public int getCount() {
+            return categories.length;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return categories[position];
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            View view = convertView;
+            if (view == null) {
+                LayoutInflater layoutInflater = LayoutInflater.from(context);
+                view = layoutInflater.inflate(R.layout.category_spinner_item, null);
+            }
+
+            Category category = categories[position];
+
+            TextView name = (TextView) view.findViewById(R.id.category_name);
+            ImageView image = (ImageView) view.findViewById(R.id.category_image);
+
+            name.setText(StringUtils.capitalize(category.name()));
+            image.setImageResource(category.colorfulImage);
+
+            return view;
         }
     }
 

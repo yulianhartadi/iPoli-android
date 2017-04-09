@@ -6,28 +6,13 @@
     android:clickable="true"
     android:focusable="true">
 
-    <FrameLayout
-        android:id="@+id/calendar_category_container"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentStart="true"
+    <CheckBox
+        android:id="@+id/calendar_check"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginStart="16dp">
-
-        <View
-            android:id="@+id/calendar_category_indicator_background"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/ic_context_progress_indicator" />
-
-        <ImageView
-            android:id="@+id/calendar_category_indicator_image"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center"
-            android:scaleType="fitXY" />
-    </FrameLayout>
-
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp" />
 
     <TextView
         android:id="@+id/calendar_name"
@@ -36,20 +21,19 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_marginStart="72dp"
-        android:layout_toStartOf="@+id/calendar_check"
+        android:layout_toStartOf="@+id/calendar_category_container"
         android:ellipsize="end"
         android:maxLines="2"
         android:textColor="@color/md_dark_text_87"
         android:textSize="16sp" />
-    
-    <CheckBox
-        android:id="@id/calendar_check"
+
+
+    <Spinner
+        android:id="@+id/calendar_category_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp" />
-
-
 </RelativeLayout>
