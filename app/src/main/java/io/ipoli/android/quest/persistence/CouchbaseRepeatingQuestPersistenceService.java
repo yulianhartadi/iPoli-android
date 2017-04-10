@@ -21,6 +21,7 @@ import java.util.Map;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.RepeatingQuest;

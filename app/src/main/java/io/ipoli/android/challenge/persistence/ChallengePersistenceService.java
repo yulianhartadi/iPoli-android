@@ -9,7 +9,7 @@ import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.persistence.OnDataChangedListener;
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

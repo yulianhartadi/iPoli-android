@@ -35,7 +35,7 @@ import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.quest.adapters.InboxAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
-import io.ipoli.android.quest.persistence.OnDataChangedListener;
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 public class InboxFragment extends BaseFragment implements OnDataChangedListener<List<Quest>> {

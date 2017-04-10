@@ -186,7 +186,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         Toast.makeText(this, R.string.sign_in_internet, Toast.LENGTH_LONG).show();
     }
 
-    protected void createLoadingDialog() {
+    private void createLoadingDialog() {
         dialog = LoadingDialog.show(this, getString(R.string.sign_in_loading_dialog_title), getString(R.string.sign_in_loading_dialog_message));
     }
 
@@ -402,7 +402,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         }
     }
 
-    protected void signUpAsGuest() {
+    private void signUpAsGuest() {
         createLoadingDialog();
         createPlayer();
         eventBus.post(new PlayerSignedInEvent("GUEST", true));

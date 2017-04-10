@@ -5,6 +5,7 @@ import org.threeten.bp.LocalDate;
 import java.util.List;
 import java.util.SortedMap;
 
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestReminder;

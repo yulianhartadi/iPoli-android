@@ -10,7 +10,7 @@ import java.util.List;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
-import io.ipoli.android.quest.persistence.OnDataChangedListener;
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.reward.data.Reward;
 
 /**

@@ -26,7 +26,6 @@ import java.util.Map;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.quest.persistence.OnDataChangedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

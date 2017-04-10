@@ -24,6 +24,7 @@ import java.util.TreeMap;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestReminder;

@@ -44,7 +44,7 @@ import io.ipoli.android.challenge.events.ChallengeCompletedEvent;
 import io.ipoli.android.challenge.events.ShowChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
-import io.ipoli.android.quest.persistence.OnDataChangedListener;
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

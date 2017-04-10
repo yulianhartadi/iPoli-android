@@ -3,7 +3,7 @@ package io.ipoli.android.reward.persistence;
 import java.util.List;
 
 import io.ipoli.android.app.persistence.PersistenceService;
-import io.ipoli.android.quest.persistence.OnDataChangedListener;
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.reward.data.Reward;
 
 /**

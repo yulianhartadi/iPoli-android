@@ -6,6 +6,7 @@ import android.util.Pair;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
@@ -31,6 +32,10 @@ public class AndroidCalendarEventParser {
     }
 
     public Pair<List<Quest>, List<RepeatingQuest>> parse(List<Event> events) {
+        return parse(events, Category.PERSONAL);
+    }
+
+    public Pair<List<Quest>, List<RepeatingQuest>> parse(List<Event> events, Category category) {
         List<Quest> quests = new ArrayList<>();
         List<RepeatingQuest> repeatingQuests = new ArrayList<>();
         for (Event e : events) {
