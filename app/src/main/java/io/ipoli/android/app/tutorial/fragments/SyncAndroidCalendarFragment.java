@@ -14,7 +14,8 @@ import android.widget.CheckBox;
 import com.github.paolorotolo.appintro.ISlideBackgroundColorHolder;
 import com.squareup.otto.Bus;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -26,12 +27,13 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.AndroidCalendarEventParser;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class SyncAndroidCalendarFragment extends Fragment implements ISlideBackgroundColorHolder, EasyPermissions.PermissionCallbacks {
+public class SyncAndroidCalendarFragment extends Fragment implements ISlideBackgroundColorHolder {
     private static final int RC_CALENDAR_PERM = 101;
     @Inject
     Bus eventBus;
@@ -52,6 +54,8 @@ public class SyncAndroidCalendarFragment extends Fragment implements ISlideBackg
     private int backgroundColor;
     private View contentView;
 
+    private Map<Long, Category> selectedCalendars = new HashMap<>();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -66,43 +70,21 @@ public class SyncAndroidCalendarFragment extends Fragment implements ISlideBackg
         return contentView;
     }
 
-    @AfterPermissionGranted(RC_CALENDAR_PERM)
     @OnClick(R.id.choose_google_calendars)
     public void onChooseCalendars(View v) {
         if (EasyPermissions.hasPermissions(getContext(), Manifest.permission.READ_CALENDAR)) {
-            getCalendars();
+            chooseCalendars();
         } else {
             EasyPermissions.requestPermissions(this, "", RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
         }
     }
 
-    private void getCalendars() {
-        AndroidCalendarsPickerFragment fragment = AndroidCalendarsPickerFragment.newInstance(R.string.fragment_calendar_title, selectedCalendars -> {
-
+    @AfterPermissionGranted(RC_CALENDAR_PERM)
+    public void chooseCalendars() {
+        AndroidCalendarsPickerFragment fragment = AndroidCalendarsPickerFragment.newInstance(R.string.choose_calendars_title, selectedCalendars -> {
+            this.selectedCalendars = selectedCalendars;
         });
         fragment.show(getFragmentManager());
-//        SyncAndroidCalendarProvider calendarProvider = new SyncAndroidCalendarProvider(getContext());
-//        List<Calendar> calendars = calendarProvider.getAndroidCalendars();
-//        List<Long> chosenCalendarIds = new ArrayList<>();
-//        for (Calendar c : calendars) {
-//            if (c.syncEvents == 1) {
-//                Log.d("AAA", c.displayName);
-//                chosenCalendarIds.add(c.id);
-//            }
-//        }
-//
-//        List<Quest> quests = new ArrayList<>();
-//        List<RepeatingQuest> repeatingQuests = new ArrayList<>();
-//
-//        for (long id : chosenCalendarIds) {
-//            List<Event> events = calendarProvider.getCalendarEvents(id);
-//            Pair<List<Quest>, List<RepeatingQuest>> result = eventParser.parse(events);
-//            quests.addAll(result.first);
-//            repeatingQuests.addAll(result.second);
-//        }
-//
-//        Log.d("AAA", "single " + quests.size());
-//        Log.d("AAA", "repeating " + repeatingQuests.size());
     }
 
     @Override
@@ -121,6 +103,10 @@ public class SyncAndroidCalendarFragment extends Fragment implements ISlideBackg
         return syncCheckBox.isChecked();
     }
 
+    public Map<Long, Category> getSelectedCalendars() {
+        return selectedCalendars;
+    }
+
     @Override
     public int getDefaultBackgroundColor() {
         return ContextCompat.getColor(getContext(), R.color.md_green_500);
@@ -131,13 +117,4 @@ public class SyncAndroidCalendarFragment extends Fragment implements ISlideBackg
         contentView.setBackgroundColor(backgroundColor);
     }
 
-    @Override
-    public void onPermissionsGranted(int i, List<String> list) {
-        getCalendars();
-    }
-
-    @Override
-    public void onPermissionsDenied(int i, List<String> list) {
-
-    }
 }

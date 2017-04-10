@@ -19,7 +19,7 @@
         android:gravity="center"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:text="Import All Your Habits &amp; ToDos"
+        android:text="@string/tutorial_sync_title"
         android:textColor="@android:color/white" />
 
     <LinearLayout
@@ -44,23 +44,23 @@
         android:layout_height="0dp"
         android:layout_gravity="center_horizontal"
         android:layout_weight="2"
+        android:gravity="center_horizontal"
         android:orientation="vertical">
 
         <CheckBox
             android:id="@+id/sync_calendar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
             android:checked="true"
-            android:text="Sync with my calendars"
+            android:text="@string/tutorial_sync_with_my_calendars"
             android:textColor="@color/md_white" />
 
         <Button
             android:id="@+id/choose_google_calendars"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Choose calendars"
-            style="@style/Widget.AppCompat.Button.Colored"/>
+            android:text="@string/tutorial_choose_calendars" />
 
     </LinearLayout>
 
