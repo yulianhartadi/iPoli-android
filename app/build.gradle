@@ -92,11 +92,21 @@ dependencies {
     compile 'com.github.medyo:fancybuttons:1.8.3'
     compile 'me.everything:providers-android:1.0.1'
     compile 'pub.devrel:easypermissions:0.3.0'
-    compile 'org.mnode.ical4j:ical4j:2.0.0'
-    compile ('com.joestelmach:natty:0.13') {
-        ['commons-logging', 'org.mnode.ical4j'].each {
+
+    compile ('org.mnode.ical4j:ical4j:2.0.0') {
+        ['org.codehaus.groovy', 'commons-codec', 'org.apache.commons', 'biz.aQute.bnd'].each {
             exclude group: it
         }
+    }
+
+    compile ('com.joestelmach:natty:0.13') {
+        ['org.mnode.ical4j', 'org.slf4j', 'org.antlr'].each {
+            exclude group: it
+        }
+    }
+
+    compile ('org.antlr:antlr-runtime:3.5.2') {
+        exclude group: "org.antlr", module: "stringtemplate"
     }
 }
 
