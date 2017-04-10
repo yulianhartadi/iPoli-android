@@ -22,6 +22,10 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,9 +50,13 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
 
     private static final String TAG = "android-calendars-picker-dialog";
     private static final String TITLE = "title";
+    private static final String PREDEFINED_CALENDARS_KEY = "predefined-calendars";
 
     @Inject
     SyncAndroidCalendarProvider syncAndroidCalendarProvider;
+
+    @Inject
+    ObjectMapper objectMapper;
 
     @BindView(R.id.calendar_list)
     RecyclerView calendarList;
@@ -69,8 +77,14 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
         AndroidCalendarsPickerFragment fragment = new AndroidCalendarsPickerFragment();
         Bundle args = new Bundle();
         args.putInt(TITLE, title);
+        if(selectedCalendars != null && !selectedCalendars.isEmpty()) {
+            try {
+                args.putString(PREDEFINED_CALENDARS_KEY, new ObjectMapper().writeValueAsString(selectedCalendars));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Can't write selected calendars Map as JSON", e);
+            }
+        }
         fragment.setArguments(args);
-        fragment.preSelectedCalendars = selectedCalendars;
         fragment.calendarsPickedListener = listener;
         return fragment;
     }
@@ -83,7 +97,16 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         App.getAppComponent(getContext()).inject(this);
-        title = getArguments().getInt(TITLE);
+        Bundle arguments = getArguments();
+        title = arguments.getInt(TITLE);
+        preSelectedCalendars = new HashMap<>();
+        if(arguments.containsKey(PREDEFINED_CALENDARS_KEY)) {
+            try {
+                preSelectedCalendars = objectMapper.readValue(arguments.getString(PREDEFINED_CALENDARS_KEY), Map.class);
+            } catch (IOException e) {
+                throw new RuntimeException("Can't convert JSON to Map " + arguments.getString(PREDEFINED_CALENDARS_KEY), e);
+            }
+        }
     }
 
     @NonNull
@@ -94,10 +117,13 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
         unbinder = ButterKnife.bind(this, view);
 
         List<CalendarViewModel> viewModels = new ArrayList<>();
+
+        //test on emulator
         viewModels.add(new CalendarViewModel(1L, "Polina Zhelyazkova", Category.PERSONAL, true));
         viewModels.add(new CalendarViewModel(2L, "Vihar calendar", Category.PERSONAL, false));
         viewModels.add(new CalendarViewModel(3L, "Holidays", Category.PERSONAL, false));
         viewModels.add(new CalendarViewModel(4L, "Birthdays", Category.PERSONAL, false));
+
         List<Calendar> calendars = syncAndroidCalendarProvider.getAndroidCalendars();
         for (Calendar c : calendars) {
             boolean selected = false;

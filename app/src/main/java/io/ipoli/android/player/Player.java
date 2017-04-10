@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.TimeOfDay;
@@ -12,6 +14,7 @@ import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.pet.data.Pet;
+import io.ipoli.android.quest.data.Category;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -37,6 +40,7 @@ public class Player extends PersistedObject {
     private Integer completeDailyQuestsEndMinute;
     private AuthProvider currentAuthProvider;
     private List<AuthProvider> authProviders;
+    private Map<Long, Category> androidCalendars;
 
     public Player() {
         super(TYPE);
@@ -62,6 +66,8 @@ public class Player extends PersistedObject {
         setSleepEndMinute(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE);
         setCompleteDailyQuestsEndMinute(Constants.DEFAULT_PLAYER_COMPLETE_DAILY_QUESTS_MINUTE);
         setUse24HourFormat(use24HourFormat);
+        setAndroidCalendars(new HashMap<>());
+
     }
 
     public List<Pet> getPets() {
@@ -334,4 +340,11 @@ public class Player extends PersistedObject {
         return currentAuthProvider != null;
     }
 
+    public Map<Long, Category> getAndroidCalendars() {
+        return androidCalendars;
+    }
+
+    public void setAndroidCalendars(Map<Long, Category> androidCalendars) {
+        this.androidCalendars = androidCalendars;
+    }
 }
