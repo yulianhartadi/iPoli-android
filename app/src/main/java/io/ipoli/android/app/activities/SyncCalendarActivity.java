@@ -8,9 +8,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -22,6 +25,7 @@ import io.ipoli.android.app.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.adapters.AndroidCalendarAdapter;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.viewmodels.AndroidCalendarViewModel;
 import io.ipoli.android.quest.data.Category;
@@ -88,9 +92,20 @@ public class SyncCalendarActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
+                onSaveTap();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void onSaveTap() {
+        List<AndroidCalendarViewModel> selectedAndroidCalendarViewModels = adapter.getSelectedCalendars();
+        Map<Long, Category> selectedCalendars = new HashMap<>();
+        for (AndroidCalendarViewModel vm : selectedAndroidCalendarViewModels) {
+            selectedCalendars.put(vm.getId(), vm.getCategory());
+        }
+        eventBus.post(new SyncCalendarRequestEvent(selectedCalendars, EventSource.SYNC_CALENDARS));
+        Toast.makeText(this, R.string.import_calendar_events_started, Toast.LENGTH_SHORT).show();
     }
 
     @AfterPermissionGranted(RC_CALENDAR_PERM)
