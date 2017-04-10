@@ -341,6 +341,9 @@ public class Player extends PersistedObject {
     }
 
     public Map<Long, Category> getAndroidCalendars() {
+        if(androidCalendars == null) {
+            androidCalendars = new HashMap<>();
+        }
         return androidCalendars;
     }
 

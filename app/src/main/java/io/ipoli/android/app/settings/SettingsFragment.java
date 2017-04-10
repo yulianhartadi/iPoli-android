@@ -4,12 +4,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -46,6 +48,7 @@ import io.ipoli.android.app.settings.events.WorkDaysChangedEvent;
 import io.ipoli.android.app.settings.events.WorkHoursChangedEvent;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
+import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
 import io.ipoli.android.app.ui.dialogs.DaysOfWeekPickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimeIntervalPickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimeOfDayPickerFragment;
@@ -89,6 +92,12 @@ public class SettingsFragment extends BaseFragment implements
 
     @BindView(R.id.time_format)
     Switch timeFormat;
+
+    @BindView(R.id.enable_sync_calendars)
+    Switch enableSyncCalendars;
+
+    @BindView(R.id.sync_calendars_text)
+    TextView syncCalendarsText;
 
     @BindView(R.id.most_productive_time)
     TextView mostProductiveTime;
@@ -151,22 +160,78 @@ public class SettingsFragment extends BaseFragment implements
             playerPersistenceService.save(player);
         });
 
+        initSyncCalendars(player);
+
 
         boolean isReminderEnabled = localStorage.readBool(Constants.KEY_DAILY_CHALLENGE_ENABLE_REMINDER, Constants.DEFAULT_DAILY_CHALLENGE_ENABLE_REMINDER);
         dailyChallengeNotification.setChecked(isReminderEnabled);
         int startMinute = localStorage.readInt(Constants.KEY_DAILY_CHALLENGE_REMINDER_START_MINUTE, Constants.DEFAULT_DAILY_CHALLENGE_REMINDER_START_MINUTE);
-        dailyChallengeStartTime.setText(Time.of(startMinute).toString());
-        dailyChallengeNotification.setOnCheckedChangeListener((compoundButton, b) -> {
+        dailyChallengeStartTime.setText(Time.of(startMinute).
+
+                toString());
+        dailyChallengeNotification.setOnCheckedChangeListener((compoundButton, b) ->
+
+        {
             localStorage.saveBool(Constants.KEY_DAILY_CHALLENGE_ENABLE_REMINDER, dailyChallengeNotification.isChecked());
             onDailyChallengeNotificationChanged();
         });
+
         onDailyChallengeNotificationChanged();
+
         Set<Integer> selectedDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
+
         populateDaysOfWeekText(dailyChallengeDays, new ArrayList<>(selectedDays));
 
 
         appVersion.setText(BuildConfig.VERSION_NAME);
         return view;
+    }
+
+    private void initSyncCalendars(Player player) {
+        int calendarsCount = player.getAndroidCalendars().size();
+        populateSyncCalendarsText(calendarsCount);
+        enableSyncCalendars.setChecked(calendarsCount > 0);
+        enableSyncCalendars.setOnCheckedChangeListener(getOnSyncCalendarsCheckedChangeListener(player));
+    }
+
+    private CompoundButton.OnCheckedChangeListener getOnSyncCalendarsCheckedChangeListener(Player player) {
+        return (buttonView, isChecked) -> {
+            if (isChecked) {
+                AndroidCalendarsPickerFragment fragment = AndroidCalendarsPickerFragment.newInstance(R.string.choose_calendars_title, player.getAndroidCalendars(), selectedCalendars -> {
+                    populateSyncCalendarsText(selectedCalendars.size());
+                    if (selectedCalendars.isEmpty()) {
+                        enableSyncCalendars.setOnCheckedChangeListener(null);
+                        enableSyncCalendars.setChecked(false);
+                        enableSyncCalendars.setOnCheckedChangeListener(getOnSyncCalendarsCheckedChangeListener(player));
+                        return;
+                    }
+
+                    //sync for these calendars and  delete for previously selected
+
+                });
+                fragment.show(getFragmentManager());
+            } else {
+                AlertDialog d = new AlertDialog.Builder(getContext())
+                        .setTitle(getString(R.string.dialog_disable_google_calendar_sync_title))
+                        .setMessage(getString(R.string.dialog_disable_google_calendar_sync_message))
+                        .setPositiveButton(getString(R.string.dialog_yes), (dialog, which) -> {
+                            //disable sync
+                            populateSyncCalendarsText(0);
+                        })
+                        .setNegativeButton(getString(R.string.dialog_no), (dialog, which) -> {
+
+                        })
+                        .create();
+                d.show();
+            }
+        };
+
+    }
+
+    private void populateSyncCalendarsText(int calendarsCount) {
+        String syncText = calendarsCount == 0 ? getString(R.string.no_calendars_selected_to_sync) :
+                String.format(getString(R.string.sync_calendars_count), calendarsCount);
+        syncCalendarsText.setText(syncText);
     }
 
     @Override
