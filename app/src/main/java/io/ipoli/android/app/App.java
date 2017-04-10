@@ -45,6 +45,8 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.QuickAddActivity;
+import io.ipoli.android.app.activities.SignInActivity;
+import io.ipoli.android.app.activities.SyncCalendarActivity;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.api.UrlProvider;
 import io.ipoli.android.app.auth.FacebookAuthService;
@@ -74,7 +76,6 @@ import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.activities.ChallengeCompleteActivity;
-import io.ipoli.android.challenge.activities.PickChallengeActivity;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.data.Difficulty;
 import io.ipoli.android.challenge.data.PredefinedChallenge;
@@ -93,7 +94,6 @@ import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.LevelUpActivity;
-import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.events.PlayerUpdatedEvent;
@@ -344,11 +344,13 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onFinishSignInActivity(FinishSignInActivityEvent e) {
         if (hasPlayer() && e.isNewPlayer) {
-            startNewActivity(MainActivity.class);
-            Intent intent = new Intent(this, PickChallengeActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(PickChallengeActivity.TITLE, getString(R.string.pick_challenge_to_start));
-            startActivity(intent);
+            startNewActivity(SyncCalendarActivity.class);
+
+//            startNewActivity(MainActivity.class);
+//            Intent intent = new Intent(this, PickChallengeActivity.class);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//            intent.putExtra(PickChallengeActivity.TITLE, getString(R.string.pick_challenge_to_start));
+//            startActivity(intent);
         } else if (!hasPlayer()) {
             System.exit(0);
         }

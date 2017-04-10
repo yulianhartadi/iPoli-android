@@ -44,11 +44,15 @@
         <activity
             android:name=".app.activities.QuickAddActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.iPoli.DialogActivity" />
+            android:theme="@style/Theme.iPoli.DialogActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".player.activities.SignInActivity"
+            android:name=".app.activities.SignInActivity"
             android:label="@string/title_sign_in_activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".app.activities.SyncCalendarActivity"
+            android:label="Choose calendars to sync"
             android:screenOrientation="portrait" />
         <activity
             android:name=".quest.activities.AddQuestActivity"
@@ -98,7 +102,7 @@
             android:name=".challenge.activities.AddChallengeActivity"
             android:label=""
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".challenge.activities.EditChallengeActivity"
             android:label="@string/title_activity_add_challenge"
@@ -299,7 +303,6 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/agenda_widget_info" />
         </receiver>
-
         <receiver
             android:name=".app.receivers.AndroidCalendarEventChangedReceiver"
             android:priority="999">
@@ -321,7 +324,6 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
-
     </application>
 
 </manifest>

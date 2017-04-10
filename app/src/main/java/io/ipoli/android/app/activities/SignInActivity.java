@@ -1,4 +1,4 @@
-package io.ipoli.android.player.activities;
+package io.ipoli.android.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -43,7 +43,6 @@ import io.ipoli.android.ApiConstants;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.api.UrlProvider;
 import io.ipoli.android.app.events.AppErrorEvent;
@@ -57,7 +56,7 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.Player;
-import io.ipoli.android.player.SignInException;
+import io.ipoli.android.app.exceptions.SignInException;
 import io.ipoli.android.player.events.PlayerSignedInEvent;
 import io.ipoli.android.player.events.PlayerUpdatedEvent;
 import io.ipoli.android.player.events.StartReplicationEvent;
@@ -398,6 +397,8 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     public void onBackPressed() {
         if(!App.hasPlayer()) {
             signUpAsGuest();
+        } else {
+            super.onBackPressed();
         }
     }
 

@@ -45,6 +45,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.activities.MigrationActivity;
+import io.ipoli.android.app.activities.SignInActivity;
 import io.ipoli.android.app.events.AvatarCoinsTappedEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
@@ -59,7 +60,6 @@ import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.rate.RateDialogConstants;
 import io.ipoli.android.app.settings.SettingsFragment;
 import io.ipoli.android.app.share.ShareQuestDialog;
-import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.utils.EmailUtils;
@@ -72,7 +72,6 @@ import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.PickAvatarPictureActivity;
-import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
@@ -176,8 +175,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }
         };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
-
-        startActivity(new Intent(this, TutorialActivity.class));
     }
 
     @Override

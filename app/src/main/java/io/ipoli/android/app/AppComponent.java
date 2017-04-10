@@ -7,6 +7,7 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
+import io.ipoli.android.app.activities.SyncCalendarActivity;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.modules.AnalyticsModule;
 import io.ipoli.android.app.modules.AndroidCalendarModule;
@@ -46,7 +47,7 @@ import io.ipoli.android.challenge.receivers.DailyChallengeReminderReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.player.activities.PickAvatarPictureActivity;
-import io.ipoli.android.player.activities.SignInActivity;
+import io.ipoli.android.app.activities.SignInActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.AddRepeatingQuestActivity;
@@ -236,5 +237,7 @@ public interface AppComponent {
     void inject(AndroidCalendarsPickerFragment androidCalendarsPickerFragment);
 
     void inject(BootCompleteReceiver bootCompleteReceiver);
+
+    void inject(SyncCalendarActivity syncCalendarActivity);
 }
 

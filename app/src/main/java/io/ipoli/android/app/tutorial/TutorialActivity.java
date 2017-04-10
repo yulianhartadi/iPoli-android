@@ -1,6 +1,5 @@
 package io.ipoli.android.app.tutorial;
 
-import android.Manifest;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -62,8 +61,8 @@ public class TutorialActivity extends AppIntro2 implements EasyPermissions.Permi
                 R.drawable.tutorial_schedule,
                 R.color.md_green_500));
 
-        syncAndroidCalendarFragment = new SyncAndroidCalendarFragment();
-        addSlide(syncAndroidCalendarFragment);
+//        syncAndroidCalendarFragment = new SyncAndroidCalendarFragment();
+//        addSlide(syncAndroidCalendarFragment);
 
         setImmersiveMode(true, true);
         setColorTransitionsEnabled(true);
@@ -73,15 +72,15 @@ public class TutorialActivity extends AppIntro2 implements EasyPermissions.Permi
     @Override
     public void onDonePressed(Fragment fragment) {
         doneButton.setVisibility(View.GONE);
-        if (syncAndroidCalendarFragment.isSyncCalendarChecked()) {
-            if (EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
-                requestSynCalendar();
-            } else {
-                EasyPermissions.requestPermissions(this, "", RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
-            }
-        } else {
+//        if (syncAndroidCalendarFragment.isSyncCalendarChecked()) {
+//            if (EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
+//                requestSynCalendar();
+//            } else {
+//                EasyPermissions.requestPermissions(this, "", RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
+//            }
+//        } else {
             onFinish();
-        }
+//        }
     }
 
     private void requestSynCalendar() {
