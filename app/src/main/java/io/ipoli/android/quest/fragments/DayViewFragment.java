@@ -215,7 +215,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             if (!rq.isScheduledForDate(currentDate)) {
                 List<Quest> questsToCreate = repeatingQuestScheduler.schedule(rq,
                         currentDate,
-                        currentDate);
+                        currentDate, currentDate);
                 for (Quest quest : questsToCreate) {
                     quest.setPlaceholder(true);
                 }
