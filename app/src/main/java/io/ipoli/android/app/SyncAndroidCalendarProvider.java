@@ -3,11 +3,13 @@ package io.ipoli.android.app;
 import android.content.Context;
 import android.provider.CalendarContract;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import me.everything.providers.android.calendar.Calendar;
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
+import me.everything.providers.android.calendar.Reminder;
 import me.everything.providers.core.Data;
 
 /**
@@ -40,8 +42,19 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
     }
 
     public List<Calendar> getAndroidCalendars() {
-        List<Calendar> calendars = getCalendars().getList();
-        return calendars;
+        Data<Calendar> data = getCalendars();
+        if(data == null) {
+            return new ArrayList<>();
+        }
+        return data.getList();
+    }
+
+    public List<Reminder> getEventReminders(long eventId) {
+        Data<Reminder> data = getReminders(eventId);
+        if(data == null) {
+            return new ArrayList<>();
+        }
+        return data.getList();
     }
 
 }

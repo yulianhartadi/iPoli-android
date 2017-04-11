@@ -6,7 +6,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -138,12 +137,14 @@ public class SyncCalendarActivity extends BaseActivity {
         player.setAndroidCalendars(selectedCalendars);
 
         List<Quest> quests = new ArrayList<>();
+        List<Quest> repeatingQuestQuests = new ArrayList<>();
         List<RepeatingQuest> repeatingQuests = new ArrayList<>();
         for(Long calendarId : selectedCalendars.keySet()) {
             List<Event> events = syncAndroidCalendarProvider.getCalendarEvents(calendarId);
-            Pair<List<Quest>, List<RepeatingQuest>> result = androidCalendarEventParser.parse(events, selectedCalendars.get(calendarId));
-            quests.addAll(result.first);
-            repeatingQuests.addAll(result.second);
+            AndroidCalendarEventParser.Result result = androidCalendarEventParser.parse(events, selectedCalendars.get(calendarId));
+            quests.addAll(result.quests);
+            repeatingQuestQuests.addAll(result.repeatingQuestQuests);
+            repeatingQuests.addAll(result.repeatingQuests);
         }
 
         Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests = new HashMap<>();
@@ -151,7 +152,7 @@ public class SyncCalendarActivity extends BaseActivity {
             repeatingQuestToQuests.put(rq, repeatingQuestScheduler.scheduleAhead(rq, LocalDate.now()));
         }
 
-        androidCalendarPersistenceService.save(player, quests, repeatingQuestToQuests, () -> onFinish());
+        androidCalendarPersistenceService.save(player, quests, repeatingQuestQuests, repeatingQuestToQuests, () -> onFinish());
     }
 
     private void onFinish() {

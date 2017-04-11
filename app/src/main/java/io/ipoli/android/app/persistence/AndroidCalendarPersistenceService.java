@@ -30,13 +30,8 @@ public class AndroidCalendarPersistenceService {
         this.repeatingQuestPersistenceService = repeatingQuestPersistenceService;
     }
 
-    public void save(Player player, List<Quest> quests, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests, TransactionCompleteListener transactionCompleteListener) {
+    public void save(Player player, List<Quest> quests, List<Quest> repeatingQuestQuests, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests, TransactionCompleteListener transactionCompleteListener) {
         database.runAsync(db -> db.runInTransaction(() -> {
-            playerPersistenceService.save(player);
-            for(Quest quest : quests) {
-                questPersistenceService.save(quest);
-            }
-
             for (Map.Entry<RepeatingQuest, List<Quest>> entry : repeatingQuestToQuests.entrySet()) {
                 RepeatingQuest rq = entry.getKey();
                 repeatingQuestPersistenceService.save(rq);
@@ -46,6 +41,21 @@ public class AndroidCalendarPersistenceService {
                 }
             }
 
+            for (Quest q : repeatingQuestQuests) {
+                RepeatingQuest rq = repeatingQuestPersistenceService.findRepeatingQuestFromAndroidCalendar(q.getSourceMapping().getAndroidCalendarMapping());
+                if (rq == null) {
+                    continue;
+                }
+                q.setRepeatingQuestId(rq.getId());
+                questPersistenceService.save(q);
+            }
+
+            for (Quest quest : quests) {
+                questPersistenceService.save(quest);
+            }
+
+
+            playerPersistenceService.save(player);
             transactionCompleteListener.onComplete();
             return true;
         }));

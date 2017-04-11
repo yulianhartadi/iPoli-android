@@ -10,29 +10,18 @@ import android.view.WindowManager;
 import com.github.paolorotolo.appintro.AppIntro2;
 import com.squareup.otto.Bus;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.inject.Inject;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FinishTutorialActivityEvent;
-import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.tutorial.events.TutorialSkippedEvent;
-import io.ipoli.android.app.tutorial.fragments.SyncAndroidCalendarFragment;
 import io.ipoli.android.app.tutorial.fragments.TutorialFragment;
-import io.ipoli.android.quest.data.Category;
-import pub.devrel.easypermissions.EasyPermissions;
 
-public class TutorialActivity extends AppIntro2 implements EasyPermissions.PermissionCallbacks {
-    private static final int RC_CALENDAR_PERM = 102;
+public class TutorialActivity extends AppIntro2 {
 
     @Inject
     Bus eventBus;
-
-    private SyncAndroidCalendarFragment syncAndroidCalendarFragment;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,9 +50,6 @@ public class TutorialActivity extends AppIntro2 implements EasyPermissions.Permi
                 R.drawable.tutorial_schedule,
                 R.color.md_green_500));
 
-//        syncAndroidCalendarFragment = new SyncAndroidCalendarFragment();
-//        addSlide(syncAndroidCalendarFragment);
-
         setImmersiveMode(true, true);
         setColorTransitionsEnabled(true);
         showSkipButton(false);
@@ -72,22 +58,6 @@ public class TutorialActivity extends AppIntro2 implements EasyPermissions.Permi
     @Override
     public void onDonePressed(Fragment fragment) {
         doneButton.setVisibility(View.GONE);
-//        if (syncAndroidCalendarFragment.isSyncCalendarChecked()) {
-//            if (EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
-//                requestSynCalendar();
-//            } else {
-//                EasyPermissions.requestPermissions(this, "", RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
-//            }
-//        } else {
-            onFinish();
-//        }
-    }
-
-    private void requestSynCalendar() {
-        Map<Long, Category> selectedCalendars = syncAndroidCalendarFragment.getSelectedCalendars();
-        if(!selectedCalendars.isEmpty()) {
-            eventBus.post(new SyncCalendarRequestEvent(selectedCalendars, EventSource.TUTORIAL));
-        }
         onFinish();
     }
 
@@ -101,25 +71,4 @@ public class TutorialActivity extends AppIntro2 implements EasyPermissions.Permi
         eventBus.post(new FinishTutorialActivityEvent());
         finish();
     }
-
-    @Override
-    public void onPermissionsGranted(int requestCode, List<String> perms) {
-        if(requestCode == RC_CALENDAR_PERM) {
-            requestSynCalendar();
-        }
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, List<String> perms) {
-        if(requestCode == RC_CALENDAR_PERM) {
-            onFinish();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
 }

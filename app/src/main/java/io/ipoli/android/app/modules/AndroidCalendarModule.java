@@ -21,8 +21,8 @@ public class AndroidCalendarModule {
 
     @Provides
     @Singleton
-    public AndroidCalendarEventParser providedAndroidCalendarEventParser(ExperienceRewardGenerator experienceRewardGenerator, CoinsRewardGenerator coinsRewardGenerator) {
-        return new AndroidCalendarEventParser(experienceRewardGenerator, coinsRewardGenerator);
+    public AndroidCalendarEventParser providedAndroidCalendarEventParser(ExperienceRewardGenerator experienceRewardGenerator, CoinsRewardGenerator coinsRewardGenerator, SyncAndroidCalendarProvider syncAndroidCalendarProvider) {
+        return new AndroidCalendarEventParser(experienceRewardGenerator, coinsRewardGenerator, syncAndroidCalendarProvider);
     }
 
     @Provides
