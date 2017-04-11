@@ -424,7 +424,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         quest.setEndDate(scheduledDate);
         quest.setScheduledDate(scheduledDate);
         quest.setCompletedAtMinute(null);
-        quest.setCompletedAtDateFromLocal(null);
+        quest.setCompletedAtDate(null);
         quest.setCompletedCount(0);
         if (isForSameDay) {
             quest.setStartMinute(null);

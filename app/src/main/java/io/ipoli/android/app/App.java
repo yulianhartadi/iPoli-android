@@ -594,7 +594,7 @@ public class App extends MultiDexApplication {
         if (q.completedAllTimesForDay()) {
             QuestNotificationScheduler.cancelAll(q, this);
             q.setScheduledDate(LocalDate.now());
-            q.setCompletedAtDateFromLocal(LocalDate.now());
+            q.setCompletedAtDate(LocalDate.now());
             q.setCompletedAtMinute(Time.now().toMinuteOfDay());
             q.setExperience(experienceRewardGenerator.generate(q));
             q.setCoins(coinsRewardGenerator.generate(q));
@@ -624,7 +624,7 @@ public class App extends MultiDexApplication {
         Quest quest = e.quest;
         quest.setDifficulty(null);
         quest.setActualStartDate(null);
-        quest.setCompletedAtDateFromLocal(null);
+        quest.setCompletedAtDate(null);
         quest.setCompletedAtMinute(null);
         if (quest.isScheduledForThePast()) {
             quest.setEndDate(null);

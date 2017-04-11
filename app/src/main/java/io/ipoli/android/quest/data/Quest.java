@@ -377,7 +377,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     @JsonIgnore
-    public void setCompletedAtDateFromLocal(LocalDate completedAtDate) {
+    public void setCompletedAtDate(LocalDate completedAtDate) {
         setCompletedAt(completedAtDate == null ? null : DateUtils.toMillis(completedAtDate));
     }
 

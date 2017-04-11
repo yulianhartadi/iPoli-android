@@ -82,7 +82,7 @@ public class DateUtils {
         return localDate.isEqual(toStartOfDayUTCLocalDate(LocalDate.now().plusDays(1)));
     }
 
-    private static LocalDate toStartOfDayUTCLocalDate(LocalDate localDate) {
+    public static LocalDate toStartOfDayUTCLocalDate(LocalDate localDate) {
         return localDate.atStartOfDay(ZONE_UTC).toLocalDate();
     }
 
