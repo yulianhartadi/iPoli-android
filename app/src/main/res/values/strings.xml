@@ -443,8 +443,19 @@
     <string name="tutorial_sync_title"><![CDATA[Import All Your Habits & ToDos]]></string>
     <string name="choose_calendars_title">Choose calendars</string>
     <string name="sync_google_calendars">Sync with Google calendar</string>
-    <string name="sync_calendars_count">%d calendars synced</string>
+    <string name="sync_calendars_count">%d calendars selected</string>
     <string name="no_calendars_selected_to_sync">No calendars selected</string>
     <string name="dialog_disable_google_calendar_sync_title">Disable Google calendar sync</string>
     <string name="dialog_disable_google_calendar_sync_message">Disabling Google calendar sync will delete all your not completed quests from Google calendars. Are you sure?</string>
+    <string name="settings_scheduling_title">Scheduling</string>
+    <string name="settings_most_productive_time">Most productive time</string>
+    <string name="settings_work_days">Work days</string>
+    <string name="settings_work_hours">Work hours</string>
+    <string name="settings_sleep_hours">Sleep hours</string>
+    <string name="settings_daily_challenge">Daily challenge</string>
+    <string name="settings_show_a_reminder">Show a reminder</string>
+    <string name="settings_remind_me_at">Remind me at</string>
+    <string name="settings_sync_calendars">Calendars sync</string>
+    <string name="settings_select_sync_calendars">Calendars to sync</string>
+    <string name="settings_sync_google_calendars">Sync Google calendars</string>
 </resources>
