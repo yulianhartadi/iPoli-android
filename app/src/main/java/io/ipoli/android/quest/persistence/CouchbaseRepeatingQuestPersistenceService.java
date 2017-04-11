@@ -289,8 +289,9 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
     public RepeatingQuest findRepeatingQuestFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping) {
         Query query = repeatingQuestFromAndroidCalendar.createQuery();
         query.setGroupLevel(2);
-        query.setStartKey(Arrays.asList(androidCalendarMapping.getCalendarId(), androidCalendarMapping.getEventId()));
-        query.setEndKey(Arrays.asList(androidCalendarMapping.getCalendarId(), androidCalendarMapping.getEventId()));
+        List<Object> key = Arrays.asList(androidCalendarMapping.getCalendarId(), androidCalendarMapping.getEventId());
+        query.setStartKey(key);
+        query.setEndKey(key);
 
         try {
             QueryEnumerator enumerator = query.run();

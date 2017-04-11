@@ -17,7 +17,7 @@ import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
  * on 4/10/17.
  */
 
-public class AndroidCalendarPersistenceService {
+public class AndroidCalendarPersistenceService implements CalendarPersistenceService {
     private final Database database;
     private final PlayerPersistenceService playerPersistenceService;
     private final QuestPersistenceService questPersistenceService;
@@ -30,6 +30,7 @@ public class AndroidCalendarPersistenceService {
         this.repeatingQuestPersistenceService = repeatingQuestPersistenceService;
     }
 
+    @Override
     public void save(Player player, List<Quest> quests, List<Quest> repeatingQuestQuests, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests, TransactionCompleteListener transactionCompleteListener) {
         database.runAsync(db -> db.runInTransaction(() -> {
             for (Map.Entry<RepeatingQuest, List<Quest>> entry : repeatingQuestToQuests.entrySet()) {
@@ -54,8 +55,8 @@ public class AndroidCalendarPersistenceService {
                 questPersistenceService.save(quest);
             }
 
-
             playerPersistenceService.save(player);
+
             transactionCompleteListener.onComplete();
             return true;
         }));
