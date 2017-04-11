@@ -37,6 +37,9 @@ import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth;
  */
 public class RepeatingQuestSchedulerTest {
 
+    private static final int DAYS_IN_A_WEEK = 7;
+    private static final int DAYS_IN_FOUR_WEEKS = DAYS_IN_A_WEEK * 4;
+
     private static RepeatingQuestScheduler rqScheduler;
     private static LocalDate today;
     private static LocalDate startOfWeek;
@@ -55,8 +58,8 @@ public class RepeatingQuestSchedulerTest {
         RepeatingQuest repeatingQuest = createRepeatingQuest();
         Recurrence recurrence = createWeeklyRecurrence(startOfWeek);
         repeatingQuest.setRecurrence(recurrence);
-        List<Quest> result = rqScheduler.schedule(repeatingQuest, startOfWeek, endOfWeek);
-        assertThat(result.size(), is(3));
+        List<Quest> result = rqScheduler.schedule(repeatingQuest, startOfWeek);
+        assertThat(result.size(), is(12));
     }
 
     @Test
@@ -66,8 +69,8 @@ public class RepeatingQuestSchedulerTest {
         Recurrence recurrence = createWeeklyRecurrence(startDate);
         repeatingQuest.setRecurrence(recurrence);
 
-        List<Quest> result = rqScheduler.schedule(repeatingQuest, startDate, endOfWeek);
-        assertThat(result.size(), is(2));
+        List<Quest> result = rqScheduler.schedule(repeatingQuest, startDate);
+        assertThat(result.size(), is(11));
     }
 
     @Test
@@ -77,22 +80,34 @@ public class RepeatingQuestSchedulerTest {
         Recurrence recurrence = createWeeklyRecurrence(lastFriday);
         repeatingQuest.setRecurrence(recurrence);
 
-        LocalDate monday = LocalDate.now().with(DayOfWeek.MONDAY);
-        LocalDate sunday = LocalDate.now().with(DayOfWeek.SUNDAY);
-        List<Quest> result = rqScheduler.schedule(repeatingQuest, monday, sunday);
-        assertThat(result.size(), is(3));
+        LocalDate monday = today.with(DayOfWeek.MONDAY);
+        List<Quest> result = rqScheduler.schedule(repeatingQuest, monday);
+        assertThat(result.size(), is(12));
     }
 
     @Test
     public void scheduleDailyRepeatingQuest() {
         RepeatingQuest repeatingQuest = createRepeatingQuest();
         Recurrence recurrence = Recurrence.create();
-        recurrence.setDtstartDate(today);
-        Recur recur = new Recur(Recur.WEEKLY, null);
+        recurrence.setDtstartDate(startOfWeek);
+        Recur recur = createEveryDayRecur();
         recurrence.setRrule(recur.toString());
         repeatingQuest.setRecurrence(recurrence);
-        List<Quest> result = rqScheduler.schedule(repeatingQuest, today, today.with(DayOfWeek.SUNDAY));
-        assertThat(result.size(), is(1));
+        List<Quest> result = rqScheduler.schedule(repeatingQuest, startOfWeek);
+        assertThat(result.size(), is(DAYS_IN_FOUR_WEEKS));
+    }
+
+    @Test
+    public void scheduleDailyRepeatingQuestStartingWednesday() {
+        RepeatingQuest repeatingQuest = createRepeatingQuest();
+        Recurrence recurrence = Recurrence.create();
+        LocalDate startDate = today.with(DayOfWeek.WEDNESDAY);
+        recurrence.setDtstartDate(startDate);
+        Recur recur = createEveryDayRecur();
+        recurrence.setRrule(recur.toString());
+        repeatingQuest.setRecurrence(recurrence);
+        List<Quest> result = rqScheduler.schedule(repeatingQuest, startDate);
+        assertThat(result.size(), is(DAYS_IN_FOUR_WEEKS - 2));
     }
 
     @Test
@@ -454,7 +469,7 @@ public class RepeatingQuestSchedulerTest {
         recurrence.setDtstartDate(startOfMonth);
         recurrence.setFlexibleCount(15);
         rq.setRecurrence(recurrence);
-        List<Quest> result = rqScheduler.scheduleAhead(rq, startOfMonth);
+        List<Quest> result = rqScheduler.schedule(rq, startOfMonth);
         assertThat(result.size(), is(15));
         assertThat(result.get(0).getTimesADay(), is(3));
     }
@@ -482,7 +497,7 @@ public class RepeatingQuestSchedulerTest {
         RepeatingQuest rq = createRepeatingQuest();
         rq.addScheduledPeriodEndDate(today.with(lastDayOfMonth()));
         rq.setRecurrence(createFlexibleMonthlyRecurrence(today.with(firstDayOfMonth()), 10));
-        List<Quest> scheduled = rqScheduler.scheduleAhead(rq, today.with(lastDayOfMonth()).minusDays(2));
+        List<Quest> scheduled = rqScheduler.schedule(rq, today.with(lastDayOfMonth()).minusDays(2));
         assertThat(scheduled.size(), is(greaterThanOrEqualTo(10)));
         assertThat(scheduled.size(), is(lessThanOrEqualTo(12)));
     }
