@@ -99,13 +99,12 @@ public class RepeatingQuestScheduler {
         return quests;
     }
 
-    private List<Quest> saveQuestsInRange(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endOfPeriodDate) {
-        java.util.Date periodEnd = DateUtils.toStartOfDayUTC(endOfPeriodDate);
-        if (!repeatingQuest.shouldBeScheduledForPeriod(periodEnd)) {
+    private List<Quest> saveQuestsInRange(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate) {
+        if (!repeatingQuest.shouldBeScheduledForPeriod(endDate)) {
             return new ArrayList<>();
         }
-        List<Quest> questsToCreate = schedule(repeatingQuest, startDate, endOfPeriodDate);
-        repeatingQuest.addScheduledPeriodEndDate(periodEnd);
+        List<Quest> questsToCreate = schedule(repeatingQuest, startDate, endDate);
+        repeatingQuest.addScheduledPeriodEndDate(endDate);
         return questsToCreate;
     }
 
