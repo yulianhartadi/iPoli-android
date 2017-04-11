@@ -375,8 +375,8 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
     @JsonIgnore
-    public void addScheduledPeriodEndDate(Date date) {
-        getScheduledPeriodEndDates().put(String.valueOf(date.getTime()), true);
+    public void addScheduledPeriodEndDate(LocalDate date) {
+        getScheduledPeriodEndDates().put(String.valueOf(DateUtils.toMillis(date)), true);
     }
 
     @JsonIgnore
@@ -392,8 +392,8 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
     @JsonIgnore
-    public boolean shouldBeScheduledForPeriod(Date periodEnd) {
-        return !getScheduledPeriodEndDates().containsKey(String.valueOf(periodEnd.getTime()));
+    public boolean shouldBeScheduledForPeriod(LocalDate periodEnd) {
+        return !getScheduledPeriodEndDates().containsKey(String.valueOf(DateUtils.toMillis(periodEnd)));
     }
 
     @JsonIgnore

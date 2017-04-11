@@ -729,7 +729,7 @@ public class App extends MultiDexApplication {
                 QuestNotificationScheduler.cancelAll(quest, this);
             }
 
-            long todayStartOfDay = DateUtils.toStartOfDayUTC(LocalDate.now()).getTime();
+            long todayStartOfDay = DateUtils.toMillis(LocalDate.now());
             List<String> periodsToDelete = new ArrayList<>();
             for (String periodEnd : repeatingQuest.getScheduledPeriodEndDates().keySet()) {
                 if (Long.valueOf(periodEnd) >= todayStartOfDay) {
