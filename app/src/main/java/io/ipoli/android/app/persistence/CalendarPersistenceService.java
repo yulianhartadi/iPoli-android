@@ -12,7 +12,7 @@ import io.ipoli.android.quest.data.RepeatingQuest;
  * on 4/11/17.
  */
 
-interface CalendarPersistenceService {
+public interface CalendarPersistenceService {
 
     void save(Player player, List<Quest> quests, List<Quest> repeatingQuestQuests, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests, TransactionCompleteListener transactionCompleteListener);
 

@@ -28,7 +28,7 @@ import io.ipoli.android.app.adapters.AndroidCalendarAdapter;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FinishSyncCalendarActivityEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
-import io.ipoli.android.app.persistence.AndroidCalendarPersistenceService;
+import io.ipoli.android.app.persistence.CalendarPersistenceService;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.dialogs.LoadingDialog;
 import io.ipoli.android.app.ui.viewmodels.AndroidCalendarViewModel;
@@ -59,7 +59,7 @@ public class SyncCalendarActivity extends BaseActivity {
     RepeatingQuestScheduler repeatingQuestScheduler;
 
     @Inject
-    AndroidCalendarPersistenceService androidCalendarPersistenceService;
+    CalendarPersistenceService calendarPersistenceService;
 
     @BindView(R.id.root_container)
     CoordinatorLayout rootContainer;
@@ -152,7 +152,7 @@ public class SyncCalendarActivity extends BaseActivity {
             repeatingQuestToQuests.put(rq, repeatingQuestScheduler.scheduleAhead(rq, LocalDate.now()));
         }
 
-        androidCalendarPersistenceService.save(player, quests, repeatingQuestQuests, repeatingQuestToQuests, () -> onFinish());
+        calendarPersistenceService.save(player, quests, repeatingQuestQuests, repeatingQuestToQuests, () -> onFinish());
     }
 
     private void onFinish() {

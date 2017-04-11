@@ -7,6 +7,7 @@ import com.squareup.otto.Bus;
 import dagger.Module;
 import dagger.Provides;
 import io.ipoli.android.app.persistence.AndroidCalendarPersistenceService;
+import io.ipoli.android.app.persistence.CalendarPersistenceService;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.CouchbaseChallengePersistenceService;
 import io.ipoli.android.player.persistence.CouchbasePlayerPersistenceService;
@@ -51,7 +52,7 @@ public class PersistenceModule {
     }
 
     @Provides
-    public AndroidCalendarPersistenceService provideAndroidCalendarPersistenceService(Database database, PlayerPersistenceService playerPersistenceService, QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService){
+    public CalendarPersistenceService provideAndroidCalendarPersistenceService(Database database, PlayerPersistenceService playerPersistenceService, QuestPersistenceService questPersistenceService, RepeatingQuestPersistenceService repeatingQuestPersistenceService){
         return new AndroidCalendarPersistenceService(database, playerPersistenceService, questPersistenceService, repeatingQuestPersistenceService);
     }
 
