@@ -1,6 +1,7 @@
 package io.ipoli.android;
 
 import android.support.annotation.NonNull;
+import android.support.v4.util.ArrayMap;
 
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.WeekDay;
@@ -9,11 +10,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.Month;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import io.ipoli.android.app.utils.DateUtils;
@@ -44,6 +47,8 @@ public class RepeatingQuestSchedulerTest {
     private static LocalDate today;
     private static LocalDate startOfWeek;
     private static LocalDate endOfWeek;
+    private static LocalDate startOfMonth;
+    private static LocalDate endOfMonth;
 
     @BeforeClass
     public static void setUp() {
@@ -51,12 +56,14 @@ public class RepeatingQuestSchedulerTest {
         today = LocalDate.now();
         startOfWeek = today.with(DayOfWeek.MONDAY);
         endOfWeek = today.with(DayOfWeek.SUNDAY);
+        startOfMonth = today.with(firstDayOfMonth());
+        endOfMonth = today.with(lastDayOfMonth());
     }
 
     @Test
     public void createRepeatingQuestStartingMonday() {
         RepeatingQuest repeatingQuest = createRepeatingQuest();
-        Recurrence recurrence = createWeeklyRecurrence(startOfWeek);
+        Recurrence recurrence = createWeeklyFixedRecurrence(startOfWeek);
         repeatingQuest.setRecurrence(recurrence);
         List<Quest> result = rqScheduler.schedule(repeatingQuest, startOfWeek);
         assertThat(result.size(), is(12));
@@ -64,9 +71,9 @@ public class RepeatingQuestSchedulerTest {
 
     @Test
     public void createRepeatingQuestStartingTuesday() {
-        LocalDate startDate = LocalDate.now().with(DayOfWeek.TUESDAY);
+        LocalDate startDate = today.with(DayOfWeek.TUESDAY);
         RepeatingQuest repeatingQuest = createRepeatingQuest();
-        Recurrence recurrence = createWeeklyRecurrence(startDate);
+        Recurrence recurrence = createWeeklyFixedRecurrence(startDate);
         repeatingQuest.setRecurrence(recurrence);
 
         List<Quest> result = rqScheduler.schedule(repeatingQuest, startDate);
@@ -75,9 +82,9 @@ public class RepeatingQuestSchedulerTest {
 
     @Test
     public void scheduleRepeatingQuestCreatedLastFriday() {
-        LocalDate lastFriday = LocalDate.now().with(DayOfWeek.FRIDAY).minusDays(7);
+        LocalDate lastFriday = today.with(DayOfWeek.FRIDAY).minusDays(7);
         RepeatingQuest repeatingQuest = createRepeatingQuest();
-        Recurrence recurrence = createWeeklyRecurrence(lastFriday);
+        Recurrence recurrence = createWeeklyFixedRecurrence(lastFriday);
         repeatingQuest.setRecurrence(recurrence);
 
         LocalDate monday = today.with(DayOfWeek.MONDAY);
@@ -101,6 +108,7 @@ public class RepeatingQuestSchedulerTest {
     public void scheduleDailyRepeatingQuestStartingWednesday() {
         RepeatingQuest repeatingQuest = createRepeatingQuest();
         Recurrence recurrence = Recurrence.create();
+        recurrence.setRecurrenceType(Recurrence.RepeatType.DAILY);
         LocalDate startDate = today.with(DayOfWeek.WEDNESDAY);
         recurrence.setDtstartDate(startDate);
         Recur recur = createEveryDayRecur();
@@ -116,11 +124,12 @@ public class RepeatingQuestSchedulerTest {
         Recurrence recurrence = Recurrence.create();
         LocalDate startOfMonth = today.withDayOfMonth(1);
         recurrence.setDtstartDate(startOfMonth);
+        recurrence.setRecurrenceType(Recurrence.RepeatType.MONTHLY);
         Recur recur = new Recur(Recur.MONTHLY, null);
         recur.getMonthDayList().add(13);
         recurrence.setRrule(recur.toString());
         repeatingQuest.setRecurrence(recurrence);
-        List<Quest> result = rqScheduler.schedule(repeatingQuest, startOfMonth, today.with(lastDayOfMonth()));
+        List<Quest> result = rqScheduler.schedule(repeatingQuest, startOfMonth);
         assertThat(result.size(), is(1));
     }
 
@@ -130,12 +139,13 @@ public class RepeatingQuestSchedulerTest {
         RepeatingQuest repeatingQuest = createRepeatingQuest();
         Recurrence recurrence = Recurrence.create();
         recurrence.setDtstartDate(midOfMonth);
+        recurrence.setRecurrenceType(Recurrence.RepeatType.MONTHLY);
         Recur recur = new Recur(Recur.MONTHLY, null);
         recur.getMonthDayList().add(13);
         recurrence.setRrule(recur.toString());
         repeatingQuest.setRecurrence(recurrence);
-        List<Quest> result = rqScheduler.schedule(repeatingQuest, midOfMonth, today.with(lastDayOfMonth()));
-        assertThat(result.size(), is(0));
+        List<Quest> result = rqScheduler.schedule(repeatingQuest, midOfMonth);
+        assertThat(result.size(), is(1));
     }
 
     @Test
@@ -427,8 +437,15 @@ public class RepeatingQuestSchedulerTest {
         recurrence.setDtstartDate(middleOfMonth);
         recurrence.setFlexibleCount(15);
         rq.setRecurrence(recurrence);
-        List<Quest> result = rqScheduler.schedule(rq, middleOfMonth, today.with(lastDayOfMonth()));
-        assertThat(result.size(), is(lessThanOrEqualTo(11)));
+        List<Quest> result = rqScheduler.schedule(rq, middleOfMonth);
+        Map<Month, List<Quest>> groupedQuests = new ArrayMap<>();
+        groupedQuests.put(today.getMonth(), new ArrayList<>());
+        groupedQuests.put(today.plusMonths(1).getMonth(), new ArrayList<>());
+        for (Quest q : result) {
+            groupedQuests.get(q.getScheduledDate().getMonth()).add(q);
+        }
+        assertThat(groupedQuests.get(today.getMonth()).size(), is(lessThanOrEqualTo(11)));
+        assertThat(groupedQuests.get(today.plusMonths(1).getMonth()).size(), is(15));
         for (Quest q : result) {
             assertThat(q.getEndDate(), is(greaterThanOrEqualTo(middleOfMonth)));
         }
@@ -449,8 +466,16 @@ public class RepeatingQuestSchedulerTest {
         recurrence.setDtstartDate(middleMonday);
         recurrence.setFlexibleCount(15);
         rq.setRecurrence(recurrence);
-        List<Quest> result = rqScheduler.schedule(rq, middleMonday, today.with(lastDayOfMonth()));
-        assertThat(result.size(), is(lessThanOrEqualTo(11)));
+        List<Quest> result = rqScheduler.schedule(rq, middleMonday);
+
+        Map<Month, List<Quest>> groupedQuests = new ArrayMap<>();
+        groupedQuests.put(today.getMonth(), new ArrayList<>());
+        groupedQuests.put(today.plusMonths(1).getMonth(), new ArrayList<>());
+        for (Quest q : result) {
+            groupedQuests.get(q.getScheduledDate().getMonth()).add(q);
+        }
+        assertThat(groupedQuests.get(today.getMonth()).size(), is(lessThanOrEqualTo(11)));
+        assertThat(groupedQuests.get(today.plusMonths(1).getMonth()).size(), is(15));
 
         for (Quest q : result) {
             assertThat(q.getEndDate(), is(greaterThanOrEqualTo(middleMonday)));
@@ -477,7 +502,6 @@ public class RepeatingQuestSchedulerTest {
     @Test
     public void shouldNotOverscheduleWeeklyFlexibleQuest() {
         RepeatingQuest rq = createRepeatingQuest();
-        rq.addScheduledPeriodEndDate(endOfWeek);
         rq.setRecurrence(createFlexibleWeeklyRecurrence(startOfWeek, 3));
 
         List<Quest> alreadyScheduled = new ArrayList<>();
@@ -486,10 +510,28 @@ public class RepeatingQuestSchedulerTest {
         q1.setCompletedAtMinute(10);
         alreadyScheduled.add(q1);
         LocalDate tuesday = today.with(DayOfWeek.TUESDAY);
-        List<Quest> scheduled = rqScheduler.schedule(rq, startOfWeek, endOfWeek, tuesday, alreadyScheduled);
-        assertThat(scheduled.size(), is(2));
+        List<Quest> scheduled = rqScheduler.schedule(rq, tuesday, alreadyScheduled);
+        assertThat(scheduled.size(), is(11));
         assertThat(scheduled.get(0).getEnd(), is(greaterThanOrEqualTo(DateUtils.toMillis(tuesday))));
         assertThat(scheduled.get(1).getEnd(), is(greaterThanOrEqualTo(DateUtils.toMillis(tuesday))));
+    }
+
+    @Test
+    public void shouldNotOverscheduleMonthlyFlexibleQuest() {
+        RepeatingQuest rq = createRepeatingQuest();
+        rq.setRecurrence(createFlexibleMonthlyRecurrence(startOfMonth, 10));
+
+        List<Quest> alreadyScheduled = new ArrayList<>();
+        Quest q1 = new Quest("1", startOfMonth);
+        q1.setCompletedAtDateFromLocal(startOfMonth);
+        q1.setCompletedAtMinute(10);
+        alreadyScheduled.add(q1);
+        LocalDate secondDayOfMonth = today.withDayOfMonth(2);
+        List<Quest> scheduled = rqScheduler.schedule(rq, secondDayOfMonth, alreadyScheduled);
+        assertThat(scheduled.size(), is(19));
+        for(Quest q : scheduled) {
+            assertThat(q.getEnd(), is(greaterThanOrEqualTo(DateUtils.toMillis(secondDayOfMonth))));
+        }
     }
 
     @Test
@@ -500,6 +542,16 @@ public class RepeatingQuestSchedulerTest {
         List<Quest> scheduled = rqScheduler.schedule(rq, today.with(lastDayOfMonth()).minusDays(2));
         assertThat(scheduled.size(), is(greaterThanOrEqualTo(10)));
         assertThat(scheduled.size(), is(lessThanOrEqualTo(12)));
+    }
+
+    @Test
+    public void shouldNotScheduleAlreadyScheduledPeriod() {
+        RepeatingQuest repeatingQuest = createRepeatingQuest();
+        Recurrence recurrence = createWeeklyFixedRecurrence(startOfWeek);
+        repeatingQuest.setRecurrence(recurrence);
+        rqScheduler.schedule(repeatingQuest, startOfWeek);
+        List<Quest> result = rqScheduler.schedule(repeatingQuest, startOfWeek);
+        assertThat(result.size(), is(0));
     }
 
     @NonNull
@@ -523,9 +575,10 @@ public class RepeatingQuestSchedulerTest {
     }
 
     @NonNull
-    private Recurrence createWeeklyRecurrence(LocalDate startDate) {
+    private Recurrence createWeeklyFixedRecurrence(LocalDate startDate) {
         Recurrence recurrence = Recurrence.create();
         recurrence.setDtstartDate(startDate);
+        recurrence.setRecurrenceType(Recurrence.RepeatType.WEEKLY);
         Recur recur = new Recur(Recur.WEEKLY, null);
         recur.getDayList().add(WeekDay.MO);
         recur.getDayList().add(WeekDay.WE);
