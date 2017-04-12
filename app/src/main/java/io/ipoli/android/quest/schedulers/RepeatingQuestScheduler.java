@@ -89,7 +89,6 @@ public class RepeatingQuestScheduler {
             return quests;
         } else if (isFlexible && repeatType == RepeatType.MONTHLY) {
 
-
             startDate = currentDate.with(firstDayOfMonth());
             endDate = currentDate.with(lastDayOfMonth());
 
@@ -168,7 +167,7 @@ public class RepeatingQuestScheduler {
         int countForMonth = recurrence.getFlexibleCount();
 
         for (Quest q : scheduledQuests) {
-            if (q.isCompleted() && !q.getScheduledDate().isBefore(startDate) && !q.getScheduledDate().isAfter(endDate)) {
+            if (q.isCompleted() && DateUtils.isBetween(q.getScheduledDate(), startDate, endDate)) {
                 countForMonth--;
             }
         }
@@ -234,7 +233,7 @@ public class RepeatingQuestScheduler {
         int countForWeek = recurrence.getFlexibleCount();
 
         for (Quest q : scheduledQuests) {
-            if (q.isCompleted() && !q.getScheduledDate().isBefore(startDate) && !q.getScheduledDate().isAfter(endDate)) {
+            if (q.isCompleted() && DateUtils.isBetween(q.getScheduledDate(), startDate, endDate)) {
                 countForWeek--;
             }
         }
