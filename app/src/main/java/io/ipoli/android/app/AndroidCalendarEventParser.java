@@ -200,9 +200,10 @@ public class AndroidCalendarEventParser {
             rq.setDuration(duration);
         }
 
+        String rRule = event.rRule;
         Recur recur;
         try {
-            recur = new Recur(event.rRule);
+            recur = new Recur(rRule);
         } catch (ParseException ex) {
             //log app error
             return null;
@@ -228,11 +229,20 @@ public class AndroidCalendarEventParser {
         switch (frequency) {
             case Recur.MONTHLY:
                 recurrence.setRecurrenceType(Recurrence.RepeatType.MONTHLY);
-                recurrence.setRrule(event.rRule);
+//                FREQ=MONTHLY;UNTIL=20170615T140000Z;INTERVAL=2;WKST=SU;BYMONTHDAY=13
+//                FREQ=MONTHLY;WKST=SU
+//                FREQ=MONTHLY;WKST=SU;BYDAY=2TH
+                if(recur.getMonthDayList().isEmpty() && recur.getDayList().isEmpty()) {
+                    recur.getMonthDayList().add(startDate.getDayOfMonth());
+                }
+                recurrence.setRrule(recur.toString());
                 break;
             case Recur.WEEKLY:
                 recurrence.setRecurrenceType(Recurrence.RepeatType.WEEKLY);
-                recurrence.setRrule(event.rRule);
+                if(recur.getDayList().isEmpty()) {
+                    recur.getDayList().add(new WeekDay(startDate.getDayOfWeek().toString().substring(0,2)));
+                }
+                recurrence.setRrule(recur.toString());
                 break;
             case Recur.DAILY:
                 recurrence.setRecurrenceType(Recurrence.RepeatType.DAILY);
@@ -240,7 +250,10 @@ public class AndroidCalendarEventParser {
                 break;
             case Recur.YEARLY:
                 recurrence.setRecurrenceType(Recurrence.RepeatType.YEARLY);
-                recurrence.setRrule(event.rRule);
+                if(recur.getYearDayList().isEmpty()) {
+                    recur.getYearDayList().add(startDate.getDayOfYear());
+                }
+                recurrence.setRrule(recur.toString());
         }
 
         rq.setRecurrence(recurrence);
@@ -254,6 +267,7 @@ public class AndroidCalendarEventParser {
         }
 
         Log.d("AAA", event.title + " " + event.rRule);
+        Log.d("AAAB", event.title + " " + recurrence.getRrule());
 
         return rq;
     }
