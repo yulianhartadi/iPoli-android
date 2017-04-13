@@ -559,7 +559,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         }
         Map<RepeatingQuest, List<Quest>> repeatingQuestToScheduledQuests = new HashMap<>();
         for (RepeatingQuest repeatingQuest : repeatingQuests) {
-            List<Quest> scheduledQuests = repeatingQuestScheduler.scheduleAhead(repeatingQuest, LocalDate.now());
+            List<Quest> scheduledQuests = repeatingQuestScheduler.schedule(repeatingQuest, LocalDate.now());
             repeatingQuestToScheduledQuests.put(repeatingQuest, scheduledQuests);
         }
 

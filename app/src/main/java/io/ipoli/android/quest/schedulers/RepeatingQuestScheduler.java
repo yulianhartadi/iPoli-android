@@ -14,6 +14,7 @@ import net.fortuna.ical4j.model.parameter.Value;
 import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.TextStyle;
+import org.threeten.bp.temporal.TemporalAdjusters;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
+import io.ipoli.android.quest.data.Recurrence.RepeatType;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.reminder.data.Reminder;
 
@@ -50,62 +52,87 @@ public class RepeatingQuestScheduler {
         this.seed = seed;
     }
 
-    public List<Quest> scheduleAhead(RepeatingQuest repeatingQuest, LocalDate startDate) {
-        List<Quest> quests = new ArrayList<>();
-        Recurrence.RepeatType repeatType = repeatingQuest.getRecurrence().getRecurrenceType();
-        if (repeatingQuest.isFlexible()) {
-            if (repeatType == Recurrence.RepeatType.MONTHLY) {
-                quests.addAll(scheduleFlexibleForMonth(repeatingQuest, startDate));
-            } else if (repeatType == Recurrence.RepeatType.WEEKLY) {
-                quests.addAll(scheduleFlexibleFor4WeeksAhead(startDate, repeatingQuest));
+    public List<Quest> schedule(RepeatingQuest repeatingQuest, LocalDate currentDate) {
+        return schedule(repeatingQuest, currentDate, new ArrayList<>());
+    }
+
+    public List<Quest> schedule(RepeatingQuest repeatingQuest, LocalDate currentDate, List<Quest> scheduledQuests) {
+        Recurrence recurrence = repeatingQuest.getRecurrence();
+        RepeatType repeatType = recurrence.getRecurrenceType();
+        LocalDate startDate;
+        LocalDate endDate;
+        boolean isFlexible = repeatingQuest.isFlexible();
+        if (isFlexible && (repeatType == RepeatType.WEEKLY || repeatType == RepeatType.DAILY)) {
+            LocalDate dtEnd = recurrence.getDtendDate();
+            if (dtEnd != null && dtEnd.isBefore(currentDate.with(DayOfWeek.MONDAY))) {
+                return new ArrayList<>();
             }
+            List<Pair<LocalDate, LocalDate>> bounds = getBoundsFor4WeeksAhead(currentDate);
+            List<Quest> quests = new ArrayList<>();
+            for (int i = 0; i < bounds.size(); i++) {
+                Pair<LocalDate, LocalDate> weekPair = bounds.get(i);
+                if (dtEnd != null && DateUtils.isBetween(dtEnd, weekPair.first, weekPair.second)) {
+                    quests.addAll(scheduleWeeklyFlexibleQuest(repeatingQuest, weekPair.first, dtEnd, currentDate, scheduledQuests));
+                    break;
+                }
+                quests.addAll(scheduleWeeklyFlexibleQuest(repeatingQuest, weekPair.first, weekPair.second, currentDate, scheduledQuests));
+            }
+            return quests;
+        } else if (!isFlexible && (repeatType == RepeatType.WEEKLY || repeatType == RepeatType.DAILY)) {
+            List<Pair<LocalDate, LocalDate>> bounds = getBoundsFor4WeeksAhead(currentDate);
+            List<Quest> quests = new ArrayList<>();
+            for (int i = 0; i < bounds.size(); i++) {
+                Pair<LocalDate, LocalDate> weekPair = bounds.get(i);
+                quests.addAll(createQuestsForFixedRepeatingQuest(repeatingQuest, weekPair.first, weekPair.second, currentDate, scheduledQuests));
+            }
+            return quests;
+        } else if (isFlexible && repeatType == RepeatType.MONTHLY) {
+
+            startDate = currentDate.with(firstDayOfMonth());
+            endDate = currentDate.with(lastDayOfMonth());
+
+            LocalDate dtEnd = recurrence.getDtendDate();
+            if (dtEnd != null && dtEnd.isBefore(startDate)) {
+                return new ArrayList<>();
+            }
+
+            if (dtEnd != null && DateUtils.isBetween(dtEnd, startDate, endDate)) {
+                return scheduleMonthlyFlexibleQuest(repeatingQuest, startDate, dtEnd, currentDate, scheduledQuests);
+            }
+
+            List<Quest> result = scheduleMonthlyFlexibleQuest(repeatingQuest, startDate, endDate, currentDate, scheduledQuests);
+
+            if (result.size() < recurrence.getFlexibleCount()) {
+
+                LocalDate nextStart = startDate.plusMonths(1);
+                LocalDate nextEnd = endDate.plusMonths(1).with(lastDayOfMonth());
+
+                if (dtEnd != null && DateUtils.isBetween(dtEnd, nextStart, nextEnd)) {
+                    nextEnd = dtEnd;
+                }
+                result.addAll(scheduleMonthlyFlexibleQuest(repeatingQuest, nextStart, nextEnd, currentDate, scheduledQuests));
+            }
+            return result;
         } else {
-            if (repeatType == Recurrence.RepeatType.MONTHLY) {
-                quests.addAll(scheduleFixedForMonth(repeatingQuest, startDate));
-            } else {
-                quests.addAll(scheduleFor4WeeksAhead(repeatingQuest, startDate));
+            startDate = currentDate.with(firstDayOfMonth());
+            endDate = currentDate.with(lastDayOfMonth());
+            List<Quest> result = createQuestsForFixedRepeatingQuest(repeatingQuest, startDate, endDate, currentDate, scheduledQuests);
+
+            // monthly repeat type can have only 1 quest per month, if not scheduled -> schedule for next month
+            if (result.isEmpty()) {
+                result.addAll(createQuestsForFixedRepeatingQuest(repeatingQuest, startDate.plusMonths(1), endDate.plusMonths(1).with(TemporalAdjusters.lastDayOfMonth()), currentDate, scheduledQuests));
             }
+            return result;
         }
-        return quests;
+        // @TODO handle yearly scheduling
 
     }
 
-    private List<Quest> scheduleFixedForMonth(RepeatingQuest repeatingQuest, LocalDate currentDate) {
-        List<Quest> quests = new ArrayList<>();
-        LocalDate fiveWeeksEnd = currentDate.with(DayOfWeek.SUNDAY).plusWeeks(4);
-        quests.addAll(saveQuestsInRange(repeatingQuest, currentDate, fiveWeeksEnd));
-        return quests;
-    }
-
-    private List<Quest> scheduleFlexibleFor4WeeksAhead(LocalDate currentDate, RepeatingQuest rq) {
-        List<Pair<LocalDate, LocalDate>> bounds = getBoundsFor4WeeksAhead(currentDate);
-        List<Quest> quests = new ArrayList<>();
-        for (int i = 0; i < bounds.size(); i++) {
-            Pair<LocalDate, LocalDate> weekPair = bounds.get(i);
-            quests.addAll(saveQuestsInRange(rq, weekPair.first, weekPair.second));
-        }
-        return quests;
-    }
-
-    private List<Quest> scheduleFlexibleForMonth(RepeatingQuest repeatingQuest, LocalDate currentDate) {
-        return saveQuestsInRange(repeatingQuest, currentDate, currentDate.with(lastDayOfMonth()));
-    }
-
-    private List<Quest> scheduleFor4WeeksAhead(RepeatingQuest repeatingQuest, LocalDate currentDate) {
-        List<Quest> quests = new ArrayList<>();
-        for (Pair<LocalDate, LocalDate> weekPair : getBoundsFor4WeeksAhead(currentDate)) {
-            quests.addAll(saveQuestsInRange(repeatingQuest, weekPair.first, weekPair.second));
-        }
-        return quests;
-    }
-
-    private List<Quest> saveQuestsInRange(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate) {
-        if (!repeatingQuest.shouldBeScheduledForPeriod(endDate)) {
+    public List<Quest> scheduleForDay(RepeatingQuest repeatingQuest, LocalDate currentDate) {
+        if (repeatingQuest.isFlexible()) {
             return new ArrayList<>();
         }
-        List<Quest> questsToCreate = schedule(repeatingQuest, startDate, endDate);
-        repeatingQuest.addScheduledPeriodEndDate(endDate);
-        return questsToCreate;
+        return doCreateQuestsForFixedRepeatingQuest(repeatingQuest, currentDate, currentDate, currentDate, new ArrayList<>());
     }
 
     @NonNull
@@ -114,7 +141,7 @@ public class RepeatingQuestScheduler {
         LocalDate endOfWeek = currentDate.with(DayOfWeek.SUNDAY);
 
         List<Pair<LocalDate, LocalDate>> weekBounds = new ArrayList<>();
-        weekBounds.add(new Pair<>(currentDate, endOfWeek));
+        weekBounds.add(new Pair<>(startOfWeek, endOfWeek));
         for (int i = 0; i < 3; i++) {
             startOfWeek = startOfWeek.plusDays(7);
             endOfWeek = endOfWeek.plusDays(7);
@@ -123,43 +150,45 @@ public class RepeatingQuestScheduler {
         return weekBounds;
     }
 
-    public List<Quest> schedule(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate) {
-        if (repeatingQuest.isFlexible()) {
-            return scheduleFlexibleQuest(repeatingQuest, startDate);
-        }
-        return scheduleFixedQuest(repeatingQuest, startDate, endDate);
-    }
-
-    private List<Quest> scheduleFlexibleQuest(RepeatingQuest repeatingQuest, LocalDate startDate) {
-        Recurrence recurrence = repeatingQuest.getRecurrence();
-        if (recurrence.getRecurrenceType() == Recurrence.RepeatType.WEEKLY) {
-            return scheduleWeeklyFlexibleQuest(repeatingQuest, startDate);
-        }
-        return scheduleMonthlyFlexibleQuest(repeatingQuest, startDate);
-    }
-
     @NonNull
-    private List<Quest> scheduleMonthlyFlexibleQuest(RepeatingQuest repeatingQuest, LocalDate startDate) {
+    private List<Quest> scheduleMonthlyFlexibleQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate, LocalDate currentDate, List<Quest> scheduledQuests) {
+
+        if (repeatingQuest.isScheduledForDate(endDate)) {
+            return new ArrayList<>();
+        }
+
+        repeatingQuest.addScheduledPeriodEndDate(endDate);
+
         Recurrence recurrence = repeatingQuest.getRecurrence();
-        List<LocalDate> possibleDates = findMonthlyPossibleDates(recurrence, startDate);
+        int questsToScheduleCount = getScheduleCount(startDate, endDate, scheduledQuests, recurrence);
+        List<LocalDate> possibleDates = findMonthlyPossibleDates(recurrence, questsToScheduleCount, startDate, endDate, currentDate);
         List<Quest> result = new ArrayList<>();
+
         for (LocalDate date : possibleDates) {
             result.add(createQuestFromRepeating(repeatingQuest, date));
-            if (result.size() == recurrence.getFlexibleCount()) {
-                break;
-            }
         }
         return result;
     }
 
+    private int getScheduleCount(LocalDate startDate, LocalDate endDate, List<Quest> scheduledQuests, Recurrence recurrence) {
+        int countForMonth = recurrence.getFlexibleCount();
+
+        for (Quest q : scheduledQuests) {
+            if (DateUtils.isBetween(q.getOriginalScheduledDate(), startDate, endDate)) {
+                countForMonth--;
+            }
+        }
+        return countForMonth;
+    }
+
     @NonNull
-    private List<LocalDate> findMonthlyPossibleDates(Recurrence recurrence, LocalDate start) {
+    private List<LocalDate> findMonthlyPossibleDates(Recurrence recurrence, int maxDatesToFind, LocalDate startDate, LocalDate endDate, LocalDate currentDate) {
         Set<LocalDate> possibleDates = new HashSet<>();
         List<LocalDate> allMonthDays = new ArrayList<>();
-        int lastDayOfMonth = start.with(lastDayOfMonth()).getDayOfMonth();
-        for (int i = start.with(firstDayOfMonth()).getDayOfMonth(); i <= lastDayOfMonth; i++) {
+        int lastDayOfMonth = endDate.getDayOfMonth();
+        for (int i = startDate.getDayOfMonth(); i <= lastDayOfMonth; i++) {
             WeekDayList weekDayList = getWeekDayList(recurrence.getRrule());
-            LocalDate date = start.withDayOfMonth(i);
+            LocalDate date = startDate.withDayOfMonth(i);
             String weekDayText = date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH).substring(0, 2).toUpperCase();
             WeekDay weekDay = new WeekDay(weekDayText);
             if (weekDayList.contains(weekDay)) {
@@ -178,50 +207,65 @@ public class RepeatingQuestScheduler {
         }
         List<LocalDate> possibleDateList = new ArrayList<>(possibleDates);
         Collections.shuffle(possibleDateList, new Random(seed));
-        possibleDateList = possibleDateList.subList(0, recurrence.getFlexibleCount());
+        if (possibleDateList.size() > recurrence.getFlexibleCount()) {
+            possibleDateList = possibleDateList.subList(0, recurrence.getFlexibleCount());
+        }
 
         List<LocalDate> result = new ArrayList<>();
         for (LocalDate possibleDate : possibleDateList) {
-            if (!possibleDate.isBefore(start)) {
+            if (!possibleDate.isBefore(currentDate)) {
                 result.add(possibleDate);
             }
+        }
+
+        if (result.size() > maxDatesToFind) {
+            return result.subList(0, maxDatesToFind);
         }
         return result;
     }
 
     @NonNull
-    private List<Quest> scheduleWeeklyFlexibleQuest(RepeatingQuest repeatingQuest, LocalDate startDate) {
+    private List<Quest> scheduleWeeklyFlexibleQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate, LocalDate currentDate, List<Quest> scheduledQuests) {
+
+        if (repeatingQuest.isScheduledForDate(endDate)) {
+            return new ArrayList<>();
+        }
+
+        repeatingQuest.addScheduledPeriodEndDate(endDate);
+
         Recurrence recurrence = repeatingQuest.getRecurrence();
-        int countForWeek = recurrence.getFlexibleCount();
-        List<LocalDate> possibleDates = findPossibleDates(recurrence.getRrule(), countForWeek, startDate);
+        int questsToScheduleCount = getScheduleCount(startDate, endDate, scheduledQuests, recurrence);
+
+        LocalDate start = startDate.isAfter(currentDate) ? startDate : currentDate;
+        List<LocalDate> possibleDates = findWeeklyPossibleDates(recurrence.getRrule(), questsToScheduleCount, start, endDate);
 
         Collections.shuffle(possibleDates, new Random(seed));
 
         List<Quest> result = new ArrayList<>();
-        for (LocalDate endDate : possibleDates) {
-            result.add(createQuestFromRepeating(repeatingQuest, endDate));
+        for (LocalDate scheduledDate : possibleDates) {
+            result.add(createQuestFromRepeating(repeatingQuest, scheduledDate));
         }
         return result;
     }
 
     @NonNull
-    private List<LocalDate> findPossibleDates(String rrule, int countForWeek, LocalDate start) {
+    private List<LocalDate> findWeeklyPossibleDates(String rrule, int maxDatesToFind, LocalDate start, LocalDate end) {
         Set<LocalDate> possibleDates = new HashSet<>();
 
         WeekDayList weekDayList = getWeekDayList(rrule);
         addPreferredDays(start, possibleDates, weekDayList);
-        if (weekDayList.size() < countForWeek) {
-            addAdditionalDays(countForWeek, start, possibleDates);
+        if (weekDayList.size() < maxDatesToFind) {
+            addAdditionalDays(maxDatesToFind, start, possibleDates);
         }
 
         List<LocalDate> result = new ArrayList<>();
         for (LocalDate possibleDate : possibleDates) {
-            if (!possibleDate.isBefore(start)) {
+            if (!possibleDate.isBefore(start) && !possibleDate.isAfter(end)) {
                 result.add(possibleDate);
             }
         }
-        if (result.size() > countForWeek) {
-            return result.subList(0, countForWeek);
+        if (result.size() > maxDatesToFind) {
+            return result.subList(0, maxDatesToFind);
         }
         return result;
     }
@@ -229,7 +273,6 @@ public class RepeatingQuestScheduler {
     private WeekDayList getWeekDayList(String rrule) {
         try {
             return new Recur(rrule).getDayList();
-
         } catch (Exception e) {
             return new WeekDayList();
         }
@@ -258,7 +301,18 @@ public class RepeatingQuestScheduler {
     }
 
     @NonNull
-    private List<Quest> scheduleFixedQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate) {
+    private List<Quest> createQuestsForFixedRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate, LocalDate currentDate, List<Quest> scheduledQuests) {
+
+        if (repeatingQuest.isScheduledForDate(endDate)) {
+            return new ArrayList<>();
+        }
+        repeatingQuest.addScheduledPeriodEndDate(endDate);
+
+        return doCreateQuestsForFixedRepeatingQuest(repeatingQuest, startDate, endDate, currentDate, scheduledQuests);
+    }
+
+    @NonNull
+    private List<Quest> doCreateQuestsForFixedRepeatingQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate, LocalDate currentDate, List<Quest> scheduledQuests) {
         Recurrence recurrence = repeatingQuest.getRecurrence();
         String rruleStr = recurrence.getRrule();
         List<Quest> res = new ArrayList<>();
@@ -282,10 +336,20 @@ public class RepeatingQuestScheduler {
         DateList dates = recur.getDates(new Date(DateUtils.toMillis(startDate)), new Date(recurrence.getDtstart()),
                 getPeriodEnd(endDate), Value.DATE);
 
+        Set<LocalDate> completedDates = new HashSet<>();
+        for (Quest q : scheduledQuests) {
+            completedDates.add(q.getOriginalScheduledDate());
+        }
+
         for (Object obj : dates) {
             Date d = (Date) obj;
-            res.add(createQuestFromRepeating(repeatingQuest, DateUtils.fromMillis(d.getTime())));
+            LocalDate scheduledDate = DateUtils.fromMillis(d.getTime());
+            if (!scheduledDate.isBefore(currentDate) && !completedDates.contains(scheduledDate)) {
+                res.add(createQuestFromRepeating(repeatingQuest, scheduledDate));
+            }
         }
+
+
         return res;
     }
 

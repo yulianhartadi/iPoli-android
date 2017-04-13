@@ -16,6 +16,7 @@ import com.squareup.otto.Bus;
 import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     private final View inboxQuestsView;
     private final View questRemindersView;
     private final View startedQuestsView;
-    private final View uncompletedQuestsForRepeatingQuestView;
+    private final View scheduledForRepeatingQuest;
     private final View completedDayQuestsView;
 
     public CouchbaseQuestPersistenceService(Database database, ObjectMapper objectMapper, Bus eventBus) {
@@ -127,12 +128,20 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
             }, Constants.DEFAULT_VIEW_VERSION);
         }
 
-        uncompletedQuestsForRepeatingQuestView = database.getView("quests/uncompletedForRepeatingQuest");
-        if (uncompletedQuestsForRepeatingQuestView.getMap() == null) {
-            uncompletedQuestsForRepeatingQuestView.setMapReduce((document, emitter) -> {
+        View oldView = database.getExistingView("quests/uncompletedForRepeatingQuest");
+        if (oldView != null) {
+            oldView.delete();
+        }
+
+        scheduledForRepeatingQuest = database.getView("quests/scheduledForRepeatingQuest");
+        if (scheduledForRepeatingQuest.getMap() == null) {
+            scheduledForRepeatingQuest.setMapReduce((document, emitter) -> {
                 String type = (String) document.get("type");
-                if (Quest.TYPE.equals(type) && document.containsKey("repeatingQuestId") && !document.containsKey("completedAt")) {
-                    emitter.emit(document.get("repeatingQuestId"), document);
+                if (Quest.TYPE.equals(type) && document.containsKey("repeatingQuestId") && document.containsKey("originalScheduled")) {
+                    List<Object> key = new ArrayList<>();
+                    key.add(document.get("repeatingQuestId"));
+                    key.add(document.get("originalScheduled"));
+                    emitter.emit(key, document);
                 }
             }, (keys, values, rereduce) -> {
                 List<Quest> quests = new ArrayList<>();
@@ -280,11 +289,12 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     }
 
     @Override
-    public void findAllUpcomingForRepeatingQuest(LocalDate startDate, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
-        Query query = uncompletedQuestsForRepeatingQuestView.createQuery();
-        query.setGroupLevel(1);
-        query.setStartKey(repeatingQuestId);
-        query.setEndKey(repeatingQuestId);
+    public void findAllUpcomingForRepeatingQuest(LocalDate scheduledPeriodStart, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
+        Query query = scheduledForRepeatingQuest.createQuery();
+        query.setGroupLevel(2);
+        query.setStartKey(Arrays.asList(repeatingQuestId, String.valueOf(DateUtils.toMillis(scheduledPeriodStart))));
+        query.setEndKey(Arrays.asList(repeatingQuestId, String.valueOf(DateUtils.toMillis(scheduledPeriodStart.plusYears(2)))));
+
         try {
             QueryEnumerator enumerator = query.run();
             List<Quest> result = new ArrayList<>();
@@ -292,9 +302,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 QueryRow row = enumerator.next();
                 List<Quest> quests = (List<Quest>) row.getValue();
                 for (Quest q : quests) {
-                    if (q.getScheduled() == null || !q.getScheduledDate().isBefore(startDate)) {
-                        result.add(q);
-                    }
+                    result.add(q);
                 }
             }
             listener.onDataChanged(result);
