@@ -16,6 +16,7 @@ import com.squareup.otto.Bus;
 import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -133,7 +134,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
         scheduledForRepeatingQuest = database.getView("quests/scheduledForRepeatingQuest");
         if (scheduledForRepeatingQuest.getMap() == null) {
-            scheduledForRepeatingQuest.setMap((document, emitter) -> {
+            scheduledForRepeatingQuest.setMapReduce((document, emitter) -> {
                 String type = (String) document.get("type");
                 if (Quest.TYPE.equals(type) && document.containsKey("repeatingQuestId") && document.containsKey("originalScheduled")) {
                     List<Object> key = new ArrayList<>();
@@ -141,6 +142,12 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                     key.add(document.get("originalScheduled"));
                     emitter.emit(key, document);
                 }
+            }, (keys, values, rereduce) -> {
+                List<Quest> quests = new ArrayList<>();
+                for (Object v : values) {
+                    quests.add(toObject(v));
+                }
+                return quests;
             }, Constants.DEFAULT_VIEW_VERSION);
         }
     }
@@ -283,27 +290,24 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     @Override
     public void findAllUpcomingForRepeatingQuest(LocalDate scheduledPeriodStart, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
         Query query = scheduledForRepeatingQuest.createQuery();
-//        query.setGroupLevel(2);
-//        query.setStartKey(Arrays.asList(repeatingQuestId, DateUtils.toMillis(scheduledPeriodStart)));
-//        query.setEndKey(Arrays.asList(repeatingQuestId, DateUtils.toMillis(scheduledPeriodStart.plusYears(2))));
+        query.setGroupLevel(2);
+        query.setStartKey(Arrays.asList(repeatingQuestId, String.valueOf(DateUtils.toMillis(scheduledPeriodStart))));
+        query.setEndKey(Arrays.asList(repeatingQuestId, String.valueOf(DateUtils.toMillis(scheduledPeriodStart.plusYears(2)))));
 
-        runQuery(query, listener);
-//        try {
-//            QueryEnumerator enumerator = query.run();
-//            List<Quest> result = new ArrayList<>();
-//            while (enumerator.hasNext()) {
-//                QueryRow row = enumerator.next();
-//                Quest q = (Quest) row.getValue();
-//                for (Quest q : quests) {
-//                    if (q.getScheduled() == null || !q.getScheduledDate().isBefore(startDate)) {
-//                        result.add(q);
-//                    }
-//                }
-//            }
-//            listener.onDataChanged(result);
-//        } catch (CouchbaseLiteException e) {
-//            postError(e);
-//        }
+        try {
+            QueryEnumerator enumerator = query.run();
+            List<Quest> result = new ArrayList<>();
+            while (enumerator.hasNext()) {
+                QueryRow row = enumerator.next();
+                List<Quest> quests = (List<Quest>) row.getValue();
+                for (Quest q : quests) {
+                    result.add(q);
+                }
+            }
+            listener.onDataChanged(result);
+        } catch (CouchbaseLiteException e) {
+            postError(e);
+        }
     }
 
     @Override
