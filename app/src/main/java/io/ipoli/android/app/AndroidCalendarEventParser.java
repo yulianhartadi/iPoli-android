@@ -229,9 +229,6 @@ public class AndroidCalendarEventParser {
         switch (frequency) {
             case Recur.MONTHLY:
                 recurrence.setRecurrenceType(Recurrence.RepeatType.MONTHLY);
-//                FREQ=MONTHLY;UNTIL=20170615T140000Z;INTERVAL=2;WKST=SU;BYMONTHDAY=13
-//                FREQ=MONTHLY;WKST=SU
-//                FREQ=MONTHLY;WKST=SU;BYDAY=2TH
                 if(recur.getMonthDayList().isEmpty() && recur.getDayList().isEmpty()) {
                     recur.getMonthDayList().add(startDate.getDayOfMonth());
                 }
