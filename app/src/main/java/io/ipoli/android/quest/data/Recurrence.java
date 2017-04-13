@@ -14,7 +14,7 @@ public class Recurrence {
 
     public static final String RRULE_EVERY_DAY = "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR,SA,SU";
 
-    public enum RepeatType {DAILY, WEEKLY, MONTHLY;}
+    public enum RepeatType {DAILY, WEEKLY, MONTHLY, YEARLY;}
 
     private int flexibleCount;
 

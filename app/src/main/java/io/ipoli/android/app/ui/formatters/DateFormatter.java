@@ -4,7 +4,6 @@ import org.threeten.bp.LocalDate;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import io.ipoli.android.app.utils.DateUtils;
 
@@ -43,7 +42,6 @@ public class DateFormatter {
         if (DateUtils.isYesterday(date)) {
             return "Yesterday";
         }
-        DATE_NO_YEAR_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
         return DATE_NO_YEAR_FORMAT.format(DateUtils.toStartOfDay(date));
     }
 

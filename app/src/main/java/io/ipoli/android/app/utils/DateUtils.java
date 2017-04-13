@@ -93,6 +93,13 @@ public class DateUtils {
         return !date.before(start) && !date.after(end);
     }
 
+    public static boolean isBetween(LocalDate date, LocalDate start, LocalDate end) {
+        if (date == null || start == null || end == null) {
+            return false;
+        }
+        return !date.isBefore(start) && !date.isAfter(end);
+    }
+
     @NonNull
     public static List<Pair<LocalDate, LocalDate>> getBoundsFor4MonthsInThePast(LocalDate currentDate) {
         LocalDate monthStart = currentDate.minusMonths(3).with(firstDayOfMonth());
