@@ -333,7 +333,7 @@ public class RepeatingQuestScheduler {
             return res;
         }
 
-        DateList dates = recur.getDates(new Date(DateUtils.toMillis(startDate)), new Date(recurrence.getDtstart()),
+        DateList dates = recur.getDates(new Date(recurrence.getDtstart()), new Date(DateUtils.toMillis(startDate)),
                 getPeriodEnd(endDate), Value.DATE);
 
         Set<LocalDate> completedDates = new HashSet<>();

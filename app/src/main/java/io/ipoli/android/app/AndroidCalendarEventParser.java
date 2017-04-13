@@ -1,17 +1,22 @@
 package io.ipoli.android.app;
 
 import android.provider.CalendarContract;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 
-import org.threeten.bp.Duration;
+import net.fortuna.ical4j.model.Dur;
+import net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.WeekDay;
+
 import org.threeten.bp.Instant;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneId;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
@@ -19,6 +24,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.SourceMapping;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
@@ -72,7 +78,7 @@ public class AndroidCalendarEventParser {
                 if (q == null) {
                     continue;
                 }
-                if(StringUtils.isEmpty(e.originalId)) {
+                if (StringUtils.isEmpty(e.originalId)) {
                     quests.add(parseQuest(e, category));
                 } else {
                     repeatingQuestQuests.add(q);
@@ -83,51 +89,56 @@ public class AndroidCalendarEventParser {
         return new Result(quests, repeatingQuestQuests, repeatingQuests);
     }
 
-    private Quest parseQuest(Event e, Category category) {
-        if(StringUtils.isEmpty(e.title) || String.valueOf(CalendarContract.Events.STATUS_CANCELED).equals(e.status)) {
+    private Quest parseQuest(Event event, Category category) {
+        if (StringUtils.isEmpty(event.title) || String.valueOf(CalendarContract.Events.STATUS_CANCELED).equals(event.status)) {
             return null;
         }
 
-        LocalDateTime startLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(e.dTStart), getZoneId(e));
+        LocalDateTime startLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(event.dTStart), getZoneId(event));
         LocalDate startDate = DateUtils.toStartOfDayUTCLocalDate(startLocalDateTime.toLocalDate());
-        if(startDate.isBefore(LocalDate.now())) {
+        if (startDate.isBefore(LocalDate.now())) {
             return null;
         }
 
-        Quest q = new Quest(e.title);
+        Quest q = new Quest(event.title);
         q.setSource(Constants.SOURCE_ANDROID_CALENDAR);
-        q.setSourceMapping(SourceMapping.fromGoogleCalendar(e.calendarId, e.id));
+        q.setSourceMapping(SourceMapping.fromGoogleCalendar(event.calendarId, event.id));
         q.setCategoryType(category);
-        TimeZone.getTimeZone(e.eventTimeZone);
+
+        LocalDate endDate = event.dTend > 0 ? DateUtils.toStartOfDayUTCLocalDate(DateUtils.fromMillis(event.dTend)) : startDate;
 
         q.setStartMinute(startLocalDateTime.getHour() * 60 + startLocalDateTime.getMinute());
         q.setStartDate(startDate);
-        q.setEndDate(DateUtils.toStartOfDayUTCLocalDate(DateUtils.fromMillis(e.dTend)));
-        q.setScheduledDate(q.getStartDate());
+        q.setEndDate(endDate);
+        q.setScheduledDate(startDate);
 
-        if (e.allDay) {
+        if (event.allDay) {
             q.setDuration(Constants.QUEST_MIN_DURATION);
         } else {
             int duration;
-            if(StringUtils.isEmpty(e.duration)) {
-                duration = (int) TimeUnit.MILLISECONDS.toMinutes(e.dTend - e.dTStart);
+            if (StringUtils.isEmpty(event.duration) && event.dTend > 0 && event.dTStart > 0) {
+                duration = (int) TimeUnit.MILLISECONDS.toMinutes(event.dTend - event.dTStart);
+            } else if (!StringUtils.isEmpty(event.duration)) {
+                Dur dur = new Dur(event.duration);
+                duration = dur.getMinutes();
             } else {
-                Duration dur = Duration.parse(e.duration);
-                duration = (int) dur.toMinutes();
+                duration = Constants.QUEST_MIN_DURATION;
             }
             duration = Math.min(duration, Constants.MAX_QUEST_DURATION_HOURS * 60);
             duration = Math.max(duration, Constants.QUEST_MIN_DURATION);
             q.setDuration(duration);
         }
-        if (q.getScheduledDate().isBefore(LocalDate.now())) {
-            q.setCompletedAtDate(q.getScheduledDate());
-            int completedAtMinute = Math.min(q.getStartMinute() + q.getDuration(), MINUTES_IN_DAY);
-            q.setCompletedAtMinute(completedAtMinute);
-            q.increaseCompletedCount();
-            q.setExperience(experienceRewardGenerator.generate(q));
-            q.setCoins(coinsRewardGenerator.generate(q));
-        } else if (e.hasAlarm) {
-            List<Reminder> reminders = syncAndroidCalendarProvider.getEventReminders(e.id);
+//        if (q.getScheduledDate().isBefore(LocalDate.now())) {
+//            q.setCompletedAtDate(q.getScheduledDate());
+//            int completedAtMinute = Math.min(q.getStartMinute() + q.getDuration(), MINUTES_IN_DAY);
+//            q.setCompletedAtMinute(completedAtMinute);
+//            q.increaseCompletedCount();
+//            q.setExperience(experienceRewardGenerator.generate(q));
+//            q.setCoins(coinsRewardGenerator.generate(q));
+//        }
+
+        if (event.hasAlarm) {
+            List<Reminder> reminders = syncAndroidCalendarProvider.getEventReminders(event.id);
             for (Reminder r : reminders) {
                 int minutes = r.minutes == -1 ? DEFAULT_REMINDER_MINUTES : -r.minutes;
                 q.addReminder(new io.ipoli.android.reminder.data.Reminder(minutes));
@@ -139,14 +150,14 @@ public class AndroidCalendarEventParser {
 
     private ZoneId getZoneId(Event e) {
         String timeZone = e.eventTimeZone;
-        if(StringUtils.isEmpty(timeZone)) {
+        if (StringUtils.isEmpty(timeZone)) {
             timeZone = e.eventEndTimeZone;
-            if(StringUtils.isEmpty(timeZone)) {
+            if (StringUtils.isEmpty(timeZone)) {
                 timeZone = e.calendarTimeZone;
             }
         }
 
-        ZoneId zoneId = null;
+        ZoneId zoneId;
         try {
             zoneId = StringUtils.isEmpty(timeZone) ? ZoneId.systemDefault() : ZoneId.of(timeZone);
         } catch (Exception ex) {
@@ -157,9 +168,108 @@ public class AndroidCalendarEventParser {
     }
 
     private RepeatingQuest parseRepeatingQuest(Event event, Category category) {
+        //rDate?
+        if (StringUtils.isEmpty(event.rRule)) {
+            return null;
+        }
+
         RepeatingQuest rq = new RepeatingQuest(event.title);
-//        return rq;
-        return null;
+        rq.setName(event.title);
+        rq.setCategoryType(category);
+        rq.setSource(Constants.SOURCE_ANDROID_CALENDAR);
+        rq.setSourceMapping(SourceMapping.fromGoogleCalendar(event.calendarId, event.id));
+
+        LocalDateTime startLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(event.dTStart), getZoneId(event));
+        rq.setStartMinute(startLocalDateTime.getHour() * 60 + startLocalDateTime.getMinute());
+
+
+        if (event.allDay) {
+            rq.setDuration(Constants.QUEST_MIN_DURATION);
+        } else {
+            int duration;
+            if (StringUtils.isEmpty(event.duration) && event.dTend > 0 && event.dTStart > 0) {
+                duration = (int) TimeUnit.MILLISECONDS.toMinutes(event.dTend - event.dTStart);
+            } else if (!StringUtils.isEmpty(event.duration)) {
+                Dur dur = new Dur(event.duration);
+                duration = dur.getMinutes();
+            } else {
+                duration = Constants.QUEST_MIN_DURATION;
+            }
+            duration = Math.min(duration, Constants.MAX_QUEST_DURATION_HOURS * 60);
+            duration = Math.max(duration, Constants.QUEST_MIN_DURATION);
+            rq.setDuration(duration);
+        }
+
+        Recur recur;
+        try {
+            recur = new Recur(event.rRule);
+        } catch (ParseException ex) {
+            //log app error
+            return null;
+        }
+
+        Recurrence recurrence = Recurrence.create();
+        recurrence.setFlexibleCount(0);
+        LocalDate startDate = DateUtils.toStartOfDayUTCLocalDate(startLocalDateTime.toLocalDate());
+        recurrence.setDtstartDate(startDate);
+        LocalDate endDate = null;
+        if(event.dTend > 0) {
+            endDate = DateUtils.toStartOfDayUTCLocalDate(DateUtils.fromMillis(event.dTend));
+        } else if(recur.getUntil() != null) {
+            LocalDateTime endLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(recur.getUntil().getTime()), getZoneId(event));
+            endDate = DateUtils.toStartOfDayUTCLocalDate(endLocalDateTime.toLocalDate());
+        }
+        if(endDate != null && endDate.isBefore(LocalDate.now())) {
+            return null;
+        }
+        recurrence.setDtendDate(endDate);
+
+        String frequency = recur.getFrequency();
+        switch (frequency) {
+            case Recur.MONTHLY:
+                recurrence.setRecurrenceType(Recurrence.RepeatType.MONTHLY);
+                recurrence.setRrule(event.rRule);
+                break;
+            case Recur.WEEKLY:
+                recurrence.setRecurrenceType(Recurrence.RepeatType.WEEKLY);
+                recurrence.setRrule(event.rRule);
+                break;
+            case Recur.DAILY:
+                recurrence.setRecurrenceType(Recurrence.RepeatType.DAILY);
+                recurrence.setRrule(createDailyRrule(recur));
+                break;
+            case Recur.YEARLY:
+                recurrence.setRecurrenceType(Recurrence.RepeatType.YEARLY);
+                recurrence.setRrule(event.rRule);
+        }
+
+        rq.setRecurrence(recurrence);
+
+        if (event.hasAlarm) {
+            List<Reminder> reminders = syncAndroidCalendarProvider.getEventReminders(event.id);
+            for (Reminder r : reminders) {
+                int minutes = r.minutes == -1 ? DEFAULT_REMINDER_MINUTES : -r.minutes;
+                rq.addReminder(new io.ipoli.android.reminder.data.Reminder(minutes));
+            }
+        }
+
+        Log.d("AAA", event.title + " " + event.rRule);
+
+        return rq;
+    }
+
+    @NonNull
+    private String createDailyRrule(Recur recur) {
+        recur.setFrequency(Recur.WEEKLY);
+        recur.getDayList().clear();
+        recur.getDayList().add(WeekDay.MO);
+        recur.getDayList().add(WeekDay.TU);
+        recur.getDayList().add(WeekDay.WE);
+        recur.getDayList().add(WeekDay.TH);
+        recur.getDayList().add(WeekDay.FR);
+        recur.getDayList().add(WeekDay.SA);
+        recur.getDayList().add(WeekDay.SU);
+        return recur.toString();
     }
 
     public class Result {

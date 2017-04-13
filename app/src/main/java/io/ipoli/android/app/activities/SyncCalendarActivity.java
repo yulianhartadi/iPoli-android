@@ -122,12 +122,12 @@ public class SyncCalendarActivity extends BaseActivity {
     }
 
     private void onNextTap() {
+        createLoadingDialog();
         List<AndroidCalendarViewModel> selectedAndroidCalendarViewModels = adapter.getSelectedCalendars();
         if(selectedAndroidCalendarViewModels.isEmpty()) {
             onFinish();
             return;
         }
-        createLoadingDialog();
         Map<Long, Category> selectedCalendars = new HashMap<>();
         for (AndroidCalendarViewModel vm : selectedAndroidCalendarViewModels) {
             selectedCalendars.put(vm.getId(), vm.getCategory());
@@ -177,10 +177,10 @@ public class SyncCalendarActivity extends BaseActivity {
         List<AndroidCalendarViewModel> viewModels = new ArrayList<>();
 
         //test on emulator
-        viewModels.add(new AndroidCalendarViewModel(1L, "Polina Zhelyazkova", Category.PERSONAL, true));
-        viewModels.add(new AndroidCalendarViewModel(2L, "Vihar calendar", Category.PERSONAL, false));
-        viewModels.add(new AndroidCalendarViewModel(3L, "Holidays", Category.PERSONAL, false));
-        viewModels.add(new AndroidCalendarViewModel(4L, "Birthdays", Category.PERSONAL, false));
+//        viewModels.add(new AndroidCalendarViewModel(1L, "Polina Zhelyazkova", Category.PERSONAL, true));
+//        viewModels.add(new AndroidCalendarViewModel(2L, "Vihar calendar", Category.PERSONAL, false));
+//        viewModels.add(new AndroidCalendarViewModel(3L, "Holidays", Category.PERSONAL, false));
+//        viewModels.add(new AndroidCalendarViewModel(4L, "Birthdays", Category.PERSONAL, false));
 
         List<Calendar> calendars = syncAndroidCalendarProvider.getAndroidCalendars();
         for (Calendar c : calendars) {

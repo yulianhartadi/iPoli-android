@@ -508,7 +508,7 @@ public class RepeatingQuestSchedulerTest {
 
         List<Quest> alreadyScheduled = new ArrayList<>();
         Quest q1 = new Quest("1", startOfWeek);
-        q1.setCompletedAtDateFromLocal(startOfWeek);
+        q1.setCompletedAtDate(startOfWeek);
         q1.setCompletedAtMinute(10);
         alreadyScheduled.add(q1);
         LocalDate tuesday = today.with(DayOfWeek.TUESDAY);
@@ -525,7 +525,7 @@ public class RepeatingQuestSchedulerTest {
 
         List<Quest> alreadyScheduled = new ArrayList<>();
         Quest q1 = new Quest("1", startOfMonth);
-        q1.setCompletedAtDateFromLocal(startOfMonth);
+        q1.setCompletedAtDate(startOfMonth);
         q1.setCompletedAtMinute(10);
         alreadyScheduled.add(q1);
         LocalDate secondDayOfMonth = today.withDayOfMonth(2);
@@ -563,7 +563,7 @@ public class RepeatingQuestSchedulerTest {
 
         List<Quest> alreadyScheduled = new ArrayList<>();
         Quest q1 = new Quest("1", startOfWeek);
-        q1.setCompletedAtDateFromLocal(startOfWeek);
+        q1.setCompletedAtDate(startOfWeek);
         q1.setCompletedAtMinute(10);
         alreadyScheduled.add(q1);
         List<Quest> scheduled = rqScheduler.schedule(rq, startOfWeek, alreadyScheduled);
@@ -583,7 +583,7 @@ public class RepeatingQuestSchedulerTest {
 
         List<Quest> alreadyScheduled = new ArrayList<>();
         Quest q1 = new Quest("1", startOfMonth);
-        q1.setCompletedAtDateFromLocal(startOfMonth);
+        q1.setCompletedAtDate(startOfMonth);
         q1.setCompletedAtMinute(10);
         alreadyScheduled.add(q1);
         List<Quest> scheduled = rqScheduler.schedule(repeatingQuest, startOfMonth, alreadyScheduled);
