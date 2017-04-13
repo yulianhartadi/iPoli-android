@@ -142,8 +142,8 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     @JsonIgnore
-    public Date getOriginalScheduledDate() {
-        return originalScheduled != null ? new Date(originalScheduled) : null;
+    public LocalDate getOriginalScheduledDate() {
+        return originalScheduled != null ? DateUtils.fromMillis(originalScheduled) : null;
     }
 
     @JsonIgnore
@@ -273,7 +273,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @JsonIgnore
     public void setStartDate(LocalDate startDate) {
-        if(startDate == null) {
+        if (startDate == null) {
             setStart(null);
             return;
         }
@@ -287,7 +287,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @JsonIgnore
     public void setEndDate(LocalDate endDate) {
-        if(endDate == null) {
+        if (endDate == null) {
             setEnd(null);
             return;
         }

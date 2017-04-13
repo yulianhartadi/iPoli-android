@@ -24,6 +24,7 @@ import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
 
 import java.math.BigInteger;
@@ -103,6 +104,7 @@ import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
@@ -717,12 +719,37 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onUpdateRepeatingQuest(UpdateRepeatingQuestEvent e) {
         final RepeatingQuest repeatingQuest = e.repeatingQuest;
-        questPersistenceService.findAllUpcomingForRepeatingQuest(LocalDate.now(), repeatingQuest.getId(), questsToRemove -> {
-            for (Quest quest : questsToRemove) {
-                QuestNotificationScheduler.cancelAll(quest, this);
+        LocalDate today = LocalDate.now();
+        Recurrence.RepeatType repeatType = repeatingQuest.getRecurrence().getRecurrenceType();
+        LocalDate periodStart;
+        switch (repeatType) {
+            case DAILY:
+            case WEEKLY:
+                periodStart = today.with(DayOfWeek.MONDAY);
+                break;
+            case MONTHLY:
+                periodStart = today.withDayOfMonth(1);
+                break;
+            default:
+                periodStart = today.withDayOfYear(1);
+                break;
+        }
+
+        questPersistenceService.findAllUpcomingForRepeatingQuest(periodStart, repeatingQuest.getId(), questsSincePeriodStart -> {
+
+            List<Quest> questsToRemove = new ArrayList<>();
+            List<Quest> scheduledQuests = new ArrayList<>();
+
+            for (Quest q : questsSincePeriodStart) {
+                if (q.isCompleted() || q.getOriginalScheduledDate().isBefore(today)) {
+                    scheduledQuests.add(q);
+                } else {
+                    questsToRemove.add(q);
+                    QuestNotificationScheduler.cancelAll(q, this);
+                }
             }
 
-            long todayStartOfDay = DateUtils.toMillis(LocalDate.now());
+            long todayStartOfDay = DateUtils.toMillis(today);
             List<String> periodsToDelete = new ArrayList<>();
             for (String periodEnd : repeatingQuest.getScheduledPeriodEndDates().keySet()) {
                 if (Long.valueOf(periodEnd) >= todayStartOfDay) {
@@ -730,7 +757,7 @@ public class App extends MultiDexApplication {
                 }
             }
             repeatingQuest.getScheduledPeriodEndDates().keySet().removeAll(periodsToDelete);
-            List<Quest> questsToCreate = repeatingQuestScheduler.schedule(repeatingQuest, LocalDate.now());
+            List<Quest> questsToCreate = repeatingQuestScheduler.schedule(repeatingQuest, today, scheduledQuests);
             repeatingQuestPersistenceService.update(repeatingQuest, questsToRemove, questsToCreate);
         });
     }

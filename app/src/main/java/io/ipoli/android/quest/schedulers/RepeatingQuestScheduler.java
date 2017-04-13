@@ -175,7 +175,7 @@ public class RepeatingQuestScheduler {
         int countForMonth = recurrence.getFlexibleCount();
 
         for (Quest q : scheduledQuests) {
-            if (q.isCompleted() && DateUtils.isBetween(q.getScheduledDate(), startDate, endDate)) {
+            if (DateUtils.isBetween(q.getOriginalScheduledDate(), startDate, endDate)) {
                 countForMonth--;
             }
         }
@@ -339,9 +339,7 @@ public class RepeatingQuestScheduler {
 
         Set<LocalDate> completedDates = new HashSet<>();
         for (Quest q : scheduledQuests) {
-            if (q.isCompleted()) {
-                completedDates.add(q.getEndDate());
-            }
+            completedDates.add(q.getOriginalScheduledDate());
         }
 
         for (Object obj : dates) {
