@@ -57,7 +57,6 @@ public class RepeatingQuestScheduler {
     }
 
     public List<Quest> schedule(RepeatingQuest repeatingQuest, LocalDate currentDate, List<Quest> scheduledQuests) {
-        // @ TODO handle placeholder quests
         Recurrence recurrence = repeatingQuest.getRecurrence();
         RepeatType repeatType = recurrence.getRecurrenceType();
         LocalDate startDate;
