@@ -32,6 +32,7 @@ import me.everything.providers.android.calendar.Reminder;
  */
 public class AndroidCalendarEventParser {
     private static final int MINUTES_IN_DAY = 24 * 60;
+    private static final int DEFAULT_REMINDER_MINUTES = -10;
 
 
     private final ExperienceRewardGenerator experienceRewardGenerator;
@@ -128,7 +129,7 @@ public class AndroidCalendarEventParser {
         } else if (e.hasAlarm) {
             List<Reminder> reminders = syncAndroidCalendarProvider.getEventReminders(e.id);
             for (Reminder r : reminders) {
-                int minutes = r.minutes == -1 ? 0 : -r.minutes;
+                int minutes = r.minutes == -1 ? DEFAULT_REMINDER_MINUTES : -r.minutes;
                 q.addReminder(new io.ipoli.android.reminder.data.Reminder(minutes));
             }
         }

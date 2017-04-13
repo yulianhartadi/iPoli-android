@@ -9,6 +9,9 @@ public class AndroidCalendarMapping {
     private Long calendarId;
     private Long eventId;
 
+    public AndroidCalendarMapping() {
+    }
+
     public AndroidCalendarMapping(Long calendarId, Long eventId) {
         this.calendarId = calendarId;
         this.eventId = eventId;

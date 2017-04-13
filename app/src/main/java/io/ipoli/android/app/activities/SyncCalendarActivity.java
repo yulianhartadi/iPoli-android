@@ -149,7 +149,7 @@ public class SyncCalendarActivity extends BaseActivity {
 
         Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests = new HashMap<>();
         for(RepeatingQuest rq: repeatingQuests) {
-            repeatingQuestToQuests.put(rq, repeatingQuestScheduler.scheduleAhead(rq, LocalDate.now()));
+            repeatingQuestToQuests.put(rq, repeatingQuestScheduler.schedule(rq, LocalDate.now()));
         }
 
         calendarPersistenceService.save(player, quests, repeatingQuestQuests, repeatingQuestToQuests, () -> onFinish());
