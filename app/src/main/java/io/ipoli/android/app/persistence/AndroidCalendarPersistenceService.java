@@ -1,5 +1,7 @@
 package io.ipoli.android.app.persistence;
 
+import android.util.Log;
+
 import com.couchbase.lite.Database;
 
 import java.util.List;
@@ -7,8 +9,10 @@ import java.util.Map;
 
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.quest.data.AndroidCalendarMapping;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.data.SourceMapping;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 
@@ -31,7 +35,7 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
     }
 
     @Override
-    public void save(Player player, List<Quest> quests, List<Quest> repeatingQuestQuests, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests, TransactionCompleteListener transactionCompleteListener) {
+    public void save(Player player, List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests, TransactionCompleteListener transactionCompleteListener) {
         database.runAsync(db -> db.runInTransaction(() -> {
             for (Map.Entry<RepeatingQuest, List<Quest>> entry : repeatingQuestToQuests.entrySet()) {
                 RepeatingQuest rq = entry.getKey();
@@ -42,8 +46,11 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
                 }
             }
 
-            for (Quest q : repeatingQuestQuests) {
-                RepeatingQuest rq = repeatingQuestPersistenceService.findRepeatingQuestFromAndroidCalendar(q.getSourceMapping().getAndroidCalendarMapping());
+            for (Quest q : questToOriginalId.keySet()) {
+                Long calendarId = q.getSourceMapping().getAndroidCalendarMapping().getCalendarId();
+                Long eventId = questToOriginalId.get(q);
+                AndroidCalendarMapping rqCalendarMapping = SourceMapping.fromGoogleCalendar(calendarId, eventId).getAndroidCalendarMapping();
+                RepeatingQuest rq = repeatingQuestPersistenceService.findFromAndroidCalendar(rqCalendarMapping);
                 if (rq == null) {
                     continue;
                 }
@@ -58,6 +65,16 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
             playerPersistenceService.save(player);
 
             transactionCompleteListener.onComplete();
+            return true;
+        }));
+    }
+
+    @Override
+    public void delete(List<Long> calendarIds) {
+        database.runAsync(db -> db.runInTransaction(() -> {
+            for(Long calendarId : calendarIds) {
+                List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findNotCompletedFromAndroidCalendar(calendarId);
+            }
             return true;
         }));
     }

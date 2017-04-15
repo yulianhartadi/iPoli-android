@@ -3,7 +3,6 @@ package io.ipoli.android.app;
 import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.Recur;
@@ -16,7 +15,9 @@ import org.threeten.bp.ZoneId;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
@@ -61,7 +62,7 @@ public class AndroidCalendarEventParser {
 
     public Result parse(List<Event> events, Category category) {
         List<Quest> quests = new ArrayList<>();
-        List<Quest> repeatingQuestQuests = new ArrayList<>();
+        Map<Quest, Long> questToOriginalId = new HashMap<>();
         List<RepeatingQuest> repeatingQuests = new ArrayList<>();
         for (Event e : events) {
             if (e.deleted || !e.visible) {
@@ -81,12 +82,16 @@ public class AndroidCalendarEventParser {
                 if (StringUtils.isEmpty(e.originalId)) {
                     quests.add(parseQuest(e, category));
                 } else {
-                    repeatingQuestQuests.add(q);
+                    try {
+                        questToOriginalId.put(q, Long.valueOf(e.originalId));
+                    } catch (Exception ex) {
+                        //log originalId not long
+                    }
                 }
             }
         }
 
-        return new Result(quests, repeatingQuestQuests, repeatingQuests);
+        return new Result(quests, questToOriginalId, repeatingQuests);
     }
 
     private Quest parseQuest(Event event, Category category) {
@@ -263,8 +268,8 @@ public class AndroidCalendarEventParser {
             }
         }
 
-        Log.d("AAA", event.title + " " + event.rRule);
-        Log.d("AAAB", event.title + " " + recurrence.getRrule());
+//        Log.d("AAA", event.title + " " + event.rRule);
+//        Log.d("AAAB", event.title + " " + recurrence.getRrule());
 
         return rq;
     }
@@ -285,12 +290,12 @@ public class AndroidCalendarEventParser {
 
     public class Result {
         public List<Quest> quests;
-        public List<Quest> repeatingQuestQuests;
+        public Map<Quest, Long> questToOriginalId;
         public List<RepeatingQuest> repeatingQuests;
 
-        public Result(List<Quest> quests, List<Quest> repeatingQuestQuests, List<RepeatingQuest> repeatingQuests) {
+        public Result(List<Quest> quests, Map<Quest, Long> questToOriginalId, List<RepeatingQuest> repeatingQuests) {
             this.quests = quests;
-            this.repeatingQuestQuests = repeatingQuestQuests;
+            this.questToOriginalId = questToOriginalId;
             this.repeatingQuests = repeatingQuests;
         }
     }

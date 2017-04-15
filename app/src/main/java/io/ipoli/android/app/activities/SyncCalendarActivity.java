@@ -137,13 +137,13 @@ public class SyncCalendarActivity extends BaseActivity {
         player.setAndroidCalendars(selectedCalendars);
 
         List<Quest> quests = new ArrayList<>();
-        List<Quest> repeatingQuestQuests = new ArrayList<>();
+        Map<Quest, Long> questToOriginalId = new HashMap<>();
         List<RepeatingQuest> repeatingQuests = new ArrayList<>();
         for(Long calendarId : selectedCalendars.keySet()) {
             List<Event> events = syncAndroidCalendarProvider.getCalendarEvents(calendarId);
             AndroidCalendarEventParser.Result result = androidCalendarEventParser.parse(events, selectedCalendars.get(calendarId));
             quests.addAll(result.quests);
-            repeatingQuestQuests.addAll(result.repeatingQuestQuests);
+            questToOriginalId.putAll(result.questToOriginalId);
             repeatingQuests.addAll(result.repeatingQuests);
         }
 
@@ -152,7 +152,7 @@ public class SyncCalendarActivity extends BaseActivity {
             repeatingQuestToQuests.put(rq, repeatingQuestScheduler.schedule(rq, LocalDate.now()));
         }
 
-        calendarPersistenceService.save(player, quests, repeatingQuestQuests, repeatingQuestToQuests, () -> onFinish());
+        calendarPersistenceService.save(player, quests, questToOriginalId, repeatingQuestToQuests, () -> onFinish());
     }
 
     private void onFinish() {
@@ -174,6 +174,7 @@ public class SyncCalendarActivity extends BaseActivity {
 
     @AfterPermissionGranted(RC_CALENDAR_PERM)
     private void getCalendars() {
+        createLoadingDialog();
         List<AndroidCalendarViewModel> viewModels = new ArrayList<>();
 
         //test on emulator
@@ -187,6 +188,7 @@ public class SyncCalendarActivity extends BaseActivity {
             viewModels.add(new AndroidCalendarViewModel(c.id, c.displayName, Category.PERSONAL, true));
         }
         adapter.setViewModels(viewModels);
+        closeLoadingDialog();
     }
 
     @Override

@@ -36,6 +36,7 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.TimeOfDay;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.TimeFormatChangedEvent;
+import io.ipoli.android.app.persistence.CalendarPersistenceService;
 import io.ipoli.android.app.settings.events.DailyChallengeDaysOfWeekChangedEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeReminderChangeEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
@@ -72,6 +73,9 @@ public class SettingsFragment extends BaseFragment implements
 
     @Inject
     LocalStorage localStorage;
+
+    @Inject
+    CalendarPersistenceService calendarPersistenceService;
 
     @Inject
     PlayerPersistenceService playerPersistenceService;
@@ -378,7 +382,13 @@ public class SettingsFragment extends BaseFragment implements
         AndroidCalendarsPickerFragment fragment = AndroidCalendarsPickerFragment.newInstance(R.string.choose_calendars_title, player.getAndroidCalendars(), selectedCalendars -> {
             populateSelectedSyncCalendarsText(selectedCalendars.size());
             //sync for these calendars and  delete for previously selected
-
+            List<Long> calendarsToDelete = new ArrayList<>();
+            for(Long calendarId : player.getAndroidCalendars().keySet()) {
+                if(!selectedCalendars.containsKey(calendarId)) {
+                    calendarsToDelete.add(calendarId);
+                }
+            }
+            calendarPersistenceService.delete(calendarsToDelete);
         });
         fragment.show(getFragmentManager());
     }

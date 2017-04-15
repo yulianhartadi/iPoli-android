@@ -14,6 +14,7 @@ import io.ipoli.android.quest.data.RepeatingQuest;
 
 public interface CalendarPersistenceService {
 
-    void save(Player player, List<Quest> quests, List<Quest> repeatingQuestQuests, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests, TransactionCompleteListener transactionCompleteListener);
+    void save(Player player, List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests, TransactionCompleteListener transactionCompleteListener);
 
+    void delete(List<Long> calendarsToDelete);
 }

@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.persistence;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.couchbase.lite.CouchbaseLiteException;
@@ -81,9 +82,10 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
         repeatingQuestFromAndroidCalendar = database.getView("repeatingQuest/fromAndroidCalendar");
         if (repeatingQuestFromAndroidCalendar.getMap() == null) {
-            repeatingQuestFromAndroidCalendar.setMap((document, emitter) -> {
+            repeatingQuestFromAndroidCalendar.setMapReduce((document, emitter) -> {
                 String type = (String) document.get("type");
-                if (RepeatingQuest.TYPE.equals(type) && document.containsKey(Constants.SOURCE_ANDROID_CALENDAR)) {
+                if (RepeatingQuest.TYPE.equals(type) && document.containsKey("source") &&
+                        document.get("source").equals(Constants.SOURCE_ANDROID_CALENDAR)) {
                     Map<String, Object> sourceMapping = (Map<String, Object>) document.get("sourceMapping");
                     Map<String, Object> androidCalendarMapping = (Map<String, Object>) sourceMapping.get("androidCalendarMapping");
                     List<Object> key = new ArrayList<>();
@@ -91,6 +93,12 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
                     key.add(androidCalendarMapping.get("eventId"));
                     emitter.emit(key, document);
                 }
+            }, (keys, values, rereduce) -> {
+                List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+                for (Object v : values) {
+                    repeatingQuests.add(toObject(v));
+                }
+                return repeatingQuests;
             }, Constants.DEFAULT_VIEW_VERSION);
         }
     }
@@ -286,26 +294,35 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
         });
     }
 
-    public RepeatingQuest findRepeatingQuestFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping) {
+    @Override
+    public RepeatingQuest findFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping) {
         Query query = repeatingQuestFromAndroidCalendar.createQuery();
         query.setGroupLevel(2);
-        List<Object> key = Arrays.asList(androidCalendarMapping.getCalendarId(), androidCalendarMapping.getEventId());
+        List<Object> key = Arrays.asList(
+                String.valueOf(androidCalendarMapping.getCalendarId()), String.valueOf(androidCalendarMapping.getEventId()));
         query.setStartKey(key);
         query.setEndKey(key);
 
         try {
             QueryEnumerator enumerator = query.run();
-            if(!enumerator.hasNext()) {
+            if (!enumerator.hasNext()) {
                 return null;
             }
             while (enumerator.hasNext()) {
                 QueryRow row = enumerator.next();
-                RepeatingQuest repeatingQuest = toObject(row.getValue());
+                List<RepeatingQuest> repeatingQuests = (List<RepeatingQuest>) row.getValue();
+                RepeatingQuest repeatingQuest = repeatingQuests.isEmpty() ? null : repeatingQuests.get(0);
                 return repeatingQuest;
             }
         } catch (CouchbaseLiteException e) {
             postError(e);
         }
+        return null;
+    }
+
+    @Override
+    public List<RepeatingQuest> findNotCompletedFromAndroidCalendar(Long calendarId) {
+
         return null;
     }
 
