@@ -21,7 +21,7 @@ public class EmailUtils {
                 "mailto", Constants.IPOLI_EMAIL, null));
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
         if (!StringUtils.isEmpty(playerId)) {
-            String body = "\n\nPlease, do not delete below this line\n=====================\nThis will help us fix the issue faster:\nPlayer id " + playerId;
+            String body = "\n\nPlease, do not updateCalendars below this line\n=====================\nThis will help us fix the issue faster:\nPlayer id " + playerId;
             emailIntent.putExtra(Intent.EXTRA_TEXT, body);
         }
         context.startActivity(Intent.createChooser(emailIntent, chooserTitle));

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -58,6 +59,8 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -76,6 +79,9 @@ public class SettingsFragment extends BaseFragment implements
 
     @Inject
     CalendarPersistenceService calendarPersistenceService;
+
+    @Inject
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
     @Inject
     PlayerPersistenceService playerPersistenceService;
@@ -381,14 +387,32 @@ public class SettingsFragment extends BaseFragment implements
         Player player = getPlayer();
         AndroidCalendarsPickerFragment fragment = AndroidCalendarsPickerFragment.newInstance(R.string.choose_calendars_title, player.getAndroidCalendars(), selectedCalendars -> {
             populateSelectedSyncCalendarsText(selectedCalendars.size());
-            //sync for these calendars and  delete for previously selected
-            List<Long> calendarsToDelete = new ArrayList<>();
-            for(Long calendarId : player.getAndroidCalendars().keySet()) {
+            //sync for these calendars and  updateCalendars for previously selected
+            List<Long> calendarsToRemove = new ArrayList<>();
+            List<Long> calendarsToAdd = new ArrayList<>();
+            Set<Long> playerCalendars = getPlayer().getAndroidCalendars().keySet();
+            for(Long calendarId : playerCalendars){
                 if(!selectedCalendars.containsKey(calendarId)) {
-                    calendarsToDelete.add(calendarId);
+                    calendarsToRemove.add(calendarId);
                 }
             }
-            calendarPersistenceService.delete(calendarsToDelete);
+            for(Long calendarId : selectedCalendars.keySet()) {
+                if(!playerCalendars.contains(calendarId)) {
+                    calendarsToAdd.add(calendarId);
+                }
+            }
+
+            List<RepeatingQuest> repeatingQuestsToDelete = new ArrayList<>();
+            for(Long calendarId : calendarsToRemove) {
+                repeatingQuestsToDelete.addAll(repeatingQuestPersistenceService.findNotCompletedFromAndroidCalendar(calendarId));
+            }
+            Log.d("AAA rqs to remove", repeatingQuestsToDelete.size() + "");
+
+
+
+//            player.setAndroidCalendars(selectedCalendars);
+//            playerPersistenceService.save(player);
+//            calendarPersistenceService.updateCalendars(calendarsToRemove, calendarsToAdd);
         });
         fragment.show(getFragmentManager());
     }

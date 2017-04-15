@@ -119,14 +119,14 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
 //                    if (repeatingQuest == null) {
 //                        return;
 //                    }
-//                    repeatingQuestPersistenceService.delete(repeatingQuest);
+//                    repeatingQuestPersistenceService.updateCalendars(repeatingQuest);
 //                });
 //            } else {
 //                questPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id), quest -> {
 //                    if (quest == null) {
 //                        return;
 //                    }
-//                    questPersistenceService.delete(quest);
+//                    questPersistenceService.updateCalendars(quest);
 //                });
 //            }
 //        }

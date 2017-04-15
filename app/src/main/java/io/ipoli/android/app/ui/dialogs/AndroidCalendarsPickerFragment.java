@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -94,7 +95,9 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
         preSelectedCalendars = new HashMap<>();
         if(arguments.containsKey(PREDEFINED_CALENDARS_KEY)) {
             try {
-                preSelectedCalendars = objectMapper.readValue(arguments.getString(PREDEFINED_CALENDARS_KEY), Map.class);
+                TypeReference<Map<Long, Category>> mapTypeReference = new TypeReference<Map<Long, Category>>() {
+                };
+                preSelectedCalendars = objectMapper.readValue(arguments.getString(PREDEFINED_CALENDARS_KEY), mapTypeReference);
             } catch (IOException e) {
                 throw new RuntimeException("Can't convert JSON to Map " + arguments.getString(PREDEFINED_CALENDARS_KEY), e);
             }

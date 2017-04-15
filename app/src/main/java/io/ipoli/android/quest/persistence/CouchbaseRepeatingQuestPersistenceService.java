@@ -1,6 +1,5 @@
 package io.ipoli.android.quest.persistence;
 
-import android.util.Log;
 import android.util.Pair;
 
 import com.couchbase.lite.CouchbaseLiteException;
@@ -322,8 +321,25 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
     @Override
     public List<RepeatingQuest> findNotCompletedFromAndroidCalendar(Long calendarId) {
+        Query query = repeatingQuestFromAndroidCalendar.createQuery();
+        query.setGroupLevel(1);
+        List<String> key = Arrays.asList(String.valueOf(calendarId));
+        query.setStartKey(key);
+        query.setEndKey(key);
 
-        return null;
+        try {
+            QueryEnumerator enumerator = query.run();
+            if (!enumerator.hasNext()) {
+                return new ArrayList<>();
+            }
+            while (enumerator.hasNext()) {
+                QueryRow row = enumerator.next();
+                return  (List<RepeatingQuest>) row.getValue();
+            }
+        } catch (CouchbaseLiteException e) {
+            postError(e);
+        }
+        return new ArrayList<>();
     }
 
     @Override

@@ -1,7 +1,5 @@
 package io.ipoli.android.app.persistence;
 
-import android.util.Log;
-
 import com.couchbase.lite.Database;
 
 import java.util.List;
@@ -70,9 +68,9 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
     }
 
     @Override
-    public void delete(List<Long> calendarIds) {
+    public void updateCalendars(List<Long> calendarsToRemove, List<Long> calendarsToAdd) {
         database.runAsync(db -> db.runInTransaction(() -> {
-            for(Long calendarId : calendarIds) {
+            for(Long calendarId : calendarsToRemove) {
                 List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findNotCompletedFromAndroidCalendar(calendarId);
             }
             return true;
