@@ -72,20 +72,6 @@ public class QuestViewModel {
         return "";
     }
 
-    public String get2LinesScheduleText() {
-        int duration = quest.getDuration();
-        Time startTime = quest.getStartTime();
-        if (duration > 0 && startTime != null) {
-            Time endTime = Time.plusMinutes(startTime, duration);
-            return startTime.toString(use24HourFormat) + "\n" + endTime.toString(use24HourFormat);
-        } else if (duration > 0) {
-            return "for\n" + DurationFormatter.format(context, duration);
-        } else if (startTime != null) {
-            return "at\n" + startTime.toString(use24HourFormat);
-        }
-        return "";
-    }
-
     public int getCompletedCount() {
         return timesADay - remainingCount;
     }

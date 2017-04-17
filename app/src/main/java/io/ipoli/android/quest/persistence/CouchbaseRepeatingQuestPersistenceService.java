@@ -29,7 +29,6 @@ import io.ipoli.android.quest.data.RepeatingQuest;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 3/5/17.
  */
-
 public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePersistenceService<RepeatingQuest> implements RepeatingQuestPersistenceService {
 
     private final View allRepeatingQuestsView;
