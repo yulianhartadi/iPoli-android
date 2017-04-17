@@ -123,6 +123,7 @@ public class SyncCalendarActivity extends BaseActivity {
 
     private void onNextTap() {
         createLoadingDialog();
+
         List<AndroidCalendarViewModel> selectedAndroidCalendarViewModels = adapter.getSelectedCalendars();
         if(selectedAndroidCalendarViewModels.isEmpty()) {
             onFinish();

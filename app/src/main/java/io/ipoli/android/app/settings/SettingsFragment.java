@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -424,8 +423,6 @@ public class SettingsFragment extends BaseFragment implements
             for (Long calendarId : calendarsToRemove) {
                 repeatingQuestsToDelete.addAll(repeatingQuestPersistenceService.findNotCompletedFromAndroidCalendar(calendarId));
             }
-            Log.d("AAA rqs to remove", repeatingQuestsToDelete.size() + "");
-
 
             List<Quest> quests = new ArrayList<>();
             Map<Quest, Long> questToOriginalId = new HashMap<>();
@@ -444,7 +441,7 @@ public class SettingsFragment extends BaseFragment implements
             }
 
             player.setAndroidCalendars(selectedCalendars);
-            calendarPersistenceService.save(player, quests, questToOriginalId, repeatingQuestToQuests, () -> Log.d("AAA", "finish " + getPlayer().getAndroidCalendars()));
+//            calendarPersistenceService.save(player, quests, questToOriginalId, repeatingQuestToQuests, () -> Log.d("AAA", "finish " + getPlayer().getAndroidCalendars()));
 
 //            calendarPersistenceService.updateCalendars(calendarsToRemove, calendarsToAdd);
         });

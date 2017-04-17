@@ -89,12 +89,11 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
                     Map<String, Object> sourceMapping = (Map<String, Object>) document.get("sourceMapping");
                     Map<String, Object> androidCalendarMapping = (Map<String, Object>) sourceMapping.get("androidCalendarMapping");
                     List<Object> key = new ArrayList<>();
-                    key.add(androidCalendarMapping.get("calendarId"));
-                    key.add(androidCalendarMapping.get("eventId"));
+                    key.add(String.valueOf(androidCalendarMapping.get("calendarId")));
+                    key.add(String.valueOf(androidCalendarMapping.get("eventId")));
                     emitter.emit(key, document);
                 }
             }, (keys, values, rereduce) -> {
-                Log.d("AA reduce", keys + " " + values);
                 List<RepeatingQuest> repeatingQuests = new ArrayList<>();
                 for (Object v : values) {
                     repeatingQuests.add(toObject(v));
@@ -323,15 +322,10 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
     @Override
     public List<RepeatingQuest> findNotCompletedFromAndroidCalendar(Long calendarId) {
-        Log.d("AAA calendarId", calendarId + "");
         Query query = repeatingQuestFromAndroidCalendar.createQuery();
-        query.setGroupLevel(2);
-        List<Object> key = Arrays.asList(String.valueOf(calendarId), new String());
-        query.setStartKey(key);
-//        query.setKeys(key);
-//        query.setEndKey(key);
-//        query.setStartKey(String.valueOf(calendarId));
-//        query.setEndKey(String.valueOf(calendarId));
+        query.setGroupLevel(1);
+        query.setStartKey(Arrays.asList(String.valueOf(calendarId), null));
+        query.setEndKey(Arrays.asList(String.valueOf(calendarId), new HashMap<String, Object>()));
 
         try {
             QueryEnumerator enumerator = query.run();
