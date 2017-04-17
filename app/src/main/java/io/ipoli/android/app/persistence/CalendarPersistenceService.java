@@ -16,5 +16,5 @@ public interface CalendarPersistenceService {
 
     void save(Player player, List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests, TransactionCompleteListener transactionCompleteListener);
 
-    void updateCalendars(List<Long> calendarsToDelete, List<Long> calendarsToAdd);
+    void save(Player player, List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests, List<Quest> questsToDelete, List<RepeatingQuest> repeatingQuestsToDelete, TransactionCompleteListener transactionCompleteListener);
 }

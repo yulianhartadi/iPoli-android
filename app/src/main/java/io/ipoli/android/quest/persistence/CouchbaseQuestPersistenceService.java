@@ -18,6 +18,7 @@ import org.threeten.bp.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -29,6 +30,7 @@ import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestReminder;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.reminder.data.Reminder;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
@@ -46,6 +48,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     private final View startedQuestsView;
     private final View scheduledForRepeatingQuest;
     private final View completedDayQuestsView;
+    private final View questFromAndroidCalendar;
 
     public CouchbaseQuestPersistenceService(Database database, ObjectMapper objectMapper, Bus eventBus) {
         super(database, objectMapper, eventBus);
@@ -141,6 +144,28 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                     List<Object> key = new ArrayList<>();
                     key.add(document.get("repeatingQuestId"));
                     key.add(document.get("originalScheduled"));
+                    emitter.emit(key, document);
+                }
+            }, (keys, values, rereduce) -> {
+                List<Quest> quests = new ArrayList<>();
+                for (Object v : values) {
+                    quests.add(toObject(v));
+                }
+                return quests;
+            }, Constants.DEFAULT_VIEW_VERSION);
+        }
+
+        questFromAndroidCalendar = database.getView("quests/fromAndroidCalendar");
+        if (questFromAndroidCalendar.getMap() == null) {
+            questFromAndroidCalendar.setMapReduce((document, emitter) -> {
+                String type = (String) document.get("type");
+                if (RepeatingQuest.TYPE.equals(type) && document.containsKey("source") &&
+                        document.get("source").equals(Constants.SOURCE_ANDROID_CALENDAR)) {
+                    Map<String, Object> sourceMapping = (Map<String, Object>) document.get("sourceMapping");
+                    Map<String, Object> androidCalendarMapping = (Map<String, Object>) sourceMapping.get("androidCalendarMapping");
+                    List<Object> key = new ArrayList<>();
+                    key.add(String.valueOf(androidCalendarMapping.get("calendarId")));
+                    key.add(String.valueOf(androidCalendarMapping.get("eventId")));
                     emitter.emit(key, document);
                 }
             }, (keys, values, rereduce) -> {
@@ -394,6 +419,31 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
         };
 
         startLiveQuery(query, changeListener);
+    }
+
+    @Override
+    public List<Quest> findNotCompletedFromAndroidCalendar(Long calendarId) {
+        Query query = questFromAndroidCalendar.createQuery();
+        query.setGroupLevel(1);
+        query.setStartKey(Arrays.asList(String.valueOf(calendarId), null));
+        query.setEndKey(Arrays.asList(String.valueOf(calendarId), new HashMap<String, Object>()));
+
+        List<Quest> result = new ArrayList<>();
+        try {
+            QueryEnumerator enumerator = query.run();
+            while (enumerator.hasNext()) {
+                QueryRow row = enumerator.next();
+                List<Quest> quests = (List<Quest>) row.getValue();
+                for(Quest q : quests) {
+                    if(!q.isCompleted()) {
+                        result.add(q);
+                    }
+                }
+            }
+        } catch (CouchbaseLiteException e) {
+            postError(e);
+        }
+        return result;
     }
 
     @NonNull

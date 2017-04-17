@@ -45,4 +45,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     void listenForAllIncompleteOrMostImportantForDate(LocalDate now, OnDataChangedListener<List<Quest>> listener);
 
     void save(List<Quest> quests);
+
+    List<Quest> findNotCompletedFromAndroidCalendar(Long calendarId);
 }
