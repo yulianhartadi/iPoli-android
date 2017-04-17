@@ -1,0 +1,14 @@
+language: android
+
+android:
+  components:
+    - tools # to get the new `repository-11.xml`
+    - tools # to install new Android SDK tools
+    - platform-tools
+    - build-tools-25.0.2
+    - android-25
+    - android-25
+
+    # Support library
+    - extra-android-support
+    - extra-android-m2repository
