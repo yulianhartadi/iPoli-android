@@ -36,8 +36,8 @@ public class TaskScheduler {
     private List<TimeBlock> insertTaskInSchedule(List<TimeBlock> freeBlocks, int newTaskDuration, Task t) {
         int startMinute = t.getStartMinute();
         int endMinute = startMinute + t.getDuration();
-        for (TimeBlock tb : freeBlocks) {
-            List<TimeBlock> newBlocks = (List<TimeBlock>) ((ArrayList<TimeBlock>) freeBlocks).clone();
+        List<TimeBlock> newBlocks = cloneTimeBlocks(freeBlocks);
+        for (TimeBlock tb : newBlocks) {
             newBlocks.remove(tb);
             if (startMinute >= tb.getStartMinute() && endMinute <= tb.getEndMinute()) {
                 TimeBlock b1 = new TimeBlock(tb.getStartMinute(), startMinute);
@@ -54,6 +54,14 @@ public class TaskScheduler {
             }
         }
         return freeBlocks;
+    }
+
+    private List<TimeBlock> cloneTimeBlocks(List<TimeBlock> timeBlocks) {
+        List<TimeBlock> result = new ArrayList<>();
+        for (TimeBlock tb : timeBlocks) {
+            result.add(new TimeBlock(tb));
+        }
+        return result;
     }
 
     public List<TimeBlock> getAvailableSlotsFor(Task task, int minTimeInterval) {

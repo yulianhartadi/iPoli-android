@@ -15,6 +15,11 @@ public class TimeBlock {
         this.endMinute = endMinute;
     }
 
+    public TimeBlock(TimeBlock timeBlock) {
+        this.startMinute = timeBlock.startMinute;
+        this.endMinute = timeBlock.endMinute;
+    }
+
     public int getStartMinute() {
         return startMinute;
     }
