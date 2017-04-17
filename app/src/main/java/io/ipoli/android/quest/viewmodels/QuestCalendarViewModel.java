@@ -92,7 +92,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
 
     @Override
     public boolean isForChallenge() {
-        return quest.getChallengeId() != null;
+        return quest.isFromChallenge();
     }
 
     public boolean shouldDisplayAsProposedSlot() {
