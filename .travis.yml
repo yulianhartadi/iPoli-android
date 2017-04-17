@@ -8,12 +8,16 @@ cache:
     - ${TRAVIS_BUILD_DIR}/gradle/caches/
     - ${TRAVIS_BUILD_DIR}/gradle/wrapper/dists/
 
-
 env:
   global:
     - ADB_INSTALL_TIMEOUT=20
   matrix:
     - ANDROID_TARGET=android-25 ANDROID_ABI=x86
+
+licenses:
+ - android-sdk-preview-license-.+
+ - android-sdk-license-.+
+ - google-gdk-license-.+
 
 android:
   components:
@@ -28,10 +32,16 @@ android:
     - extra-android-support
     - extra-android-m2repository
 
-install:
-  # List and delete unnecessary components to free space
-  - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
-  - echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
+before_install:
+
+    - mkdir "$ANDROID_HOME/licenses" || true
+    - chmod +x gradlew
+    - ./gradlew dependencies || true
+
+#install:
+  ## List and delete unnecessary components to free space
+  #- echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout;1.0.2"
+  #- echo yes | sdkmanager "extras;m2repository;com;android;support;constraint;constraint-layout-solver;1.0.2"
 
 script:
   - ./gradlew clean
