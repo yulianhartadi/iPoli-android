@@ -1,6 +1,5 @@
 package io.ipoli.android.quest.persistence;
 
-import android.util.Log;
 import android.util.Pair;
 
 import com.couchbase.lite.CouchbaseLiteException;
@@ -305,9 +304,6 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
         try {
             QueryEnumerator enumerator = query.run();
-            if (!enumerator.hasNext()) {
-                return null;
-            }
             while (enumerator.hasNext()) {
                 QueryRow row = enumerator.next();
                 List<RepeatingQuest> repeatingQuests = (List<RepeatingQuest>) row.getValue();
@@ -327,19 +323,22 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
         query.setStartKey(Arrays.asList(String.valueOf(calendarId), null));
         query.setEndKey(Arrays.asList(String.valueOf(calendarId), new HashMap<String, Object>()));
 
+        List<RepeatingQuest> result = new ArrayList<>();
         try {
             QueryEnumerator enumerator = query.run();
-            if (!enumerator.hasNext()) {
-                return new ArrayList<>();
-            }
             while (enumerator.hasNext()) {
                 QueryRow row = enumerator.next();
-                return  (List<RepeatingQuest>) row.getValue();
+                List<RepeatingQuest> repeatingQuests = (List<RepeatingQuest>) row.getValue();
+                for(RepeatingQuest rq : repeatingQuests) {
+                    if(!rq.isCompleted()) {
+                        result.add(rq);
+                    }
+                }
             }
         } catch (CouchbaseLiteException e) {
             postError(e);
         }
-        return new ArrayList<>();
+        return result;
     }
 
     @Override

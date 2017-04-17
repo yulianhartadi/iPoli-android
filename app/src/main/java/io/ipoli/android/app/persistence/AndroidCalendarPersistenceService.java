@@ -1,5 +1,8 @@
 package io.ipoli.android.app.persistence;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.couchbase.lite.Database;
 
 import java.util.List;
@@ -62,7 +65,7 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
 
             playerPersistenceService.save(player);
 
-            transactionCompleteListener.onComplete();
+            postResult(transactionCompleteListener);
             return true;
         }));
     }
@@ -75,5 +78,9 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
             }
             return true;
         }));
+    }
+
+    private  <E> void postResult(TransactionCompleteListener listener) {
+        new Handler(Looper.getMainLooper()).post(() -> listener.onComplete());
     }
 }
