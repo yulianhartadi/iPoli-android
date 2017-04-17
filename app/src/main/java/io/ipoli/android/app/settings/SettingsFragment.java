@@ -408,9 +408,7 @@ public class SettingsFragment extends BaseFragment implements
             return;
         }
         Player player = getPlayer();
-        AndroidCalendarsPickerFragment fragment = AndroidCalendarsPickerFragment.newInstance(R.string.choose_calendars_title, player.getAndroidCalendars(), selectedCalendars -> {
-            onSelectCalendarsToSync(selectedCalendars);
-        });
+        AndroidCalendarsPickerFragment fragment = AndroidCalendarsPickerFragment.newInstance(R.string.choose_calendars_title, player.getAndroidCalendars(), this::onSelectCalendarsToSync);
         fragment.show(getFragmentManager());
     }
 
