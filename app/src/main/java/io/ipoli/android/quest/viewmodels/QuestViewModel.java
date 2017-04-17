@@ -118,7 +118,7 @@ public class QuestViewModel {
     }
 
     public boolean isForChallenge() {
-        return quest.getChallengeId() != null;
+        return quest.isFromChallenge();
     }
 
     public boolean isCompleted() {

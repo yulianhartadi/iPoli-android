@@ -25,12 +25,15 @@ import java.util.Random;
 import java.util.Set;
 
 import io.ipoli.android.Constants;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.reminder.data.Reminder;
 
+import static io.ipoli.android.app.utils.DateUtils.fromMillis;
+import static io.ipoli.android.app.utils.DateUtils.nowUTC;
+import static io.ipoli.android.app.utils.DateUtils.toMillis;
+import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
 import static org.threeten.bp.temporal.TemporalAdjusters.firstDayOfMonth;
 import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth;
 
@@ -100,7 +103,7 @@ public class RepeatingQuestScheduler {
     }
 
     private List<Quest> saveQuestsInRange(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endOfPeriodDate) {
-        java.util.Date periodEnd = DateUtils.toStartOfDayUTC(endOfPeriodDate);
+        java.util.Date periodEnd = toStartOfDayUTC(endOfPeriodDate);
         if (!repeatingQuest.shouldBeScheduledForPeriod(periodEnd)) {
             return new ArrayList<>();
         }
@@ -280,19 +283,19 @@ public class RepeatingQuestScheduler {
             return res;
         }
 
-        DateList dates = recur.getDates(new Date(DateUtils.toMillis(startDate)), new Date(recurrence.getDtstart()),
+        DateList dates = recur.getDates(new Date(toMillis(startDate)), new Date(recurrence.getDtstart()),
                 getPeriodEnd(endDate), Value.DATE);
 
         for (Object obj : dates) {
             Date d = (Date) obj;
-            res.add(createQuestFromRepeating(repeatingQuest, DateUtils.fromMillis(d.getTime())));
+            res.add(createQuestFromRepeating(repeatingQuest, fromMillis(d.getTime())));
         }
         return res;
     }
 
     @NonNull
     private DateTime getPeriodEnd(LocalDate endDate) {
-        return new DateTime(DateUtils.toStartOfDayUTC(endDate.plusDays(1)));
+        return new DateTime(toStartOfDayUTC(endDate.plusDays(1)));
     }
 
     private Quest createQuestFromRepeating(RepeatingQuest repeatingQuest, LocalDate endDate) {
@@ -305,8 +308,8 @@ public class RepeatingQuestScheduler {
         quest.setEndDate(endDate);
         quest.setStartDate(endDate);
         quest.setScheduledDate(endDate);
-        quest.setCreatedAt(DateUtils.nowUTC().getTime());
-        quest.setUpdatedAt(DateUtils.nowUTC().getTime());
+        quest.setCreatedAt(nowUTC().getTime());
+        quest.setUpdatedAt(nowUTC().getTime());
         quest.setSource(Constants.API_RESOURCE_SOURCE);
         quest.setChallengeId(repeatingQuest.getChallengeId());
         quest.setSubQuests(repeatingQuest.getSubQuests());

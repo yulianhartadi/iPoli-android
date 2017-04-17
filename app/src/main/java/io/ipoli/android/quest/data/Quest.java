@@ -406,7 +406,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @JsonIgnore
     public boolean isScheduledFor(LocalDate date) {
         return date.isEqual(DateUtils.fromMillis(getScheduled()));
-
     }
 
     @JsonIgnore
@@ -429,15 +428,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @JsonIgnore
     public boolean isStarted() {
         return actualStart != null && completedAt == null;
-    }
-
-    @JsonIgnore
-    public boolean isScheduledForTomorrow() {
-        if (getScheduled() == null) {
-            return false;
-        }
-        LocalDate tomorrow = LocalDate.now().plusDays(1);
-        return tomorrow.isEqual(DateUtils.fromMillis(getScheduled()));
     }
 
     @JsonIgnore
