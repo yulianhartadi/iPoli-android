@@ -18,12 +18,12 @@ import io.ipoli.android.quest.data.Quest;
  */
 public class PosteriorEstimator {
 
-    public static final int MORNING_6 = 6 * 60;
-    public static final int MORNING_11 = 11 * 60;
-    public static final int AFTERNOON_13 = 13 * 60;
-    public static final int AFTERNOON_17 = 17 * 60;
-    public static final int EVENING_19 = 19 * 60;
-    public static final int EVENING_23 = 23 * 60;
+    public static final int MORNING_START = 6 * 60;
+    public static final int MORNING_END = 11 * 60;
+    public static final int AFTERNOON_START = 13 * 60;
+    public static final int AFTERNOON_END = 17 * 60;
+    public static final int EVENING_START = 19 * 60;
+    public static final int EVENING_END = 23 * 60;
 
     private final PosteriorSettings posteriorSettings;
     private final LocalDate currentDate;
@@ -132,7 +132,7 @@ public class PosteriorEstimator {
     }
 
     private boolean isWorkDay(LocalDate currentDate, List<Integer> workDays) {
-        return workDays.contains(currentDate.getDayOfWeek());
+        return workDays.contains(currentDate.getDayOfWeek().getValue());
     }
 
     private DiscreteDistribution inverseUniformDistribution(DiscreteDistribution distribution) {
@@ -150,7 +150,7 @@ public class PosteriorEstimator {
     private DiscreteDistribution createFunDistribution() {
         double[] values = createEmptyWholeDayValues();
         for (int i = 0; i < values.length; i++) {
-            if (i > EVENING_19 && i < EVENING_23) {
+            if (i > EVENING_START && i < EVENING_END) {
                 values[i] = 1;
             } else {
                 values[i] = 0;
@@ -162,7 +162,7 @@ public class PosteriorEstimator {
     private DiscreteDistribution createEveningProductiveDistribution() {
         double[] values = createEmptyWholeDayValues();
         for (int i = 0; i < values.length; i++) {
-            if (i > EVENING_19 && i < EVENING_23) {
+            if (i > EVENING_START && i < EVENING_END) {
                 values[i] = 10;
             } else {
                 values[i] = 1;
@@ -174,7 +174,7 @@ public class PosteriorEstimator {
     private DiscreteDistribution createAfternoonProductiveDistribution() {
         double[] values = createEmptyWholeDayValues();
         for (int i = 0; i < values.length; i++) {
-            if (i > AFTERNOON_13 && i < AFTERNOON_17) {
+            if (i > AFTERNOON_START && i < AFTERNOON_END) {
                 values[i] = 10;
             } else {
                 values[i] = 1;
@@ -186,7 +186,7 @@ public class PosteriorEstimator {
     private DiscreteDistribution createMorningProductiveDistribution() {
         double[] values = createEmptyWholeDayValues();
         for (int i = 0; i < values.length; i++) {
-            if (i > MORNING_6 && i < MORNING_11) {
+            if (i > MORNING_START && i < MORNING_END) {
                 values[i] = 10;
             } else {
                 values[i] = 1;

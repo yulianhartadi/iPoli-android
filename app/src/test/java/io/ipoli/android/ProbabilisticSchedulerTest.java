@@ -65,4 +65,9 @@ public class ProbabilisticSchedulerTest {
         List<TimeBlock> slots = scheduler.chooseSlotsFor(new Task(10), 15, startTime, dist);
         assertThat(slots.get(0).getProbability(), greaterThan(0.183));
     }
+
+    @Test
+    public void shouldScheduleTaskWithMorningPreference() {
+        ProbabilisticTaskScheduler scheduler = new ProbabilisticTaskScheduler(0, 24, new ArrayList<>(), random);
+    }
 }
