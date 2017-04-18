@@ -547,7 +547,9 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     public void setTimesADay(Integer timesADay) {
-        setCompletedCount(Math.min(timesADay, getCompletedCount()));
+        if(timesADay != null && getCompletedCount() != null) {
+            setCompletedCount(Math.min(timesADay, getCompletedCount()));
+        }
         this.timesADay = timesADay;
     }
 
@@ -566,11 +568,11 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return getStartMinute() != null;
     }
 
-    public void setCompletedCount(int completedCount) {
+    public void setCompletedCount(Integer completedCount) {
         this.completedCount = completedCount;
     }
 
-    public int getCompletedCount() {
+    public Integer getCompletedCount() {
         return completedCount;
     }
 
