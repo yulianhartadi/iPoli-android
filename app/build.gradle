@@ -17,8 +17,8 @@ android {
         multiDexEnabled true
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 154
-        versionName "1.10.16"
+        versionCode 155
+        versionName "1.10.17"
     }
 
     compileOptions {
