@@ -151,7 +151,8 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     public int getStreak() {
         Recurrence recurrence = getRecurrence();
         List<QuestData> questsData = new ArrayList<>(getQuestsData().values());
-        Collections.sort(questsData, (q1, q2) -> -Long.compare(q1.getOriginalScheduledDate(), q2.getOriginalScheduledDate()));
+        Collections.sort(questsData,
+                (o1, o2) -> -o1.getOriginalScheduledDate().compareTo(o2.getOriginalScheduledDate()));
         if (isFlexible()) {
             return getFlexibleStreak(recurrence.getRecurrenceType(), questsData);
         } else {
@@ -183,15 +184,15 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     private int getFixedStreak(List<QuestData> questsData) {
         int streak = 0;
         for (QuestData qd : questsData) {
-            if (new Date(qd.getOriginalScheduledDate()).after(toStartOfDayUTC(LocalDate.now()))) {
+            if (qd.getOriginalScheduledDate().isAfter(LocalDate.now())) {
                 continue;
             }
 
-            if (DateUtils.isToday(DateUtils.fromMillis(qd.getOriginalScheduledDate())) && !qd.isComplete()) {
+            if (DateUtils.isToday(qd.getOriginalScheduledDate()) && !qd.isComplete()) {
                 continue;
             }
 
-            if (qd.isComplete() && qd.getScheduledDate().equals(qd.getOriginalScheduledDate())) {
+            if (qd.isComplete() && qd.getScheduledDate().isEqual(qd.getOriginalScheduledDate())) {
                 streak++;
             } else {
                 break;
@@ -205,7 +206,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
         int streak = 0;
         for (QuestData qd : questsData) {
 
-            LocalDate originalScheduledDate = DateUtils.fromMillis(qd.getOriginalScheduledDate());
+            LocalDate originalScheduledDate = qd.getOriginalScheduledDate();
             if (originalScheduledDate.isAfter(LocalDate.now())) {
                 continue;
             }
@@ -225,7 +226,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
             }
 
             if (qd.isComplete()
-                    && isBetween(new Date(qd.getScheduledDate()), toStartOfDayUTC(periodStart), toStartOfDayUTC(periodEnd))) {
+                    && isBetween(qd.getScheduledDate(), periodStart, periodEnd)) {
                 streak++;
             } else {
                 break;
@@ -238,9 +239,9 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     public LocalDate getNextScheduledDate(LocalDate currentDate) {
         LocalDate nextDate = null;
         for (QuestData qd : getQuestsData().values()) {
-            if (!qd.isComplete() && qd.getScheduledDate() != null && qd.getScheduledDate() >= DateUtils.toStartOfDayUTC(currentDate).getTime()) {
-                if (nextDate == null || nextDate.isAfter(DateUtils.fromMillis(qd.getScheduledDate()))) {
-                    nextDate = DateUtils.fromMillis(qd.getScheduledDate());
+            if (!qd.isComplete() && qd.getScheduledDate() != null && !currentDate.isAfter(qd.getScheduledDate())) {
+                if (nextDate == null || nextDate.isAfter(qd.getScheduledDate())) {
+                    nextDate = qd.getScheduledDate();
                 }
             }
         }
@@ -426,16 +427,16 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
                 DateUtils.getBoundsFor4WeeksInThePast(currentDate);
 
         for (Pair<LocalDate, LocalDate> p : pairs) {
-            result.add(new PeriodHistory(toStartOfDayUTC(p.first).getTime(), toStartOfDayUTC(p.second).getTime(), frequency));
+            result.add(new PeriodHistory(p.first, p.second, frequency));
         }
 
         for (QuestData qd : getQuestsData().values()) {
             for (PeriodHistory p : result) {
-                Long scheduledDate = qd.getScheduledDate();
+                LocalDate scheduledDate = qd.getScheduledDate();
                 if (scheduledDate == null) {
                     continue;
                 }
-                if (DateUtils.isBetween(new Date(scheduledDate), new Date(p.getStart()), new Date(p.getEnd()))) {
+                if (DateUtils.isBetween(scheduledDate, p.getStartDate(), (p.getEndDate()))) {
                     if (qd.isComplete()) {
                         p.increaseCompletedCount();
                     }

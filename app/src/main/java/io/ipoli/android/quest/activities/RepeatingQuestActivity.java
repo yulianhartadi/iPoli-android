@@ -45,7 +45,6 @@ import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.ui.formatters.FrequencyTextFormatter;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.data.Category;
@@ -309,13 +308,13 @@ public class RepeatingQuestActivity extends BaseActivity {
     private List<String> getXValues(List<PeriodHistory> periodHistories) {
         List<String> xValues = new ArrayList<>();
         if (repeatingQuest.getRecurrence().getRecurrenceType() == Recurrence.RepeatType.MONTHLY) {
-            xValues.add(getMonthText(periodHistories.get(0).getStart()));
-            xValues.add(getMonthText(periodHistories.get(1).getStart()));
-            xValues.add(getMonthText(periodHistories.get(2).getStart()));
+            xValues.add(getMonthText(periodHistories.get(0).getStartDate()));
+            xValues.add(getMonthText(periodHistories.get(1).getStartDate()));
+            xValues.add(getMonthText(periodHistories.get(2).getStartDate()));
             xValues.add("this month");
         } else {
-            xValues.add(getWeekRangeText(periodHistories.get(0).getStart(), periodHistories.get(0).getEnd()));
-            xValues.add(getWeekRangeText(periodHistories.get(1).getStart(), periodHistories.get(1).getEnd()));
+            xValues.add(getWeekRangeText(periodHistories.get(0).getStartDate(), periodHistories.get(0).getEndDate()));
+            xValues.add(getWeekRangeText(periodHistories.get(1).getStartDate(), periodHistories.get(1).getEndDate()));
             xValues.add("last week");
             xValues.add("this week");
         }
@@ -353,12 +352,8 @@ public class RepeatingQuestActivity extends BaseActivity {
         return dataSet;
     }
 
-    private String getMonthText(long date) {
-        return getMonthShortName(DateUtils.fromMillis(date));
-    }
-
-    private String getWeekRangeText(long weekStart, long weekEnd) {
-        return getWeekRangeText(DateUtils.fromMillis(weekStart), DateUtils.fromMillis(weekEnd));
+    private String getMonthText(LocalDate date) {
+        return getMonthShortName(date);
     }
 
     private String getWeekRangeText(LocalDate weekStart, LocalDate weekEnd) {
