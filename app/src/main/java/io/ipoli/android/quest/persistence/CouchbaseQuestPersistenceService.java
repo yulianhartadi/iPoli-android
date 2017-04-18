@@ -30,7 +30,6 @@ import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestReminder;
-import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.reminder.data.Reminder;
 
 import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
@@ -159,7 +158,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
         if (questFromAndroidCalendar.getMap() == null) {
             questFromAndroidCalendar.setMapReduce((document, emitter) -> {
                 String type = (String) document.get("type");
-                if (RepeatingQuest.TYPE.equals(type) && document.containsKey("source") &&
+                if (Quest.TYPE.equals(type) && document.containsKey("source") &&
                         document.get("source").equals(Constants.SOURCE_ANDROID_CALENDAR)) {
                     Map<String, Object> sourceMapping = (Map<String, Object>) document.get("sourceMapping");
                     Map<String, Object> androidCalendarMapping = (Map<String, Object>) sourceMapping.get("androidCalendarMapping");
