@@ -214,6 +214,11 @@ public class AndroidCalendarEventParser {
             return null;
         }
 
+        //temp
+        if(recur.getFrequency().equals(Recur.YEARLY)) {
+            return null;
+        }
+
         Recurrence recurrence = Recurrence.create();
         recurrence.setFlexibleCount(0);
         LocalDate startDate = DateUtils.toStartOfDayUTCLocalDate(startLocalDateTime.toLocalDate());
@@ -256,6 +261,7 @@ public class AndroidCalendarEventParser {
                     recur.getYearDayList().add(startDate.getDayOfYear());
                 }
                 recurrence.setRrule(recur.toString());
+                break;
         }
 
         rq.setRecurrence(recurrence);

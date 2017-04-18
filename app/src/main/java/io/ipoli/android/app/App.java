@@ -274,7 +274,7 @@ public class App extends MultiDexApplication {
             try {
                 localStorage.saveString(Constants.KEY_WIDGET_AGENDA_QUEST_LIST, objectMapper.writeValueAsString(quests));
             } catch (JsonProcessingException e) {
-                throw new RuntimeException("Cant save quests for Widget", e);
+                throw new RuntimeException("Cant saveSync quests for Widget", e);
             }
             requestWidgetUpdate();
 

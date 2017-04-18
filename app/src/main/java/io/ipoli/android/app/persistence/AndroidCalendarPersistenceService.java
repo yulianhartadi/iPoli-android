@@ -41,22 +41,32 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
     }
 
     @Override
-    public void save(Player player, List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests, TransactionCompleteListener transactionCompleteListener) {
-        save(player, quests, questToOriginalId, repeatingQuestToQuests, null, null, transactionCompleteListener);
+    public void saveSync(Player player, List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests) {
+        saveSync(player, quests, questToOriginalId, repeatingQuestToQuests, null, null);
     }
 
     @Override
-    public void save(Player player, List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests, List<Quest> questsToDelete, List<RepeatingQuest> repeatingQuestsToDelete, TransactionCompleteListener listener) {
-        database.runAsync(db -> db.runInTransaction(() -> {
-            if(repeatingQuestsToDelete != null) {
-                for(RepeatingQuest rq : repeatingQuestsToDelete) {
-                    delete(rq);
+    public void saveSync(Player player, List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests, List<Quest> questsToDelete, List<RepeatingQuest> repeatingQuestsToDelete) {
+        database.runInTransaction(() -> {
+            if (repeatingQuestsToDelete != null) {
+                for (RepeatingQuest rq : repeatingQuestsToDelete) {
+                    try {
+                        delete(rq);
+                    } catch (CouchbaseLiteException e) {
+                        postError(e);
+                        return false;
+                    }
                 }
             }
 
-            if(questsToDelete != null) {
-                for(Quest q : questsToDelete) {
-                    delete(q);
+            if (questsToDelete != null) {
+                for (Quest q : questsToDelete) {
+                    try {
+                        delete(q);
+                    } catch (CouchbaseLiteException e) {
+                        postError(e);
+                        return false;
+                    }
                 }
             }
 
@@ -65,10 +75,8 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
             saveQuests(quests);
 
             playerPersistenceService.save(player);
-
-            postResult(listener);
             return true;
-        }));
+        });
     }
 
     private void saveQuests(List<Quest> quests) {
@@ -102,16 +110,12 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
         }
     }
 
-    private void delete(PersistedObject object) {
-        try {
-            database.getExistingDocument(object.getId()).delete();
-        } catch (CouchbaseLiteException e) {
-            postError(e);
-        }
+    private void delete(PersistedObject object) throws CouchbaseLiteException {
+        database.getExistingDocument(object.getId()).delete();
     }
 
 
-    private  <E> void postResult(TransactionCompleteListener listener) {
+    private <E> void postResult(TransactionCompleteListener listener) {
         new Handler(Looper.getMainLooper()).post(() -> listener.onComplete());
     }
 

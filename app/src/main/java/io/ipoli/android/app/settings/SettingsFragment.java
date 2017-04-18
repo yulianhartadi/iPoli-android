@@ -2,6 +2,7 @@ package io.ipoli.android.app.settings;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -56,6 +57,7 @@ import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
 import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
 import io.ipoli.android.app.ui.dialogs.DaysOfWeekPickerFragment;
+import io.ipoli.android.app.ui.dialogs.LoadingDialog;
 import io.ipoli.android.app.ui.dialogs.TimeIntervalPickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimeOfDayPickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
@@ -413,38 +415,51 @@ public class SettingsFragment extends BaseFragment implements
     }
 
     private void onSelectCalendarsToSync(Map<Long, Category> selectedCalendars) {
-        Player player = getPlayer();
         populateSelectedSyncCalendarsText(selectedCalendars.size());
+        LoadingDialog dialog = LoadingDialog.show(getContext(), getString(R.string.sync_calendars_loading_dialog_title), getString(R.string.sync_calendars_loading_dialog_message));
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                Player player = getPlayer();
 
-        Set<Long> calendarsToRemove = getCalendarsToRemove(selectedCalendars, player.getAndroidCalendars().keySet());
-        List<RepeatingQuest> repeatingQuestsToDelete = new ArrayList<>();
-        List<Quest> questsToDelete = new ArrayList<>();
-        for (Long calendarId : calendarsToRemove) {
-            repeatingQuestsToDelete.addAll(repeatingQuestPersistenceService.findNotCompletedFromAndroidCalendar(calendarId));
-            questsToDelete.addAll(questPersistenceService.findNotCompletedFromAndroidCalendar(calendarId));
-        }
+                Set<Long> calendarsToRemove = getCalendarsToRemove(selectedCalendars, player.getAndroidCalendars().keySet());
+                List<RepeatingQuest> repeatingQuestsToDelete = new ArrayList<>();
+                List<Quest> questsToDelete = new ArrayList<>();
+                for (Long calendarId : calendarsToRemove) {
+                    repeatingQuestsToDelete.addAll(repeatingQuestPersistenceService.findNotCompletedFromAndroidCalendar(calendarId));
+                    questsToDelete.addAll(questPersistenceService.findNotCompletedFromAndroidCalendar(calendarId));
+                }
 
-        Set<Long> calendarsToAdd = getCalendarsToAdd(selectedCalendars, player.getAndroidCalendars().keySet());
-        List<Quest> quests = new ArrayList<>();
-        Map<Quest, Long> questToOriginalId = new HashMap<>();
-        List<RepeatingQuest> repeatingQuests = new ArrayList<>();
-        for (Long calendarId : calendarsToAdd) {
-            List<Event> events = syncAndroidCalendarProvider.getCalendarEvents(calendarId);
-            AndroidCalendarEventParser.Result result = androidCalendarEventParser.parse(events, selectedCalendars.get(calendarId));
-            quests.addAll(result.quests);
-            questToOriginalId.putAll(result.questToOriginalId);
-            repeatingQuests.addAll(result.repeatingQuests);
-        }
+                Set<Long> calendarsToAdd = getCalendarsToAdd(selectedCalendars, player.getAndroidCalendars().keySet());
+                List<Quest> quests = new ArrayList<>();
+                Map<Quest, Long> questToOriginalId = new HashMap<>();
+                List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+                for (Long calendarId : calendarsToAdd) {
+                    List<Event> events = syncAndroidCalendarProvider.getCalendarEvents(calendarId);
+                    AndroidCalendarEventParser.Result result = androidCalendarEventParser.parse(events, selectedCalendars.get(calendarId));
+                    quests.addAll(result.quests);
+                    questToOriginalId.putAll(result.questToOriginalId);
+                    repeatingQuests.addAll(result.repeatingQuests);
+                }
 
-        Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests = new HashMap<>();
-        for (RepeatingQuest rq : repeatingQuests) {
-            repeatingQuestToQuests.put(rq, repeatingQuestScheduler.schedule(rq, LocalDate.now()));
-        }
+                Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests = new HashMap<>();
+                for (RepeatingQuest rq : repeatingQuests) {
+                    repeatingQuestToQuests.put(rq, repeatingQuestScheduler.schedule(rq, LocalDate.now()));
+                }
 
-        player.setAndroidCalendars(selectedCalendars);
-        calendarPersistenceService.save(player, quests, questToOriginalId, repeatingQuestToQuests, questsToDelete, repeatingQuestsToDelete, () -> {
-            //hide loading dialog
-        });
+                player.setAndroidCalendars(selectedCalendars);
+                calendarPersistenceService.saveSync(player, quests, questToOriginalId, repeatingQuestToQuests, questsToDelete, repeatingQuestsToDelete);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if(dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        }.execute();
+
     }
 
     @NonNull

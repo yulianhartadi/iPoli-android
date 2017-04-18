@@ -566,11 +566,11 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         return getStartMinute() != null;
     }
 
-    public void setCompletedCount(int completedCount) {
+    public void setCompletedCount(Integer completedCount) {
         this.completedCount = completedCount;
     }
 
-    public int getCompletedCount() {
+    public Integer getCompletedCount() {
         return completedCount;
     }
 

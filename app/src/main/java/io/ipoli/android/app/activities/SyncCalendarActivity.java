@@ -1,6 +1,7 @@
 package io.ipoli.android.app.activities;
 
 import android.Manifest;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.ActionBar;
@@ -124,36 +125,47 @@ public class SyncCalendarActivity extends BaseActivity {
     private void onNextTap() {
         createLoadingDialog();
 
-        List<AndroidCalendarViewModel> selectedAndroidCalendarViewModels = adapter.getSelectedCalendars();
-        if(selectedAndroidCalendarViewModels.isEmpty()) {
-            onFinish();
-            return;
-        }
-        Map<Long, Category> selectedCalendars = new HashMap<>();
-        for (AndroidCalendarViewModel vm : selectedAndroidCalendarViewModels) {
-            selectedCalendars.put(vm.getId(), vm.getCategory());
-        }
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                List<AndroidCalendarViewModel> selectedAndroidCalendarViewModels = adapter.getSelectedCalendars();
+                if(selectedAndroidCalendarViewModels.isEmpty()) {
+                    return null;
+                }
+                Map<Long, Category> selectedCalendars = new HashMap<>();
+                for (AndroidCalendarViewModel vm : selectedAndroidCalendarViewModels) {
+                    selectedCalendars.put(vm.getId(), vm.getCategory());
+                }
 
-        Player player = playerPersistenceService.get();
-        player.setAndroidCalendars(selectedCalendars);
+                Player player = playerPersistenceService.get();
+                player.setAndroidCalendars(selectedCalendars);
 
-        List<Quest> quests = new ArrayList<>();
-        Map<Quest, Long> questToOriginalId = new HashMap<>();
-        List<RepeatingQuest> repeatingQuests = new ArrayList<>();
-        for(Long calendarId : selectedCalendars.keySet()) {
-            List<Event> events = syncAndroidCalendarProvider.getCalendarEvents(calendarId);
-            AndroidCalendarEventParser.Result result = androidCalendarEventParser.parse(events, selectedCalendars.get(calendarId));
-            quests.addAll(result.quests);
-            questToOriginalId.putAll(result.questToOriginalId);
-            repeatingQuests.addAll(result.repeatingQuests);
-        }
+                List<Quest> quests = new ArrayList<>();
+                Map<Quest, Long> questToOriginalId = new HashMap<>();
+                List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+                for(Long calendarId : selectedCalendars.keySet()) {
+                    List<Event> events = syncAndroidCalendarProvider.getCalendarEvents(calendarId);
+                    AndroidCalendarEventParser.Result result = androidCalendarEventParser.parse(events, selectedCalendars.get(calendarId));
+                    quests.addAll(result.quests);
+                    questToOriginalId.putAll(result.questToOriginalId);
+                    repeatingQuests.addAll(result.repeatingQuests);
+                }
 
-        Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests = new HashMap<>();
-        for(RepeatingQuest rq: repeatingQuests) {
-            repeatingQuestToQuests.put(rq, repeatingQuestScheduler.schedule(rq, LocalDate.now()));
-        }
+                Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests = new HashMap<>();
+                for(RepeatingQuest rq: repeatingQuests) {
+                    repeatingQuestToQuests.put(rq, repeatingQuestScheduler.schedule(rq, LocalDate.now()));
+                }
 
-        calendarPersistenceService.save(player, quests, questToOriginalId, repeatingQuestToQuests, () -> onFinish());
+                calendarPersistenceService.saveSync(player, quests, questToOriginalId, repeatingQuestToQuests);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                onFinish();
+            }
+        }.execute();
+
     }
 
     private void onFinish() {
@@ -162,7 +174,7 @@ public class SyncCalendarActivity extends BaseActivity {
         finish();
     }
 
-    protected void createLoadingDialog() {
+    private void createLoadingDialog() {
         dialog = LoadingDialog.show(this, getString(R.string.sync_calendars_loading_dialog_title), getString(R.string.sync_calendars_loading_dialog_message));
     }
 

@@ -108,8 +108,8 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
 //            }
 //        }
 //
-//        androidCalendarQuestService.save(nonRepeating);
-//        androidCalendarRepeatingQuestService.save(repeating);
+//        androidCalendarQuestService.saveSync(nonRepeating);
+//        androidCalendarRepeatingQuestService.saveSync(repeating);
 //    }
 //
 //    private void deleteEvents(List<Event> events) {
