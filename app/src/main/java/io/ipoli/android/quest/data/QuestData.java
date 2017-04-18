@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.data;
 
+import org.threeten.bp.LocalDate;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 12/27/16.
@@ -7,8 +9,8 @@ package io.ipoli.android.quest.data;
 public class QuestData {
     private boolean isComplete;
     private Integer duration;
-    private Long scheduledDate;
-    private Long originalScheduledDate;
+    private LocalDate scheduledDate;
+    private LocalDate originalScheduledDate;
 
     public QuestData() {
 
@@ -17,8 +19,8 @@ public class QuestData {
     public QuestData(Quest quest) {
         isComplete = quest.isCompleted();
         duration = quest.getActualDuration();
-        scheduledDate = quest.getScheduled();
-        originalScheduledDate = quest.getOriginalScheduled();
+        scheduledDate = quest.getScheduledDate();
+        originalScheduledDate = quest.getOriginalScheduledDate();
     }
 
     public boolean isComplete() {
@@ -37,19 +39,11 @@ public class QuestData {
         this.duration = duration;
     }
 
-    public Long getScheduledDate() {
+    public LocalDate getScheduledDate() {
         return scheduledDate;
     }
 
-    public void setScheduledDate(Long scheduledDate) {
-        this.scheduledDate = scheduledDate;
-    }
-
-    public void setOriginalScheduledDate(Long originalScheduledDate) {
-        this.originalScheduledDate = originalScheduledDate;
-    }
-
-    public Long getOriginalScheduledDate() {
+    public LocalDate getOriginalScheduledDate() {
         return originalScheduledDate;
     }
 }
