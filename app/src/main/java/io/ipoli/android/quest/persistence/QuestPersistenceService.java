@@ -47,4 +47,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     void save(List<Quest> quests);
 
     List<Quest> findNotCompletedFromAndroidCalendar(Long calendarId);
+
+    List<Quest> findFromAndroidCalendar(Long calendarId);
 }

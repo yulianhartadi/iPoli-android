@@ -294,7 +294,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
     }
 
     @Override
-    public RepeatingQuest findFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping) {
+    public RepeatingQuest findNotCompletedFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping) {
         Query query = repeatingQuestFromAndroidCalendar.createQuery();
         query.setGroupLevel(2);
         List<Object> key = Arrays.asList(
@@ -318,6 +318,15 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
     @Override
     public List<RepeatingQuest> findNotCompletedFromAndroidCalendar(Long calendarId) {
+        return doFindFromAndroidCalendar(calendarId, false);
+    }
+
+    @Override
+    public List<RepeatingQuest> findFromAndroidCalendar(Long calendarId) {
+        return doFindFromAndroidCalendar(calendarId, true);
+    }
+
+    private List<RepeatingQuest> doFindFromAndroidCalendar(Long calendarId, boolean includeCompleted) {
         Query query = repeatingQuestFromAndroidCalendar.createQuery();
         query.setGroupLevel(1);
         query.setStartKey(Arrays.asList(String.valueOf(calendarId), null));
@@ -330,9 +339,10 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
                 QueryRow row = enumerator.next();
                 List<RepeatingQuest> repeatingQuests = (List<RepeatingQuest>) row.getValue();
                 for(RepeatingQuest rq : repeatingQuests) {
-                    if(!rq.isCompleted()) {
-                        result.add(rq);
+                    if(!includeCompleted && rq.isCompleted()) {
+                        continue;
                     }
+                    result.add(rq);
                 }
             }
         } catch (CouchbaseLiteException e) {
