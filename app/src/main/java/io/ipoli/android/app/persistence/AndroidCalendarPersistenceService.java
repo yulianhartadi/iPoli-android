@@ -1,8 +1,5 @@
 package io.ipoli.android.app.persistence;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.squareup.otto.Bus;
@@ -115,9 +112,9 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
     }
 
 
-    private <E> void postResult(TransactionCompleteListener listener) {
-        new Handler(Looper.getMainLooper()).post(() -> listener.onComplete());
-    }
+//    private <E> void postResult(TransactionCompleteListener listener) {
+//        new Handler(Looper.getMainLooper()).post(() -> listener.onComplete());
+//    }
 
     protected void postError(Exception e) {
         eventBus.post(new AppErrorEvent(e));
