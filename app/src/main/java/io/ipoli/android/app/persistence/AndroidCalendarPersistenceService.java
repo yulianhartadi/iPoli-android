@@ -4,13 +4,16 @@ import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.squareup.otto.Bus;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.AndroidCalendarMapping;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.SourceMapping;
@@ -39,41 +42,68 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
 
     @Override
     public void saveSync(Player player, List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests) {
-        saveSync(player, quests, questToOriginalId, repeatingQuestToQuests, null, null);
+        database.runInTransaction(() -> {
+            saveRepeatingQuests(repeatingQuestToQuests);
+            saveQuestsWithOriginalId(questToOriginalId);
+            saveQuests(quests);
+            savePlayer(player);
+            return true;
+        });
     }
 
-    @Override
-    public void saveSync(Player player, List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests, List<Quest> questsToDelete, List<RepeatingQuest> repeatingQuestsToDelete) {
-        database.runInTransaction(() -> {
-            if (repeatingQuestsToDelete != null) {
-                for (RepeatingQuest rq : repeatingQuestsToDelete) {
-                    try {
-                        delete(rq);
-                    } catch (CouchbaseLiteException e) {
-                        postError(e);
-                        return false;
-                    }
-                }
-            }
 
-            if (questsToDelete != null) {
-                for (Quest q : questsToDelete) {
-                    try {
-                        delete(q);
-                    } catch (CouchbaseLiteException e) {
-                        postError(e);
-                        return false;
-                    }
-                }
+    @Override
+    public void updateSync(Player player, List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests, Set<Long> calendarsToRemove, Map<Long, Category> calendarsToUpdate) {
+        database.runInTransaction(() -> {
+            try {
+                deleteCalendars(calendarsToRemove);
+            } catch (CouchbaseLiteException e) {
+                postError(e);
+                return false;
             }
 
             saveRepeatingQuests(repeatingQuestToQuests);
             saveQuestsWithOriginalId(questToOriginalId);
             saveQuests(quests);
+            savePlayer(player);
 
-            playerPersistenceService.save(player);
+            for (Long calendarId : calendarsToUpdate.keySet()) {
+                Category category = calendarsToUpdate.get(calendarId);
+                List<RepeatingQuest> repeatingQuestsToUpdate = repeatingQuestPersistenceService.findFromAndroidCalendar(calendarId);
+                List<Quest> questsToUpdate = questPersistenceService.findFromAndroidCalendar(calendarId);
+                for (RepeatingQuest rq : repeatingQuestsToUpdate) {
+                    rq.setCategoryType(category);
+                    repeatingQuestPersistenceService.save(rq);
+                }
+                for (Quest q : questsToUpdate) {
+                    q.setCategoryType(category);
+                    questPersistenceService.save(q);
+                }
+            }
+
             return true;
         });
+    }
+
+    private void deleteCalendars(Set<Long> calendarsToRemove) throws CouchbaseLiteException {
+        List<RepeatingQuest> repeatingQuestsToDelete = new ArrayList<>();
+        List<Quest> questsToDelete = new ArrayList<>();
+        for (Long calendarId : calendarsToRemove) {
+            repeatingQuestsToDelete.addAll(repeatingQuestPersistenceService.findNotCompletedFromAndroidCalendar(calendarId));
+            questsToDelete.addAll(questPersistenceService.findNotCompletedFromAndroidCalendar(calendarId));
+        }
+
+        for (RepeatingQuest rq : repeatingQuestsToDelete) {
+            delete(rq);
+        }
+
+        for (Quest q : questsToDelete) {
+                delete(q);
+        }
+    }
+
+    private void savePlayer(Player player) {
+        playerPersistenceService.save(player);
     }
 
     private void saveQuests(List<Quest> quests) {
@@ -87,7 +117,7 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
             Long calendarId = q.getSourceMapping().getAndroidCalendarMapping().getCalendarId();
             Long eventId = questToOriginalId.get(q);
             AndroidCalendarMapping rqCalendarMapping = SourceMapping.fromGoogleCalendar(calendarId, eventId).getAndroidCalendarMapping();
-            RepeatingQuest rq = repeatingQuestPersistenceService.findFromAndroidCalendar(rqCalendarMapping);
+            RepeatingQuest rq = repeatingQuestPersistenceService.findNotCompletedFromAndroidCalendar(rqCalendarMapping);
             if (rq == null) {
                 continue;
             }
