@@ -28,6 +28,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.quest.data.AndroidCalendarMapping;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestReminder;
 import io.ipoli.android.reminder.data.Reminder;
@@ -428,6 +429,29 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     @Override
     public List<Quest> findFromAndroidCalendar(Long calendarId) {
         return doFindFromAndroid(calendarId, true);
+    }
+
+    @Override
+    public Quest findNotCompletedFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping) {
+        Query query = questFromAndroidCalendar.createQuery();
+        query.setGroupLevel(2);
+        List<Object> key = Arrays.asList(
+                String.valueOf(androidCalendarMapping.getCalendarId()), String.valueOf(androidCalendarMapping.getEventId()));
+        query.setStartKey(key);
+        query.setEndKey(key);
+
+        try {
+            QueryEnumerator enumerator = query.run();
+            while (enumerator.hasNext()) {
+                QueryRow row = enumerator.next();
+                List<Quest> quests = (List<Quest>) row.getValue();
+                Quest quest = quests.isEmpty() ? null : quests.get(0);
+                return quest;
+            }
+        } catch (CouchbaseLiteException e) {
+            postError(e);
+        }
+        return null;
     }
 
     private List<Quest> doFindFromAndroid(Long calendarId, boolean includeCompleted) {

@@ -4,22 +4,30 @@ import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.squareup.otto.Bus;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
+import io.ipoli.android.app.AndroidCalendarEventParser;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.SyncAndroidCalendarProvider;
-import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.app.persistence.CalendarPersistenceService;
+import io.ipoli.android.player.Player;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.quest.data.Category;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import me.everything.providers.android.calendar.Event;
+import pub.devrel.easypermissions.EasyPermissions;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -28,38 +36,70 @@ import me.everything.providers.android.calendar.Event;
 public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
 
     @Inject
+    PlayerPersistenceService playerPersistenceService;
+
+    @Inject
     QuestPersistenceService questPersistenceService;
 
     @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
-//    @Inject
-//    AndroidCalendarQuestListPersistenceService androidCalendarQuestService;
-//
-//    @Inject
-//    AndroidCalendarRepeatingQuestListPersistenceService androidCalendarRepeatingQuestService;
+    @Inject
+    SyncAndroidCalendarProvider syncAndroidCalendarProvider;
+
+    @Inject
+    AndroidCalendarEventParser androidCalendarEventParser;
+
+    @Inject
+    CalendarPersistenceService calendarPersistenceService;
 
     @Inject
     Bus eventBus;
 
-    @Inject
-    LocalStorage localStorage;
-
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d("AAAA", "receive");
-        if (ContextCompat.checkSelfPermission(context,
-                Manifest.permission.READ_CALENDAR)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (!EasyPermissions.hasPermissions(context, Manifest.permission.READ_CALENDAR)) {
             return;
         }
 
         App.getAppComponent(context).inject(this);
-        SyncAndroidCalendarProvider provider = new SyncAndroidCalendarProvider(context);
-        List<Event> dirtyEvents = provider.getDirtyEvents(1).getList();
-        for(Event e : dirtyEvents) {
-            Log.d("AAAA event", e.title);
+        Player player = playerPersistenceService.get();
+
+        List<Quest> quests = new ArrayList<>();
+        Map<Quest, Long> questToOriginalId = new HashMap<>();
+        List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+
+        for (Map.Entry<Long, Category> calendar : player.getAndroidCalendars().entrySet()) {
+            List<Event> dirtyEvents = syncAndroidCalendarProvider.getDirtyEvents(calendar.getKey());
+            AndroidCalendarEventParser.Result result = androidCalendarEventParser.parse(dirtyEvents, calendar.getValue());
+            quests.addAll(result.quests);
+            questToOriginalId.putAll(result.questToOriginalId);
+            repeatingQuests.addAll(result.repeatingQuests);
         }
+
+
+        for(RepeatingQuest rq : repeatingQuests) {
+            RepeatingQuest existingRepeatingQuest = repeatingQuestPersistenceService.findNotCompletedFromAndroidCalendar(rq.getSourceMapping().getAndroidCalendarMapping());
+            if(existingRepeatingQuest != null) {
+                rq.setId(existingRepeatingQuest.getId());
+                rq.setCreatedAt(existingRepeatingQuest.getCreatedAt());
+            }
+        }
+
+        for(Quest q : quests) {
+            Quest existingQuest = questPersistenceService.findNotCompletedFromAndroidCalendar(q.getSourceMapping().getAndroidCalendarMapping());
+            if(existingQuest != null) {
+                q.setId(existingQuest.getId());
+                q.setCreatedAt(existingQuest.getCreatedAt());
+            }
+        }
+
+//        calendarPersistenceService.updateAsync(quests, questToOriginalId, repeatingQuests);
+
+
+
+
 //        Set<String> calendarIds = localStorage.readStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS);
 //        List<Event> dirtyEvents = new ArrayList<>();
 //        List<Event> deletedEvents = new ArrayList<>();

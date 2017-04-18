@@ -22,19 +22,21 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
         super(context);
     }
 
-    public Data<Event> getDirtyEvents(long calendarId) {
+    public List<Event> getDirtyEvents(long calendarId) {
         String selection = CalendarContract.Events.CALENDAR_ID + " = ? AND "
                 + CalendarContract.Events.DIRTY + "= ? AND "
                 + CalendarContract.Events.DELETED + "= ?";
         String[] selectionArgs = new String[]{String.valueOf(calendarId), String.valueOf(1), String.valueOf(0)};
-        return getContentTableData(Event.uri, selection, selectionArgs, null, Event.class);
+        Data<Event> data = getContentTableData(Event.uri, selection, selectionArgs, null, Event.class);
+        return data == null ? new ArrayList<>() : data.getList();
     }
 
-    public Data<Event> getDeletedEvents(long calendarId) {
+    public List<Event> getDeletedEvents(long calendarId) {
         String selection = CalendarContract.Events.CALENDAR_ID + " = ? AND "
                 + CalendarContract.Events.DELETED + "= ?";
         String[] selectionArgs = new String[]{String.valueOf(calendarId), String.valueOf(1)};
-        return getContentTableData(Event.uri, selection, selectionArgs, null, Event.class);
+        Data<Event> data = getContentTableData(Event.uri, selection, selectionArgs, null, Event.class);
+        return data == null ? new ArrayList<>() : data.getList();
     }
 
     public List<Event> getCalendarEvents(long calendarId) {
@@ -43,18 +45,12 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
 
     public List<Calendar> getAndroidCalendars() {
         Data<Calendar> data = getCalendars();
-        if(data == null) {
-            return new ArrayList<>();
-        }
-        return data.getList();
+        return data == null ? new ArrayList<>() : data.getList();
     }
 
     public List<Reminder> getEventReminders(long eventId) {
         Data<Reminder> data = getReminders(eventId);
-        if(data == null) {
-            return new ArrayList<>();
-        }
-        return data.getList();
+        return data == null ? new ArrayList<>() : data.getList();
     }
 
 }
