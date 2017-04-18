@@ -36,8 +36,9 @@ public class TaskScheduler {
     private List<TimeBlock> insertTaskInSchedule(List<TimeBlock> freeBlocks, int newTaskDuration, Task t) {
         int startMinute = t.getStartMinute();
         int endMinute = startMinute + t.getDuration();
+
         List<TimeBlock> newBlocks = cloneTimeBlocks(freeBlocks);
-        for (TimeBlock tb : newBlocks) {
+        for (TimeBlock tb : freeBlocks) {
             newBlocks.remove(tb);
             if (startMinute >= tb.getStartMinute() && endMinute <= tb.getEndMinute()) {
                 TimeBlock b1 = new TimeBlock(tb.getStartMinute(), startMinute);
@@ -59,7 +60,7 @@ public class TaskScheduler {
     private List<TimeBlock> cloneTimeBlocks(List<TimeBlock> timeBlocks) {
         List<TimeBlock> result = new ArrayList<>();
         for (TimeBlock tb : timeBlocks) {
-            result.add(new TimeBlock(tb));
+            result.add(tb);
         }
         return result;
     }
