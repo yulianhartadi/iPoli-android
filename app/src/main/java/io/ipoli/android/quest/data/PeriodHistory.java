@@ -1,27 +1,27 @@
 package io.ipoli.android.quest.data;
 
+import org.threeten.bp.LocalDate;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 12/25/16.
  */
 public class PeriodHistory {
-    private long start;
-    private long end;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private int completedCount;
     private int totalCount;
     private int scheduledCount;
 
-    private String type;
-
-    public PeriodHistory(long start, long end, int totalCount) {
-        this.start = start;
-        this.end = end;
+    public PeriodHistory(LocalDate startDate, LocalDate endDate, int totalCount) {
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.totalCount = totalCount;
         this.completedCount = 0;
     }
 
-    public PeriodHistory(long start, long end) {
-        this(start, end, -1);
+    public PeriodHistory(LocalDate startDate, LocalDate endDate) {
+        this(startDate, endDate, -1);
     }
 
     public void increaseCompletedCount() {
@@ -29,28 +29,20 @@ public class PeriodHistory {
         totalCount = Math.max(completedCount, totalCount);
     }
 
-    public String getType() {
-        return type;
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
 
-    public long getStart() {
-        return start;
+    public LocalDate getEndDate() {
+        return endDate;
     }
 
-    public void setStart(long start) {
-        this.start = start;
-    }
-
-    public long getEnd() {
-        return end;
-    }
-
-    public void setEnd(long end) {
-        this.end = end;
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 
     public int getCompletedCount() {
