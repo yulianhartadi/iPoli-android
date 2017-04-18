@@ -23,8 +23,6 @@ import io.ipoli.android.quest.data.QuestData;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.generators.RewardProvider;
 
-import static io.ipoli.android.app.utils.DateUtils.toStartOfDayUTC;
-
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
@@ -298,12 +296,12 @@ public class Challenge extends PersistedObject implements RewardProvider {
     }
 
     @JsonIgnore
-    public LocalDate getNextScheduledDate(long currentDate) {
+    public LocalDate getNextScheduledDate(LocalDate currentDate) {
         LocalDate nextDate = null;
         for (QuestData qd : questsData.values()) {
-            if (!qd.isComplete() && qd.getScheduledDate() != null && qd.getScheduledDate() >= currentDate) {
-                if (nextDate == null || nextDate.isAfter(DateUtils.fromMillis(qd.getScheduledDate()))) {
-                    nextDate = DateUtils.fromMillis(qd.getScheduledDate());
+            if (!qd.isComplete() && qd.getScheduledDate() != null && !currentDate.isAfter(qd.getScheduledDate())) {
+                if (nextDate == null || nextDate.isAfter(qd.getScheduledDate())) {
+                    nextDate = qd.getScheduledDate();
                 }
             }
         }
@@ -328,7 +326,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
                 DateUtils.getBoundsFor4WeeksInThePast(currentDate);
 
         for (Pair<LocalDate, LocalDate> p : pairs) {
-            result.add(new PeriodHistory(toStartOfDayUTC(p.first).getTime(), toStartOfDayUTC(p.second).getTime()));
+            result.add(new PeriodHistory(p.first, p.second));
         }
 
         for (QuestData qd : getQuestsData().values()) {
@@ -336,7 +334,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
                 continue;
             }
             for (PeriodHistory p : result) {
-                if (DateUtils.isBetween(new Date(qd.getScheduledDate()), new Date(p.getStart()), new Date(p.getEnd()))) {
+                if (DateUtils.isBetween(qd.getScheduledDate(), p.getStartDate(), p.getEndDate())) {
                     p.increaseCompletedCount();
                     break;
                 }

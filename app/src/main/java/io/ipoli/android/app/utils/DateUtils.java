@@ -86,13 +86,6 @@ public class DateUtils {
         return localDate.atStartOfDay(ZONE_UTC).toLocalDate();
     }
 
-    public static boolean isBetween(Date date, Date start, Date end) {
-        if (date == null || start == null || end == null) {
-            return false;
-        }
-        return !date.before(start) && !date.after(end);
-    }
-
     public static boolean isBetween(LocalDate date, LocalDate start, LocalDate end) {
         if (date == null || start == null || end == null) {
             return false;

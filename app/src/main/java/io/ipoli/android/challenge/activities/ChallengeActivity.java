@@ -283,7 +283,7 @@ public class ChallengeActivity extends BaseActivity {
         categoryImage.setImageResource(category.whiteImage);
 
         String nextScheduledDateText = DateFormatter.formatWithoutYear(
-                challenge.getNextScheduledDate(DateUtils.toMillis(LocalDate.now())),
+                challenge.getNextScheduledDate(LocalDate.now()),
                 getString(R.string.unscheduled)
         );
         nextScheduledDate.setText(nextScheduledDateText);
@@ -335,8 +335,8 @@ public class ChallengeActivity extends BaseActivity {
         dataSet.setBarShadowColor(ContextCompat.getColor(this, Challenge.getCategory(challenge).color100));
 
         List<String> xValues = new ArrayList<>();
-        xValues.add(getWeekRangeText(periodHistories.get(0).getStart(), periodHistories.get(0).getEnd()));
-        xValues.add(getWeekRangeText(periodHistories.get(1).getStart(), periodHistories.get(1).getEnd()));
+        xValues.add(getWeekRangeText(periodHistories.get(0).getStartDate(), periodHistories.get(0).getEndDate()));
+        xValues.add(getWeekRangeText(periodHistories.get(1).getStartDate(), periodHistories.get(1).getEndDate()));
         xValues.add("last week");
         xValues.add("this week");
         setHistoryData(dataSet, xValues);
