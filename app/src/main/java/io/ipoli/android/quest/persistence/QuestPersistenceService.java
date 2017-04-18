@@ -7,6 +7,7 @@ import java.util.SortedMap;
 
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.persistence.PersistenceService;
+import io.ipoli.android.quest.data.AndroidCalendarMapping;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestReminder;
 
@@ -49,4 +50,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     List<Quest> findNotCompletedFromAndroidCalendar(Long calendarId);
 
     List<Quest> findFromAndroidCalendar(Long calendarId);
+
+    Quest findNotCompletedFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping);
 }
