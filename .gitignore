@@ -16,3 +16,4 @@ app/google-services_dev.json
 *AnalyticsConstants.java
 app/fabric.properties
 *ApiConstants.java
+secrets.tar

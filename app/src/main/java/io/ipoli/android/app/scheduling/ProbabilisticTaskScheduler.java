@@ -26,14 +26,18 @@ public class ProbabilisticTaskScheduler extends TaskScheduler {
     @NonNull
     private List<TimeBlock> rankSlots(List<TimeBlock> slotsToConsider) {
         List<TimeBlock> result = new ArrayList<>();
+        List<TimeBlock> availableSlots = new ArrayList<>();
+        for (TimeBlock tb : slotsToConsider) {
+            availableSlots.add(tb);
+        }
         for (int i = 0; i < slotsToConsider.size(); i++) {
             WeightedRandomSampler<TimeBlock> sampler = new WeightedRandomSampler<>(random);
-            for (TimeBlock slot : slotsToConsider) {
+            for (TimeBlock slot : availableSlots) {
                 sampler.add(slot, slot.getProbability());
             }
             TimeBlock timeBlock = sampler.sample();
             result.add(timeBlock);
-            slotsToConsider.remove(timeBlock);
+            availableSlots.remove(timeBlock);
         }
         return result;
     }

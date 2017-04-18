@@ -1,5 +1,6 @@
 package io.ipoli.android;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -23,11 +24,20 @@ import static org.hamcrest.Matchers.is;
 
 public class ProbabilisticSchedulerTest {
 
+    private static Time startTime;
+    private static Random random;
+
+    @BeforeClass
+    public static void setUp() {
+        startTime = Time.at(0, 0);
+        random = new Random(42);
+    }
+
     @Test
     public void shouldGiveAllAvailableSlots() {
         List<Task> tasks = new ArrayList<>();
         tasks.add(new Task(10, 20));
-        Random random = new Random(42);
+
         ProbabilisticTaskScheduler scheduler = new ProbabilisticTaskScheduler(0, 1, tasks, random);
 
         double[] values = new double[61];
@@ -36,7 +46,7 @@ public class ProbabilisticSchedulerTest {
         }
         DiscreteDistribution dist = new DiscreteDistribution(values, random);
 
-        List<TimeBlock> slots = scheduler.chooseSlotsFor(new Task(10), 15, Time.now(), dist);
+        List<TimeBlock> slots = scheduler.chooseSlotsFor(new Task(10), 15, startTime, dist);
         assertThat(slots.size(), is(3));
     }
 
@@ -44,7 +54,6 @@ public class ProbabilisticSchedulerTest {
     public void shouldHaveHighProbSlotAsFirstChoice() {
         List<Task> tasks = new ArrayList<>();
         tasks.add(new Task(10, 20));
-        Random random = new Random(42);
         ProbabilisticTaskScheduler scheduler = new ProbabilisticTaskScheduler(0, 1, tasks, random);
 
         double[] values = new double[60];
@@ -53,7 +62,12 @@ public class ProbabilisticSchedulerTest {
         }
         DiscreteDistribution dist = new DiscreteDistribution(values, random);
 
-        List<TimeBlock> slots = scheduler.chooseSlotsFor(new Task(10), 15, Time.now(), dist);
+        List<TimeBlock> slots = scheduler.chooseSlotsFor(new Task(10), 15, startTime, dist);
         assertThat(slots.get(0).getProbability(), greaterThan(0.183));
+    }
+
+    @Test
+    public void shouldScheduleTaskWithMorningPreference() {
+        ProbabilisticTaskScheduler scheduler = new ProbabilisticTaskScheduler(0, 24, new ArrayList<>(), random);
     }
 }

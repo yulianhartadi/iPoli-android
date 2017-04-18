@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/iPoli/iPoli-android.svg?branch=dev)](https://travis-ci.org/iPoli/iPoli-android)
+
 # ![iPoli](.github/logo.png)
 
 # iPoli: AI-powered task scheduling for your life!
