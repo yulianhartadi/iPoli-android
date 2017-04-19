@@ -315,14 +315,19 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
     @Override
     public void findAllUpcomingForRepeatingQuest(LocalDate scheduledPeriodStart, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener) {
+        listener.onDataChanged(findAllUpcomingForRepeatingQuest(scheduledPeriodStart, repeatingQuestId));
+    }
+
+    @Override
+    public List<Quest> findAllUpcomingForRepeatingQuest(LocalDate scheduledPeriodStart, String repeatingQuestId) {
         Query query = scheduledForRepeatingQuest.createQuery();
         query.setGroupLevel(2);
         query.setStartKey(Arrays.asList(repeatingQuestId, String.valueOf(DateUtils.toMillis(scheduledPeriodStart))));
         query.setEndKey(Arrays.asList(repeatingQuestId, String.valueOf(DateUtils.toMillis(scheduledPeriodStart.plusYears(2)))));
 
+        List<Quest> result = new ArrayList<>();
         try {
             QueryEnumerator enumerator = query.run();
-            List<Quest> result = new ArrayList<>();
             while (enumerator.hasNext()) {
                 QueryRow row = enumerator.next();
                 List<Quest> quests = (List<Quest>) row.getValue();
@@ -330,10 +335,10 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                     result.add(q);
                 }
             }
-            listener.onDataChanged(result);
         } catch (CouchbaseLiteException e) {
             postError(e);
         }
+        return result;
     }
 
     @Override
@@ -466,8 +471,8 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
             while (enumerator.hasNext()) {
                 QueryRow row = enumerator.next();
                 List<Quest> quests = (List<Quest>) row.getValue();
-                for(Quest q : quests) {
-                    if(!includeCompleted && q.isCompleted()) {
+                for (Quest q : quests) {
+                    if (!includeCompleted && q.isCompleted()) {
                         continue;
                     }
                     result.add(q);

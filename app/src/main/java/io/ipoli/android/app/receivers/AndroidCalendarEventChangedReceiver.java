@@ -5,8 +5,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.util.Pair;
 
 import com.squareup.otto.Bus;
+
+import org.threeten.bp.DayOfWeek;
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,13 +23,17 @@ import io.ipoli.android.app.AndroidCalendarEventParser;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.persistence.CalendarPersistenceService;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
+import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import me.everything.providers.android.calendar.Event;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -54,6 +62,9 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
     CalendarPersistenceService calendarPersistenceService;
 
     @Inject
+    RepeatingQuestScheduler repeatingQuestScheduler;
+
+    @Inject
     Bus eventBus;
 
     @Override
@@ -78,34 +89,76 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
             repeatingQuests.addAll(result.repeatingQuests);
         }
 
+        Map<RepeatingQuest, Pair<List<Quest>, List<Quest>>> repeatingQuestToQuestsToRemoveAndCreate = new HashMap<>();
 
-        for(RepeatingQuest rq : repeatingQuests) {
+        for (RepeatingQuest rq : repeatingQuests) {
             RepeatingQuest existingRepeatingQuest = repeatingQuestPersistenceService.findNotCompletedFromAndroidCalendar(rq.getSourceMapping().getAndroidCalendarMapping());
-            if(existingRepeatingQuest != null) {
-                rq.setId(existingRepeatingQuest.getId());
-                rq.setCreatedAt(existingRepeatingQuest.getCreatedAt());
-                rq.setScheduledPeriodEndDates(existingRepeatingQuest.getScheduledPeriodEndDates());
-                rq.setChallengeId(existingRepeatingQuest.getChallengeId());
-                rq.setCategory(existingRepeatingQuest.getCategory());
-                rq.setNotes(existingRepeatingQuest.getNotes());
-                rq.setPreferredStartTime(existingRepeatingQuest.getPreferredStartTime());
-                rq.setPriority(existingRepeatingQuest.getPriority());
-                rq.setSubQuests(existingRepeatingQuest.getSubQuests());
-                rq.setTimesADay(existingRepeatingQuest.getTimesADay());
+            if (existingRepeatingQuest != null) {
+                copyRepeatingQuestProperties(rq, existingRepeatingQuest);
+
+                LocalDate today = LocalDate.now();
+                Recurrence.RepeatType repeatType = rq.getRecurrence().getRecurrenceType();
+                LocalDate periodStart;
+                switch (repeatType) {
+                    case DAILY:
+                    case WEEKLY:
+                        periodStart = today.with(DayOfWeek.MONDAY);
+                        break;
+                    case MONTHLY:
+                        periodStart = today.withDayOfMonth(1);
+                        break;
+                    default:
+                        periodStart = today.withDayOfYear(1);
+                        break;
+                }
+
+                List<Quest> questsSincePeriodStart = questPersistenceService.findAllUpcomingForRepeatingQuest(periodStart, rq.getId());
+
+                List<Quest> questsToRemove = new ArrayList<>();
+                List<Quest> scheduledQuests = new ArrayList<>();
+
+                for (Quest q : questsSincePeriodStart) {
+                    if (q.isCompleted() || q.getOriginalScheduledDate().isBefore(today)) {
+                        scheduledQuests.add(q);
+                    } else {
+                        questsToRemove.add(q);
+                        QuestNotificationScheduler.cancelAll(q, context);
+                    }
+                }
+
+                long todayStartOfDay = DateUtils.toMillis(today);
+                List<String> periodsToDelete = new ArrayList<>();
+                for (String periodEnd : rq.getScheduledPeriodEndDates().keySet()) {
+                    if (Long.valueOf(periodEnd) >= todayStartOfDay) {
+                        periodsToDelete.add(periodEnd);
+                    }
+                }
+                rq.getScheduledPeriodEndDates().keySet().removeAll(periodsToDelete);
+                List<Quest> questsToCreate = repeatingQuestScheduler.schedule(rq, today, scheduledQuests);
+                repeatingQuestToQuestsToRemoveAndCreate.put(rq, new Pair<>(questsToRemove, questsToCreate));
+
+            } else {
+                List<Quest> questsToCreate = repeatingQuestScheduler.schedule(rq, LocalDate.now());
+                repeatingQuestToQuestsToRemoveAndCreate.put(rq, new Pair<>(new ArrayList<>(), questsToCreate));
+
+            }
+        }
+
+        for(Quest q : questToOriginalId.keySet()) {
+            Quest existingQuest = questPersistenceService.findNotCompletedFromAndroidCalendar(q.getSourceMapping().getAndroidCalendarMapping());
+            if(existingQuest != null) {
+                copyQuestProperties(q, existingQuest);
             }
         }
 
         for(Quest q : quests) {
             Quest existingQuest = questPersistenceService.findNotCompletedFromAndroidCalendar(q.getSourceMapping().getAndroidCalendarMapping());
             if(existingQuest != null) {
-                q.setId(existingQuest.getId());
-                q.setCreatedAt(existingQuest.getCreatedAt());
+                copyQuestProperties(q, existingQuest);
             }
         }
 
-//        calendarPersistenceService.updateAsync(quests, questToOriginalId, repeatingQuests);
-
-
+        calendarPersistenceService.updateAsync(quests, questToOriginalId, repeatingQuestToQuestsToRemoveAndCreate);
 
 
 //        Set<String> calendarIds = localStorage.readStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS);
@@ -118,6 +171,33 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
 //        }
 //        createOrUpdateEvents(dirtyEvents, context);
 //        deleteEvents(deletedEvents);
+    }
+
+    private void copyRepeatingQuestProperties(RepeatingQuest newRepeatingQuest, RepeatingQuest existingRepeatingQuest) {
+        newRepeatingQuest.setId(existingRepeatingQuest.getId());
+        newRepeatingQuest.setCreatedAt(existingRepeatingQuest.getCreatedAt());
+        newRepeatingQuest.setScheduledPeriodEndDates(existingRepeatingQuest.getScheduledPeriodEndDates());
+        newRepeatingQuest.setChallengeId(existingRepeatingQuest.getChallengeId());
+        newRepeatingQuest.setCategory(existingRepeatingQuest.getCategory());
+        newRepeatingQuest.setNotes(existingRepeatingQuest.getNotes());
+        newRepeatingQuest.setPreferredStartTime(existingRepeatingQuest.getPreferredStartTime());
+        newRepeatingQuest.setPriority(existingRepeatingQuest.getPriority());
+        newRepeatingQuest.setSubQuests(existingRepeatingQuest.getSubQuests());
+        newRepeatingQuest.setTimesADay(existingRepeatingQuest.getTimesADay());
+    }
+
+    private void copyQuestProperties(Quest newQuest, Quest existingQuest) {
+        newQuest.setId(existingQuest.getId());
+        newQuest.setCreatedAt(existingQuest.getCreatedAt());
+        newQuest.setChallengeId(existingQuest.getChallengeId());
+        newQuest.setPriority(existingQuest.getPriority());
+        newQuest.setCategory(existingQuest.getCategory());
+        newQuest.setSubQuests(existingQuest.getSubQuests());
+        newQuest.setNotes(existingQuest.getNotes());
+        newQuest.setPreferredStartTime(existingQuest.getPreferredStartTime());
+        //what is difficulty for
+        newQuest.setDifficulty(existingQuest.getDifficulty());
+        newQuest.setTimesADay(existingQuest.getTimesADay());
     }
 
 //    private void addDeletedEvents(int calendarId, SyncAndroidCalendarProvider provider, List<Event> deletedEvents) {
