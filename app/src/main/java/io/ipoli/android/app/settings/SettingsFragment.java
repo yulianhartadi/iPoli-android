@@ -234,6 +234,9 @@ public class SettingsFragment extends BaseFragment implements
         int calendarsCount = player.getAndroidCalendars().size();
         enableSyncCalendars.setChecked(calendarsCount > 0);
         enableSyncCalendars.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            //permission?
+
+
 //            if (isChecked) {
             onSyncCalendarsChanged(0);
 //            } else {

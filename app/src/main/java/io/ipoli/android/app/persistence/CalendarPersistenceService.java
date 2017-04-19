@@ -10,6 +10,7 @@ import io.ipoli.android.player.Player;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.data.SourceMapping;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -23,4 +24,6 @@ public interface CalendarPersistenceService {
     void updateSync(Player player, List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests, Set<Long> calendarsToRemove, Map<Long, Category> calendarsToUpdate);
 
     void updateAsync(List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, Pair<List<Quest>, List<Quest>>> repeatingQuests);
+
+    void deleteAsync(List<SourceMapping> questMappings, List<SourceMapping> repeatingQuestMappings);
 }
