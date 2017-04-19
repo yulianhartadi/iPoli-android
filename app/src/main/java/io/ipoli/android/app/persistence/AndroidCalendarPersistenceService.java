@@ -1,5 +1,7 @@
 package io.ipoli.android.app.persistence;
 
+import android.util.Pair;
+
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.squareup.otto.Bus;
@@ -141,6 +143,38 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
         database.getExistingDocument(object.getId()).delete();
     }
 
+    @Override
+    public void updateAsync(List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, Pair<List<Quest>, List<Quest>>> repeatingQuestsToQuestsToRemoveAndCreate) {
+        database.runAsync(db -> db.runInTransaction(() -> {
+            for(RepeatingQuest rq : repeatingQuestsToQuestsToRemoveAndCreate.keySet()) {
+                Pair<List<Quest>, List<Quest>> repeatingQuestQuests = repeatingQuestsToQuestsToRemoveAndCreate.get(rq);
+                repeatingQuestPersistenceService.save(rq);
+
+                for (Quest q : repeatingQuestQuests.first) {
+                    try {
+                        delete(q);
+                    } catch (CouchbaseLiteException e) {
+                        postError(e);
+                        return false;
+                    }
+                }
+
+                for (Quest q : repeatingQuestQuests.second) {
+                    q.setRepeatingQuestId(rq.getId());
+                    questPersistenceService.save(q);
+                }
+            }
+
+            //originalId
+
+
+            for(Quest q : quests) {
+                questPersistenceService.save(q);
+            }
+
+            return true;
+        }));
+    }
 
 //    private <E> void postResult(TransactionCompleteListener listener) {
 //        new Handler(Looper.getMainLooper()).post(() -> listener.onComplete());
