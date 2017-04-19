@@ -84,6 +84,14 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
             if(existingRepeatingQuest != null) {
                 rq.setId(existingRepeatingQuest.getId());
                 rq.setCreatedAt(existingRepeatingQuest.getCreatedAt());
+                rq.setScheduledPeriodEndDates(existingRepeatingQuest.getScheduledPeriodEndDates());
+                rq.setChallengeId(existingRepeatingQuest.getChallengeId());
+                rq.setCategory(existingRepeatingQuest.getCategory());
+                rq.setNotes(existingRepeatingQuest.getNotes());
+                rq.setPreferredStartTime(existingRepeatingQuest.getPreferredStartTime());
+                rq.setPriority(existingRepeatingQuest.getPriority());
+                rq.setSubQuests(existingRepeatingQuest.getSubQuests());
+                rq.setTimesADay(existingRepeatingQuest.getTimesADay());
             }
         }
 

@@ -88,11 +88,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @JsonIgnore
     private Long previousScheduledDate;
 
-
-    @JsonIgnore
-    private String previousChallengeId;
-
-
     @JsonIgnore
     private transient boolean isPlaceholder;
 
@@ -479,7 +474,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     public void setChallengeId(String challengeId) {
-        setPreviousChallengeId(this.challengeId);
         this.challengeId = challengeId;
     }
 
@@ -551,16 +545,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
             setCompletedCount(Math.min(timesADay, getCompletedCount()));
         }
         this.timesADay = timesADay;
-    }
-
-    @JsonIgnore
-    public String getPreviousChallengeId() {
-        return previousChallengeId;
-    }
-
-    @JsonIgnore
-    public void setPreviousChallengeId(String previousChallengeId) {
-        this.previousChallengeId = previousChallengeId;
     }
 
     @JsonIgnore
