@@ -24,14 +24,12 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.persistence.CalendarPersistenceService;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.data.SourceMapping;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
@@ -80,37 +78,6 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
         Player player = playerPersistenceService.get();
 
         updateDirtyEvents(context, player);
-
-        List<SourceMapping> questMappings = new ArrayList<>();
-        List<SourceMapping> repeatingQuestMappings = new ArrayList<>();
-        for (Map.Entry<Long, Category> calendar : player.getAndroidCalendars().entrySet()) {
-            Long calendarId = calendar.getKey();
-            List<Event> deletedEvents = syncAndroidCalendarProvider.getDeletedEvents(calendarId);
-            for(Event e : deletedEvents) {
-                SourceMapping mapping = SourceMapping.fromGoogleCalendar(calendarId, e.id);
-                if(isRepeatingAndroidCalendarEvent(e)) {
-                    repeatingQuestMappings.add(mapping);
-                } else {
-                    questMappings.add(mapping);
-                }
-            }
-
-        }
-        calendarPersistenceService.deleteAsync(questMappings, repeatingQuestMappings);
-
-
-
-
-//        Set<String> calendarIds = localStorage.readStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS);
-//        List<Event> dirtyEvents = new ArrayList<>();
-//        List<Event> deletedEvents = new ArrayList<>();
-//        for (String cid : calendarIds) {
-//            int calendarId = Integer.valueOf(cid);
-//            addDirtyEvents(provider, calendarId, dirtyEvents);
-//            addDeletedEvents(calendarId, provider, deletedEvents);
-//        }
-//        createOrUpdateEvents(dirtyEvents, context);
-//        deleteEvents(deletedEvents);
     }
 
     private void updateDirtyEvents(Context context, Player player) {
@@ -223,69 +190,5 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
         //what is difficulty for
         newQuest.setDifficulty(existingQuest.getDifficulty());
         newQuest.setTimesADay(existingQuest.getTimesADay());
-    }
-
-//    private void addDeletedEvents(int calendarId, SyncAndroidCalendarProvider provider, List<Event> deletedEvents) {
-//        Data<Event> deletedEventsData = provider.getDeletedEvents(calendarId);
-//        Cursor deletedEventsCursor = deletedEventsData.getCursor();
-//
-//        while (deletedEventsCursor.moveToNext()) {
-//            Event e = deletedEventsData.fromCursor(deletedEventsCursor, CalendarContract.Events._ID);
-//            deletedEvents.add(e);
-//        }
-//        deletedEventsCursor.close();
-//    }
-//
-//    private void addDirtyEvents(SyncAndroidCalendarProvider provider, int calendarId, List<Event> dirtyEvents) {
-//        Data<Event> dirtyEventsData = provider.getDirtyEvents(calendarId);
-//        Cursor dirtyEventsCursor = dirtyEventsData.getCursor();
-//
-//        while (dirtyEventsCursor.moveToNext()) {
-//            Event e = dirtyEventsData.fromCursor(dirtyEventsCursor, CalendarContract.Events._ID);
-//            dirtyEvents.add(e);
-//        }
-//
-//        dirtyEventsCursor.close();
-//    }
-//
-//    private void createOrUpdateEvents(List<Event> dirtyEvents, Context context) {
-//        List<Event> repeating = new ArrayList<>();
-//        List<Event> nonRepeating = new ArrayList<>();
-//        CalendarProvider calendarProvider = new CalendarProvider(context);
-//        for (Event e : dirtyEvents) {
-//            Event event = calendarProvider.getEvent(e.id);
-//            if (isRepeatingAndroidCalendarEvent(event)) {
-//                repeating.add(event);
-//            } else {
-//                nonRepeating.add(event);
-//            }
-//        }
-//
-//        androidCalendarQuestService.saveSync(nonRepeating);
-//        androidCalendarRepeatingQuestService.saveSync(repeating);
-//    }
-//
-//    private void deleteEvents(List<Event> events) {
-//        for (Event e : events) {
-//            if (isRepeatingAndroidCalendarEvent(e)) {
-//                repeatingQuestPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id), repeatingQuest -> {
-//                    if (repeatingQuest == null) {
-//                        return;
-//                    }
-//                    repeatingQuestPersistenceService.updateCalendars(repeatingQuest);
-//                });
-//            } else {
-//                questPersistenceService.findByExternalSourceMappingId(Constants.EXTERNAL_SOURCE_ANDROID_CALENDAR, String.valueOf(e.id), quest -> {
-//                    if (quest == null) {
-//                        return;
-//                    }
-//                    questPersistenceService.updateCalendars(quest);
-//                });
-//            }
-//        }
-//    }
-//
-    private boolean isRepeatingAndroidCalendarEvent(Event e) {
-        return !StringUtils.isEmpty(e.rRule) || !StringUtils.isEmpty(e.rDate);
     }
 }

@@ -178,23 +178,9 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
         });
     }
 
-    @Override
-    public void deleteAsync(List<SourceMapping> questMappings, List<SourceMapping> repeatingQuestMappings) {
-        runAsyncTransaction(() -> {
-            for(SourceMapping sm : questMappings) {
-                
-            }
-            return true;
-        });
-    }
-
     private void runAsyncTransaction(Transaction transaction) {
         database.runAsync(db -> db.runInTransaction(transaction::run));
     }
-
-//    private <E> void postResult(TransactionCompleteListener listener) {
-//        new Handler(Looper.getMainLooper()).post(() -> listener.onComplete());
-//    }
 
     protected void postError(Exception e) {
         eventBus.post(new AppErrorEvent(e));
