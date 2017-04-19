@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import io.ipoli.android.app.events.AppErrorEvent;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.AndroidCalendarMapping;
@@ -100,7 +101,7 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
         }
 
         for (Quest q : questsToDelete) {
-                delete(q);
+            delete(q);
         }
     }
 
@@ -116,26 +117,43 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
 
     private void saveQuestsWithOriginalId(Map<Quest, Long> questToOriginalId) {
         for (Quest q : questToOriginalId.keySet()) {
-            Long calendarId = q.getSourceMapping().getAndroidCalendarMapping().getCalendarId();
-            Long eventId = questToOriginalId.get(q);
-            AndroidCalendarMapping rqCalendarMapping = SourceMapping.fromGoogleCalendar(calendarId, eventId).getAndroidCalendarMapping();
-            RepeatingQuest rq = repeatingQuestPersistenceService.findNotCompletedFromAndroidCalendar(rqCalendarMapping);
-            if (rq == null) {
-                continue;
+            if (StringUtils.isEmpty(q.getRepeatingQuestId())) {
+                Long calendarId = q.getSourceMapping().getAndroidCalendarMapping().getCalendarId();
+                Long eventId = questToOriginalId.get(q);
+                AndroidCalendarMapping rqCalendarMapping = SourceMapping.fromGoogleCalendar(calendarId, eventId).getAndroidCalendarMapping();
+                RepeatingQuest rq = repeatingQuestPersistenceService.findNotCompletedFromAndroidCalendar(rqCalendarMapping);
+                if (rq != null) {
+                    q.setRepeatingQuestId(rq.getId());
+                }
             }
-            q.setRepeatingQuestId(rq.getId());
             questPersistenceService.save(q);
+        }
+    }
+
+    private void saveRepeatingQuestsWithQuestsToRemove(Map<RepeatingQuest, Pair<List<Quest>, List<Quest>>> repeatingQuestToQuestsToRemoveAndCreate) throws CouchbaseLiteException {
+        for (RepeatingQuest rq : repeatingQuestToQuestsToRemoveAndCreate.keySet()) {
+            List<Quest> questsToRemove = repeatingQuestToQuestsToRemoveAndCreate.get(rq).first;
+            List<Quest> questsToCreate = repeatingQuestToQuestsToRemoveAndCreate.get(rq).second;
+
+            for (Quest q : questsToRemove) {
+                delete(q);
+            }
+            saveRepeatingQuestWithQuests(rq, questsToCreate);
         }
     }
 
     private void saveRepeatingQuests(Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests) {
         for (Map.Entry<RepeatingQuest, List<Quest>> entry : repeatingQuestToQuests.entrySet()) {
             RepeatingQuest rq = entry.getKey();
-            repeatingQuestPersistenceService.save(rq);
-            for (Quest q : entry.getValue()) {
-                q.setRepeatingQuestId(rq.getId());
-                questPersistenceService.save(q);
-            }
+            saveRepeatingQuestWithQuests(rq, entry.getValue());
+        }
+    }
+
+    private void saveRepeatingQuestWithQuests(RepeatingQuest rq, List<Quest> questsToCreate) {
+        repeatingQuestPersistenceService.save(rq);
+        for (Quest q : questsToCreate) {
+            q.setRepeatingQuestId(rq.getId());
+            questPersistenceService.save(q);
         }
     }
 
@@ -145,35 +163,33 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
 
     @Override
     public void updateAsync(List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, Pair<List<Quest>, List<Quest>>> repeatingQuestsToQuestsToRemoveAndCreate) {
-        database.runAsync(db -> db.runInTransaction(() -> {
-            for(RepeatingQuest rq : repeatingQuestsToQuestsToRemoveAndCreate.keySet()) {
-                Pair<List<Quest>, List<Quest>> repeatingQuestQuests = repeatingQuestsToQuestsToRemoveAndCreate.get(rq);
-                repeatingQuestPersistenceService.save(rq);
-
-                for (Quest q : repeatingQuestQuests.first) {
-                    try {
-                        delete(q);
-                    } catch (CouchbaseLiteException e) {
-                        postError(e);
-                        return false;
-                    }
-                }
-
-                for (Quest q : repeatingQuestQuests.second) {
-                    q.setRepeatingQuestId(rq.getId());
-                    questPersistenceService.save(q);
-                }
+        runAsyncTransaction(() -> {
+            try {
+                saveRepeatingQuestsWithQuestsToRemove(repeatingQuestsToQuestsToRemoveAndCreate);
+            } catch (CouchbaseLiteException e) {
+                postError(e);
+                return false;
             }
 
-            //originalId
-
-
-            for(Quest q : quests) {
-                questPersistenceService.save(q);
-            }
+            saveQuestsWithOriginalId(questToOriginalId);
+            saveQuests(quests);
 
             return true;
-        }));
+        });
+    }
+
+    @Override
+    public void deleteAsync(List<SourceMapping> questMappings, List<SourceMapping> repeatingQuestMappings) {
+        runAsyncTransaction(() -> {
+            for(SourceMapping sm : questMappings) {
+                
+            }
+            return true;
+        });
+    }
+
+    private void runAsyncTransaction(Transaction transaction) {
+        database.runAsync(db -> db.runInTransaction(transaction::run));
     }
 
 //    private <E> void postResult(TransactionCompleteListener listener) {
@@ -182,5 +198,9 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
 
     protected void postError(Exception e) {
         eventBus.post(new AppErrorEvent(e));
+    }
+
+    protected interface Transaction {
+        boolean run();
     }
 }

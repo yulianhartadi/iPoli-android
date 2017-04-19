@@ -24,12 +24,14 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.persistence.CalendarPersistenceService;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.data.SourceMapping;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
@@ -77,6 +79,41 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
         App.getAppComponent(context).inject(this);
         Player player = playerPersistenceService.get();
 
+        updateDirtyEvents(context, player);
+
+        List<SourceMapping> questMappings = new ArrayList<>();
+        List<SourceMapping> repeatingQuestMappings = new ArrayList<>();
+        for (Map.Entry<Long, Category> calendar : player.getAndroidCalendars().entrySet()) {
+            Long calendarId = calendar.getKey();
+            List<Event> deletedEvents = syncAndroidCalendarProvider.getDeletedEvents(calendarId);
+            for(Event e : deletedEvents) {
+                SourceMapping mapping = SourceMapping.fromGoogleCalendar(calendarId, e.id);
+                if(isRepeatingAndroidCalendarEvent(e)) {
+                    repeatingQuestMappings.add(mapping);
+                } else {
+                    questMappings.add(mapping);
+                }
+            }
+
+        }
+        calendarPersistenceService.deleteAsync(questMappings, repeatingQuestMappings);
+
+
+
+
+//        Set<String> calendarIds = localStorage.readStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS);
+//        List<Event> dirtyEvents = new ArrayList<>();
+//        List<Event> deletedEvents = new ArrayList<>();
+//        for (String cid : calendarIds) {
+//            int calendarId = Integer.valueOf(cid);
+//            addDirtyEvents(provider, calendarId, dirtyEvents);
+//            addDeletedEvents(calendarId, provider, deletedEvents);
+//        }
+//        createOrUpdateEvents(dirtyEvents, context);
+//        deleteEvents(deletedEvents);
+    }
+
+    private void updateDirtyEvents(Context context, Player player) {
         List<Quest> quests = new ArrayList<>();
         Map<Quest, Long> questToOriginalId = new HashMap<>();
         List<RepeatingQuest> repeatingQuests = new ArrayList<>();
@@ -159,18 +196,6 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
         }
 
         calendarPersistenceService.updateAsync(quests, questToOriginalId, repeatingQuestToQuestsToRemoveAndCreate);
-
-
-//        Set<String> calendarIds = localStorage.readStringSet(Constants.KEY_SELECTED_ANDROID_CALENDARS);
-//        List<Event> dirtyEvents = new ArrayList<>();
-//        List<Event> deletedEvents = new ArrayList<>();
-//        for (String cid : calendarIds) {
-//            int calendarId = Integer.valueOf(cid);
-//            addDirtyEvents(provider, calendarId, dirtyEvents);
-//            addDeletedEvents(calendarId, provider, deletedEvents);
-//        }
-//        createOrUpdateEvents(dirtyEvents, context);
-//        deleteEvents(deletedEvents);
     }
 
     private void copyRepeatingQuestProperties(RepeatingQuest newRepeatingQuest, RepeatingQuest existingRepeatingQuest) {
@@ -260,7 +285,7 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
 //        }
 //    }
 //
-//    private boolean isRepeatingAndroidCalendarEvent(Event e) {
-//        return !TextUtils.isEmpty(e.rRule) || !TextUtils.isEmpty(e.rDate);
-//    }
+    private boolean isRepeatingAndroidCalendarEvent(Event e) {
+        return !StringUtils.isEmpty(e.rRule) || !StringUtils.isEmpty(e.rDate);
+    }
 }
