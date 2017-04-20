@@ -54,10 +54,6 @@ public class AndroidCalendarEventParser {
         return !TextUtils.isEmpty(e.rRule) || !TextUtils.isEmpty(e.rDate);
     }
 
-    public Result parse(List<Event> events) {
-        return parse(events, Category.PERSONAL);
-    }
-
     public Result parse(List<Event> events, Category category) {
         List<Quest> quests = new ArrayList<>();
         Map<Quest, Long> questToOriginalId = new HashMap<>();
