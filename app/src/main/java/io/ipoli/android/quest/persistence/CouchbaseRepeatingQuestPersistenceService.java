@@ -2,6 +2,7 @@ package io.ipoli.android.quest.persistence;
 
 import android.util.Pair;
 
+import com.couchbase.lite.AsyncTask;
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.LiveQuery;
@@ -204,7 +205,12 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
 
     @Override
     public void delete(RepeatingQuest repeatingQuest) {
-        runAsyncTransaction(() -> {
+        runAsyncTask(deleteTask(repeatingQuest));
+    }
+
+    @Override
+    public AsyncTask deleteTask(RepeatingQuest repeatingQuest) {
+        return db -> db.runInTransaction(() -> {
             Query query = repeatingQuestWithQuestsView.createQuery();
             query.setStartKey(repeatingQuest.getId());
             query.setEndKey(repeatingQuest.getId());
@@ -338,8 +344,8 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
             while (enumerator.hasNext()) {
                 QueryRow row = enumerator.next();
                 List<RepeatingQuest> repeatingQuests = (List<RepeatingQuest>) row.getValue();
-                for(RepeatingQuest rq : repeatingQuests) {
-                    if(!includeCompleted && rq.isCompleted()) {
+                for (RepeatingQuest rq : repeatingQuests) {
+                    if (!includeCompleted && rq.isCompleted()) {
                         continue;
                     }
                     result.add(rq);
@@ -354,5 +360,9 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
     @Override
     protected Class<RepeatingQuest> getModelClass() {
         return RepeatingQuest.class;
+    }
+
+    protected void runAsyncTask(AsyncTask asyncTask) {
+        database.runAsync(asyncTask);
     }
 }
