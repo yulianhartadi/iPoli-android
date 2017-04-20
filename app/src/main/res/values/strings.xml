@@ -455,7 +455,7 @@
     <string name="settings_daily_challenge">Daily challenge</string>
     <string name="settings_show_a_reminder">Show a reminder</string>
     <string name="settings_remind_me_at">Remind me at</string>
-    <string name="settings_sync_calendars">Calendars sync</string>
+    <string name="settings_sync_calendars">Calendar sync</string>
     <string name="settings_select_sync_calendars">Calendars to sync</string>
     <string name="settings_sync_google_calendars">Sync Google calendars</string>
     <string name="empty_calendars_text">No calendars</string>
