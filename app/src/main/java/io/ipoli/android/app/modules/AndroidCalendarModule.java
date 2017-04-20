@@ -2,14 +2,14 @@ package io.ipoli.android.app.modules;
 
 import android.content.Context;
 
+import com.squareup.otto.Bus;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 import io.ipoli.android.app.AndroidCalendarEventParser;
 import io.ipoli.android.app.SyncAndroidCalendarProvider;
-import io.ipoli.android.quest.generators.CoinsRewardGenerator;
-import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -21,8 +21,8 @@ public class AndroidCalendarModule {
 
     @Provides
     @Singleton
-    public AndroidCalendarEventParser providedAndroidCalendarEventParser(ExperienceRewardGenerator experienceRewardGenerator, CoinsRewardGenerator coinsRewardGenerator, SyncAndroidCalendarProvider syncAndroidCalendarProvider) {
-        return new AndroidCalendarEventParser(experienceRewardGenerator, coinsRewardGenerator, syncAndroidCalendarProvider);
+    public AndroidCalendarEventParser providedAndroidCalendarEventParser(SyncAndroidCalendarProvider syncAndroidCalendarProvider, Bus eventBus) {
+        return new AndroidCalendarEventParser(syncAndroidCalendarProvider, eventBus);
     }
 
     @Provides

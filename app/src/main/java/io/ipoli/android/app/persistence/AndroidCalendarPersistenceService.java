@@ -198,7 +198,7 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
         database.runAsync(db -> db.runInTransaction(transaction::run));
     }
 
-    protected void postError(Exception e) {
+    private void postError(Exception e) {
         eventBus.post(new AppErrorEvent(e));
     }
 

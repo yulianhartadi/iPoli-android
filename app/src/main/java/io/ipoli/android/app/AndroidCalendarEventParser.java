@@ -4,6 +4,8 @@ import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.squareup.otto.Bus;
+
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.WeekDay;
@@ -22,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.Constants;
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.data.Category;
@@ -29,8 +32,6 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.Recurrence;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.SourceMapping;
-import io.ipoli.android.quest.generators.CoinsRewardGenerator;
-import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import me.everything.providers.android.calendar.Event;
 import me.everything.providers.android.calendar.Reminder;
 
@@ -39,18 +40,14 @@ import me.everything.providers.android.calendar.Reminder;
  * on 5/11/16.
  */
 public class AndroidCalendarEventParser {
-    private static final int MINUTES_IN_DAY = 24 * 60;
     private static final int DEFAULT_REMINDER_MINUTES = -10;
 
-
-    private final ExperienceRewardGenerator experienceRewardGenerator;
-    private final CoinsRewardGenerator coinsRewardGenerator;
     private final SyncAndroidCalendarProvider syncAndroidCalendarProvider;
+    private final Bus eventBus;
 
-    public AndroidCalendarEventParser(ExperienceRewardGenerator experienceRewardGenerator, CoinsRewardGenerator coinsRewardGenerator, SyncAndroidCalendarProvider syncAndroidCalendarProvider) {
-        this.experienceRewardGenerator = experienceRewardGenerator;
-        this.coinsRewardGenerator = coinsRewardGenerator;
+    public AndroidCalendarEventParser(SyncAndroidCalendarProvider syncAndroidCalendarProvider, Bus eventBus) {
         this.syncAndroidCalendarProvider = syncAndroidCalendarProvider;
+        this.eventBus = eventBus;
     }
 
     private boolean isRepeatingAndroidCalendarEvent(Event e) {
@@ -86,7 +83,7 @@ public class AndroidCalendarEventParser {
                     try {
                         questToOriginalId.put(q, Long.valueOf(e.originalId));
                     } catch (Exception ex) {
-                        //@TODO log originalId not long
+                        postError(ex);
                     }
                 }
             }
@@ -138,14 +135,6 @@ public class AndroidCalendarEventParser {
             duration = Math.max(duration, Constants.QUEST_MIN_DURATION);
             q.setDuration(duration);
         }
-//        if (q.getScheduledDate().isBefore(LocalDate.now())) {
-//            q.setCompletedAtDate(q.getScheduledDate());
-//            int completedAtMinute = Math.min(q.getStartMinute() + q.getDuration(), MINUTES_IN_DAY);
-//            q.setCompletedAtMinute(completedAtMinute);
-//            q.increaseCompletedCount();
-//            q.setExperience(experienceRewardGenerator.generate(q));
-//            q.setCoins(coinsRewardGenerator.generate(q));
-//        }
 
         if (event.hasAlarm) {
             List<Reminder> reminders = syncAndroidCalendarProvider.getEventReminders(event.id);
@@ -219,7 +208,7 @@ public class AndroidCalendarEventParser {
         try {
             recur = new Recur(rRule);
         } catch (ParseException ex) {
-            //@TODO log app error
+            postError(ex);
             return null;
         }
 
@@ -302,5 +291,9 @@ public class AndroidCalendarEventParser {
             this.questToOriginalId = questToOriginalId;
             this.repeatingQuests = repeatingQuests;
         }
+    }
+
+    protected void postError(Exception e) {
+        eventBus.post(new AppErrorEvent(e));
     }
 }
