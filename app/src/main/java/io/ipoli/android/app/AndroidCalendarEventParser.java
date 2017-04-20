@@ -15,6 +15,7 @@ import org.threeten.bp.ZoneId;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -196,7 +197,7 @@ public class AndroidCalendarEventParser {
                 duration = (int) TimeUnit.MILLISECONDS.toMinutes(event.dTend - event.dTStart);
             } else if (!StringUtils.isEmpty(event.duration)) {
                 Dur dur = new Dur(event.duration);
-                duration = dur.getMinutes();
+                duration =(int) TimeUnit.MILLISECONDS.toMinutes(dur.getTime(new Date(0)).getTime());
             } else {
                 duration = Constants.QUEST_MIN_DURATION;
             }
@@ -211,11 +212,6 @@ public class AndroidCalendarEventParser {
             recur = new Recur(rRule);
         } catch (ParseException ex) {
             //@TODO log app error
-            return null;
-        }
-
-        //@TODO temp
-        if(recur.getFrequency().equals(Recur.YEARLY)) {
             return null;
         }
 
@@ -257,9 +253,6 @@ public class AndroidCalendarEventParser {
                 break;
             case Recur.YEARLY:
                 recurrence.setRecurrenceType(Recurrence.RepeatType.YEARLY);
-                if(recur.getYearDayList().isEmpty()) {
-                    recur.getYearDayList().add(startDate.getDayOfYear());
-                }
                 recurrence.setRrule(recur.toString());
                 break;
         }
