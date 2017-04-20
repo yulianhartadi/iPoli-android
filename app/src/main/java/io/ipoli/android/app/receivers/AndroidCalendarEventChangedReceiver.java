@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.Pair;
 
@@ -93,6 +94,27 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
             repeatingQuests.addAll(result.repeatingQuests);
         }
 
+        Map<RepeatingQuest, Pair<List<Quest>, List<Quest>>> repeatingQuestToQuestsToRemoveAndCreate = prepareRepeatingQuests(context, repeatingQuests);
+
+        for(Quest q : questToOriginalId.keySet()) {
+            Quest existingQuest = questPersistenceService.findNotCompletedFromAndroidCalendar(q.getSourceMapping().getAndroidCalendarMapping());
+            if(existingQuest != null) {
+                copyQuestProperties(q, existingQuest);
+            }
+        }
+
+        for(Quest q : quests) {
+            Quest existingQuest = questPersistenceService.findNotCompletedFromAndroidCalendar(q.getSourceMapping().getAndroidCalendarMapping());
+            if(existingQuest != null) {
+                copyQuestProperties(q, existingQuest);
+            }
+        }
+
+        calendarPersistenceService.updateAsync(quests, questToOriginalId, repeatingQuestToQuestsToRemoveAndCreate);
+    }
+
+    @NonNull
+    private Map<RepeatingQuest, Pair<List<Quest>, List<Quest>>> prepareRepeatingQuests(Context context, List<RepeatingQuest> repeatingQuests) {
         Map<RepeatingQuest, Pair<List<Quest>, List<Quest>>> repeatingQuestToQuestsToRemoveAndCreate = new HashMap<>();
 
         for (RepeatingQuest rq : repeatingQuests) {
@@ -100,27 +122,13 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
             if (existingRepeatingQuest != null) {
                 copyRepeatingQuestProperties(rq, existingRepeatingQuest);
 
-                LocalDate today = LocalDate.now();
-                Recurrence.RepeatType repeatType = rq.getRecurrence().getRecurrenceType();
-                LocalDate periodStart;
-                switch (repeatType) {
-                    case DAILY:
-                    case WEEKLY:
-                        periodStart = today.with(DayOfWeek.MONDAY);
-                        break;
-                    case MONTHLY:
-                        periodStart = today.withDayOfMonth(1);
-                        break;
-                    default:
-                        periodStart = today.withDayOfYear(1);
-                        break;
-                }
-
+                LocalDate periodStart = getPeriodStart(rq);
                 List<Quest> questsSincePeriodStart = questPersistenceService.findAllUpcomingForRepeatingQuest(periodStart, rq.getId());
 
                 List<Quest> questsToRemove = new ArrayList<>();
                 List<Quest> scheduledQuests = new ArrayList<>();
 
+                LocalDate today = LocalDate.now();
                 for (Quest q : questsSincePeriodStart) {
                     if (q.isCompleted() || q.getOriginalScheduledDate().isBefore(today)) {
                         scheduledQuests.add(q);
@@ -147,22 +155,26 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
 
             }
         }
+        return repeatingQuestToQuestsToRemoveAndCreate;
+    }
 
-        for(Quest q : questToOriginalId.keySet()) {
-            Quest existingQuest = questPersistenceService.findNotCompletedFromAndroidCalendar(q.getSourceMapping().getAndroidCalendarMapping());
-            if(existingQuest != null) {
-                copyQuestProperties(q, existingQuest);
-            }
+    private LocalDate getPeriodStart(RepeatingQuest repeatingQuest) {
+        LocalDate today = LocalDate.now();
+        Recurrence.RepeatType repeatType = repeatingQuest.getRecurrence().getRecurrenceType();
+        LocalDate periodStart;
+        switch (repeatType) {
+            case DAILY:
+            case WEEKLY:
+                periodStart = today.with(DayOfWeek.MONDAY);
+                break;
+            case MONTHLY:
+                periodStart = today.withDayOfMonth(1);
+                break;
+            default:
+                periodStart = today.withDayOfYear(1);
+                break;
         }
-
-        for(Quest q : quests) {
-            Quest existingQuest = questPersistenceService.findNotCompletedFromAndroidCalendar(q.getSourceMapping().getAndroidCalendarMapping());
-            if(existingQuest != null) {
-                copyQuestProperties(q, existingQuest);
-            }
-        }
-
-        calendarPersistenceService.updateAsync(quests, questToOriginalId, repeatingQuestToQuestsToRemoveAndCreate);
+        return periodStart;
     }
 
     private void copyRepeatingQuestProperties(RepeatingQuest newRepeatingQuest, RepeatingQuest existingRepeatingQuest) {
@@ -191,4 +203,5 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
         newQuest.setDifficulty(existingQuest.getDifficulty());
         newQuest.setTimesADay(existingQuest.getTimesADay());
     }
+
 }
