@@ -7,6 +7,7 @@ import com.couchbase.lite.Database;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -174,6 +175,21 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
             saveQuestsWithOriginalId(questToOriginalId);
             saveQuests(quests);
 
+            return true;
+        });
+    }
+
+    @Override
+    public void deleteAllCalendarsSync(Player player) {
+        database.runInTransaction(() -> {
+            try {
+                deleteCalendars(player.getAndroidCalendars().keySet());
+            } catch (CouchbaseLiteException e) {
+                postError(e);
+                return false;
+            }
+            player.setAndroidCalendars(new HashMap<>());
+            savePlayer(player);
             return true;
         });
     }

@@ -1,17 +1,20 @@
 package io.ipoli.android.app.settings;
 
+import android.Manifest;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -74,6 +77,8 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import me.everything.providers.android.calendar.Event;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -82,8 +87,10 @@ import me.everything.providers.android.calendar.Event;
 public class SettingsFragment extends BaseFragment implements
         TimeOfDayPickerFragment.OnTimesOfDayPickedListener,
         TimePickerFragment.OnTimePickedListener,
-        DaysOfWeekPickerFragment.OnDaysOfWeekPickedListener {
+        DaysOfWeekPickerFragment.OnDaysOfWeekPickedListener,
+        EasyPermissions.PermissionCallbacks {
 
+    private static final int RC_CALENDAR_PERM = 102;
     @Inject
     Bus eventBus;
 
@@ -230,31 +237,63 @@ public class SettingsFragment extends BaseFragment implements
         populateDaysOfWeekText(dailyChallengeDays, new ArrayList<>(selectedDays));
     }
 
+    private CompoundButton.OnCheckedChangeListener onCheckSyncCalendarChangeListener = (buttonView, isChecked) -> {
+        if (isChecked) {
+            if (EasyPermissions.hasPermissions(getContext(), Manifest.permission.READ_CALENDAR)) {
+                onSyncCalendarsSelected();
+            } else {
+                EasyPermissions.requestPermissions(SettingsFragment.this, getString(R.string.allow_read_calendars_perm_reason), RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
+            }
+        } else {
+            showAlertSyncCalendarsDialog();
+        }
+    };
+
+    private void showAlertSyncCalendarsDialog() {
+        AlertDialog d = new AlertDialog.Builder(getContext())
+                .setTitle(getString(R.string.dialog_disable_google_calendar_sync_title))
+                .setMessage(getString(R.string.dialog_disable_google_calendar_sync_message))
+                .setPositiveButton(getString(R.string.dialog_yes), (dialog, which) -> {
+                    deleteSyncCalendars();
+                })
+                .setNegativeButton(getString(R.string.dialog_no), (dialog, which) -> {
+                    enableSyncCalendars.setOnCheckedChangeListener(null);
+                    enableSyncCalendars.setChecked(true);
+                    enableSyncCalendars.setOnCheckedChangeListener(onCheckSyncCalendarChangeListener);
+                })
+                .create();
+        d.show();
+    }
+
+    private void deleteSyncCalendars() {
+        LoadingDialog loadingDialog = LoadingDialog.show(getContext(), getString(R.string.sync_calendars_delete_loading_dialog_title), getString(R.string.sync_calendars_loading_dialog_message));
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                calendarPersistenceService.deleteAllCalendarsSync(getPlayer());
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if (loadingDialog != null) {
+                    loadingDialog.dismiss();
+                }
+                onSyncCalendarsChanged(0);
+            }
+        }.execute();
+    }
+
     private void initSyncCalendars(Player player) {
         int calendarsCount = player.getAndroidCalendars().size();
         enableSyncCalendars.setChecked(calendarsCount > 0);
-        enableSyncCalendars.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            //permission?
-
-
-//            if (isChecked) {
-            onSyncCalendarsChanged(0);
-//            } else {
-//                AlertDialog d = new AlertDialog.Builder(getContext())
-//                        .setTitle(getString(R.string.dialog_disable_google_calendar_sync_title))
-//                        .setMessage(getString(R.string.dialog_disable_google_calendar_sync_message))
-//                        .setPositiveButton(getString(R.string.dialog_yes), (dialog, which) -> {
-//                            //disable sync
-//                            onSyncCalendarsChanged(0);
-//                        })
-//                        .setNegativeButton(getString(R.string.dialog_no), (dialog, which) -> {
-//
-//                        })
-//                        .create();
-//                d.show();
-//            }
-        });
+        enableSyncCalendars.setOnCheckedChangeListener(onCheckSyncCalendarChangeListener);
         onSyncCalendarsChanged(calendarsCount);
+    }
+
+    @AfterPermissionGranted(RC_CALENDAR_PERM)
+    private void onSyncCalendarsSelected() {
+        onSyncCalendarsChanged(0);
     }
 
 
@@ -419,7 +458,7 @@ public class SettingsFragment extends BaseFragment implements
 
     private void onSelectCalendarsToSync(Map<Long, Category> selectedCalendars) {
         populateSelectedSyncCalendarsText(selectedCalendars.size());
-        LoadingDialog dialog = LoadingDialog.show(getContext(), getString(R.string.sync_calendars_loading_dialog_title), getString(R.string.sync_calendars_loading_dialog_message));
+        LoadingDialog loadingDialog = LoadingDialog.show(getContext(), getString(R.string.sync_calendars_loading_dialog_title), getString(R.string.sync_calendars_loading_dialog_message));
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -452,8 +491,8 @@ public class SettingsFragment extends BaseFragment implements
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                if(dialog != null) {
-                    dialog.dismiss();
+                if (loadingDialog != null) {
+                    loadingDialog.dismiss();
                 }
             }
         }.execute();
@@ -487,7 +526,7 @@ public class SettingsFragment extends BaseFragment implements
         Map<Long, Category> calendarsToUpdate = new HashMap<>();
         for (Long calendarId : selectedCalendars.keySet()) {
             if (playerCalendars.keySet().contains(calendarId)) {
-                if(selectedCalendars.get(calendarId) != playerCalendars.get(calendarId)) {
+                if (selectedCalendars.get(calendarId) != playerCalendars.get(calendarId)) {
                     calendarsToUpdate.put(calendarId, selectedCalendars.get(calendarId));
                 }
             }
@@ -552,5 +591,23 @@ public class SettingsFragment extends BaseFragment implements
         Uri uri = Uri.parse("market://details?id=" + getActivity().getPackageName());
         Intent linkToMarket = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(linkToMarket);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        enableSyncCalendars.setOnCheckedChangeListener(null);
+        enableSyncCalendars.setChecked(false);
+        enableSyncCalendars.setOnCheckedChangeListener(onCheckSyncCalendarChangeListener);
     }
 }
