@@ -294,7 +294,7 @@ public class CouchbaseRepeatingQuestPersistenceService extends BaseCouchbasePers
     }
 
     @Override
-    public RepeatingQuest findNotCompletedFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping) {
+    public RepeatingQuest findFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping) {
         Query query = repeatingQuestFromAndroidCalendar.createQuery();
         query.setGroupLevel(2);
         List<Object> key = Arrays.asList(

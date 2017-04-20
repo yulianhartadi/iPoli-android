@@ -122,7 +122,7 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
                 Long calendarId = q.getSourceMapping().getAndroidCalendarMapping().getCalendarId();
                 Long eventId = questToOriginalId.get(q);
                 AndroidCalendarMapping rqCalendarMapping = SourceMapping.fromGoogleCalendar(calendarId, eventId).getAndroidCalendarMapping();
-                RepeatingQuest rq = repeatingQuestPersistenceService.findNotCompletedFromAndroidCalendar(rqCalendarMapping);
+                RepeatingQuest rq = repeatingQuestPersistenceService.findFromAndroidCalendar(rqCalendarMapping);
                 if (rq != null) {
                     q.setRepeatingQuestId(rq.getId());
                 }

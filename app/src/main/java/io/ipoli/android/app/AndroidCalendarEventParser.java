@@ -120,6 +120,10 @@ public class AndroidCalendarEventParser {
 
         if (event.allDay) {
             q.setDuration(Constants.QUEST_MIN_DURATION);
+            q.setStartMinute(null);
+            if(!event.hasAlarm) {
+                q.addReminder(new io.ipoli.android.reminder.data.Reminder(0));
+            }
         } else {
             int duration;
             if (StringUtils.isEmpty(event.duration) && event.dTend > 0 && event.dTStart > 0) {
@@ -191,6 +195,10 @@ public class AndroidCalendarEventParser {
 
         if (event.allDay) {
             rq.setDuration(Constants.QUEST_MIN_DURATION);
+            rq.setStartMinute(null);
+            if(!event.hasAlarm) {
+                rq.addReminder(new io.ipoli.android.reminder.data.Reminder(0));
+            }
         } else {
             int duration;
             if (StringUtils.isEmpty(event.duration) && event.dTend > 0 && event.dTStart > 0) {
