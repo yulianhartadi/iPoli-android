@@ -383,8 +383,7 @@ public class RepeatingQuestScheduler {
         quest.setCompletedCount(0);
         quest.setAllDay(false);
         quest.setTimesADay(repeatingQuest.getTimesADay());
-        quest.setSource(repeatingQuest.getSource());
-        quest.setSourceMapping(repeatingQuest.getSourceMapping());
+        quest.setSource(Constants.API_RESOURCE_SOURCE);
         List<Reminder> questReminders = new ArrayList<>();
         if (repeatingQuest.getReminders() != null) {
             for (Reminder r : repeatingQuest.getReminders()) {

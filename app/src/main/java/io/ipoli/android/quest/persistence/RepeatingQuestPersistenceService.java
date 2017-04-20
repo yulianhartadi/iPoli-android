@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.persistence;
 
+import com.couchbase.lite.AsyncTask;
+
 import java.util.List;
 import java.util.Map;
 
@@ -36,4 +38,6 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
     List<RepeatingQuest> findNotCompletedFromAndroidCalendar(Long calendarId);
 
     List<RepeatingQuest> findFromAndroidCalendar(Long calendarId);
+
+    AsyncTask deleteTask(RepeatingQuest repeatingQuest);
 }

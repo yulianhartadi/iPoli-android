@@ -6,7 +6,6 @@ import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.squareup.otto.Bus;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,19 +89,15 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
     }
 
     private void deleteCalendars(Set<Long> calendarsToRemove) throws CouchbaseLiteException {
-        List<RepeatingQuest> repeatingQuestsToDelete = new ArrayList<>();
-        List<Quest> questsToDelete = new ArrayList<>();
         for (Long calendarId : calendarsToRemove) {
-            repeatingQuestsToDelete.addAll(repeatingQuestPersistenceService.findNotCompletedFromAndroidCalendar(calendarId));
-            questsToDelete.addAll(questPersistenceService.findNotCompletedFromAndroidCalendar(calendarId));
-        }
-
-        for (RepeatingQuest rq : repeatingQuestsToDelete) {
-            delete(rq);
-        }
-
-        for (Quest q : questsToDelete) {
-            delete(q);
+            List<RepeatingQuest> repeatingQuests = repeatingQuestPersistenceService.findNotCompletedFromAndroidCalendar(calendarId);
+            for (RepeatingQuest rq : repeatingQuests) {
+                repeatingQuestPersistenceService.deleteTask(rq).run(database);
+            }
+            List<Quest> quests = questPersistenceService.findNotCompletedFromAndroidCalendar(calendarId);
+            for (Quest q : quests) {
+                delete(q);
+            }
         }
     }
 
@@ -163,7 +158,7 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
     }
 
     @Override
-    public void updateAsync(List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, Pair<List<Quest>, List<Quest>>> repeatingQuestsToQuestsToRemoveAndCreate) {
+    public void updateAsync(List<Quest> quests, Map<RepeatingQuest, Pair<List<Quest>, List<Quest>>> repeatingQuestsToQuestsToRemoveAndCreate) {
         runAsyncTransaction(() -> {
             try {
                 saveRepeatingQuestsWithQuestsToRemove(repeatingQuestsToQuestsToRemoveAndCreate);
@@ -172,7 +167,6 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
                 return false;
             }
 
-            saveQuestsWithOriginalId(questToOriginalId);
             saveQuests(quests);
 
             return true;
