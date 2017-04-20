@@ -937,7 +937,7 @@ public class App extends MultiDexApplication {
             eventBus.post(new CalendarDayChangedEvent(LocalDate.now(), CalendarDayChangedEvent.Source.DATE_CHANGE));
         });
     }
-    
+
     public static String getPlayerId() {
         return playerId;
     }
