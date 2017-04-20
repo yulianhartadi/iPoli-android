@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.util.Pair;
 
 import com.squareup.otto.Bus;
@@ -70,7 +69,6 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d("AAAA", "receive");
         if (!EasyPermissions.hasPermissions(context, Manifest.permission.READ_CALENDAR)) {
             return;
         }
