@@ -96,21 +96,33 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
 
         Map<RepeatingQuest, Pair<List<Quest>, List<Quest>>> repeatingQuestToQuestsToRemoveAndCreate = prepareRepeatingQuests(context, repeatingQuests);
 
+
+        Map<Quest, Long> questsWithOriginalIdToUpdate = new HashMap<>();
         for(Quest q : questToOriginalId.keySet()) {
             Quest existingQuest = questPersistenceService.findFromAndroidCalendar(q.getSourceMapping().getAndroidCalendarMapping());
+            if(existingQuest != null && existingQuest.isCompleted()) {
+                continue;
+            }
             if(existingQuest != null) {
                 copyQuestProperties(q, existingQuest);
             }
+            questsWithOriginalIdToUpdate.put(q, questToOriginalId.get(q));
         }
 
+
+        List<Quest> questsToUpdate = new ArrayList<>();
         for(Quest q : quests) {
             Quest existingQuest = questPersistenceService.findFromAndroidCalendar(q.getSourceMapping().getAndroidCalendarMapping());
+            if(existingQuest != null && existingQuest.isCompleted()) {
+                continue;
+            }
             if(existingQuest != null) {
                 copyQuestProperties(q, existingQuest);
             }
+            questsToUpdate.add(q);
         }
 
-        calendarPersistenceService.updateAsync(quests, questToOriginalId, repeatingQuestToQuestsToRemoveAndCreate);
+        calendarPersistenceService.updateAsync(questsToUpdate, questsWithOriginalIdToUpdate, repeatingQuestToQuestsToRemoveAndCreate);
     }
 
     @NonNull
@@ -119,7 +131,7 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
 
         for (RepeatingQuest rq : repeatingQuests) {
             RepeatingQuest existingRepeatingQuest = repeatingQuestPersistenceService.findFromAndroidCalendar(rq.getSourceMapping().getAndroidCalendarMapping());
-            if (existingRepeatingQuest != null) {
+            if (existingRepeatingQuest != null && !existingRepeatingQuest.isCompleted()) {
                 copyRepeatingQuestProperties(rq, existingRepeatingQuest);
 
                 LocalDate periodStart = getPeriodStart(rq);
