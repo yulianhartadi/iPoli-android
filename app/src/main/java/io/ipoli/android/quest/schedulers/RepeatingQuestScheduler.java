@@ -14,7 +14,6 @@ import net.fortuna.ical4j.model.parameter.Value;
 import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.TextStyle;
-import org.threeten.bp.temporal.TemporalAdjusters;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -34,7 +33,9 @@ import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.reminder.data.Reminder;
 
 import static org.threeten.bp.temporal.TemporalAdjusters.firstDayOfMonth;
+import static org.threeten.bp.temporal.TemporalAdjusters.firstDayOfYear;
 import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth;
+import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfYear;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -113,19 +114,28 @@ public class RepeatingQuestScheduler {
                 result.addAll(scheduleMonthlyFlexibleQuest(repeatingQuest, nextStart, nextEnd, currentDate, scheduledQuests));
             }
             return result;
-        } else {
+        } else if (!isFlexible && repeatType == RepeatType.MONTHLY) {
             startDate = currentDate.with(firstDayOfMonth());
             endDate = currentDate.with(lastDayOfMonth());
             List<Quest> result = createQuestsForFixedRepeatingQuest(repeatingQuest, startDate, endDate, currentDate, scheduledQuests);
 
             // monthly repeat type can have only 1 quest per month, if not scheduled -> schedule for next month
             if (result.isEmpty()) {
-                result.addAll(createQuestsForFixedRepeatingQuest(repeatingQuest, startDate.plusMonths(1), endDate.plusMonths(1).with(TemporalAdjusters.lastDayOfMonth()), currentDate, scheduledQuests));
+                result.addAll(createQuestsForFixedRepeatingQuest(repeatingQuest, startDate.plusMonths(1), endDate.plusMonths(1).with(lastDayOfMonth()), currentDate, scheduledQuests));
+            }
+            return result;
+        } else if (!isFlexible && repeatType == RepeatType.YEARLY) {
+            startDate = currentDate.with(firstDayOfYear());
+            endDate = currentDate.with(lastDayOfYear());
+            List<Quest> result = createQuestsForFixedRepeatingQuest(repeatingQuest, startDate, endDate, currentDate, scheduledQuests);
+
+            // yearly repeat type can have only 1 quest per year, if not scheduled -> schedule for next year
+            if (result.isEmpty()) {
+                result.addAll(createQuestsForFixedRepeatingQuest(repeatingQuest, startDate.plusYears(1), endDate.plusYears(1).with(lastDayOfYear()), currentDate, scheduledQuests));
             }
             return result;
         }
-        // @TODO handle yearly scheduling
-
+        return new ArrayList<>();
     }
 
     public List<Quest> scheduleForDay(RepeatingQuest repeatingQuest, LocalDate currentDate) {
@@ -329,10 +339,6 @@ public class RepeatingQuestScheduler {
             recur.setUntil(new Date(recurrence.getDtend()));
         }
 
-        if (recur.getFrequency().equals(Recur.YEARLY)) {
-            return res;
-        }
-
         DateList dates = recur.getDates(new Date(recurrence.getDtstart()), new Date(DateUtils.toMillis(startDate)),
                 getPeriodEnd(endDate), Value.DATE);
 
@@ -348,7 +354,6 @@ public class RepeatingQuestScheduler {
                 res.add(createQuestFromRepeating(repeatingQuest, scheduledDate));
             }
         }
-
 
         return res;
     }

@@ -85,7 +85,7 @@ public class AndroidCalendarEventParser {
                     try {
                         questToOriginalId.put(q, Long.valueOf(e.originalId));
                     } catch (Exception ex) {
-                        //log originalId not long
+                        //@TODO log originalId not long
                     }
                 }
             }
@@ -210,11 +210,11 @@ public class AndroidCalendarEventParser {
         try {
             recur = new Recur(rRule);
         } catch (ParseException ex) {
-            //log app error
+            //@TODO log app error
             return null;
         }
 
-        //temp
+        //@TODO temp
         if(recur.getFrequency().equals(Recur.YEARLY)) {
             return null;
         }
@@ -273,9 +273,6 @@ public class AndroidCalendarEventParser {
                 rq.addReminder(new io.ipoli.android.reminder.data.Reminder(minutes));
             }
         }
-
-//        Log.d("AAA", event.title + " " + event.rRule);
-//        Log.d("AAAB", event.title + " " + recurrence.getRrule());
 
         return rq;
     }

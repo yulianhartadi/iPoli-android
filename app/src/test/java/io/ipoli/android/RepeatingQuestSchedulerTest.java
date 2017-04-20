@@ -32,7 +32,9 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
 import static org.hamcrest.number.OrderingComparison.lessThanOrEqualTo;
 import static org.threeten.bp.temporal.TemporalAdjusters.firstDayOfMonth;
+import static org.threeten.bp.temporal.TemporalAdjusters.firstDayOfYear;
 import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth;
+import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfYear;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -49,6 +51,8 @@ public class RepeatingQuestSchedulerTest {
     private static LocalDate endOfWeek;
     private static LocalDate startOfMonth;
     private static LocalDate endOfMonth;
+    private static LocalDate startOfYear;
+    private static LocalDate endOfYear;
 
     @BeforeClass
     public static void setUp() {
@@ -58,6 +62,8 @@ public class RepeatingQuestSchedulerTest {
         endOfWeek = today.with(DayOfWeek.SUNDAY);
         startOfMonth = today.with(firstDayOfMonth());
         endOfMonth = today.with(lastDayOfMonth());
+        startOfYear = today.with(firstDayOfYear());
+        endOfYear = today.with(lastDayOfYear());
     }
 
     @Test
@@ -590,6 +596,37 @@ public class RepeatingQuestSchedulerTest {
         assertThat(scheduled.size(), is(1));
     }
 
+    @Test
+    public void scheduleYearlyRepeatingQuest() {
+        RepeatingQuest rq = createRepeatingQuest();
+        rq.setRecurrence(createYearlyFixedRecurrence(today, today.getDayOfYear()));
+        List<Quest> result = rqScheduler.schedule(rq, today);
+        assertThat(result.size(), is(1));
+    }
+
+    @Test
+    public void scheduleYearlyRepeatingQuestWithPastDate() {
+        RepeatingQuest rq = createRepeatingQuest();
+        rq.setRecurrence(createYearlyFixedRecurrence(today, today.minusDays(1).getDayOfYear()));
+        List<Quest> result = rqScheduler.schedule(rq, today);
+        assertThat(result.size(), is(1));
+    }
+
+    @Test
+    public void shouldNotOverscheduleFixedYearly() {
+        RepeatingQuest repeatingQuest = createRepeatingQuest();
+        repeatingQuest.setRecurrence(createYearlyFixedRecurrence(startOfYear, 1));
+
+        List<Quest> alreadyScheduled = new ArrayList<>();
+        Quest q1 = new Quest("1", startOfYear);
+        q1.setCompletedAtDate(startOfYear);
+        q1.setCompletedAtMinute(10);
+        alreadyScheduled.add(q1);
+        List<Quest> scheduled = rqScheduler.schedule(repeatingQuest, startOfYear, alreadyScheduled);
+        assertThat(scheduled.size(), is(1));
+    }
+
+
     @NonNull
     private Recur createEveryDayRecur() {
         Recur recur = new Recur(Recur.WEEKLY, null);
@@ -619,6 +656,17 @@ public class RepeatingQuestSchedulerTest {
         recur.getDayList().add(WeekDay.MO);
         recur.getDayList().add(WeekDay.WE);
         recur.getDayList().add(WeekDay.FR);
+        recurrence.setRrule(recur.toString());
+        return recurrence;
+    }
+
+    @NonNull
+    private Recurrence createYearlyFixedRecurrence(LocalDate startDate, int yearDay) {
+        Recurrence recurrence = Recurrence.create();
+        recurrence.setDtstartDate(startDate);
+        recurrence.setRecurrenceType(Recurrence.RepeatType.YEARLY);
+        Recur recur = new Recur(Recur.YEARLY, null);
+        recur.getYearDayList().add(yearDay);
         recurrence.setRrule(recur.toString());
         return recurrence;
     }
