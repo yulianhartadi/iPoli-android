@@ -458,4 +458,7 @@
     <string name="settings_sync_calendars">Calendars sync</string>
     <string name="settings_select_sync_calendars">Calendars to sync</string>
     <string name="settings_sync_google_calendars">Sync Google calendars</string>
+    <string name="empty_calendars_text">No calendars</string>
+    <string name="allow_read_calendars_perm_reason">iPoli needs to read your calendars to import your events as quests</string>
+    <string name="sync_calendars_delete_loading_dialog_title">Deleting quests</string>
 </resources>

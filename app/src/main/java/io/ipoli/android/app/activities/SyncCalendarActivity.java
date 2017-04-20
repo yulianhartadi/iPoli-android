@@ -44,7 +44,7 @@ import me.everything.providers.android.calendar.Event;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class SyncCalendarActivity extends BaseActivity {
+public class SyncCalendarActivity extends BaseActivity implements EasyPermissions.PermissionCallbacks{
     private static final int RC_CALENDAR_PERM = 101;
 
     @Inject
@@ -88,7 +88,7 @@ public class SyncCalendarActivity extends BaseActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         calendarList.setLayoutManager(layoutManager);
-        calendarList.setEmptyView(rootContainer, R.string.empty_agenda_text, R.drawable.ic_calendar_blank_grey_24dp);
+        calendarList.setEmptyView(rootContainer, R.string.empty_calendars_text, R.drawable.ic_calendar_blank_grey_24dp);
         adapter = new AndroidCalendarAdapter(this, new ArrayList<>());
         calendarList.setAdapter(adapter);
 
@@ -208,5 +208,15 @@ public class SyncCalendarActivity extends BaseActivity {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> perms) {
+
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> perms) {
+        onFinish();
     }
 }

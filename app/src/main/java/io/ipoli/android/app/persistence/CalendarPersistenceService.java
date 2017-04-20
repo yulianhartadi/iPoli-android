@@ -23,4 +23,6 @@ public interface CalendarPersistenceService {
     void updateSync(Player player, List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests, Set<Long> calendarsToRemove, Map<Long, Category> calendarsToUpdate);
 
     void updateAsync(List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, Pair<List<Quest>, List<Quest>>> repeatingQuests);
+
+    void deleteAllCalendarsSync(Player player);
 }
