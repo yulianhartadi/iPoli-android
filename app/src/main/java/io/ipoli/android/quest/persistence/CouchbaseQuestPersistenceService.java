@@ -437,7 +437,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     }
 
     @Override
-    public Quest findNotCompletedFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping) {
+    public Quest findFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping) {
         Query query = questFromAndroidCalendar.createQuery();
         query.setGroupLevel(2);
         List<Object> key = Arrays.asList(

@@ -31,7 +31,7 @@ public interface RepeatingQuestPersistenceService extends PersistenceService<Rep
 
     void addToChallenge(List<RepeatingQuest> repeatingQuests, String challengeId);
 
-    RepeatingQuest findNotCompletedFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping);
+    RepeatingQuest findFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping);
 
     List<RepeatingQuest> findNotCompletedFromAndroidCalendar(Long calendarId);
 

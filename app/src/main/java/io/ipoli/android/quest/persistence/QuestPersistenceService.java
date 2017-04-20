@@ -53,5 +53,5 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     List<Quest> findFromAndroidCalendar(Long calendarId);
 
-    Quest findNotCompletedFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping);
+    Quest findFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping);
 }

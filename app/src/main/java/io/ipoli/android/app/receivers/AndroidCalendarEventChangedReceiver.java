@@ -97,14 +97,14 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
         Map<RepeatingQuest, Pair<List<Quest>, List<Quest>>> repeatingQuestToQuestsToRemoveAndCreate = prepareRepeatingQuests(context, repeatingQuests);
 
         for(Quest q : questToOriginalId.keySet()) {
-            Quest existingQuest = questPersistenceService.findNotCompletedFromAndroidCalendar(q.getSourceMapping().getAndroidCalendarMapping());
+            Quest existingQuest = questPersistenceService.findFromAndroidCalendar(q.getSourceMapping().getAndroidCalendarMapping());
             if(existingQuest != null) {
                 copyQuestProperties(q, existingQuest);
             }
         }
 
         for(Quest q : quests) {
-            Quest existingQuest = questPersistenceService.findNotCompletedFromAndroidCalendar(q.getSourceMapping().getAndroidCalendarMapping());
+            Quest existingQuest = questPersistenceService.findFromAndroidCalendar(q.getSourceMapping().getAndroidCalendarMapping());
             if(existingQuest != null) {
                 copyQuestProperties(q, existingQuest);
             }
@@ -118,7 +118,7 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
         Map<RepeatingQuest, Pair<List<Quest>, List<Quest>>> repeatingQuestToQuestsToRemoveAndCreate = new HashMap<>();
 
         for (RepeatingQuest rq : repeatingQuests) {
-            RepeatingQuest existingRepeatingQuest = repeatingQuestPersistenceService.findNotCompletedFromAndroidCalendar(rq.getSourceMapping().getAndroidCalendarMapping());
+            RepeatingQuest existingRepeatingQuest = repeatingQuestPersistenceService.findFromAndroidCalendar(rq.getSourceMapping().getAndroidCalendarMapping());
             if (existingRepeatingQuest != null) {
                 copyRepeatingQuestProperties(rq, existingRepeatingQuest);
 
