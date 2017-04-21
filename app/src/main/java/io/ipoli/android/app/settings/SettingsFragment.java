@@ -1,12 +1,16 @@
 package io.ipoli.android.app.settings;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -88,7 +92,8 @@ public class SettingsFragment extends BaseFragment implements
         TimeOfDayPickerFragment.OnTimesOfDayPickedListener,
         TimePickerFragment.OnTimePickedListener,
         DaysOfWeekPickerFragment.OnDaysOfWeekPickedListener,
-        EasyPermissions.PermissionCallbacks {
+        EasyPermissions.PermissionCallbacks,
+        LoaderManager.LoaderCallbacks<Void> {
 
     private static final int RC_CALENDAR_PERM = 102;
     @Inject
@@ -173,6 +178,9 @@ public class SettingsFragment extends BaseFragment implements
     TextView appVersion;
 
     private Unbinder unbinder;
+
+    private LoadingDialog loadingDialog;
+    private Map<Long, Category> selectedCalendars;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -458,80 +466,9 @@ public class SettingsFragment extends BaseFragment implements
 
     private void onSelectCalendarsToSync(Map<Long, Category> selectedCalendars) {
         populateSelectedSyncCalendarsText(selectedCalendars.size());
-        LoadingDialog loadingDialog = LoadingDialog.show(getContext(), getString(R.string.sync_calendars_loading_dialog_title), getString(R.string.sync_calendars_loading_dialog_message));
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                Player player = getPlayer();
-
-                Set<Long> calendarsToAdd = getCalendarsToAdd(selectedCalendars, player.getAndroidCalendars().keySet());
-                List<Quest> quests = new ArrayList<>();
-                Map<Quest, Long> questToOriginalId = new HashMap<>();
-                List<RepeatingQuest> repeatingQuests = new ArrayList<>();
-                for (Long calendarId : calendarsToAdd) {
-                    List<Event> events = syncAndroidCalendarProvider.getCalendarEvents(calendarId);
-                    AndroidCalendarEventParser.Result result = androidCalendarEventParser.parse(events, selectedCalendars.get(calendarId));
-                    quests.addAll(result.quests);
-                    questToOriginalId.putAll(result.questToOriginalId);
-                    repeatingQuests.addAll(result.repeatingQuests);
-                }
-
-                Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests = new HashMap<>();
-                for (RepeatingQuest rq : repeatingQuests) {
-                    repeatingQuestToQuests.put(rq, repeatingQuestScheduler.schedule(rq, LocalDate.now()));
-                }
-
-                Set<Long> calendarsToRemove = getCalendarsToRemove(selectedCalendars, player.getAndroidCalendars().keySet());
-                Map<Long, Category> calendarsToUpdate = getCalendarsToUpdate(selectedCalendars, player.getAndroidCalendars());
-
-                player.setAndroidCalendars(selectedCalendars);
-                calendarPersistenceService.updateSync(player, quests, questToOriginalId, repeatingQuestToQuests, calendarsToRemove, calendarsToUpdate);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                if (loadingDialog != null) {
-                    loadingDialog.dismiss();
-                }
-            }
-        }.execute();
-
-    }
-
-    @NonNull
-    private Set<Long> getCalendarsToRemove(Map<Long, Category> selectedCalendars, Set<Long> playerCalendars) {
-        Set<Long> calendarsToRemove = new HashSet<>();
-        for (Long calendarId : playerCalendars) {
-            if (!selectedCalendars.containsKey(calendarId)) {
-                calendarsToRemove.add(calendarId);
-            }
-        }
-        return calendarsToRemove;
-    }
-
-    @NonNull
-    private Set<Long> getCalendarsToAdd(Map<Long, Category> selectedCalendars, Set<Long> playerCalendars) {
-        Set<Long> calendarsToAdd = new HashSet<>();
-        for (Long calendarId : selectedCalendars.keySet()) {
-            if (!playerCalendars.contains(calendarId)) {
-                calendarsToAdd.add(calendarId);
-            }
-        }
-        return calendarsToAdd;
-    }
-
-    @NonNull
-    private Map<Long, Category> getCalendarsToUpdate(Map<Long, Category> selectedCalendars, Map<Long, Category> playerCalendars) {
-        Map<Long, Category> calendarsToUpdate = new HashMap<>();
-        for (Long calendarId : selectedCalendars.keySet()) {
-            if (playerCalendars.keySet().contains(calendarId)) {
-                if (selectedCalendars.get(calendarId) != playerCalendars.get(calendarId)) {
-                    calendarsToUpdate.put(calendarId, selectedCalendars.get(calendarId));
-                }
-            }
-        }
-        return calendarsToUpdate;
+        loadingDialog = LoadingDialog.show(getContext(), getString(R.string.sync_calendars_loading_dialog_title), getString(R.string.sync_calendars_loading_dialog_message));
+        this.selectedCalendars = selectedCalendars;
+        getLoaderManager().initLoader(1, null, this);
     }
 
     @OnClick(R.id.sync_calendars_container)
@@ -609,5 +546,115 @@ public class SettingsFragment extends BaseFragment implements
         enableSyncCalendars.setOnCheckedChangeListener(null);
         enableSyncCalendars.setChecked(false);
         enableSyncCalendars.setOnCheckedChangeListener(onCheckSyncCalendarChangeListener);
+    }
+
+    @Override
+    public Loader<Void> onCreateLoader(int id, Bundle args) {
+        return new CalendarLoader(getContext(), selectedCalendars, getPlayer(), syncAndroidCalendarProvider, androidCalendarEventParser, repeatingQuestScheduler, calendarPersistenceService);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Void> loader, Void data) {
+        if(loadingDialog != null) {
+            loadingDialog.dismiss();
+            loadingDialog = null;
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Void> loader) {
+
+    }
+
+    public static class CalendarLoader extends AsyncTaskLoader<Void> {
+
+        private Map<Long, Category> selectedCalendars;
+        private Player player;
+        private SyncAndroidCalendarProvider syncAndroidCalendarProvider;
+        private AndroidCalendarEventParser androidCalendarEventParser;
+        private RepeatingQuestScheduler repeatingQuestScheduler;
+        private CalendarPersistenceService calendarPersistenceService;
+
+        public CalendarLoader(Context context, Map<Long, Category> selectedCalendars, Player player, SyncAndroidCalendarProvider syncAndroidCalendarProvider, AndroidCalendarEventParser androidCalendarEventParser, RepeatingQuestScheduler repeatingQuestScheduler, CalendarPersistenceService calendarPersistenceService) {
+            super(context);
+            this.selectedCalendars = selectedCalendars;
+            this.player = player;
+            this.syncAndroidCalendarProvider = syncAndroidCalendarProvider;
+            this.androidCalendarEventParser = androidCalendarEventParser;
+            this.repeatingQuestScheduler = repeatingQuestScheduler;
+            this.calendarPersistenceService = calendarPersistenceService;
+        }
+
+        @Override
+        protected void onStartLoading() {
+            forceLoad();
+        }
+
+        @Override
+        public Void loadInBackground() {
+            Set<Long> calendarsToAdd = getCalendarsToAdd(selectedCalendars, player.getAndroidCalendars().keySet());
+            List<Quest> quests = new ArrayList<>();
+            Map<Quest, Long> questToOriginalId = new HashMap<>();
+            List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+            for (Long calendarId : calendarsToAdd) {
+                List<Event> events = syncAndroidCalendarProvider.getCalendarEvents(calendarId);
+                AndroidCalendarEventParser.Result result = androidCalendarEventParser.parse(events, selectedCalendars.get(calendarId));
+                quests.addAll(result.quests);
+                questToOriginalId.putAll(result.questToOriginalId);
+                repeatingQuests.addAll(result.repeatingQuests);
+            }
+
+            Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests = new HashMap<>();
+            for (RepeatingQuest rq : repeatingQuests) {
+                repeatingQuestToQuests.put(rq, repeatingQuestScheduler.schedule(rq, LocalDate.now()));
+            }
+
+            Set<Long> calendarsToRemove = getCalendarsToRemove(selectedCalendars, player.getAndroidCalendars().keySet());
+            Map<Long, Category> calendarsToUpdate = getCalendarsToUpdate(selectedCalendars, player.getAndroidCalendars());
+
+            player.setAndroidCalendars(selectedCalendars);
+            calendarPersistenceService.updateSync(player, quests, questToOriginalId, repeatingQuestToQuests, calendarsToRemove, calendarsToUpdate);
+            return null;
+        }
+
+        @NonNull
+        private Set<Long> getCalendarsToRemove(Map<Long, Category> selectedCalendars, Set<Long> playerCalendars) {
+            Set<Long> calendarsToRemove = new HashSet<>();
+            for (Long calendarId : playerCalendars) {
+                if (!selectedCalendars.containsKey(calendarId)) {
+                    calendarsToRemove.add(calendarId);
+                }
+            }
+            return calendarsToRemove;
+        }
+
+        @NonNull
+        private Set<Long> getCalendarsToAdd(Map<Long, Category> selectedCalendars, Set<Long> playerCalendars) {
+            Set<Long> calendarsToAdd = new HashSet<>();
+            for (Long calendarId : selectedCalendars.keySet()) {
+                if (!playerCalendars.contains(calendarId)) {
+                    calendarsToAdd.add(calendarId);
+                }
+            }
+            return calendarsToAdd;
+        }
+
+        @NonNull
+        private Map<Long, Category> getCalendarsToUpdate(Map<Long, Category> selectedCalendars, Map<Long, Category> playerCalendars) {
+            Map<Long, Category> calendarsToUpdate = new HashMap<>();
+            for (Long calendarId : selectedCalendars.keySet()) {
+                if (playerCalendars.keySet().contains(calendarId)) {
+                    if (selectedCalendars.get(calendarId) != playerCalendars.get(calendarId)) {
+                        calendarsToUpdate.put(calendarId, selectedCalendars.get(calendarId));
+                    }
+                }
+            }
+            return calendarsToUpdate;
+        }
+
+        @Override
+        protected void onStopLoading() {
+            cancelLoad();
+        }
     }
 }
