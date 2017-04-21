@@ -112,13 +112,6 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
         unbinder = ButterKnife.bind(this, view);
 
         List<AndroidCalendarViewModel> viewModels = new ArrayList<>();
-
-        //test on emulator
-//        viewModels.add(new AndroidCalendarViewModel(1L, "Polina Zhelyazkova", Category.PERSONAL, true));
-//        viewModels.add(new AndroidCalendarViewModel(2L, "Vihar calendar", Category.PERSONAL, false));
-//        viewModels.add(new AndroidCalendarViewModel(3L, "Holidays", Category.PERSONAL, false));
-//        viewModels.add(new AndroidCalendarViewModel(4L, "Birthdays", Category.PERSONAL, false));
-
         List<Calendar> calendars = syncAndroidCalendarProvider.getAndroidCalendars();
         for (Calendar c : calendars) {
             boolean selected = false;
