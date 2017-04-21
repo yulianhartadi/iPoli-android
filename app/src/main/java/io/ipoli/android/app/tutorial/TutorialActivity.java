@@ -23,8 +23,6 @@ public class TutorialActivity extends AppIntro2 {
     @Inject
     Bus eventBus;
 
-    private boolean showSignIn = false;
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +31,7 @@ public class TutorialActivity extends AppIntro2 {
         getWindow().setNavigationBarColor(Color.BLACK);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
 
         addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_welcome_title),
                 getString(R.string.tutorial_hero_desc),
@@ -59,18 +58,17 @@ public class TutorialActivity extends AppIntro2 {
     @Override
     public void onDonePressed(Fragment fragment) {
         doneButton.setVisibility(View.GONE);
-        finish();
+        onFinish();
     }
 
     @Override
     public void onBackPressed() {
         eventBus.post(new TutorialSkippedEvent());
-        super.onBackPressed();
+        onFinish();
     }
 
-    @Override
-    public void finish() {
+    private void onFinish() {
         eventBus.post(new FinishTutorialActivityEvent());
-        super.finish();
+        finish();
     }
 }

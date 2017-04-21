@@ -55,8 +55,7 @@ public class DateTimeParser {
             " nineteen"
     };
 
-    public DateTimeParser()
-    {
+    public DateTimeParser() {
         parser = new Parser(TimeZone.getDefault());
         for (int hours = 0; hours < 24; hours++)
             for (int min = 0; min < 60; min++)
@@ -72,21 +71,17 @@ public class DateTimeParser {
      * Provides a string representation for the number passed. This method works for limited set of numbers as parsing
      * will only be done at maximum for 2400, which will be used in military time format.
      */
-    private String provideRepresentation(int number)
-    {
+    private String provideRepresentation(int number) {
         String key;
 
         if (number == 0)
             key = "zero";
         else if (number < 20)
             key = numNames[number];
-        else if (number < 100)
-        {
+        else if (number < 100) {
             int unit = number % 10;
             key = tensNames[number / 10] + numNames[unit];
-        }
-        else
-        {
+        } else {
             int unit = number % 10;
             int ten = number % 100 - unit;
             int hundred = (number - ten) / 100;
@@ -105,20 +100,22 @@ public class DateTimeParser {
     /**
      * Parse the given text and return a {@link List} with all discovered {@link Date} instances.
      */
-    public List<Date> parse(String text)
-    {
+    public List<Date> parse(String text) {
+        return parse(text, new Date());
+    }
+
+    public List<Date> parse(String text, Date currentDate) {
         text = words2numbers(text);
 
         List<Date> result = new ArrayList<>();
-        List<DateGroup> groups = parser.parse(text);
+        List<DateGroup> groups = parser.parse(text, currentDate);
         for (DateGroup group : groups) {
             result.addAll(group.getDates());
         }
         return result;
     }
 
-    private String words2numbers(String language)
-    {
+    private String words2numbers(String language) {
         for (Map.Entry<String, String> entry : translations.entrySet()) {
             language = language.replaceAll("\\b" + entry.getKey() + "\\b", entry.getValue());
         }

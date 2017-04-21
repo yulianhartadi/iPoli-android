@@ -6,6 +6,8 @@ import net.fortuna.ical4j.model.Recur;
 
 import org.threeten.bp.LocalDate;
 
+import java.util.Date;
+
 import io.ipoli.android.app.parsers.DateTimeParser;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.parsers.DurationMatcher;
@@ -46,9 +48,14 @@ public class QuestParser {
     private final RecurrenceDayOfMonthMatcher dayOfMonthMatcher = new RecurrenceDayOfMonthMatcher();
     private final TimesAWeekMatcher timesAWeekMatcher = new TimesAWeekMatcher();
     private final TimesAMonthMatcher timesAMonthMatcher = new TimesAMonthMatcher();
+
     public QuestParser(DateTimeParser timeParser) {
+        this(timeParser, new Date());
+    }
+
+    public QuestParser(DateTimeParser timeParser, Date currentDate) {
         startTimeMatcher = new StartTimeMatcher(timeParser);
-        endDateMatcher = new EndDateMatcher(timeParser);
+        endDateMatcher = new EndDateMatcher(timeParser, currentDate);
     }
 
     public Quest parseQuest(String text) {

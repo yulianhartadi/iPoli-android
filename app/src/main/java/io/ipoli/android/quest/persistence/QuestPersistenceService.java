@@ -5,7 +5,9 @@ import org.threeten.bp.LocalDate;
 import java.util.List;
 import java.util.SortedMap;
 
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.persistence.PersistenceService;
+import io.ipoli.android.quest.data.AndroidCalendarMapping;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestReminder;
 
@@ -35,6 +37,10 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void findAllUpcomingForRepeatingQuest(LocalDate scheduledPeriodStart, String repeatingQuestId, OnDataChangedListener<List<Quest>> listener);
 
+    List<Quest> findAllUpcomingForRepeatingQuest(LocalDate scheduledPeriodStart, String repeatingQuestId);
+
+    List<Quest> findAllForRepeatingQuest(String repeatingQuestId);
+
     void countAllCompletedWithPriorityForDate(int priority, LocalDate date, OnDataChangedListener<Long> listener);
 
     void findQuestRemindersAtStartTime(long startTime, OnDataChangedListener<List<QuestReminder>> listener);
@@ -44,4 +50,10 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     void listenForAllIncompleteOrMostImportantForDate(LocalDate now, OnDataChangedListener<List<Quest>> listener);
 
     void save(List<Quest> quests);
+
+    List<Quest> findNotCompletedFromAndroidCalendar(Long calendarId);
+
+    List<Quest> findFromAndroidCalendar(Long calendarId);
+
+    Quest findFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping);
 }
