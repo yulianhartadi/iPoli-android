@@ -1,9 +1,12 @@
 package io.ipoli.android.app.activities;
 
 import android.Manifest;
-import android.os.AsyncTask;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -44,7 +47,7 @@ import me.everything.providers.android.calendar.Event;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class SyncCalendarActivity extends BaseActivity implements EasyPermissions.PermissionCallbacks{
+public class SyncCalendarActivity extends BaseActivity implements EasyPermissions.PermissionCallbacks, LoaderManager.LoaderCallbacks<Void> {
     private static final int RC_CALENDAR_PERM = 101;
 
     @Inject
@@ -124,48 +127,12 @@ public class SyncCalendarActivity extends BaseActivity implements EasyPermission
 
     private void onNextTap() {
         createLoadingDialog();
+        getSupportLoaderManager().initLoader(0, null, this);
+    }
 
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                List<AndroidCalendarViewModel> selectedAndroidCalendarViewModels = adapter.getSelectedCalendars();
-                if(selectedAndroidCalendarViewModels.isEmpty()) {
-                    return null;
-                }
-                Map<Long, Category> selectedCalendars = new HashMap<>();
-                for (AndroidCalendarViewModel vm : selectedAndroidCalendarViewModels) {
-                    selectedCalendars.put(vm.getId(), vm.getCategory());
-                }
-
-                Player player = playerPersistenceService.get();
-                player.setAndroidCalendars(selectedCalendars);
-
-                List<Quest> quests = new ArrayList<>();
-                Map<Quest, Long> questToOriginalId = new HashMap<>();
-                List<RepeatingQuest> repeatingQuests = new ArrayList<>();
-                for(Long calendarId : selectedCalendars.keySet()) {
-                    List<Event> events = syncAndroidCalendarProvider.getCalendarEvents(calendarId);
-                    AndroidCalendarEventParser.Result result = androidCalendarEventParser.parse(events, selectedCalendars.get(calendarId));
-                    quests.addAll(result.quests);
-                    questToOriginalId.putAll(result.questToOriginalId);
-                    repeatingQuests.addAll(result.repeatingQuests);
-                }
-
-                Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests = new HashMap<>();
-                for(RepeatingQuest rq: repeatingQuests) {
-                    repeatingQuestToQuests.put(rq, repeatingQuestScheduler.schedule(rq, LocalDate.now()));
-                }
-
-                calendarPersistenceService.saveSync(player, quests, questToOriginalId, repeatingQuestToQuests);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                onFinish();
-            }
-        }.execute();
-
+    @Override
+    public void onBackPressed() {
+        onFinish();
     }
 
     private void onFinish() {
@@ -212,5 +179,84 @@ public class SyncCalendarActivity extends BaseActivity implements EasyPermission
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms) {
         onFinish();
+    }
+
+    @Override
+    public Loader<Void> onCreateLoader(int id, Bundle args) {
+        return new CalendarLoader(this, adapter, playerPersistenceService, syncAndroidCalendarProvider, androidCalendarEventParser, repeatingQuestScheduler, calendarPersistenceService);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Void> loader, Void data) {
+        onFinish();
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Void> loader) {
+
+    }
+
+    public static class CalendarLoader extends AsyncTaskLoader<Void> {
+
+        private AndroidCalendarAdapter adapter;
+        private PlayerPersistenceService playerPersistenceService;
+        private SyncAndroidCalendarProvider syncAndroidCalendarProvider;
+        private AndroidCalendarEventParser androidCalendarEventParser;
+        private RepeatingQuestScheduler repeatingQuestScheduler;
+        private CalendarPersistenceService calendarPersistenceService;
+
+        public CalendarLoader(Context context, AndroidCalendarAdapter adapter, PlayerPersistenceService playerPersistenceService, SyncAndroidCalendarProvider syncAndroidCalendarProvider, AndroidCalendarEventParser androidCalendarEventParser, RepeatingQuestScheduler repeatingQuestScheduler, CalendarPersistenceService calendarPersistenceService) {
+            super(context);
+            this.adapter = adapter;
+            this.playerPersistenceService = playerPersistenceService;
+            this.syncAndroidCalendarProvider = syncAndroidCalendarProvider;
+            this.androidCalendarEventParser = androidCalendarEventParser;
+            this.repeatingQuestScheduler = repeatingQuestScheduler;
+            this.calendarPersistenceService = calendarPersistenceService;
+        }
+
+        @Override
+        protected void onStartLoading() {
+            forceLoad();
+        }
+
+        @Override
+        public Void loadInBackground() {
+            List<AndroidCalendarViewModel> selectedAndroidCalendarViewModels = adapter.getSelectedCalendars();
+            if(selectedAndroidCalendarViewModels.isEmpty()) {
+                return null;
+            }
+            Map<Long, Category> selectedCalendars = new HashMap<>();
+            for (AndroidCalendarViewModel vm : selectedAndroidCalendarViewModels) {
+                selectedCalendars.put(vm.getId(), vm.getCategory());
+            }
+
+            Player player = playerPersistenceService.get();
+            player.setAndroidCalendars(selectedCalendars);
+
+            List<Quest> quests = new ArrayList<>();
+            Map<Quest, Long> questToOriginalId = new HashMap<>();
+            List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+            for(Long calendarId : selectedCalendars.keySet()) {
+                List<Event> events = syncAndroidCalendarProvider.getCalendarEvents(calendarId);
+                AndroidCalendarEventParser.Result result = androidCalendarEventParser.parse(events, selectedCalendars.get(calendarId));
+                quests.addAll(result.quests);
+                questToOriginalId.putAll(result.questToOriginalId);
+                repeatingQuests.addAll(result.repeatingQuests);
+            }
+
+            Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests = new HashMap<>();
+            for(RepeatingQuest rq: repeatingQuests) {
+                repeatingQuestToQuests.put(rq, repeatingQuestScheduler.schedule(rq, LocalDate.now()));
+            }
+
+            calendarPersistenceService.saveSync(player, quests, questToOriginalId, repeatingQuestToQuests);
+            return null;
+        }
+
+        @Override
+        protected void onStopLoading() {
+            cancelLoad();
+        }
     }
 }
