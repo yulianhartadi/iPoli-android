@@ -39,6 +39,8 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     List<Quest> findAllUpcomingForRepeatingQuest(LocalDate scheduledPeriodStart, String repeatingQuestId);
 
+    List<Quest> findAllForRepeatingQuest(String repeatingQuestId);
+
     void countAllCompletedWithPriorityForDate(int priority, LocalDate date, OnDataChangedListener<Long> listener);
 
     void findQuestRemindersAtStartTime(long startTime, OnDataChangedListener<List<QuestReminder>> listener);

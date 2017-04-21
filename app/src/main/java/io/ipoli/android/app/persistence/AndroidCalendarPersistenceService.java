@@ -75,6 +75,9 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
                 List<RepeatingQuest> repeatingQuestsToUpdate = repeatingQuestPersistenceService.findFromAndroidCalendar(calendarId);
                 List<Quest> questsToUpdate = questPersistenceService.findFromAndroidCalendar(calendarId);
                 for (RepeatingQuest rq : repeatingQuestsToUpdate) {
+                    questsToUpdate.addAll(questPersistenceService.findAllForRepeatingQuest(rq.getId()));
+                }
+                for (RepeatingQuest rq : repeatingQuestsToUpdate) {
                     rq.setCategoryType(category);
                     repeatingQuestPersistenceService.save(rq);
                 }

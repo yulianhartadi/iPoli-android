@@ -342,6 +342,29 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     }
 
     @Override
+    public List<Quest> findAllForRepeatingQuest(String repeatingQuestId) {
+        Query query = scheduledForRepeatingQuest.createQuery();
+        query.setGroupLevel(1);
+        query.setStartKey(Arrays.asList(repeatingQuestId, null));
+        query.setEndKey(Arrays.asList(repeatingQuestId, new HashMap<String, Object>()));
+
+        List<Quest> result = new ArrayList<>();
+        try {
+            QueryEnumerator enumerator = query.run();
+            while (enumerator.hasNext()) {
+                QueryRow row = enumerator.next();
+                List<Quest> quests = (List<Quest>) row.getValue();
+                for (Quest q : quests) {
+                    result.add(q);
+                }
+            }
+        } catch (CouchbaseLiteException e) {
+            postError(e);
+        }
+        return result;
+    }
+
+    @Override
     public void countAllCompletedWithPriorityForDate(int priority, LocalDate date, OnDataChangedListener<Long> listener) {
         Query query = dayQuestsView.createQuery();
         long key = toStartOfDayUTC(date).getTime();
