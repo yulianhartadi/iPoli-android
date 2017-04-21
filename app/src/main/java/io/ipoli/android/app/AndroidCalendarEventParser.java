@@ -10,6 +10,7 @@ import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.WeekDay;
 
+import org.threeten.bp.DateTimeException;
 import org.threeten.bp.Instant;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.LocalDateTime;
@@ -93,9 +94,10 @@ public class AndroidCalendarEventParser {
             return null;
         }
 
+        ZoneId zoneId = getZoneId(event);
         LocalDateTime startLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(event.dTStart), getZoneId(event));
-        LocalDate startDate = DateUtils.toStartOfDayUTCLocalDate(startLocalDateTime.toLocalDate());
-        if (startDate.isBefore(LocalDate.now())) {
+        LocalDate startDate = DateUtils.fromMillis(event.dTStart, zoneId);
+        if (isForThePast(startDate)) {
             return null;
         }
 
@@ -104,7 +106,7 @@ public class AndroidCalendarEventParser {
         q.setSourceMapping(SourceMapping.fromGoogleCalendar(event.calendarId, event.id));
         q.setCategoryType(category);
 
-        LocalDate endDate = event.dTend > 0 ? DateUtils.toStartOfDayUTCLocalDate(DateUtils.fromMillis(event.dTend)) : startDate;
+        LocalDate endDate = event.dTend > 0 ? DateUtils.fromMillis(event.dTend, zoneId) : startDate;
 
         q.setStartMinute(startLocalDateTime.getHour() * 60 + startLocalDateTime.getMinute());
         q.setStartDate(startDate);
@@ -114,7 +116,7 @@ public class AndroidCalendarEventParser {
         if (event.allDay) {
             q.setDuration(Constants.QUEST_MIN_DURATION);
             q.setStartMinute(null);
-            if(!event.hasAlarm) {
+            if (!event.hasAlarm) {
                 q.addReminder(new io.ipoli.android.reminder.data.Reminder(0));
             }
         } else {
@@ -143,23 +145,8 @@ public class AndroidCalendarEventParser {
         return q;
     }
 
-    private ZoneId getZoneId(Event e) {
-        String timeZone = e.eventTimeZone;
-        if (StringUtils.isEmpty(timeZone)) {
-            timeZone = e.eventEndTimeZone;
-            if (StringUtils.isEmpty(timeZone)) {
-                timeZone = e.calendarTimeZone;
-            }
-        }
-
-        ZoneId zoneId;
-        try {
-            zoneId = StringUtils.isEmpty(timeZone) ? ZoneId.systemDefault() : ZoneId.of(timeZone);
-        } catch (Exception ex) {
-            zoneId = ZoneId.of(e.calendarTimeZone);
-        }
-
-        return zoneId;
+    private boolean isForThePast(LocalDate date) {
+        return date != null && date.isBefore(LocalDate.now());
     }
 
     private RepeatingQuest parseRepeatingQuest(Event event, Category category) {
@@ -174,14 +161,14 @@ public class AndroidCalendarEventParser {
         rq.setSource(Constants.SOURCE_ANDROID_CALENDAR);
         rq.setSourceMapping(SourceMapping.fromGoogleCalendar(event.calendarId, event.id));
 
-        LocalDateTime startLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(event.dTStart), getZoneId(event));
+        ZoneId zoneId = getZoneId(event);
+        LocalDateTime startLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(event.dTStart), zoneId);
         rq.setStartMinute(startLocalDateTime.getHour() * 60 + startLocalDateTime.getMinute());
-
 
         if (event.allDay) {
             rq.setDuration(Constants.QUEST_MIN_DURATION);
             rq.setStartMinute(null);
-            if(!event.hasAlarm) {
+            if (!event.hasAlarm) {
                 rq.addReminder(new io.ipoli.android.reminder.data.Reminder(0));
             }
         } else {
@@ -190,7 +177,7 @@ public class AndroidCalendarEventParser {
                 duration = (int) TimeUnit.MILLISECONDS.toMinutes(event.dTend - event.dTStart);
             } else if (!StringUtils.isEmpty(event.duration)) {
                 Dur dur = new Dur(event.duration);
-                duration =(int) TimeUnit.MILLISECONDS.toMinutes(dur.getTime(new Date(0)).getTime());
+                duration = (int) TimeUnit.MILLISECONDS.toMinutes(dur.getTime(new Date(0)).getTime());
             } else {
                 duration = Constants.QUEST_MIN_DURATION;
             }
@@ -210,16 +197,15 @@ public class AndroidCalendarEventParser {
 
         Recurrence recurrence = Recurrence.create();
         recurrence.setFlexibleCount(0);
-        LocalDate startDate = DateUtils.toStartOfDayUTCLocalDate(startLocalDateTime.toLocalDate());
+        LocalDate startDate = DateUtils.fromMillis(event.dTStart, zoneId);
         recurrence.setDtstartDate(startDate);
         LocalDate endDate = null;
-        if(event.dTend > 0) {
-            endDate = DateUtils.toStartOfDayUTCLocalDate(DateUtils.fromMillis(event.dTend));
-        } else if(recur.getUntil() != null) {
-            LocalDateTime endLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(recur.getUntil().getTime()), getZoneId(event));
-            endDate = DateUtils.toStartOfDayUTCLocalDate(endLocalDateTime.toLocalDate());
+        if (event.dTend > 0) {
+            endDate = DateUtils.fromMillis(event.dTend, zoneId);
+        } else if (recur.getUntil() != null) {
+            endDate = DateUtils.fromMillis(recur.getUntil().getTime(), zoneId);
         }
-        if(endDate != null && endDate.isBefore(LocalDate.now())) {
+        if (isForThePast(endDate)) {
             return null;
         }
         recurrence.setDtendDate(endDate);
@@ -228,15 +214,15 @@ public class AndroidCalendarEventParser {
         switch (frequency) {
             case Recur.MONTHLY:
                 recurrence.setRecurrenceType(Recurrence.RepeatType.MONTHLY);
-                if(recur.getMonthDayList().isEmpty() && recur.getDayList().isEmpty()) {
+                if (recur.getMonthDayList().isEmpty() && recur.getDayList().isEmpty()) {
                     recur.getMonthDayList().add(startDate.getDayOfMonth());
                 }
                 recurrence.setRrule(recur.toString());
                 break;
             case Recur.WEEKLY:
                 recurrence.setRecurrenceType(Recurrence.RepeatType.WEEKLY);
-                if(recur.getDayList().isEmpty()) {
-                    recur.getDayList().add(new WeekDay(startDate.getDayOfWeek().toString().substring(0,2)));
+                if (recur.getDayList().isEmpty()) {
+                    recur.getDayList().add(new WeekDay(startDate.getDayOfWeek().toString().substring(0, 2)));
                 }
                 recurrence.setRrule(recur.toString());
                 break;
@@ -261,6 +247,32 @@ public class AndroidCalendarEventParser {
         }
 
         return rq;
+    }
+
+    private ZoneId getZoneId(Event event) {
+        String timeZone = event.eventTimeZone;
+        if (StringUtils.isEmpty(timeZone)) {
+            timeZone = event.eventEndTimeZone;
+            if (StringUtils.isEmpty(timeZone)) {
+                timeZone = event.calendarTimeZone;
+            }
+        }
+
+        if (StringUtils.isEmpty(timeZone)) {
+            return ZoneId.systemDefault();
+        }
+
+        try {
+            return ZoneId.of(timeZone);
+        } catch (DateTimeException ex) {
+            postError(ex);
+            try {
+                return ZoneId.of(event.calendarTimeZone);
+            } catch (DateTimeException e) {
+                postError(e);
+                return ZoneId.systemDefault();
+            }
+        }
     }
 
     @NonNull

@@ -28,6 +28,10 @@ public class DateUtils {
         return Instant.ofEpochMilli(dateMillis).atZone(DateUtils.ZONE_UTC).toLocalDate();
     }
 
+    public static LocalDate fromMillis(long dateMillis, ZoneId zoneId) {
+        return Instant.ofEpochMilli(dateMillis).atZone(zoneId).toLocalDate();
+    }
+
     public static String getShortName(Month month) {
         return month.getDisplayName(TextStyle.SHORT, Locale.getDefault());
     }
