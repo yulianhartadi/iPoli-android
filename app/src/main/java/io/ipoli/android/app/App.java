@@ -46,6 +46,8 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.QuickAddActivity;
+import io.ipoli.android.app.activities.SignInActivity;
+import io.ipoli.android.app.activities.SyncCalendarActivity;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.api.UrlProvider;
 import io.ipoli.android.app.auth.FacebookAuthService;
@@ -55,6 +57,7 @@ import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.DateChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FinishSignInActivityEvent;
+import io.ipoli.android.app.events.FinishSyncCalendarActivityEvent;
 import io.ipoli.android.app.events.FinishTutorialActivityEvent;
 import io.ipoli.android.app.events.InitAppEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
@@ -94,7 +97,6 @@ import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.LevelUpActivity;
-import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.events.PlayerUpdatedEvent;
@@ -346,14 +348,19 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onFinishSignInActivity(FinishSignInActivityEvent e) {
         if (hasPlayer() && e.isNewPlayer) {
-            startNewActivity(MainActivity.class);
-            Intent intent = new Intent(this, PickChallengeActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(PickChallengeActivity.TITLE, getString(R.string.pick_challenge_to_start));
-            startActivity(intent);
+            startNewActivity(SyncCalendarActivity.class);
         } else if (!hasPlayer()) {
             System.exit(0);
         }
+    }
+
+    @Subscribe
+    public void onFinishSynCalendarActivity(FinishSyncCalendarActivityEvent e) {
+        startNewActivity(MainActivity.class);
+        Intent intent = new Intent(this, PickChallengeActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(PickChallengeActivity.TITLE, getString(R.string.pick_challenge_to_start));
+        startActivity(intent);
     }
 
     private void startNewActivity(Class clazz) {
@@ -589,7 +596,7 @@ public class App extends MultiDexApplication {
         if (q.completedAllTimesForDay()) {
             QuestNotificationScheduler.cancelAll(q, this);
             q.setScheduledDate(LocalDate.now());
-            q.setCompletedAtDateFromLocal(LocalDate.now());
+            q.setCompletedAtDate(LocalDate.now());
             q.setCompletedAtMinute(Time.now().toMinuteOfDay());
             q.setExperience(experienceRewardGenerator.generate(q));
             q.setCoins(coinsRewardGenerator.generate(q));
@@ -619,7 +626,7 @@ public class App extends MultiDexApplication {
         Quest quest = e.quest;
         quest.setDifficulty(null);
         quest.setActualStartDate(null);
-        quest.setCompletedAtDateFromLocal(null);
+        quest.setCompletedAtDate(null);
         quest.setCompletedAtMinute(null);
         if (quest.isScheduledForThePast()) {
             quest.setEndDate(null);

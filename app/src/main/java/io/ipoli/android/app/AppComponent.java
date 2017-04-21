@@ -7,8 +7,11 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
+import io.ipoli.android.app.activities.SignInActivity;
+import io.ipoli.android.app.activities.SyncCalendarActivity;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.modules.AnalyticsModule;
+import io.ipoli.android.app.modules.AndroidCalendarModule;
 import io.ipoli.android.app.modules.ApiModule;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.modules.BusModule;
@@ -21,12 +24,14 @@ import io.ipoli.android.app.modules.SchedulerModule;
 import io.ipoli.android.app.modules.TimeParserModule;
 import io.ipoli.android.app.modules.UrlProviderModule;
 import io.ipoli.android.app.rate.RateDialog;
+import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
 import io.ipoli.android.app.receivers.BootCompleteReceiver;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.settings.SettingsFragment;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.tutorial.fragments.PickTutorialQuestsFragment;
 import io.ipoli.android.app.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
+import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
 import io.ipoli.android.challenge.activities.AddChallengeActivity;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
@@ -42,7 +47,6 @@ import io.ipoli.android.challenge.receivers.DailyChallengeReminderReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.player.activities.PickAvatarPictureActivity;
-import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.AddRepeatingQuestActivity;
@@ -95,7 +99,8 @@ import io.ipoli.android.shop.fragments.CoinsStoreFragment;
                 SchedulerModule.class,
                 TimeParserModule.class,
                 ApiModule.class,
-                UrlProviderModule.class
+                UrlProviderModule.class,
+                AndroidCalendarModule.class
         }
 )
 public interface AppComponent {
@@ -224,6 +229,12 @@ public interface AppComponent {
 
     void inject(AddChallengeQuestsFragment addChallengeQuestsFragment);
 
+    void inject(AndroidCalendarEventChangedReceiver androidCalendarEventChangedReceiver);
+
+    void inject(AndroidCalendarsPickerFragment androidCalendarsPickerFragment);
+
     void inject(BootCompleteReceiver bootCompleteReceiver);
+
+    void inject(SyncCalendarActivity syncCalendarActivity);
 }
 

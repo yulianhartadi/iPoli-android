@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.persistence;
+package io.ipoli.android.app.persistence;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

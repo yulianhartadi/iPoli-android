@@ -38,10 +38,16 @@ public class EndDateMatcher extends BaseMatcher<LocalDate> {
 
     private static final Pattern dueThisMonthPattern = Pattern.compile(DUE_THIS_MONTH_PATTERN, Pattern.CASE_INSENSITIVE);
     private final DateTimeParser parser;
+    private final Date currentDate;
 
     public EndDateMatcher(DateTimeParser parser) {
+        this(parser, new Date());
+    }
+
+    public EndDateMatcher(DateTimeParser parser, Date currentDate) {
         super(new DueDateSuggestionsProvider());
         this.parser = parser;
+        this.currentDate = currentDate;
     }
 
     @Override
@@ -83,7 +89,7 @@ public class EndDateMatcher extends BaseMatcher<LocalDate> {
         for (Pattern p : dueDatePatterns) {
             Matcher matcher = p.matcher(text);
             if (matcher.find()) {
-                List<Date> dueResult = parser.parse(matcher.group());
+                List<Date> dueResult = parser.parse(matcher.group(), currentDate);
                 if (dueResult.size() != 1) {
                     return null;
                 }
