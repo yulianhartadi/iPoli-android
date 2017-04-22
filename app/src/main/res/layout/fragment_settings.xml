@@ -145,7 +145,6 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true" />
-
             </RelativeLayout>
 
             <LinearLayout
@@ -198,7 +197,7 @@
                 android:layout_height="wrap_content"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp"
-                android:text="Scheduling"
+                android:text="@string/settings_scheduling_title"
                 android:textColor="@color/colorAccent"
                 android:textSize="14sp" />
 
@@ -218,7 +217,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="bottom"
-                    android:text="Most productive time"
+                    android:text="@string/settings_most_productive_time"
                     android:textColor="@color/md_dark_text_87"
                     android:textSize="16sp" />
 
@@ -249,7 +248,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="bottom"
-                    android:text="Work days"
+                    android:text="@string/settings_work_days"
                     android:textColor="@color/md_dark_text_87"
                     android:textSize="16sp" />
 
@@ -280,7 +279,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="bottom"
-                    android:text="Work hours"
+                    android:text="@string/settings_work_hours"
                     android:textColor="@color/md_dark_text_87"
                     android:textSize="16sp" />
 
@@ -311,7 +310,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="bottom"
-                    android:text="Sleep hours"
+                    android:text="@string/settings_sleep_hours"
                     android:textColor="@color/md_dark_text_87"
                     android:textSize="16sp" />
 
@@ -346,7 +345,7 @@
                 android:layout_height="wrap_content"
                 android:paddingEnd="16dp"
                 android:paddingStart="16dp"
-                android:text="Daily challenge"
+                android:text="@string/settings_daily_challenge"
                 android:textColor="@color/colorAccent"
                 android:textSize="14sp" />
 
@@ -364,7 +363,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
-                    android:text="Show a reminder"
+                    android:text="@string/settings_show_a_reminder"
                     android:textColor="@color/md_dark_text_87"
                     android:textSize="16sp" />
 
@@ -394,7 +393,7 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:gravity="bottom"
-                    android:text="Remind me at"
+                    android:text="@string/settings_remind_me_at"
                     android:textColor="@color/md_dark_text_87"
                     android:textSize="16sp" />
 
@@ -421,6 +420,7 @@
                 android:weightSum="2">
 
                 <TextView
+                    android:id="@+id/daily_challenge_days_hint"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
@@ -436,6 +436,88 @@
                     android:layout_weight="1"
                     android:gravity="top"
                     android:text="Mon, Tue, Wed, Thu, Fri"
+                    android:textColor="@color/md_dark_text_54"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@color/md_dark_text_12" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/TextAppearance.AppCompat.Body2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:text="@string/settings_sync_calendars"
+                android:textColor="@color/colorAccent"
+                android:textSize="14sp" />
+
+            <RelativeLayout
+                android:id="@+id/sync_calendars_container"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:text="@string/settings_sync_google_calendars"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <Switch
+                    android:id="@+id/enable_sync_calendars"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/select_sync_calendars_container"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:orientation="vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:weightSum="2">
+
+                <TextView
+                    android:id="@+id/select_sync_calendars_hint"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="bottom"
+                    android:text="@string/settings_select_sync_calendars"
+                    android:textColor="@color/md_dark_text_87"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/selected_sync_calendars"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:gravity="top"
+                    android:text="@string/no_calendars_selected_to_sync"
                     android:textColor="@color/md_dark_text_54"
                     android:textSize="14sp" />
             </LinearLayout>

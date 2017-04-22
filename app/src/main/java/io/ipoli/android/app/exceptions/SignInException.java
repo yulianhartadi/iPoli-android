@@ -1,4 +1,4 @@
-package io.ipoli.android.player;
+package io.ipoli.android.app.exceptions;
 
 import io.ipoli.android.app.App;
 

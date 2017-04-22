@@ -5,23 +5,22 @@ package io.ipoli.android.quest.data;
  * on 5/11/16.
  */
 public class SourceMapping {
-
-    private String androidCalendar;
+    private AndroidCalendarMapping androidCalendarMapping;
 
     private SourceMapping() {
     }
 
-    public static SourceMapping fromGoogleCalendar(long eventId) {
+    public static SourceMapping fromGoogleCalendar(long calendarId, long eventId) {
         SourceMapping sourceMapping = new SourceMapping();
-        sourceMapping.androidCalendar = String.valueOf(eventId);
+        sourceMapping.androidCalendarMapping = new AndroidCalendarMapping(calendarId, eventId);
         return sourceMapping;
     }
 
-    public String getAndroidCalendar() {
-        return androidCalendar;
+    public AndroidCalendarMapping getAndroidCalendarMapping() {
+        return androidCalendarMapping;
     }
 
-    public void setAndroidCalendar(String googleCalendar) {
-        this.androidCalendar = String.valueOf(googleCalendar);
+    public void setAndroidCalendarMapping(AndroidCalendarMapping androidCalendarMapping) {
+        this.androidCalendarMapping = androidCalendarMapping;
     }
 }

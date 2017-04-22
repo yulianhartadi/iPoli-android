@@ -4,7 +4,7 @@ import com.facebook.AccessToken;
 import com.squareup.otto.Bus;
 
 import io.ipoli.android.app.events.AppErrorEvent;
-import io.ipoli.android.player.SignInException;
+import io.ipoli.android.app.exceptions.SignInException;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

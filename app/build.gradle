@@ -17,8 +17,8 @@ android {
         multiDexEnabled true
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 155
-        versionName "1.10.17"
+        versionCode 157
+        versionName "1.11.1"
     }
 
     compileOptions {
@@ -90,6 +90,8 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.0.pr2'
     compile 'com.squareup.okhttp3:okhttp:3.6.0'
     compile 'com.github.medyo:fancybuttons:1.8.3'
+    compile 'me.everything:providers-android:1.0.1'
+    compile 'pub.devrel:easypermissions:0.3.0'
     compile ('org.mnode.ical4j:ical4j:2.0.0') {
         ['org.codehaus.groovy', 'commons-codec', 'org.apache.commons', 'biz.aQute.bnd'].each {
             exclude group: it

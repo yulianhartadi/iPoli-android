@@ -3,7 +3,6 @@ package io.ipoli.android.quest.adapters;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.Space;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -107,6 +106,12 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
             progressViewEmptyBackground.setStroke((int) ViewUtils.dpToPx(1, context.getResources()), ContextCompat.getColor(context, vm.getCategoryColor()));
             questHolder.progressContainer.addView(progressViewEmpty);
         }
+
+        if(questHolder.progressContainer.getChildCount() == 0) {
+            questHolder.progressContainer.setVisibility(View.GONE);
+        } else {
+            questHolder.progressContainer.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -139,9 +144,6 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
 
         @BindView(R.id.quest_remaining)
         public TextView repeatFrequency;
-
-        @BindView(R.id.quest_progress_space)
-        public Space progressSpace;
 
         @BindView(R.id.repeating_quest_more_menu)
         public ImageButton moreMenu;

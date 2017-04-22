@@ -8,6 +8,7 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.Month;
 import org.threeten.bp.temporal.TemporalAdjusters;
 
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -226,10 +227,32 @@ public class QuestParserTest {
     }
 
     @Test
-    public void addQuestThisFriday() {
-        Quest q = parse("Workout this Friday");
+    public void addQuestThisFridayWhenItIsThursday() {
+        Date currentDate = DateUtils.toStartOfDay(today.with(DayOfWeek.THURSDAY));
+        QuestParser questParser = new QuestParser(parser, currentDate);
+        Quest q = questParser.parseQuest("Workout this Friday");
         assertThat(q.getName(), is("Workout"));
-        assertDueDate(q, today.with(TemporalAdjusters.nextOrSame(DayOfWeek.FRIDAY)));
+        LocalDate thisFriday = today.with(DayOfWeek.FRIDAY);
+        assertDueDate(q, thisFriday);
+    }
+
+    @Test
+    public void addQuestThisFridayWhenItIsFriday() {
+        QuestParser questParser = new QuestParser(parser, DateUtils.toStartOfDay(today.with(DayOfWeek.FRIDAY)));
+        Quest q = questParser.parseQuest("Workout this Friday");
+        assertThat(q.getName(), is("Workout"));
+        LocalDate thisFriday = today.with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
+        assertDueDate(q, thisFriday);
+    }
+
+    @Test
+    public void addQuestThisFridayWhenItIsSaturday() {
+        Date currentDate = DateUtils.toStartOfDay(today.with(DayOfWeek.SATURDAY));
+        QuestParser questParser = new QuestParser(parser, currentDate);
+        Quest q = questParser.parseQuest("Workout this Friday");
+        assertThat(q.getName(), is("Workout"));
+        LocalDate thisFriday = today.with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
+        assertDueDate(q, thisFriday);
     }
 
     @Test
@@ -269,7 +292,7 @@ public class QuestParserTest {
 
     @Test
     public void testHitEndDueDate() {
-       String DUE_MONTH_PATTERN = "(?:^|\\s)on\\s(\\d){1,2}(\\s)?(st|th)?\\s(of\\s)?(next month|this month|January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec){1}(?:$|\\s)";
+        String DUE_MONTH_PATTERN = "(?:^|\\s)on\\s(\\d){1,2}(\\s)?(st|th)?\\s(of\\s)?(next month|this month|January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec){1}(?:$|\\s)";
         Pattern p = Pattern.compile(DUE_MONTH_PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher("on 12");
         m.matches();

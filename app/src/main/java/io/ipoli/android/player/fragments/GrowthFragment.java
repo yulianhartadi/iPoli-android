@@ -54,7 +54,7 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.player.GrowthException;
+import io.ipoli.android.player.exceptions.GrowthException;
 import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;

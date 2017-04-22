@@ -147,7 +147,7 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
     @Subscribe
     public void onNewQuestNameAndCategoryPicked(NameAndCategoryPickedEvent e) {
         repeatingQuest = new RepeatingQuest(e.name);
-        repeatingQuest.setName(e.name);
+        repeatingQuest. setName(e.name);
         repeatingQuest.addReminder(new Reminder(0));
         repeatingQuest.setCategoryType(e.category);
         KeyboardUtils.hideKeyboard(this);
