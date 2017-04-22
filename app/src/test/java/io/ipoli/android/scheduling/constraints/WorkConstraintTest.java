@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.ipoli.android.app.scheduling.DailySchedule;
-import io.ipoli.android.app.scheduling.DiscreteDistribution;
+import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 import io.ipoli.android.app.scheduling.constraints.WorkConstraint;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
@@ -43,25 +43,22 @@ public class WorkConstraintTest {
 
     @Test
     public void shouldHaveZeroProbabilityOfPlacingOutsideWorkTime() {
-        Quest q = new Quest("q1", Category.WORK);
         DailySchedule schedule = new DailySchedule(0, 60, 15);
-        DiscreteDistribution dist = constraint.apply(schedule, q);
+        DiscreteDistribution dist = constraint.apply(schedule);
         assertThat(dist.at(schedule.getSlotForMinute(55)), is(0.0));
     }
 
     @Test
     public void shouldHaveNonZeroProbabilityWithinWorkTime() {
-        Quest q = new Quest("q1", Category.WORK);
         DailySchedule schedule = new DailySchedule(0, 60, 15);
-        DiscreteDistribution dist = constraint.apply(schedule, q);
+        DiscreteDistribution dist = constraint.apply(schedule);
         assertThat(dist.at(schedule.getSlotForMinute(0)), is(greaterThan(0.0)));
     }
 
     @Test
     public void shouldHaveZeroProbabilityAtEndOfWorkTime() {
-        Quest q = new Quest("q1", Category.WORK);
         DailySchedule schedule = new DailySchedule(0, 60, 15);
-        DiscreteDistribution dist = constraint.apply(schedule, q);
+        DiscreteDistribution dist = constraint.apply(schedule);
         assertThat(dist.at(schedule.getSlotForMinute(30)), is(0.0));
     }
 }

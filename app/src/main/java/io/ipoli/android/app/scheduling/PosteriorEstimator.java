@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Random;
 
 import io.ipoli.android.app.TimeOfDay;
+import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 
