@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import io.ipoli.android.app.scheduling.DiscreteDistribution;
+import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 import io.ipoli.android.app.scheduling.ProbabilisticTaskScheduler;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.TimeBlock;

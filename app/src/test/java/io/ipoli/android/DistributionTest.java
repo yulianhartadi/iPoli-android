@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import io.ipoli.android.app.scheduling.DiscreteDistribution;
+import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;

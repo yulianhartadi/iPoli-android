@@ -1,16 +1,21 @@
-package io.ipoli.android.app.scheduling;
+package io.ipoli.android.app.scheduling.distributions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+
+import io.ipoli.android.app.scheduling.WeightedRandomSampler;
 
 public class DiscreteDistribution {
 
     private final WeightedRandomSampler<Integer> randomSampler;
     private final List<Double> frequencies;
+    private final double[] values;
     private final Random random;
 
     public DiscreteDistribution(double[] values, Random random) {
+        this.values = values;
         this.random = random;
 
         frequencies = new ArrayList<>();
@@ -57,5 +62,15 @@ public class DiscreteDistribution {
             values[i] = at(i) + distribution.at(i);
         }
         return new DiscreteDistribution(values, random);
+    }
+
+    public int size() {
+        return frequencies.size();
+    }
+
+    public DiscreteDistribution set(int index, double value) {
+        double[] values = Arrays.copyOf(this.values, this.values.length);
+        values[index] = value;
+        return new DiscreteDistribution(values);
     }
 }

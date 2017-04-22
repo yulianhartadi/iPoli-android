@@ -35,7 +35,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.StartQuickAddEvent;
-import io.ipoli.android.app.scheduling.DiscreteDistribution;
+import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 import io.ipoli.android.app.scheduling.PosteriorEstimator;
 import io.ipoli.android.app.scheduling.ProbabilisticTaskScheduler;
 import io.ipoli.android.app.scheduling.Task;

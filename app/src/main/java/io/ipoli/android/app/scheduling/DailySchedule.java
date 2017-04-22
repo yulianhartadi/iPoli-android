@@ -52,4 +52,13 @@ public class DailySchedule {
     public int getSlotForMinute(int minute) {
         return getIndex(minute);
     }
+
+    /**
+     * @param startMinute inclusive
+     * @param endMinute exclusive
+     * @return number of time slots between the minutes
+     */
+    public int getSlotCountBetween(int startMinute, int endMinute) {
+        return getIndex(endMinute - 1) - getIndex(startMinute) + 1;
+    }
 }
