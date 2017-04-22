@@ -1,4 +1,4 @@
-package io.ipoli.android;
+package io.ipoli.android.scheduling;
 
 import org.junit.Test;
 
@@ -16,7 +16,6 @@ import static org.hamcrest.Matchers.is;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 12/16/16.
  */
-
 public class SchedulerTest {
 
     @Test
