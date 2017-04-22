@@ -45,6 +45,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.activities.MigrationActivity;
+import io.ipoli.android.app.activities.SignInActivity;
 import io.ipoli.android.app.events.AvatarCoinsTappedEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
@@ -71,7 +72,6 @@ import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.PickAvatarPictureActivity;
-import io.ipoli.android.player.activities.SignInActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
@@ -424,7 +424,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         quest.setEndDate(scheduledDate);
         quest.setScheduledDate(scheduledDate);
         quest.setCompletedAtMinute(null);
-        quest.setCompletedAtDateFromLocal(null);
+        quest.setCompletedAtDate(null);
         quest.setCompletedCount(0);
         if (isForSameDay) {
             quest.setStartMinute(null);

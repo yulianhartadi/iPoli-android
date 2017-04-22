@@ -26,7 +26,6 @@ import java.util.Map;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.quest.persistence.OnDataChangedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -83,7 +82,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
     }
 
     protected void runQuery(Query query, OnDataChangedListener<List<T>> listener, Predicate<T> predicate, QuerySort<T> querySort) {
-        listener.onDataChanged(getQueryResult(query, predicate));
+        listener.onDataChanged(getQueryResult(query, predicate, querySort));
     }
 
     protected List<T> getQueryResult(Query query, Predicate<T> predicate) {
@@ -92,7 +91,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
 
     protected List<T> getQueryResult(Query query, Predicate<T> predicate, QuerySort<T> querySort) {
         try {
-            return getResult(query.run(), predicate);
+            return getResult(query.run(), predicate, querySort);
         } catch (CouchbaseLiteException e) {
             postError(e);
             return new ArrayList<>();

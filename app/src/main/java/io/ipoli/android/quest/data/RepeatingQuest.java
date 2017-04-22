@@ -74,9 +74,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     private Map<String, Boolean> scheduledPeriodEndDates;
 
     @JsonIgnore
-    private String previousChallengeId;
-
-    @JsonIgnore
     private Map<String, QuestData> questsData;
 
     public RepeatingQuest() {
@@ -355,7 +352,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     }
 
     public void setChallengeId(String challengeId) {
-        setPreviousChallengeId(this.challengeId);
         this.challengeId = challengeId;
     }
 
@@ -467,18 +463,6 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
     public void addQuestData(String id, QuestData questData) {
         getQuestsData().put(id, questData);
     }
-
-    @JsonIgnore
-    public String getPreviousChallengeId() {
-        return previousChallengeId;
-    }
-
-
-    @JsonIgnore
-    public void setPreviousChallengeId(String previousChallengeId) {
-        this.previousChallengeId = previousChallengeId;
-    }
-
 
     @JsonIgnore
     public int getTotalTimeSpent() {

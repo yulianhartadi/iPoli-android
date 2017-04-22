@@ -39,7 +39,7 @@ import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.adapters.OverviewAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
-import io.ipoli.android.quest.persistence.OnDataChangedListener;
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.viewmodels.QuestViewModel;
 
