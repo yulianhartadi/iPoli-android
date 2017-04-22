@@ -232,7 +232,7 @@ public class QuestParserTest {
         QuestParser questParser = new QuestParser(parser, currentDate);
         Quest q = questParser.parseQuest("Workout this Friday");
         assertThat(q.getName(), is("Workout"));
-        LocalDate thisFriday = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.FRIDAY));
+        LocalDate thisFriday = today.with(DayOfWeek.FRIDAY);
         assertDueDate(q, thisFriday);
     }
 
