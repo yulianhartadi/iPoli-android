@@ -1,6 +1,7 @@
 package io.ipoli.android.app.scheduling;
 
-import java.util.BitSet;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -10,25 +11,30 @@ import java.util.List;
 public class DailySchedule {
 
     private final int timeSlotDuration;
-    private final BitSet isOccupied;
+    private final boolean[] isFree;
+
+    public DailySchedule(int startMinute, int endMinute, int timeSlotDuration) {
+        this(startMinute, endMinute, timeSlotDuration, new ArrayList<>());
+    }
 
     public DailySchedule(int startMinute, int endMinute, int timeSlotDuration, List<Task> scheduledTasks) {
         this.timeSlotDuration = timeSlotDuration;
-        isOccupied = new BitSet((endMinute - startMinute) / timeSlotDuration);
+        int slotCount = (endMinute - startMinute) / timeSlotDuration;
+        isFree = new boolean[slotCount];
+        Arrays.fill(isFree, true);
 
         // Task
         // start minute - inclusive
         // end minute - exclusive
         for(Task t : scheduledTasks) {
             int index = getIndex(t.getStartMinute());
-            isOccupied.set(index, true);
+            isFree[index] = false;
         }
     }
 
     public boolean isFree(int startMinute, int endMinute) {
-        BitSet subset = isOccupied.get(getIndex(startMinute), getIndex(endMinute));
-        for(int i = 0 ; i < subset.length(); i++) {
-            if(subset.get(i)) {
+        for(int i = getIndex(startMinute) ; i < getIndex(endMinute); i++) {
+            if(!isFree[i]) {
                 return false;
             }
         }
@@ -37,5 +43,13 @@ public class DailySchedule {
 
     private int getIndex(int minute) {
         return minute / timeSlotDuration;
+    }
+
+    public int getSlotCount() {
+        return isFree.length;
+    }
+
+    public int getSlotForMinute(int minute) {
+        return getIndex(minute);
     }
 }
