@@ -96,10 +96,18 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     public Quest(String name) {
-        this(name, null);
+        this(name, (LocalDate) null);
     }
 
     public Quest(String name, LocalDate endDate) {
+        this(name, endDate, Category.PERSONAL);
+    }
+
+    public Quest(String name, Category category) {
+        this(name, null, category);
+    }
+
+    public Quest(String name, LocalDate endDate, Category category) {
         super(TYPE);
         this.name = name;
         setEndDate(endDate);
@@ -108,7 +116,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         setStartMinute(null);
         setCreatedAt(DateUtils.nowUTC().getTime());
         setUpdatedAt(DateUtils.nowUTC().getTime());
-        this.category = Category.PERSONAL.name();
+        this.category = category.name();
         this.source = Constants.API_RESOURCE_SOURCE;
         this.setCompletedCount(0);
         this.setTimesADay(1);

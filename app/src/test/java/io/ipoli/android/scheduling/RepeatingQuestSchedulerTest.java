@@ -1,4 +1,4 @@
-package io.ipoli.android;
+package io.ipoli.android.scheduling;
 
 import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;

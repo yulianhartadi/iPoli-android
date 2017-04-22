@@ -1,4 +1,4 @@
-package io.ipoli.android;
+package io.ipoli.android.scheduling;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
