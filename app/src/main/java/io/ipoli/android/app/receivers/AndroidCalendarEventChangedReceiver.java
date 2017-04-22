@@ -76,6 +76,10 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
         App.getAppComponent(context).inject(this);
         Player player = playerPersistenceService.get();
 
+        if(player == null) {
+            return;
+        }
+
         updateDirtyEvents(context, player);
     }
 
