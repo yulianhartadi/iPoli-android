@@ -16,7 +16,7 @@ import static io.ipoli.android.app.utils.Time.h2Min;
 public class MorningConstraint implements Constraint {
 
     public static final int MORNING_START = h2Min(6);
-    public static final int MORNING_END = h2Min(11);
+    public static final int MORNING_END = h2Min(12);
 
     @Override
     public boolean shouldApply(Task task) {
@@ -33,9 +33,9 @@ public class MorningConstraint implements Constraint {
         }
 
         int slopeWidth = schedule.getSlotCountBetween(0, 30);
-        int peakWidth = schedule.getSlotCountBetween(h2Min(2), h2Min(4));
-        int peakIndex = schedule.getSlotForMinute(h2Min(3));
-        return FlatPeakDiscreteDistribution.create(peakIndex, peakWidth, 100, slopeWidth, schedule.getSlotCount());
+        int peakWidth = schedule.getSlotCountBetween(Math.max(MORNING_START, startMinute), Math.min(MORNING_END, endMinute));
+        int peakStart = schedule.getSlotForMinute(Math.max(MORNING_START, startMinute));
+        return FlatPeakDiscreteDistribution.create(peakStart, peakWidth, 100, slopeWidth, schedule.getSlotCount());
     }
 
 

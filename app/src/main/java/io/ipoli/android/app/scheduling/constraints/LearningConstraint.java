@@ -29,14 +29,14 @@ public class LearningConstraint {
 
     private DiscreteDistribution createStartOfDayPeak(DailySchedule schedule, int slopeWidth) {
         int peakWidth = schedule.getSlotCountBetween(h2Min(2), h2Min(4));
-        int peakIndex = schedule.getSlotForMinute(h2Min(3));
-        return FlatPeakDiscreteDistribution.create(peakIndex, peakWidth, 100, slopeWidth, schedule.getSlotCount());
+        int peakStart = schedule.getSlotForMinute(h2Min(2));
+        return FlatPeakDiscreteDistribution.create(peakStart, peakWidth, 100, slopeWidth, schedule.getSlotCount());
     }
 
     private DiscreteDistribution createEndOfDayPeak(DailySchedule schedule, int slopeWidth) {
         int peakWidth = schedule.getSlotCountBetween(h2Min(10), h2Min(12));
-        int peakIndex = schedule.getSlotForMinute(h2Min(11));
-        return FlatPeakDiscreteDistribution.create(peakIndex, peakWidth, 100, slopeWidth, schedule.getSlotCount());
+        int peakStart = schedule.getSlotForMinute(h2Min(10));
+        return FlatPeakDiscreteDistribution.create(peakStart, peakWidth, 100, slopeWidth, schedule.getSlotCount());
     }
 
     private int h2Min(int hours) {
