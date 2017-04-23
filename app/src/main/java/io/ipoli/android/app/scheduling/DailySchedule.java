@@ -10,6 +10,8 @@ import java.util.List;
  */
 public class DailySchedule {
 
+    private final int startMinute;
+    private final int endMinute;
     private final int timeSlotDuration;
     private final boolean[] isFree;
 
@@ -18,18 +20,25 @@ public class DailySchedule {
     }
 
     public DailySchedule(int startMinute, int endMinute, int timeSlotDuration, List<Task> scheduledTasks) {
+        this.startMinute = startMinute;
+        this.endMinute = endMinute;
         this.timeSlotDuration = timeSlotDuration;
+        isFree = createFreeSlots(scheduledTasks);
+    }
+
+    private boolean[] createFreeSlots(List<Task> scheduledTasks) {
         int slotCount = (endMinute - startMinute) / timeSlotDuration;
-        isFree = new boolean[slotCount];
-        Arrays.fill(isFree, true);
+        boolean[] freeSlots = new boolean[slotCount];
+        Arrays.fill(freeSlots, true);
 
         // Task
         // start minute - inclusive
         // end minute - exclusive
         for(Task t : scheduledTasks) {
             int index = getIndex(t.getStartMinute());
-            isFree[index] = false;
+            freeSlots[index] = false;
         }
+        return freeSlots;
     }
 
     public boolean isFree(int startMinute, int endMinute) {
@@ -39,6 +48,14 @@ public class DailySchedule {
             }
         }
         return true;
+    }
+
+    public int getStartMinute() {
+        return startMinute;
+    }
+
+    public int getEndMinute() {
+        return endMinute;
     }
 
     private int getIndex(int minute) {
