@@ -59,7 +59,7 @@ public class DailySchedule {
     }
 
     private int getIndex(int minute) {
-        return minute / timeSlotDuration;
+        return (minute - startMinute) / timeSlotDuration;
     }
 
     public int getSlotCount() {
@@ -76,6 +76,6 @@ public class DailySchedule {
      * @return number of time slots between the minutes
      */
     public int getSlotCountBetween(int startMinute, int endMinute) {
-        return getIndex(endMinute - 1) - getIndex(startMinute) + 1;
+        return (endMinute - startMinute) / timeSlotDuration;
     }
 }

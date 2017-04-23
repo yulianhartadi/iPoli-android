@@ -1,5 +1,6 @@
 package io.ipoli.android.app.scheduling.distributions;
 
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -13,6 +14,12 @@ public class UniformDiscreteDistribution extends DiscreteDistribution {
     }
 
     public static UniformDiscreteDistribution create(int valueCount) {
-        return null;
+        return create(valueCount, new Random());
+    }
+
+    public static UniformDiscreteDistribution create(int valueCount, Random random) {
+        double[] values = new double[valueCount];
+        Arrays.fill(values, 1);
+        return new UniformDiscreteDistribution(values, random);
     }
 }
