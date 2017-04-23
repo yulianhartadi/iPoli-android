@@ -344,7 +344,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         List<Task> tasks = new ArrayList<>();
         for (QuestCalendarViewModel vm : schedule.getCalendarEvents()) {
-            tasks.add(new Task(vm.getStartMinute(), vm.getDuration()));
+            tasks.add(new Task(vm.getStartMinute(), vm.getDuration(), vm.getCategory()));
         }
 
         ProbabilisticTaskScheduler probabilisticTaskScheduler = new ProbabilisticTaskScheduler(0, 24, tasks, new Random(Constants.RANDOM_SEED));
@@ -367,7 +367,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     private void proposeSlotForQuest(List<QuestCalendarViewModel> scheduledEvents, ProbabilisticTaskScheduler probabilisticTaskScheduler, List<QuestCalendarViewModel> proposedEvents, Quest q) {
         DiscreteDistribution posterior = posteriorEstimator.posteriorFor(q);
 
-        List<TimeBlock> timeBlocks = probabilisticTaskScheduler.chooseSlotsFor(new Task(q.getDuration()), 15, Time.now(), posterior);
+        List<TimeBlock> timeBlocks = probabilisticTaskScheduler.chooseSlotsFor(new Task(q.getDuration(), q.getCategoryType()), 15, Time.now(), posterior);
 
         TimeBlock timeBlock = chooseNonOverlappingTimeBlock(proposedEvents, timeBlocks);
 
