@@ -7,6 +7,7 @@ import java.util.List;
 
 import io.ipoli.android.app.scheduling.TimeBlock;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 
 /**
@@ -22,6 +23,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
     private boolean shouldDisplayAsProposedSlot;
     private Integer startMinute;
     private List<TimeBlock> proposedSlots;
+    private Category category;
 
     public QuestCalendarViewModel(Quest quest) {
         this.quest = quest;
@@ -31,6 +33,7 @@ public class QuestCalendarViewModel implements CalendarEvent {
         this.startMinute = quest.getActualStartMinute();
         this.shouldDisplayAsProposedSlot = false;
         this.proposedSlots = new ArrayList<>();
+        this.category = quest.getCategoryType();
     }
 
     public static QuestCalendarViewModel createWithProposedTime(Quest quest, int startMinute, List<TimeBlock> proposedSlots) {
@@ -93,6 +96,10 @@ public class QuestCalendarViewModel implements CalendarEvent {
     @Override
     public boolean isForChallenge() {
         return quest.isFromChallenge();
+    }
+
+    public Category getCategory() {
+        return category;
     }
 
     public boolean shouldDisplayAsProposedSlot() {

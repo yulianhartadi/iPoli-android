@@ -12,6 +12,7 @@ import io.ipoli.android.app.scheduling.ProbabilisticTaskScheduler;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.TimeBlock;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.quest.data.Category;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
@@ -36,7 +37,7 @@ public class ProbabilisticSchedulerTest {
     @Test
     public void shouldGiveAllAvailableSlots() {
         List<Task> tasks = new ArrayList<>();
-        tasks.add(new Task(10, 20));
+        tasks.add(new Task(10, 20, Category.PERSONAL));
 
         ProbabilisticTaskScheduler scheduler = new ProbabilisticTaskScheduler(0, 1, tasks, random);
 
@@ -46,14 +47,14 @@ public class ProbabilisticSchedulerTest {
         }
         DiscreteDistribution dist = new DiscreteDistribution(values, random);
 
-        List<TimeBlock> slots = scheduler.chooseSlotsFor(new Task(10), 15, startTime, dist);
+        List<TimeBlock> slots = scheduler.chooseSlotsFor(new Task(10, Category.PERSONAL), 15, startTime, dist);
         assertThat(slots.size(), is(3));
     }
 
     @Test
     public void shouldHaveHighProbSlotAsFirstChoice() {
         List<Task> tasks = new ArrayList<>();
-        tasks.add(new Task(10, 20));
+        tasks.add(new Task(10, 20, Category.PERSONAL));
         ProbabilisticTaskScheduler scheduler = new ProbabilisticTaskScheduler(0, 1, tasks, random);
 
         double[] values = new double[60];
@@ -62,12 +63,7 @@ public class ProbabilisticSchedulerTest {
         }
         DiscreteDistribution dist = new DiscreteDistribution(values, random);
 
-        List<TimeBlock> slots = scheduler.chooseSlotsFor(new Task(10), 15, startTime, dist);
+        List<TimeBlock> slots = scheduler.chooseSlotsFor(new Task(10, Category.PERSONAL), 15, startTime, dist);
         assertThat(slots.get(0).getProbability(), greaterThan(0.183));
-    }
-
-    @Test
-    public void shouldScheduleTaskWithMorningPreference() {
-        ProbabilisticTaskScheduler scheduler = new ProbabilisticTaskScheduler(0, 24, new ArrayList<>(), random);
     }
 }
