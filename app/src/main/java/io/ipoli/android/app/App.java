@@ -541,17 +541,6 @@ public class App extends MultiDexApplication {
         repeatingQuestPersistenceService.findAllNonAllDayActiveRepeatingQuests(this::scheduleRepeatingQuests);
     }
 
-    private void clearIncompleteQuests() {
-        questPersistenceService.findAllIncompleteFor(LocalDate.now().minusDays(1), quests -> {
-            for (Quest q : quests) {
-                if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
-                    q.setPriority(null);
-                }
-            }
-            questPersistenceService.save(quests);
-        });
-    }
-
     private void registerServices() {
         eventBus.register(analyticsService);
         eventBus.register(this);
@@ -691,6 +680,7 @@ public class App extends MultiDexApplication {
         if (quest.isScheduledForThePast()) {
             completeAtScheduledDate(quest);
         }
+
         if (quest.isCompleted()) {
             quest.setExperience(experienceRewardGenerator.generate(quest));
             quest.setCoins(coinsRewardGenerator.generate(quest));
@@ -940,6 +930,23 @@ public class App extends MultiDexApplication {
             scheduleDateChanged();
             listenForChanges();
             eventBus.post(new CalendarDayChangedEvent(LocalDate.now(), CalendarDayChangedEvent.Source.DATE_CHANGE));
+        });
+    }
+
+    private void clearIncompleteQuests() {
+        questPersistenceService.findAllIncompleteBefore(LocalDate.now(), quests -> {
+            for (Quest q : quests) {
+                if (q.isStarted()) {
+                    q.setScheduledDate(LocalDate.now());
+                    q.setStartMinute(0);
+                } else {
+                    q.setScheduledDate(null);
+                }
+                if (q.getPriority() == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) {
+                    q.setPriority(null);
+                }
+            }
+            questPersistenceService.save(quests);
         });
     }
 
