@@ -20,7 +20,7 @@ public class LearningConstraint {
     }
 
     public DiscreteDistribution apply(DailySchedule schedule) {
-        int slopeWidth = schedule.getSlotCountBetween(h2Min(1) + 30, h2Min(2));
+        int slopeWidth = schedule.getSlotCountBetween(0, 30);
         DiscreteDistribution d1 = createStartOfDayPeak(schedule, slopeWidth);
         DiscreteDistribution d2 = createEndOfDayPeak(schedule, slopeWidth);
         DiscreteDistribution d = d1.joint(d2);
@@ -28,14 +28,16 @@ public class LearningConstraint {
     }
 
     private DiscreteDistribution createStartOfDayPeak(DailySchedule schedule, int slopeWidth) {
-        int peakWidth = schedule.getSlotCountBetween(h2Min(2), h2Min(4));
-        int peakStart = schedule.getSlotForMinute(h2Min(2));
+        int startMinute = schedule.getStartMinute() + h2Min(2);
+        int peakWidth = schedule.getSlotCountBetween(startMinute, startMinute + h2Min(2));
+        int peakStart = schedule.getSlotForMinute(startMinute);
         return FlatPeakDiscreteDistribution.create(peakStart, peakWidth, 100, slopeWidth, schedule.getSlotCount());
     }
 
     private DiscreteDistribution createEndOfDayPeak(DailySchedule schedule, int slopeWidth) {
-        int peakWidth = schedule.getSlotCountBetween(h2Min(10), h2Min(12));
-        int peakStart = schedule.getSlotForMinute(h2Min(10));
+        int startMinute = schedule.getStartMinute() + h2Min(10);
+        int peakWidth = schedule.getSlotCountBetween(startMinute, startMinute + h2Min(2));
+        int peakStart = schedule.getSlotForMinute(startMinute);
         return FlatPeakDiscreteDistribution.create(peakStart, peakWidth, 100, slopeWidth, schedule.getSlotCount());
     }
 
