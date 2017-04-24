@@ -8,14 +8,15 @@ import com.google.firebase.crash.FirebaseCrash;
 import com.squareup.otto.Subscribe;
 
 import io.ipoli.android.app.events.AppErrorEvent;
+import io.ipoli.android.app.events.AvatarCoinsTappedEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.FriendsInvitedEvent;
-import io.ipoli.android.app.events.InviteFriendsEvent;
 import io.ipoli.android.app.events.InviteFriendsCanceledEvent;
+import io.ipoli.android.app.events.InviteFriendsEvent;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.PlayerMigratedEvent;
@@ -37,6 +38,7 @@ import io.ipoli.android.app.services.analytics.EventParams;
 import io.ipoli.android.app.settings.events.DailyChallengeDaysOfWeekChangedEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeReminderChangeEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
+import io.ipoli.android.app.settings.events.EnableSynCalendarsEvent;
 import io.ipoli.android.app.settings.events.MostProductiveTimesChangedEvent;
 import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
 import io.ipoli.android.app.settings.events.SleepHoursChangedEvent;
@@ -55,7 +57,6 @@ import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.app.events.AvatarCoinsTappedEvent;
 import io.ipoli.android.challenge.events.AcceptChallengeEvent;
 import io.ipoli.android.challenge.events.DailyChallengeCompleteEvent;
 import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
@@ -82,12 +83,12 @@ import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.AgendaWidgetDisabledEvent;
 import io.ipoli.android.quest.events.AgendaWidgetEnabledEvent;
 import io.ipoli.android.quest.events.CancelDeleteQuestEvent;
+import io.ipoli.android.quest.events.CategoryChangedEvent;
 import io.ipoli.android.quest.events.ChallengePickedEvent;
 import io.ipoli.android.quest.events.DeleteRepeatingQuestRequestEvent;
 import io.ipoli.android.quest.events.DoneQuestTapEvent;
 import io.ipoli.android.quest.events.DuplicateQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
-import io.ipoli.android.quest.events.CategoryChangedEvent;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.events.NewQuestSavedEvent;
 import io.ipoli.android.quest.events.NewRepeatingQuestEvent;
@@ -449,6 +450,11 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onSyncCalendarRequest(SyncCalendarRequestEvent e) {
         log("sync_calendar_request", e.source);
+    }
+
+    @Subscribe
+    public void onEnableSyncCalendars(EnableSynCalendarsEvent e) {
+        log("enable_sync_calendars", EventParams.of("enabled", e.isEnabled));
     }
 
     @Subscribe
