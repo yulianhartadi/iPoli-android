@@ -31,13 +31,22 @@ public class PriorityEstimator {
             score += 5;
         }
         Category category = quest.getCategoryType();
-        if (category == Category.WORK) {
-            score += 5;
+        switch (category) {
+            case WORK:
+                score += 5;
+                break;
+            case LEARNING:
+            case WELLNESS:
+                score += 3;
+                break;
+            case PERSONAL:
+                score += 1;
+                break;
+            case FUN:
+                score -= 3;
+                break;
         }
-        if (category == Category.LEARNING || category == Category.WELLNESS) {
-            score += 3;
-        }
-        if(quest.isFromChallenge()) {
+        if (quest.isFromChallenge()) {
             score += 3;
         }
         return score;
