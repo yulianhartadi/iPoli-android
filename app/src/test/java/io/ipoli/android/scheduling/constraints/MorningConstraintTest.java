@@ -3,15 +3,13 @@ package io.ipoli.android.scheduling.constraints;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.List;
-
 import io.ipoli.android.app.scheduling.DailySchedule;
 import io.ipoli.android.app.scheduling.constraints.Constraint;
 import io.ipoli.android.app.scheduling.constraints.MorningConstraint;
 import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 import io.ipoli.android.app.utils.Time;
 
+import static io.ipoli.android.scheduling.distributions.DistributionTestUtil.getIndexCountWithMaxProbability;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -67,17 +65,5 @@ public class MorningConstraintTest {
         DiscreteDistribution dist = constraint.apply(schedule);
         assertThat(getIndexCountWithMaxProbability(dist), is(4 * schedule.getSlotCountBetween(0, 60)));
 
-    }
-
-    private int getIndexCountWithMaxProbability(DiscreteDistribution dist) {
-        List<Double> freq = dist.toList();
-        Double max = Collections.max(freq);
-        int idxCount = 0;
-        for (int i = 0; i < freq.size(); i++) {
-            if (Double.compare(freq.get(i), max) == 0) {
-                idxCount++;
-            }
-        }
-        return idxCount;
     }
 }
