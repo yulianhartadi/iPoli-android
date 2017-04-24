@@ -237,25 +237,6 @@ public class QuestParserTest {
     }
 
     @Test
-    public void addQuestThisFridayWhenItIsFriday() {
-        QuestParser questParser = new QuestParser(parser, DateUtils.toStartOfDay(today.with(DayOfWeek.FRIDAY)));
-        Quest q = questParser.parseQuest("Workout this Friday");
-        assertThat(q.getName(), is("Workout"));
-        LocalDate thisFriday = today.with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
-        assertDueDate(q, thisFriday);
-    }
-
-    @Test
-    public void addQuestThisFridayWhenItIsSaturday() {
-        Date currentDate = DateUtils.toStartOfDay(today.with(DayOfWeek.SATURDAY));
-        QuestParser questParser = new QuestParser(parser, currentDate);
-        Quest q = questParser.parseQuest("Workout this Friday");
-        assertThat(q.getName(), is("Workout"));
-        LocalDate thisFriday = today.with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
-        assertDueDate(q, thisFriday);
-    }
-
-    @Test
     public void addQuest3DaysFromNow() {
         Quest q = parse("Workout 3 days from now");
         assertThat(q.getName(), is("Workout"));
