@@ -74,6 +74,7 @@ import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
@@ -456,6 +457,10 @@ public class App extends MultiDexApplication {
     }
 
     private void initReplication() {
+        if(!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+            return;
+        }
+
         Player player = getPlayer();
         if (!player.isAuthenticated()) {
             return;
