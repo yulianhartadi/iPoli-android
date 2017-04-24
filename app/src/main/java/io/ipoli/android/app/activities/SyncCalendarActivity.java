@@ -32,6 +32,7 @@ import io.ipoli.android.app.adapters.AndroidCalendarAdapter;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FinishSyncCalendarActivityEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.persistence.CalendarPersistenceService;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.dialogs.LoadingDialog;
@@ -127,6 +128,10 @@ public class SyncCalendarActivity extends BaseActivity implements EasyPermission
 
     private void onNextTap() {
         createLoadingDialog();
+        Map<Long, Category> calendars = adapter.getSelectedCalendars();
+        if(!calendars.isEmpty()) {
+            eventBus.post(new SyncCalendarRequestEvent(calendars, EventSource.SYNC_CALENDARS));
+        }
         getSupportLoaderManager().initLoader(0, null, this);
     }
 
@@ -222,13 +227,9 @@ public class SyncCalendarActivity extends BaseActivity implements EasyPermission
 
         @Override
         public Void loadInBackground() {
-            List<AndroidCalendarViewModel> selectedAndroidCalendarViewModels = adapter.getSelectedCalendars();
-            if(selectedAndroidCalendarViewModels.isEmpty()) {
+            Map<Long, Category> selectedCalendars = adapter.getSelectedCalendars();
+            if(selectedCalendars.isEmpty()) {
                 return null;
-            }
-            Map<Long, Category> selectedCalendars = new HashMap<>();
-            for (AndroidCalendarViewModel vm : selectedAndroidCalendarViewModels) {
-                selectedCalendars.put(vm.getId(), vm.getCategory());
             }
 
             Player player = playerPersistenceService.get();

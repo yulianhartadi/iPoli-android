@@ -133,14 +133,8 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
         builder.setIcon(R.drawable.logo)
                 .setView(view)
                 .setTitle(title)
-                .setPositiveButton(R.string.help_dialog_ok, (dialog, which) -> {
-                    List<AndroidCalendarViewModel> selectedAndroidCalendarViewModels = adapter.getSelectedCalendars();
-                    Map<Long, Category> selectedCalendars = new HashMap<>();
-                    for (AndroidCalendarViewModel vm : selectedAndroidCalendarViewModels) {
-                        selectedCalendars.put(vm.getId(), vm.getCategory());
-                    }
-                    calendarsPickedListener.onCalendarsPicked(selectedCalendars);
-                })
+                .setPositiveButton(R.string.help_dialog_ok, (dialog, which) ->
+                        calendarsPickedListener.onCalendarsPicked(adapter.getSelectedCalendars()))
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
 
                 });
