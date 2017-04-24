@@ -50,11 +50,13 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.TimeOfDay;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.TimeFormatChangedEvent;
 import io.ipoli.android.app.persistence.CalendarPersistenceService;
 import io.ipoli.android.app.settings.events.DailyChallengeDaysOfWeekChangedEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeReminderChangeEvent;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
+import io.ipoli.android.app.settings.events.EnableSynCalendarsEvent;
 import io.ipoli.android.app.settings.events.MostProductiveTimesChangedEvent;
 import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
 import io.ipoli.android.app.settings.events.SleepHoursChangedEvent;
@@ -247,6 +249,7 @@ public class SettingsFragment extends BaseFragment implements
 
     private CompoundButton.OnCheckedChangeListener onCheckSyncCalendarChangeListener = (buttonView, isChecked) -> {
         if (isChecked) {
+            eventBus.post(new EnableSynCalendarsEvent(true));
             if (EasyPermissions.hasPermissions(getContext(), Manifest.permission.READ_CALENDAR)) {
                 onSyncCalendarsSelected();
             } else {
@@ -262,6 +265,7 @@ public class SettingsFragment extends BaseFragment implements
                 .setTitle(getString(R.string.dialog_disable_google_calendar_sync_title))
                 .setMessage(getString(R.string.dialog_disable_google_calendar_sync_message))
                 .setPositiveButton(getString(R.string.dialog_yes), (dialog, which) -> {
+                    eventBus.post(new EnableSynCalendarsEvent(false));
                     deleteSyncCalendars();
                 })
                 .setNegativeButton(getString(R.string.dialog_no), (dialog, which) -> {
@@ -468,6 +472,9 @@ public class SettingsFragment extends BaseFragment implements
         populateSelectedSyncCalendarsText(selectedCalendars.size());
         loadingDialog = LoadingDialog.show(getContext(), getString(R.string.sync_calendars_loading_dialog_title), getString(R.string.sync_calendars_loading_dialog_message));
         this.selectedCalendars = selectedCalendars;
+        if(!selectedCalendars.isEmpty()) {
+            eventBus.post(new SyncCalendarRequestEvent(selectedCalendars, EventSource.SETTINGS));
+        }
         getLoaderManager().initLoader(1, null, this);
     }
 
