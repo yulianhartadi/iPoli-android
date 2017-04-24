@@ -243,11 +243,10 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     }
 
     @Override
-    public void findAllIncompleteFor(LocalDate date, OnDataChangedListener<List<Quest>> listener) {
+    public void findAllIncompleteBefore(LocalDate date, OnDataChangedListener<List<Quest>> listener) {
         Query query = dayQuestsView.createQuery();
         query.setMapOnly(true);
-        long key = toStartOfDayUTC(date).getTime();
-        query.setStartKey(key);
+        long key = toStartOfDayUTC(date.minusDays(1)).getTime();
         query.setEndKey(key);
         runQuery(query, listener, q -> !q.isCompleted());
     }
