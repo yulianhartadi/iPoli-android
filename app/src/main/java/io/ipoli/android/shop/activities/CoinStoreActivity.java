@@ -1,12 +1,12 @@
-package io.ipoli.android.shop.fragments;
-
+package io.ipoli.android.shop.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -25,13 +25,13 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import io.ipoli.android.BillingConstants;
-import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.AppErrorEvent;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
@@ -46,7 +46,7 @@ import io.ipoli.android.shop.iab.Purchase;
 import io.ipoli.android.shop.iab.SkuDetails;
 import io.ipoli.android.shop.viewmodels.ProductViewModels;
 
-public class CoinsStoreFragment extends BaseFragment {
+public class CoinStoreActivity extends BaseActivity {
     private static final String SKU_COINS_100 = "coins_100";
     private static final String SKU_COINS_300 = "coins_300";
     private static final String SKU_COINS_500 = "coins_500";
@@ -58,7 +58,6 @@ public class CoinsStoreFragment extends BaseFragment {
         put(SKU_COINS_300, 300);
         put(SKU_COINS_500, 500);
         put(SKU_COINS_1000, 1000);
-
     }};
 
     @Inject
@@ -85,31 +84,34 @@ public class CoinsStoreFragment extends BaseFragment {
     @Inject
     PlayerPersistenceService playerPersistenceService;
 
-    private Unbinder unbinder;
     private IabHelper iabHelper;
     private CoinsStoreAdapter adapter;
 
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_coins_store, container, false);
-        unbinder = ButterKnife.bind(this, view);
-        App.getAppComponent(getContext()).inject(this);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_coin_store);
 
-        ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_fragment_store);
+        App.getAppComponent(this).inject(this);
+        ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         coinsList.setLayoutManager(layoutManager);
-        coinsList.setEmptyView(rootLayout, R.string.empty_inbox_text, R.drawable.ic_inbox_grey_24dp);
+        coinsList.setEmptyView(rootLayout, R.string.empty_store_items, R.drawable.ic_coins_grey_24dp);
         adapter = new CoinsStoreAdapter(new ArrayList<>(), eventBus);
         coinsList.setAdapter(adapter);
 
-        if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
+        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             showFailureMessage(R.string.no_internet_to_buy_coins);
         } else {
-            iabHelper = new IabHelper(getContext(), BillingConstants.getAppPublicKey());
+            iabHelper = new IabHelper(this, BillingConstants.getAppPublicKey());
             iabHelper.startSetup(result -> {
                 if (!result.isSuccess() || iabHelper == null) {
                     showFailureMessage(R.string.something_went_wrong);
@@ -119,7 +121,7 @@ public class CoinsStoreFragment extends BaseFragment {
             });
         }
 
-        return view;
+        eventBus.post(new ScreenShownEvent(EventSource.STORE));
     }
 
     private void showFailureMessage(int messageRes) {
@@ -168,23 +170,27 @@ public class CoinsStoreFragment extends BaseFragment {
     }
 
     @Override
-    protected boolean useOptionsMenu() {
-        return true;
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_help:
+                showHelpDialog();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
-    @Override
+
     protected void showHelpDialog() {
-        HelpDialog.newInstance(R.layout.fragment_help_dialog_store, R.string.help_dialog_store_title, "store").show(getActivity().getSupportFragmentManager());
+        HelpDialog.newInstance(R.layout.fragment_help_dialog_store, R.string.help_dialog_store_title, "store").show(getSupportFragmentManager());
     }
 
     @Override
-    public void onDestroyView() {
-        unbinder.unbind();
+    public void onDestroy() {
+        super.onDestroy();
         if (iabHelper != null) {
             iabHelper.disposeWhenFinished();
             iabHelper = null;
         }
-        super.onDestroyView();
     }
 
     @Override
