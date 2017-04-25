@@ -58,7 +58,7 @@ import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.rate.RateDialogConstants;
-import io.ipoli.android.app.settings.SettingsFragment;
+import io.ipoli.android.app.settings.SettingsActivity;
 import io.ipoli.android.app.share.ShareQuestDialog;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
@@ -236,7 +236,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             case R.id.settings:
                 source = EventSource.SETTINGS;
-                changeCurrentFragment(new SettingsFragment());
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
 
             case R.id.feedback:

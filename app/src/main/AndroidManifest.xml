@@ -125,6 +125,15 @@
                 android:value=".pet.PetActivity" />
         </activity>
         <activity
+            android:name=".app.settings.SettingsActivity"
+            android:label="@string/settings"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
             android:name=".app.tutorial.TutorialActivity"
             android:screenOrientation="portrait" />
         <activity

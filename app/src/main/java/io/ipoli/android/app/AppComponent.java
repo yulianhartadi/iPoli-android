@@ -27,7 +27,7 @@ import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
 import io.ipoli.android.app.receivers.BootCompleteReceiver;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
-import io.ipoli.android.app.settings.SettingsFragment;
+import io.ipoli.android.app.settings.SettingsActivity;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.tutorial.fragments.PickTutorialQuestsFragment;
 import io.ipoli.android.app.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
@@ -161,8 +161,6 @@ public interface AppComponent {
 
     void inject(RecurrencePickerFragment recurrencePickerFragment);
 
-    void inject(SettingsFragment settingsFragment);
-
     void inject(PickDailyChallengeQuestsActivity pickDailyChallengeQuestsActivity);
 
     void inject(ChallengePickerFragment challengePickerFragment);
@@ -236,5 +234,7 @@ public interface AppComponent {
     void inject(BootCompleteReceiver bootCompleteReceiver);
 
     void inject(SyncCalendarActivity syncCalendarActivity);
+
+    void inject(SettingsActivity settingsActivity);
 }
 
