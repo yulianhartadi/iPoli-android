@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.CalendarView;
@@ -105,6 +106,15 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
     protected void onResume() {
         super.onResume();
         showQuestsForDate(selectedDate);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem helpMenu = menu.findItem(R.id.action_help);
+        if (helpMenu != null) {
+            helpMenu.setVisible(false);
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
