@@ -7,6 +7,7 @@ import java.util.List;
 
 import io.ipoli.android.app.scheduling.TimeBlock;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
+import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 
@@ -131,5 +132,13 @@ public class QuestCalendarViewModel implements CalendarEvent {
             }
         }
         return false;
+    }
+
+    public int getPriority() {
+        return quest.getPriority();
+    }
+
+    public TimePreference getStartTimePreference() {
+        return quest.getStartTimePreference();
     }
 }

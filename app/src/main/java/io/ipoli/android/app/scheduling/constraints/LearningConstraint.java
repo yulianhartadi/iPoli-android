@@ -3,22 +3,23 @@ package io.ipoli.android.app.scheduling.constraints;
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.app.scheduling.DailySchedule;
+import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 import io.ipoli.android.app.scheduling.distributions.FlatPeakDiscreteDistribution;
 import io.ipoli.android.quest.data.Category;
-import io.ipoli.android.quest.data.Quest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 4/22/17.
  */
+public class LearningConstraint implements Constraint {
 
-public class LearningConstraint {
-
-    public boolean shouldApply(Quest quest) {
-        return quest.getCategoryType() == Category.LEARNING;
+    @Override
+    public boolean shouldApply(Task task) {
+        return task.getCategory() == Category.LEARNING;
     }
 
+    @Override
     public DiscreteDistribution apply(DailySchedule schedule) {
         int slopeWidth = schedule.getSlotCountBetween(0, 30);
         DiscreteDistribution d1 = createStartOfDayPeak(schedule, slopeWidth);

@@ -1,16 +1,16 @@
 package io.ipoli.android.app.scheduling.constraints;
 
 import io.ipoli.android.app.scheduling.DailySchedule;
+import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 import io.ipoli.android.quest.data.Category;
-import io.ipoli.android.quest.data.Quest;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 4/22/17.
  */
 
-public class WorkConstraint {
+public class WorkConstraint implements Constraint {
 
     private final int workStartMinute;
     private final int workEndMinute;
@@ -20,10 +20,12 @@ public class WorkConstraint {
         this.workEndMinute = workEndMinute - 1;
     }
 
-    public boolean shouldApply(Quest quest) {
-        return quest.getCategoryType() == Category.WORK;
+    @Override
+    public boolean shouldApply(Task task) {
+        return task.getCategory() == Category.WORK;
     }
 
+    @Override
     public DiscreteDistribution apply(DailySchedule schedule) {
         double[] vals = new double[schedule.getSlotCount()];
         int startSlot = schedule.getSlotForMinute(workStartMinute);
