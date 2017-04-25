@@ -62,7 +62,7 @@
             android:title="@string/invite_friends" />
         <item
             android:id="@+id/settings"
-            android:checkable="true"
+            android:checkable="false"
             android:checked="false"
             android:icon="@drawable/ic_settings_black_24dp"
             android:title="@string/settings" />
