@@ -48,4 +48,8 @@ public class Task implements Comparable<Task> {
     public Category getCategory() {
         return category;
     }
+
+    public int getPriority() {
+        return priority;
+    }
 }

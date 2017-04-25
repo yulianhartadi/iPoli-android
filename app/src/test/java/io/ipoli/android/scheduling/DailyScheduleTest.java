@@ -11,6 +11,7 @@ import java.util.Random;
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.scheduling.DailySchedule;
 import io.ipoli.android.app.scheduling.DailyScheduleBuilder;
+import io.ipoli.android.app.scheduling.PriorityEstimator;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.constraints.MorningConstraint;
 import io.ipoli.android.app.utils.Time;
@@ -87,9 +88,21 @@ public class DailyScheduleTest {
                 .setSeed(random)
                 .createDailySchedule();
         List<Task> tasksToSchedule = new ArrayList<>();
-        tasksToSchedule.add(new Task(15, Quest.PRIORITY_IMPORTANT_NOT_URGENT, TimePreference.MORNING, Category.WELLNESS));
+        Quest q = new Quest("q1", Category.WELLNESS);
+        q.setPriority(Quest.PRIORITY_IMPORTANT_NOT_URGENT);
+        q.setStartTimePreference(TimePreference.MORNING);
+        tasksToSchedule.add(toTask(q));
         List<Task> scheduledTasks = schedule.scheduleTasks(tasksToSchedule);
 //        assertThat(scheduledTasks.size(), is(1));
 //        assertThat(scheduledTasks.get(0).getStartMinute(), is(greaterThanOrEqualTo(0)));
+    }
+
+    private Task toTask(Quest quest) {
+        PriorityEstimator priorityEstimator = new PriorityEstimator();
+        return new Task(quest.getStartMinute() == null ? -1 : quest.getStartMinute(),
+                quest.getDuration(),
+                priorityEstimator.estimate(quest),
+                quest.getStartTimePreference(),
+                quest.getCategoryType());
     }
 }
