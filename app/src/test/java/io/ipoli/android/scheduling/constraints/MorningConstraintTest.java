@@ -3,7 +3,12 @@ package io.ipoli.android.scheduling.constraints;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+
+import io.ipoli.android.Constants;
+import io.ipoli.android.app.TimeOfDay;
 import io.ipoli.android.app.scheduling.DailySchedule;
+import io.ipoli.android.app.scheduling.DailyScheduleBuilder;
 import io.ipoli.android.app.scheduling.constraints.Constraint;
 import io.ipoli.android.app.scheduling.constraints.MorningConstraint;
 import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
@@ -28,7 +33,13 @@ public class MorningConstraintTest {
     @Before
     public void setUp() throws Exception {
         constraint = new MorningConstraint();
-        schedule = new DailySchedule(MorningConstraint.MORNING_START, Time.MINUTES_IN_A_DAY, 15);
+        schedule = new DailyScheduleBuilder()
+                .setStartMinute(MorningConstraint.MORNING_START)
+                .setEndMinute(Time.MINUTES_IN_A_DAY)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Arrays.asList(TimeOfDay.MORNING))
+                .createDailySchedule();
     }
 
     @Test
@@ -61,7 +72,13 @@ public class MorningConstraintTest {
 
     @Test
     public void shouldStartFromScheduleStartMinute() {
-        DailySchedule schedule = new DailySchedule(MorningConstraint.MORNING_START + Time.h2Min(2), Time.MINUTES_IN_A_DAY, 15);
+        DailySchedule schedule = new DailyScheduleBuilder()
+                .setStartMinute(MorningConstraint.MORNING_START + Time.h2Min(2))
+                .setEndMinute(Time.MINUTES_IN_A_DAY)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Arrays.asList(TimeOfDay.MORNING))
+                .createDailySchedule();
         DiscreteDistribution dist = constraint.apply(schedule);
         assertThat(getIndexCountWithMaxProbability(dist), is(4 * schedule.getSlotCountBetween(0, 60)));
 

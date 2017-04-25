@@ -8,7 +8,9 @@ import java.util.List;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.TaskScheduler;
 import io.ipoli.android.app.scheduling.TimeBlock;
+import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.data.Category;
+import io.ipoli.android.quest.data.Quest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -43,7 +45,7 @@ public class SchedulerTest {
     @Test
     public void shouldHave2TimeBlocks() {
         List<Task> tasks = new ArrayList<>();
-        tasks.add(new Task(10, 15, Category.PERSONAL));
+        tasks.add(new Task(10, 15, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
         TaskScheduler scheduler = new TaskScheduler(0, 1, tasks);
         List<TimeBlock> freeBlocks = scheduler.getFreeBlocks();
         assertThat(freeBlocks.size(), is(2));
@@ -52,9 +54,9 @@ public class SchedulerTest {
     @Test
     public void shouldHaveFreeBlocksWithEnoughDuration() {
         List<Task> tasks = new ArrayList<>();
-        tasks.add(new Task(10, 20, Category.PERSONAL));
+        tasks.add(new Task(10, 20, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
         TaskScheduler scheduler = new TaskScheduler(0, 1, tasks);
-        List<TimeBlock> freeBlocks = scheduler.getFreeBlocksFor(new Task(15, Category.PERSONAL));
+        List<TimeBlock> freeBlocks = scheduler.getFreeBlocksFor(new Task(15, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
         assertThat(freeBlocks.size(), is(1));
     }
 }
