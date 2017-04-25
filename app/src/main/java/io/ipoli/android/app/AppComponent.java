@@ -78,8 +78,8 @@ import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.fragments.RewardListFragment;
-import io.ipoli.android.shop.ShopActivity;
-import io.ipoli.android.shop.fragments.CoinsStoreFragment;
+import io.ipoli.android.shop.activities.CoinStoreActivity;
+import io.ipoli.android.shop.activities.ShopActivity;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -197,8 +197,6 @@ public interface AppComponent {
 
     void inject(CompleteQuestReceiver completeQuestReceiver);
 
-    void inject(CoinsStoreFragment coinsStoreFragment);
-
     void inject(QuickAddActivity quickAddActivity);
 
     void inject(AgendaActivity agendaActivity);
@@ -236,5 +234,7 @@ public interface AppComponent {
     void inject(SyncCalendarActivity syncCalendarActivity);
 
     void inject(SettingsActivity settingsActivity);
+
+    void inject(CoinStoreActivity coinStoreActivity);
 }
 
