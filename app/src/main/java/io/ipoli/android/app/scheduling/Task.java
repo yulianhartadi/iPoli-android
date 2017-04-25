@@ -12,22 +12,20 @@ import io.ipoli.android.quest.data.Category;
 public class Task implements Comparable<Task> {
     private final int startMinute;
     private final int duration;
+    private final int priority;
     private final TimePreference startTimePreference;
-    private Category category;
+    private final Category category;
 
-    public Task(int startMinute, int duration, TimePreference startTimePreference, Category category) {
+    public Task(int startMinute, int duration, int priority, TimePreference startTimePreference, Category category) {
         this.startMinute = startMinute;
         this.duration = duration;
+        this.priority = priority;
         this.startTimePreference = startTimePreference;
         this.category = category;
     }
 
-    public Task(int startMinute, int duration, Category category) {
-        this(startMinute, duration, TimePreference.ANY, category);
-    }
-
-    public Task(int duration, Category category) {
-        this(-1, duration, TimePreference.ANY, category);
+    public Task(int duration, int priority, TimePreference startTimePreference, Category category) {
+        this(-1, duration, priority, startTimePreference, category);
     }
 
     public int getStartMinute() {
@@ -49,5 +47,9 @@ public class Task implements Comparable<Task> {
 
     public Category getCategory() {
         return category;
+    }
+
+    public int getPriority() {
+        return priority;
     }
 }
