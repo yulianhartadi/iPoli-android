@@ -1,4 +1,4 @@
-package io.ipoli.android.shop;
+package io.ipoli.android.shop.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -28,6 +28,7 @@ import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.shop.adapters.ShopPetAdapter;
 import io.ipoli.android.shop.events.BuyPetRequestEvent;
 import io.ipoli.android.shop.events.PetBoughtEvent;
 import io.ipoli.android.shop.viewmodels.PetViewModel;

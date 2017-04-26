@@ -58,7 +58,7 @@ import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.rate.RateDialogConstants;
-import io.ipoli.android.app.settings.SettingsFragment;
+import io.ipoli.android.app.settings.SettingsActivity;
 import io.ipoli.android.app.share.ShareQuestDialog;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
@@ -96,7 +96,7 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reminder.data.Reminder;
 import io.ipoli.android.reward.fragments.RewardListFragment;
-import io.ipoli.android.shop.fragments.CoinsStoreFragment;
+import io.ipoli.android.shop.activities.CoinStoreActivity;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -227,7 +227,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             case R.id.store:
                 source = EventSource.STORE;
-                changeCurrentFragment(new CoinsStoreFragment());
+                startActivity(new Intent(this, CoinStoreActivity.class));
                 break;
 
             case R.id.invite_friends:
@@ -236,7 +236,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             case R.id.settings:
                 source = EventSource.SETTINGS;
-                changeCurrentFragment(new SettingsFragment());
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
 
             case R.id.feedback:
@@ -273,9 +273,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         TextView coins = (TextView) header.findViewById(R.id.avatar_coins);
         coins.setText(String.valueOf(player.getCoins()));
         coins.setOnClickListener(view -> {
-            changeCurrentFragment(new CoinsStoreFragment());
-            drawerLayout.closeDrawer(GravityCompat.START);
-            navigationView.setCheckedItem(R.id.store);
+            startActivity(new Intent(this, CoinStoreActivity.class));
             eventBus.post(new AvatarCoinsTappedEvent());
         });
 

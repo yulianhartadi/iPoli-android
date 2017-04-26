@@ -116,13 +116,31 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".shop.ShopActivity"
+            android:name=".shop.activities.ShopActivity"
             android:label="@string/title_activity_shop"
             android:parentActivityName=".pet.PetActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".pet.PetActivity" />
+        </activity>
+        <activity
+            android:name=".app.settings.SettingsActivity"
+            android:label="@string/settings"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity
+            android:name=".shop.activities.CoinStoreActivity"
+            android:label="@string/title_activity_store"
+            android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
         </activity>
         <activity
             android:name=".app.tutorial.TutorialActivity"
