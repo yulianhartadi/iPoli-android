@@ -2,6 +2,8 @@ package io.ipoli.android.app.scheduling;
 
 import android.support.annotation.NonNull;
 
+import java.util.List;
+
 import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.data.Category;
 
@@ -15,6 +17,7 @@ public class Task implements Comparable<Task> {
     private final int priority;
     private final TimePreference startTimePreference;
     private final Category category;
+    private List<TimeBlock> recommendedSlots;
 
     public Task(int startMinute, int duration, int priority, TimePreference startTimePreference, Category category) {
         this.startMinute = startMinute;
@@ -51,5 +54,13 @@ public class Task implements Comparable<Task> {
 
     public int getPriority() {
         return priority;
+    }
+
+    public void setRecommendedSlots(List<TimeBlock> recommendedSlots) {
+        this.recommendedSlots = recommendedSlots;
+    }
+
+    public List<TimeBlock> getRecommendedSlots() {
+        return recommendedSlots;
     }
 }
