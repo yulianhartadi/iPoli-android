@@ -13,8 +13,8 @@ public class EveningConstraint extends SoftConstraint {
     public static final int EVENING_START = Time.h2Min(18);
     public static final int EVENING_END = Time.h2Min(23);
 
-    public EveningConstraint() {
-        super(EVENING_START, EVENING_END);
+    public EveningConstraint(int slotDuration) {
+        super(EVENING_START, EVENING_END, slotDuration);
     }
 
     @Override
