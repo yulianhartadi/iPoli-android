@@ -18,10 +18,10 @@ import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -97,7 +97,7 @@ public class DailyScheduleTest {
         tasksToSchedule.add(toTask(q));
         List<Task> scheduledTasks = schedule.scheduleTasks(tasksToSchedule);
         assertThat(scheduledTasks.size(), is(1));
-        assertThat(scheduledTasks.get(0).getStartMinute(), is(greaterThanOrEqualTo(0)));
+        assertThat(scheduledTasks.get(0).getRecommendedSlots().get(0).getStartMinute(), is(greaterThanOrEqualTo(0)));
     }
 
     private Task toTask(Quest quest) {
