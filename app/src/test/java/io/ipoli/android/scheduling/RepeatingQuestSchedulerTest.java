@@ -34,7 +34,6 @@ import static org.hamcrest.number.OrderingComparison.lessThanOrEqualTo;
 import static org.threeten.bp.temporal.TemporalAdjusters.firstDayOfMonth;
 import static org.threeten.bp.temporal.TemporalAdjusters.firstDayOfYear;
 import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth;
-import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfYear;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -52,7 +51,6 @@ public class RepeatingQuestSchedulerTest {
     private static LocalDate startOfMonth;
     private static LocalDate endOfMonth;
     private static LocalDate startOfYear;
-    private static LocalDate endOfYear;
 
     @BeforeClass
     public static void setUp() {
@@ -63,7 +61,6 @@ public class RepeatingQuestSchedulerTest {
         startOfMonth = today.with(firstDayOfMonth());
         endOfMonth = today.with(lastDayOfMonth());
         startOfYear = today.with(firstDayOfYear());
-        endOfYear = today.with(lastDayOfYear());
     }
 
     @Test
@@ -545,7 +542,7 @@ public class RepeatingQuestSchedulerTest {
     @Test
     public void shouldScheduleForNextMonthWhenCloseToEndOfThis() {
         RepeatingQuest rq = createRepeatingQuest();
-        rq.addScheduledPeriodEndDate(today.with(lastDayOfMonth()));
+        rq.addScheduledPeriodEndDate(endOfMonth);
         rq.setRecurrence(createFlexibleMonthlyRecurrence(today.with(firstDayOfMonth()), 10));
         List<Quest> scheduled = rqScheduler.schedule(rq, today.with(lastDayOfMonth()).minusDays(2));
         assertThat(scheduled.size(), is(greaterThanOrEqualTo(10)));
