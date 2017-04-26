@@ -18,7 +18,7 @@ public class WorkConstraint extends BaseConstraint {
     public WorkConstraint(int workStartMinute, int workEndMinute, int slotDuration) {
         super(slotDuration);
         this.workStartMinute = workStartMinute;
-        this.workEndMinute = workEndMinute - 1;
+        this.workEndMinute = workEndMinute;
     }
 
     @Override

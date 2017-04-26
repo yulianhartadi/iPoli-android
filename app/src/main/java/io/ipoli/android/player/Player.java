@@ -58,7 +58,7 @@ public class Player extends PersistedObject {
         this.level = level;
         this.coins = coins;
         this.picture = picture;
-        setMostProductiveTimesOfDayList(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIME);
+        setMostProductiveTimesOfDayList(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES);
         setWorkDays(Constants.DEFAULT_PLAYER_WORK_DAYS);
         setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE);
         setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE);

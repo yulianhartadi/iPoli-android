@@ -36,7 +36,7 @@ public class ProductiveTimeConstraintTest {
 
     @Before
     public void setUp() {
-        productivityConstraint = new ProductiveTimeConstraint(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIME, DailySchedule.DEFAULT_TIME_SLOT_DURATION);
+        productivityConstraint = new ProductiveTimeConstraint(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES, DailySchedule.DEFAULT_TIME_SLOT_DURATION);
     }
 
     @Test

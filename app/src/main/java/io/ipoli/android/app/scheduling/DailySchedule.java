@@ -121,7 +121,7 @@ public class DailySchedule {
             int startSlot = 0;
             int endSlot = 0;
             for (int i = 0; i < isFreeSlot.length; i++) {
-                if (isFreeSlot[i] && dist.at(i) > 0) {
+                if (isFreeSlot[i] && dist.at(i + getSlotCountBetween(0, startMinute)) > 0) {
 //                if (isFreeSlot[i]) {
                     endSlot = i;
 //                    System.out.println(startSlot + " endSlot " + endSlot);
@@ -138,19 +138,20 @@ public class DailySchedule {
                 timeBlocks.addAll(cutSlotToTimeBlocks(startSlot, endSlot, taskSlotCount));
             }
 
+//            for(TimeBlock tb : timeBlocks) {
+//                System.out.println(tb.getStartTime() + " end: " + tb.getEndTime());
+//            }
+
             List<TimeBlock> rankedSlots = rankSlots(timeBlocks, dist);
             t.setRecommendedSlots(rankedSlots);
             if (!rankedSlots.isEmpty()) {
                 TimeBlock bestSlot = rankedSlots.get(0);
                 int slotMinute = bestSlot.getStartMinute();
                 while (slotMinute < bestSlot.getEndMinute()) {
-                    isFreeSlot[getSlotForMinute(slotMinute)] = false;
+                    isFreeSlot[getSlotForMinute(slotMinute - startMinute)] = false;
                     slotMinute += timeSlotDuration;
                 }
             }
-//            for (TimeBlock b : timeBlocks) {
-//                System.out.println(b.getStartMinute() + ":" + b.getEndMinute());
-//            }
         }
         return tasksToSchedule;
     }
@@ -178,7 +179,7 @@ public class DailySchedule {
         List<TimeBlock> blocks = new ArrayList<>();
         int endTimeBlockSlot = startSlot + slotCount;
         for (int i = startSlot; i < endTimeBlockSlot; i++) {
-            int startMinute = i * timeSlotDuration;
+            int startMinute = this.startMinute + i * timeSlotDuration;
             int endMinute = startMinute + taskSlotCount * timeSlotDuration;
             blocks.add(new TimeBlock(startMinute, endMinute));
         }
