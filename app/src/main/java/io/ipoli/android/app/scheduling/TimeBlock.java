@@ -32,14 +32,6 @@ public class TimeBlock {
         return endMinute - startMinute;
     }
 
-    public void setProbability(double probability) {
-        this.probability = probability;
-    }
-
-    public double getProbability() {
-        return probability;
-    }
-
     public boolean doOverlap(int startMinute, int endMinute) {
         return !(getEndMinute() < startMinute || endMinute < getStartMinute());
     }

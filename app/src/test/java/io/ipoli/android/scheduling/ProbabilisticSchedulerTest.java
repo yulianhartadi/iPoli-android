@@ -7,17 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 import io.ipoli.android.app.scheduling.ProbabilisticTaskScheduler;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.TimeBlock;
+import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 /**
@@ -51,21 +50,5 @@ public class ProbabilisticSchedulerTest {
 
         List<TimeBlock> slots = scheduler.chooseSlotsFor(new Task(10, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL), 15, startTime, dist);
         assertThat(slots.size(), is(3));
-    }
-
-    @Test
-    public void shouldHaveHighProbSlotAsFirstChoice() {
-        List<Task> tasks = new ArrayList<>();
-        tasks.add(new Task(10, 20, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
-        ProbabilisticTaskScheduler scheduler = new ProbabilisticTaskScheduler(0, 1, tasks, random);
-
-        double[] values = new double[60];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = 1;
-        }
-        DiscreteDistribution dist = new DiscreteDistribution(values);
-
-        List<TimeBlock> slots = scheduler.chooseSlotsFor(new Task(10, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL), 15, startTime, dist);
-        assertThat(slots.get(0).getProbability(), greaterThan(0.183));
     }
 }
