@@ -17,7 +17,7 @@ public class NotWorkConstraint extends BaseConstraint {
     public NotWorkConstraint(int workStartMinute, int workEndMinute, int slotDuration) {
         super(slotDuration);
         this.workStartMinute = workStartMinute;
-        this.workEndMinute = workEndMinute - 1;
+        this.workEndMinute = workEndMinute;
     }
 
     @Override
