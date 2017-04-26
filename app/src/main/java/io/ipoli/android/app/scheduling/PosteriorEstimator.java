@@ -61,7 +61,7 @@ public class PosteriorEstimator {
             }
         }
 
-        return new DiscreteDistribution(values, random);
+        return new DiscreteDistribution(values);
     }
 
     @NonNull
@@ -86,7 +86,7 @@ public class PosteriorEstimator {
             }
         }
 
-        return new DiscreteDistribution(values, random);
+        return new DiscreteDistribution(values);
     }
 
     private static double[] createEmptyWholeDayValues() {
@@ -145,7 +145,7 @@ public class PosteriorEstimator {
                 values[i] = 1;
             }
         }
-        return new DiscreteDistribution(values, random);
+        return new DiscreteDistribution(values);
     }
 
     private DiscreteDistribution createFunDistribution() {
@@ -157,7 +157,7 @@ public class PosteriorEstimator {
                 values[i] = 0;
             }
         }
-        return new DiscreteDistribution(values, random);
+        return new DiscreteDistribution(values);
     }
 
     private DiscreteDistribution createEveningProductiveDistribution() {
@@ -169,7 +169,7 @@ public class PosteriorEstimator {
                 values[i] = 1;
             }
         }
-        return new DiscreteDistribution(values, random);
+        return new DiscreteDistribution(values);
     }
 
     private DiscreteDistribution createAfternoonProductiveDistribution() {
@@ -181,7 +181,7 @@ public class PosteriorEstimator {
                 values[i] = 1;
             }
         }
-        return new DiscreteDistribution(values, random);
+        return new DiscreteDistribution(values);
     }
 
     private DiscreteDistribution createMorningProductiveDistribution() {
@@ -193,7 +193,7 @@ public class PosteriorEstimator {
                 values[i] = 1;
             }
         }
-        return new DiscreteDistribution(values, random);
+        return new DiscreteDistribution(values);
     }
 
     public static class PosteriorSettings {

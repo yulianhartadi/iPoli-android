@@ -14,11 +14,13 @@ import io.ipoli.android.app.scheduling.DailyScheduleBuilder;
 import io.ipoli.android.app.scheduling.PriorityEstimator;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.constraints.MorningConstraint;
-import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -81,7 +83,7 @@ public class DailyScheduleTest {
     public void shouldScheduleTask() {
         DailySchedule schedule = new DailyScheduleBuilder()
                 .setStartMinute(MorningConstraint.MORNING_START)
-                .setEndMinute(Time.MINUTES_IN_A_DAY)
+                .setEndMinute(MorningConstraint.MORNING_END)
                 .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
                 .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
                 .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIME)
@@ -91,10 +93,11 @@ public class DailyScheduleTest {
         Quest q = new Quest("q1", Category.WELLNESS);
         q.setPriority(Quest.PRIORITY_IMPORTANT_NOT_URGENT);
         q.setStartTimePreference(TimePreference.MORNING);
+        q.setDuration(30);
         tasksToSchedule.add(toTask(q));
         List<Task> scheduledTasks = schedule.scheduleTasks(tasksToSchedule);
-//        assertThat(scheduledTasks.size(), is(1));
-//        assertThat(scheduledTasks.get(0).getStartMinute(), is(greaterThanOrEqualTo(0)));
+        assertThat(scheduledTasks.size(), is(1));
+        assertThat(scheduledTasks.get(0).getStartMinute(), is(greaterThanOrEqualTo(0)));
     }
 
     private Task toTask(Quest quest) {

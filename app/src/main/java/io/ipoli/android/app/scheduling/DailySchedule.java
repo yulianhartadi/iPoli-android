@@ -7,23 +7,19 @@ import java.util.List;
 import java.util.Random;
 
 import io.ipoli.android.app.TimeOfDay;
-import io.ipoli.android.app.scheduling.constraints.AfternoonConstraint;
 import io.ipoli.android.app.scheduling.constraints.Constraint;
-import io.ipoli.android.app.scheduling.constraints.EveningConstraint;
-import io.ipoli.android.app.scheduling.constraints.LearningConstraint;
-import io.ipoli.android.app.scheduling.constraints.MorningConstraint;
-import io.ipoli.android.app.scheduling.constraints.NotWorkConstraint;
 import io.ipoli.android.app.scheduling.constraints.ProductiveTimeConstraint;
-import io.ipoli.android.app.scheduling.constraints.WellnessConstraint;
-import io.ipoli.android.app.scheduling.constraints.WorkConstraint;
 import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 import io.ipoli.android.app.scheduling.distributions.UniformDiscreteDistribution;
+import io.ipoli.android.app.utils.Time;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 04/21/17.
  */
 public class DailySchedule {
+
+    public static final int DEFAULT_TIME_SLOT_DURATION = 15;
 
     private final int startMinute;
     private final int endMinute;
@@ -51,19 +47,19 @@ public class DailySchedule {
 
     private List<Constraint> createConstraints() {
         List<Constraint> constraints = new ArrayList<>();
-        constraints.add(new MorningConstraint());
-        constraints.add(new AfternoonConstraint());
-        constraints.add(new EveningConstraint());
-        constraints.add(new WorkConstraint(workStartMinute, workEndMinute));
-        constraints.add(new NotWorkConstraint(workStartMinute, workEndMinute));
-        constraints.add(new WellnessConstraint());
-        constraints.add(new LearningConstraint());
-        constraints.add(new ProductiveTimeConstraint(productiveTimes));
+//        constraints.add(new MorningConstraint());
+//        constraints.add(new AfternoonConstraint());
+//        constraints.add(new EveningConstraint());
+////        constraints.add(new WorkConstraint(workStartMinute, workEndMinute, 15));
+//        constraints.add(new NotWorkConstraint(workStartMinute, workEndMinute));
+//        constraints.add(new WellnessConstraint());
+//        constraints.add(new LearningConstraint());
+        constraints.add(new ProductiveTimeConstraint(productiveTimes, DEFAULT_TIME_SLOT_DURATION));
         return constraints;
     }
 
     private boolean[] createFreeSlots(List<Task> scheduledTasks) {
-        int slotCount = (endMinute - startMinute) / timeSlotDuration;
+        int slotCount = Time.MINUTES_IN_A_DAY / timeSlotDuration;
         boolean[] freeSlots = new boolean[slotCount];
         Arrays.fill(freeSlots, true);
 
@@ -95,7 +91,7 @@ public class DailySchedule {
     }
 
     private int getIndex(int minute) {
-        return (minute - startMinute) / timeSlotDuration;
+        return minute / timeSlotDuration;
     }
 
     public int getSlotCount() {
@@ -122,10 +118,10 @@ public class DailySchedule {
         }
         Collections.sort(result, (t1, t2) -> -Integer.compare(t1.getPriority(), t2.getPriority()));
         for (Task t : result) {
-            DiscreteDistribution dist = UniformDiscreteDistribution.create(getSlotCount(), seed);
+            DiscreteDistribution dist = UniformDiscreteDistribution.create(getSlotCount());
             for (Constraint constraint : constraints) {
                 if (constraint.shouldApply(t)) {
-                    dist = dist.joint(constraint.apply(this));
+                    dist = dist.joint(constraint.apply());
                 }
             }
 
@@ -138,11 +134,15 @@ public class DailySchedule {
                     endSlot = i;
                 } else {
                     if (taskSlotCount <= endSlot - startSlot + 1) {
+//                        System.out.println(startSlot + " endSlot " + endSlot);
                         timeBlocks.addAll(cutSlotToTimeBlocks(startSlot, endSlot, taskSlotCount));
                     }
                     startSlot = i + 1;
                     endSlot = i + 1;
                 }
+            }
+            for(TimeBlock b : timeBlocks) {
+                System.out.println(b.getStartMinute() + ":" + b.getEndMinute());
             }
         }
         return tasksToSchedule;

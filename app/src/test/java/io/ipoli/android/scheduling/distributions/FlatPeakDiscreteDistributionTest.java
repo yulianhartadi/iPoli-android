@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import io.ipoli.android.app.scheduling.distributions.FlatPeakDiscreteDistribution;
 
+import static io.ipoli.android.scheduling.distributions.DistributionTestUtil.getIndexCountWithMaxProbability;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -19,7 +20,7 @@ public class FlatPeakDiscreteDistributionTest {
     private FlatPeakDiscreteDistribution dist;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         dist = FlatPeakDiscreteDistribution.create(5, 2, 10, 2, 10);
     }
 
@@ -45,8 +46,17 @@ public class FlatPeakDiscreteDistributionTest {
     }
 
     @Test
-    public void shouldBeCutOffAtEnd() {
-        FlatPeakDiscreteDistribution dist = FlatPeakDiscreteDistribution.create(8, 2, 10, 2, 10);
-        assertThat(dist.at(8), is(equalTo(dist.at(9))));
+    public void shouldHaveZeroSlope() {
+        FlatPeakDiscreteDistribution dist = FlatPeakDiscreteDistribution.create(0, 2, 10, 0, 10);
+        assertThat(getIndexCountWithMaxProbability(dist), is(2));
+        assertThat(dist.at(2), is(equalTo(dist.at(3))));
+        assertThat(dist.at(2), is(equalTo(dist.at(9))));
+    }
+
+    @Test
+    public void shouldWrapAtTheEnd() {
+        FlatPeakDiscreteDistribution dist = FlatPeakDiscreteDistribution.create(9, 2, 10, 0, 10);
+        assertThat(getIndexCountWithMaxProbability(dist), is(2));
+        assertThat(dist.at(0), is(equalTo(dist.at(9))));
     }
 }
