@@ -7,8 +7,15 @@ import java.util.List;
 import java.util.Random;
 
 import io.ipoli.android.app.TimeOfDay;
+import io.ipoli.android.app.scheduling.constraints.AfternoonConstraint;
 import io.ipoli.android.app.scheduling.constraints.Constraint;
+import io.ipoli.android.app.scheduling.constraints.EveningConstraint;
+import io.ipoli.android.app.scheduling.constraints.LearningConstraint;
+import io.ipoli.android.app.scheduling.constraints.MorningConstraint;
+import io.ipoli.android.app.scheduling.constraints.NotWorkConstraint;
 import io.ipoli.android.app.scheduling.constraints.ProductiveTimeConstraint;
+import io.ipoli.android.app.scheduling.constraints.WellnessConstraint;
+import io.ipoli.android.app.scheduling.constraints.WorkConstraint;
 import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 import io.ipoli.android.app.scheduling.distributions.UniformDiscreteDistribution;
 import io.ipoli.android.app.utils.Time;
@@ -31,7 +38,7 @@ public class DailySchedule {
     private final int workStartMinute;
     private final int workEndMinute;
 
-    public DailySchedule(int startMinute, int endMinute, int timeSlotDuration, int workStartMinute, int workEndMinute, List<TimeOfDay> productiveTimes, List<Task> scheduledTasks, Random seed) {
+    DailySchedule(int startMinute, int endMinute, int timeSlotDuration, int workStartMinute, int workEndMinute, List<TimeOfDay> productiveTimes, List<Task> scheduledTasks, Random seed) {
         this.startMinute = startMinute;
         this.endMinute = endMinute;
         this.timeSlotDuration = timeSlotDuration;
@@ -47,13 +54,13 @@ public class DailySchedule {
 
     private List<Constraint> createConstraints() {
         List<Constraint> constraints = new ArrayList<>();
-//        constraints.add(new MorningConstraint());
-//        constraints.add(new AfternoonConstraint());
-//        constraints.add(new EveningConstraint());
-////        constraints.add(new WorkConstraint(workStartMinute, workEndMinute, 15));
-//        constraints.add(new NotWorkConstraint(workStartMinute, workEndMinute));
-//        constraints.add(new WellnessConstraint());
-//        constraints.add(new LearningConstraint());
+        constraints.add(new MorningConstraint(DEFAULT_TIME_SLOT_DURATION));
+        constraints.add(new AfternoonConstraint(DEFAULT_TIME_SLOT_DURATION));
+        constraints.add(new EveningConstraint(DEFAULT_TIME_SLOT_DURATION));
+        constraints.add(new WorkConstraint(workStartMinute, workEndMinute, DEFAULT_TIME_SLOT_DURATION));
+        constraints.add(new NotWorkConstraint(workStartMinute, workEndMinute, DEFAULT_TIME_SLOT_DURATION));
+        constraints.add(new WellnessConstraint(startMinute, DEFAULT_TIME_SLOT_DURATION));
+        constraints.add(new LearningConstraint(startMinute, DEFAULT_TIME_SLOT_DURATION));
         constraints.add(new ProductiveTimeConstraint(productiveTimes, DEFAULT_TIME_SLOT_DURATION));
         return constraints;
     }
@@ -114,8 +121,8 @@ public class DailySchedule {
             int startSlot = 0;
             int endSlot = 0;
             for (int i = 0; i < isFreeSlot.length; i++) {
-//                if (isFreeSlot[i] && dist.at(i) > 0) {
-                if (isFreeSlot[i]) {
+                if (isFreeSlot[i] && dist.at(i) > 0) {
+//                if (isFreeSlot[i]) {
                     endSlot = i;
 //                    System.out.println(startSlot + " endSlot " + endSlot);
                 } else {
@@ -130,15 +137,6 @@ public class DailySchedule {
             if (startSlot != endSlot) {
                 timeBlocks.addAll(cutSlotToTimeBlocks(startSlot, endSlot, taskSlotCount));
             }
-
-//            WeightedRandomSampler<TimeBlock> sampler = new WeightedRandomSampler<>(seed);
-////            for (TimeBlock slot : availableSlots) {
-////                sampler.add(slot, slot.getProbability());
-////            }
-//
-//            for (TimeBlock tb : timeBlocks) {
-//                sampler.add(tb, dist.at(getSlotForMinute(tb.getStartMinute())));
-//            }
 
             List<TimeBlock> rankedSlots = rankSlots(timeBlocks, dist);
             t.setRecommendedSlots(rankedSlots);
