@@ -1,4 +1,4 @@
-package io.ipoli.android.shop;
+package io.ipoli.android.shop.adapters;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;

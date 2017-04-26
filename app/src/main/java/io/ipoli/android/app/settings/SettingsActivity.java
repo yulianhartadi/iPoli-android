@@ -11,11 +11,10 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -39,17 +38,16 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import butterknife.Unbinder;
 import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
-import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.AndroidCalendarEventParser;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.TimeOfDay;
+import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.TimeFormatChangedEvent;
 import io.ipoli.android.app.persistence.CalendarPersistenceService;
@@ -86,11 +84,7 @@ import me.everything.providers.android.calendar.Event;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-/**
- * Created by Venelin Valkov <venelin@curiousily.com>
- * on 6/21/16.
- */
-public class SettingsFragment extends BaseFragment implements
+public class SettingsActivity extends BaseActivity implements
         TimeOfDayPickerFragment.OnTimesOfDayPickedListener,
         TimePickerFragment.OnTimePickedListener,
         DaysOfWeekPickerFragment.OnDaysOfWeekPickedListener,
@@ -179,20 +173,20 @@ public class SettingsFragment extends BaseFragment implements
     @BindView(R.id.app_version)
     TextView appVersion;
 
-    private Unbinder unbinder;
-
     private LoadingDialog loadingDialog;
     private Map<Long, Category> selectedCalendars;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_settings, container, false);
-        unbinder = ButterKnife.bind(this, view);
-        App.getAppComponent(getContext()).inject(this);
-
-        ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_fragment_settings);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_settings);
+        App.getAppComponent(this).inject(this);
+        ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
 
         Player player = getPlayer();
 
@@ -202,9 +196,13 @@ public class SettingsFragment extends BaseFragment implements
         initSyncCalendars(player);
         initDailyChallenge();
 
-
         appVersion.setText(BuildConfig.VERSION_NAME);
-        return view;
+        eventBus.post(new ScreenShownEvent(EventSource.SETTINGS));
+    }
+
+    @Override
+    protected boolean useParentOptionsMenu() {
+        return false;
     }
 
     private void initScheduling(Player player) {
@@ -250,10 +248,10 @@ public class SettingsFragment extends BaseFragment implements
     private CompoundButton.OnCheckedChangeListener onCheckSyncCalendarChangeListener = (buttonView, isChecked) -> {
         if (isChecked) {
             eventBus.post(new EnableSynCalendarsEvent(true));
-            if (EasyPermissions.hasPermissions(getContext(), Manifest.permission.READ_CALENDAR)) {
+            if (EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
                 onSyncCalendarsSelected();
             } else {
-                EasyPermissions.requestPermissions(SettingsFragment.this, getString(R.string.allow_read_calendars_perm_reason), RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
+                EasyPermissions.requestPermissions(this, getString(R.string.allow_read_calendars_perm_reason), RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
             }
         } else {
             showAlertSyncCalendarsDialog();
@@ -261,7 +259,7 @@ public class SettingsFragment extends BaseFragment implements
     };
 
     private void showAlertSyncCalendarsDialog() {
-        AlertDialog d = new AlertDialog.Builder(getContext())
+        AlertDialog d = new AlertDialog.Builder(this)
                 .setTitle(getString(R.string.dialog_disable_google_calendar_sync_title))
                 .setMessage(getString(R.string.dialog_disable_google_calendar_sync_message))
                 .setPositiveButton(getString(R.string.dialog_yes), (dialog, which) -> {
@@ -278,7 +276,7 @@ public class SettingsFragment extends BaseFragment implements
     }
 
     private void deleteSyncCalendars() {
-        LoadingDialog loadingDialog = LoadingDialog.show(getContext(), getString(R.string.sync_calendars_delete_loading_dialog_title), getString(R.string.sync_calendars_loading_dialog_message));
+        LoadingDialog loadingDialog = LoadingDialog.show(this, getString(R.string.sync_calendars_delete_loading_dialog_title), getString(R.string.sync_calendars_loading_dialog_message));
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -315,24 +313,6 @@ public class SettingsFragment extends BaseFragment implements
         selectedSyncCalendars.setText(syncText);
     }
 
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_pick_daily_challenge_quests).setVisible(false);
-        menu.findItem(R.id.action_help).setVisible(false);
-    }
-
-    @Override
-    public void onDestroyView() {
-        playerPersistenceService.removeAllListeners();
-        unbinder.unbind();
-        super.onDestroyView();
-    }
-
-    @Override
-    protected boolean useOptionsMenu() {
-        return true;
-    }
-
     @OnClick(R.id.pick_avatar_container)
     public void onPickAvatarClicked(View view) {
         eventBus.post(new PickAvatarRequestEvent(EventSource.SETTINGS));
@@ -351,7 +331,7 @@ public class SettingsFragment extends BaseFragment implements
     @OnClick(R.id.show_tutorial_container)
     public void onShowTutorialClicked(View view) {
         eventBus.post(new ShowTutorialEvent());
-        Intent intent = new Intent(getContext(), TutorialActivity.class);
+        Intent intent = new Intent(this, TutorialActivity.class);
         startActivity(intent);
     }
 
@@ -359,7 +339,7 @@ public class SettingsFragment extends BaseFragment implements
     public void onMostProductiveTimeClicked(View view) {
         Player player = getPlayer();
         TimeOfDayPickerFragment fragment = TimeOfDayPickerFragment.newInstance(R.string.time_of_day_picker_title, player.getMostProductiveTimesOfDayList(), this);
-        fragment.show(getFragmentManager());
+        fragment.show(getSupportFragmentManager());
     }
 
     @OnClick(R.id.work_days_container)
@@ -370,8 +350,9 @@ public class SettingsFragment extends BaseFragment implements
                     eventBus.post(new WorkDaysChangedEvent(selectedDays));
                     player.setWorkDays(new ArrayList<>(selectedDays));
                     playerPersistenceService.save(player);
+                    populateDaysOfWeekText(workDays, player.getWorkDays());
                 });
-        fragment.show(getFragmentManager());
+        fragment.show(getSupportFragmentManager());
     }
 
     @OnClick(R.id.work_hours_container)
@@ -383,8 +364,9 @@ public class SettingsFragment extends BaseFragment implements
                     player.setWorkStartTime(startTime);
                     player.setWorkEndTime(endTime);
                     playerPersistenceService.save(player);
+                    populateTimeInterval(workHours, player.getWorkStartTime(), player.getWorkEndTime());
                 });
-        fragment.show(getFragmentManager());
+        fragment.show(getSupportFragmentManager());
     }
 
     @OnClick(R.id.sleep_hours_container)
@@ -396,8 +378,9 @@ public class SettingsFragment extends BaseFragment implements
                     player.setSleepStartTime(startTime);
                     player.setSleepEndTime(endTime);
                     playerPersistenceService.save(player);
+                    populateTimeInterval(sleepHours, player.getSleepStartTime(), player.getSleepEndTime());
                 });
-        fragment.show(getFragmentManager());
+        fragment.show(getSupportFragmentManager());
     }
 
     private void populateTimeInterval(TextView textView, Time startTime, Time endTime) {
@@ -411,7 +394,7 @@ public class SettingsFragment extends BaseFragment implements
     public void onDailyChallengeStartTimeClicked(View view) {
         if (dailyChallengeNotification.isChecked()) {
             TimePickerFragment fragment = TimePickerFragment.newInstance(false, this);
-            fragment.show(getFragmentManager());
+            fragment.show(getSupportFragmentManager());
         }
     }
 
@@ -430,31 +413,31 @@ public class SettingsFragment extends BaseFragment implements
         }
         Set<Integer> selectedDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
         DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(R.string.challenge_days_question, selectedDays, this);
-        fragment.show(getFragmentManager());
+        fragment.show(getSupportFragmentManager());
     }
 
     private void onDailyChallengeNotificationChanged() {
         if (dailyChallengeNotification.isChecked()) {
-            dailyChallengeStartTimeHint.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
-            dailyChallengeStartTime.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
-            dailyChallengeDaysHint.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
-            dailyChallengeDays.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
+            dailyChallengeStartTimeHint.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_87));
+            dailyChallengeStartTime.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_54));
+            dailyChallengeDaysHint.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_87));
+            dailyChallengeDays.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_54));
         } else {
-            dailyChallengeStartTimeHint.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_26));
-            dailyChallengeStartTime.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_26));
-            dailyChallengeDaysHint.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_26));
-            dailyChallengeDays.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_26));
+            dailyChallengeStartTimeHint.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_26));
+            dailyChallengeStartTime.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_26));
+            dailyChallengeDaysHint.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_26));
+            dailyChallengeDays.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_26));
         }
     }
 
     private void onSyncCalendarsChanged(int calendarsCount) {
         populateSelectedSyncCalendarsText(calendarsCount);
         if (calendarsCount > 0 || enableSyncCalendars.isChecked()) {
-            selectSyncCalendarsHint.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
-            selectedSyncCalendars.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
+            selectSyncCalendarsHint.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_87));
+            selectedSyncCalendars.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_54));
         } else {
-            selectSyncCalendarsHint.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_26));
-            selectedSyncCalendars.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_26));
+            selectSyncCalendarsHint.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_26));
+            selectedSyncCalendars.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_26));
         }
     }
 
@@ -465,17 +448,17 @@ public class SettingsFragment extends BaseFragment implements
         }
         Player player = getPlayer();
         AndroidCalendarsPickerFragment fragment = AndroidCalendarsPickerFragment.newInstance(R.string.choose_calendars_title, player.getAndroidCalendars(), this::onSelectCalendarsToSync);
-        fragment.show(getFragmentManager());
+        fragment.show(getSupportFragmentManager());
     }
 
     private void onSelectCalendarsToSync(Map<Long, Category> selectedCalendars) {
         populateSelectedSyncCalendarsText(selectedCalendars.size());
-        loadingDialog = LoadingDialog.show(getContext(), getString(R.string.sync_calendars_loading_dialog_title), getString(R.string.sync_calendars_loading_dialog_message));
+        loadingDialog = LoadingDialog.show(this, getString(R.string.sync_calendars_loading_dialog_title), getString(R.string.sync_calendars_loading_dialog_message));
         this.selectedCalendars = selectedCalendars;
-        if(!selectedCalendars.isEmpty()) {
+        if (!selectedCalendars.isEmpty()) {
             eventBus.post(new SyncCalendarRequestEvent(selectedCalendars, EventSource.SETTINGS));
         }
-        getLoaderManager().initLoader(1, null, this);
+        getSupportLoaderManager().initLoader(1, null, this);
     }
 
     @OnClick(R.id.sync_calendars_container)
@@ -492,6 +475,7 @@ public class SettingsFragment extends BaseFragment implements
         }
         player.setMostProductiveTimesOfDayList(selectedTimes);
         playerPersistenceService.save(player);
+        populateMostProductiveTimesOfDay(selectedTimes);
     }
 
     private void populateMostProductiveTimesOfDay(List<TimeOfDay> selectedTimes) {
@@ -532,7 +516,7 @@ public class SettingsFragment extends BaseFragment implements
 
     @OnClick(R.id.rate_container)
     public void onRateClicked(View v) {
-        Uri uri = Uri.parse("market://details?id=" + getActivity().getPackageName());
+        Uri uri = Uri.parse("market://details?id=" + getPackageName());
         Intent linkToMarket = new Intent(Intent.ACTION_VIEW, uri);
         startActivity(linkToMarket);
     }
@@ -557,12 +541,12 @@ public class SettingsFragment extends BaseFragment implements
 
     @Override
     public Loader<Void> onCreateLoader(int id, Bundle args) {
-        return new CalendarLoader(getContext(), selectedCalendars, getPlayer(), syncAndroidCalendarProvider, androidCalendarEventParser, repeatingQuestScheduler, calendarPersistenceService);
+        return new CalendarLoader(this, selectedCalendars, getPlayer(), syncAndroidCalendarProvider, androidCalendarEventParser, repeatingQuestScheduler, calendarPersistenceService);
     }
 
     @Override
     public void onLoadFinished(Loader<Void> loader, Void data) {
-        if(loadingDialog != null) {
+        if (loadingDialog != null) {
             loadingDialog.dismiss();
             loadingDialog = null;
         }
