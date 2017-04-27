@@ -1,6 +1,8 @@
 package io.ipoli.android.app.ui.formatters;
 
+import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.format.TextStyle;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -29,7 +31,7 @@ public class DateFormatter {
         return DEFAULT_DATE_FORMAT.format(DateUtils.toStartOfDay(date));
     }
 
-    public static String formatWithoutYear(LocalDate date, String emptyValue) {
+    public static String formatWithoutYear(LocalDate date, String emptyValue, LocalDate currentDate) {
         if (date == null) {
             return emptyValue;
         }
@@ -42,10 +44,27 @@ public class DateFormatter {
         if (DateUtils.isYesterday(date)) {
             return "Yesterday";
         }
+        if (currentDate != null) {
+            if (currentDate.with(DayOfWeek.MONDAY).isEqual(date.with(DayOfWeek.MONDAY))) {
+                return date.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault());
+            }
+        }
         return DATE_NO_YEAR_FORMAT.format(DateUtils.toStartOfDay(date));
     }
 
     public static String formatWithoutYear(LocalDate date) {
-        return formatWithoutYear(date, DEFAULT_EMPTY_VALUE);
+        return formatWithoutYear(date, DEFAULT_EMPTY_VALUE, null);
+    }
+
+    public static String formatWithoutYear(LocalDate date, String emptyValue) {
+        return formatWithoutYear(date, emptyValue, null);
+    }
+
+    public static String formatWithoutYear(LocalDate date, LocalDate currentDate) {
+        return formatWithoutYear(date, DEFAULT_EMPTY_VALUE, currentDate);
+    }
+
+    public static String formatWithoutYearSimple(LocalDate date) {
+        return DATE_NO_YEAR_FORMAT.format(DateUtils.toStartOfDay(date));
     }
 }

@@ -27,7 +27,7 @@ import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
 import io.ipoli.android.app.receivers.BootCompleteReceiver;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
-import io.ipoli.android.app.settings.SettingsFragment;
+import io.ipoli.android.app.settings.SettingsActivity;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.tutorial.fragments.PickTutorialQuestsFragment;
 import io.ipoli.android.app.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
@@ -78,8 +78,8 @@ import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.fragments.RewardListFragment;
-import io.ipoli.android.shop.ShopActivity;
-import io.ipoli.android.shop.fragments.CoinsStoreFragment;
+import io.ipoli.android.shop.activities.CoinStoreActivity;
+import io.ipoli.android.shop.activities.ShopActivity;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -161,8 +161,6 @@ public interface AppComponent {
 
     void inject(RecurrencePickerFragment recurrencePickerFragment);
 
-    void inject(SettingsFragment settingsFragment);
-
     void inject(PickDailyChallengeQuestsActivity pickDailyChallengeQuestsActivity);
 
     void inject(ChallengePickerFragment challengePickerFragment);
@@ -199,8 +197,6 @@ public interface AppComponent {
 
     void inject(CompleteQuestReceiver completeQuestReceiver);
 
-    void inject(CoinsStoreFragment coinsStoreFragment);
-
     void inject(QuickAddActivity quickAddActivity);
 
     void inject(AgendaActivity agendaActivity);
@@ -236,5 +232,9 @@ public interface AppComponent {
     void inject(BootCompleteReceiver bootCompleteReceiver);
 
     void inject(SyncCalendarActivity syncCalendarActivity);
+
+    void inject(SettingsActivity settingsActivity);
+
+    void inject(CoinStoreActivity coinStoreActivity);
 }
 

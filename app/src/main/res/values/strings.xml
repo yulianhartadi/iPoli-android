@@ -186,7 +186,6 @@
     <string name="empty_inbox_text">Your inbox is empty</string>
     <string name="empty_repeating_quests_text">No repeating quests? Add repeating task or habit?</string>
     <string name="action_settings">Settings</string>
-    <string name="nav_header_player_level">Level %d: Newbie</string>
     <string name="nav_drawer_player_xp">XP: %s</string>
     <string name="title_fragment_growth">Growth</string>
     <string name="help_dialog_growth_title">What is growth all about?</string>
@@ -263,8 +262,6 @@
     <string name="recurrence_picker_title">Pick repeating pattern</string>
     <string name="pick_flexible_count_title">How often?</string>
     <string name="preferred_days">Preferred days</string>
-    <string name="title_activity_repeating_quest" />
-    <string name="title_activity_challenge" />
     <string name="activity_quest_title">Quest</string>
     <string name="add_sub_quest">Add Sub Quest</string>
     <string name="edit_quest_add_sub_quest">+ Add sub-quest</string>
@@ -343,7 +340,7 @@
     <string name="reward_earned">%s earned! Enjoy!</string>
     <string name="coins_bought">+ %d coins added to your stash</string>
     <string name="store">Store</string>
-    <string name="title_fragment_store">Store</string>
+    <string name="title_activity_store">Store</string>
     <string name="no_internet_to_buy_coins">If you want some coins, you should enable your internet!</string>
     <string name="something_went_wrong">Something went wrong, please try again later!</string>
     <string name="help_dialog_store_title">What can you buy?</string>
@@ -461,4 +458,18 @@
     <string name="empty_calendars_text">No calendars</string>
     <string name="allow_read_calendars_perm_reason">iPoli needs to read your calendars to import your events as quests</string>
     <string name="sync_calendars_delete_loading_dialog_title">Deleting quests</string>
+    <string name="empty_store_items">No availabale items</string>
+
+    <string-array name="player_titles">
+        <item>Novice</item>
+        <item>Apprentice</item>
+        <item>Adept</item>
+        <item>Expert</item>
+        <item>Folk Hero</item>
+        <item>Master</item>
+        <item>Legend</item>
+        <item>Immortal</item>
+        <item>Demigod</item>
+        <item>Titan</item>
+    </string-array>
 </resources>
