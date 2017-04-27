@@ -3,12 +3,7 @@ package io.ipoli.android.scheduling.constraints;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-
-import io.ipoli.android.Constants;
-import io.ipoli.android.app.TimeOfDay;
 import io.ipoli.android.app.scheduling.DailySchedule;
-import io.ipoli.android.app.scheduling.DailyScheduleBuilder;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.constraints.Constraint;
 import io.ipoli.android.app.scheduling.constraints.NotWorkConstraint;
@@ -30,18 +25,10 @@ import static org.hamcrest.Matchers.is;
 public class NotWorkConstraintTest {
 
     private Constraint constraint;
-    private DailySchedule schedule;
 
     @Before
     public void setUp() throws Exception {
-        constraint = new NotWorkConstraint(0, 30);
-        schedule = new DailyScheduleBuilder()
-                .setStartMinute(0)
-                .setEndMinute(60)
-                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
-                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
-                .setProductiveTimes(Arrays.asList(TimeOfDay.MORNING))
-                .createDailySchedule();
+        constraint = new NotWorkConstraint(0, 30, DailySchedule.DEFAULT_TIME_SLOT_DURATION);
     }
 
     @Test
@@ -58,19 +45,19 @@ public class NotWorkConstraintTest {
 
     @Test
     public void shouldHaveNonZeroProbabilityOutsideWorkTime() {
-        DiscreteDistribution dist = constraint.apply(schedule);
-        assertThat(dist.at(schedule.getSlotForMinute(55)), is(greaterThan(0.0)));
+        DiscreteDistribution dist = constraint.apply();
+        assertThat(dist.at(constraint.getSlotForMinute(55)), is(greaterThan(0.0)));
     }
 
     @Test
     public void shouldHaveZeroProbabilityWithinWorkTime() {
-        DiscreteDistribution dist = constraint.apply(schedule);
-        assertThat(dist.at(schedule.getSlotForMinute(0)), is(0.0));
+        DiscreteDistribution dist = constraint.apply();
+        assertThat(dist.at(constraint.getSlotForMinute(0)), is(0.0));
     }
 
     @Test
     public void shouldHaveNonZeroProbabilityAtStartOfNonWorkTime() {
-        DiscreteDistribution dist = constraint.apply(schedule);
-        assertThat(dist.at(schedule.getSlotForMinute(30)), is(greaterThan(0.0)));
+        DiscreteDistribution dist = constraint.apply();
+        assertThat(dist.at(constraint.getSlotForMinute(30)), is(greaterThan(0.0)));
     }
 }

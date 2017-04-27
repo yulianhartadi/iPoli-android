@@ -2,11 +2,9 @@ package io.ipoli.android.app.scheduling.constraints;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Random;
 import java.util.Set;
 
 import io.ipoli.android.app.TimeOfDay;
-import io.ipoli.android.app.scheduling.DailySchedule;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 import io.ipoli.android.app.scheduling.distributions.FlatPeakDiscreteDistribution;
@@ -24,18 +22,13 @@ import static io.ipoli.android.app.scheduling.constraints.MorningConstraint.MORN
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 4/23/17.
  */
-public class ProductiveTimeConstraint implements Constraint {
+public class ProductiveTimeConstraint extends BaseConstraint {
 
     private final Set<TimeOfDay> productiveTimes;
-    private final Random random;
 
-    public ProductiveTimeConstraint(Collection<TimeOfDay> productiveTimes) {
-        this(productiveTimes, new Random());
-    }
-
-    public ProductiveTimeConstraint(Collection<TimeOfDay> productiveTimes, Random random) {
+    public ProductiveTimeConstraint(Collection<TimeOfDay> productiveTimes, int slotDuration) {
+        super(slotDuration);
         this.productiveTimes = new HashSet<>(productiveTimes);
-        this.random = random;
     }
 
     @Override
@@ -45,49 +38,44 @@ public class ProductiveTimeConstraint implements Constraint {
     }
 
     @Override
-    public DiscreteDistribution apply(DailySchedule schedule) {
-        DiscreteDistribution result = UniformDiscreteDistribution.create(schedule.getSlotCount(), random);
+    public DiscreteDistribution apply() {
+        DiscreteDistribution result = UniformDiscreteDistribution.create(getTotalSlotCount());
         if (productiveTimes.contains(TimeOfDay.ANY_TIME)) {
             return result;
         }
 
-        int slopeWidth = schedule.getSlotCountBetween(0, 30);
+        int slopeWidth = getSlotCountBetween(0, 30);
 
-        if (productiveTimes.contains(TimeOfDay.MORNING) && canAddToSchedule(schedule, MORNING_START, MORNING_END)) {
-            result = result.joint(createMorningDistribution(schedule, slopeWidth));
+        if (productiveTimes.contains(TimeOfDay.MORNING)) {
+            result = result.joint(createMorningDistribution(slopeWidth));
         }
 
-        if (productiveTimes.contains(TimeOfDay.AFTERNOON) && canAddToSchedule(schedule, AFTERNOON_START, AFTERNOON_END)) {
-            result = result.joint(createAfternoonDistribution(schedule, slopeWidth));
+        if (productiveTimes.contains(TimeOfDay.AFTERNOON)) {
+            result = result.joint(createAfternoonDistribution(slopeWidth));
         }
 
-        if (productiveTimes.contains(TimeOfDay.EVENING) && canAddToSchedule(schedule, EVENING_START, EVENING_END)) {
-            result = result.joint(createEveningDistribution(schedule, slopeWidth));
+        if (productiveTimes.contains(TimeOfDay.EVENING)) {
+            result = result.joint(createEveningDistribution(slopeWidth));
         }
 
         return result;
     }
 
-    private boolean canAddToSchedule(DailySchedule schedule, int startMinute, int endMinute) {
-        return schedule.getStartMinute() <= endMinute && schedule.getEndMinute() >= startMinute;
+    private DiscreteDistribution createMorningDistribution(int slopeWidth) {
+        return createDistribution(slopeWidth, MORNING_START, MORNING_END);
     }
 
-    private DiscreteDistribution createMorningDistribution(DailySchedule schedule, int slopeWidth) {
-        return createDistribution(schedule, slopeWidth, MORNING_START, MORNING_END);
+    private DiscreteDistribution createAfternoonDistribution(int slopeWidth) {
+        return createDistribution(slopeWidth, AFTERNOON_START, AFTERNOON_END);
     }
 
-    private DiscreteDistribution createAfternoonDistribution(DailySchedule schedule, int slopeWidth) {
-        return createDistribution(schedule, slopeWidth, AFTERNOON_START, AFTERNOON_END);
+    private DiscreteDistribution createEveningDistribution(int slopeWidth) {
+        return createDistribution(slopeWidth, EVENING_START, EVENING_END);
     }
 
-    private DiscreteDistribution createEveningDistribution(DailySchedule schedule, int slopeWidth) {
-        return createDistribution(schedule, slopeWidth, EVENING_START, EVENING_END);
-    }
-
-    private DiscreteDistribution createDistribution(DailySchedule schedule, int slopeWidth, int startMinute, int endMinute) {
-        int peakWidth = schedule.getSlotCountBetween(Math.max(startMinute, schedule.getStartMinute()),
-                Math.min(endMinute, schedule.getEndMinute()));
-        int peakStart = schedule.getSlotForMinute(Math.max(startMinute, schedule.getStartMinute()));
-        return FlatPeakDiscreteDistribution.create(peakStart, peakWidth, 100, slopeWidth, schedule.getSlotCount());
+    private DiscreteDistribution createDistribution(int slopeWidth, int startMinute, int endMinute) {
+        int peakWidth = getSlotCountBetween(startMinute, endMinute);
+        int peakStart = getSlotForMinute(startMinute);
+        return FlatPeakDiscreteDistribution.create(peakStart, peakWidth, 100, slopeWidth, getTotalSlotCount());
     }
 }

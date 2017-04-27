@@ -80,10 +80,10 @@ public interface Constants {
     int DEFAULT_AVATAR_LEVEL = 1;
     long DEFAULT_PLAYER_COINS = 10;
     String DEFAULT_PLAYER_PICTURE = "avatar_12";
-    List<TimeOfDay> DEFAULT_PLAYER_PRODUCTIVE_TIME = new ArrayList<>(Collections.singletonList(TimeOfDay.MORNING));
+    List<TimeOfDay> DEFAULT_PLAYER_PRODUCTIVE_TIMES = new ArrayList<>(Collections.singletonList(TimeOfDay.MORNING));
     int DEFAULT_PLAYER_WORK_START_MINUTE = 10 * 60;
     int DEFAULT_PLAYER_WORK_END_MINUTE = 18 * 60;
-    int DEFAULT_PLAYER_SLEEP_START_MINUTE = 0;
+    int DEFAULT_PLAYER_SLEEP_START_MINUTE = 23 * 60;
     int DEFAULT_PLAYER_SLEEP_END_MINUTE = 8 * 60;
     int DEFAULT_PLAYER_COMPLETE_DAILY_QUESTS_MINUTE = 0;
 

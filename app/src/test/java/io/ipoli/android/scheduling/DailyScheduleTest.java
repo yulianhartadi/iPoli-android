@@ -13,13 +13,14 @@ import io.ipoli.android.app.scheduling.DailySchedule;
 import io.ipoli.android.app.scheduling.DailyScheduleBuilder;
 import io.ipoli.android.app.scheduling.PriorityEstimator;
 import io.ipoli.android.app.scheduling.Task;
-import io.ipoli.android.app.scheduling.constraints.MorningConstraint;
-import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -42,7 +43,7 @@ public class DailyScheduleTest {
                 .setEndMinute(60)
                 .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
                 .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
-                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIME)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
                 .setScheduledTasks(Collections.singletonList(new Task(30, 30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)))
                 .createDailySchedule();
         assertTrue(schedule.isFree(0, 30));
@@ -56,7 +57,7 @@ public class DailyScheduleTest {
                 .setEndMinute(60)
                 .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
                 .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
-                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIME)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
                 .setScheduledTasks(Collections.singletonList(new Task(0, 30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)))
                 .createDailySchedule();
         assertTrue(schedule.isFree(30, 60));
@@ -70,7 +71,7 @@ public class DailyScheduleTest {
                 .setEndMinute(60)
                 .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
                 .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
-                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIME)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
                 .setScheduledTasks(Collections.singletonList(new Task(5, 30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)))
                 .createDailySchedule();
         assertTrue(schedule.isFree(30, 60));
@@ -80,21 +81,22 @@ public class DailyScheduleTest {
     @Test
     public void shouldScheduleTask() {
         DailySchedule schedule = new DailyScheduleBuilder()
-                .setStartMinute(MorningConstraint.MORNING_START)
-                .setEndMinute(Time.MINUTES_IN_A_DAY)
+                .setStartMinute(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE)
+                .setEndMinute(Constants.DEFAULT_PLAYER_SLEEP_START_MINUTE)
                 .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
                 .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
-                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIME)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
                 .setSeed(random)
                 .createDailySchedule();
         List<Task> tasksToSchedule = new ArrayList<>();
         Quest q = new Quest("q1", Category.WELLNESS);
         q.setPriority(Quest.PRIORITY_IMPORTANT_NOT_URGENT);
         q.setStartTimePreference(TimePreference.MORNING);
+        q.setDuration(30);
         tasksToSchedule.add(toTask(q));
         List<Task> scheduledTasks = schedule.scheduleTasks(tasksToSchedule);
-//        assertThat(scheduledTasks.size(), is(1));
-//        assertThat(scheduledTasks.get(0).getStartMinute(), is(greaterThanOrEqualTo(0)));
+        assertThat(scheduledTasks.size(), is(1));
+        assertThat(scheduledTasks.get(0).getRecommendedSlots().get(0).getStartMinute(), is(greaterThanOrEqualTo(0)));
     }
 
     private Task toTask(Quest quest) {

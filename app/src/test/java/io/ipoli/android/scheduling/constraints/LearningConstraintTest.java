@@ -3,14 +3,10 @@ package io.ipoli.android.scheduling.constraints;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
-
 import io.ipoli.android.Constants;
-import io.ipoli.android.app.TimeOfDay;
 import io.ipoli.android.app.scheduling.DailySchedule;
-import io.ipoli.android.app.scheduling.DailyScheduleBuilder;
 import io.ipoli.android.app.scheduling.Task;
+import io.ipoli.android.app.scheduling.constraints.Constraint;
 import io.ipoli.android.app.scheduling.constraints.LearningConstraint;
 import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 import io.ipoli.android.app.utils.TimePreference;
@@ -30,20 +26,11 @@ import static org.hamcrest.Matchers.is;
  */
 public class LearningConstraintTest {
 
-    private LearningConstraint constraint;
-    private DailySchedule schedule;
+    private Constraint constraint;
 
     @Before
     public void setUp() throws Exception {
-        constraint = new LearningConstraint();
-        List<TimeOfDay> productiveTimes = Arrays.asList(TimeOfDay.MORNING);
-        schedule = new DailyScheduleBuilder()
-                .setStartMinute(0)
-                .setEndMinute(h2Min(15))
-                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
-                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
-                .setProductiveTimes(productiveTimes)
-                .createDailySchedule();
+        constraint = new LearningConstraint(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE, DailySchedule.DEFAULT_TIME_SLOT_DURATION);
     }
 
     @Test
@@ -60,28 +47,28 @@ public class LearningConstraintTest {
 
     @Test
     public void shouldHaveZeroProbabilityForFirstSlot() {
-        DiscreteDistribution dist = constraint.apply(schedule);
-        assertThat(dist.at(schedule.getSlotForMinute(5)), is(0.0));
+        DiscreteDistribution dist = constraint.apply();
+        assertThat(dist.at(constraint.getSlotForMinute(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE)), is(0.0));
     }
 
     @Test
     public void shouldHaveEqualProbabilitiesInFirstPeakEdges() {
-        DiscreteDistribution dist = constraint.apply(schedule);
-        assertThat(dist.at(schedule.getSlotForMinute(h2Min(2))),
-                is(dist.at(schedule.getSlotForMinute(h2Min(4) - 1))));
+        DiscreteDistribution dist = constraint.apply();
+        assertThat(dist.at(constraint.getSlotForMinute(h2Min(2))),
+                is(dist.at(constraint.getSlotForMinute(h2Min(4) - 1))));
     }
 
     @Test
     public void shouldHaveHigherProbabilityInPeakThanSlope() {
-        DiscreteDistribution dist = constraint.apply(schedule);
-        assertThat(dist.at(schedule.getSlotForMinute(h2Min(3))),
-                is(greaterThan(dist.at(schedule.getSlotForMinute(h2Min(4) + 15)))));
+        DiscreteDistribution dist = constraint.apply();
+        assertThat(dist.at(constraint.getSlotForMinute(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE + h2Min(3))),
+                is(greaterThan(dist.at(constraint.getSlotForMinute(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE + h2Min(4) + 15)))));
     }
 
     @Test
     public void shouldHaveHigherProbabilityInSlopeThanPlateau() {
-        DiscreteDistribution dist = constraint.apply(schedule);
-        assertThat(dist.at(schedule.getSlotForMinute(h2Min(4) + 15)),
-                is(greaterThan(dist.at(schedule.getSlotForMinute(h2Min(6))))));
+        DiscreteDistribution dist = constraint.apply();
+        assertThat(dist.at(constraint.getSlotForMinute(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE + h2Min(4) + 15)),
+                is(greaterThan(dist.at(constraint.getSlotForMinute(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE + h2Min(6))))));
     }
 }

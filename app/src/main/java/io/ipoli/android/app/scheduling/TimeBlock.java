@@ -1,5 +1,7 @@
 package io.ipoli.android.app.scheduling;
 
+import io.ipoli.android.app.utils.Time;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 12/16/16.
@@ -32,12 +34,12 @@ public class TimeBlock {
         return endMinute - startMinute;
     }
 
-    public void setProbability(double probability) {
-        this.probability = probability;
+    public Time getStartTime() {
+        return Time.of(startMinute);
     }
 
-    public double getProbability() {
-        return probability;
+    public Time getEndTime() {
+        return Time.of(endMinute);
     }
 
     public boolean doOverlap(int startMinute, int endMinute) {

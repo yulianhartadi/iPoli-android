@@ -1,6 +1,5 @@
 package io.ipoli.android.app.scheduling.constraints;
 
-import io.ipoli.android.app.scheduling.DailySchedule;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 
@@ -12,5 +11,16 @@ public interface Constraint {
 
     boolean shouldApply(Task task);
 
-    DiscreteDistribution apply(DailySchedule schedule);
+    DiscreteDistribution apply();
+
+    int getSlotForMinute(int minute);
+
+    int getTotalSlotCount();
+
+    /**
+     * @param startMinute inclusive
+     * @param endMinute   exclusive
+     * @return number of time slots between the minutes
+     */
+    int getSlotCountBetween(int startMinute, int endMinute);
 }
