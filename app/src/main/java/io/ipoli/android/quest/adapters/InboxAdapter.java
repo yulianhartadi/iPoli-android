@@ -1,9 +1,9 @@
 package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
+import org.threeten.bp.LocalDate;
+
 import java.util.List;
 
 import butterknife.BindView;
@@ -20,12 +22,15 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
+import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.DeleteQuestRequestEvent;
 import io.ipoli.android.quest.events.EditQuestRequestEvent;
 import io.ipoli.android.quest.events.ScheduleQuestForTodayEvent;
+
+import static org.threeten.bp.temporal.ChronoUnit.DAYS;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -36,11 +41,13 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
     private Context context;
     private List<Quest> quests;
     private final Bus eventBus;
+    private final LocalDate today;
 
     public InboxAdapter(Context context, List<Quest> quests, Bus eventBus) {
         this.context = context;
         this.quests = quests;
         this.eventBus = eventBus;
+        this.today = LocalDate.now();
     }
 
     @Override
@@ -60,7 +67,23 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         holder.categoryIndicatorImage.setImageResource(category.colorfulImage);
 
         holder.name.setText(q.getName());
-        holder.createdAt.setText(DateUtils.getRelativeTimeSpanString(q.getCreatedAt()));
+
+        if (q.getEnd() != null) {
+            holder.dueIn.setVisibility(View.VISIBLE);
+
+            LocalDate endDate = q.getEndDate().minusDays(10);
+            if (endDate.isBefore(today)) {
+                long overdueDays = DAYS.between(endDate, today);
+                String daysText = overdueDays > 1 ? "days" : "day";
+                holder.dueIn.setText("Overdue by " + overdueDays + " " + daysText);
+                holder.dueIn.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
+            } else {
+                holder.dueIn.setText("Due " + DateFormatter.formatWithoutYear(endDate, today));
+                holder.dueIn.setTextColor(ContextCompat.getColor(context, R.color.md_dark_text_54));
+            }
+        } else {
+            holder.dueIn.setVisibility(View.GONE);
+        }
 
         holder.moreMenu.setOnClickListener(v -> {
             eventBus.post(new ItemActionsShownEvent(EventSource.INBOX));
@@ -105,8 +128,8 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         @BindView(R.id.quest_text)
         TextView name;
 
-        @BindView(R.id.quest_created_at)
-        TextView createdAt;
+        @BindView(R.id.quest_due_in)
+        TextView dueIn;
 
         @BindView(R.id.quest_category_indicator_image)
         ImageView categoryIndicatorImage;

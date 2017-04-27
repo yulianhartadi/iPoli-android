@@ -4,6 +4,8 @@ import android.content.Context;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 
+import org.threeten.bp.LocalDate;
+
 import java.util.Locale;
 
 import io.ipoli.android.app.ui.formatters.DateFormatter;
@@ -46,8 +48,8 @@ public class QuestViewModel {
         return getQuestCategory().colorfulImage;
     }
 
-    public String getDueDateText() {
-        return DateFormatter.formatWithoutYear(quest.getScheduledDate());
+    public String getDueDateText(LocalDate currentDate) {
+        return DateFormatter.formatWithoutYear(quest.getScheduledDate(), currentDate);
     }
 
     private Category getQuestCategory() {
