@@ -63,4 +63,8 @@ public class DateFormatter {
     public static String formatWithoutYear(LocalDate date, LocalDate currentDate) {
         return formatWithoutYear(date, DEFAULT_EMPTY_VALUE, currentDate);
     }
+
+    public static String formatWithoutYearSimple(LocalDate date) {
+        return DATE_NO_YEAR_FORMAT.format(DateUtils.toStartOfDay(date));
+    }
 }
