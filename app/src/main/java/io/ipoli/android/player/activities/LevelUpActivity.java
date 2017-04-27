@@ -24,6 +24,9 @@ public class LevelUpActivity extends BaseActivity {
     @BindView(R.id.message)
     TextView message;
 
+    @BindView(R.id.title)
+    TextView title;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +35,14 @@ public class LevelUpActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         int level = getIntent().getIntExtra(LEVEL, 100);
+
+        String[] playerTitles = getResources().getStringArray(R.array.player_titles);
+
+        if (level % 10 == 0 && level <= (playerTitles.length - 1) * 10) {
+            String playerTitle = playerTitles[level / 10];
+            title.setText("You've become " + playerTitle);
+        }
+
         message.setText(Html.fromHtml(getString(R.string.level_up_message, level)));
     }
 
