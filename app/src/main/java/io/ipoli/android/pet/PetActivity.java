@@ -38,7 +38,7 @@ import io.ipoli.android.pet.events.RevivePetRequest;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
-import io.ipoli.android.shop.ShopActivity;
+import io.ipoli.android.shop.activities.ShopActivity;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 /**

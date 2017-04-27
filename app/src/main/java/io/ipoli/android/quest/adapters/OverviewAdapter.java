@@ -62,13 +62,17 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private static final int COMPLETED_QUEST_ITEM_VIEW_TYPE = 2;
 
     private final Context context;
+    private final LayoutInflater inflater;
 
     private List<Object> items;
-    private Bus eventBus;
+    private final Bus eventBus;
+    private final LocalDate today;
 
     public OverviewAdapter(Context context, Bus eventBus) {
         this.context = context;
         this.eventBus = eventBus;
+        this.inflater = LayoutInflater.from(context);
+        this.today = LocalDate.now();
         items = new ArrayList<>();
     }
 
@@ -186,7 +190,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private void bindCompletedQuestViewHolder(CompletedQuestViewHolder holder) {
         final QuestViewModel vm = (QuestViewModel) items.get(holder.getAdapterPosition());
         holder.name.setText(vm.getName());
-        holder.dueDate.setText(vm.getDueDateText());
+        holder.dueDate.setText(vm.getDueDateText(today));
     }
 
     private void bindHeaderView(RecyclerView.ViewHolder holder, int position) {
@@ -217,7 +221,12 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         holder.contextIndicatorImage.setImageResource(vm.getCategoryImage());
-        holder.dueDate.setText(vm.getDueDateText());
+        if(q.getScheduledDate().isEqual(today) || q.getScheduledDate().isEqual(today.plusDays(1))) {
+            holder.dueDate.setVisibility(View.GONE);
+        } else {
+            holder.dueDate.setVisibility(View.VISIBLE);
+            holder.dueDate.setText(vm.getDueDateText(today));
+        }
 
         String scheduleText = vm.getScheduleText();
 
@@ -246,8 +255,6 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if (!vm.hasTimesADay()) {
             return;
         }
-
-        LayoutInflater inflater = LayoutInflater.from(context);
 
         for (int i = 1; i <= vm.getCompletedCount(); i++) {
             View progressView = inflater.inflate(R.layout.repeating_quest_progress_context_indicator, holder.progressContainer, false);

@@ -58,12 +58,13 @@ import io.ipoli.android.quest.data.Recurrence;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/13/16.
  */
-public class RecurrencePickerFragment extends DialogFragment implements DatePickerFragment.OnDatePickedListener {
+public class RecurrencePickerFragment extends DialogFragment{
 
     private static final String TAG = "recurrence-picker-dialog";
     public static final int FREQUENCY_DAILY = 0;
     public static final int FREQUENCY_WEEKLY = 1;
     public static final int FREQUENCY_MONTHLY = 2;
+    public static final int FREQUENCY_YEARLY = 3;
     public static final int FLEXIBLE_FREQUENCY_WEEKLY = 0;
     public static final int FLEXIBLE_FREQUENCY_MONTHLY = 1;
     private static final String RECURRENCE = "recurrence";
@@ -77,7 +78,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
         put(WeekDay.SA, R.id.saturday);
         put(WeekDay.SU, R.id.sunday);
     }};
-    private List<String> frequencies = Arrays.asList("Daily", "Weekly", "Monthly");
+    private List<String> frequencies = Arrays.asList("Daily", "Weekly", "Monthly", "Yearly");
     private List<String> flexibleFrequencies = Arrays.asList("Weekly", "Monthly");
     private boolean isFlexible = false;
     private View view;
@@ -104,6 +105,9 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     @BindView(R.id.day_of_month_container)
     ViewGroup dayOfMonthContainer;
 
+    @BindView(R.id.day_of_year_container)
+    ViewGroup dayOfYearContainer;
+
     @BindView(R.id.day_of_month)
     Spinner dayOfMonth;
 
@@ -115,6 +119,9 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
 
     @BindView(R.id.preferred_days_title)
     TextView preferredDays;
+
+    @BindView(R.id.day_of_year)
+    Button dayOfYear;
 
     @BindView(R.id.recurrence_until)
     Button until;
@@ -187,6 +194,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     private void initUI() {
         if (isFlexible) {
             dayOfMonthContainer.setVisibility(View.GONE);
+            dayOfYearContainer.setVisibility(View.GONE);
             flexibleCountContainer.setVisibility(View.VISIBLE);
             preferredDays.setVisibility(View.VISIBLE);
             dayOfWeekContainer.setVisibility(View.VISIBLE);
@@ -198,11 +206,18 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
             flexibleCountContainer.setVisibility(View.GONE);
             dayOfWeekContainer.setVisibility(View.GONE);
             dayOfMonthContainer.setVisibility(View.GONE);
+            dayOfYearContainer.setVisibility(View.GONE);
             initFrequencies();
             initDaysOfMonth();
             initWeekDays();
+            initDayOfYear();
         }
         initUntilDate();
+    }
+
+    private void initDayOfYear() {
+        dayOfYear.setText(DateFormatter.formatWithoutYearSimple(LocalDate.now()));
+        dayOfYear.setTag(LocalDate.now());
     }
 
     private void initWeekDays() {
@@ -251,7 +266,7 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     private void initUntilDate() {
         if (recurrence.getDtendDate() != null) {
             LocalDate dtend = DateUtils.fromMillis(recurrence.getDtend());
-            until.setText(DateUtils.isToday(dtend) ? getString(R.string.today) : DateFormatter.format(dtend));
+            until.setText(DateFormatter.format(dtend));
             until.setTag(dtend);
         }
     }
@@ -314,6 +329,8 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
                 return FREQUENCY_WEEKLY;
             case MONTHLY:
                 return FREQUENCY_MONTHLY;
+            case YEARLY:
+                return FREQUENCY_YEARLY;
         }
         return FREQUENCY_DAILY;
     }
@@ -342,17 +359,25 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
                     recurrenceFrequency.setTag(Recurrence.RepeatType.DAILY);
                     dayOfWeekContainer.setVisibility(View.GONE);
                     dayOfMonthContainer.setVisibility(View.GONE);
+                    dayOfYearContainer.setVisibility(View.GONE);
                     break;
                 case FREQUENCY_WEEKLY:
                     recurrenceFrequency.setTag(Recurrence.RepeatType.WEEKLY);
                     dayOfWeekContainer.setVisibility(View.VISIBLE);
                     dayOfMonthContainer.setVisibility(View.GONE);
+                    dayOfYearContainer.setVisibility(View.GONE);
                     break;
                 case FREQUENCY_MONTHLY:
                     recurrenceFrequency.setTag(Recurrence.RepeatType.MONTHLY);
                     dayOfWeekContainer.setVisibility(View.GONE);
                     dayOfMonthContainer.setVisibility(View.VISIBLE);
+                    dayOfYearContainer.setVisibility(View.GONE);
                     break;
+                case FREQUENCY_YEARLY:
+                    recurrenceFrequency.setTag(Recurrence.RepeatType.YEARLY);
+                    dayOfWeekContainer.setVisibility(View.GONE);
+                    dayOfMonthContainer.setVisibility(View.GONE);
+                    dayOfYearContainer.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -360,21 +385,37 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
     @OnClick(R.id.recurrence_until)
     public void onUntilTapped() {
         if (until.getTag() != null) {
-            DatePickerFragment.newInstance((LocalDate) until.getTag(), true, this).show(getFragmentManager());
+            DatePickerFragment.newInstance((LocalDate) until.getTag(), true, onUntilDatePicked).show(getFragmentManager());
         } else {
-            DatePickerFragment.newInstance(true, this).show(getFragmentManager());
+            DatePickerFragment.newInstance(true, onUntilDatePicked).show(getFragmentManager());
         }
     }
 
-    @Override
-    public void onDatePicked(LocalDate date) {
+    private DatePickerFragment.OnDatePickedListener onUntilDatePicked = date -> {
         String text = getString(R.string.end_of_time);
         if (date != null) {
-            text = DateUtils.isToday(date) ? getString(R.string.today) : DateFormatter.format(date);
+            text = DateFormatter.format(date);
         }
         until.setText(text);
         until.setTag(date);
+    };
+
+    @OnClick(R.id.day_of_year)
+    public void onDayOfYearTapped() {
+        if (dayOfYear.getTag() != null) {
+            DatePickerFragment.newInstance((LocalDate) dayOfYear.getTag(), onDateOfYearPicked).show(getFragmentManager());
+        } else {
+            DatePickerFragment.newInstance(false, onDateOfYearPicked).show(getFragmentManager());
+        }
     }
+
+    private DatePickerFragment.OnDatePickedListener onDateOfYearPicked = date -> {
+        if (date == null) {
+            date = LocalDate.now();
+        }
+        dayOfYear.setText(DateFormatter.formatWithoutYearSimple(date));
+        dayOfYear.setTag(date);
+    };
 
     private void onDialogDone(View view) {
         Recurrence.RepeatType repeatType = (Recurrence.RepeatType) recurrenceFrequency.getTag();
@@ -389,6 +430,9 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
             recurrence.setDtendDate((LocalDate) until.getTag());
         } else {
             recurrence.setDtend(null);
+        }
+        if(repeatType == Recurrence.RepeatType.YEARLY) {
+            recurrence.setDtstartDate((LocalDate) dayOfYear.getTag());
         }
         recurrencePickerListener.onRecurrencePicked(recurrence);
     }
@@ -443,6 +487,10 @@ public class RecurrencePickerFragment extends DialogFragment implements DatePick
                 recur.setFrequency(Recur.MONTHLY);
                 recur.getMonthDayList().add(dayOfMonth.getSelectedItemPosition() + 1);
                 recurrence.setRecurrenceType(Recurrence.RepeatType.MONTHLY);
+                break;
+            case YEARLY:
+                recur.setFrequency(Recur.YEARLY);
+                recurrence.setRecurrenceType(Recurrence.RepeatType.YEARLY);
                 break;
         }
         recurrence.setRrule(recur.toString());
