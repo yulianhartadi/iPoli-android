@@ -152,6 +152,10 @@ public class DailySchedule {
                     slotMinute += timeSlotDuration;
                 }
             }
+
+            for (TimeBlock tb : rankedSlots) {
+                System.out.println(tb.getStartTime() + " end: " + tb.getEndTime());
+            }
         }
         return tasksToSchedule;
     }
