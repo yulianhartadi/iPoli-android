@@ -71,7 +71,7 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         if (q.getEnd() != null) {
             holder.dueIn.setVisibility(View.VISIBLE);
 
-            LocalDate endDate = q.getEndDate().minusDays(10);
+            LocalDate endDate = q.getEndDate();
             if (endDate.isBefore(today)) {
                 long overdueDays = DAYS.between(endDate, today);
                 String daysText = overdueDays > 1 ? "days" : "day";
