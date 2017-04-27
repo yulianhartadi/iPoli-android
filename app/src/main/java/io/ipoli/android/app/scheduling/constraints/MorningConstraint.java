@@ -14,8 +14,8 @@ public class MorningConstraint extends SoftConstraint {
     public static final int MORNING_START = h2Min(6);
     public static final int MORNING_END = h2Min(12);
 
-    public MorningConstraint() {
-        super(MORNING_START, MORNING_END);
+    public MorningConstraint(int slotDuration) {
+        super(MORNING_START, MORNING_END, slotDuration);
     }
 
     @Override

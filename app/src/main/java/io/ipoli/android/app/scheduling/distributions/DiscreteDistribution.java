@@ -4,20 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
-
-import io.ipoli.android.app.scheduling.WeightedRandomSampler;
 
 public class DiscreteDistribution implements Iterable<Double> {
 
-    private final WeightedRandomSampler<Integer> randomSampler;
+    //    private final WeightedRandomSampler<Integer> randomSampler;
     private final List<Double> frequencies;
     private final double[] values;
-    private final Random random;
 
-    public DiscreteDistribution(double[] values, Random random) {
+    public DiscreteDistribution(double[] values) {
         this.values = values;
-        this.random = random;
 
         frequencies = new ArrayList<>();
         double total = 0;
@@ -27,23 +22,20 @@ public class DiscreteDistribution implements Iterable<Double> {
         for (double value : values) {
             frequencies.add((value / total));
         }
-
-        randomSampler = new WeightedRandomSampler<>(random);
-        for (int i = 0; i < values.length; i++) {
-            randomSampler.add(i, values[i]);
-        }
+//
+//        randomSampler = new WeightedRandomSampler<>(random);
+//        for (int i = 0; i < values.length; i++) {
+//            randomSampler.add(i, values[i]);
+//        }
     }
 
-    public DiscreteDistribution(double[] values) {
-        this(values, new Random());
-    }
 
-    public int sample() {
-        return randomSampler.sample();
-    }
+//    public int sample() {
+//        return randomSampler.sample();
+//    }
 
     public double at(int position) {
-        if(position < 0 || position >= frequencies.size()) {
+        if (position < 0 || position >= frequencies.size()) {
             return 0;
         }
         return frequencies.get(position);
@@ -54,7 +46,7 @@ public class DiscreteDistribution implements Iterable<Double> {
         for (int i = 0; i < values.length; i++) {
             values[i] = at(i) * distribution.at(i);
         }
-        return new DiscreteDistribution(values, random);
+        return new DiscreteDistribution(values);
     }
 
     public DiscreteDistribution add(DiscreteDistribution distribution) {
@@ -62,7 +54,7 @@ public class DiscreteDistribution implements Iterable<Double> {
         for (int i = 0; i < values.length; i++) {
             values[i] = at(i) + distribution.at(i);
         }
-        return new DiscreteDistribution(values, random);
+        return new DiscreteDistribution(values);
     }
 
     public int size() {
@@ -82,9 +74,27 @@ public class DiscreteDistribution implements Iterable<Double> {
 
     public List<Double> toList() {
         List<Double> values = new ArrayList<>();
-        for(double v : frequencies) {
+        for (double v : frequencies) {
             values.add(v);
         }
         return values;
+    }
+
+    public DiscreteDistribution inverse() {
+        double[] inverseValues = new double[values.length];
+        double maxElement = -1;
+        for (int i = 0; i < values.length; i++) {
+            double val = values[i];
+            if (val > maxElement) {
+                maxElement = val;
+            }
+            inverseValues[i] = val;
+        }
+
+        for (int i = 0; i < inverseValues.length; i++) {
+            inverseValues[i] = maxElement - inverseValues[i];
+        }
+
+        return new DiscreteDistribution(inverseValues);
     }
 }

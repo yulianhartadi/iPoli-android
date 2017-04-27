@@ -1,18 +1,24 @@
 package io.ipoli.android.app.scheduling.constraints;
 
-import java.util.concurrent.TimeUnit;
-
-import io.ipoli.android.app.scheduling.DailySchedule;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 import io.ipoli.android.app.scheduling.distributions.FlatPeakDiscreteDistribution;
 import io.ipoli.android.quest.data.Category;
 
+import static io.ipoli.android.app.utils.Time.h2Min;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 4/22/17.
  */
-public class LearningConstraint implements Constraint {
+public class LearningConstraint extends BaseConstraint {
+
+    private final int sleepEndMinute;
+
+    public LearningConstraint(int sleepEndMinute, int slotDuration) {
+        super(slotDuration);
+        this.sleepEndMinute = sleepEndMinute;
+    }
 
     @Override
     public boolean shouldApply(Task task) {
@@ -20,29 +26,25 @@ public class LearningConstraint implements Constraint {
     }
 
     @Override
-    public DiscreteDistribution apply(DailySchedule schedule) {
-        int slopeWidth = schedule.getSlotCountBetween(0, 30);
-        DiscreteDistribution d1 = createStartOfDayPeak(schedule, slopeWidth);
-        DiscreteDistribution d2 = createEndOfDayPeak(schedule, slopeWidth);
+    public DiscreteDistribution apply() {
+        int slopeWidth = getSlotCountBetween(0, 30);
+        DiscreteDistribution d1 = createStartOfDayPeak(slopeWidth);
+        DiscreteDistribution d2 = createEndOfDayPeak(slopeWidth);
         DiscreteDistribution d = d1.joint(d2);
-        return d.set(0, 0.0);
+        return d.set(getSlotForMinute(sleepEndMinute), 0.0);
     }
 
-    private DiscreteDistribution createStartOfDayPeak(DailySchedule schedule, int slopeWidth) {
-        int startMinute = schedule.getStartMinute() + h2Min(2);
-        int peakWidth = schedule.getSlotCountBetween(startMinute, startMinute + h2Min(2));
-        int peakStart = schedule.getSlotForMinute(startMinute);
-        return FlatPeakDiscreteDistribution.create(peakStart, peakWidth, 100, slopeWidth, schedule.getSlotCount());
+    private DiscreteDistribution createStartOfDayPeak(int slopeWidth) {
+        int startMinute = sleepEndMinute + h2Min(2);
+        int peakWidth = getSlotCountBetween(startMinute, startMinute + h2Min(2));
+        int peakStart = getSlotForMinute(startMinute);
+        return FlatPeakDiscreteDistribution.create(peakStart, peakWidth, 100, slopeWidth, getTotalSlotCount());
     }
 
-    private DiscreteDistribution createEndOfDayPeak(DailySchedule schedule, int slopeWidth) {
-        int startMinute = schedule.getStartMinute() + h2Min(10);
-        int peakWidth = schedule.getSlotCountBetween(startMinute, startMinute + h2Min(2));
-        int peakStart = schedule.getSlotForMinute(startMinute);
-        return FlatPeakDiscreteDistribution.create(peakStart, peakWidth, 100, slopeWidth, schedule.getSlotCount());
-    }
-
-    private int h2Min(int hours) {
-        return (int) TimeUnit.HOURS.toMinutes(hours);
+    private DiscreteDistribution createEndOfDayPeak(int slopeWidth) {
+        int startMinute = sleepEndMinute + h2Min(10);
+        int peakWidth = getSlotCountBetween(startMinute, startMinute + h2Min(2));
+        int peakStart = getSlotForMinute(startMinute);
+        return FlatPeakDiscreteDistribution.create(peakStart, peakWidth, 100, slopeWidth, getTotalSlotCount());
     }
 }
