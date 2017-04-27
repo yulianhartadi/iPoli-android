@@ -263,8 +263,6 @@
     <string name="recurrence_picker_title">Pick repeating pattern</string>
     <string name="pick_flexible_count_title">How often?</string>
     <string name="preferred_days">Preferred days</string>
-    <string name="title_activity_repeating_quest" />
-    <string name="title_activity_challenge" />
     <string name="activity_quest_title">Quest</string>
     <string name="add_sub_quest">Add Sub Quest</string>
     <string name="edit_quest_add_sub_quest">+ Add sub-quest</string>
