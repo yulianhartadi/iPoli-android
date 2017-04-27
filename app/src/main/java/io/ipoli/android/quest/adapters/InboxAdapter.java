@@ -69,8 +69,6 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
         holder.name.setText(q.getName());
 
         if (q.getEnd() != null) {
-            holder.dueIn.setVisibility(View.VISIBLE);
-
             LocalDate endDate = q.getEndDate();
             if (endDate.isBefore(today)) {
                 long overdueDays = DAYS.between(endDate, today);
@@ -82,7 +80,8 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
                 holder.dueIn.setTextColor(ContextCompat.getColor(context, R.color.md_dark_text_54));
             }
         } else {
-            holder.dueIn.setVisibility(View.GONE);
+            holder.dueIn.setText("No due date");
+            holder.dueIn.setTextColor(ContextCompat.getColor(context, R.color.md_dark_text_54));
         }
 
         holder.moreMenu.setOnClickListener(v -> {

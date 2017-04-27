@@ -199,13 +199,13 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
             Long q1End = q1.getEnd();
             Long q2End = q2.getEnd();
             if (q1End == null && q2End == null) {
-                return 1;
+                return -1;
             }
             if (q1End == null) {
-                return 1;
+                return -1;
             }
             if (q2End == null) {
-                return -1;
+                return 1;
             }
             return Long.compare(q1End, q2End);
         };
