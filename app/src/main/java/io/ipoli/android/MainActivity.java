@@ -71,6 +71,7 @@ import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
+import io.ipoli.android.player.activities.LevelUpActivity;
 import io.ipoli.android.player.activities.PickAvatarPictureActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
@@ -267,10 +268,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void updatePlayerInDrawer(Player player) {
 
         View header = navigationView.getHeaderView(0);
-        TextView level = (TextView) header.findViewById(R.id.avatar_level);
-        level.setText(String.format(getString(R.string.nav_header_player_level), player.getLevel()));
+        TextView level = (TextView) header.findViewById(R.id.player_level);
+        int playerLevel = player.getLevel();
+        String[] playerTitles = getResources().getStringArray(R.array.player_titles);
+        String title = playerTitles[Math.min(playerLevel / 10, playerTitles.length - 1)];
+        level.setText("Level " + playerLevel + ": " + title);
 
-        TextView coins = (TextView) header.findViewById(R.id.avatar_coins);
+        TextView coins = (TextView) header.findViewById(R.id.player_coins);
         coins.setText(String.valueOf(player.getCoins()));
         coins.setOnClickListener(view -> {
             startActivity(new Intent(this, CoinStoreActivity.class));
@@ -281,11 +285,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
         experienceBar.setProgress(getCurrentProgress(player));
 
-        CircleImageView avatarPictureView = (CircleImageView) header.findViewById(R.id.avatar_picture);
+        CircleImageView avatarPictureView = (CircleImageView) header.findViewById(R.id.player_picture);
         avatarPictureView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getPicture()));
         avatarPictureView.setOnClickListener(v -> eventBus.post(new PickAvatarRequestEvent(EventSource.NAVIGATION_DRAWER)));
 
-        TextView currentXP = (TextView) header.findViewById(R.id.avatar_current_xp);
+        TextView currentXP = (TextView) header.findViewById(R.id.player_current_xp);
         currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), player.getExperience()));
         updatePetInDrawer(player.getPet());
 
@@ -568,7 +572,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             String picture = data.getStringExtra(Constants.PICTURE_NAME_EXTRA_KEY);
             if (!TextUtils.isEmpty(picture)) {
                 Player player = getPlayer();
-                ImageView avatarImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.avatar_picture);
+                ImageView avatarImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.player_picture);
                 avatarImage.setImageResource(ResourceUtils.extractDrawableResource(this, picture));
                 player.setPicture(picture);
                 playerPersistenceService.save(player);
