@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="72dp"
-    android:alpha="0.54"
-    android:background="@color/md_grey_300"
+    android:background="@color/md_grey_200"
     android:clickable="true">
 
     <RelativeLayout
@@ -23,7 +22,7 @@
             android:layout_marginStart="16dp"
             android:layout_alignParentStart="true"
             android:layout_toStartOf="@+id/quest_suggestion_next_container"
-            android:textColor="@color/md_dark_text_87"
+            android:textColor="@color/md_dark_text_54"
             android:textSize="18sp" />
 
         <com.lnikkila.extendedtouchview.ExtendedTouchView
@@ -44,7 +43,7 @@
                 android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
                 android:scaleType="fitXY"
-                android:src="@drawable/ic_done_black_24dp" />
+                android:src="@drawable/ic_done_green_24dp" />
         </com.lnikkila.extendedtouchview.ExtendedTouchView>
 
         <com.lnikkila.extendedtouchview.ExtendedTouchView
