@@ -4,9 +4,9 @@ import android.support.annotation.NonNull;
 
 import org.threeten.bp.LocalDate;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 import io.ipoli.android.app.TimeOfDay;
 import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
@@ -107,7 +107,7 @@ public class PosteriorEstimator {
             posterior = workDistribution;
         }
 
-        List<TimeOfDay> productiveTimesOfDay = posteriorSettings.getMostProductiveTimesOfDayList();
+        Set<TimeOfDay> productiveTimesOfDay = posteriorSettings.getMostProductiveTimesOfDaySet();
         if (!productiveTimesOfDay.contains(TimeOfDay.ANY_TIME) && (category == Category.WORK || category == Category.LEARNING)) {
             if (productiveTimesOfDay.contains(TimeOfDay.MORNING)) {
                 posterior = posterior.joint(createMorningProductiveDistribution());
@@ -132,7 +132,7 @@ public class PosteriorEstimator {
         return posterior;
     }
 
-    private boolean isWorkDay(LocalDate currentDate, List<Integer> workDays) {
+    private boolean isWorkDay(LocalDate currentDate, Set<Integer> workDays) {
         return workDays.contains(currentDate.getDayOfWeek().getValue());
     }
 
@@ -197,8 +197,8 @@ public class PosteriorEstimator {
     }
 
     public static class PosteriorSettings {
-        private List<String> mostProductiveTimesOfDay;
-        private List<Integer> workDays;
+        private Set<String> mostProductiveTimesOfDay;
+        private Set<Integer> workDays;
         private Integer workStartMinute;
         private Integer workEndMinute;
         private Integer sleepStartMinute;
@@ -208,20 +208,16 @@ public class PosteriorEstimator {
             return new PosteriorSettings();
         }
 
-        public List<String> getMostProductiveTimesOfDay() {
-            return mostProductiveTimesOfDay;
-        }
-
-        public PosteriorSettings setMostProductiveTimesOfDay(List<String> mostProductiveTimesOfDay) {
+        public PosteriorSettings setMostProductiveTimesOfDay(Set<String> mostProductiveTimesOfDay) {
             this.mostProductiveTimesOfDay = mostProductiveTimesOfDay;
             return this;
         }
 
-        public List<Integer> getWorkDays() {
+        public Set<Integer> getWorkDays() {
             return workDays;
         }
 
-        public PosteriorSettings setWorkDays(List<Integer> workDays) {
+        public PosteriorSettings setWorkDays(Set<Integer> workDays) {
             this.workDays = workDays;
             return this;
         }
@@ -262,10 +258,10 @@ public class PosteriorEstimator {
             return this;
         }
 
-        public List<TimeOfDay> getMostProductiveTimesOfDayList() {
-            List<TimeOfDay> timesOfDay = new ArrayList<>();
+        public Set<TimeOfDay> getMostProductiveTimesOfDaySet() {
+            Set<TimeOfDay> timesOfDay = new HashSet<>();
             if(mostProductiveTimesOfDay == null) {
-                mostProductiveTimesOfDay = new ArrayList<>();
+                mostProductiveTimesOfDay = new HashSet<>();
                 return timesOfDay;
             }
             for(String timeOfDay : mostProductiveTimesOfDay) {

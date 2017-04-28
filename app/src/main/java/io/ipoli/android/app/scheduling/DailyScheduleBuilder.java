@@ -1,8 +1,12 @@
 package io.ipoli.android.app.scheduling;
 
+import org.threeten.bp.DayOfWeek;
+
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import io.ipoli.android.app.TimeOfDay;
 
@@ -13,7 +17,8 @@ public class DailyScheduleBuilder {
     private List<Task> scheduledTasks = new ArrayList<>();
     private int workStartMinute;
     private int workEndMinute;
-    private List<TimeOfDay> productiveTimes;
+    private Set<DayOfWeek> workDays = new HashSet<>();
+    private Set<TimeOfDay> productiveTimes = new HashSet<>();
     private Random seed = new Random();
 
     public DailyScheduleBuilder setStartMinute(int startMinute) {
@@ -46,7 +51,7 @@ public class DailyScheduleBuilder {
         return this;
     }
 
-    public DailyScheduleBuilder setProductiveTimes(List<TimeOfDay> productiveTimes) {
+    public DailyScheduleBuilder setProductiveTimes(Set<TimeOfDay> productiveTimes) {
         this.productiveTimes = productiveTimes;
         return this;
     }
@@ -56,7 +61,12 @@ public class DailyScheduleBuilder {
         return this;
     }
 
+    public DailyScheduleBuilder setWorkDays(Set<DayOfWeek> workDays) {
+        this.workDays = workDays;
+        return this;
+    }
+
     public DailySchedule createDailySchedule() {
-        return new DailySchedule(startMinute, endMinute, timeSlotDuration, workStartMinute, workEndMinute, productiveTimes, scheduledTasks, seed);
+        return new DailySchedule(startMinute, endMinute, timeSlotDuration, workStartMinute, workEndMinute, workDays, productiveTimes, scheduledTasks, seed);
     }
 }

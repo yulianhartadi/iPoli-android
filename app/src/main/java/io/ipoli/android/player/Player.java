@@ -2,11 +2,15 @@ package io.ipoli.android.player;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import org.threeten.bp.DayOfWeek;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.TimeOfDay;
@@ -29,8 +33,8 @@ public class Player extends PersistedObject {
     private Long coins;
     private String picture;
     private List<Pet> pets;
-    private List<String> mostProductiveTimesOfDay;
-    private List<Integer> workDays;
+    private Set<String> mostProductiveTimesOfDay;
+    private Set<Integer> workDays;
     private Integer workStartMinute;
     private Integer workEndMinute;
     private Integer sleepStartMinute;
@@ -58,7 +62,7 @@ public class Player extends PersistedObject {
         this.level = level;
         this.coins = coins;
         this.picture = picture;
-        setMostProductiveTimesOfDayList(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES);
+        setMostProductiveTimesOfDaySet(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES);
         setWorkDays(Constants.DEFAULT_PLAYER_WORK_DAYS);
         setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE);
         setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE);
@@ -143,18 +147,18 @@ public class Player extends PersistedObject {
         this.picture = picture;
     }
 
-    public List<String> getMostProductiveTimesOfDay() {
+    public Set<String> getMostProductiveTimesOfDay() {
         if (mostProductiveTimesOfDay == null) {
-            mostProductiveTimesOfDay = new ArrayList<>();
+            mostProductiveTimesOfDay = new HashSet<>();
         }
         return mostProductiveTimesOfDay;
     }
 
     @JsonIgnore
-    public List<TimeOfDay> getMostProductiveTimesOfDayList() {
-        List<TimeOfDay> timesOfDay = new ArrayList<>();
+    public Set<TimeOfDay> getMostProductiveTimesOfDaySet() {
+        Set<TimeOfDay> timesOfDay = new HashSet<>();
         if (mostProductiveTimesOfDay == null) {
-            mostProductiveTimesOfDay = new ArrayList<>();
+            mostProductiveTimesOfDay = new HashSet<>();
             return timesOfDay;
         }
         for (String timeOfDay : mostProductiveTimesOfDay) {
@@ -163,28 +167,38 @@ public class Player extends PersistedObject {
         return timesOfDay;
     }
 
-    public void setMostProductiveTimesOfDay(List<String> mostProductiveTimesOfDay) {
+    public void setMostProductiveTimesOfDay(Set<String> mostProductiveTimesOfDay) {
         this.mostProductiveTimesOfDay = mostProductiveTimesOfDay;
     }
 
 
     @JsonIgnore
-    public void setMostProductiveTimesOfDayList(List<TimeOfDay> timesOfDay) {
-        mostProductiveTimesOfDay = new ArrayList<>();
+    public void setMostProductiveTimesOfDaySet(Set<TimeOfDay> timesOfDay) {
+        mostProductiveTimesOfDay = new HashSet<>();
         for (TimeOfDay timeOfDay : timesOfDay) {
             mostProductiveTimesOfDay.add(timeOfDay.name());
         }
     }
 
-    public List<Integer> getWorkDays() {
+    public Set<Integer> getWorkDays() {
         if (workDays == null) {
-            workDays = new ArrayList<>();
+            workDays = new HashSet<>();
         }
         return workDays;
     }
 
-    public void setWorkDays(List<Integer> workDays) {
+    public void setWorkDays(Set<Integer> workDays) {
         this.workDays = workDays;
+    }
+
+    @JsonIgnore
+    public void setDayOfWeekWorkDays(Set<DayOfWeek> workDays) {
+        setWorkDays(DateUtils.toIntegers(workDays));
+    }
+
+    @JsonIgnore
+    public Set<DayOfWeek> getDayOfWeekWorkDays() {
+        return DateUtils.toDaysOfWeek(getWorkDays());
     }
 
     public Integer getWorkStartMinute() {
@@ -227,7 +241,6 @@ public class Player extends PersistedObject {
     public void setWorkEndMinute(Integer workEndMinute) {
         this.workEndMinute = workEndMinute;
     }
-
 
     @JsonIgnore
     public void setWorkEndTime(Time endTime) {
@@ -341,7 +354,7 @@ public class Player extends PersistedObject {
     }
 
     public Map<Long, Category> getAndroidCalendars() {
-        if(androidCalendars == null) {
+        if (androidCalendars == null) {
             androidCalendars = new HashMap<>();
         }
         return androidCalendars;

@@ -1,7 +1,7 @@
 package io.ipoli.android.app.settings.events;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import io.ipoli.android.app.TimeOfDay;
 
@@ -10,14 +10,14 @@ import io.ipoli.android.app.TimeOfDay;
  * on 12/19/16.
  */
 public class MostProductiveTimesChangedEvent {
-    private final List<TimeOfDay> timesOfDay;
+    private final Set<TimeOfDay> timesOfDay;
 
-    public MostProductiveTimesChangedEvent(List<TimeOfDay> timesOfDay) {
+    public MostProductiveTimesChangedEvent(Set<TimeOfDay> timesOfDay) {
         this.timesOfDay = timesOfDay;
     }
 
-    public List<String> getTimesOfDay() {
-        List<String> names = new ArrayList<>();
+    public Set<String> getTimesOfDay() {
+        Set<String> names = new HashSet<>();
         for(TimeOfDay timeOfDay : timesOfDay) {
             names.add(timeOfDay.name());
         }
