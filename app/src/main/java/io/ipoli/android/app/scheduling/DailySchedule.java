@@ -1,10 +1,13 @@
 package io.ipoli.android.app.scheduling;
 
+import org.threeten.bp.DayOfWeek;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import io.ipoli.android.app.TimeOfDay;
 import io.ipoli.android.app.scheduling.constraints.AfternoonConstraint;
@@ -31,23 +34,24 @@ public class DailySchedule {
     private final int startMinute;
     private final int endMinute;
     private final int timeSlotDuration;
-    private final List<TimeOfDay> productiveTimes;
+    private final Set<DayOfWeek> workDays;
+    private final Set<TimeOfDay> productiveTimes;
     private final boolean[] isFreeSlot;
     private final Random seed;
     private final List<Constraint> constraints;
     private final int workStartMinute;
     private final int workEndMinute;
 
-    DailySchedule(int startMinute, int endMinute, int timeSlotDuration, int workStartMinute, int workEndMinute, List<TimeOfDay> productiveTimes, List<Task> scheduledTasks, Random seed) {
+    DailySchedule(int startMinute, int endMinute, int timeSlotDuration, int workStartMinute, int workEndMinute, Set<DayOfWeek> workDays, Set<TimeOfDay> productiveTimes, List<Task> scheduledTasks, Random seed) {
         this.startMinute = startMinute;
         this.endMinute = endMinute;
         this.timeSlotDuration = timeSlotDuration;
+        this.workDays = workDays;
         this.productiveTimes = productiveTimes;
         this.workStartMinute = workStartMinute;
         this.workEndMinute = workEndMinute;
-        isFreeSlot = createFreeSlots(scheduledTasks);
+        this.isFreeSlot = createFreeSlots(scheduledTasks);
         this.seed = seed;
-
         this.constraints = createConstraints();
 
     }
@@ -57,8 +61,8 @@ public class DailySchedule {
         constraints.add(new MorningConstraint(DEFAULT_TIME_SLOT_DURATION));
         constraints.add(new AfternoonConstraint(DEFAULT_TIME_SLOT_DURATION));
         constraints.add(new EveningConstraint(DEFAULT_TIME_SLOT_DURATION));
-        constraints.add(new WorkConstraint(workStartMinute, workEndMinute, DEFAULT_TIME_SLOT_DURATION));
-        constraints.add(new NotWorkConstraint(workStartMinute, workEndMinute, DEFAULT_TIME_SLOT_DURATION));
+        constraints.add(new WorkConstraint(workStartMinute, workEndMinute, workDays, DEFAULT_TIME_SLOT_DURATION));
+        constraints.add(new NotWorkConstraint(workStartMinute, workEndMinute, workDays, DEFAULT_TIME_SLOT_DURATION));
         constraints.add(new WellnessConstraint(startMinute, DEFAULT_TIME_SLOT_DURATION));
         constraints.add(new LearningConstraint(startMinute, DEFAULT_TIME_SLOT_DURATION));
         constraints.add(new ProductiveTimeConstraint(productiveTimes, DEFAULT_TIME_SLOT_DURATION));

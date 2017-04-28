@@ -10,14 +10,16 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.util.SparseBooleanArray;
 
+import org.threeten.bp.DayOfWeek;
+import org.threeten.bp.format.TextStyle;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
-import io.ipoli.android.Constants.DaysOfWeek;
 import io.ipoli.android.R;
-import io.ipoli.android.app.utils.StringUtils;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -31,7 +33,7 @@ public class DaysOfWeekPickerFragment extends DialogFragment {
 
     private OnDaysOfWeekPickedListener textPickedListener;
 
-    private List<Integer> preSelectedDays;
+    private List<DayOfWeek> preSelectedDays;
     private AlertDialog alertDialog;
 
     @StringRes
@@ -41,10 +43,14 @@ public class DaysOfWeekPickerFragment extends DialogFragment {
         return newInstance(title, new HashSet<>(), listener);
     }
 
-    public static DaysOfWeekPickerFragment newInstance(@StringRes int title, Set<Integer> selectedDays, OnDaysOfWeekPickedListener listener) {
+    public static DaysOfWeekPickerFragment newInstance(@StringRes int title, Set<DayOfWeek> selectedDays, OnDaysOfWeekPickedListener listener) {
         DaysOfWeekPickerFragment fragment = new DaysOfWeekPickerFragment();
         Bundle args = new Bundle();
-        args.putIntegerArrayList(SELECTED_DAYS, new ArrayList<>(selectedDays));
+        ArrayList<Integer> days = new ArrayList<>();
+        for (DayOfWeek day : selectedDays) {
+            days.add(day.getValue());
+        }
+        args.putIntegerArrayList(SELECTED_DAYS, days);
         args.putInt(TITLE, title);
         fragment.setArguments(args);
         fragment.textPickedListener = listener;
@@ -52,41 +58,45 @@ public class DaysOfWeekPickerFragment extends DialogFragment {
     }
 
     public interface OnDaysOfWeekPickedListener {
-        void onDaysOfWeekPicked(Set<Integer> selectedDays);
+        void onDaysOfWeekPicked(Set<DayOfWeek> selectedDays);
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        preSelectedDays = getArguments().getIntegerArrayList(SELECTED_DAYS);
+        ArrayList<Integer> selectedDays = getArguments().getIntegerArrayList(SELECTED_DAYS);
+        preSelectedDays = new ArrayList<>();
+        for (int dayOfWeek : selectedDays) {
+            preSelectedDays.add(DayOfWeek.of(dayOfWeek));
+        }
         title = getArguments().getInt(TITLE);
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        boolean[] checkedDays = new boolean[DaysOfWeek.values().length];
+        boolean[] checkedDays = new boolean[DayOfWeek.values().length];
 
-        String[] daysOfWeek = new String[DaysOfWeek.values().length];
+        String[] dayOfWeekNames = new String[DayOfWeek.values().length];
 
-        for (int i = 0; i < DaysOfWeek.values().length; i++) {
-            DaysOfWeek dayOfWeek = DaysOfWeek.values()[i];
-            if (preSelectedDays.contains(dayOfWeek.getIsoOrder())) {
+        for (int i = 0; i < DayOfWeek.values().length; i++) {
+            DayOfWeek dayOfWeek = DayOfWeek.values()[i];
+            if (preSelectedDays.contains(dayOfWeek)) {
                 checkedDays[i] = true;
             }
-            daysOfWeek[i] = StringUtils.capitalize(dayOfWeek.name());
+            dayOfWeekNames[i] = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault());
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setIcon(R.drawable.logo)
-                .setMultiChoiceItems(daysOfWeek, checkedDays, null)
+                .setMultiChoiceItems(dayOfWeekNames, checkedDays, null)
                 .setTitle(title)
                 .setPositiveButton(R.string.accept, (dialog, which) -> {
                     SparseBooleanArray selectedPositions = alertDialog.getListView().getCheckedItemPositions();
-                    Set<Integer> selectedDays = new HashSet<>();
+                    Set<DayOfWeek> selectedDays = new HashSet<>();
                     for (int i = 0; i < alertDialog.getListView().getAdapter().getCount(); i++) {
                         if (selectedPositions.get(i)) {
-                            selectedDays.add(DaysOfWeek.values()[i].getIsoOrder());
+                            selectedDays.add(DayOfWeek.values()[i]);
                         }
                     }
                     textPickedListener.onDaysOfWeekPicked(selectedDays);

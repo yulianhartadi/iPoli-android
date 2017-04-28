@@ -23,13 +23,16 @@ import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
+import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.format.TextStyle;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -68,6 +71,7 @@ import io.ipoli.android.app.ui.dialogs.LoadingDialog;
 import io.ipoli.android.app.ui.dialogs.TimeIntervalPickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimeOfDayPickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
@@ -206,8 +210,8 @@ public class SettingsActivity extends BaseActivity implements
     }
 
     private void initScheduling(Player player) {
-        populateMostProductiveTimesOfDay(player.getMostProductiveTimesOfDayList());
-        populateDaysOfWeekText(workDays, player.getWorkDays());
+        populateMostProductiveTimesOfDay(player.getMostProductiveTimesOfDaySet());
+        populateDaysOfWeekText(workDays, player.getDayOfWeekWorkDays());
         populateTimeInterval(workHours, player.getWorkStartTime(), player.getWorkEndTime());
         populateTimeInterval(sleepHours, player.getSleepStartTime(), player.getSleepEndTime());
     }
@@ -242,7 +246,7 @@ public class SettingsActivity extends BaseActivity implements
         });
         onDailyChallengeNotificationChanged();
         Set<Integer> selectedDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
-        populateDaysOfWeekText(dailyChallengeDays, new ArrayList<>(selectedDays));
+        populateDaysOfWeekText(dailyChallengeDays, DateUtils.toDaysOfWeek(selectedDays));
     }
 
     private CompoundButton.OnCheckedChangeListener onCheckSyncCalendarChangeListener = (buttonView, isChecked) -> {
@@ -338,19 +342,19 @@ public class SettingsActivity extends BaseActivity implements
     @OnClick(R.id.most_productive_time_container)
     public void onMostProductiveTimeClicked(View view) {
         Player player = getPlayer();
-        TimeOfDayPickerFragment fragment = TimeOfDayPickerFragment.newInstance(R.string.time_of_day_picker_title, player.getMostProductiveTimesOfDayList(), this);
+        TimeOfDayPickerFragment fragment = TimeOfDayPickerFragment.newInstance(R.string.time_of_day_picker_title, player.getMostProductiveTimesOfDaySet(), this);
         fragment.show(getSupportFragmentManager());
     }
 
     @OnClick(R.id.work_days_container)
     public void onWorkDaysClicked(View view) {
         Player player = getPlayer();
-        DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(R.string.work_days_picker_title, new HashSet<>(player.getWorkDays()),
+        DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(R.string.work_days_picker_title, new HashSet<>(player.getDayOfWeekWorkDays()),
                 selectedDays -> {
                     eventBus.post(new WorkDaysChangedEvent(selectedDays));
-                    player.setWorkDays(new ArrayList<>(selectedDays));
+                    player.setDayOfWeekWorkDays(selectedDays);
                     playerPersistenceService.save(player);
-                    populateDaysOfWeekText(workDays, player.getWorkDays());
+                    populateDaysOfWeekText(workDays, player.getDayOfWeekWorkDays());
                 });
         fragment.show(getSupportFragmentManager());
     }
@@ -412,7 +416,7 @@ public class SettingsActivity extends BaseActivity implements
             return;
         }
         Set<Integer> selectedDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
-        DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(R.string.challenge_days_question, selectedDays, this);
+        DaysOfWeekPickerFragment fragment = DaysOfWeekPickerFragment.newInstance(R.string.challenge_days_question, DateUtils.toDaysOfWeek(selectedDays), this);
         fragment.show(getSupportFragmentManager());
     }
 
@@ -467,18 +471,18 @@ public class SettingsActivity extends BaseActivity implements
     }
 
     @Override
-    public void onTimesOfDayPicked(List<TimeOfDay> selectedTimes) {
+    public void onTimesOfDayPicked(Set<TimeOfDay> selectedTimes) {
         Player player = getPlayer();
         eventBus.post(new MostProductiveTimesChangedEvent(selectedTimes));
         if (selectedTimes.contains(TimeOfDay.ANY_TIME) || selectedTimes.isEmpty()) {
-            selectedTimes = new ArrayList<>(Arrays.asList(TimeOfDay.ANY_TIME));
+            selectedTimes = new HashSet<>(Collections.singletonList(TimeOfDay.ANY_TIME));
         }
-        player.setMostProductiveTimesOfDayList(selectedTimes);
+        player.setMostProductiveTimesOfDaySet(selectedTimes);
         playerPersistenceService.save(player);
         populateMostProductiveTimesOfDay(selectedTimes);
     }
 
-    private void populateMostProductiveTimesOfDay(List<TimeOfDay> selectedTimes) {
+    private void populateMostProductiveTimesOfDay(Set<TimeOfDay> selectedTimes) {
         List<String> timeNames = new ArrayList<>();
         for (TimeOfDay timeOfDay : selectedTimes) {
             timeNames.add(StringUtils.capitalizeAndReplaceUnderscore(timeOfDay.name()));
@@ -494,17 +498,17 @@ public class SettingsActivity extends BaseActivity implements
     }
 
     @Override
-    public void onDaysOfWeekPicked(Set<Integer> selectedDays) {
-        populateDaysOfWeekText(dailyChallengeDays, new ArrayList<>(selectedDays));
-        localStorage.saveIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, selectedDays);
+    public void onDaysOfWeekPicked(Set<DayOfWeek> selectedDays) {
+        populateDaysOfWeekText(dailyChallengeDays, selectedDays);
+        localStorage.saveIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, DateUtils.toIntegers(selectedDays));
         eventBus.post(new DailyChallengeDaysOfWeekChangedEvent(selectedDays));
     }
 
-    private void populateDaysOfWeekText(TextView textView, List<Integer> selectedDays) {
+    private void populateDaysOfWeekText(TextView textView, Set<DayOfWeek> selectedDays) {
         List<String> dayNames = new ArrayList<>();
-        for (Constants.DaysOfWeek dayOfWeek : Constants.DaysOfWeek.values()) {
-            if (selectedDays.contains(dayOfWeek.getIsoOrder())) {
-                dayNames.add(StringUtils.capitalize(dayOfWeek.name()).substring(0, 3));
+        for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
+            if (selectedDays.contains(dayOfWeek)) {
+                dayNames.add(dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault()).substring(0, 3));
             }
         }
         if (dayNames.isEmpty()) {
@@ -522,7 +526,7 @@ public class SettingsActivity extends BaseActivity implements
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
@@ -557,7 +561,7 @@ public class SettingsActivity extends BaseActivity implements
 
     }
 
-    public static class CalendarLoader extends AsyncTaskLoader<Void> {
+    private static class CalendarLoader extends AsyncTaskLoader<Void> {
 
         private Map<Long, Category> selectedCalendars;
         private Player player;
@@ -566,7 +570,7 @@ public class SettingsActivity extends BaseActivity implements
         private RepeatingQuestScheduler repeatingQuestScheduler;
         private CalendarPersistenceService calendarPersistenceService;
 
-        public CalendarLoader(Context context, Map<Long, Category> selectedCalendars, Player player, SyncAndroidCalendarProvider syncAndroidCalendarProvider, AndroidCalendarEventParser androidCalendarEventParser, RepeatingQuestScheduler repeatingQuestScheduler, CalendarPersistenceService calendarPersistenceService) {
+        CalendarLoader(Context context, Map<Long, Category> selectedCalendars, Player player, SyncAndroidCalendarProvider syncAndroidCalendarProvider, AndroidCalendarEventParser androidCalendarEventParser, RepeatingQuestScheduler repeatingQuestScheduler, CalendarPersistenceService calendarPersistenceService) {
             super(context);
             this.selectedCalendars = selectedCalendars;
             this.player = player;

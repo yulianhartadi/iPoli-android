@@ -2,6 +2,12 @@ package io.ipoli.android.scheduling.constraints;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.threeten.bp.DayOfWeek;
+import org.threeten.bp.LocalDate;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.constraints.WorkConstraint;
@@ -26,7 +32,8 @@ public class WorkConstraintTest {
 
     @Before
     public void setUp() throws Exception {
-        constraint = new WorkConstraint(0, 30, 15);
+        Set<DayOfWeek> workDays = new HashSet<>(Collections.singleton(LocalDate.now().getDayOfWeek()));
+        constraint = new WorkConstraint(0, 30, workDays, 15);
     }
 
     @Test
