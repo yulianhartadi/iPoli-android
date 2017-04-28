@@ -33,13 +33,13 @@ public class NotWorkConstraintTest {
 
     @Test
     public void shouldApplyToNonWorkTask() {
-        Task t = new Task(30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.WELLNESS);
+        Task t = new Task(30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.PERSONAL_HOURS, Category.WELLNESS);
         assertTrue(constraint.shouldApply(t));
     }
 
     @Test
     public void shouldNotApplyToWorkTask() {
-        Task t = new Task(30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.WORK);
+        Task t = new Task(30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.PERSONAL_HOURS, Category.WORK);
         assertFalse(constraint.shouldApply(t));
     }
 

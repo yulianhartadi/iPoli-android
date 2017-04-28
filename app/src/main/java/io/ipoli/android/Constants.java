@@ -153,7 +153,6 @@ public interface Constants {
     String KEY_WIDGET_AGENDA_QUEST_LIST = "widget_agenda_quest_list";
     int API_READ_TIMEOUT_SECONDS = 30;
     String DEFAULT_VIEW_VERSION = "1.0";
-    int READ_CALENDAR_PERMISSION_REQUEST_CODE = 100;
     String SOURCE_ANDROID_CALENDAR = "android-calendar";
 
     enum DaysOfWeek {
