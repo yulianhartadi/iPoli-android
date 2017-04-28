@@ -37,7 +37,7 @@ public class WorkConstraintTest {
 
     @Test
     public void shouldApplyToWorkQuest() {
-        Task t = new Task(0, Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT, TimePreference.ANY, Category.WORK);
+        Task t = new Task(0, Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT, TimePreference.WORK_HOURS, Category.WORK);
         assertTrue(constraint.shouldApply(t));
     }
 
