@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="72dp"
@@ -9,7 +10,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="4dp">
+        android:layout_marginTop="4dp"
+        android:background="?android:attr/selectableItemBackground">
 
         <TextView
             android:id="@+id/quest_text"
@@ -17,36 +19,52 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
+            android:layout_gravity="center_vertical"
             android:layout_marginStart="16dp"
-            android:layout_toStartOf="@+id/accept_quest"
+            android:layout_toStartOf="@+id/quest_suggestion_next_container"
             android:textColor="@color/md_dark_text_54"
             android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/accept_quest"
+        <com.lnikkila.extendedtouchview.ExtendedTouchView
+            android:id="@+id/quest_suggestion_accept_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginEnd="16dp"
             android:layout_marginStart="16dp"
-            android:layout_toStartOf="@+id/reschedule_quest"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:text="@string/accept"
-            android:textAllCaps="true"
-            android:textColor="?attr/colorAccent" />
+            android:layout_toStartOf="@+id/quest_suggestion_next_container"
+            app:touchHeight="@dimen/extended_touch_height"
+            app:touchWidth="@dimen/extended_touch_width">
 
-        <TextView
-            android:id="@+id/reschedule_quest"
+            <ImageButton
+                android:id="@+id/accept_quest"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_done_green_24dp" />
+        </com.lnikkila.extendedtouchview.ExtendedTouchView>
+
+        <com.lnikkila.extendedtouchview.ExtendedTouchView
+            android:id="@+id/quest_suggestion_next_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
             android:layout_marginEnd="16dp"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:text="@string/next"
-            android:textAllCaps="true"
-            android:textColor="@color/md_blue_500" />
+            app:touchHeight="@dimen/extended_touch_height"
+            app:touchWidth="@dimen/extended_touch_width">
+
+            <ImageButton
+                android:id="@+id/reschedule_quest"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_reject_red_24dp" />
+        </com.lnikkila.extendedtouchview.ExtendedTouchView>
+
     </RelativeLayout>
 </FrameLayout>
