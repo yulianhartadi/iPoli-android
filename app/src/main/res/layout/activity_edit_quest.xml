@@ -345,7 +345,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="72dp"
-                    android:text="+ Add reminder"
+                    android:text="@string/add_reminder_button"
                     android:textColor="@color/colorAccent" />
 
             </RelativeLayout>

@@ -417,7 +417,7 @@ public class App extends MultiDexApplication {
             } else {
                 builder.addAction(R.drawable.ic_play_arrow_black_24dp, getString(R.string.start).toUpperCase(), getStartPendingIntent(quest.getId()));
             }
-            builder.addAction(R.drawable.ic_done_24dp, getString(R.string.done), getDonePendingIntent(quest.getId()));
+            builder.addAction(R.drawable.ic_done_24dp, getString(R.string.done).toUpperCase(), getDonePendingIntent(quest.getId()));
         }
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
         notificationManagerCompat.notify(Constants.ONGOING_NOTIFICATION_ID, builder.build());

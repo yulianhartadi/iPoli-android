@@ -256,7 +256,7 @@ public class ChallengeActivity extends BaseActivity {
 
         int percentDone = Math.round((completed / (float) totalCount) * 100);
 
-        progressPercent.setText(String.valueOf(percentDone) + "% done");
+        progressPercent.setText(getString(R.string.challenge_percentage_done, percentDone));
 
         int progressColor = R.color.colorAccent;
 
@@ -337,8 +337,8 @@ public class ChallengeActivity extends BaseActivity {
         List<String> xValues = new ArrayList<>();
         xValues.add(getWeekRangeText(periodHistories.get(0).getStartDate(), periodHistories.get(0).getEndDate()));
         xValues.add(getWeekRangeText(periodHistories.get(1).getStartDate(), periodHistories.get(1).getEndDate()));
-        xValues.add("last week");
-        xValues.add("this week");
+        xValues.add(getString(R.string.last_week));
+        xValues.add(getString(R.string.this_week));
         setHistoryData(dataSet, xValues);
 
     }

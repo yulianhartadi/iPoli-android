@@ -234,7 +234,7 @@ public class RepeatingQuestActivity extends BaseActivity {
         int completedCount = currentPeriodHistory.getCompletedCount();
         if (totalCount > 7) {
             TextView progressText = (TextView) inflater.inflate(R.layout.repeating_quest_progress_text, progressContainer, false);
-            progressText.setText(completedCount + " completed this month");
+            progressText.setText(getString(R.string.repeating_quest_completed_this_month, completedCount));
             progressContainer.addView(progressText);
             return;
         }
@@ -311,12 +311,12 @@ public class RepeatingQuestActivity extends BaseActivity {
             xValues.add(getMonthText(periodHistories.get(0).getStartDate()));
             xValues.add(getMonthText(periodHistories.get(1).getStartDate()));
             xValues.add(getMonthText(periodHistories.get(2).getStartDate()));
-            xValues.add("this month");
+            xValues.add(getString(R.string.this_month));
         } else {
             xValues.add(getWeekRangeText(periodHistories.get(0).getStartDate(), periodHistories.get(0).getEndDate()));
             xValues.add(getWeekRangeText(periodHistories.get(1).getStartDate(), periodHistories.get(1).getEndDate()));
-            xValues.add("last week");
-            xValues.add("this week");
+            xValues.add(getString(R.string.last_week));
+            xValues.add(getString(R.string.this_week));
         }
         return xValues;
 
