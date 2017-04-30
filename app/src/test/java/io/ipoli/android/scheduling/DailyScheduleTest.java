@@ -13,6 +13,7 @@ import io.ipoli.android.app.scheduling.DailySchedule;
 import io.ipoli.android.app.scheduling.DailyScheduleBuilder;
 import io.ipoli.android.app.scheduling.PriorityEstimator;
 import io.ipoli.android.app.scheduling.Task;
+import io.ipoli.android.app.scheduling.TimeBlock;
 import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
@@ -97,6 +98,24 @@ public class DailyScheduleTest {
         List<Task> scheduledTasks = schedule.scheduleTasks(tasksToSchedule);
         assertThat(scheduledTasks.size(), is(1));
         assertThat(scheduledTasks.get(0).getRecommendedSlots().get(0).getStartMinute(), is(greaterThanOrEqualTo(0)));
+    }
+
+    @Test
+    public void shouldNotOverlapWithScheduledTasks() {
+        DailySchedule schedule = new DailyScheduleBuilder()
+                .setStartMinute(0)
+                .setEndMinute(60)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .setScheduledTasks(Collections.singletonList(new Task(0, 20, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)))
+                .createDailySchedule();
+        List<Task> tasksToSchedule = Collections.singletonList(new Task(20, Quest.PRIORITY_IMPORTANT_URGENT, TimePreference.ANY, Category.CHORES));
+        List<Task> scheduledTasks = schedule.scheduleTasks(tasksToSchedule);
+        Task scheduledTask = scheduledTasks.get(0);
+        List<TimeBlock> recommendedSlots = scheduledTask.getRecommendedSlots();
+        assertThat(recommendedSlots.size(), is(1));
+
     }
 
     private Task toTask(Quest quest) {

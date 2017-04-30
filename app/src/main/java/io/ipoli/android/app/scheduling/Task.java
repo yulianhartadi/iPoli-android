@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.data.Category;
 
@@ -62,5 +63,9 @@ public class Task implements Comparable<Task> {
 
     public List<TimeBlock> getRecommendedSlots() {
         return recommendedSlots;
+    }
+
+    public int getEndMinute() {
+        return (getStartMinute() + getDuration()) % Time.MINUTES_IN_A_DAY;
     }
 }
