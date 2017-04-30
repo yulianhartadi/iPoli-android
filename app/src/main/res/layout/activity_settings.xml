@@ -30,7 +30,7 @@
                     android:layout_height="wrap_content"
                     android:paddingEnd="16dp"
                     android:paddingStart="16dp"
-                    android:text="General"
+                    android:text="@string/settings_general_title"
                     android:textColor="@color/colorAccent"
                     android:textSize="14sp" />
 
@@ -50,7 +50,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="bottom"
-                        android:text="Change your avatar"
+                        android:text="@string/settings_avatar_title"
                         android:textColor="@color/md_dark_text_87"
                         android:textSize="16sp" />
 
@@ -59,7 +59,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="top"
-                        android:text="Pick an awesome new avatar for yourself"
+                        android:text="@string/settings_avatar_desc"
                         android:textColor="@color/md_dark_text_54"
                         android:textSize="14sp" />
 
@@ -86,7 +86,7 @@
                             android:layout_height="0dp"
                             android:layout_weight="1"
                             android:gravity="bottom"
-                            android:text="Persistent notification"
+                            android:text="@string/settings_persistent_notification_title"
                             android:textColor="@color/md_dark_text_87"
                             android:textSize="16sp" />
 
@@ -95,7 +95,7 @@
                             android:layout_height="0dp"
                             android:layout_weight="1"
                             android:gravity="top"
-                            android:text="Quickly view your daily quests and progress"
+                            android:text="@string/settings_persistent_notification_desc"
                             android:textColor="@color/md_dark_text_54"
                             android:textSize="14sp" />
                     </LinearLayout>
@@ -168,7 +168,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="bottom"
-                        android:text="Show tutorial"
+                        android:text="@string/settings_tutorial_title"
                         android:textColor="@color/md_dark_text_87"
                         android:textSize="16sp" />
 
@@ -177,7 +177,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="top"
-                        android:text="View tutorial again to find out more about iPoli"
+                        android:text="@string/settings_tutorial_desc"
                         android:textColor="@color/md_dark_text_54"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -546,7 +546,7 @@
                     android:layout_height="wrap_content"
                     android:paddingEnd="16dp"
                     android:paddingStart="16dp"
-                    android:text="About"
+                    android:text="@string/settings_about_title"
                     android:textColor="@color/colorAccent"
                     android:textSize="14sp" />
 
@@ -566,7 +566,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="bottom"
-                        android:text="Encourage us"
+                        android:text="@string/settings_rate_title"
                         android:textColor="@color/md_dark_text_87"
                         android:textSize="16sp" />
 
@@ -575,7 +575,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="top"
-                        android:text="Rate iPoli on Google Play and share your opinion"
+                        android:text="@string/settings_rate_desc"
                         android:textColor="@color/md_dark_text_54"
                         android:textSize="14sp" />
                 </LinearLayout>
@@ -596,7 +596,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="1"
                         android:gravity="bottom"
-                        android:text="App version"
+                        android:text="@string/settings_app_version"
                         android:textColor="@color/md_dark_text_87"
                         android:textSize="16sp" />
 
