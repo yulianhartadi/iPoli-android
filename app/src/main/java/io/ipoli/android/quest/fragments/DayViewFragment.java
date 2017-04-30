@@ -35,6 +35,8 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.StartQuickAddEvent;
+import io.ipoli.android.app.scheduling.DailySchedule;
+import io.ipoli.android.app.scheduling.DailyScheduleBuilder;
 import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 import io.ipoli.android.app.scheduling.PosteriorEstimator;
 import io.ipoli.android.app.scheduling.ProbabilisticTaskScheduler;
@@ -52,6 +54,7 @@ import io.ipoli.android.player.Player;
 import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
 import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.QuestTask;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
@@ -348,14 +351,37 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         }
 
         ProbabilisticTaskScheduler probabilisticTaskScheduler = new ProbabilisticTaskScheduler(0, 24, tasks, new Random(Constants.RANDOM_SEED));
+        Player player = getPlayer();
+        DailySchedule dailySchedule = new DailyScheduleBuilder()
+                .setStartMinute(player.getSleepEndMinute())
+                .setEndMinute(player.getSleepStartMinute())
+                .setProductiveTimes(player.getMostProductiveTimesOfDaySet())
+                .setScheduledTasks(tasks)
+                .setSeed(Constants.RANDOM_SEED)
+                .setWorkDays(player.getDayOfWeekWorkDays())
+                .setWorkStartMinute(player.getWorkStartMinute())
+                .setWorkEndMinute(player.getWorkEndMinute())
+                .createDailySchedule();
 
-        List<QuestCalendarViewModel> proposedEvents = new ArrayList<>();
+//        List<QuestCalendarViewModel> proposedEvents = new ArrayList<>();
+        List<Task> tasksToSchedule = new ArrayList<>();
         for (Quest q : schedule.getUnscheduledQuests()) {
             unscheduledViewModels.add(new UnscheduledQuestViewModel(q));
             if (!q.shouldBeDoneMultipleTimesPerDay()) {
-                proposeSlotForQuest(scheduledEvents, probabilisticTaskScheduler, proposedEvents, q);
+//                dailySchedule
+                tasksToSchedule.add(new QuestTask(q.getDuration(), q.getPriority(), q.getStartTimePreference(), q.getCategoryType(), q));
+
+//                proposeSlotForQuest(scheduledEvents, probabilisticTaskScheduler, proposedEvents, q);
             }
         }
+
+        List<Task> scheduledTasks = dailySchedule.scheduleTasks(tasksToSchedule);
+        for (Task t : scheduledTasks) {
+            QuestTask qt = (QuestTask) t;
+            QuestCalendarViewModel vm = QuestCalendarViewModel.createWithProposedTime(qt.quest, qt.getRecommendedSlots().get(0).getStartMinute(), qt.getRecommendedSlots());
+            scheduledEvents.add(vm);
+        }
+
 
         unscheduledQuestsAdapter.updateQuests(unscheduledViewModels);
         calendarAdapter.updateEvents(scheduledEvents);
