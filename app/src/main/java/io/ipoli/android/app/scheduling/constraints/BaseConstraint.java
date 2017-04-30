@@ -15,11 +15,11 @@ public abstract class BaseConstraint implements Constraint {
     }
 
     public int getSlotForMinute(int minute) {
-        return (int) Math.ceil(minute / slotDuration);
+        return minute / slotDuration;
     }
 
     public int getTotalSlotCount() {
-        return (int) Math.ceil(Time.MINUTES_IN_A_DAY / slotDuration);
+        return (int) Math.ceil(Time.MINUTES_IN_A_DAY / (float) slotDuration);
     }
 
     /**

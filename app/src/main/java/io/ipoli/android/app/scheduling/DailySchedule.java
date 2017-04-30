@@ -78,6 +78,14 @@ public class DailySchedule {
         // start minute - inclusive
         // end minute - exclusive
         for (Task t : scheduledTasks) {
+
+            int slotMinute = t.getStartMinute();
+            while (slotMinute < t.getEndMinute()) {
+                int slotIndex = getSlotForMinute(slotMinute - startMinute);
+                freeSlots[slotIndex] = false;
+                slotMinute += timeSlotDuration;
+            }
+
             int index = getSlotForMinute(t.getStartMinute());
             freeSlots[index] = false;
         }
@@ -103,7 +111,7 @@ public class DailySchedule {
      * @return number of time slots between the minutes
      */
     public int getSlotCountBetween(int startMinute, int endMinute) {
-        return (endMinute - startMinute) / timeSlotDuration;
+        return (int) Math.ceil((endMinute - startMinute) / (float) timeSlotDuration);
     }
 
     public List<Task> scheduleTasks(List<Task> tasksToSchedule) {
@@ -113,7 +121,7 @@ public class DailySchedule {
         }
         Collections.sort(result, (t1, t2) -> -Integer.compare(t1.getPriority(), t2.getPriority()));
         for (Task t : result) {
-            DiscreteDistribution dist = UniformDiscreteDistribution.create((int) Math.ceil(Time.MINUTES_IN_A_DAY / timeSlotDuration));
+            DiscreteDistribution dist = UniformDiscreteDistribution.create((int) Math.ceil(Time.MINUTES_IN_A_DAY / (float) timeSlotDuration));
             for (Constraint constraint : constraints) {
                 if (constraint.shouldApply(t)) {
                     dist = dist.joint(constraint.apply());
@@ -122,29 +130,19 @@ public class DailySchedule {
 
             List<TimeBlock> timeBlocks = new ArrayList<>();
             int taskSlotCount = getSlotCountBetween(0, t.getDuration());
-            int startSlot = 0;
-            int endSlot = 0;
-            for (int i = 0; i < isFreeSlot.length; i++) {
-                if (isFreeSlot[i] && dist.at(i + getSlotCountBetween(0, startMinute)) > 0) {
-//                if (isFreeSlot[i]) {
-                    endSlot = i;
-//                    System.out.println(startSlot + " endSlot " + endSlot);
-                } else {
-//                    System.out.println(startSlot + " endSlot " + endSlot);
-                    if (taskSlotCount <= endSlot - startSlot + 1) {
-                        timeBlocks.addAll(cutSlotToTimeBlocks(startSlot, endSlot, taskSlotCount));
+            for (int startSlot = 0; startSlot < isFreeSlot.length; startSlot++) {
+                if (isAvailableSlot(dist, startSlot)) {
+                    for (int endSlot = startSlot; endSlot < isFreeSlot.length; endSlot++) {
+                        if (isNotAvailableSlot(dist, endSlot) || endSlot == isFreeSlot.length - 1) {
+                            if (taskSlotCount <= endSlot - startSlot + 1) {
+                                timeBlocks.addAll(cutSlotToTimeBlocks(startSlot, endSlot, taskSlotCount));
+                            }
+                            startSlot = endSlot + 1;
+                            break;
+                        }
                     }
-                    startSlot = i + 1;
-                    endSlot = i + 1;
                 }
             }
-            if (startSlot != endSlot) {
-                timeBlocks.addAll(cutSlotToTimeBlocks(startSlot, endSlot, taskSlotCount));
-            }
-
-//            for(TimeBlock tb : timeBlocks) {
-//                System.out.println(tb.getStartTime() + " end: " + tb.getEndTime());
-//            }
 
             List<TimeBlock> rankedSlots = rankSlots(timeBlocks, dist);
             t.setRecommendedSlots(rankedSlots);
@@ -157,11 +155,19 @@ public class DailySchedule {
                 }
             }
 
-            for (TimeBlock tb : rankedSlots) {
-                System.out.println(tb.getStartTime() + " end: " + tb.getEndTime());
-            }
+//            for (TimeBlock tb : rankedSlots) {
+//                System.out.println(tb.getStartTime() + " end: " + tb.getEndTime());
+//            }
         }
         return tasksToSchedule;
+    }
+
+    private boolean isNotAvailableSlot(DiscreteDistribution dist, int endSlot) {
+        return !isFreeSlot[endSlot] || dist.at(endSlot + getSlotCountBetween(0, startMinute)) <= 0;
+    }
+
+    private boolean isAvailableSlot(DiscreteDistribution dist, int startSlot) {
+        return isFreeSlot[startSlot] && dist.at(startSlot + getSlotCountBetween(0, startMinute)) > 0;
     }
 
     private List<TimeBlock> rankSlots(List<TimeBlock> slotsToConsider, DiscreteDistribution distribution) {
