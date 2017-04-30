@@ -61,6 +61,11 @@ public class DailyScheduleBuilder {
         return this;
     }
 
+    public DailyScheduleBuilder setSeed(int seed) {
+        this.seed = new Random(seed);
+        return this;
+    }
+
     public DailyScheduleBuilder setWorkDays(Set<DayOfWeek> workDays) {
         this.workDays = workDays;
         return this;
