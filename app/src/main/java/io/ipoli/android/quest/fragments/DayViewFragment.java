@@ -22,7 +22,6 @@ import org.threeten.bp.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -37,9 +36,6 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.StartQuickAddEvent;
 import io.ipoli.android.app.scheduling.DailySchedule;
 import io.ipoli.android.app.scheduling.DailyScheduleBuilder;
-import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
-import io.ipoli.android.app.scheduling.PosteriorEstimator;
-import io.ipoli.android.app.scheduling.ProbabilisticTaskScheduler;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.TimeBlock;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
@@ -119,7 +115,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     List<Quest> futureQuests = new ArrayList<>();
     List<Quest> futurePlaceholderQuests = new ArrayList<>();
-    private PosteriorEstimator posteriorEstimator;
 
     public static DayViewFragment newInstance(LocalDate date) {
         DayViewFragment fragment = new DayViewFragment();
@@ -173,16 +168,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         calendarDayView.setAdapter(calendarAdapter);
         calendarDayView.setOnHourCellLongClickListener(this);
         calendarDayView.scrollToNow();
-
-        PosteriorEstimator.PosteriorSettings posteriorSettings = PosteriorEstimator.PosteriorSettings.create()
-                .setWorkDays(player.getWorkDays())
-                .setSleepStartMinute(player.getSleepStartMinute())
-                .setSleepEndMinute(player.getSleepEndMinute())
-                .setWorkStartMinute(player.getWorkStartMinute())
-                .setWorkEndMinute(player.getWorkEndMinute())
-                .setMostProductiveTimesOfDay(player.getMostProductiveTimesOfDay());
-
-        posteriorEstimator = new PosteriorEstimator(posteriorSettings, currentDate, new Random(Constants.RANDOM_SEED));
 
         if (!currentDate.isEqual(LocalDate.now())) {
             calendarDayView.hideTimeLine();
@@ -350,7 +335,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             tasks.add(new Task(vm.getStartMinute(), vm.getDuration(), vm.getPriority(), vm.getStartTimePreference(), vm.getCategory()));
         }
 
-        ProbabilisticTaskScheduler probabilisticTaskScheduler = new ProbabilisticTaskScheduler(0, 24, tasks, new Random(Constants.RANDOM_SEED));
         Player player = getPlayer();
         DailySchedule dailySchedule = new DailyScheduleBuilder()
                 .setStartMinute(player.getSleepEndMinute())
@@ -374,7 +358,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             }
         }
 
-        List<Task> scheduledTasks = dailySchedule.scheduleTasks(tasksToSchedule, Time.minutesAgo(400));
+        List<Task> scheduledTasks = dailySchedule.scheduleTasks(tasksToSchedule);
         for (Task t : scheduledTasks) {
             QuestTask qt = (QuestTask) t;
             if(qt.getRecommendedSlots().isEmpty()) {
@@ -390,21 +374,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         setUnscheduledQuestsHeight();
         calendarDayView.onMinuteChanged();
-    }
-
-    private void proposeSlotForQuest(List<QuestCalendarViewModel> scheduledEvents, ProbabilisticTaskScheduler probabilisticTaskScheduler, List<QuestCalendarViewModel> proposedEvents, Quest q) {
-        DiscreteDistribution posterior = posteriorEstimator.posteriorFor(q);
-
-        List<TimeBlock> timeBlocks = probabilisticTaskScheduler.chooseSlotsFor(new Task(q.getDuration(), q.getPriority(), q.getStartTimePreference(), q.getCategoryType()), 15, Time.now(), posterior);
-
-        TimeBlock timeBlock = chooseNonOverlappingTimeBlock(proposedEvents, timeBlocks);
-
-        if (timeBlock != null) {
-            timeBlocks.remove(0);
-            QuestCalendarViewModel vm = QuestCalendarViewModel.createWithProposedTime(q, timeBlock.getStartMinute(), timeBlocks);
-            scheduledEvents.add(vm);
-            proposedEvents.add(vm);
-        }
     }
 
     @Nullable
