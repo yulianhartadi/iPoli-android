@@ -1,51 +1,27 @@
 <resources>
     <string name="app_name">iPoli</string>
-    <string name="title_activity_quest_list">Today</string>
     <string name="title_fragment_inbox">Inbox</string>
     <string name="title_activity_pick_avatar">Pick avatar</string>
     <string name="title_edit_quest">Edit quest</string>
-    <string name="player_level">Level %d</string>
     <string name="quest_deleted">Quest deleted</string>
     <string name="repeating_quest_deleted">Repeating Quest deleted</string>
-    <string name="default_assistant_name">iPoli</string>
-    <string name="title_activity_quest_complete">Well done!</string>
-    <string name="quest_complete_difficulty_question">How difficult was it?</string>
-    <string name="quest_complete_done_log">What did you do?</string>
     <string name="done">DONE</string>
-    <string name="easy">Easy</string>
-    <string name="medium">Medium</string>
-    <string name="hard">Hard</string>
-    <string name="title_activity_level_up">Level Up!</string>
-    <string name="level_up_reward">You are now level %d! Your reward is:</string>
-    <string name="attribution">Source: %s</string>
     <string name="quest_complete">Quest complete</string>
     <string name="quest_complete_with_bounty">Quest complete! +%1$d XP +%2$d coins.</string>
     <string name="challenge_complete">Challenge %s complete</string>
     <string name="quest_undone">Quest undone. -%1$d XP -%2$d coins.</string>
     <string name="quest_undone_to_inbox">Quest moved to Inbox. -%1$d XP -%2$d coins.</string>
-    <string name="start_time_default">Start time</string>
-    <string name="due_date_default">Due date</string>
     <string name="today">Today</string>
-    <string name="edit_quest_duration_hint">How long will it take?</string>
-    <string name="edit_quest_start_time_hint">When should it start?</string>
-    <string name="edit_quest_due_date_hint">When will you do it?</string>
-    <string name="edit_quest_name_hint">Name (e.g. Read a book)</string>
     <string name="add_quest_name_hint">Name (e.g. Read a book)</string>
-    <string name="hours">%02d</string>
-    <string name="minutes">%02d</string>
     <string name="start">Start</string>
     <string name="edit">EDIT</string>
     <string name="stop">Stop</string>
     <string name="quest_item_full_duration">%1$d h %2$d m</string>
     <string name="quest_item_minutes_duration">%d min</string>
     <string name="quest_item_hours_duration">%d h</string>
-    <string name="quest_timer_hours_and_minutes">For %1$d hour(s) and %2$02d minutes</string>
-    <string name="quest_timer_minutes">For %d minutes</string>
-    <string name="excuse_help_reminder"><![CDATA[Type <b>help</b> to see what you can do with me :)]]></string>
     <string name="tomorrow">Tomorrow</string>
     <string name="next_7_days">Next 7 days</string>
     <string name="cancel">Cancel</string>
-    <string name="add_quest">add quest</string>
     <string name="title_fragment_wizard_quest_name">New Quest</string>
     <string name="unknown_choice">Don\'t know</string>
     <string name="delete">Delete</string>
@@ -63,18 +39,11 @@
     <string name="calendar_format">EEE, d MMM</string>
     <string name="agenda_calendar_format">EEEE, d MMM</string>
     <string name="widget_agenda_title_format">EEE, d MMM</string>
-    <string name="undo">undo</string>
     <string name="quest_scheduled_for_today">Quest scheduled for today</string>
     <string name="quest_scheduled_for_tomorrow">Quest scheduled for tomorrow</string>
 
-    <string name="add_quest_today">today</string>
-
-    <string name="feedback_email_subject">How iPoli can be improved</string>
-    <string name="contact_us_email_subject">Hi</string>
-    <string name="feedback_email_chooser_title">How to make iPoli better</string>
     <string name="contact_us_email_chooser_title">Contact us</string>
     <string name="repeating_quest_saved">Repeating Quest saved</string>
-    <string name="repeating_quest_next_datetime">Next: %s</string>
 
     <string-array name="growth_intervals">
         <item>Today</item>
@@ -85,29 +54,20 @@
     <string name="title_activity_main">iPoli</string>
 
     <string name="save">SAVE</string>
-    <string name="show_tutorial">Show Tutorial</string>
     <string name="tutorial_welcome_title">3 Simple Steps to Upgrade Your Life</string>
-    <string name="tutorial_welcome_desc">Ready for a life-changing challenge? You are free to accept or refuse!</string>
-    <string name="tutorial_hero_title">Level Up Your Life</string>
     <string name="tutorial_hero_desc">Your daily tasks and habits are now called quests. Earn life coins and experience by completing them!</string>
     <string name="tutorial_challenges_title">Keep Challenging Yourself</string>
     <string name="tutorial_challenges_desc">Stay motivated and achieve your life goals with iPoli challenges! Get bonus rewards when you complete them.</string>
-    <string name="fragment_calendar_title">Calendar</string>
     <string name="title_pick_initial_repeating_quests">Pick a few Habits to start with</string>
     <string name="title_pick_initial_quests">Pick a few Quests to start with</string>
-    <string name="loading_message">Looking for a cracker…</string>
-    <string name="find_slots_loading_message">Finding the perfect time…</string>
     <string name="title_fragment_repeating_quests">Repeating Quests</string>
 
     <string name="share">Share</string>
 
     <string name="facebook_app_id">1609232436065758</string>
     <string name="invite_friends">Invite Friends</string>
-    <string name="show_invite_failed">Oops, please, try again later!</string>
     <string name="cannot_edit_completed_quests">Completed quests cannot be edited</string>
     <string name="fragment_overview_title">Your Journey Ahead</string>
-    <string name="sync_android_calendars">Sync Calendars</string>
-    <string name="import_calendar_events_started">Your quests will be available soon…</string>
     <string name="widget_journey_name">iPoli: Daily Journey</string>
     <string name="add">ADD</string>
     <string name="rate_dialog_initial_title">Hey Hero</string>
@@ -136,7 +96,6 @@
     <string name="help_dialog_calendar_text1">Calendar is the place where you can control your daily schedule.</string>
     <string name="help_dialog_calendar_text2">Above the calendar is the area with your unscheduled quests for the day.</string>
     <string name="help_dialog_calendar_drag">Touch, hold and drag quest to schedule it</string>
-    <string name="help_dialog_calendar_smart_schedule">Tap the arrow to automatically schedule the quest. If you don\'t like the chosen time, tap again to reschedule it.</string>
     <string name="help_dialog_repeating_quests_text1">Repeating Quests are called all your repeating tasks.</string>
     <string name="help_dialog_repeating_quests_text2">iPoli automatically makes a quest in your calendar for the repeating one if you have to do it on a particular date.</string>
     <string name="help_dialog_repeating_quests_text3">From this screen you can track your weekly progress.</string>
@@ -154,7 +113,7 @@
     <string name="help_dialog_rewards_text2">Reward can be anything. For example: \'Eat a chocolate\' or \'Go on a vacation\'.</string>
     <string name="help_dialog_rewards_text3">You choose how much it costs depending on your efforts.</string>
     <string name="help_dialog_rewards_buy">Press the button to buy your reward. If the button is grey, work a little bit harder to earn these coins!</string>
-    <string name="help_dialog_open_options">Swipe quest left to open the actions:</string>
+    <string name="help_dialog_open_options">Open the actions menu:</string>
     <string name="help_dialog_delete_quest">Delete the quest</string>
     <string name="help_dialog_schedule_for_today">Schedule the quest for today</string>
     <string name="help_dialog_edit_reward">Edit reward</string>
@@ -162,14 +121,12 @@
 
     <string name="drawer_close">Navigation Closed</string>
     <string name="drawer_open">Navigation Opened</string>
-    <string name="home">Home</string>
     <string name="repeating_quests">Repeating Quests</string>
     <string name="challenges">Challenges</string>
     <string name="growth">Growth</string>
     <string name="rewards">Rewards</string>
     <string name="title_fragment_challenges">Challenges</string>
     <string name="title_fragment_rewards">Rewards</string>
-    <string name="price_hint">Cost</string>
     <string name="title_activity_add_reward">Add Reward</string>
     <string name="reward_name_hint">Name (e.g. Eat a chocolate)</string>
 
@@ -185,9 +142,7 @@
     <string name="empty_overview_text">Your adventure is empty! Start it by adding a quest?</string>
     <string name="empty_inbox_text">Your inbox is empty</string>
     <string name="empty_repeating_quests_text">No repeating quests? Add repeating task or habit?</string>
-    <string name="action_settings">Settings</string>
     <string name="nav_drawer_player_xp">XP: %s</string>
-    <string name="title_fragment_growth">Growth</string>
     <string name="help_dialog_growth_title">What is growth all about?</string>
     <string name="chart_time_spent_description">Time spent per category</string>
     <string name="chart_time_spent_center_text">XP: %1$d\nCoins: %2$d</string>
@@ -200,13 +155,10 @@
     <string name="summary_stats_quests_done">Quests done: %d</string>
     <string name="title_activity_add_challenge">Challenge Yourself</string>
     <string name="reward_name_validation">You must add name for your reward</string>
-    <string name="do_not_repeat">Do not repeat</string>
     <string name="end_of_time">End of time</string>
-    <string name="smart_add_hint">Enter name, start time, duration …</string>
     <string name="quest_end_date_question">When will you do it?</string>
     <string name="quest_start_time_question">When should it start?</string>
     <string name="quest_duration_question">For how long?</string>
-    <string name="quest_times_per_day_question">How many times per day?</string>
     <string name="quest_repeat_pattern_question">How often should it repeat?</string>
     <string name="reward_description_question">Why do you want this reward?</string>
     <string name="reward_price_question">How much does it cost?</string>
@@ -216,7 +168,6 @@
     <string name="pick_note_title">Enter a note</string>
     <string name="empty_text_chanllenge">Add your challenges and conquer them!</string>
     <string name="settings">Settings</string>
-    <string name="title_fragment_settings">Settings</string>
     <string name="accept">Accept</string>
     <string name="challenge_days_question">Challenge me on these days</string>
     <string name="no_challenge_days">No days selected</string>
@@ -262,7 +213,6 @@
     <string name="recurrence_picker_title">Pick repeating pattern</string>
     <string name="pick_flexible_count_title">How often?</string>
     <string name="preferred_days">Preferred days</string>
-    <string name="activity_quest_title">Quest</string>
     <string name="add_sub_quest">Add Sub Quest</string>
     <string name="edit_quest_add_sub_quest">+ Add sub-quest</string>
     <string name="help_dialog_quest_title">Manage your quest</string>
@@ -294,14 +244,12 @@
     <string name="overview">Journey Ahead</string>
     <string name="do_today">Do today</string>
     <string name="snooze_for_tomorrow">Snooze for tomorrow</string>
-    <string name="duplicate_date_picker_title">Duplicate quest for</string>
     <string name="quest_duplicated">Quest duplicated</string>
     <string name="view">View</string>
     <string name="pick_date">Pick date</string>
     <string name="quest_snoozed">Quest snoozed</string>
     <string name="quest_moved_to_inbox">Quest moved to Inbox</string>
     <string name="migration_no_internet">iPoli needs a little bit of internet, just this time!</string>
-    <string name="title_no_internet">No internet</string>
     <string name="help_dialog_calendar_quick_add">Long tap on any free time slot to use quick add</string>
     <string name="ongoing_notification_no_quests_text">Start your day with a smile</string>
     <string name="ongoing_notification_no_quests_title">Ready for a quest?</string>
@@ -322,7 +270,6 @@
     <string name="edit_menu">Edit</string>
     <string name="brag">Brag</string>
 
-    <string name="facebook_application_id" translatable="false">1609232436065758</string>
     <string name="title_activity_pick_challenge">Pick a Challenge</string>
     <string name="personalize">Personalize</string>
     <string name="title_activity_personalize_challenge">Accept the Challenge</string>
@@ -330,11 +277,8 @@
     <string name="pick_challenge_to_start">Pick a challenge to start with</string>
     <string name="pick_challenge">PICK CHALLENGE</string>
     <string name="challenge_accepted">Challenge accepted!</string>
-    <string name="loading">Loading…</string>
     <string name="widget_agenda_empty">iPoli wants a quest!</string>
     <string name="quests">Quests</string>
-    <string name="title_edit_new_quest">Add Quest</string>
-    <string name="title_edit_new_repeating_quest">Add Repeating Quest</string>
     <string name="quest_started">Quest started</string>
     <string name="quest_stopped">Quest stopped</string>
     <string name="reward_earned">%s earned! Enjoy!</string>
@@ -355,7 +299,6 @@
     <string name="quest_times_a_day_question">How many times a day?</string>
     <string name="title_activity_agenda">Your calendar</string>
     <string name="migration_text">Oh no, you have to wait!\niPoli is eating a biscuit and upgrading your experience</string>
-    <string name="migration_error_message">An error occurred. Please, wait for app update.</string>
     <string name="agenda_daily_journey">Daily Journey for %s</string>
     <string name="add_quest_by_date">By %s</string>
     <string name="agenda_daily_journey_format">MMMM d\'%s\'</string>
@@ -435,11 +378,7 @@
     <string name="title_sign_in_activity">Sign Up</string>
     <string name="using_as_guest">You are using iPoli as Guest</string>
     <string name="widget_quick_add_validation">You must sign up to add quests</string>
-    <string name="tutorial_sync_with_my_calendars">Sync with my calendars</string>
-    <string name="tutorial_choose_calendars">Choose calendars</string>
-    <string name="tutorial_sync_title"><![CDATA[Import All Your Habits & ToDos]]></string>
     <string name="choose_calendars_title">Choose calendars</string>
-    <string name="sync_google_calendars">Sync with Google calendar</string>
     <string name="sync_calendars_count">%d calendars selected</string>
     <string name="no_calendars_selected_to_sync">No calendars selected</string>
     <string name="dialog_disable_google_calendar_sync_title">Disable Google calendar sync</string>
@@ -458,7 +397,7 @@
     <string name="empty_calendars_text">No calendars</string>
     <string name="allow_read_calendars_perm_reason">iPoli needs to read your calendars to import your events as quests</string>
     <string name="sync_calendars_delete_loading_dialog_title">Deleting quests</string>
-    <string name="empty_store_items">No availabale items</string>
+    <string name="empty_store_items">No available items</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
