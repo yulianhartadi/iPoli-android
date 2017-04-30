@@ -81,7 +81,7 @@ public class DailySchedule {
 
             int slotMinute = t.getStartMinute();
             while (slotMinute < t.getEndMinute()) {
-                int slotIndex = getSlotForMinute(slotMinute - startMinute);
+                int slotIndex = getSlotForMinute(slotMinute);
                 freeSlots[slotIndex] = false;
                 slotMinute += timeSlotDuration;
             }
@@ -102,7 +102,7 @@ public class DailySchedule {
     }
 
     public int getSlotForMinute(int minute) {
-        return minute / timeSlotDuration;
+        return (minute - startMinute) / timeSlotDuration;
     }
 
     /**
@@ -114,7 +114,7 @@ public class DailySchedule {
         return (int) Math.ceil((endMinute - startMinute) / (float) timeSlotDuration);
     }
 
-    public List<Task> scheduleTasks(List<Task> tasksToSchedule) {
+    public List<Task> scheduleTasks(List<Task> tasksToSchedule, Time currentTime) {
         List<Task> result = new ArrayList<>();
         for (Task t : tasksToSchedule) {
             result.add(t);
@@ -130,7 +130,7 @@ public class DailySchedule {
 
             List<TimeBlock> timeBlocks = new ArrayList<>();
             int taskSlotCount = getSlotCountBetween(0, t.getDuration());
-            for (int startSlot = 0; startSlot < isFreeSlot.length; startSlot++) {
+            for (int startSlot = getSlotForMinute(currentTime.toMinuteOfDay()); startSlot < isFreeSlot.length; startSlot++) {
                 if (isAvailableSlot(dist, startSlot)) {
                     for (int endSlot = startSlot; endSlot < isFreeSlot.length; endSlot++) {
                         if (isNotAvailableSlot(dist, endSlot) || endSlot == isFreeSlot.length - 1) {
@@ -150,14 +150,14 @@ public class DailySchedule {
                 TimeBlock bestSlot = rankedSlots.get(0);
                 int slotMinute = bestSlot.getStartMinute();
                 while (slotMinute < bestSlot.getEndMinute()) {
-                    isFreeSlot[getSlotForMinute(slotMinute - startMinute)] = false;
+                    isFreeSlot[getSlotForMinute(slotMinute)] = false;
                     slotMinute += timeSlotDuration;
                 }
             }
 
-//            for (TimeBlock tb : rankedSlots) {
-//                System.out.println(tb.getStartTime() + " end: " + tb.getEndTime());
-//            }
+            for (TimeBlock tb : rankedSlots) {
+                System.out.println(tb.getStartTime() + " end: " + tb.getEndTime());
+            }
         }
         return tasksToSchedule;
     }

@@ -368,16 +368,18 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         for (Quest q : schedule.getUnscheduledQuests()) {
             unscheduledViewModels.add(new UnscheduledQuestViewModel(q));
             if (!q.shouldBeDoneMultipleTimesPerDay()) {
-//                dailySchedule
                 tasksToSchedule.add(new QuestTask(q.getDuration(), q.getPriority(), q.getStartTimePreference(), q.getCategoryType(), q));
 
 //                proposeSlotForQuest(scheduledEvents, probabilisticTaskScheduler, proposedEvents, q);
             }
         }
 
-        List<Task> scheduledTasks = dailySchedule.scheduleTasks(tasksToSchedule);
+        List<Task> scheduledTasks = dailySchedule.scheduleTasks(tasksToSchedule, Time.minutesAgo(400));
         for (Task t : scheduledTasks) {
             QuestTask qt = (QuestTask) t;
+            if(qt.getRecommendedSlots().isEmpty()) {
+                continue;
+            }
             QuestCalendarViewModel vm = QuestCalendarViewModel.createWithProposedTime(qt.quest, qt.getRecommendedSlots().get(0).getStartMinute(), qt.getRecommendedSlots());
             scheduledEvents.add(vm);
         }
