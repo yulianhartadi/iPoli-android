@@ -19,6 +19,12 @@
         android:layout_marginTop="8dp"
         android:text="@string/help_dialog_calendar_text2" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/help_dialog_calendar_text3" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -56,6 +62,5 @@
             android:layout_marginStart="16dp"
             android:text="@string/help_dialog_calendar_quick_add" />
     </LinearLayout>
-
 
 </LinearLayout>
