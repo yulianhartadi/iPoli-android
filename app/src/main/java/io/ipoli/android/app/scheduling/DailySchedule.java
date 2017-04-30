@@ -114,6 +114,10 @@ public class DailySchedule {
         return (int) Math.ceil((endMinute - startMinute) / (float) timeSlotDuration);
     }
 
+    public List<Task> scheduleTasks(List<Task> tasksToSchedule) {
+        return scheduleTasks(tasksToSchedule, Time.now());
+    }
+
     public List<Task> scheduleTasks(List<Task> tasksToSchedule, Time currentTime) {
         List<Task> result = new ArrayList<>();
         for (Task t : tasksToSchedule) {
@@ -155,9 +159,9 @@ public class DailySchedule {
                 }
             }
 
-            for (TimeBlock tb : rankedSlots) {
-                System.out.println(tb.getStartTime() + " end: " + tb.getEndTime());
-            }
+//            for (TimeBlock tb : rankedSlots) {
+//                System.out.println(tb.getStartTime() + " end: " + tb.getEndTime());
+//            }
         }
         return tasksToSchedule;
     }

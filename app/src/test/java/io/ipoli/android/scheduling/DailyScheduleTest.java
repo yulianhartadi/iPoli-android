@@ -14,6 +14,7 @@ import io.ipoli.android.app.scheduling.DailyScheduleBuilder;
 import io.ipoli.android.app.scheduling.PriorityEstimator;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.TimeBlock;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
@@ -31,10 +32,12 @@ import static org.junit.Assert.assertTrue;
 public class DailyScheduleTest {
 
     private Random random;
+    private Time defaultTime;
 
     @Before
     public void setUp() throws Exception {
         random = new Random(Constants.RANDOM_SEED);
+        defaultTime = Time.of(0);
     }
 
     @Test
@@ -95,7 +98,7 @@ public class DailyScheduleTest {
         q.setStartTimePreference(TimePreference.MORNING);
         q.setDuration(30);
         tasksToSchedule.add(toTask(q));
-        List<Task> scheduledTasks = schedule.scheduleTasks(tasksToSchedule);
+        List<Task> scheduledTasks = schedule.scheduleTasks(tasksToSchedule, Time.of(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE));
         assertThat(scheduledTasks.size(), is(1));
         assertThat(scheduledTasks.get(0).getRecommendedSlots().get(0).getStartMinute(), is(greaterThanOrEqualTo(0)));
     }
@@ -111,7 +114,7 @@ public class DailyScheduleTest {
                 .setScheduledTasks(Collections.singletonList(new Task(0, 20, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)))
                 .createDailySchedule();
         List<Task> tasksToSchedule = Collections.singletonList(new Task(20, Quest.PRIORITY_IMPORTANT_URGENT, TimePreference.ANY, Category.CHORES));
-        List<Task> scheduledTasks = schedule.scheduleTasks(tasksToSchedule);
+        List<Task> scheduledTasks = schedule.scheduleTasks(tasksToSchedule, defaultTime);
         Task scheduledTask = scheduledTasks.get(0);
         List<TimeBlock> recommendedSlots = scheduledTask.getRecommendedSlots();
         assertThat(recommendedSlots.size(), is(1));
