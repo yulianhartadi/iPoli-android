@@ -61,9 +61,7 @@
     <string name="title_pick_initial_repeating_quests">Pick a few Habits to start with</string>
     <string name="title_pick_initial_quests">Pick a few Quests to start with</string>
     <string name="title_fragment_repeating_quests">Repeating Quests</string>
-
     <string name="share">Share</string>
-
     <string name="facebook_app_id">1609232436065758</string>
     <string name="invite_friends">Invite Friends</string>
     <string name="cannot_edit_completed_quests">Completed quests cannot be edited</string>
@@ -95,6 +93,7 @@
     <string name="help_wanted_chooser_title">Ask us for help</string>
     <string name="help_dialog_calendar_text1">Calendar is the place where you can control your daily schedule.</string>
     <string name="help_dialog_calendar_text2">Above the calendar is the area with your unscheduled quests for the day.</string>
+    <string name="help_dialog_calendar_text3">In grey you can see where iPoli recommends to schedule them.</string>
     <string name="help_dialog_calendar_drag">Touch, hold and drag quest to schedule it</string>
     <string name="help_dialog_repeating_quests_text1">Repeating Quests are called all your repeating tasks.</string>
     <string name="help_dialog_repeating_quests_text2">iPoli automatically makes a quest in your calendar for the repeating one if you have to do it on a particular date.</string>
@@ -102,9 +101,6 @@
     <string name="help_dialog_inbox_text1">This is the place with all your unscheduled quests.</string>
     <string name="help_dialog_inbox_text2">If you don\'t complete a quest during the day it will automatically move to your Inbox.</string>
     <string name="help_dialog_overview_text1">Use the overview to manage your uncompleted quests for the next 7 days.</string>
-    <string name="help_dialog_edit_quest">Edit the quest</string>
-    <string name="help_dialog_complete_quest">Complete the quest</string>
-    <string name="help_dialog_reschedule_quest">Reschedule quest for today or tomorrow</string>
     <string name="help_dialog_challenges_text1">Challenges are your short and long-term goals.</string>
     <string name="help_dialog_challenges_text2">Use them to clearly define what you want, why you want it and by what date you will achieve it.</string>
     <string name="help_dialog_challenges_text3">Divide your epic challenges into smaller tasks by assigning (repeating) quests to a challenge. Gain additional XP and coins when you complete a quest from a challenge!</string>
@@ -113,11 +109,6 @@
     <string name="help_dialog_rewards_text2">Reward can be anything. For example: \'Eat a chocolate\' or \'Go on a vacation\'.</string>
     <string name="help_dialog_rewards_text3">You choose how much it costs depending on your efforts.</string>
     <string name="help_dialog_rewards_buy">Press the button to buy your reward. If the button is grey, work a little bit harder to earn these coins!</string>
-    <string name="help_dialog_open_options">Open the actions menu:</string>
-    <string name="help_dialog_delete_quest">Delete the quest</string>
-    <string name="help_dialog_schedule_for_today">Schedule the quest for today</string>
-    <string name="help_dialog_edit_reward">Edit reward</string>
-    <string name="help_dialog_delete_reward">Delete reward</string>
 
     <string name="drawer_close">Navigation Closed</string>
     <string name="drawer_open">Navigation Opened</string>
@@ -200,11 +191,7 @@
     <string name="challenge_with_quests_deleted">Challenge and quests deleted</string>
     <string name="quest_challenge_question">Challenge</string>
     <string name="quest_pick_challenge">Pick a challenge</string>
-    <string name="help_dialog_complete_challenge">Complete the challenge</string>
-    <string name="help_dialog_edit_challenge">Edit the challenge</string>
-    <string name="help_dialog_delete_challenge">Delete the challenge</string>
     <string name="help_dialog_challenges_title">Ready to achieve more?</string>
-    <string name="help_dialog_open_challenges_options">Swipe challenge left to open the actions:</string>
     <string name="quest_reminders_question">When should you be reminded?</string>
     <string name="reminder_dialog_add_custom_time_value">Please, add time value</string>
     <string name="do_not_remind">Do not remind</string>
