@@ -308,6 +308,8 @@ public class CalendarDayView extends FrameLayout {
                 hasDropped = false;
                 CalendarEvent calendarEvent = eventViewToCalendarEvent.get(dragView);
                 adapter.onDragStarted(dragView, Time.of(calendarEvent.getStartMinute()));
+
+                //event.getY() is different in Started and Entered
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     computeInitialTouchHeight(event);
                 }
