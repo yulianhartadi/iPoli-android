@@ -934,7 +934,7 @@ public class App extends MultiDexApplication {
     }
 
     private void clearIncompleteQuests() {
-        questPersistenceService.findAllIncompleteBefore(LocalDate.now(), quests -> {
+        questPersistenceService.findAllIncompleteNotFromRepeatingBefore(LocalDate.now(), quests -> {
             for (Quest q : quests) {
                 if (q.isStarted()) {
                     q.setScheduledDate(LocalDate.now());
