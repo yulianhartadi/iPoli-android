@@ -79,7 +79,7 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
                 .setLargeIcon(largeIcon)
                 .setOnlyAlertOnce(false)
                 .setAutoCancel(true)
-                .addAction(R.drawable.ic_snooze_black_24dp, context.getString(R.string.snooze), snoozeQuestPI)
+                .addAction(R.drawable.ic_snooze_black_24dp, context.getString(R.string.snooze).toUpperCase(), snoozeQuestPI)
                 .addAction(R.drawable.ic_play_arrow_black_24dp, context.getString(R.string.start).toUpperCase(), startQuestPI)
                 .setDefaults(NotificationCompat.DEFAULT_VIBRATE | NotificationCompat.DEFAULT_SOUND | NotificationCompat.DEFAULT_LIGHTS)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)

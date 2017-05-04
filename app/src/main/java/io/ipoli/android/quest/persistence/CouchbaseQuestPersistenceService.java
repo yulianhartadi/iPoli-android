@@ -163,10 +163,12 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                         document.get("source").equals(Constants.SOURCE_ANDROID_CALENDAR)) {
                     Map<String, Object> sourceMapping = (Map<String, Object>) document.get("sourceMapping");
                     Map<String, Object> androidCalendarMapping = (Map<String, Object>) sourceMapping.get("androidCalendarMapping");
-                    List<Object> key = new ArrayList<>();
-                    key.add(String.valueOf(androidCalendarMapping.get("calendarId")));
-                    key.add(String.valueOf(androidCalendarMapping.get("eventId")));
-                    emitter.emit(key, document);
+                    if(androidCalendarMapping != null) {
+                        List<Object> key = new ArrayList<>();
+                        key.add(String.valueOf(androidCalendarMapping.get("calendarId")));
+                        key.add(String.valueOf(androidCalendarMapping.get("eventId")));
+                        emitter.emit(key, document);
+                    }
                 }
             }, (keys, values, rereduce) -> {
                 List<Quest> quests = new ArrayList<>();
