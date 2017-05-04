@@ -308,25 +308,25 @@ public class CalendarDayView extends FrameLayout {
                 hasDropped = false;
                 CalendarEvent calendarEvent = eventViewToCalendarEvent.get(dragView);
                 adapter.onDragStarted(dragView, Time.of(calendarEvent.getStartMinute()));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    computeInitialTouchHeight(event);
+                }
             }
 
             @Override
             public void onDragEntered(DragEvent event) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    int[] dragViewLoc = new int[2];
-                    dragView.getLocationOnScreen(dragViewLoc);
-                    int[] calendarViewLoc = new int[2];
-                    getLocationOnScreen(calendarViewLoc);
-                    int dragViewTop = dragViewLoc[1] - calendarViewLoc[1];
-                    initialTouchHeight = (int) (event.getY() - dragView.getTop() + dragViewTop + ViewUtils.dpToPx(16, getResources()));
-                } else {
-                    int[] dragViewLoc = new int[2];
-                    dragView.getLocationOnScreen(dragViewLoc);
-                    int[] calendarViewLoc = new int[2];
-                    getLocationOnScreen(calendarViewLoc);
-                    int dragViewTop = dragViewLoc[1] - calendarViewLoc[1];
-                    initialTouchHeight = (int) (event.getY() - getTop() - dragViewTop);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                    computeInitialTouchHeight(event);
                 }
+            }
+
+            private void computeInitialTouchHeight(DragEvent event) {
+                int[] dragViewLoc = new int[2];
+                dragView.getLocationOnScreen(dragViewLoc);
+                int[] calendarViewLoc = new int[2];
+                getLocationOnScreen(calendarViewLoc);
+                int dragViewTop = dragViewLoc[1] - calendarViewLoc[1];
+                initialTouchHeight = (int) (event.getY() - getTop() - dragViewTop);
             }
 
             @Override
