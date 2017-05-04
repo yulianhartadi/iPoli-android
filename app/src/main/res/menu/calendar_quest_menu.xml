@@ -10,13 +10,13 @@
 
     <item
         android:id="@+id/quest_snooze_for_tomorrow"
-        android:title="Snooze for tomorrow"
+        android:title="@string/snooze_for_tomorrow"
         android:visible="true"
         tools:showAsAction="withText" />
 
     <item
         android:id="@+id/quest_snooze"
-        android:title="Snooze"
+        android:title="@string/snooze"
         android:visible="true"
         tools:showAsAction="withText" >
         <menu />
@@ -24,7 +24,7 @@
 
     <item
         android:id="@+id/quest_duplicate"
-        android:title="Duplicate"
+        android:title="@string/duplicate"
         android:visible="true"
         tools:showAsAction="withText">
         <menu/>
@@ -38,7 +38,7 @@
 
     <item
         android:id="@+id/quest_delete"
-        android:title="Delete"
+        android:title="@string/delete"
         android:visible="true"
         tools:showAsAction="withText" />
 </menu>

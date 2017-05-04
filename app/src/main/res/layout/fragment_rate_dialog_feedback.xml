@@ -18,7 +18,7 @@
             android:id="@+id/feedback"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="What do you think of iPoli ..."
+            android:hint="@string/rate_dialog_feedback_hint"
             android:inputType="textMultiLine" />
 
     </android.support.design.widget.TextInputLayout>

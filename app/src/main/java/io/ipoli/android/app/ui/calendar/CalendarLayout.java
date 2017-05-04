@@ -112,18 +112,21 @@ public class CalendarLayout extends FrameLayout {
             @Override
             public void onDragStarted(DragEvent event) {
                 hasDropped = false;
+                //event.getY() is different in Started and Entered
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    initialTouchHeight = (int) (event.getY() - dragView.getTop());
-                } else {
-                    int[] loc = new int[2];
-                    CalendarLayout.this.getLocationOnScreen(loc);
-                    initialTouchHeight = (int) (event.getY() - dragView.getTop()) - loc[1];
+                    computeInitialTouchHeight(event);
                 }
             }
 
             @Override
             public void onDragEntered(DragEvent event) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                    computeInitialTouchHeight(event);
+                }
+            }
 
+            private void computeInitialTouchHeight(DragEvent event) {
+                initialTouchHeight = (int) (event.getY() - dragView.getTop());
             }
 
             @Override
