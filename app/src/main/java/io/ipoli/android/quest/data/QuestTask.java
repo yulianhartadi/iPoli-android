@@ -12,15 +12,15 @@ public class QuestTask extends Task {
     public Quest quest;
 
     public QuestTask(int duration, int priority, TimePreference startTimePreference, Category category, Quest quest) {
-        this(duration, priority, startTimePreference, category);
+        this(quest.getId(), duration, priority, startTimePreference, category);
         this.quest = quest;
     }
 
-    public QuestTask(int startMinute, int duration, int priority, TimePreference startTimePreference, Category category) {
-        super(startMinute, duration, priority, startTimePreference, category);
+    public QuestTask(String id, int startMinute, int duration, int priority, TimePreference startTimePreference, Category category) {
+        super(id, startMinute, duration, priority, startTimePreference, category);
     }
 
-    public QuestTask(int duration, int priority, TimePreference startTimePreference, Category category) {
-        super(duration, priority, startTimePreference, category);
+    public QuestTask(String id, int duration, int priority, TimePreference startTimePreference, Category category) {
+        super(id, duration, priority, startTimePreference, category);
     }
 }
