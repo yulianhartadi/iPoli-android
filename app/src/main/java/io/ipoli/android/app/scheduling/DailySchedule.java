@@ -204,67 +204,23 @@ public class DailySchedule {
         currentlyScheduledTasks.clear();
         currentlyScheduledTasks.addAll(scheduleTasks(newOrUpdatedTasks, currentTime));
 
-        for(Task t : sameTasks) {
-            if(!t.getRecommendedSlots().isEmpty()) {
+        for (Task t : sameTasks) {
+            if (!t.getRecommendedSlots().isEmpty()) {
                 TimeBlock tb = t.getRecommendedSlots().get(0);
-                if(isFree(tb.getStartMinute(), tb.getEndMinute())) {
-                   continue;
+                if (isFree(tb.getStartMinute(), tb.getEndMinute())) {
+                    continue;
                 }
             }
 
             List<TimeBlock> recommendedSlots = new ArrayList<>();
-            for(TimeBlock slot : t.getRecommendedSlots()) {
-                if(isFree(slot.getStartMinute(), slot.getEndMinute())) {
+            for (TimeBlock slot : t.getRecommendedSlots()) {
+                if (isFree(slot.getStartMinute(), slot.getEndMinute())) {
                     recommendedSlots.add(slot);
                 }
             }
             t.setRecommendedSlots(recommendedSlots);
         }
         currentlyScheduledTasks.addAll(sameTasks);
-
-//        DiffUtil.DiffResult diff = DiffUtil.calculateDiff(new DiffUtil.Callback() {
-//            @Override
-//            public int getOldListSize() {
-//                return currentlyScheduledTasks.size();
-//            }
-//
-//            @Override
-//            public int getNewListSize() {
-//                return tasksToSchedule.size();
-//            }
-//
-//            @Override
-//            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-//                return currentlyScheduledTasks.get(oldItemPosition).getId().equals(tasksToSchedule.get(newItemPosition).getId());
-//            }
-//
-//            @Override
-//            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-//                return currentlyScheduledTasks.get(oldItemPosition).equals(tasksToSchedule.get(newItemPosition));
-//            }
-//        });
-//
-//        diff.dispatchUpdatesTo(new ListUpdateCallback() {
-//            @Override
-//            public void onInserted(int position, int count) {
-//
-//            }
-//
-//            @Override
-//            public void onRemoved(int position, int count) {
-//
-//            }
-//
-//            @Override
-//            public void onMoved(int fromPosition, int toPosition) {
-//
-//            }
-//
-//            @Override
-//            public void onChanged(int position, int count, Object payload) {
-//
-//            }
-//        });
 
         return currentlyScheduledTasks;
     }

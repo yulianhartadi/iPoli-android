@@ -342,16 +342,12 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
                 -Integer.compare(q1.getDuration(), q2.getDuration()));
         List<QuestCalendarViewModel> scheduledEvents = schedule.getCalendarEvents();
 
-
-//        List<QuestCalendarViewModel> proposedEvents = new ArrayList<>();
         List<UnscheduledQuestViewModel> unscheduledViewModels = new ArrayList<>();
         List<Task> tasksToSchedule = new ArrayList<>();
         for (Quest q : schedule.getUnscheduledQuests()) {
             unscheduledViewModels.add(new UnscheduledQuestViewModel(q));
             if (!q.shouldBeDoneMultipleTimesPerDay()) {
                 tasksToSchedule.add(new QuestTask(q.getDuration(), q.getPriority(), q.getStartTimePreference(), q.getCategoryType(), q));
-
-//                proposeSlotForQuest(scheduledEvents, probabilisticTaskScheduler, proposedEvents, q);
             }
         }
 
@@ -363,13 +359,12 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         List<Task> scheduledTasks = dailySchedule.scheduleTasks(tasksToSchedule, calendarTasks);
         for (Task t : scheduledTasks) {
             QuestTask qt = (QuestTask) t;
-            if(qt.getRecommendedSlots().isEmpty()) {
+            if (qt.getRecommendedSlots().isEmpty()) {
                 continue;
             }
             QuestCalendarViewModel vm = QuestCalendarViewModel.createWithProposedTime(qt.quest, qt.getRecommendedSlots().get(0).getStartMinute(), qt.getRecommendedSlots());
             scheduledEvents.add(vm);
         }
-
 
         unscheduledQuestsAdapter.updateQuests(unscheduledViewModels);
         calendarAdapter.updateEvents(scheduledEvents);
