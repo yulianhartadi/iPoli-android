@@ -116,6 +116,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     List<Quest> futureQuests = new ArrayList<>();
     List<Quest> futurePlaceholderQuests = new ArrayList<>();
 
+    private DailySchedule dailySchedule;
+
     public static DayViewFragment newInstance(LocalDate date) {
         DayViewFragment fragment = new DayViewFragment();
         Bundle args = new Bundle();
@@ -154,6 +156,17 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         unscheduledQuestList.setLayoutManager(layoutManager);
 
         Player player = getPlayer();
+
+        dailySchedule = new DailyScheduleBuilder()
+                .setStartMinute(player.getSleepEndMinute())
+                .setEndMinute(player.getSleepStartMinute())
+                .setProductiveTimes(player.getMostProductiveTimesOfDaySet())
+                .setSeed(Constants.RANDOM_SEED)
+                .setWorkDays(player.getDayOfWeekWorkDays())
+                .setWorkStartMinute(player.getWorkStartMinute())
+                .setWorkEndMinute(player.getWorkEndMinute())
+                .createDailySchedule();
+
 
         calendarContainer.setCalendarListener(this);
         calendarContainer.setTimeFormat(player.getUse24HourFormat());
@@ -327,27 +340,11 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         }
         Collections.sort(schedule.getUnscheduledQuests(), (q1, q2) ->
                 -Integer.compare(q1.getDuration(), q2.getDuration()));
-        List<UnscheduledQuestViewModel> unscheduledViewModels = new ArrayList<>();
         List<QuestCalendarViewModel> scheduledEvents = schedule.getCalendarEvents();
 
-        List<Task> tasks = new ArrayList<>();
-        for (QuestCalendarViewModel vm : schedule.getCalendarEvents()) {
-            tasks.add(new Task(vm.getStartMinute(), vm.getDuration(), vm.getPriority(), vm.getStartTimePreference(), vm.getCategory()));
-        }
-
-        Player player = getPlayer();
-        DailySchedule dailySchedule = new DailyScheduleBuilder()
-                .setStartMinute(player.getSleepEndMinute())
-                .setEndMinute(player.getSleepStartMinute())
-                .setProductiveTimes(player.getMostProductiveTimesOfDaySet())
-                .setScheduledTasks(tasks)
-                .setSeed(Constants.RANDOM_SEED)
-                .setWorkDays(player.getDayOfWeekWorkDays())
-                .setWorkStartMinute(player.getWorkStartMinute())
-                .setWorkEndMinute(player.getWorkEndMinute())
-                .createDailySchedule();
 
 //        List<QuestCalendarViewModel> proposedEvents = new ArrayList<>();
+        List<UnscheduledQuestViewModel> unscheduledViewModels = new ArrayList<>();
         List<Task> tasksToSchedule = new ArrayList<>();
         for (Quest q : schedule.getUnscheduledQuests()) {
             unscheduledViewModels.add(new UnscheduledQuestViewModel(q));
@@ -358,7 +355,12 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             }
         }
 
-        List<Task> scheduledTasks = dailySchedule.scheduleTasks(tasksToSchedule);
+        List<Task> calendarTasks = new ArrayList<>();
+        for (QuestCalendarViewModel vm : scheduledEvents) {
+            calendarTasks.add(new Task(vm.getId(), vm.getStartMinute(), vm.getDuration(), vm.getPriority(), vm.getStartTimePreference(), vm.getCategory()));
+        }
+
+        List<Task> scheduledTasks = dailySchedule.scheduleTasks(tasksToSchedule, calendarTasks);
         for (Task t : scheduledTasks) {
             QuestTask qt = (QuestTask) t;
             if(qt.getRecommendedSlots().isEmpty()) {

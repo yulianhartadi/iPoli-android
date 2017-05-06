@@ -36,11 +36,13 @@ public class DailySchedule {
     private final int timeSlotDuration;
     private final Set<DayOfWeek> workDays;
     private final Set<TimeOfDay> productiveTimes;
-    private final boolean[] isFreeSlot;
+    private boolean[] isFreeSlot;
     private final Random seed;
     private final List<Constraint> constraints;
     private final int workStartMinute;
     private final int workEndMinute;
+
+    private List<Task> currentlyScheduledTasks;
 
     DailySchedule(int startMinute, int endMinute, int timeSlotDuration, int workStartMinute, int workEndMinute, Set<DayOfWeek> workDays, Set<TimeOfDay> productiveTimes, List<Task> scheduledTasks, Random seed) {
         this.startMinute = startMinute;
@@ -53,6 +55,7 @@ public class DailySchedule {
         this.isFreeSlot = createFreeSlots(scheduledTasks);
         this.seed = seed;
         this.constraints = createConstraints();
+        currentlyScheduledTasks = new ArrayList<>();
 
     }
 
@@ -166,6 +169,106 @@ public class DailySchedule {
         return tasksToSchedule;
     }
 
+    public List<Task> scheduleTasks(List<Task> tasksToSchedule, List<Task> scheduledTasks) {
+        return scheduleTasks(tasksToSchedule, scheduledTasks, Time.now());
+    }
+
+    public List<Task> scheduleTasks(List<Task> tasksToSchedule, List<Task> scheduledTasks, Time currentTime) {
+        isFreeSlot = createFreeSlots(scheduledTasks);
+
+        List<Task> newOrUpdatedTasks = new ArrayList<>();
+        List<Task> sameTasks = new ArrayList<>();
+
+        if (!currentlyScheduledTasks.isEmpty()) {
+            for (Task tNew : tasksToSchedule) {
+                boolean isNew = true;
+                for (Task tOld : currentlyScheduledTasks) {
+                    if (!tNew.getId().equals(tOld.getId())) {
+                        continue;
+                    }
+                    isNew = false;
+                    if (tNew.equals(tOld)) {
+                        sameTasks.add(tOld);
+                    } else {
+                        newOrUpdatedTasks.add(tNew);
+                    }
+                }
+                if (isNew) {
+                    newOrUpdatedTasks.add(tNew);
+                }
+            }
+        } else {
+            newOrUpdatedTasks.addAll(tasksToSchedule);
+        }
+
+        currentlyScheduledTasks.clear();
+        currentlyScheduledTasks.addAll(scheduleTasks(newOrUpdatedTasks, currentTime));
+
+        for(Task t : sameTasks) {
+            if(!t.getRecommendedSlots().isEmpty()) {
+                TimeBlock tb = t.getRecommendedSlots().get(0);
+                if(isFree(tb.getStartMinute(), tb.getEndMinute())) {
+                   continue;
+                }
+            }
+
+            List<TimeBlock> recommendedSlots = new ArrayList<>();
+            for(TimeBlock slot : t.getRecommendedSlots()) {
+                if(isFree(slot.getStartMinute(), slot.getEndMinute())) {
+                    recommendedSlots.add(slot);
+                }
+            }
+            t.setRecommendedSlots(recommendedSlots);
+        }
+        currentlyScheduledTasks.addAll(sameTasks);
+
+//        DiffUtil.DiffResult diff = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+//            @Override
+//            public int getOldListSize() {
+//                return currentlyScheduledTasks.size();
+//            }
+//
+//            @Override
+//            public int getNewListSize() {
+//                return tasksToSchedule.size();
+//            }
+//
+//            @Override
+//            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+//                return currentlyScheduledTasks.get(oldItemPosition).getId().equals(tasksToSchedule.get(newItemPosition).getId());
+//            }
+//
+//            @Override
+//            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+//                return currentlyScheduledTasks.get(oldItemPosition).equals(tasksToSchedule.get(newItemPosition));
+//            }
+//        });
+//
+//        diff.dispatchUpdatesTo(new ListUpdateCallback() {
+//            @Override
+//            public void onInserted(int position, int count) {
+//
+//            }
+//
+//            @Override
+//            public void onRemoved(int position, int count) {
+//
+//            }
+//
+//            @Override
+//            public void onMoved(int fromPosition, int toPosition) {
+//
+//            }
+//
+//            @Override
+//            public void onChanged(int position, int count, Object payload) {
+//
+//            }
+//        });
+
+        return currentlyScheduledTasks;
+    }
+
     private boolean isNotAvailableSlot(DiscreteDistribution dist, int endSlot) {
         return !isFreeSlot[endSlot] || dist.at(endSlot + getSlotCountBetween(0, startMinute)) <= 0;
     }
@@ -203,4 +306,6 @@ public class DailySchedule {
         }
         return blocks;
     }
+
+
 }

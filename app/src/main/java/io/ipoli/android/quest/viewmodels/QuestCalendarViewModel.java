@@ -79,6 +79,10 @@ public class QuestCalendarViewModel implements CalendarEvent {
         return quest;
     }
 
+    public String getId() {
+        return quest.getId();
+    }
+
     @Override
     public boolean isRepeating() {
         return quest.isFromRepeatingQuest();
