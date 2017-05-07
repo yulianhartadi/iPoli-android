@@ -448,7 +448,6 @@
     <string name="saturday">Saturday</string>
     <string name="sunday">Sunday</string>
 
-
     <string name="pet_state_awesome">Awesome</string>
     <string name="pet_state_happy">Happy</string>
     <string name="pet_state_good">Good</string>
@@ -471,6 +470,10 @@
     <string name="pick_time">Pick time</string>
     <string name="snooze_time_min">%d min</string>
     <string name="snooze_time_hour">%d hour</string>
+    <string name="inbox_no_due_date">No due date</string>
+    <string name="inbox_due_date">Due %s</string>
+    <string name="inbox_overdue_by">Overdue by %1$d %2$s</string>
+    <string name="days">Days</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
