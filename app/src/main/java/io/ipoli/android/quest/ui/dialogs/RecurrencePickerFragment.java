@@ -78,8 +78,8 @@ public class RecurrencePickerFragment extends DialogFragment{
         put(WeekDay.SA, R.id.saturday);
         put(WeekDay.SU, R.id.sunday);
     }};
-    private List<String> frequencies = Arrays.asList("Daily", "Weekly", "Monthly", "Yearly");
-    private List<String> flexibleFrequencies = Arrays.asList("Weekly", "Monthly");
+    private List<String> frequencies;
+    private List<String> flexibleFrequencies;
     private boolean isFlexible = false;
     private View view;
 
@@ -167,6 +167,8 @@ public class RecurrencePickerFragment extends DialogFragment{
         } else {
             recurrence = Recurrence.create();
         }
+        frequencies = Arrays.asList(getResources().getStringArray(R.array.repeating_quest_frequencies));
+        flexibleFrequencies = Arrays.asList(getResources().getStringArray(R.array.repeating_quest_flexible_frequencies));
     }
 
     @NonNull
@@ -276,14 +278,14 @@ public class RecurrencePickerFragment extends DialogFragment{
         int selectedPosition = 0;
         if (recurrenceFrequency.getSelectedItemPosition() == FLEXIBLE_FREQUENCY_WEEKLY) {
             for (int i = Constants.MIN_FLEXIBLE_TIMES_A_WEEK_COUNT; i <= Constants.MAX_FLEXIBLE_TIMES_A_WEEK_COUNT; i++) {
-                flexibleCountValues.add(FlexibleTimesFormatter.formatReadable(i));
+                flexibleCountValues.add(FlexibleTimesFormatter.formatLocalReadable(getContext(), i));
                 if (recurrence.getFlexibleCount() == i) {
                     selectedPosition = i - Constants.MIN_FLEXIBLE_TIMES_A_WEEK_COUNT;
                 }
             }
         } else if (recurrenceFrequency.getSelectedItemPosition() == FLEXIBLE_FREQUENCY_MONTHLY) {
             for (int i = Constants.MIN_FLEXIBLE_TIMES_A_MONTH_COUNT; i <= Constants.MAX_FLEXIBLE_TIMES_A_MONTH_COUNT; i++) {
-                flexibleCountValues.add(FlexibleTimesFormatter.formatReadable(i));
+                flexibleCountValues.add(FlexibleTimesFormatter.formatLocalReadable(getContext(), i));
                 if (recurrence.getFlexibleCount() == i) {
                     selectedPosition = i - Constants.MIN_FLEXIBLE_TIMES_A_MONTH_COUNT;
                 }
