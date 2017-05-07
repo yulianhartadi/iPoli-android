@@ -412,7 +412,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
         dateContainer.setVisibility(View.VISIBLE);
         recurrenceContainer.setVisibility(View.GONE);
         if (Objects.equals(quest.getStart(), quest.getEnd())) {
-            scheduledDate.setText(DateFormatter.formatWithoutYear(quest.getEndDate()));
+            scheduledDate.setText(DateFormatter.formatWithoutYear(getContext(), quest.getEndDate()));
         } else {
             LocalDate byDate = quest.getEndDate();
             LocalDate today = LocalDate.now();

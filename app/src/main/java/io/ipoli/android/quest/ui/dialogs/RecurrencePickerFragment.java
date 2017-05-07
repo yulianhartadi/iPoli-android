@@ -268,7 +268,7 @@ public class RecurrencePickerFragment extends DialogFragment{
     private void initUntilDate() {
         if (recurrence.getDtendDate() != null) {
             LocalDate dtend = DateUtils.fromMillis(recurrence.getDtend());
-            until.setText(DateFormatter.format(dtend));
+            until.setText(DateFormatter.format(getContext(), dtend));
             until.setTag(dtend);
         }
     }
@@ -396,7 +396,7 @@ public class RecurrencePickerFragment extends DialogFragment{
     private DatePickerFragment.OnDatePickedListener onUntilDatePicked = date -> {
         String text = getString(R.string.end_of_time);
         if (date != null) {
-            text = DateFormatter.format(date);
+            text = DateFormatter.format(getContext(), date);
         }
         until.setText(text);
         until.setTag(date);
