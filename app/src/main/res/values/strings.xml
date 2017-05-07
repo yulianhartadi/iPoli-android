@@ -438,6 +438,8 @@
     <string name="category_fun">Fun</string>
     <string name="category_chores">Chores</string>
 
+    <string name="any_time">Any time</string>
+
     <string-array name="player_titles">
         <item>Novice</item>
         <item>Apprentice</item>

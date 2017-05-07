@@ -481,7 +481,7 @@ public class SettingsActivity extends BaseActivity implements
     private void populateMostProductiveTimesOfDay(List<TimeOfDay> selectedTimes) {
         List<String> timeNames = new ArrayList<>();
         for (TimeOfDay timeOfDay : selectedTimes) {
-            timeNames.add(StringUtils.capitalizeAndReplaceUnderscore(timeOfDay.name()));
+            timeNames.add(TimeOfDay.getLocalName(this, timeOfDay));
         }
         mostProductiveTime.setText(TextUtils.join(", ", timeNames));
     }

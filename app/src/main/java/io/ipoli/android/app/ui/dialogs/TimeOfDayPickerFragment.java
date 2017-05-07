@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.R;
-import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.TimeOfDay;
 
 /**
@@ -75,7 +74,7 @@ public class TimeOfDayPickerFragment extends DialogFragment {
             if (preSelectedTimes.contains(timeOfDay.name())) {
                 checkedDays[i] = true;
             }
-            timesOfDay[i] = StringUtils.capitalizeAndReplaceUnderscore(timeOfDay.name());
+            timesOfDay[i] = TimeOfDay.getLocalName(getContext(), timeOfDay);
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
