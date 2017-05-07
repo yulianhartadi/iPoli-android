@@ -460,6 +460,9 @@
     <string name="pet_revive_notification_message">Revive %s to help you with your quests!</string>
     <string name="pet_notification_message">Complete your quests to make me happy!</string>
     <string name="notification_for_time">for %s</string>
+    <string name="sub_quests">Sub Quests</string>
+    <string name="notes">Notes</string>
+    <string name="tap_to_add_note">Tap to add a note</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
