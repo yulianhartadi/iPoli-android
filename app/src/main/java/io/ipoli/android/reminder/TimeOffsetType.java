@@ -1,7 +1,5 @@
 package io.ipoli.android.reminder;
 
-import android.content.Context;
-
 import java.util.concurrent.TimeUnit;
 
 import io.ipoli.android.R;
@@ -19,42 +17,42 @@ public enum TimeOffsetType {
         return minutes;
     }
 
-    public static String getLocalTypeName(Context context, TimeOffsetType timeOffsetType) {
+    public static int getNameRes(TimeOffsetType timeOffsetType) {
         switch (timeOffsetType) {
             case MINUTES:
-                return context.getString(R.string.minutes);
+                return R.string.minutes;
             case HOURS:
-                return context.getString(R.string.hours);
+                return R.string.hours;
             case DAYS:
-                return context.getString(R.string.days);
+                return R.string.days;
             default:
-                return context.getString(R.string.weeks);
+                return R.string.weeks;
         }
     }
 
-    public static String getLocalTypeNameSingle(Context context, TimeOffsetType timeOffsetType) {
+    public static int getNameSingleRes(TimeOffsetType timeOffsetType) {
         switch (timeOffsetType) {
             case MINUTES:
-                return context.getString(R.string.minute);
+                return R.string.minute;
             case HOURS:
-                return context.getString(R.string.hour);
+                return R.string.hour;
             case DAYS:
-                return context.getString(R.string.day);
+                return R.string.day;
             default:
-                return context.getString(R.string.week);
+                return R.string.week;
         }
     }
 
-    public static String getLocalTypeNameBefore(Context context, TimeOffsetType timeOffsetType) {
+    public static int getNameBeforeRes(TimeOffsetType timeOffsetType) {
         switch (timeOffsetType) {
             case MINUTES:
-                return context.getString(R.string.minutes_before);
+                return R.string.minutes_before;
             case HOURS:
-                return context.getString(R.string.hours_before);
+                return R.string.hours_before;
             case DAYS:
-                return context.getString(R.string.days_before);
+                return R.string.days_before;
             default:
-                return context.getString(R.string.weeks_before);
+                return R.string.weeks_before;
         }
     }
 }

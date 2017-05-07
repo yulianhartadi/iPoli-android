@@ -131,7 +131,7 @@ public class QuestRemoteViewsFactory implements RemoteViewsService.RemoteViewsFa
             Time endTime = Time.plusMinutes(startTime, duration);
             questTime = startTime.toString(use24HourFormat) + " - " + endTime.toString(use24HourFormat);
         } else if (duration > 0) {
-            questTime = "for " + DurationFormatter.formatReadable(duration);
+            questTime = "for " + DurationFormatter.formatReadable(context, duration);
         } else if (startTime != null) {
             questTime = "at " + startTime.toString(use24HourFormat);
         }

@@ -1,7 +1,5 @@
 package io.ipoli.android.app;
 
-import android.content.Context;
-
 import io.ipoli.android.R;
 
 /**
@@ -12,16 +10,16 @@ import io.ipoli.android.R;
 public enum TimeOfDay {
     MORNING, AFTERNOON, EVENING, ANY_TIME;
 
-    public static String getLocalName(Context context, TimeOfDay timeOfDay) {
+    public static int getNameRes(TimeOfDay timeOfDay) {
         switch (timeOfDay) {
             case MORNING:
-                return context.getString(R.string.morning);
+                return R.string.morning;
             case AFTERNOON:
-                return context.getString(R.string.afternoon);
+                return R.string.afternoon;
             case EVENING:
-                return context.getString(R.string.evening);
+                return R.string.evening;
             default:
-                return context.getString(R.string.any_time);
+                return R.string.any_time;
         }
     }
 }

@@ -1,7 +1,5 @@
 package io.ipoli.android;
 
-import android.content.Context;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -171,41 +169,41 @@ public interface Constants {
             return order;
         }
 
-        public static String getLocalName(Context context, DaysOfWeek daysOfWeek) {
+        public static int getNameRes(DaysOfWeek daysOfWeek) {
             switch (daysOfWeek) {
                 case MONDAY:
-                    return context.getString(R.string.monday);
+                    return R.string.monday;
                 case TUESDAY:
-                    return context.getString(R.string.tuesday);
+                    return R.string.tuesday;
                 case WEDNESDAY:
-                    return context.getString(R.string.wednesday);
+                    return R.string.wednesday;
                 case THURSDAY:
-                    return context.getString(R.string.thursday);
+                    return R.string.thursday;
                 case FRIDAY:
-                    return context.getString(R.string.friday);
+                    return R.string.friday;
                 case SATURDAY:
-                    return context.getString(R.string.saturday);
+                    return R.string.saturday;
                 default:
-                    return context.getString(R.string.sunday);
+                    return R.string.sunday;
             }
         }
 
-        public static String getLocalShortName(Context context, DaysOfWeek daysOfWeek) {
+        public static int getShortNameRes(DaysOfWeek daysOfWeek) {
             switch (daysOfWeek) {
                 case MONDAY:
-                    return context.getString(R.string.monday_short);
+                    return R.string.monday_short;
                 case TUESDAY:
-                    return context.getString(R.string.tuesday_short);
+                    return R.string.tuesday_short;
                 case WEDNESDAY:
-                    return context.getString(R.string.wednesday_short);
+                    return R.string.wednesday_short;
                 case THURSDAY:
-                    return context.getString(R.string.thursday_short);
+                    return R.string.thursday_short;
                 case FRIDAY:
-                    return context.getString(R.string.friday_short);
+                    return R.string.friday_short;
                 case SATURDAY:
-                    return context.getString(R.string.saturday_short);
+                    return R.string.saturday_short;
                 default:
-                    return context.getString(R.string.sunday_short);
+                    return R.string.sunday_short;
             }
         }
     }

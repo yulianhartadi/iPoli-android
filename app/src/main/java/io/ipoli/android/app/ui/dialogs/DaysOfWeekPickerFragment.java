@@ -73,7 +73,7 @@ public class DaysOfWeekPickerFragment extends DialogFragment {
             if (preSelectedDays.contains(dayOfWeek.getIsoOrder())) {
                 checkedDays[i] = true;
             }
-            daysOfWeek[i] = DaysOfWeek.getLocalName(getContext(), dayOfWeek);
+            daysOfWeek[i] = getString(DaysOfWeek.getNameRes(dayOfWeek));
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
