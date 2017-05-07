@@ -207,7 +207,7 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private void displaySummaryStats(Category category) {
-        categoryName.setText(StringUtils.capitalize(category.name()));
+        categoryName.setText(StringUtils.capitalize(Category.getLocalName(this, category)));
         categoryImage.setImageResource(category.whiteImage);
 
         int timeSpent = repeatingQuest.getTotalTimeSpent();

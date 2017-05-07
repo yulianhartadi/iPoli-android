@@ -279,7 +279,7 @@ public class ChallengeActivity extends BaseActivity {
 
         summaryStatsContainer.setBackgroundResource(category.color500);
 
-        categoryName.setText(StringUtils.capitalize(category.name()));
+        categoryName.setText(StringUtils.capitalize(Category.getLocalName(this, category)));
         categoryImage.setImageResource(category.whiteImage);
 
         String nextScheduledDateText = DateFormatter.formatWithoutYear(
