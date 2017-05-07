@@ -702,7 +702,7 @@ public class EditQuestActivity extends BaseActivity implements
     }
 
     private void populateDuration(int duration) {
-        durationText.setText(DurationFormatter.formatReadable(duration));
+        durationText.setText(DurationFormatter.formatReadable(this, duration));
         durationText.setTag(duration);
     }
 

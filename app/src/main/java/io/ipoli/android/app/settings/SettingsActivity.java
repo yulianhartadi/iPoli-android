@@ -480,7 +480,7 @@ public class SettingsActivity extends BaseActivity implements
     private void populateMostProductiveTimesOfDay(List<TimeOfDay> selectedTimes) {
         List<String> timeNames = new ArrayList<>();
         for (TimeOfDay timeOfDay : selectedTimes) {
-            timeNames.add(TimeOfDay.getLocalName(this, timeOfDay));
+            timeNames.add(getString(TimeOfDay.getNameRes(timeOfDay)));
         }
         mostProductiveTime.setText(TextUtils.join(", ", timeNames));
     }
@@ -503,7 +503,7 @@ public class SettingsActivity extends BaseActivity implements
         List<String> dayNames = new ArrayList<>();
         for (Constants.DaysOfWeek dayOfWeek : Constants.DaysOfWeek.values()) {
             if (selectedDays.contains(dayOfWeek.getIsoOrder())) {
-                dayNames.add(Constants.DaysOfWeek.getLocalShortName(this, dayOfWeek));
+                dayNames.add(getString(Constants.DaysOfWeek.getShortNameRes(dayOfWeek)));
             }
         }
         if (dayNames.isEmpty()) {

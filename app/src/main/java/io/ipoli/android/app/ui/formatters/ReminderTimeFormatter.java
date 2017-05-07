@@ -47,9 +47,9 @@ public class ReminderTimeFormatter {
             return context.getString(R.string.reminder_at_start);
         }
 
-        String type = TimeOffsetType.getLocalTypeName(context, timeOffsetType).toLowerCase();
+        String type = context.getString(TimeOffsetType.getNameRes(timeOffsetType)).toLowerCase();
         if(timeValue == 1) {
-            type = TimeOffsetType.getLocalTypeNameSingle(context, timeOffsetType).toLowerCase();
+            type = context.getString(TimeOffsetType.getNameSingleRes(timeOffsetType)).toLowerCase();
         }
 
         return String.format(context.getString(R.string.reminder_time_format_offset), timeValue, type);

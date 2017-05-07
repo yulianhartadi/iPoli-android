@@ -176,7 +176,7 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
             revive.setVisibility(View.GONE);
             hp.setVisibility(View.VISIBLE);
             state.setVisibility(View.VISIBLE);
-            state.setText(Pet.PetState.getLocalName(this, pet.getState()).toUpperCase());
+            state.setText(getString(Pet.PetState.getNameRes(pet.getState())).toUpperCase());
             hp.setProgress(pet.getHealthPointsPercentage());
         }
     }

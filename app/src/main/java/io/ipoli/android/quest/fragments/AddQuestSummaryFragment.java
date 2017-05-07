@@ -373,7 +373,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
     }
 
     private void showDuration(int duration) {
-        durationText.setText("For " + DurationFormatter.formatReadable(duration));
+        durationText.setText("For " + DurationFormatter.formatReadable(getContext(), duration));
         durationText.setTag(duration);
     }
 

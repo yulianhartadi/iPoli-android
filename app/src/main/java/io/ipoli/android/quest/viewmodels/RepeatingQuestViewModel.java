@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.viewmodels;
 
+import android.content.Context;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 
@@ -23,13 +24,15 @@ import io.ipoli.android.quest.data.RepeatingQuest;
  */
 public class RepeatingQuestViewModel {
 
+    private final Context context;
     private final RepeatingQuest repeatingQuest;
     private final LocalDate nextDate;
     private final int scheduledCount;
     private final int completedCount;
     private final int remainingScheduledCount;
 
-    public RepeatingQuestViewModel(RepeatingQuest repeatingQuest) {
+    public RepeatingQuestViewModel(Context context, RepeatingQuest repeatingQuest) {
+        this.context = context;
         this.repeatingQuest = repeatingQuest;
         nextDate = repeatingQuest.getNextScheduledDate(LocalDate.now());
         List<PeriodHistory> periodHistories = repeatingQuest.getPeriodHistories(LocalDate.now());
@@ -87,7 +90,7 @@ public class RepeatingQuestViewModel {
             Time endTime = Time.plusMinutes(startTime, duration);
             nextText += startTime + " - " + endTime;
         } else if (duration > 0) {
-            nextText += "for " + DurationFormatter.formatReadable(duration);
+            nextText += "for " + DurationFormatter.formatReadable(context, duration);
         } else if (startTime != null) {
             nextText += startTime;
         }

@@ -322,7 +322,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         ArrayList<String> xVals = new ArrayList<String>();
         List<Integer> colors = new ArrayList<>();
         for (Category usedCategory : usedCategories) {
-            xVals.add(StringUtils.capitalize(Category.getLocalName(getContext(), usedCategory)));
+            xVals.add(StringUtils.capitalize(getString(Category.getNameRes(usedCategory))));
             colors.add(getColor(usedCategory.color500));
         }
 

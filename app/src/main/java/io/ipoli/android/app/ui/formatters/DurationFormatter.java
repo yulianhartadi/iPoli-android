@@ -16,7 +16,7 @@ public class DurationFormatter {
 
     public static String format(Context context, int duration) {
         if (duration < 0) {
-            return formatEmptyDuration();
+            return formatEmptyDuration(context);
         }
         long hours = 0;
         long mins = 0;
@@ -33,12 +33,12 @@ public class DurationFormatter {
         }
     }
 
-    public static String formatReadable(int duration) {
+    public static String formatReadable(Context context, int duration) {
         if (duration < 0) {
-            return formatEmptyDuration();
+            return formatEmptyDuration(context);
         }
         if (duration <= Constants.QUEST_MIN_DURATION) {
-            return Constants.QUEST_MIN_DURATION + " minutes or less";
+            return String.format(context.getString(R.string.duration_minutes_or_less), Constants.QUEST_MIN_DURATION);
         }
         long hours = TimeUnit.MINUTES.toHours(duration);
         long mins = duration - hours * 60;
@@ -46,14 +46,14 @@ public class DurationFormatter {
             return "";
         }
         if (hours > 0 && mins > 0) {
-            return hours + "h and " + mins + " min";
+            return String.format(context.getString(R.string.duration_full), hours, mins);
         }
 
         if (hours > 0 && mins == 0) {
-            return hours == 1 ? "1 hour" : hours + " hours";
+            return context.getResources().getQuantityString(R.plurals.duration_hours, (int) hours, hours);
         }
 
-        return mins == 1 ? "1 minute" : mins + " minutes";
+        return context.getResources().getQuantityString(R.plurals.duration_minutes, (int) mins, mins);
     }
 
     public static String formatReadableShort(int duration) {
@@ -97,7 +97,7 @@ public class DurationFormatter {
 
 
 
-    private static String formatEmptyDuration() {
-        return "Don't know";
+    private static String formatEmptyDuration(Context context) {
+        return context.getString(R.string.do_not_know);
     }
 }

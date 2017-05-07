@@ -194,7 +194,7 @@ public class EditReminderFragment extends DialogFragment {
     private void initCustomTimes() {
         List<String> times = new ArrayList<>();
         for (TimeOffsetType type : TimeOffsetType.values()) {
-            times.add(TimeOffsetType.getLocalTypeNameBefore(getContext(), type).toLowerCase());
+            times.add(getString(TimeOffsetType.getNameBeforeRes(type)).toLowerCase());
         }
         ArrayAdapter<String> customTimeTypesAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, times);
         customTimeTypesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
