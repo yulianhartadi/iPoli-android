@@ -683,7 +683,7 @@ public class EditQuestActivity extends BaseActivity implements
     }
 
     private void populateTimesADay(int timesADay) {
-        timesADayText.setText(TimesADayFormatter.formatReadable(timesADay));
+        timesADayText.setText(TimesADayFormatter.formatReadableShort(this, timesADay));
         timesADayText.setTag(timesADay);
         if (timesADay > 1) {
             populateStartTime(null);
