@@ -217,9 +217,9 @@ public class App extends MultiDexApplication {
     }
 
     private void notifyPetStateChanged(Pet pet) {
-        String title = pet.getState() == Pet.PetState.DEAD ? pet.getName() + " has died" : "I am so sad, don't let me die";
-        String text = pet.getState() == Pet.PetState.DEAD ? "Revive " + pet.getName() + " to help you with your quests!" :
-                "Complete your quests to make me happy!";
+        String title = pet.getState() == Pet.PetState.DEAD ? String.format(getString(R.string.pet_died_notification_title), pet.getName()) : getString(R.string.pet_sad_notification_title);
+        String text = pet.getState() == Pet.PetState.DEAD ? String.format(getString(R.string.pet_revive_notification_message), pet.getName()) :
+                getString(R.string.pet_notification_message);
 
         Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), ResourceUtils.extractDrawableResource(this, pet.getPicture() + "_head"));
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, PetActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
@@ -387,7 +387,7 @@ public class App extends MultiDexApplication {
         String text = totalCount == 0 ? getString(R.string.ongoing_notification_no_quests_text) : getString(R.string.ongoing_notification_progress_text, completedCount, totalCount);
         boolean showWhen = quest != null && quest.isScheduled();
         long when = showWhen ? Quest.getStartDateTimeMillis(quest) : 0;
-        String contentInfo = quest == null ? "" : "for " + DurationFormatter.format(this, quest.getDuration());
+        String contentInfo = quest == null ? "" :  String.format(getString(R.string.notification_for_time), DurationFormatter.format(this, quest.getDuration()));
         int smallIcon = quest == null ? R.drawable.ic_notification_small : quest.getCategoryType().whiteImage;
         int iconColor = quest == null ? R.color.md_grey_500 : quest.getCategoryType().color500;
 
