@@ -29,6 +29,7 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.StringUtils;
@@ -37,7 +38,6 @@ import io.ipoli.android.pet.events.PetRenamedEvent;
 import io.ipoli.android.pet.events.RevivePetRequest;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.shop.activities.ShopActivity;
 import mehdi.sakout.fancybuttons.FancyButton;
 
@@ -161,8 +161,8 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
         getSupportActionBar().setTitle(pet.getName());
         picture.setImageDrawable(getDrawable(ResourceUtils.extractDrawableResource(this, pet.getPicture())));
         pictureState.setImageDrawable(getDrawable(ResourceUtils.extractDrawableResource(this, pet.getPicture() + "_" + pet.getStateText())));
-        xpBonus.setText("XP: +" + pet.getExperienceBonusPercentage() + "%");
-        coinsBonus.setText("Coins: +" + pet.getCoinsBonusPercentage() + "%");
+        xpBonus.setText(String.format(getString(R.string.pet_xp), pet.getExperienceBonusPercentage()));
+        coinsBonus.setText(String.format(getString(R.string.pet_coins), pet.getCoinsBonusPercentage()));
 
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) revive.getIconImageObject().getLayoutParams();
         params.gravity = Gravity.CENTER_VERTICAL;
@@ -187,7 +187,8 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
         eventBus.post(new RevivePetRequest(pet.getPicture()));
         long playerCoins = player.getCoins();
         if (playerCoins < Constants.REVIVE_PET_COST) {
-            Toast.makeText(this, "Not enough coins to revive " + pet.getName(), Toast.LENGTH_SHORT).show();
+            String message = String.format(getString(R.string.pet_revive_not_enough_coins), pet.getName());
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
             return;
         }
         player.removeCoins(Constants.REVIVE_PET_COST);

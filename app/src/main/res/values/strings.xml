@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">iPoli</string>
     <string name="title_fragment_inbox">Inbox</string>
@@ -426,6 +427,9 @@
     <string name="last_week">last week</string>
     <string name="this_week">this week</string>
     <string name="challenge_percentage_done">%d%% done</string>
+    <string name="pet_xp">XP: %d%%</string>
+    <string name="pet_coins">Coins: %d%%</string>
+    <string name="pet_revive_not_enough_coins">Not enough coins to revive %s</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
@@ -438,5 +442,14 @@
         <item>Immortal</item>
         <item>Demigod</item>
         <item>Titan</item>
+    </string-array>
+
+
+    <string-array name="pet_names">
+        <item>Cute tail</item>
+        <item>Fancy ears</item>
+        <item>Flying ears</item>
+        <item>Crazy teeth</item>
+        <item>Chicken invader</item>
     </string-array>
 </resources>
