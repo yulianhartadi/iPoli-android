@@ -465,6 +465,7 @@
     <string name="tap_to_add_note">Tap to add a note</string>
     <string name="times_per_period_single">%d time</string>
     <string name="times_per_period_multiple">%d times</string>
+    <string name="player_level">Level %1$d: %2$s</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
