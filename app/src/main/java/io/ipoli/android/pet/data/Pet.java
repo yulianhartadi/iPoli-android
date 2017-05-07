@@ -1,5 +1,6 @@
 package io.ipoli.android.pet.data;
 
+import android.content.Context;
 import android.support.annotation.ColorRes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -137,6 +138,21 @@ public class Pet {
 
         PetState(@ColorRes int color) {
             this.color = color;
+        }
+
+        public static String getLocalName(Context context, PetState petState) {
+            switch (petState) {
+                case AWESOME:
+                    return context.getString(R.string.pet_state_awesome);
+                case HAPPY:
+                    return context.getString(R.string.pet_state_happy);
+                case GOOD:
+                    return context.getString(R.string.pet_state_good);
+                case SAD:
+                    return context.getString(R.string.pet_state_sad);
+                default:
+                    return context.getString(R.string.pet_state_dead);
+            }
         }
     }
 }

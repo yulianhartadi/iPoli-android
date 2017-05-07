@@ -448,6 +448,19 @@
     <string name="saturday">Saturday</string>
     <string name="sunday">Sunday</string>
 
+
+    <string name="pet_state_awesome">Awesome</string>
+    <string name="pet_state_happy">Happy</string>
+    <string name="pet_state_good">Good</string>
+    <string name="pet_state_sad">Sad</string>
+    <string name="pet_state_dead">Dead</string>
+
+    <string name="pet_sad_notification_title">I am so sad, don\'t let me die</string>
+    <string name="pet_died_notification_title">%s has died</string>
+    <string name="pet_revive_notification_message">Revive %s to help you with your quests!</string>
+    <string name="pet_notification_message">Complete your quests to make me happy!</string>
+    <string name="notification_for_time">for %s</string>
+
     <string-array name="player_titles">
         <item>Novice</item>
         <item>Apprentice</item>
