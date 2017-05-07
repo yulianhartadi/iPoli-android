@@ -467,6 +467,11 @@
     <string name="times_per_period_multiple">%d times</string>
     <string name="player_level">Level %1$d: %2$s</string>
 
+    <string name="move_to_inbox">Move to inbox</string>
+    <string name="pick_time">Pick time</string>
+    <string name="snooze_time_min">%d min</string>
+    <string name="snooze_time_hour">%d hour</string>
+
     <string-array name="player_titles">
         <item>Novice</item>
         <item>Apprentice</item>
