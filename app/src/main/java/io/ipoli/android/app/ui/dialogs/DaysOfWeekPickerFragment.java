@@ -17,7 +17,6 @@ import java.util.Set;
 
 import io.ipoli.android.Constants.DaysOfWeek;
 import io.ipoli.android.R;
-import io.ipoli.android.app.utils.StringUtils;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -74,7 +73,7 @@ public class DaysOfWeekPickerFragment extends DialogFragment {
             if (preSelectedDays.contains(dayOfWeek.getIsoOrder())) {
                 checkedDays[i] = true;
             }
-            daysOfWeek[i] = StringUtils.capitalize(dayOfWeek.name());
+            daysOfWeek[i] = DaysOfWeek.getLocalName(getContext(), dayOfWeek);
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

@@ -405,13 +405,13 @@
     <string name="rate_dialog_feedback_hint">What do you think of iPoli ...</string>
     <string name="repeat_type_flexible">Flexible</string>
     <string name="repeat_frequency">Frequency</string>
-    <string name="sunday_short">SUN</string>
-    <string name="monday_short">MON</string>
-    <string name="tuesday_short">TUE</string>
-    <string name="wednesday_short">WED</string>
-    <string name="thursday_short">THU</string>
-    <string name="friday_short">FRI</string>
-    <string name="saturday_short">SAT</string>
+    <string name="sunday_short">Sun</string>
+    <string name="monday_short">Mon</string>
+    <string name="tuesday_short">Tue</string>
+    <string name="wednesday_short">Wed</string>
+    <string name="thursday_short">Thu</string>
+    <string name="friday_short">Fri</string>
+    <string name="saturday_short">Sat</string>
     <string name="day_of_month">Day of month</string>
     <string name="day">Day</string>
     <string name="until">Until</string>
@@ -439,6 +439,14 @@
     <string name="category_chores">Chores</string>
 
     <string name="any_time">Any time</string>
+
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

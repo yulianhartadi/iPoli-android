@@ -69,7 +69,6 @@ import io.ipoli.android.app.ui.dialogs.TimeIntervalPickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimeOfDayPickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.utils.LocalStorage;
-import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
@@ -504,7 +503,7 @@ public class SettingsActivity extends BaseActivity implements
         List<String> dayNames = new ArrayList<>();
         for (Constants.DaysOfWeek dayOfWeek : Constants.DaysOfWeek.values()) {
             if (selectedDays.contains(dayOfWeek.getIsoOrder())) {
-                dayNames.add(StringUtils.capitalize(dayOfWeek.name()).substring(0, 3));
+                dayNames.add(Constants.DaysOfWeek.getLocalShortName(this, dayOfWeek));
             }
         }
         if (dayNames.isEmpty()) {
