@@ -291,7 +291,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 .createDuplicateDateMap(context, pm.getMenu().findItem(R.id.quest_duplicate));
 
         Map<Integer, SnoozeTimeItem> itemIdToSnoozeTimeItem = SnoozeQuestItemsHelper
-                .createSnoozeTimeMap(quest, pm.getMenu().findItem(R.id.quest_snooze));
+                .createSnoozeTimeMap(context, quest, pm.getMenu().findItem(R.id.quest_snooze));
 
         pm.setOnMenuItemClickListener(item -> {
             if (itemIdToDuplicateDateItem.containsKey(item.getItemId())) {

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.v7.widget.PopupMenu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
@@ -52,7 +51,7 @@ public class CalendarQuestPopupMenu {
             if (quest.isStarted()) {
                 hideItemsIfQuestStarted(pm);
             } else {
-                itemIdToSnoozeTimeItem = SnoozeQuestItemsHelper.createSnoozeTimeMap(quest, pm.getMenu().findItem(R.id.quest_snooze));
+                itemIdToSnoozeTimeItem = SnoozeQuestItemsHelper.createSnoozeTimeMap(context, quest, pm.getMenu().findItem(R.id.quest_snooze));
             }
         }
 

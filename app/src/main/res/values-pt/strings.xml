@@ -7,7 +7,7 @@
     <string name="title_edit_quest">"Editar missão"</string>
     <string name="quest_deleted">"Missão deletada"</string>
     <string name="repeating_quest_deleted">"Missão recorrente deletada"</string>
-    <string name="done">"FEITO"</string>
+    <string name="done">"Feito"</string>
     <string name="quest_complete">"Missão completa"</string>
     <string name="quest_complete_with_bounty">"Missão completa! +%1$d EXP +%2$d moedas.."</string>
     <string name="challenge_complete">"Desafio %s completo"</string>
@@ -18,7 +18,7 @@
     <string name="add_quest_name_hint">"Nome (ex. Ler um livro)"</string>
 
     <string name="start">"Iniciar"</string>
-    <string name="edit">"EDITAR"</string>
+    <string name="edit">"Editar"</string>
     <string name="stop">"Parar"</string>
     <string name="quest_item_full_duration">"%1$d h %2$d min"</string>
     <string name="quest_item_minutes_duration">"%d min"</string>
@@ -198,7 +198,7 @@ Moedas: %2$d"</string>
     <string name="reminder_dialog_add_custom_time_value">"Por favor, adicione a hora/minuto"</string>
     <string name="do_not_remind">"Não me lembrar"</string>
     <string name="ready_to_start">"Pronto(a) para começar?"</string>
-    <string name="snooze">"ADIAR"</string>
+    <string name="snooze">"Adiar"</string>
     <string name="recurrence_picker_title">"Escolha um padrão de repetição"</string>
     <string name="pick_flexible_count_title">"Com que frequência?"</string>
     <string name="preferred_days">"Dias preferidos"</string>
