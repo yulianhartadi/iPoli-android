@@ -1,5 +1,7 @@
 package io.ipoli.android;
 
+import android.content.Context;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -167,6 +169,44 @@ public interface Constants {
 
         public int getIsoOrder() {
             return order;
+        }
+
+        public static String getLocalName(Context context, DaysOfWeek daysOfWeek) {
+            switch (daysOfWeek) {
+                case MONDAY:
+                    return context.getString(R.string.monday);
+                case TUESDAY:
+                    return context.getString(R.string.tuesday);
+                case WEDNESDAY:
+                    return context.getString(R.string.wednesday);
+                case THURSDAY:
+                    return context.getString(R.string.thursday);
+                case FRIDAY:
+                    return context.getString(R.string.friday);
+                case SATURDAY:
+                    return context.getString(R.string.saturday);
+                default:
+                    return context.getString(R.string.sunday);
+            }
+        }
+
+        public static String getLocalShortName(Context context, DaysOfWeek daysOfWeek) {
+            switch (daysOfWeek) {
+                case MONDAY:
+                    return context.getString(R.string.monday_short);
+                case TUESDAY:
+                    return context.getString(R.string.tuesday_short);
+                case WEDNESDAY:
+                    return context.getString(R.string.wednesday_short);
+                case THURSDAY:
+                    return context.getString(R.string.thursday_short);
+                case FRIDAY:
+                    return context.getString(R.string.friday_short);
+                case SATURDAY:
+                    return context.getString(R.string.saturday_short);
+                default:
+                    return context.getString(R.string.sunday_short);
+            }
         }
     }
 }

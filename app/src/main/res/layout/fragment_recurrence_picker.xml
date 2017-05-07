@@ -109,28 +109,32 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/sunday_short" />
+                android:text="@string/sunday_short"
+                android:textAllCaps="true" />
 
             <CheckBox
                 android:id="@+id/monday"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/monday_short" />
+                android:text="@string/monday_short"
+                android:textAllCaps="true" />
 
             <CheckBox
                 android:id="@+id/tuesday"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/tuesday_short" />
+                android:text="@string/tuesday_short"
+                android:textAllCaps="true" />
 
             <CheckBox
                 android:id="@+id/wednesday"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/wednesday_short" />
+                android:text="@string/wednesday_short"
+                android:textAllCaps="true" />
 
         </LinearLayout>
 
@@ -145,21 +149,24 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/thursday_short" />
+                android:text="@string/thursday_short"
+                android:textAllCaps="true" />
 
             <CheckBox
                 android:id="@+id/friday"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/friday_short" />
+                android:text="@string/friday_short"
+                android:textAllCaps="true" />
 
             <CheckBox
                 android:id="@+id/saturday"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/saturday_short" />
+                android:text="@string/saturday_short"
+                android:textAllCaps="true" />
 
             <Space
                 android:layout_width="0dp"
