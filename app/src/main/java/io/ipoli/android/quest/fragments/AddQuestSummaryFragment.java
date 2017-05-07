@@ -221,7 +221,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
         String text = "";
         Pair<Long, TimeOffsetType> parsedResult = ReminderMinutesParser.parseCustomMinutes(Math.abs(reminder.getMinutesFromStart()));
         if (parsedResult != null) {
-            text = ReminderTimeFormatter.formatTimeOffset(parsedResult.first, parsedResult.second);
+            text = ReminderTimeFormatter.formatTimeOffset(getContext(), parsedResult.first, parsedResult.second);
         }
         ((TextView) reminderView.findViewById(R.id.reminder_text)).setText(text);
         reminderView.setTag(reminder);
