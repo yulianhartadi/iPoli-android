@@ -431,6 +431,13 @@
     <string name="pet_coins">Coins: %d%%</string>
     <string name="pet_revive_not_enough_coins">Not enough coins to revive %s</string>
 
+    <string name="category_learning">Learning</string>
+    <string name="category_wellness">Wellness</string>
+    <string name="category_personal">Personal</string>
+    <string name="category_work">Work</string>
+    <string name="category_fun">Fun</string>
+    <string name="category_chores">Chores</string>
+
     <string-array name="player_titles">
         <item>Novice</item>
         <item>Apprentice</item>

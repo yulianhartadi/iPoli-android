@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.data;
 
+import android.content.Context;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 
@@ -51,5 +52,22 @@ public enum Category {
         this.color800 = color800;
         this.whiteImage = whiteImage;
         this.colorfulImage = colorfulImage;
+    }
+
+    public static String getLocalName(Context context, Category category) {
+        switch (category) {
+            case LEARNING:
+                return context.getString(R.string.category_learning);
+            case WELLNESS:
+                return context.getString(R.string.category_wellness);
+            case PERSONAL:
+                return context.getString(R.string.category_personal);
+            case WORK:
+                return context.getString(R.string.category_work);
+            case FUN:
+                return context.getString(R.string.category_fun);
+            default:
+                return context.getString(R.string.category_chores);
+        }
     }
 }

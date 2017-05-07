@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.R;
-import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.data.Category;
 
@@ -148,7 +147,28 @@ public class CategoryView extends LinearLayout {
     }
 
     private void setCategoryName() {
-        categoryName.setText(StringUtils.capitalize(category.name()));
+        int nameRes;
+        switch (category) {
+            case LEARNING:
+                nameRes = R.string.category_learning;
+                break;
+            case WELLNESS:
+                nameRes = R.string.category_wellness;
+                break;
+            case PERSONAL:
+                nameRes = R.string.category_personal;
+                break;
+            case WORK:
+                nameRes = R.string.category_work;
+                break;
+            case FUN:
+                nameRes = R.string.category_fun;
+                break;
+            default:
+                nameRes = R.string.category_chores;
+                break;
+        }
+        categoryName.setText(getContext().getString(nameRes));
     }
 
 
