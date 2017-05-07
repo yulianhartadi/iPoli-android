@@ -500,12 +500,12 @@
     <string name="duration_full">%1$d h and %2$d min</string>
 
     <plurals name="duration_hours">
-        <item quantity="one">%d hour1</item>
-        <item quantity="other">%d hours1</item>
+        <item quantity="one">%d hour</item>
+        <item quantity="other">%d hours</item>
     </plurals>
     <plurals name="duration_minutes">
-        <item quantity="one">%d minute1</item>
-        <item quantity="other">%d minutes1</item>
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
     </plurals>
 
     <string name="duration_for_time">For %s</string>
@@ -514,6 +514,7 @@
     <string name="times_a_day">%d times a day</string>
     <string name="once">Once</string>
     <string name="twice">Twice</string>
+    <string name="yesterday">Yesterday</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

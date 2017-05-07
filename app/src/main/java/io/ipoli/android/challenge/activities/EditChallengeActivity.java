@@ -358,7 +358,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     }
 
     private void populateEndDate(LocalDate date) {
-        endDateText.setText(DateFormatter.format(date));
+        endDateText.setText(DateFormatter.format(this, date));
         endDateText.setTag(date);
     }
 

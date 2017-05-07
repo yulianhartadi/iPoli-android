@@ -77,7 +77,8 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.ViewHolder> 
                 holder.dueIn.setText(String.format(context.getString(R.string.inbox_overdue_by), overdueDays, daysText));
                 holder.dueIn.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
             } else {
-                holder.dueIn.setText(String.format(context.getString(R.string.inbox_due_date), DateFormatter.formatWithoutYear(endDate, today)));
+                holder.dueIn.setText(String.format(context.getString(R.string.inbox_due_date),
+                        DateFormatter.formatWithoutYear(context, endDate, today)));
                 holder.dueIn.setTextColor(ContextCompat.getColor(context, R.color.md_dark_text_54));
             }
         } else {

@@ -49,7 +49,7 @@ public class QuestViewModel {
     }
 
     public String getDueDateText(LocalDate currentDate) {
-        return DateFormatter.formatWithoutYear(quest.getScheduledDate(), currentDate);
+        return DateFormatter.formatWithoutYear(context, quest.getScheduledDate(), currentDate);
     }
 
     private Category getQuestCategory() {

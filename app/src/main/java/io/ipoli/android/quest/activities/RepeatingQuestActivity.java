@@ -218,10 +218,7 @@ public class RepeatingQuestActivity extends BaseActivity {
 
         LocalDate nextScheduledDate = repeatingQuest.getNextScheduledDate(LocalDate.now());
 
-        String nextScheduledDateText = DateFormatter.formatWithoutYear(
-                nextScheduledDate,
-                getString(R.string.unscheduled)
-        );
+        String nextScheduledDateText = DateFormatter.formatWithoutYear(this, nextScheduledDate, getString(R.string.unscheduled));
         this.nextScheduledDate.setText(nextScheduledDateText);
         streakText.setText(String.valueOf(repeatingQuest.getStreak()));
     }

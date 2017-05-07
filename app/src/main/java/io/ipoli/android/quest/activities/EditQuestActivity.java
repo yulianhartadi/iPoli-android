@@ -678,7 +678,7 @@ public class EditQuestActivity extends BaseActivity implements
         if (date != null) {
             setFrequencyText(null);
         }
-        endDateText.setText(DateFormatter.format(date));
+        endDateText.setText(DateFormatter.format(this, date));
         endDateText.setTag(date);
     }
 
