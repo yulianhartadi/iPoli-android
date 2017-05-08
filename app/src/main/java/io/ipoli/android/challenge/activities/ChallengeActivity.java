@@ -291,7 +291,7 @@ public class ChallengeActivity extends BaseActivity {
         dueDate.setText(DateFormatter.formatWithoutYear(this, challenge.getEndDate()));
 
         int timeSpent = challenge.getTotalTimeSpent();
-        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
+        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(this, timeSpent) : "0");
     }
 
     private void setupChart() {

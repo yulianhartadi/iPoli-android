@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
+import io.ipoli.android.R;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
@@ -71,12 +72,12 @@ public class RepeatingQuestViewModel {
     public String getNextText() {
         String nextText = "";
         if (nextDate == null) {
-            nextText += "Unscheduled";
+            nextText += context.getString(R.string.unscheduled);
         } else {
             if (DateUtils.isTodayUTC(nextDate)) {
-                nextText = "Today";
+                nextText = context.getString(R.string.today);;
             } else if (DateUtils.isTomorrowUTC(nextDate)) {
-                nextText = "Tomorrow";
+                nextText = context.getString(R.string.tomorrow);;
             } else {
                 nextText = new SimpleDateFormat("dd MMM", Locale.getDefault()).format(DateUtils.toStartOfDay(nextDate));
             }
@@ -90,11 +91,11 @@ public class RepeatingQuestViewModel {
             Time endTime = Time.plusMinutes(startTime, duration);
             nextText += startTime + " - " + endTime;
         } else if (duration > 0) {
-            nextText += "for " + DurationFormatter.formatReadable(context, duration);
+            nextText += String.format(context.getString(R.string.repeating_quest_for_time), DurationFormatter.formatReadable(context, duration));
         } else if (startTime != null) {
             nextText += startTime;
         }
-        return "Next: " + nextText;
+        return String.format(context.getString(R.string.repeating_quest_next), nextText);
     }
 
     public long getScheduledCount() {
@@ -106,15 +107,15 @@ public class RepeatingQuestViewModel {
         int remainingCount = getRemainingScheduledCount();
 
         if (remainingCount <= 0) {
-            return "Done";
+            return context.getString(R.string.repeating_quest_done);
         }
 
         Recurrence recurrence = repeatingQuest.getRecurrence();
         if (recurrence.getRecurrenceType() == Recurrence.RepeatType.MONTHLY) {
-            return remainingCount + " more this month";
+            return String.format(context.getString(R.string.repeating_quest_more_this_month), remainingCount);
         }
 
-        return remainingCount + " more this week";
+        return String.format(context.getString(R.string.repeating_quest_more_this_week), remainingCount);
 
     }
 
