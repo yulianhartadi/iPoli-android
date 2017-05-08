@@ -497,7 +497,8 @@
     <string name="weeks_before">weeks before</string>
     <string name="days_before">days before</string>
     <string name="duration_minutes_or_less">%d minutes or less</string>
-    <string name="duration_full">%1$d h and %2$d min</string>
+    <string name="duration_format_full">%1$d h and %2$d min</string>
+    <string name="duration_format_short">%1$dh %2$dm</string>
 
     <plurals name="duration_hours">
         <item quantity="one">%d hour</item>
@@ -515,6 +516,14 @@
     <string name="once">Once</string>
     <string name="twice">Twice</string>
     <string name="yesterday">Yesterday</string>
+    <string name="repeating_quest_done">Done</string>
+    <string name="repeating_quest_more_this_month">%d more this month</string>
+    <string name="repeating_quest_more_this_week">%d more this week</string>
+    <string name="repeating_quest_for_time">for %s</string>
+    <string name="repeating_quest_next">Next: %s</string>
+    <string name="quest_for_time">for %s</string>
+    <string name="quest_at_time">at %s</string>
+    <string name="quest_remaining_count">x%d more</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

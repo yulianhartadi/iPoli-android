@@ -212,7 +212,7 @@ public class RepeatingQuestActivity extends BaseActivity {
 
         int timeSpent = repeatingQuest.getTotalTimeSpent();
 
-        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
+        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(this, timeSpent) : "0");
 
         frequencyInterval.setText(FrequencyTextFormatter.formatInterval(repeatingQuest.getFrequency(), repeatingQuest.getRecurrence()));
 
