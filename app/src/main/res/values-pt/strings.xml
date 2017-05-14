@@ -454,6 +454,115 @@ iPoli está comendo um biscoito e melhorando a sua experiência com o app."</str
     <string name="challenge_percentage_done">"%d%% feito"</string>
     <string name="player_level">Nível %1$d: %2$s</string>
 
+    <string name="pet_xp">"EXP: %d%%"</string>
+    <string name="pet_coins">"Moedas: %d%%"</string>
+    <string name="pet_revive_not_enough_coins">"Sem moedas suficientes para reviver %s"</string>
+    <string name="category_learning">"Aprendizado"</string>
+    <string name="category_wellness">"Bem-estar"</string>
+    <string name="category_personal">"Pessoal"</string>
+    <string name="category_work">"Trabalho"</string>
+    <string name="category_fun">"Diversão"</string>
+    <string name="category_chores">"Afazeres"</string>
+    <string name="any_time">"Qualquer horário"</string>
+    <string name="monday">"Segunda"</string>
+    <string name="tuesday">"Terça"</string>
+    <string name="wednesday">"Quarta"</string>
+    <string name="thursday">"Quinta"</string>
+    <string name="friday">"Sexta"</string>
+    <string name="saturday">"Sábado"</string>
+    <string name="sunday">"Domingo"</string>
+    <string name="pet_state_awesome">"Incrível"</string>
+    <string name="pet_state_happy">"Feliz"</string>
+    <string name="pet_state_good">"Bem"</string>
+    <string name="pet_state_sad">"Triste"</string>
+    <string name="pet_state_dead">"Morto"</string>
+    <string name="pet_sad_notification_title">"Estou tão triste, não me deixe morrer"</string>
+    <string name="pet_died_notification_title">"%s morreu"</string>
+    <string name="pet_revive_notification_message">"Reviva %s para te ajudar nas suas missões!"</string>
+    <string name="pet_notification_message">"Complete as missões para me deixar feliz!"</string>
+    <string name="notification_for_time">"por %s"</string>
+    <string name="sub_quests">"Subtarefas"</string>
+    <string name="notes">"Anotações"</string>
+    <string name="tap_to_add_note">"Clique para criar uma anotação"</string>
+
+    <string name="times_per_period_single">"%d vez"</string>
+    <string name="times_per_period_multiple">"%d vezes"</string>
+    <string name="move_to_inbox">"Mover para caixa de entrada"</string>
+    <string name="pick_time">"Escolher hora"</string>
+    <string name="snooze_time_min">"%d min"</string>
+    <string name="snooze_time_hour">"%d hora"</string>
+    <string name="inbox_no_due_date">"Sem prazo definido"</string>
+    <string name="inbox_due_date">"Prazo %s"</string>
+    <string name="inbox_overdue_by">"Atrasada em %1$d %2$s"</string>
+    <string name="days">"dias"</string>
+    <string name="reminder_at_start">"Ao iniciar"</string>
+    <string name="reminder_time_format_full">"%1$d horas e %2$d minutos antes"</string>
+    <string name="reminder_time_format_1_hour">"1 hora antes"</string>
+    <string name="reminder_time_format_hours">"%d horas antes"</string>
+    <string name="reminder_time_format_1_minute">"1 minuto antes"</string>
+    <string name="reminder_time_format_minutes">"%d minutos antes"</string>
+    <string name="minutes">"minutos"</string>
+    <string name="hours">"horas"</string>
+    <string name="weeks">"semanas"</string>
+    <string name="minute">"minuto"</string>
+    <string name="hour">"hora"</string>
+    <string name="week">"semana"</string>
+    <string name="reminder_time_format_offset">"%1$d %2$s antes"</string>
+    <string name="custom">"Personalizar"</string>
+    <string name="minutes_before">"minutos antes"</string>
+    <string name="hours_before">"horas antes"</string>
+    <string name="weeks_before">"semanas antes"</string>
+    <string name="days_before">"dias antes"</string>
+    <string name="duration_minutes_or_less">"%d minutos ou menos"</string>
+    <string name="duration_format_full">"%1$d h e %2$d min"</string>
+    <string name="duration_format_short">"%1$dh %2$dm"</string>
+    <string name="duration_for_time">"Por %s"</string>
+    <string name="once_a_day">"Uma vez por dia"</string>
+    <string name="twice_a_day">"Duas vezes por dia"</string>
+    <string name="times_a_day">"%d vezes por dia"</string>
+    <string name="once">"Uma vez"</string>
+    <string name="twice">"Duas vezes"</string>
+    <string name="yesterday">"Ontem"</string>
+    <string name="repeating_quest_done">"Feito"</string>
+    <string name="repeating_quest_more_this_month">"mais %d este mês"</string>
+    <string name="repeating_quest_more_this_week">"mais %d esta semana"</string>
+    <string name="repeating_quest_for_time">"por %s"</string>
+    <string name="repeating_quest_next">"Próximo: %s"</string>
+    <string name="quest_for_time">"por %s"</string>
+    <string name="quest_at_time">"às %s"</string>
+    <string name="quest_remaining_count">"mais x%d"</string>
+
+    <plurals name="duration_hours">
+        <item quantity="one">%d hora</item>
+        <item quantity="other">%d hora</item>
+    </plurals>
+    <plurals name="duration_minutes">
+        <item quantity="one">%d minuto</item>
+        <item quantity="other">%d minutos</item>
+    </plurals>
+
+
+    <string-array name="pet_names">
+        <item>Cauda fofa</item>
+        <item>Orelhas chiques</item>
+        <item>Orelhas voadoras</item>
+        <item>Dente malucoh</item>
+        <item>Pintinho invasor</item>
+    </string-array>
+
+    <string-array name="repeating_quest_frequencies">
+        <item>Diário</item>
+        <item>Semanal</item>
+        <item>Mensal</item>
+        <item>Anual</item>
+    </string-array>
+
+    <string-array name="repeating_quest_flexible_frequencies">
+        <item>Semanal</item>
+        <item>Mensal</item>
+    </string-array>
+
+
     <string-array name="player_titles">
         <item>Novato(a)</item>
         <item>Aprendiz</item>
