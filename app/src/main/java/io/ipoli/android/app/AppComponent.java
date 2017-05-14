@@ -29,8 +29,6 @@ import io.ipoli.android.app.receivers.BootCompleteReceiver;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.settings.SettingsActivity;
 import io.ipoli.android.app.tutorial.TutorialActivity;
-import io.ipoli.android.app.tutorial.fragments.PickTutorialQuestsFragment;
-import io.ipoli.android.app.tutorial.fragments.PickTutorialRepeatingQuestsFragment;
 import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
 import io.ipoli.android.challenge.activities.AddChallengeActivity;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
@@ -130,10 +128,6 @@ public interface AppComponent {
     void inject(RepeatingQuestListFragment repeatingQuestListFragment);
 
     void inject(TutorialActivity tutorialActivity);
-
-    void inject(PickTutorialRepeatingQuestsFragment pickTutorialRepeatingQuestsFragment);
-
-    void inject(PickTutorialQuestsFragment pickTutorialQuestsFragment);
 
     void inject(CalendarFragment calendarFragment);
 
