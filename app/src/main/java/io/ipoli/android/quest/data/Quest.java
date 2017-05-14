@@ -3,7 +3,10 @@ package io.ipoli.android.quest.data;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.threeten.bp.Instant;
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.ZoneId;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,6 +22,8 @@ import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.quest.generators.RewardProvider;
 import io.ipoli.android.reminder.data.Reminder;
+
+import static io.ipoli.android.app.utils.DateUtils.fromMillis;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -138,12 +143,12 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @JsonIgnore
     public LocalDate getOriginalScheduledDate() {
-        return originalScheduled != null ? DateUtils.fromMillis(originalScheduled) : null;
+        return originalScheduled != null ? fromMillis(originalScheduled) : null;
     }
 
     @JsonIgnore
     public LocalDate getScheduledDate() {
-        return scheduled != null ? DateUtils.fromMillis(scheduled) : null;
+        return scheduled != null ? fromMillis(scheduled) : null;
     }
 
     @JsonIgnore
@@ -255,7 +260,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @JsonIgnore
     public LocalDate getStartDate() {
-        return start != null ? DateUtils.fromMillis(start) : null;
+        return start != null ? fromMillis(start) : null;
     }
 
     public Long getStart() {
@@ -277,7 +282,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @JsonIgnore
     public LocalDate getEndDate() {
-        return end != null ? DateUtils.fromMillis(end) : null;
+        return end != null ? fromMillis(end) : null;
     }
 
     @JsonIgnore
@@ -368,7 +373,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @JsonIgnore
     public LocalDate getCompletedAtDate() {
-        return completedAt != null ? DateUtils.fromMillis(completedAt) : null;
+        return completedAt != null ? fromMillis(completedAt) : null;
     }
 
     @JsonIgnore
@@ -400,7 +405,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     @JsonIgnore
     public boolean isScheduledFor(LocalDate date) {
-        return date.isEqual(DateUtils.fromMillis(getScheduled()));
+        return date.isEqual(fromMillis(getScheduled()));
     }
 
     @JsonIgnore
@@ -480,16 +485,27 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @JsonIgnore
     public int getActualDuration() {
         if (this.isCompleted() && getActualStartDate() != null) {
-            long completedAtMinutes = TimeUnit.MINUTES.toMillis(getCompletedAtMinute());
-            return (int) TimeUnit.MILLISECONDS.toMinutes(getCompletedAt() + completedAtMinutes - actualStart);
+            int startMinute = getActualLocalStartMinute();
+            int minutes = getCompletedAtMinute() - startMinute;
+            return minutes >=0 ? minutes : Time.MINUTES_IN_A_DAY - startMinute + getCompletedAtMinute();
         }
         return getDuration();
     }
 
     @JsonIgnore
+    private int getActualLocalStartMinute() {
+        LocalDateTime localActualStart = LocalDateTime.ofInstant(Instant.ofEpochMilli(actualStart), ZoneId.systemDefault());
+        return Math.max(0, localActualStart.getHour() * 60 + localActualStart.getMinute());
+    }
+
+    @JsonIgnore
     public Integer getActualStartMinute() {
         if (this.isCompleted() && getActualStartDate() != null) {
-            return Math.max(0, getCompletedAtMinute() - getActualDuration());
+            if(DateUtils.fromMillis(actualStart).equals(DateUtils.fromMillis(completedAt))) {
+                return getActualLocalStartMinute();
+            } else {
+                return 0;
+            }
         }
         return getStartMinute();
     }
