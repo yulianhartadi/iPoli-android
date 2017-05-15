@@ -678,12 +678,12 @@ public class EditQuestActivity extends BaseActivity implements
         if (date != null) {
             setFrequencyText(null);
         }
-        endDateText.setText(DateFormatter.format(date));
+        endDateText.setText(DateFormatter.format(this, date));
         endDateText.setTag(date);
     }
 
     private void populateTimesADay(int timesADay) {
-        timesADayText.setText(TimesADayFormatter.formatReadable(timesADay));
+        timesADayText.setText(TimesADayFormatter.formatReadableShort(this, timesADay));
         timesADayText.setTag(timesADay);
         if (timesADay > 1) {
             populateStartTime(null);
@@ -702,7 +702,7 @@ public class EditQuestActivity extends BaseActivity implements
     }
 
     private void populateDuration(int duration) {
-        durationText.setText(DurationFormatter.formatReadable(duration));
+        durationText.setText(DurationFormatter.formatReadable(this, duration));
         durationText.setTag(duration);
     }
 
@@ -746,7 +746,7 @@ public class EditQuestActivity extends BaseActivity implements
         String text = "";
         Pair<Long, TimeOffsetType> parsedResult = ReminderMinutesParser.parseCustomMinutes(Math.abs(reminder.getMinutesFromStart()));
         if (parsedResult != null) {
-            text = ReminderTimeFormatter.formatTimeOffset(parsedResult.first, parsedResult.second);
+            text = ReminderTimeFormatter.formatTimeOffset(this, parsedResult.first, parsedResult.second);
         }
         ((TextView) reminderView.findViewById(R.id.reminder_text)).setText(text);
         reminderView.setTag(reminder);

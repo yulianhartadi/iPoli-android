@@ -52,4 +52,21 @@ public enum Category {
         this.whiteImage = whiteImage;
         this.colorfulImage = colorfulImage;
     }
+
+    public static int getNameRes(Category category) {
+        switch (category) {
+            case LEARNING:
+                return R.string.category_learning;
+            case WELLNESS:
+                return R.string.category_wellness;
+            case PERSONAL:
+                return R.string.category_personal;
+            case WORK:
+                return R.string.category_work;
+            case FUN:
+                return R.string.category_fun;
+            default:
+                return R.string.category_chores;
+        }
+    }
 }

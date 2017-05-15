@@ -8,6 +8,7 @@ import org.threeten.bp.LocalDate;
 
 import java.util.Locale;
 
+import io.ipoli.android.R;
 import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.Time;
@@ -49,7 +50,7 @@ public class QuestViewModel {
     }
 
     public String getDueDateText(LocalDate currentDate) {
-        return DateFormatter.formatWithoutYear(quest.getScheduledDate(), currentDate);
+        return DateFormatter.formatWithoutYear(context, quest.getScheduledDate(), currentDate);
     }
 
     private Category getQuestCategory() {
@@ -67,9 +68,9 @@ public class QuestViewModel {
             Time endTime = Time.plusMinutes(startTime, duration);
             return startTime.toString(use24HourFormat) + " - " + endTime.toString(use24HourFormat);
         } else if (duration > 0) {
-            return "for " + DurationFormatter.format(context, duration);
+            return String.format(context.getString(R.string.quest_for_time), DurationFormatter.format(context, duration));
         } else if (startTime != null) {
-            return "at " + startTime.toString(use24HourFormat);
+            return String.format(context.getString(R.string.quest_at_time), startTime.toString(use24HourFormat));
         }
         return "";
     }
@@ -94,7 +95,7 @@ public class QuestViewModel {
         if (timesADay == 1) {
             return "";
         }
-        return String.format(Locale.getDefault(), "x%d more", remainingCount);
+        return String.format(Locale.getDefault(), context.getString(R.string.quest_remaining_count), remainingCount);
     }
 
     public boolean isStarted() {

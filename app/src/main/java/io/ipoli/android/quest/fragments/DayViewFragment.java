@@ -274,8 +274,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
                 event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinuteOfDay());
             }
             calendarEvents.add(event);
-            updateSchedule(new Schedule(new ArrayList<>(), calendarEvents));
         }
+        updateSchedule(new Schedule(new ArrayList<>(), calendarEvents));
     }
 
     @Override
@@ -499,7 +499,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         } else if (currentDate.isEqual(LocalDate.now().plusDays(1))) {
             dateText = "tomorrow";
         } else {
-            dateText = "on " + DateFormatter.formatWithoutYear(currentDate);
+            dateText = "on " + DateFormatter.formatWithoutYearSimple(currentDate);
         }
 
         eventBus.post(new StartQuickAddEvent(" at " + atTime.toString() + " " + dateText));

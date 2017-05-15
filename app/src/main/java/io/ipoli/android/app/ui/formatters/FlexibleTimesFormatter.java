@@ -1,7 +1,11 @@
 package io.ipoli.android.app.ui.formatters;
 
+import android.content.Context;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import io.ipoli.android.R;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -13,6 +17,14 @@ public class FlexibleTimesFormatter {
             value = 1;
         }
         return value == 1 ? value + " time" : value + " times";
+    }
+
+    public static String formatLocalReadable(Context context, int value) {
+        if(value <= 0) {
+            value = 1;
+        }
+        return value == 1 ? String.format(context.getString(R.string.times_per_period_single), value) :
+                String.format(context.getString(R.string.times_per_period_multiple), value);
     }
 
     public static int parse(String flexibleTimes) {
