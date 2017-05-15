@@ -71,7 +71,6 @@ import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
-import io.ipoli.android.player.activities.LevelUpActivity;
 import io.ipoli.android.player.activities.PickAvatarPictureActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
@@ -272,7 +271,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         int playerLevel = player.getLevel();
         String[] playerTitles = getResources().getStringArray(R.array.player_titles);
         String title = playerTitles[Math.min(playerLevel / 10, playerTitles.length - 1)];
-        level.setText("Level " + playerLevel + ": " + title);
+        level.setText(String.format(getString(R.string.player_level), playerLevel, title));
 
         TextView coins = (TextView) header.findViewById(R.id.player_coins);
         coins.setText(String.valueOf(player.getCoins()));

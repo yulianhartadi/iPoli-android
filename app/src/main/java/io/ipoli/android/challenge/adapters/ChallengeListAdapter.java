@@ -64,7 +64,7 @@ public class ChallengeListAdapter extends RecyclerView.Adapter<ChallengeListAdap
         holder.contextIndicatorImage.setImageResource(category.colorfulImage);
 
         holder.name.setText(challenge.getName());
-        holder.endDate.setText(DateFormatter.format(challenge.getEndDate()));
+        holder.endDate.setText(DateFormatter.format(context, challenge.getEndDate()));
 
         holder.moreMenu.setOnClickListener(v -> {
             eventBus.post(new ItemActionsShownEvent(EventSource.CHALLENGES));

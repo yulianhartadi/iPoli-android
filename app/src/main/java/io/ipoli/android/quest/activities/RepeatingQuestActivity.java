@@ -207,21 +207,18 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private void displaySummaryStats(Category category) {
-        categoryName.setText(StringUtils.capitalize(category.name()));
+        categoryName.setText(StringUtils.capitalize(getString(Category.getNameRes(category))));
         categoryImage.setImageResource(category.whiteImage);
 
         int timeSpent = repeatingQuest.getTotalTimeSpent();
 
-        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
+        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(this, timeSpent) : "0");
 
         frequencyInterval.setText(FrequencyTextFormatter.formatInterval(repeatingQuest.getFrequency(), repeatingQuest.getRecurrence()));
 
         LocalDate nextScheduledDate = repeatingQuest.getNextScheduledDate(LocalDate.now());
 
-        String nextScheduledDateText = DateFormatter.formatWithoutYear(
-                nextScheduledDate,
-                getString(R.string.unscheduled)
-        );
+        String nextScheduledDateText = DateFormatter.formatWithoutYear(this, nextScheduledDate, getString(R.string.unscheduled));
         this.nextScheduledDate.setText(nextScheduledDateText);
         streakText.setText(String.valueOf(repeatingQuest.getStreak()));
     }

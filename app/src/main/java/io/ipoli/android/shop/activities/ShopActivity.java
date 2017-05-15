@@ -61,7 +61,7 @@ public class ShopActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        String[] descriptions = new String[]{"Cute tail", "Fancy ears", "Flying ears", "Crazy teeth", "Chicken invader"};
+        String[] descriptions = getResources().getStringArray(R.array.pet_names);
         List<PetViewModel> petViewModels = new ArrayList<>();
         for (int i = 0; i < descriptions.length; i++) {
             int petIndex = i + 1;

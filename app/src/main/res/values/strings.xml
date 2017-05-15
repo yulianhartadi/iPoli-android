@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">iPoli</string>
     <string name="title_fragment_inbox">Inbox</string>
@@ -404,13 +405,13 @@
     <string name="rate_dialog_feedback_hint">What do you think of iPoli ...</string>
     <string name="repeat_type_flexible">Flexible</string>
     <string name="repeat_frequency">Frequency</string>
-    <string name="sunday_short">SUN</string>
-    <string name="monday_short">MON</string>
-    <string name="tuesday_short">TUE</string>
-    <string name="wednesday_short">WED</string>
-    <string name="thursday_short">THU</string>
-    <string name="friday_short">FRI</string>
-    <string name="saturday_short">SAT</string>
+    <string name="sunday_short">Sun</string>
+    <string name="monday_short">Mon</string>
+    <string name="tuesday_short">Tue</string>
+    <string name="wednesday_short">Wed</string>
+    <string name="thursday_short">Thu</string>
+    <string name="friday_short">Fri</string>
+    <string name="saturday_short">Sat</string>
     <string name="day_of_month">Day of month</string>
     <string name="day">Day</string>
     <string name="until">Until</string>
@@ -426,6 +427,257 @@
     <string name="last_week">last week</string>
     <string name="this_week">this week</string>
     <string name="challenge_percentage_done">%d%% done</string>
+    <string name="pet_xp">XP: %d%%</string>
+    <string name="pet_coins">Coins: %d%%</string>
+    <string name="pet_revive_not_enough_coins">Not enough coins to revive %s</string>
+
+    <string name="category_learning">Learning</string>
+    <string name="category_wellness">Wellness</string>
+    <string name="category_personal">Personal</string>
+    <string name="category_work">Work</string>
+    <string name="category_fun">Fun</string>
+    <string name="category_chores">Chores</string>
+
+    <string name="any_time">Any time</string>
+
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
+
+    <string name="pet_state_awesome">Awesome</string>
+    <string name="pet_state_happy">Happy</string>
+    <string name="pet_state_good">Good</string>
+    <string name="pet_state_sad">Sad</string>
+    <string name="pet_state_dead">Dead</string>
+
+    <string name="pet_sad_notification_title">I am so sad, don\'t let me die</string>
+    <string name="pet_died_notification_title">%s has died</string>
+    <string name="pet_revive_notification_message">Revive %s to help you with your quests!</string>
+    <string name="pet_notification_message">Complete your quests to make me happy!</string>
+    <string name="notification_for_time">for %s</string>
+    <string name="sub_quests">Sub Quests</string>
+    <string name="notes">Notes</string>
+    <string name="tap_to_add_note">Tap to add a note</string>
+    <string name="times_per_period_single">%d time</string>
+    <string name="times_per_period_multiple">%d times</string>
+    <string name="player_level">Level %1$d: %2$s</string>
+
+    <string name="move_to_inbox">Move to inbox</string>
+    <string name="pick_time">Pick time</string>
+    <string name="snooze_time_min">%d min</string>
+    <string name="snooze_time_hour">%d hour</string>
+    <string name="inbox_no_due_date">No due date</string>
+    <string name="inbox_due_date">Due %s</string>
+    <string name="inbox_overdue_by">Overdue by %1$d %2$s</string>
+    <string name="days">Days</string>
+
+    <string name="reminder_at_start">At start</string>
+    <string name="reminder_time_format_full">%1$d hours and %2$d minutes before</string>
+    <string name="reminder_time_format_1_hour">1 hour before</string>
+    <string name="reminder_time_format_hours">%d hours before</string>
+    <string name="reminder_time_format_1_minute">1 minute before</string>
+    <string name="reminder_time_format_minutes">%d minutes before</string>
+
+    <string name="minutes">minutes</string>
+    <string name="hours">hours</string>
+    <string name="weeks">weeks</string>
+
+    <string name="minute">minute</string>
+    <string name="hour">hour</string>
+    <string name="week">week</string>
+    <string name="reminder_time_format_offset">%1$d %2$s before</string>
+    <string name="custom">Custom</string>
+
+    <string name="minutes_before">minutes before</string>
+    <string name="hours_before">hours before</string>
+    <string name="weeks_before">weeks before</string>
+    <string name="days_before">days before</string>
+    <string name="duration_minutes_or_less">%d minutes or less</string>
+    <string name="duration_format_full">%1$d h and %2$d min</string>
+    <string name="duration_format_short">%1$dh %2$dm</string>
+
+    <plurals name="duration_hours">
+        <item quantity="one">%d hour</item>
+        <item quantity="other">%d hours</item>
+    </plurals>
+    <plurals name="duration_minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+
+    <string name="duration_for_time">For %s</string>
+    <string name="once_a_day">Once a day</string>
+    <string name="twice_a_day">Twice a day</string>
+    <string name="times_a_day">%d times a day</string>
+    <string name="once">Once</string>
+    <string name="twice">Twice</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="repeating_quest_done">Done</string>
+    <string name="repeating_quest_more_this_month">%d more this month</string>
+    <string name="repeating_quest_more_this_week">%d more this week</string>
+    <string name="repeating_quest_for_time">for %s</string>
+    <string name="repeating_quest_next">Next: %s</string>
+    <string name="quest_for_time">for %s</string>
+    <string name="quest_at_time">at %s</string>
+    <string name="quest_remaining_count">x%d more</string>
+
+    <string name="challenge2_name">Stress-Free Mind</string>
+    <string name="challenge2_reason1">Be more focused</string>
+    <string name="challenge2_reason2">Be relaxed</string>
+    <string name="challenge2_reason3">Be healthy</string>
+    <string name="challenge2_exp_result1">Concentrate for at least 30 min at a time</string>
+    <string name="challenge2_exp_result2">Completely stop anxiety</string>
+    <string name="challenge2_exp_result3">Lose 5 pounds</string>
+    <string name="challenge2_desc">Be mindful and stay in the flow longer</string>
+    <string name="challenge1_name">Weight Cutter</string>
+    <string name="challenge1_reason1">Feel great</string>
+    <string name="challenge1_reason2">Become more confident</string>
+    <string name="challenge1_reason3">Become healthier</string>
+    <string name="challenge1_exp_result1">Lose 10 pounds</string>
+    <string name="challenge1_exp_result2">Reduce wear size</string>
+    <string name="challenge1_exp_result3">Love working out</string>
+    <string name="challenge1_desc">Start shedding some weight and feel great</string>
+    <string name="challenge3_name"><![CDATA[Healthy & Fit]]></string>
+    <string name="challenge3_reason1">Be healthier</string>
+    <string name="challenge3_reason2">Stay fit</string>
+    <string name="challenge3_reason3">Feel great</string>
+    <string name="challenge3_exp_result1">Lose 5 pounds</string>
+    <string name="challenge3_exp_result2">Concentrate for at least 30 min at a time</string>
+    <string name="challenge3_exp_result3">Workout 3 times a week</string>
+    <string name="challenge3_desc">Keep working out and live healthier life</string>
+    <string name="challenge4_name">English Jedi</string>
+    <string name="challenge4_reason1">Learn to read great books</string>
+    <string name="challenge4_reason2">Participate in conversations</string>
+    <string name="challenge4_reason3"><![CDATA[Meet & speak with new people]]></string>
+    <string name="challenge4_exp_result1">Read a book</string>
+    <string name="challenge4_exp_result2">Understand movies</string>
+    <string name="challenge4_exp_result3">Write an essay in English</string>
+    <string name="challenge4_desc">Advance your English skills</string>
+    <string name="challenge5_name">Programming Ninja</string>
+    <string name="challenge5_reason1">Learn to command my computer</string>
+    <string name="challenge5_reason2">Understand technologies better</string>
+    <string name="challenge5_reason3">Find new job</string>
+    <string name="challenge5_exp_result1">Write simple webpage</string>
+    <string name="challenge5_exp_result2">Understand what code editors are</string>
+    <string name="challenge5_exp_result3">Understand how Internet works</string>
+    <string name="challenge5_desc">Learn the fundamentals of computer programming</string>
+    <string name="challenge6_name">Master Presenter</string>
+    <string name="challenge6_reason1">Better present my ideas</string>
+    <string name="challenge6_reason2">Become more confident</string>
+    <string name="challenge6_reason3">Explain better</string>
+    <string name="challenge6_exp_result1">Prepare a presentation</string>
+    <string name="challenge6_exp_result2">Present in front of an audience</string>
+    <string name="challenge6_exp_result3">Upload my presentation on the Internet</string>
+    <string name="challenge6_desc">Learn how to create and present effectively</string>
+    <string name="challenge7_name">Famous writer</string>
+    <string name="challenge7_reason1">Better present my ideas</string>
+    <string name="challenge7_reason2">Become more confident</string>
+    <string name="challenge7_reason3">Meet new people</string>
+    <string name="challenge7_exp_result1">Have a blog</string>
+    <string name="challenge7_exp_result2">100 readers per month</string>
+    <string name="challenge7_exp_result3">Write 5 blog posts</string>
+    <string name="challenge7_desc"><![CDATA[Learn how to become great writer & blogger]]></string>
+    <string name="challenge8_name"><![CDATA[Friends & Family time]]></string>
+    <string name="challenge8_reason1">Feel more connected to others</string>
+    <string name="challenge8_reason2">Have more fun</string>
+    <string name="challenge8_reason3">Stay close with family</string>
+    <string name="challenge8_exp_result1">Spend more time with family</string>
+    <string name="challenge8_exp_result2">Go out more often</string>
+    <string name="challenge8_exp_result3">See friends more often</string>
+    <string name="challenge8_desc">Connect with your friends and family</string>
+    <string name="challenge2_rq1_raw_text">Meditate every day for 10 min</string>
+    <string name="challenge2_rq1_name">Meditate</string>
+    <string name="challenge2_rq2_raw_text">Read a book for 30 min 3 times a week</string>
+    <string name="challenge2_rq2_name">Read a book</string>
+    <string name="challenge2_quest1_name">Share your troubles with a friend</string>
+    <string name="challenge2_rq3_raw_text">Take a walk for 30 min 5 times a week</string>
+    <string name="challenge2_rq3_name">Take a walk</string>
+    <string name="challenge2_rq4_raw_text">Say 3 things that I am grateful for every morning</string>
+    <string name="challenge2_rq4_name">Say 3 things that I am grateful</string>
+    <string name="challenge1_quest1_name">Sign up for a gym club card</string>
+    <string name="challenge1_rq1_raw_text">Run 2 times a week for 30 min</string>
+    <string name="challenge1_rq1_name">Run</string>
+    <string name="challenge1_rq2_raw_text">Workout at the gym 3 times a week for 1h</string>
+    <string name="challenge1_rq2_name">Workout</string>
+    <string name="challenge1_rq3_raw_text">Measure my weight every morning</string>
+    <string name="challenge1_rq3_name">Measure my weight</string>
+    <string name="challenge1_rq4_raw_text">Prepare healthy dinner 6 times a week</string>
+    <string name="challenge1_rq4_name">Prepare healthy dinner</string>
+    <string name="challenge3_rq1_raw_text">Drink 6 glasses of water every day</string>
+    <string name="challenge3_rq1_name">Drink glass of water</string>
+    <string name="challenge3_rq2_raw_text">Eat healthy breakfast every day</string>
+    <string name="challenge3_rq2_name">Eat healthy breakfast</string>
+    <string name="challenge3_rq3_raw_text">Workout 3 times a week</string>
+    <string name="challenge3_rq3_name">Workout</string>
+    <string name="challenge3_rq4_raw_text">Go for a walk 3 times a week</string>
+    <string name="challenge3_rq4_name">Go for a walk</string>
+    <string name="challenge3_rq5_raw_text">Go for a run 2 times a week</string>
+    <string name="challenge3_rq5_name">Go for a run</string>
+    <string name="challenge3_rq6_raw_text">Cook healthy dinner 5 times a week</string>
+    <string name="challenge3_rq6_name">Cook healthy dinner</string>
+    <string name="challenge3_rq7_raw_text">Meditate 3 times a week</string>
+    <string name="challenge3_rq7_name">Meditate</string>
+    <string name="challenge3_rq8_raw_text">Say 3 things I am grateful for every day</string>
+    <string name="challenge3_rq8_name">Say 3 things I am grateful for</string>
+    <string name="challenge3_rq9_raw_text">Eat a fruit every day</string>
+    <string name="challenge3_rq9_name">Eat a fruit</string>
+    <string name="challenge4_quest1_name">Sign up at Duolingo</string>
+    <string name="challenge4_quest1_note1">Sign up at Duolingo</string>
+    <string name="challenge4_quest2_name">Sign up for a local English course</string>
+    <string name="challenge4_quest3_name">Subscribe to the Misterduncan YouTube channel</string>
+    <string name="challenge4_quest3_note1">Subscribe to Misterduncan</string>
+    <string name="challenge4_rq1_raw_text">Learn using Duolingo for 15 min every day</string>
+    <string name="challenge4_rq1_note1">Learn using Duolingo</string>
+    <string name="challenge4_rq1_name">Learn using Duolingo</string>
+    <string name="challenge4_rq2_raw_text">Watch a movie with English subtitles 5 times a week</string>
+    <string name="challenge4_rq2_name">Watch a movie with English subtitles</string>
+    <string name="challenge4_rq3_raw_text">Read Alice in Wonderland 4 times a week</string>
+    <string name="challenge4_rq3_name">Read Alice in Wonderland</string>
+    <string name="challenge4_rq3_note1">Read Alice in Wonderland</string>
+    <string name="challenge5_quest1_name">Sign up at freeCodeCamp</string>
+    <string name="challenge5_quest1_note1">Sign up at freeCodeCamp</string>
+    <string name="challenge5_rq1_raw_text">Read JavaScript For Cats 3 times a week</string>
+    <string name="challenge5_rq1_name">Read JavaScript For Cats</string>
+    <string name="challenge5_rq1_note1">JavaScript For Cats</string>
+    <string name="challenge5_rq2_raw_text">Conquer freeCodeCamp challenges 5 times a week</string>
+    <string name="challenge5_rq2_name">Conquer freeCodeCamp challenges</string>
+    <string name="challenge5_rq2_note1">freeCodeCamp challenges</string>
+    <string name="challenge5_rq3_raw_text">Watch CS50x Programming Course 2 times a week</string>
+    <string name="challenge5_rq3_name">Watch CS50x Programming Course</string>
+    <string name="challenge5_rq3_note1">Watch CS50x on edX</string>
+    <string name="challenge6_quest1_name">Learn how to give great presentation</string>
+    <string name="challenge6_quest1_note1">Presentation Tips by Princeton University</string>
+    <string name="challenge6_quest1_note2">Presentation Tips by University of Kent</string>
+    <string name="challenge6_quest2_name">Sign up at Canva</string>
+    <string name="challenge6_quest2_note1">Sign up at Canva</string>
+    <string name="challenge6_quest3_name">Create my presentation at Canva</string>
+    <string name="challenge6_quest3_note1">Open Canva</string>
+    <string name="challenge6_rq1_raw_text">Practice presenting alone twice a day for a week</string>
+    <string name="challenge6_rq1_name">Practice presenting alone</string>
+    <string name="challenge6_quest4_name">Practice presenting to a friend</string>
+    <string name="challenge6_quest5_name">Upload my presentation to SlideShare</string>
+    <string name="challenge6_quest5_note1">Sign up at SlideShare.net</string>
+    <string name="challenge7_quest1_name">Create a blog at Medium</string>
+    <string name="challenge7_quest1_note1">Create my blog at Medium</string>
+    <string name="challenge7_quest2_name">Choose what I am going to write about</string>
+    <string name="challenge7_quest3_name">Pick 5 bloggers who inspire you and read most of their posts</string>
+    <string name="challenge7_quest4_name"><![CDATA[Research & write my first blog post]]></string>
+    <string name="challenge7_rq1_raw_text">Write a blog post once every week</string>
+    <string name="challenge7_rq1_name">Write a blog post</string>
+    <string name="challenge7_rq1_note1">Visit Medium</string>
+    <string name="challenge8_quest1_name">Plan a vacation with friends</string>
+    <string name="challenge8_rq1_raw_text">Call parents once every week</string>
+    <string name="challenge8_rq1_name">Call parents</string>
+    <string name="challenge8_rq2_raw_text">Visit parents once every month</string>
+    <string name="challenge8_rq2_name">Visit parents</string>
+    <string name="challenge8_rq3_raw_text">Have family dinner 3 times a week</string>
+    <string name="challenge8_rq3_name">Have family dinner</string>
+    <string name="challenge8_rq4_raw_text">Go out with friends 2 times a week</string>
+    <string name="challenge8_rq4_name">Go out with friends</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
@@ -438,5 +690,25 @@
         <item>Immortal</item>
         <item>Demigod</item>
         <item>Titan</item>
+    </string-array>
+
+    <string-array name="pet_names">
+        <item>Cute tail</item>
+        <item>Fancy ears</item>
+        <item>Flying ears</item>
+        <item>Crazy teeth</item>
+        <item>Chicken invader</item>
+    </string-array>
+
+    <string-array name="repeating_quest_frequencies">
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+        <item>Yearly</item>
+    </string-array>
+
+    <string-array name="repeating_quest_flexible_frequencies">
+        <item>Weekly</item>
+        <item>Monthly</item>
     </string-array>
 </resources>
