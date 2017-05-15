@@ -138,5 +138,20 @@ public class Pet {
         PetState(@ColorRes int color) {
             this.color = color;
         }
+
+        public static int getNameRes(PetState petState) {
+            switch (petState) {
+                case AWESOME:
+                    return R.string.pet_state_awesome;
+                case HAPPY:
+                    return R.string.pet_state_happy;
+                case GOOD:
+                    return R.string.pet_state_good;
+                case SAD:
+                    return R.string.pet_state_sad;
+                default:
+                    return R.string.pet_state_dead;
+            }
+        }
     }
 }

@@ -279,19 +279,19 @@ public class ChallengeActivity extends BaseActivity {
 
         summaryStatsContainer.setBackgroundResource(category.color500);
 
-        categoryName.setText(StringUtils.capitalize(category.name()));
+        categoryName.setText(StringUtils.capitalize(getString(Category.getNameRes(category))));
         categoryImage.setImageResource(category.whiteImage);
 
-        String nextScheduledDateText = DateFormatter.formatWithoutYear(
+        String nextScheduledDateText = DateFormatter.formatWithoutYear(this,
                 challenge.getNextScheduledDate(LocalDate.now()),
                 getString(R.string.unscheduled)
         );
         nextScheduledDate.setText(nextScheduledDateText);
 
-        dueDate.setText(DateFormatter.formatWithoutYear(challenge.getEndDate()));
+        dueDate.setText(DateFormatter.formatWithoutYear(this, challenge.getEndDate()));
 
         int timeSpent = challenge.getTotalTimeSpent();
-        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
+        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(this, timeSpent) : "0");
     }
 
     private void setupChart() {

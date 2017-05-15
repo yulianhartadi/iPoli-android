@@ -73,7 +73,6 @@ import io.ipoli.android.app.ui.dialogs.TimeOfDayPickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
-import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
@@ -485,7 +484,7 @@ public class SettingsActivity extends BaseActivity implements
     private void populateMostProductiveTimesOfDay(Set<TimeOfDay> selectedTimes) {
         List<String> timeNames = new ArrayList<>();
         for (TimeOfDay timeOfDay : selectedTimes) {
-            timeNames.add(StringUtils.capitalizeAndReplaceUnderscore(timeOfDay.name()));
+            timeNames.add(getString(TimeOfDay.getNameRes(timeOfDay)));
         }
         mostProductiveTime.setText(TextUtils.join(", ", timeNames));
     }
