@@ -70,7 +70,7 @@ public class PickChallengeActivity extends BaseActivity {
             }
         }
 
-        List<PredefinedChallenge> challenges = App.getPredefinedChallenges();
+        List<PredefinedChallenge> challenges = App.getPredefinedChallenges(this);
         setBackgroundColors(challenges.get(0).challenge.getCategoryType());
 
         PickChallengeAdapter pickChallengeAdapter = new PickChallengeAdapter(this, challenges, eventBus);

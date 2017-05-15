@@ -499,7 +499,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         } else if (currentDate.isEqual(LocalDate.now().plusDays(1))) {
             dateText = "tomorrow";
         } else {
-            dateText = "on " + DateFormatter.formatWithoutYear(currentDate);
+            dateText = "on " + DateFormatter.formatWithoutYearSimple(currentDate);
         }
 
         eventBus.post(new StartQuickAddEvent(" at " + atTime.toString() + " " + dateText));

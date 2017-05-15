@@ -73,7 +73,6 @@ import io.ipoli.android.app.ui.dialogs.TimeOfDayPickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
-import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
@@ -96,6 +95,7 @@ public class SettingsActivity extends BaseActivity implements
         LoaderManager.LoaderCallbacks<Void> {
 
     private static final int RC_CALENDAR_PERM = 102;
+    
     @Inject
     Bus eventBus;
 
@@ -485,7 +485,7 @@ public class SettingsActivity extends BaseActivity implements
     private void populateMostProductiveTimesOfDay(Set<TimeOfDay> selectedTimes) {
         List<String> timeNames = new ArrayList<>();
         for (TimeOfDay timeOfDay : selectedTimes) {
-            timeNames.add(StringUtils.capitalizeAndReplaceUnderscore(timeOfDay.name()));
+            timeNames.add(getString(TimeOfDay.getNameRes(timeOfDay)));
         }
         mostProductiveTime.setText(TextUtils.join(", ", timeNames));
     }
@@ -526,7 +526,8 @@ public class SettingsActivity extends BaseActivity implements
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }

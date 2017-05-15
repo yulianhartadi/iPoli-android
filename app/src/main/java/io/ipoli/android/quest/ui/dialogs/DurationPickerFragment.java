@@ -62,7 +62,7 @@ public class DurationPickerFragment extends DialogFragment {
         selectedDurationIndex = -1;
         for (int i = 0; i < availableDurations.length; i++) {
             int d = availableDurations[i];
-            questDurations.add(DurationFormatter.formatReadable(d));
+            questDurations.add(DurationFormatter.formatReadable(getContext(), d));
             if (d == duration) {
                 selectedDurationIndex = i;
             }
@@ -70,7 +70,7 @@ public class DurationPickerFragment extends DialogFragment {
 
         if (selectedDurationIndex == -1) {
             selectedDurationIndex = 0;
-            questDurations.add(0, DurationFormatter.formatReadable(duration));
+            questDurations.add(0, DurationFormatter.formatReadable(getContext(), duration));
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

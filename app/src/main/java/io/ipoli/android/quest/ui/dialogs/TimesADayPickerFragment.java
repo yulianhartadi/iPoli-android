@@ -60,7 +60,7 @@ public class TimesADayPickerFragment extends DialogFragment {
         selectedTimesADayIndex = -1;
         for (int i = 1; i <= maxTimesADay; i++) {
             availableTimes[i - 1] = i;
-            availableTimesReadable[i - 1] = TimesADayFormatter.formatReadable(i);
+            availableTimesReadable[i - 1] = TimesADayFormatter.formatReadableShort(getContext(), i);
             if (i == timesADay) {
                 selectedTimesADayIndex = i - 1;
             }
