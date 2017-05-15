@@ -273,8 +273,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
                 event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinuteOfDay());
             }
             calendarEvents.add(event);
-            updateSchedule(new Schedule(new ArrayList<>(), calendarEvents));
         }
+        updateSchedule(new Schedule(new ArrayList<>(), calendarEvents));
     }
 
     @Override
