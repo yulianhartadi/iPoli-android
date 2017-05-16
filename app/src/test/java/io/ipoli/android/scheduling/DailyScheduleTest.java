@@ -1,7 +1,6 @@
 package io.ipoli.android.scheduling;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -109,7 +108,6 @@ public class DailyScheduleTest {
     }
 
     @Test
-    @Ignore
     public void shouldNotOverlapWithScheduledTasks() {
         DailySchedule schedule = new DailyScheduleBuilder()
                 .setStartMinute(0)
@@ -122,7 +120,9 @@ public class DailyScheduleTest {
         List<Task> tasksToSchedule = Collections.singletonList(new Task(20, Quest.PRIORITY_IMPORTANT_URGENT, TimePreference.ANY, Category.CHORES));
         List<Task> tasks = schedule.scheduleTasks(tasksToSchedule, scheduledTasks, defaultTime);
         Task scheduledTask = tasks.get(0);
-        assertThat(scheduledTask.getCurrentTimeSlot().getStartMinute(), is(30));
+        TimeSlot timeSlot = scheduledTask.getCurrentTimeSlot();
+        TimeSlot newTimeSlot = schedule.chooseNewTimeSlot(scheduledTask.getId(), Time.of(0)).getCurrentTimeSlot();
+        assertTimeSlotsAreEqual(timeSlot, newTimeSlot);
     }
 
     @Test
@@ -146,7 +146,7 @@ public class DailyScheduleTest {
                 Collections.singletonList(new Task(25, 30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)),
                 defaultTime);
 
-        assertTimeBlocksAreEqual(firstScheduledTasks.get(0).getCurrentTimeSlot(), secondScheduledTasks.get(0).getCurrentTimeSlot());
+        assertTimeSlotsAreEqual(firstScheduledTasks.get(0).getCurrentTimeSlot(), secondScheduledTasks.get(0).getCurrentTimeSlot());
 
     }
 
@@ -172,7 +172,7 @@ public class DailyScheduleTest {
                 Collections.singletonList(new Task(timeSlot.getStartMinute(), 10, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)),
                 defaultTime);
 
-        assertTimeBlocksAreNotEqual(timeSlot, secondScheduledTasks.get(0).getCurrentTimeSlot());
+        assertTimeSlotsAreNotEqual(timeSlot, secondScheduledTasks.get(0).getCurrentTimeSlot());
 
     }
 
@@ -204,7 +204,7 @@ public class DailyScheduleTest {
             }
         }
 
-        assertTimeBlocksAreNotEqual(task1TB, task2TB);
+        assertTimeSlotsAreNotEqual(task1TB, task2TB);
     }
 
     @Test
@@ -220,7 +220,9 @@ public class DailyScheduleTest {
         List<Task> tasksToSchedule = Collections.singletonList(new Task(15, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
         List<Task> scheduledTasks = schedule.scheduleTasks(tasksToSchedule, Time.of(0));
         Task t = scheduledTasks.get(0);
-//        schedule.
+        TimeSlot oldTimeSlot = t.getCurrentTimeSlot();
+        Task updatedTask = schedule.chooseNewTimeSlot(t.getId(), Time.of(0));
+        assertTimeSlotsAreNotEqual(oldTimeSlot, updatedTask.getCurrentTimeSlot());
     }
 
     private Task toTask(Quest quest) {
@@ -232,13 +234,13 @@ public class DailyScheduleTest {
                 quest.getCategoryType());
     }
 
-    private void assertTimeBlocksAreEqual(TimeSlot tb1, TimeSlot tb2) {
-        assertThat(tb1.getStartMinute(), is(tb2.getStartMinute()));
-        assertThat(tb1.getEndMinute(), is(tb2.getEndMinute()));
+    private void assertTimeSlotsAreEqual(TimeSlot ts1, TimeSlot ts2) {
+        assertThat(ts1.getStartMinute(), is(ts2.getStartMinute()));
+        assertThat(ts1.getEndMinute(), is(ts2.getEndMinute()));
     }
 
-    private void assertTimeBlocksAreNotEqual(TimeSlot tb1, TimeSlot tb2) {
-        assertThat(tb1.getStartMinute(), is(not(tb2.getStartMinute())));
-        assertThat(tb1.getEndMinute(), is(not(tb2.getEndMinute())));
+    private void assertTimeSlotsAreNotEqual(TimeSlot ts1, TimeSlot ts2) {
+        assertThat(ts1.getStartMinute(), is(not(ts2.getStartMinute())));
+        assertThat(ts1.getEndMinute(), is(not(ts2.getEndMinute())));
     }
 }
