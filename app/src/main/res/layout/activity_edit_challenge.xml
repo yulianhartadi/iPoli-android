@@ -224,7 +224,7 @@
                         style="@style/TextAppearance.AppCompat.Body1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="When is the deadline?" />
+                        android:text="@string/challenge_deadline_question" />
 
                     <TextView
                         android:id="@+id/challenge_end_date_value"

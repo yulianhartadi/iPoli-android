@@ -21,6 +21,7 @@ import io.ipoli.android.quest.data.Quest;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -118,7 +119,88 @@ public class DailyScheduleTest {
         Task scheduledTask = scheduledTasks.get(0);
         List<TimeBlock> recommendedSlots = scheduledTask.getRecommendedSlots();
         assertThat(recommendedSlots.size(), is(1));
+    }
 
+    @Test
+    public void shouldNotUpdateCurrentSlot() {
+        DailySchedule schedule = new DailyScheduleBuilder()
+                .setStartMinute(0)
+                .setEndMinute(60)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .createDailySchedule();
+
+        List<Task> firstScheduledTasks = schedule.scheduleTasks(
+                Collections.singletonList(new Task(10, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)),
+                Collections.singletonList(new Task(20, 30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)),
+                defaultTime);
+
+
+        List<Task> secondScheduledTasks = schedule.scheduleTasks(
+                Collections.singletonList(new Task(10, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)),
+                Collections.singletonList(new Task(25, 30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)),
+                defaultTime);
+
+        assertTimeBlocksAreEqual(firstScheduledTasks.get(0).getRecommendedSlots().get(0), secondScheduledTasks.get(0).getRecommendedSlots().get(0));
+
+    }
+
+    @Test
+    public void shouldUpdateCurrentSlot() {
+        DailySchedule schedule = new DailyScheduleBuilder()
+                .setStartMinute(0)
+                .setEndMinute(60)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .createDailySchedule();
+
+        List<Task> firstScheduledTasks = schedule.scheduleTasks(
+                Collections.singletonList(new Task(10, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)),
+                Collections.singletonList(new Task(20, 30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)),
+                defaultTime);
+
+        TimeBlock timeBlock = firstScheduledTasks.get(0).getRecommendedSlots().get(0);
+
+        List<Task> secondScheduledTasks = schedule.scheduleTasks(
+                Collections.singletonList(new Task(10, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)),
+                Collections.singletonList(new Task(timeBlock.getStartMinute(), 10, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)),
+                defaultTime);
+
+        assertTimeBlocksAreNotEqual(timeBlock, secondScheduledTasks.get(0).getRecommendedSlots().get(0));
+
+    }
+
+    @Test
+    public void shouldNotOverlapWithNewTask() {
+        DailySchedule schedule = new DailyScheduleBuilder()
+                .setStartMinute(0)
+                .setEndMinute(120)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .createDailySchedule();
+
+        List<Task> scheduledTasks = Collections.singletonList(new Task(20, 30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
+        List<Task> tasksToSchedule = new ArrayList<>();
+        tasksToSchedule.add(new Task("1", 10, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
+        schedule.scheduleTasks(tasksToSchedule, scheduledTasks, defaultTime);
+
+        tasksToSchedule.add(new Task("2", 10, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
+        List<Task> secondScheduledTasks = schedule.scheduleTasks(tasksToSchedule, scheduledTasks, defaultTime);
+
+        TimeBlock task1TB = null;
+        TimeBlock task2TB = null;
+        for (Task t : secondScheduledTasks) {
+            if (t.getId().equals("1")) {
+                task1TB = t.getRecommendedSlots().get(0);
+            } else {
+                task2TB = t.getRecommendedSlots().get(0);
+            }
+        }
+
+        assertTimeBlocksAreNotEqual(task1TB, task2TB);
     }
 
     private Task toTask(Quest quest) {
@@ -128,5 +210,15 @@ public class DailyScheduleTest {
                 priorityEstimator.estimate(quest),
                 quest.getStartTimePreference(),
                 quest.getCategoryType());
+    }
+
+    private void assertTimeBlocksAreEqual(TimeBlock tb1, TimeBlock tb2) {
+        assertThat(tb1.getStartMinute(), is(tb2.getStartMinute()));
+        assertThat(tb1.getEndMinute(), is(tb2.getEndMinute()));
+    }
+
+    private void assertTimeBlocksAreNotEqual(TimeBlock tb1, TimeBlock tb2) {
+        assertThat(tb1.getStartMinute(), is(not(tb2.getStartMinute())));
+        assertThat(tb1.getEndMinute(), is(not(tb2.getEndMinute())));
     }
 }

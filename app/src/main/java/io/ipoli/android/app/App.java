@@ -217,9 +217,9 @@ public class App extends MultiDexApplication {
     }
 
     private void notifyPetStateChanged(Pet pet) {
-        String title = pet.getState() == Pet.PetState.DEAD ? pet.getName() + " has died" : "I am so sad, don't let me die";
-        String text = pet.getState() == Pet.PetState.DEAD ? "Revive " + pet.getName() + " to help you with your quests!" :
-                "Complete your quests to make me happy!";
+        String title = pet.getState() == Pet.PetState.DEAD ? String.format(getString(R.string.pet_died_notification_title), pet.getName()) : getString(R.string.pet_sad_notification_title);
+        String text = pet.getState() == Pet.PetState.DEAD ? String.format(getString(R.string.pet_revive_notification_message), pet.getName()) :
+                getString(R.string.pet_notification_message);
 
         Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), ResourceUtils.extractDrawableResource(this, pet.getPicture() + "_head"));
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, PetActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
@@ -387,7 +387,7 @@ public class App extends MultiDexApplication {
         String text = totalCount == 0 ? getString(R.string.ongoing_notification_no_quests_text) : getString(R.string.ongoing_notification_progress_text, completedCount, totalCount);
         boolean showWhen = quest != null && quest.isScheduled();
         long when = showWhen ? Quest.getStartDateTimeMillis(quest) : 0;
-        String contentInfo = quest == null ? "" : "for " + DurationFormatter.format(this, quest.getDuration());
+        String contentInfo = quest == null ? "" :  String.format(getString(R.string.notification_for_time), DurationFormatter.format(this, quest.getDuration()));
         int smallIcon = quest == null ? R.drawable.ic_notification_small : quest.getCategoryType().whiteImage;
         int iconColor = quest == null ? R.color.md_grey_500 : quest.getCategoryType().color500;
 
@@ -417,7 +417,7 @@ public class App extends MultiDexApplication {
             } else {
                 builder.addAction(R.drawable.ic_play_arrow_black_24dp, getString(R.string.start).toUpperCase(), getStartPendingIntent(quest.getId()));
             }
-            builder.addAction(R.drawable.ic_done_24dp, getString(R.string.done), getDonePendingIntent(quest.getId()));
+            builder.addAction(R.drawable.ic_done_24dp, getString(R.string.done).toUpperCase(), getDonePendingIntent(quest.getId()));
         }
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
         notificationManagerCompat.notify(Constants.ONGOING_NOTIFICATION_ID, builder.build());
@@ -934,7 +934,7 @@ public class App extends MultiDexApplication {
     }
 
     private void clearIncompleteQuests() {
-        questPersistenceService.findAllIncompleteBefore(LocalDate.now(), quests -> {
+        questPersistenceService.findAllIncompleteNotFromRepeatingBefore(LocalDate.now(), quests -> {
             for (Quest q : quests) {
                 if (q.isStarted()) {
                     q.setScheduledDate(LocalDate.now());
@@ -958,105 +958,105 @@ public class App extends MultiDexApplication {
         return !StringUtils.isEmpty(playerId);
     }
 
-    public static List<PredefinedChallenge> getPredefinedChallenges() {
+    public static List<PredefinedChallenge> getPredefinedChallenges(Context context) {
         List<PredefinedChallenge> challenges = new ArrayList<>();
 
-        Challenge c = new Challenge("Stress-Free Mind");
+        Challenge c = new Challenge(context.getString(R.string.challenge2_name));
         c.setCategoryType(Category.WELLNESS);
         c.setDifficultyType(Difficulty.HARD);
         c.setEndDate(LocalDate.now().plusWeeks(2));
-        c.setReason1("Be more focused");
-        c.setReason2("Be relaxed");
-        c.setReason3("Be healthy");
-        c.setExpectedResult1("Concentrate for at least 30 min at a time");
-        c.setExpectedResult2("Completely stop anxiety");
-        c.setExpectedResult3("Lose 5 pounds");
-        challenges.add(new PredefinedChallenge(c, "Be mindful and stay in the flow longer", R.drawable.challenge_02, R.drawable.challenge_expanded_02));
+        c.setReason1(context.getString(R.string.challenge2_reason1));
+        c.setReason2(context.getString(R.string.challenge2_reason2));
+        c.setReason3(context.getString(R.string.challenge2_reason3));
+        c.setExpectedResult1(context.getString(R.string.challenge2_exp_result1));
+        c.setExpectedResult2(context.getString(R.string.challenge2_exp_result2));
+        c.setExpectedResult3(context.getString(R.string.challenge2_exp_result3));
+        challenges.add(new PredefinedChallenge(c, context.getString(R.string.challenge2_desc), R.drawable.challenge_02, R.drawable.challenge_expanded_02));
 
-        c = new Challenge("Weight Cutter");
+        c = new Challenge(context.getString(R.string.challenge1_name));
         c.setCategoryType(Category.WELLNESS);
         c.setDifficultyType(Difficulty.HARD);
         c.setEndDate(LocalDate.now().plusWeeks(2));
-        c.setReason1("Feel great");
-        c.setReason2("Become more confident");
-        c.setReason3("Become healthier");
-        c.setExpectedResult1("Lose 10 pounds");
-        c.setExpectedResult2("Reduce wear size");
-        c.setExpectedResult3("Love working out");
-        challenges.add(new PredefinedChallenge(c, "Start shedding some weight and feel great", R.drawable.challenge_01, R.drawable.challenge_expanded_01));
+        c.setReason1(context.getString(R.string.challenge1_reason1));
+        c.setReason2(context.getString(R.string.challenge1_reason2));
+        c.setReason3(context.getString(R.string.challenge1_reason3));
+        c.setExpectedResult1(context.getString(R.string.challenge1_exp_result1));
+        c.setExpectedResult2(context.getString(R.string.challenge1_exp_result2));
+        c.setExpectedResult3(context.getString(R.string.challenge1_exp_result3));
+        challenges.add(new PredefinedChallenge(c, context.getString(R.string.challenge1_desc), R.drawable.challenge_01, R.drawable.challenge_expanded_01));
 
 
-        c = new Challenge("Healthy & Fit");
+        c = new Challenge(context.getString(R.string.challenge3_name));
         c.setCategoryType(Category.WELLNESS);
         c.setDifficultyType(Difficulty.HARD);
         c.setEndDate(LocalDate.now().plusWeeks(2));
-        c.setReason1("Be healthier");
-        c.setReason2("Stay fit");
-        c.setReason3("Feel great");
-        c.setExpectedResult1("Lose 5 pounds");
-        c.setExpectedResult2("Concentrate for at least 30 min at a time");
-        c.setExpectedResult3("Workout 3 times a week");
-        challenges.add(new PredefinedChallenge(c, "Keep working out and live healthier life", R.drawable.challenge_03, R.drawable.challenge_expanded_03));
+        c.setReason1(context.getString(R.string.challenge3_reason1));
+        c.setReason2(context.getString(R.string.challenge3_reason2));
+        c.setReason3(context.getString(R.string.challenge3_reason3));
+        c.setExpectedResult1(context.getString(R.string.challenge3_exp_result1));
+        c.setExpectedResult2(context.getString(R.string.challenge3_exp_result2));
+        c.setExpectedResult3(context.getString(R.string.challenge3_exp_result3));
+        challenges.add(new PredefinedChallenge(c, context.getString(R.string.challenge3_desc), R.drawable.challenge_03, R.drawable.challenge_expanded_03));
 
-        c = new Challenge("English Jedi");
+        c = new Challenge(context.getString(R.string.challenge4_name));
         c.setCategoryType(Category.LEARNING);
         c.setDifficultyType(Difficulty.HARD);
         c.setEndDate(LocalDate.now().plusWeeks(2));
-        c.setReason1("Learn to read great books");
-        c.setReason2("Participate in conversations");
-        c.setReason3("Meet & speak with new people");
-        c.setExpectedResult1("Read a book");
-        c.setExpectedResult2("Understand movies");
-        c.setExpectedResult3("Write an essey in English");
-        challenges.add(new PredefinedChallenge(c, "Advance your English skills", R.drawable.challenge_04, R.drawable.challenge_expanded_04));
+        c.setReason1(context.getString(R.string.challenge4_reason1));
+        c.setReason2(context.getString(R.string.challenge4_reason2));
+        c.setReason3(context.getString(R.string.challenge4_reason3));
+        c.setExpectedResult1(context.getString(R.string.challenge4_exp_result1));
+        c.setExpectedResult2(context.getString(R.string.challenge4_exp_result2));
+        c.setExpectedResult3(context.getString(R.string.challenge4_exp_result3));
+        challenges.add(new PredefinedChallenge(c, context.getString(R.string.challenge4_desc), R.drawable.challenge_04, R.drawable.challenge_expanded_04));
 
-        c = new Challenge("Programming Ninja");
+        c = new Challenge(context.getString(R.string.challenge5_name));
         c.setCategoryType(Category.LEARNING);
         c.setDifficultyType(Difficulty.HARD);
         c.setEndDate(LocalDate.now().plusWeeks(2));
-        c.setReason1("Learn to command my computer");
-        c.setReason2("Understand technologies better");
-        c.setReason3("Find new job");
-        c.setExpectedResult1("Write simple webpage");
-        c.setExpectedResult2("Understand what code editors are");
-        c.setExpectedResult3("Understand how Internet works");
-        challenges.add(new PredefinedChallenge(c, "Learn the fundamentals of computer programming", R.drawable.challenge_05, R.drawable.challenge_expanded_05));
+        c.setReason1(context.getString(R.string.challenge5_reason1));
+        c.setReason2(context.getString(R.string.challenge5_reason2));
+        c.setReason3(context.getString(R.string.challenge5_reason3));
+        c.setExpectedResult1(context.getString(R.string.challenge5_exp_result1));
+        c.setExpectedResult2(context.getString(R.string.challenge5_exp_result2));
+        c.setExpectedResult3(context.getString(R.string.challenge5_exp_result3));
+        challenges.add(new PredefinedChallenge(c, context.getString(R.string.challenge5_desc), R.drawable.challenge_05, R.drawable.challenge_expanded_05));
 
-        c = new Challenge("Master Presenter");
+        c = new Challenge(context.getString(R.string.challenge6_name));
         c.setCategoryType(Category.WORK);
         c.setDifficultyType(Difficulty.HARD);
         c.setEndDate(LocalDate.now().plusWeeks(2));
-        c.setReason1("Better present my ideas");
-        c.setReason2("Become more confident");
-        c.setReason3("Explain better");
-        c.setExpectedResult1("Prepare a presentation");
-        c.setExpectedResult2("Present in front of an audience");
-        c.setExpectedResult3("Upload my presentation on the Internet");
-        challenges.add(new PredefinedChallenge(c, "Learn how to create and present effectively", R.drawable.challenge_06, R.drawable.challenge_expanded_06));
+        c.setReason1(context.getString(R.string.challenge6_reason1));
+        c.setReason2(context.getString(R.string.challenge6_reason2));
+        c.setReason3(context.getString(R.string.challenge6_reason3));
+        c.setExpectedResult1(context.getString(R.string.challenge6_exp_result1));
+        c.setExpectedResult2(context.getString(R.string.challenge6_exp_result2));
+        c.setExpectedResult3(context.getString(R.string.challenge6_exp_result3));
+        challenges.add(new PredefinedChallenge(c, context.getString(R.string.challenge6_desc), R.drawable.challenge_06, R.drawable.challenge_expanded_06));
 
-        c = new Challenge("Famous writer");
+        c = new Challenge(context.getString(R.string.challenge7_name));
         c.setCategoryType(Category.WORK);
         c.setDifficultyType(Difficulty.HARD);
         c.setEndDate(LocalDate.now().plusWeeks(2));
-        c.setReason1("Better present my ideas");
-        c.setReason2("Become more confident");
-        c.setReason3("Meet new people");
-        c.setExpectedResult1("Have a blog");
-        c.setExpectedResult2("100 readers per month");
-        c.setExpectedResult3("Write 5 blog posts");
-        challenges.add(new PredefinedChallenge(c, "Learn how to become great writer & blogger", R.drawable.challenge_07, R.drawable.challenge_expanded_07));
+        c.setReason1(context.getString(R.string.challenge7_reason1));
+        c.setReason2(context.getString(R.string.challenge7_reason2));
+        c.setReason3(context.getString(R.string.challenge7_reason3));
+        c.setExpectedResult1(context.getString(R.string.challenge7_exp_result1));
+        c.setExpectedResult2(context.getString(R.string.challenge7_exp_result2));
+        c.setExpectedResult3(context.getString(R.string.challenge7_exp_result3));
+        challenges.add(new PredefinedChallenge(c, context.getString(R.string.challenge7_desc), R.drawable.challenge_07, R.drawable.challenge_expanded_07));
 
-        c = new Challenge("Friends & Family time");
+        c = new Challenge(context.getString(R.string.challenge8_name));
         c.setCategoryType(Category.PERSONAL);
         c.setDifficultyType(Difficulty.NORMAL);
         c.setEndDate(LocalDate.now().plusWeeks(2));
-        c.setReason1("Feel more connected to others");
-        c.setReason2("Have more fun");
-        c.setReason3("Stay close with family");
-        c.setExpectedResult1("Spend more time with family");
-        c.setExpectedResult2("Go out more often");
-        c.setExpectedResult3("See friends more often");
-        challenges.add(new PredefinedChallenge(c, "Connect with your friends and family", R.drawable.challenge_08, R.drawable.challenge_expanded_08));
+        c.setReason1(context.getString(R.string.challenge8_reason1));
+        c.setReason2(context.getString(R.string.challenge8_reason2));
+        c.setReason3(context.getString(R.string.challenge8_reason3));
+        c.setExpectedResult1(context.getString(R.string.challenge8_exp_result1));
+        c.setExpectedResult2(context.getString(R.string.challenge8_exp_result2));
+        c.setExpectedResult3(context.getString(R.string.challenge8_exp_result3));
+        challenges.add(new PredefinedChallenge(c, context.getString(R.string.challenge8_desc), R.drawable.challenge_08, R.drawable.challenge_expanded_08));
 
         return challenges;
     }
