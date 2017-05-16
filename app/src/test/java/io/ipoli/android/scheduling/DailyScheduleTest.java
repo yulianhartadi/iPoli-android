@@ -49,8 +49,9 @@ public class DailyScheduleTest {
                 .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
                 .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
                 .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
-                .setScheduledTasks(Collections.singletonList(new Task(30, 30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)))
                 .createDailySchedule();
+        List<Task> scheduledTasks = Collections.singletonList(new Task(30, 30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
+        schedule.scheduleTasks(new ArrayList<>(), scheduledTasks);
         assertTrue(schedule.isFree(0, 30));
         assertFalse(schedule.isFree(30, 60));
     }
@@ -63,8 +64,9 @@ public class DailyScheduleTest {
                 .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
                 .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
                 .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
-                .setScheduledTasks(Collections.singletonList(new Task(0, 30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)))
                 .createDailySchedule();
+        List<Task> scheduledTasks = Collections.singletonList(new Task(0, 30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
+        schedule.scheduleTasks(new ArrayList<>(), scheduledTasks);
         assertTrue(schedule.isFree(30, 60));
         assertFalse(schedule.isFree(0, 30));
     }
@@ -77,8 +79,9 @@ public class DailyScheduleTest {
                 .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
                 .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
                 .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
-                .setScheduledTasks(Collections.singletonList(new Task(5, 30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)))
                 .createDailySchedule();
+        List<Task> scheduledTasks = Collections.singletonList(new Task(5, 30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
+        schedule.scheduleTasks(new ArrayList<>(), scheduledTasks);
         assertTrue(schedule.isFree(30, 60));
         assertFalse(schedule.isFree(0, 30));
     }
@@ -112,11 +115,11 @@ public class DailyScheduleTest {
                 .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
                 .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
                 .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
-                .setScheduledTasks(Collections.singletonList(new Task(0, 20, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)))
                 .createDailySchedule();
+        List<Task> scheduledTasks = Collections.singletonList(new Task(0, 20, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
         List<Task> tasksToSchedule = Collections.singletonList(new Task(20, Quest.PRIORITY_IMPORTANT_URGENT, TimePreference.ANY, Category.CHORES));
-        List<Task> scheduledTasks = schedule.scheduleTasks(tasksToSchedule, defaultTime);
-        Task scheduledTask = scheduledTasks.get(0);
+        List<Task> tasks = schedule.scheduleTasks(tasksToSchedule, scheduledTasks, defaultTime);
+        Task scheduledTask = tasks.get(0);
         List<TimeBlock> recommendedSlots = scheduledTask.getRecommendedSlots();
         assertThat(recommendedSlots.size(), is(1));
     }
@@ -201,6 +204,11 @@ public class DailyScheduleTest {
         }
 
         assertTimeBlocksAreNotEqual(task1TB, task2TB);
+    }
+
+    @Test
+    public void shouldScheduleTaskForNextSlot() {
+
     }
 
     private Task toTask(Quest quest) {
