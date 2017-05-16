@@ -221,7 +221,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
         String text = "";
         Pair<Long, TimeOffsetType> parsedResult = ReminderMinutesParser.parseCustomMinutes(Math.abs(reminder.getMinutesFromStart()));
         if (parsedResult != null) {
-            text = ReminderTimeFormatter.formatTimeOffset(parsedResult.first, parsedResult.second);
+            text = ReminderTimeFormatter.formatTimeOffset(getContext(), parsedResult.first, parsedResult.second);
         }
         ((TextView) reminderView.findViewById(R.id.reminder_text)).setText(text);
         reminderView.setTag(reminder);
@@ -373,14 +373,15 @@ public class AddQuestSummaryFragment extends BaseFragment {
     }
 
     private void showDuration(int duration) {
-        durationText.setText("For " + DurationFormatter.formatReadable(duration));
+        durationText.setText(String.format(getString(R.string.duration_for_time),
+                DurationFormatter.formatReadable(getContext(), duration)));
         durationText.setTag(duration);
     }
 
     private void showTimesADay(int timesADay) {
         timesADayContainer.setVisibility(View.VISIBLE);
         timesADayHorizontalLine.setVisibility(View.VISIBLE);
-        timesADayText.setText(TimesADayFormatter.formatReadable(timesADay, "a day"));
+        timesADayText.setText(TimesADayFormatter.formatReadable(getContext(), timesADay));
         timesADayText.setTag(timesADay);
     }
 
@@ -411,7 +412,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
         dateContainer.setVisibility(View.VISIBLE);
         recurrenceContainer.setVisibility(View.GONE);
         if (Objects.equals(quest.getStart(), quest.getEnd())) {
-            scheduledDate.setText(DateFormatter.formatWithoutYear(quest.getEndDate()));
+            scheduledDate.setText(DateFormatter.formatWithoutYear(getContext(), quest.getEndDate()));
         } else {
             LocalDate byDate = quest.getEndDate();
             LocalDate today = LocalDate.now();

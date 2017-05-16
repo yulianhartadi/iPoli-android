@@ -256,7 +256,7 @@ public class ChallengeActivity extends BaseActivity {
 
         int percentDone = Math.round((completed / (float) totalCount) * 100);
 
-        progressPercent.setText(String.valueOf(percentDone) + "% done");
+        progressPercent.setText(getString(R.string.challenge_percentage_done, percentDone));
 
         int progressColor = R.color.colorAccent;
 
@@ -279,19 +279,19 @@ public class ChallengeActivity extends BaseActivity {
 
         summaryStatsContainer.setBackgroundResource(category.color500);
 
-        categoryName.setText(StringUtils.capitalize(category.name()));
+        categoryName.setText(StringUtils.capitalize(getString(Category.getNameRes(category))));
         categoryImage.setImageResource(category.whiteImage);
 
-        String nextScheduledDateText = DateFormatter.formatWithoutYear(
+        String nextScheduledDateText = DateFormatter.formatWithoutYear(this,
                 challenge.getNextScheduledDate(LocalDate.now()),
                 getString(R.string.unscheduled)
         );
         nextScheduledDate.setText(nextScheduledDateText);
 
-        dueDate.setText(DateFormatter.formatWithoutYear(challenge.getEndDate()));
+        dueDate.setText(DateFormatter.formatWithoutYear(this, challenge.getEndDate()));
 
         int timeSpent = challenge.getTotalTimeSpent();
-        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
+        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(this, timeSpent) : "0");
     }
 
     private void setupChart() {
@@ -337,8 +337,8 @@ public class ChallengeActivity extends BaseActivity {
         List<String> xValues = new ArrayList<>();
         xValues.add(getWeekRangeText(periodHistories.get(0).getStartDate(), periodHistories.get(0).getEndDate()));
         xValues.add(getWeekRangeText(periodHistories.get(1).getStartDate(), periodHistories.get(1).getEndDate()));
-        xValues.add("last week");
-        xValues.add("this week");
+        xValues.add(getString(R.string.last_week));
+        xValues.add(getString(R.string.this_week));
         setHistoryData(dataSet, xValues);
 
     }

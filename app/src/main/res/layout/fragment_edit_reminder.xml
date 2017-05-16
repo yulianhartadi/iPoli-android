@@ -13,7 +13,7 @@
             android:id="@+id/reminder_message"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="Message (e.g. Don't be lazy)"
+            android:hint="@string/reminder_message"
             android:inputType="text"
             android:maxLines="1" />
     </android.support.design.widget.TextInputLayout>

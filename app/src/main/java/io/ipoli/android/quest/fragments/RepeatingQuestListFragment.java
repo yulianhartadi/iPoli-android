@@ -127,7 +127,7 @@ public class RepeatingQuestListFragment extends BaseFragment implements OnDataCh
         }
         List<RepeatingQuestViewModel> viewModels = new ArrayList<>();
         for (RepeatingQuest rq : quests) {
-            viewModels.add(new RepeatingQuestViewModel(rq));
+            viewModels.add(new RepeatingQuestViewModel(getContext(), rq));
         }
         adapter = new RepeatingQuestListAdapter(getContext(), viewModels, eventBus);
         questList.setAdapter(adapter);

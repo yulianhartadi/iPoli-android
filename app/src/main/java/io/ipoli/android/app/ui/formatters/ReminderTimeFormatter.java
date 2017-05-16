@@ -1,7 +1,10 @@
 package io.ipoli.android.app.ui.formatters;
 
+import android.content.Context;
+
 import java.util.concurrent.TimeUnit;
 
+import io.ipoli.android.R;
 import io.ipoli.android.reminder.TimeOffsetType;
 
 /**
@@ -10,43 +13,45 @@ import io.ipoli.android.reminder.TimeOffsetType;
  */
 public class ReminderTimeFormatter {
 
-    public static String formatMinutesBeforeReadable(long minutes) {
+    public static String formatMinutesBeforeReadable(Context context, long minutes) {
         if(minutes < 0) {
             return "";
         }
 
         if(minutes == 0) {
-            return "At start";
+            return context.getString(R.string.reminder_at_start);
         }
 
         long hours = TimeUnit.MINUTES.toHours(minutes);
         long mins = minutes - hours * 60;
 
         if (hours > 0 && mins > 0) {
-            return hours + "hours and " + mins + " minutes before";
+            return String.format(context.getString(R.string.reminder_time_format_full), hours, mins);
         }
 
         if (hours > 0 && mins == 0) {
-            return hours == 1 ? "1 hour before" : hours + " hours before";
+            return hours == 1 ? context.getString(R.string.reminder_time_format_1_hour) :
+                    String.format(context.getString(R.string.reminder_time_format_hours), hours);
         }
 
-        return mins == 1 ? "1 minute before" : mins + " minutes before";
+        return mins == 1 ? context.getString(R.string.reminder_time_format_1_minute) :
+                String.format(context.getString(R.string.reminder_time_format_minutes), mins);
     }
 
-    public static String formatTimeOffset(long timeValue, TimeOffsetType timeOffsetType) {
+    public static String formatTimeOffset(Context context, long timeValue, TimeOffsetType timeOffsetType) {
         if(timeValue < 0) {
             return "";
         }
 
         if(timeValue == 0) {
-            return "At start";
+            return context.getString(R.string.reminder_at_start);
         }
 
-        String type = timeOffsetType.name().toLowerCase();
+        String type = context.getString(TimeOffsetType.getNameRes(timeOffsetType)).toLowerCase();
         if(timeValue == 1) {
-            type = type.substring(0, type.length() - 1);
+            type = context.getString(TimeOffsetType.getNameSingleRes(timeOffsetType)).toLowerCase();
         }
 
-        return timeValue + " " + type + " before";
+        return String.format(context.getString(R.string.reminder_time_format_offset), timeValue, type);
     }
 }

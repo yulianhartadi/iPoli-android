@@ -207,21 +207,18 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private void displaySummaryStats(Category category) {
-        categoryName.setText(StringUtils.capitalize(category.name()));
+        categoryName.setText(StringUtils.capitalize(getString(Category.getNameRes(category))));
         categoryImage.setImageResource(category.whiteImage);
 
         int timeSpent = repeatingQuest.getTotalTimeSpent();
 
-        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(timeSpent, "") : "0");
+        totalTimeSpent.setText(timeSpent > 0 ? DurationFormatter.formatShort(this, timeSpent) : "0");
 
         frequencyInterval.setText(FrequencyTextFormatter.formatInterval(repeatingQuest.getFrequency(), repeatingQuest.getRecurrence()));
 
         LocalDate nextScheduledDate = repeatingQuest.getNextScheduledDate(LocalDate.now());
 
-        String nextScheduledDateText = DateFormatter.formatWithoutYear(
-                nextScheduledDate,
-                getString(R.string.unscheduled)
-        );
+        String nextScheduledDateText = DateFormatter.formatWithoutYear(this, nextScheduledDate, getString(R.string.unscheduled));
         this.nextScheduledDate.setText(nextScheduledDateText);
         streakText.setText(String.valueOf(repeatingQuest.getStreak()));
     }
@@ -234,7 +231,7 @@ public class RepeatingQuestActivity extends BaseActivity {
         int completedCount = currentPeriodHistory.getCompletedCount();
         if (totalCount > 7) {
             TextView progressText = (TextView) inflater.inflate(R.layout.repeating_quest_progress_text, progressContainer, false);
-            progressText.setText(completedCount + " completed this month");
+            progressText.setText(getString(R.string.repeating_quest_completed_this_month, completedCount));
             progressContainer.addView(progressText);
             return;
         }
@@ -311,12 +308,12 @@ public class RepeatingQuestActivity extends BaseActivity {
             xValues.add(getMonthText(periodHistories.get(0).getStartDate()));
             xValues.add(getMonthText(periodHistories.get(1).getStartDate()));
             xValues.add(getMonthText(periodHistories.get(2).getStartDate()));
-            xValues.add("this month");
+            xValues.add(getString(R.string.this_month));
         } else {
             xValues.add(getWeekRangeText(periodHistories.get(0).getStartDate(), periodHistories.get(0).getEndDate()));
             xValues.add(getWeekRangeText(periodHistories.get(1).getStartDate(), periodHistories.get(1).getEndDate()));
-            xValues.add("last week");
-            xValues.add("this week");
+            xValues.add(getString(R.string.last_week));
+            xValues.add(getString(R.string.this_week));
         }
         return xValues;
 
