@@ -91,6 +91,7 @@ public class SettingsActivity extends BaseActivity implements
         LoaderManager.LoaderCallbacks<Void> {
 
     private static final int RC_CALENDAR_PERM = 102;
+
     @Inject
     Bus eventBus;
 
