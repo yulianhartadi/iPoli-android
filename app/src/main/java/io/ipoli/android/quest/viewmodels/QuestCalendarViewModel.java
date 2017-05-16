@@ -2,10 +2,6 @@ package io.ipoli.android.quest.viewmodels;
 
 import android.support.annotation.DrawableRes;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import io.ipoli.android.app.scheduling.TimeSlot;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.data.Category;
@@ -23,7 +19,6 @@ public class QuestCalendarViewModel implements CalendarEvent {
     private final Quest quest;
     private boolean shouldDisplayAsProposedSlot;
     private Integer startMinute;
-    private List<TimeSlot> proposedSlots;
     private Category category;
 
     public QuestCalendarViewModel(Quest quest) {
@@ -33,15 +28,13 @@ public class QuestCalendarViewModel implements CalendarEvent {
         this.dragBackgroundColor = quest.getCategoryType().color500;
         this.startMinute = quest.getActualStartMinute();
         this.shouldDisplayAsProposedSlot = false;
-        this.proposedSlots = new ArrayList<>();
         this.category = quest.getCategoryType();
     }
 
-    public static QuestCalendarViewModel createWithProposedTime(Quest quest, int startMinute, List<TimeSlot> proposedSlots) {
+    public static QuestCalendarViewModel createWithProposedTime(Quest quest, int startMinute) {
         QuestCalendarViewModel vm = new QuestCalendarViewModel(quest);
         vm.setStartMinute(startMinute);
         vm.shouldDisplayAsProposedSlot = true;
-        vm.proposedSlots = proposedSlots;
         return vm;
     }
 
@@ -109,33 +102,6 @@ public class QuestCalendarViewModel implements CalendarEvent {
 
     public boolean shouldDisplayAsProposedSlot() {
         return shouldDisplayAsProposedSlot;
-    }
-
-    public boolean useNextSlot(List<QuestCalendarViewModel> eventsWithProposedSlots) {
-        TimeSlot timeSlot = null;
-        for (TimeSlot tb : proposedSlots) {
-            if (!doOverlap(eventsWithProposedSlots, tb)) {
-                timeSlot = tb;
-                break;
-            }
-        }
-        if (timeSlot != null) {
-            setStartMinute(timeSlot.getStartMinute());
-            proposedSlots.remove(timeSlot);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean doOverlap(List<QuestCalendarViewModel> eventsWithProposedSlots, TimeSlot tb) {
-        for (QuestCalendarViewModel vm : eventsWithProposedSlots) {
-            if (vm != this) {
-                if (tb.doOverlap(vm.getStartMinute(), vm.getStartMinute() + vm.getDuration() - 1)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     public int getPriority() {

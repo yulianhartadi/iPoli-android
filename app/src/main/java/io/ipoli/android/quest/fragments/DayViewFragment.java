@@ -362,10 +362,10 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         List<Task> scheduledTasks = dailySchedule.scheduleTasks(tasksToSchedule, calendarTasks);
         for (Task t : scheduledTasks) {
             QuestTask qt = (QuestTask) t;
-            if (qt.getRecommendedSlots().isEmpty()) {
+            if (qt.getCurrentTimeSlot() == null) {
                 continue;
             }
-            QuestCalendarViewModel vm = QuestCalendarViewModel.createWithProposedTime(qt.quest, qt.getRecommendedSlots().get(0).getStartMinute(), qt.getRecommendedSlots());
+            QuestCalendarViewModel vm = QuestCalendarViewModel.createWithProposedTime(qt.quest, qt.getCurrentTimeSlot().getStartMinute());
             scheduledEvents.add(vm);
         }
 
@@ -441,12 +441,12 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Subscribe
     public void onRescheduleQuest(RescheduleQuestEvent e) {
-        if (e.calendarEvent.useNextSlot(calendarAdapter.getEventsWithProposedSlots())) {
-            calendarAdapter.notifyDataSetChanged();
-            calendarDayView.smoothScrollToTime(Time.of(e.calendarEvent.getStartMinute()));
-        } else {
-            Toast.makeText(getContext(), "No more suggestions", Toast.LENGTH_SHORT).show();
-        }
+//        if (e.calendarEvent.useNextSlot(calendarAdapter.getEventsWithProposedSlots())) {
+//            calendarAdapter.notifyDataSetChanged();
+//            calendarDayView.smoothScrollToTime(Time.of(e.calendarEvent.getStartMinute()));
+//        } else {
+//            Toast.makeText(getContext(), "No more suggestions", Toast.LENGTH_SHORT).show();
+//        }
     }
 
     @Override

@@ -19,6 +19,7 @@ public class Task implements Comparable<Task> {
     private final int priority;
     private final TimePreference startTimePreference;
     private final Category category;
+    private int currentTimeSlotIndex = -1;
     private List<TimeSlot> recommendedSlots;
 
     public Task(String id, int startMinute, int duration, int priority, TimePreference startTimePreference, Category category) {
@@ -75,16 +76,20 @@ public class Task implements Comparable<Task> {
         this.recommendedSlots = recommendedSlots;
     }
 
-    public List<TimeSlot> getRecommendedSlots() {
+    List<TimeSlot> getRecommendedSlots() {
         return recommendedSlots;
     }
 
-    public TimeSlot getCurrentRecommendedSlot() {
-        if(recommendedSlots == null || recommendedSlots.isEmpty()) {
+    public void setCurrentTimeSlotIndex(int currentTimeSlotIndex) {
+        this.currentTimeSlotIndex = currentTimeSlotIndex;
+    }
+
+    public TimeSlot getCurrentTimeSlot() {
+        if(recommendedSlots == null || recommendedSlots.isEmpty() || currentTimeSlotIndex >= recommendedSlots.size()
+                || currentTimeSlotIndex < 0) {
             return null;
         }
-
-        return recommendedSlots.get(0);
+        return recommendedSlots.get(currentTimeSlotIndex);
     }
 
     public int getEndMinute() {
