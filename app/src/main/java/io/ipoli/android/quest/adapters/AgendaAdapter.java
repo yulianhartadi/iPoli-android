@@ -62,17 +62,8 @@ public class AgendaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         });
         vh.categoryIndicator.setImageResource(vm.getCategoryImage());
         vh.startEnd.setText(vm.getScheduleText());
-        if(vm.isFromRepeatingQuest()) {
-            vh.repeatingIndicator.setVisibility(View.VISIBLE);
-        } else {
-            vh.repeatingIndicator.setVisibility(View.GONE);
-        }
-
-        if(vm.isFromChallenge()) {
-            vh.challengeIndicator.setVisibility(View.VISIBLE);
-        } else {
-            vh.challengeIndicator.setVisibility(View.GONE);
-        }
+        vh.repeatingIndicator.setVisibility(vm.isFromRepeatingQuest() ? View.VISIBLE : View.GONE);
+        vh.challengeIndicator.setVisibility(vm.isFromChallenge() ? View.VISIBLE : View.GONE);
     }
 
     @Override
