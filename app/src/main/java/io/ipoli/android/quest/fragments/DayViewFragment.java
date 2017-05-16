@@ -300,6 +300,9 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         ViewGroup.LayoutParams layoutParams = unscheduledQuestList.getLayoutParams();
         layoutParams.height = unscheduledQuestsToShow * itemHeight;
+        if(unscheduledQuestsToShow == Constants.MAX_UNSCHEDULED_QUEST_VISIBLE_COUNT) {
+            layoutParams.height = layoutParams.height - itemHeight / 2;
+        }
         unscheduledQuestList.setLayoutParams(layoutParams);
     }
 
