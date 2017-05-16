@@ -72,7 +72,7 @@ public class Task implements Comparable<Task> {
         return priority;
     }
 
-    public void setRecommendedSlots(List<TimeSlot> recommendedSlots) {
+    void setRecommendedSlots(List<TimeSlot> recommendedSlots) {
         this.recommendedSlots = recommendedSlots;
     }
 
@@ -80,11 +80,11 @@ public class Task implements Comparable<Task> {
         return recommendedSlots;
     }
 
-    public int getCurrentTimeSlotIndex() {
+    int getCurrentTimeSlotIndex() {
         return currentTimeSlotIndex;
     }
 
-    public void setCurrentTimeSlotIndex(int currentTimeSlotIndex) {
+    void setCurrentTimeSlotIndex(int currentTimeSlotIndex) {
         this.currentTimeSlotIndex = currentTimeSlotIndex;
     }
 
