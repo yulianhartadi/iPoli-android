@@ -150,10 +150,6 @@ public class DailySchedule {
             if (currentSlot != null) {
                 occupySlots(isFreeSlot, currentSlot.getStartMinute(), currentSlot.getEndMinute());
             }
-
-//            for (TimeSlot tb : rankedSlots) {
-//                System.out.println(tb.getStartTime() + " end: " + tb.getEndTime());
-//            }
         }
         return tasksToSchedule;
     }
