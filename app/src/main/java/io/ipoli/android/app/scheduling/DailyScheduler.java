@@ -29,7 +29,7 @@ import io.ipoli.android.app.utils.Time;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 04/21/17.
  */
-public class DailySchedule {
+public class DailyScheduler {
 
     public static final int DEFAULT_TIME_SLOT_DURATION = 15;
 
@@ -46,7 +46,7 @@ public class DailySchedule {
 
     private List<Task> tasks;
 
-    DailySchedule(int startMinute, int endMinute, int timeSlotDuration, int workStartMinute, int workEndMinute, Set<DayOfWeek> workDays, Set<TimeOfDay> productiveTimes, Random seed) {
+    DailyScheduler(int startMinute, int endMinute, int timeSlotDuration, int workStartMinute, int workEndMinute, Set<DayOfWeek> workDays, Set<TimeOfDay> productiveTimes, Random seed) {
         this.startMinute = startMinute;
         this.endMinute = endMinute;
         this.timeSlotDuration = timeSlotDuration;

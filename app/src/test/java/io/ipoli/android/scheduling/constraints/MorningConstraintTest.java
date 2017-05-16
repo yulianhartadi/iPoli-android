@@ -3,7 +3,7 @@ package io.ipoli.android.scheduling.constraints;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.ipoli.android.app.scheduling.DailySchedule;
+import io.ipoli.android.app.scheduling.DailyScheduler;
 import io.ipoli.android.app.scheduling.constraints.Constraint;
 import io.ipoli.android.app.scheduling.constraints.MorningConstraint;
 import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
@@ -25,7 +25,7 @@ public class MorningConstraintTest {
 
     @Before
     public void setUp() throws Exception {
-        constraint = new MorningConstraint(DailySchedule.DEFAULT_TIME_SLOT_DURATION);
+        constraint = new MorningConstraint(DailyScheduler.DEFAULT_TIME_SLOT_DURATION);
     }
 
     @Test

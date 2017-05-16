@@ -34,8 +34,8 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.StartQuickAddEvent;
-import io.ipoli.android.app.scheduling.DailySchedule;
-import io.ipoli.android.app.scheduling.DailyScheduleBuilder;
+import io.ipoli.android.app.scheduling.DailyScheduler;
+import io.ipoli.android.app.scheduling.DailySchedulerBuilder;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.TimeSlot;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
@@ -116,7 +116,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     List<Quest> futureQuests = new ArrayList<>();
     List<Quest> futurePlaceholderQuests = new ArrayList<>();
 
-    private DailySchedule dailySchedule;
+    private DailyScheduler dailyScheduler;
 
     public static DayViewFragment newInstance(LocalDate date) {
         DayViewFragment fragment = new DayViewFragment();
@@ -157,7 +157,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         Player player = getPlayer();
 
-        dailySchedule = new DailyScheduleBuilder()
+        dailyScheduler = new DailySchedulerBuilder()
                 .setStartMinute(player.getSleepEndMinute())
                 .setEndMinute(player.getSleepStartMinute())
                 .setProductiveTimes(player.getMostProductiveTimesOfDaySet())
@@ -359,7 +359,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             calendarTasks.add(new Task(vm.getId(), vm.getStartMinute(), vm.getDuration(), vm.getPriority(), vm.getStartTimePreference(), vm.getCategory()));
         }
 
-        List<Task> scheduledTasks = dailySchedule.scheduleTasks(tasksToSchedule, calendarTasks);
+        List<Task> scheduledTasks = dailyScheduler.scheduleTasks(tasksToSchedule, calendarTasks);
         for (Task t : scheduledTasks) {
             QuestTask qt = (QuestTask) t;
             if (qt.getCurrentTimeSlot() == null) {
@@ -441,7 +441,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Subscribe
     public void onRescheduleQuest(RescheduleQuestEvent e) {
-        Task task = dailySchedule.chooseNewTimeSlot(e.calendarEvent.getId(), Time.now());
+        Task task = dailyScheduler.chooseNewTimeSlot(e.calendarEvent.getId(), Time.now());
         TimeSlot currentTimeSlot = task.getCurrentTimeSlot();
         if(currentTimeSlot == null) {
             Toast.makeText(getContext(), "No more suggestions", Toast.LENGTH_SHORT).show();

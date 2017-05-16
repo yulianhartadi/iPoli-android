@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import io.ipoli.android.app.scheduling.DailySchedule;
+import io.ipoli.android.app.scheduling.DailyScheduler;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.constraints.Constraint;
 import io.ipoli.android.app.scheduling.constraints.NotWorkConstraint;
@@ -35,7 +35,7 @@ public class NotWorkConstraintTest {
     @Before
     public void setUp() throws Exception {
         Set<DayOfWeek> workDays = new HashSet<>(Collections.singleton(LocalDate.now().getDayOfWeek()));
-        constraint = new NotWorkConstraint(0, 30, workDays, DailySchedule.DEFAULT_TIME_SLOT_DURATION);
+        constraint = new NotWorkConstraint(0, 30, workDays, DailyScheduler.DEFAULT_TIME_SLOT_DURATION);
     }
 
     @Test
