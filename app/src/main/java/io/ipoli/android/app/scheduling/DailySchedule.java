@@ -42,9 +42,9 @@ public class DailySchedule {
     private final int workStartMinute;
     private final int workEndMinute;
 
-    private List<Task> currentlyScheduledTasks;
+    private List<Task> tasks;
 
-    DailySchedule(int startMinute, int endMinute, int timeSlotDuration, int workStartMinute, int workEndMinute, Set<DayOfWeek> workDays, Set<TimeOfDay> productiveTimes, List<Task> scheduledTasks, Random seed) {
+    DailySchedule(int startMinute, int endMinute, int timeSlotDuration, int workStartMinute, int workEndMinute, Set<DayOfWeek> workDays, Set<TimeOfDay> productiveTimes, Random seed) {
         this.startMinute = startMinute;
         this.endMinute = endMinute;
         this.timeSlotDuration = timeSlotDuration;
@@ -52,10 +52,9 @@ public class DailySchedule {
         this.productiveTimes = productiveTimes;
         this.workStartMinute = workStartMinute;
         this.workEndMinute = workEndMinute;
-        this.isFreeSlot = createFreeSlots(scheduledTasks);
         this.seed = seed;
         this.constraints = createConstraints();
-        currentlyScheduledTasks = new ArrayList<>();
+        tasks = new ArrayList<>();
 
     }
 
@@ -117,11 +116,7 @@ public class DailySchedule {
         return (int) Math.ceil((endMinute - startMinute) / (float) timeSlotDuration);
     }
 
-    public List<Task> scheduleTasks(List<Task> tasksToSchedule) {
-        return scheduleTasks(tasksToSchedule, Time.now());
-    }
-
-    public List<Task> scheduleTasks(List<Task> tasksToSchedule, Time currentTime) {
+    private List<Task> doScheduleTasks(List<Task> tasksToSchedule, Time currentTime) {
         List<Task> result = new ArrayList<>();
         for (Task t : tasksToSchedule) {
             result.add(t);
@@ -169,6 +164,15 @@ public class DailySchedule {
         return tasksToSchedule;
     }
 
+    public List<Task> scheduleTasks(List<Task> tasksToSchedule) {
+        return scheduleTasks(tasksToSchedule, Time.now());
+    }
+
+    public List<Task> scheduleTasks(List<Task> tasksToSchedule, Time currentTime) {
+        isFreeSlot = createFreeSlots(new ArrayList<>());
+        return doScheduleTasks(tasksToSchedule, currentTime);
+    }
+
     public List<Task> scheduleTasks(List<Task> tasksToSchedule, List<Task> scheduledTasks) {
         return scheduleTasks(tasksToSchedule, scheduledTasks, Time.now());
     }
@@ -179,10 +183,10 @@ public class DailySchedule {
         List<Task> newOrUpdatedTasks = new ArrayList<>();
         List<Task> sameTasks = new ArrayList<>();
 
-        if (!currentlyScheduledTasks.isEmpty()) {
+        if (!tasks.isEmpty()) {
             for (Task tNew : tasksToSchedule) {
                 boolean isNew = true;
-                for (Task tOld : currentlyScheduledTasks) {
+                for (Task tOld : tasks) {
                     if (!tNew.getId().equals(tOld.getId())) {
                         continue;
                     }
@@ -201,8 +205,8 @@ public class DailySchedule {
             newOrUpdatedTasks.addAll(tasksToSchedule);
         }
 
-        currentlyScheduledTasks.clear();
-        currentlyScheduledTasks.addAll(scheduleTasks(newOrUpdatedTasks, currentTime));
+        tasks.clear();
+        tasks.addAll(doScheduleTasks(newOrUpdatedTasks, currentTime));
 
         for (Task t : sameTasks) {
             if (!t.getRecommendedSlots().isEmpty()) {
@@ -220,9 +224,9 @@ public class DailySchedule {
             }
             t.setRecommendedSlots(recommendedSlots);
         }
-        currentlyScheduledTasks.addAll(sameTasks);
+        tasks.addAll(sameTasks);
 
-        return currentlyScheduledTasks;
+        return tasks;
     }
 
     private boolean isNotAvailableSlot(DiscreteDistribution dist, int endSlot) {
@@ -262,6 +266,4 @@ public class DailySchedule {
         }
         return blocks;
     }
-
-
 }
