@@ -60,8 +60,19 @@ public class AgendaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 eventBus.post(new ShowQuestEvent(vm.getQuest(), EventSource.AGENDA_CALENDAR));
             }
         });
-        vh.categoryIndicatorImage.setImageResource(vm.getCategoryImage());
+        vh.categoryIndicator.setImageResource(vm.getCategoryImage());
         vh.startEnd.setText(vm.getScheduleText());
+        if(vm.isFromRepeatingQuest()) {
+            vh.repeatingIndicator.setVisibility(View.VISIBLE);
+        } else {
+            vh.repeatingIndicator.setVisibility(View.GONE);
+        }
+
+        if(vm.isFromChallenge()) {
+            vh.challengeIndicator.setVisibility(View.VISIBLE);
+        } else {
+            vh.challengeIndicator.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -77,8 +88,14 @@ public class AgendaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         @BindView(R.id.quest_text)
         TextView name;
 
-        @BindView(R.id.quest_category_indicator_image)
-        ImageView categoryIndicatorImage;
+        @BindView(R.id.quest_repeating_indicator)
+        ImageView repeatingIndicator;
+
+        @BindView(R.id.quest_challenge_indicator)
+        ImageView challengeIndicator;
+
+        @BindView(R.id.quest_category_indicator)
+        ImageView categoryIndicator;
 
         AgendaViewHolder(View v) {
             super(v);
