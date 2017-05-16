@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -165,7 +164,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
                 .setWorkDays(player.getDayOfWeekWorkDays())
                 .setWorkStartMinute(player.getWorkStartMinute())
                 .setWorkEndMinute(player.getWorkEndMinute())
-                .createDailySchedule();
+                .create();
 
 
         calendarContainer.setCalendarListener(this);
@@ -374,28 +373,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         setUnscheduledQuestsHeight();
         calendarDayView.onMinuteChanged();
-    }
-
-    @Nullable
-    private TimeSlot chooseNonOverlappingTimeBlock(List<QuestCalendarViewModel> proposedEvents, List<TimeSlot> timeSlots) {
-        for (TimeSlot tb : timeSlots) {
-            if (!doOverlap(proposedEvents, tb)) {
-                return tb;
-            }
-        }
-        return null;
-    }
-
-    private boolean doOverlap(List<QuestCalendarViewModel> proposedEvents, TimeSlot tb) {
-        for (QuestCalendarViewModel vm : proposedEvents) {
-            int sm = vm.getStartMinute();
-            int em = vm.getStartMinute() + vm.getDuration() - 1;
-
-            if (tb.doOverlap(sm, em)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

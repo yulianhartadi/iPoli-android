@@ -63,7 +63,7 @@ public class DailySchedulerBuilder {
         return this;
     }
 
-    public DailyScheduler createDailySchedule() {
+    public DailyScheduler create() {
         return new DailyScheduler(startMinute, endMinute, timeSlotDuration, workStartMinute, workEndMinute, workDays, productiveTimes, seed);
     }
 }

@@ -252,8 +252,8 @@ public class DailyScheduler {
     private List<TimeSlot> rankSlots(List<TimeSlot> slotsToConsider, DiscreteDistribution distribution) {
         List<TimeSlot> result = new ArrayList<>();
         List<TimeSlot> availableSlots = new ArrayList<>();
-        for (TimeSlot tb : slotsToConsider) {
-            availableSlots.add(tb);
+        for (TimeSlot ts : slotsToConsider) {
+            availableSlots.add(ts);
         }
         for (int i = 0; i < slotsToConsider.size(); i++) {
             WeightedRandomSampler<TimeSlot> sampler = new WeightedRandomSampler<>(seed);
