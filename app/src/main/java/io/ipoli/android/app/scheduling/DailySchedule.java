@@ -82,16 +82,24 @@ public class DailySchedule {
         // start minute - inclusive
         // end minute - exclusive
         for (Task t : scheduledTasks) {
-            fillSlots(freeSlots, t.getStartMinute(), t.getEndMinute());
+            occupySlots(freeSlots, t.getStartMinute(), t.getEndMinute());
         }
         return freeSlots;
     }
 
-    private void fillSlots(boolean[] freeSlots, int startMinute, int endMinute) {
+    private void occupySlots(boolean[] freeSlots, int startMinute, int endMinute) {
+        populateSlots(freeSlots, false, startMinute, endMinute);
+    }
+
+    private void freeSlots(boolean[] freeSlots, int startMinute, int endMinute) {
+        populateSlots(freeSlots, true, startMinute, endMinute);
+    }
+
+    private void populateSlots(boolean[] slots, boolean value, int startMinute, int endMinute) {
         int slotMinute = startMinute;
         while (slotMinute < endMinute) {
             int slotIndex = getSlotForMinute(slotMinute);
-            freeSlots[slotIndex] = false;
+            slots[slotIndex] = value;
             slotMinute += timeSlotDuration;
         }
     }
@@ -139,8 +147,8 @@ public class DailySchedule {
             updateTaskCurrentSlot(t);
 
             TimeSlot currentSlot = t.getCurrentTimeSlot();
-            if(currentSlot != null) {
-                fillSlots(isFreeSlot, currentSlot.getStartMinute(), currentSlot.getEndMinute());
+            if (currentSlot != null) {
+                occupySlots(isFreeSlot, currentSlot.getStartMinute(), currentSlot.getEndMinute());
             }
 
 //            for (TimeSlot tb : rankedSlots) {
@@ -194,8 +202,7 @@ public class DailySchedule {
     }
 
     public List<Task> scheduleTasks(List<Task> tasksToSchedule, Time currentTime) {
-        isFreeSlot = createFreeSlots(new ArrayList<>());
-        return doScheduleTasks(tasksToSchedule, currentTime);
+        return scheduleTasks(tasksToSchedule, new ArrayList<>(), currentTime);
     }
 
     public List<Task> scheduleTasks(List<Task> tasksToSchedule, List<Task> scheduledTasks) {
@@ -237,7 +244,7 @@ public class DailySchedule {
 
             TimeSlot timeSlot = t.getCurrentTimeSlot();
             if (timeSlot != null) {
-                fillSlots(isFreeSlot, timeSlot.getStartMinute(), timeSlot.getEndMinute());
+                occupySlots(isFreeSlot, timeSlot.getStartMinute(), timeSlot.getEndMinute());
             }
         }
         tasks.addAll(sameTasks);
@@ -274,5 +281,28 @@ public class DailySchedule {
             blocks.add(new TimeSlot(startMinute, endMinute));
         }
         return blocks;
+    }
+
+    public Task chooseNewTimeSlot(String taskId, Time currentTime) {
+        for (Task t : tasks) {
+            if (t.getId().equals(taskId)) {
+                freeSlots(isFreeSlot, t.getCurrentTimeSlot().getStartMinute(), t.getCurrentTimeSlot().getEndMinute());
+
+                int size = t.getRecommendedSlots().size();
+                int end = size + t.getCurrentTimeSlotIndex();
+                for (int i = t.getCurrentTimeSlotIndex(); i < end; i++) {
+                    int idx = (i + 1) % size;
+                    TimeSlot ts = t.getRecommendedSlots().get(idx);
+                    if (!isFree(ts.getStartMinute(), ts.getEndMinute()) ||
+                            currentTime.toMinuteOfDay() > ts.getStartMinute()) {
+                        continue;
+                    }
+
+                    t.setCurrentTimeSlotIndex(idx);
+                    return t;
+                }
+            }
+        }
+        return null;
     }
 }
