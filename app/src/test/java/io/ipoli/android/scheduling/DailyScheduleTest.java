@@ -13,7 +13,7 @@ import io.ipoli.android.app.scheduling.DailySchedule;
 import io.ipoli.android.app.scheduling.DailyScheduleBuilder;
 import io.ipoli.android.app.scheduling.PriorityEstimator;
 import io.ipoli.android.app.scheduling.Task;
-import io.ipoli.android.app.scheduling.TimeBlock;
+import io.ipoli.android.app.scheduling.TimeSlot;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.data.Category;
@@ -120,7 +120,7 @@ public class DailyScheduleTest {
         List<Task> tasksToSchedule = Collections.singletonList(new Task(20, Quest.PRIORITY_IMPORTANT_URGENT, TimePreference.ANY, Category.CHORES));
         List<Task> tasks = schedule.scheduleTasks(tasksToSchedule, scheduledTasks, defaultTime);
         Task scheduledTask = tasks.get(0);
-        List<TimeBlock> recommendedSlots = scheduledTask.getRecommendedSlots();
+        List<TimeSlot> recommendedSlots = scheduledTask.getRecommendedSlots();
         assertThat(recommendedSlots.size(), is(1));
     }
 
@@ -164,14 +164,14 @@ public class DailyScheduleTest {
                 Collections.singletonList(new Task(20, 30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)),
                 defaultTime);
 
-        TimeBlock timeBlock = firstScheduledTasks.get(0).getRecommendedSlots().get(0);
+        TimeSlot timeSlot = firstScheduledTasks.get(0).getRecommendedSlots().get(0);
 
         List<Task> secondScheduledTasks = schedule.scheduleTasks(
                 Collections.singletonList(new Task(10, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)),
-                Collections.singletonList(new Task(timeBlock.getStartMinute(), 10, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)),
+                Collections.singletonList(new Task(timeSlot.getStartMinute(), 10, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL)),
                 defaultTime);
 
-        assertTimeBlocksAreNotEqual(timeBlock, secondScheduledTasks.get(0).getRecommendedSlots().get(0));
+        assertTimeBlocksAreNotEqual(timeSlot, secondScheduledTasks.get(0).getRecommendedSlots().get(0));
 
     }
 
@@ -193,8 +193,8 @@ public class DailyScheduleTest {
         tasksToSchedule.add(new Task("2", 10, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
         List<Task> secondScheduledTasks = schedule.scheduleTasks(tasksToSchedule, scheduledTasks, defaultTime);
 
-        TimeBlock task1TB = null;
-        TimeBlock task2TB = null;
+        TimeSlot task1TB = null;
+        TimeSlot task2TB = null;
         for (Task t : secondScheduledTasks) {
             if (t.getId().equals("1")) {
                 task1TB = t.getRecommendedSlots().get(0);
@@ -208,7 +208,22 @@ public class DailyScheduleTest {
 
     @Test
     public void shouldScheduleTaskForNextSlot() {
-
+        DailySchedule schedule = new DailyScheduleBuilder()
+                .setStartMinute(0)
+                .setEndMinute(60)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .setSeed(Constants.RANDOM_SEED)
+                .createDailySchedule();
+        List<Task> tasksToSchedule = Collections.singletonList(new Task(15, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
+        List<Task> scheduledTasks = schedule.scheduleTasks(tasksToSchedule, Time.of(0));
+        Task t = scheduledTasks.get(0);
+        assertThat(t.getRecommendedSlots().size(), is(4));
+        TimeSlot firstSlot = t.getRecommendedSlots().get(0);
+        assertThat(firstSlot.getStartMinute(), is(30));
+        assertThat(schedule.isFree(30, 45), is(false));
+//        schedule.
     }
 
     private Task toTask(Quest quest) {
@@ -220,12 +235,12 @@ public class DailyScheduleTest {
                 quest.getCategoryType());
     }
 
-    private void assertTimeBlocksAreEqual(TimeBlock tb1, TimeBlock tb2) {
+    private void assertTimeBlocksAreEqual(TimeSlot tb1, TimeSlot tb2) {
         assertThat(tb1.getStartMinute(), is(tb2.getStartMinute()));
         assertThat(tb1.getEndMinute(), is(tb2.getEndMinute()));
     }
 
-    private void assertTimeBlocksAreNotEqual(TimeBlock tb1, TimeBlock tb2) {
+    private void assertTimeBlocksAreNotEqual(TimeSlot tb1, TimeSlot tb2) {
         assertThat(tb1.getStartMinute(), is(not(tb2.getStartMinute())));
         assertThat(tb1.getEndMinute(), is(not(tb2.getEndMinute())));
     }
