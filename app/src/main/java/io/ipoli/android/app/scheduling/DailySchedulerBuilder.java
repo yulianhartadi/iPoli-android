@@ -8,7 +8,7 @@ import java.util.Set;
 
 import io.ipoli.android.app.TimeOfDay;
 
-public class DailyScheduleBuilder {
+public class DailySchedulerBuilder {
     private int startMinute;
     private int endMinute;
     private int timeSlotDuration = 15;
@@ -18,52 +18,52 @@ public class DailyScheduleBuilder {
     private Set<TimeOfDay> productiveTimes = new HashSet<>();
     private Random seed = new Random();
 
-    public DailyScheduleBuilder setStartMinute(int startMinute) {
+    public DailySchedulerBuilder setStartMinute(int startMinute) {
         this.startMinute = startMinute;
         return this;
     }
 
-    public DailyScheduleBuilder setEndMinute(int endMinute) {
+    public DailySchedulerBuilder setEndMinute(int endMinute) {
         this.endMinute = endMinute;
         return this;
     }
 
-    public DailyScheduleBuilder setTimeSlotDuration(int timeSlotDuration) {
+    public DailySchedulerBuilder setTimeSlotDuration(int timeSlotDuration) {
         this.timeSlotDuration = timeSlotDuration;
         return this;
     }
 
-    public DailyScheduleBuilder setWorkStartMinute(int workStartMinute) {
+    public DailySchedulerBuilder setWorkStartMinute(int workStartMinute) {
         this.workStartMinute = workStartMinute;
         return this;
     }
 
-    public DailyScheduleBuilder setWorkEndMinute(int workEndMinute) {
+    public DailySchedulerBuilder setWorkEndMinute(int workEndMinute) {
         this.workEndMinute = workEndMinute;
         return this;
     }
 
-    public DailyScheduleBuilder setProductiveTimes(Set<TimeOfDay> productiveTimes) {
+    public DailySchedulerBuilder setProductiveTimes(Set<TimeOfDay> productiveTimes) {
         this.productiveTimes = productiveTimes;
         return this;
     }
 
-    public DailyScheduleBuilder setSeed(Random seed) {
+    public DailySchedulerBuilder setSeed(Random seed) {
         this.seed = seed;
         return this;
     }
 
-    public DailyScheduleBuilder setSeed(int seed) {
+    public DailySchedulerBuilder setSeed(int seed) {
         this.seed = new Random(seed);
         return this;
     }
 
-    public DailyScheduleBuilder setWorkDays(Set<DayOfWeek> workDays) {
+    public DailySchedulerBuilder setWorkDays(Set<DayOfWeek> workDays) {
         this.workDays = workDays;
         return this;
     }
 
-    public DailySchedule createDailySchedule() {
-        return new DailySchedule(startMinute, endMinute, timeSlotDuration, workStartMinute, workEndMinute, workDays, productiveTimes, seed);
+    public DailyScheduler createDailySchedule() {
+        return new DailyScheduler(startMinute, endMinute, timeSlotDuration, workStartMinute, workEndMinute, workDays, productiveTimes, seed);
     }
 }

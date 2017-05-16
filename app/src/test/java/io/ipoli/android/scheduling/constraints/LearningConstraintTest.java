@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.ipoli.android.Constants;
-import io.ipoli.android.app.scheduling.DailySchedule;
+import io.ipoli.android.app.scheduling.DailyScheduler;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.constraints.Constraint;
 import io.ipoli.android.app.scheduling.constraints.LearningConstraint;
@@ -30,7 +30,7 @@ public class LearningConstraintTest {
 
     @Before
     public void setUp() throws Exception {
-        constraint = new LearningConstraint(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE, DailySchedule.DEFAULT_TIME_SLOT_DURATION);
+        constraint = new LearningConstraint(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE, DailyScheduler.DEFAULT_TIME_SLOT_DURATION);
     }
 
     @Test

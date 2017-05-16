@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Random;
 
 import io.ipoli.android.Constants;
-import io.ipoli.android.app.scheduling.DailySchedule;
-import io.ipoli.android.app.scheduling.DailyScheduleBuilder;
+import io.ipoli.android.app.scheduling.DailyScheduler;
+import io.ipoli.android.app.scheduling.DailySchedulerBuilder;
 import io.ipoli.android.app.scheduling.PriorityEstimator;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.TimeSlot;
@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 04/21/17.
  */
-public class DailyScheduleTest {
+public class DailySchedulerTest {
 
     private Random random;
     private Time defaultTime;
@@ -43,7 +43,7 @@ public class DailyScheduleTest {
 
     @Test
     public void shouldHaveFreeTimeAtStart() {
-        DailySchedule schedule = new DailyScheduleBuilder()
+        DailyScheduler schedule = new DailySchedulerBuilder()
                 .setStartMinute(0)
                 .setEndMinute(60)
                 .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
@@ -58,7 +58,7 @@ public class DailyScheduleTest {
 
     @Test
     public void shouldHaveFreeTimeAtEnd() {
-        DailySchedule schedule = new DailyScheduleBuilder()
+        DailyScheduler schedule = new DailySchedulerBuilder()
                 .setStartMinute(0)
                 .setEndMinute(60)
                 .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
@@ -73,7 +73,7 @@ public class DailyScheduleTest {
 
     @Test
     public void shouldNotHaveFreeTimeAtSlot() {
-        DailySchedule schedule = new DailyScheduleBuilder()
+        DailyScheduler schedule = new DailySchedulerBuilder()
                 .setStartMinute(0)
                 .setEndMinute(60)
                 .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
@@ -88,7 +88,7 @@ public class DailyScheduleTest {
 
     @Test
     public void shouldScheduleTask() {
-        DailySchedule schedule = new DailyScheduleBuilder()
+        DailyScheduler schedule = new DailySchedulerBuilder()
                 .setStartMinute(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE)
                 .setEndMinute(Constants.DEFAULT_PLAYER_SLEEP_START_MINUTE)
                 .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
@@ -109,7 +109,7 @@ public class DailyScheduleTest {
 
     @Test
     public void shouldNotOverlapWithScheduledTasks() {
-        DailySchedule schedule = new DailyScheduleBuilder()
+        DailyScheduler schedule = new DailySchedulerBuilder()
                 .setStartMinute(0)
                 .setEndMinute(60)
                 .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
@@ -127,7 +127,7 @@ public class DailyScheduleTest {
 
     @Test
     public void shouldNotUpdateCurrentSlot() {
-        DailySchedule schedule = new DailyScheduleBuilder()
+        DailyScheduler schedule = new DailySchedulerBuilder()
                 .setStartMinute(0)
                 .setEndMinute(60)
                 .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
@@ -152,7 +152,7 @@ public class DailyScheduleTest {
 
     @Test
     public void shouldUpdateCurrentSlot() {
-        DailySchedule schedule = new DailyScheduleBuilder()
+        DailyScheduler schedule = new DailySchedulerBuilder()
                 .setStartMinute(0)
                 .setEndMinute(60)
                 .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
@@ -178,7 +178,7 @@ public class DailyScheduleTest {
 
     @Test
     public void shouldNotOverlapWithNewTask() {
-        DailySchedule schedule = new DailyScheduleBuilder()
+        DailyScheduler schedule = new DailySchedulerBuilder()
                 .setStartMinute(0)
                 .setEndMinute(120)
                 .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
@@ -209,7 +209,7 @@ public class DailyScheduleTest {
 
     @Test
     public void shouldScheduleTaskForNextSlot() {
-        DailySchedule schedule = new DailyScheduleBuilder()
+        DailyScheduler schedule = new DailySchedulerBuilder()
                 .setStartMinute(0)
                 .setEndMinute(60)
                 .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)

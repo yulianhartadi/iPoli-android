@@ -10,7 +10,7 @@ import java.util.List;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.app.TimeOfDay;
-import io.ipoli.android.app.scheduling.DailySchedule;
+import io.ipoli.android.app.scheduling.DailyScheduler;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.constraints.Constraint;
 import io.ipoli.android.app.scheduling.constraints.EveningConstraint;
@@ -36,7 +36,7 @@ public class ProductiveTimeConstraintTest {
 
     @Before
     public void setUp() {
-        productivityConstraint = new ProductiveTimeConstraint(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES, DailySchedule.DEFAULT_TIME_SLOT_DURATION);
+        productivityConstraint = new ProductiveTimeConstraint(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES, DailyScheduler.DEFAULT_TIME_SLOT_DURATION);
     }
 
     @Test
@@ -91,6 +91,6 @@ public class ProductiveTimeConstraintTest {
 
     @NonNull
     private ProductiveTimeConstraint createConstraint(List<TimeOfDay> productiveTimes) {
-        return new ProductiveTimeConstraint(productiveTimes, DailySchedule.DEFAULT_TIME_SLOT_DURATION);
+        return new ProductiveTimeConstraint(productiveTimes, DailyScheduler.DEFAULT_TIME_SLOT_DURATION);
     }
 }
