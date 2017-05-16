@@ -19,11 +19,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 
@@ -263,7 +261,7 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private void setupChart(List<PeriodHistory> periodHistories) {
-        history.setDescription("");
+//        history.setDescription("");
         history.setTouchEnabled(false);
         history.setPinchZoom(false);
         history.setExtraBottomOffset(20);
@@ -283,7 +281,7 @@ public class RepeatingQuestActivity extends BaseActivity {
         XAxis xLabels = history.getXAxis();
         xLabels.setPosition(XAxis.XAxisPosition.BOTTOM);
         xLabels.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_54));
-        xLabels.setLabelsToSkip(0);
+//        xLabels.setLabelsToSkip(0);
         xLabels.setTextSize(13f);
         xLabels.setDrawAxisLine(false);
         xLabels.setDrawGridLines(false);
@@ -291,7 +289,7 @@ public class RepeatingQuestActivity extends BaseActivity {
         history.getLegend().setEnabled(false);
 
         List<String> xValues = getXValues(periodHistories);
-        setHistoryData(periodHistories, xValues);
+//        setHistoryData(periodHistories, xValues);
     }
 
     private void colorLayout(Category category) {
@@ -319,21 +317,21 @@ public class RepeatingQuestActivity extends BaseActivity {
 
     }
 
-    private void setHistoryData(List<PeriodHistory> periodHistories, List<String> xValues) {
-        BarData data = new BarData(xValues, createBarDataSet(periodHistories));
-        data.setValueTextSize(14f);
-        data.setValueTextColor(Color.WHITE);
-        data.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
-            if (value == 0) {
-                return "";
-            }
-            return String.valueOf((int) value);
-        });
-
-        history.setData(data);
-        history.invalidate();
-        history.animateY(1400, Easing.EasingOption.EaseInOutQuart);
-    }
+//    private void setHistoryData(List<PeriodHistory> periodHistories, List<String> xValues) {
+//        BarData data = new BarData(xValues, createBarDataSet(periodHistories));
+//        data.setValueTextSize(14f);
+//        data.setValueTextColor(Color.WHITE);
+//        data.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
+//            if (value == 0) {
+//                return "";
+//            }
+//            return String.valueOf((int) value);
+//        });
+//
+//        history.setData(data);
+//        history.invalidate();
+//        history.animateY(1400, Easing.EasingOption.EaseInOutQuart);
+//    }
 
     @NonNull
     private BarDataSet createBarDataSet(List<PeriodHistory> periodHistories) {
