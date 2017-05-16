@@ -7,19 +7,13 @@ import io.ipoli.android.app.utils.Time;
  * on 12/16/16.
  */
 
-public class TimeBlock {
+public class TimeSlot {
     private final int startMinute;
     private final int endMinute;
-    private double probability;
 
-    public TimeBlock(int startMinute, int endMinute) {
+    public TimeSlot(int startMinute, int endMinute) {
         this.startMinute = startMinute;
         this.endMinute = endMinute;
-    }
-
-    public TimeBlock(TimeBlock timeBlock) {
-        this.startMinute = timeBlock.startMinute;
-        this.endMinute = timeBlock.endMinute;
     }
 
     public int getStartMinute() {

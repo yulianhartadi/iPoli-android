@@ -19,7 +19,7 @@ public class Task implements Comparable<Task> {
     private final int priority;
     private final TimePreference startTimePreference;
     private final Category category;
-    private List<TimeBlock> recommendedSlots;
+    private List<TimeSlot> recommendedSlots;
 
     public Task(String id, int startMinute, int duration, int priority, TimePreference startTimePreference, Category category) {
         this.id = id;
@@ -71,12 +71,20 @@ public class Task implements Comparable<Task> {
         return priority;
     }
 
-    public void setRecommendedSlots(List<TimeBlock> recommendedSlots) {
+    public void setRecommendedSlots(List<TimeSlot> recommendedSlots) {
         this.recommendedSlots = recommendedSlots;
     }
 
-    public List<TimeBlock> getRecommendedSlots() {
+    public List<TimeSlot> getRecommendedSlots() {
         return recommendedSlots;
+    }
+
+    public TimeSlot getCurrentRecommendedSlot() {
+        if(recommendedSlots == null || recommendedSlots.isEmpty()) {
+            return null;
+        }
+
+        return recommendedSlots.get(0);
     }
 
     public int getEndMinute() {

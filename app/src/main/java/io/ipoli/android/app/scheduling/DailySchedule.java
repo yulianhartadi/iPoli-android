@@ -80,18 +80,21 @@ public class DailySchedule {
         // start minute - inclusive
         // end minute - exclusive
         for (Task t : scheduledTasks) {
-
-            int slotMinute = t.getStartMinute();
-            while (slotMinute < t.getEndMinute()) {
-                int slotIndex = getSlotForMinute(slotMinute);
-                freeSlots[slotIndex] = false;
-                slotMinute += timeSlotDuration;
-            }
-
-            int index = getSlotForMinute(t.getStartMinute());
-            freeSlots[index] = false;
+            fillSlots(freeSlots, t.getStartMinute(), t.getEndMinute());
         }
         return freeSlots;
+    }
+
+    private void fillSlots(boolean[] freeSlots, int startMinute, int endMinute) {
+        int slotMinute = startMinute;
+        while (slotMinute < endMinute) {
+            int slotIndex = getSlotForMinute(slotMinute);
+            freeSlots[slotIndex] = false;
+            slotMinute += timeSlotDuration;
+        }
+
+        int index = getSlotForMinute(startMinute);
+        freeSlots[index] = false;
     }
 
     public boolean isFree(int startMinute, int endMinute) {
@@ -130,14 +133,14 @@ public class DailySchedule {
                 }
             }
 
-            List<TimeBlock> timeBlocks = new ArrayList<>();
+            List<TimeSlot> timeSlots = new ArrayList<>();
             int taskSlotCount = getSlotCountBetween(0, t.getDuration());
             for (int startSlot = getSlotForMinute(currentTime.toMinuteOfDay()); startSlot < isFreeSlot.length; startSlot++) {
                 if (isAvailableSlot(dist, startSlot)) {
                     for (int endSlot = startSlot; endSlot < isFreeSlot.length; endSlot++) {
                         if (isNotAvailableSlot(dist, endSlot) || endSlot == isFreeSlot.length - 1) {
                             if (taskSlotCount <= endSlot - startSlot + 1) {
-                                timeBlocks.addAll(cutSlotToTimeBlocks(startSlot, endSlot, taskSlotCount));
+                                timeSlots.addAll(cutSlotToTimeBlocks(startSlot, endSlot, taskSlotCount));
                             }
                             startSlot = endSlot + 1;
                             break;
@@ -146,10 +149,10 @@ public class DailySchedule {
                 }
             }
 
-            List<TimeBlock> rankedSlots = rankSlots(timeBlocks, dist);
+            List<TimeSlot> rankedSlots = rankSlots(timeSlots, dist);
             t.setRecommendedSlots(rankedSlots);
             if (!rankedSlots.isEmpty()) {
-                TimeBlock bestSlot = rankedSlots.get(0);
+                TimeSlot bestSlot = rankedSlots.get(0);
                 int slotMinute = bestSlot.getStartMinute();
                 while (slotMinute < bestSlot.getEndMinute()) {
                     isFreeSlot[getSlotForMinute(slotMinute)] = false;
@@ -157,7 +160,7 @@ public class DailySchedule {
                 }
             }
 
-//            for (TimeBlock tb : rankedSlots) {
+//            for (TimeSlot tb : rankedSlots) {
 //                System.out.println(tb.getStartTime() + " end: " + tb.getEndTime());
 //            }
         }
@@ -206,27 +209,34 @@ public class DailySchedule {
         }
 
         tasks.clear();
-        tasks.addAll(doScheduleTasks(newOrUpdatedTasks, currentTime));
 
         for (Task t : sameTasks) {
-            if (!t.getRecommendedSlots().isEmpty()) {
-                TimeBlock tb = t.getRecommendedSlots().get(0);
-                if (isFree(tb.getStartMinute(), tb.getEndMinute())) {
-                    continue;
+            if (isCurrentRecommendedSlotTaken(t)) {
+                List<TimeSlot> recommendedSlots = new ArrayList<>();
+                for (TimeSlot slot : t.getRecommendedSlots()) {
+                    if (isFree(slot.getStartMinute(), slot.getEndMinute())) {
+                        recommendedSlots.add(slot);
+                    }
                 }
+                t.setRecommendedSlots(recommendedSlots);
             }
 
-            List<TimeBlock> recommendedSlots = new ArrayList<>();
-            for (TimeBlock slot : t.getRecommendedSlots()) {
-                if (isFree(slot.getStartMinute(), slot.getEndMinute())) {
-                    recommendedSlots.add(slot);
-                }
+            TimeSlot timeSlot = t.getCurrentRecommendedSlot();
+            if (timeSlot != null) {
+                fillSlots(isFreeSlot, timeSlot.getStartMinute(), timeSlot.getEndMinute());
             }
-            t.setRecommendedSlots(recommendedSlots);
         }
         tasks.addAll(sameTasks);
-
+        tasks.addAll(doScheduleTasks(newOrUpdatedTasks, currentTime));
         return tasks;
+    }
+
+    private boolean isCurrentRecommendedSlotTaken(Task task) {
+        if (task.getRecommendedSlots() == null || task.getRecommendedSlots().isEmpty()) {
+            return false;
+        }
+        TimeSlot ts = task.getRecommendedSlots().get(0);
+        return !isFree(ts.getStartMinute(), ts.getEndMinute());
     }
 
     private boolean isNotAvailableSlot(DiscreteDistribution dist, int endSlot) {
@@ -237,32 +247,32 @@ public class DailySchedule {
         return isFreeSlot[startSlot] && dist.at(startSlot + getSlotCountBetween(0, startMinute)) > 0;
     }
 
-    private List<TimeBlock> rankSlots(List<TimeBlock> slotsToConsider, DiscreteDistribution distribution) {
-        List<TimeBlock> result = new ArrayList<>();
-        List<TimeBlock> availableSlots = new ArrayList<>();
-        for (TimeBlock tb : slotsToConsider) {
+    private List<TimeSlot> rankSlots(List<TimeSlot> slotsToConsider, DiscreteDistribution distribution) {
+        List<TimeSlot> result = new ArrayList<>();
+        List<TimeSlot> availableSlots = new ArrayList<>();
+        for (TimeSlot tb : slotsToConsider) {
             availableSlots.add(tb);
         }
         for (int i = 0; i < slotsToConsider.size(); i++) {
-            WeightedRandomSampler<TimeBlock> sampler = new WeightedRandomSampler<>(seed);
-            for (TimeBlock slot : availableSlots) {
+            WeightedRandomSampler<TimeSlot> sampler = new WeightedRandomSampler<>(seed);
+            for (TimeSlot slot : availableSlots) {
                 sampler.add(slot, distribution.at(getSlotForMinute(slot.getStartMinute())));
             }
-            TimeBlock timeBlock = sampler.sample();
-            result.add(timeBlock);
-            availableSlots.remove(timeBlock);
+            TimeSlot timeSlot = sampler.sample();
+            result.add(timeSlot);
+            availableSlots.remove(timeSlot);
         }
         return result;
     }
 
-    private List<TimeBlock> cutSlotToTimeBlocks(int startSlot, int endSlot, int taskSlotCount) {
+    private List<TimeSlot> cutSlotToTimeBlocks(int startSlot, int endSlot, int taskSlotCount) {
         int slotCount = (endSlot - startSlot + 1) - taskSlotCount + 1;
-        List<TimeBlock> blocks = new ArrayList<>();
+        List<TimeSlot> blocks = new ArrayList<>();
         int endTimeBlockSlot = startSlot + slotCount;
         for (int i = startSlot; i < endTimeBlockSlot; i++) {
             int startMinute = this.startMinute + i * timeSlotDuration;
             int endMinute = startMinute + taskSlotCount * timeSlotDuration;
-            blocks.add(new TimeBlock(startMinute, endMinute));
+            blocks.add(new TimeSlot(startMinute, endMinute));
         }
         return blocks;
     }

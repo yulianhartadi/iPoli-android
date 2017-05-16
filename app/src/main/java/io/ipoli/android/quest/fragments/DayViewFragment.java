@@ -37,7 +37,7 @@ import io.ipoli.android.app.events.StartQuickAddEvent;
 import io.ipoli.android.app.scheduling.DailySchedule;
 import io.ipoli.android.app.scheduling.DailyScheduleBuilder;
 import io.ipoli.android.app.scheduling.Task;
-import io.ipoli.android.app.scheduling.TimeBlock;
+import io.ipoli.android.app.scheduling.TimeSlot;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
@@ -377,8 +377,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     }
 
     @Nullable
-    private TimeBlock chooseNonOverlappingTimeBlock(List<QuestCalendarViewModel> proposedEvents, List<TimeBlock> timeBlocks) {
-        for (TimeBlock tb : timeBlocks) {
+    private TimeSlot chooseNonOverlappingTimeBlock(List<QuestCalendarViewModel> proposedEvents, List<TimeSlot> timeSlots) {
+        for (TimeSlot tb : timeSlots) {
             if (!doOverlap(proposedEvents, tb)) {
                 return tb;
             }
@@ -386,7 +386,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         return null;
     }
 
-    private boolean doOverlap(List<QuestCalendarViewModel> proposedEvents, TimeBlock tb) {
+    private boolean doOverlap(List<QuestCalendarViewModel> proposedEvents, TimeSlot tb) {
         for (QuestCalendarViewModel vm : proposedEvents) {
             int sm = vm.getStartMinute();
             int em = vm.getStartMinute() + vm.getDuration() - 1;
