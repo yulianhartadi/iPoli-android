@@ -301,7 +301,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         ViewGroup.LayoutParams layoutParams = unscheduledQuestList.getLayoutParams();
         layoutParams.height = unscheduledQuestsToShow * itemHeight;
-        if(unscheduledQuestsToShow == Constants.MAX_UNSCHEDULED_QUEST_VISIBLE_COUNT) {
+        if (unscheduledQuestsToShow == Constants.MAX_UNSCHEDULED_QUEST_VISIBLE_COUNT) {
             layoutParams.height = layoutParams.height - itemHeight / 2;
         }
         unscheduledQuestList.setLayoutParams(layoutParams);
@@ -441,12 +441,15 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Subscribe
     public void onRescheduleQuest(RescheduleQuestEvent e) {
-//        if (e.calendarEvent.useNextSlot(calendarAdapter.getEventsWithProposedSlots())) {
-//            calendarAdapter.notifyDataSetChanged();
-//            calendarDayView.smoothScrollToTime(Time.of(e.calendarEvent.getStartMinute()));
-//        } else {
-//            Toast.makeText(getContext(), "No more suggestions", Toast.LENGTH_SHORT).show();
-//        }
+        Task task = dailySchedule.chooseNewTimeSlot(e.calendarEvent.getId(), Time.now());
+        TimeSlot currentTimeSlot = task.getCurrentTimeSlot();
+        if(currentTimeSlot == null) {
+            Toast.makeText(getContext(), "No more suggestions", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        QuestCalendarViewModel vm = QuestCalendarViewModel.createWithProposedTime(e.calendarEvent.getQuest(), currentTimeSlot.getStartMinute());
+        calendarAdapter.updateEvent(vm);
+        calendarDayView.smoothScrollToTime(Time.of(currentTimeSlot.getStartMinute()));
     }
 
     @Override
