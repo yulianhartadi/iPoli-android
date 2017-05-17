@@ -21,6 +21,7 @@ import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 
+import static io.ipoli.android.app.utils.Time.h2Min;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -45,8 +46,8 @@ public class DailySchedulerTest {
 
     @Test
     public void shouldNotScheduleInSleepMinutes() {
-        int sleepStart = Time.h2Min(2);
-        int sleepEnd = Time.h2Min(6);
+        int sleepStart = h2Min(2);
+        int sleepEnd = h2Min(6);
         DailyScheduler schedule = new DailySchedulerBuilder()
                 .setStartMinute(sleepEnd)
                 .setEndMinute(sleepStart)
@@ -75,8 +76,8 @@ public class DailySchedulerTest {
 
     @Test
     public void shouldNotScheduleWithinSleepMinutes() {
-        int sleepStart = Time.h2Min(23);
-        int sleepEnd = Time.h2Min(8);
+        int sleepStart = h2Min(23);
+        int sleepEnd = h2Min(8);
         DailyScheduler schedule = new DailySchedulerBuilder()
                 .setStartMinute(sleepEnd)
                 .setEndMinute(sleepStart)
@@ -90,8 +91,8 @@ public class DailySchedulerTest {
 
     @Test
     public void shouldNotScheduleOnStartBound() {
-        int sleepStart = Time.h2Min(23);
-        int sleepEnd = Time.h2Min(8);
+        int sleepStart = h2Min(23);
+        int sleepEnd = h2Min(8);
         DailyScheduler schedule = new DailySchedulerBuilder()
                 .setStartMinute(sleepEnd)
                 .setEndMinute(sleepStart)
@@ -105,8 +106,8 @@ public class DailySchedulerTest {
 
     @Test
     public void shouldNotScheduleOnEndBound() {
-        int sleepStart = Time.h2Min(23);
-        int sleepEnd = Time.h2Min(8);
+        int sleepStart = h2Min(23);
+        int sleepEnd = h2Min(8);
         DailyScheduler schedule = new DailySchedulerBuilder()
                 .setStartMinute(sleepEnd)
                 .setEndMinute(sleepStart)
@@ -120,8 +121,8 @@ public class DailySchedulerTest {
 
     @Test
     public void shouldScheduleOnStartBound() {
-        int sleepStart = Time.h2Min(23);
-        int sleepEnd = Time.h2Min(8);
+        int sleepStart = h2Min(23);
+        int sleepEnd = h2Min(8);
         DailyScheduler schedule = new DailySchedulerBuilder()
                 .setStartMinute(sleepEnd)
                 .setEndMinute(sleepStart)
@@ -135,8 +136,8 @@ public class DailySchedulerTest {
 
     @Test
     public void shouldHaveTaskAtSleepingTime() {
-        int sleepStart = Time.h2Min(23);
-        int sleepEnd = Time.h2Min(8);
+        int sleepStart = h2Min(23);
+        int sleepEnd = h2Min(8);
         DailyScheduler schedule = new DailySchedulerBuilder()
                 .setStartMinute(sleepEnd)
                 .setEndMinute(sleepStart)
@@ -151,8 +152,8 @@ public class DailySchedulerTest {
 
     @Test
     public void shouldOccupySlotsForTaskOverlappingWithSleepStart() {
-        int sleepStart = Time.h2Min(1);
-        int sleepEnd = Time.h2Min(8);
+        int sleepStart = h2Min(1);
+        int sleepEnd = h2Min(8);
         DailyScheduler schedule = new DailySchedulerBuilder()
                 .setStartMinute(sleepEnd)
                 .setEndMinute(sleepStart)
@@ -160,17 +161,17 @@ public class DailySchedulerTest {
                 .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
                 .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
                 .create();
-        List<Task> scheduledTasks = Collections.singletonList(new Task(0, Time.h2Min(2), Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
+        List<Task> scheduledTasks = Collections.singletonList(new Task(0, h2Min(2), Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
         schedule.scheduleTasks(new ArrayList<>(), scheduledTasks);
         assertFalse(schedule.isFree(0, sleepStart));
         assertTrue(schedule.isFree(sleepEnd, 0));
-        assertFalse(schedule.isFree(Time.h2Min(23), sleepStart));
+        assertFalse(schedule.isFree(h2Min(23), sleepStart));
     }
 
     @Test
     public void shouldOccupySlotsForTaskOverlappingWithSleepEnd() {
-        int sleepStart = Time.h2Min(1);
-        int sleepEnd = Time.h2Min(8);
+        int sleepStart = h2Min(1);
+        int sleepEnd = h2Min(8);
         DailyScheduler schedule = new DailySchedulerBuilder()
                 .setStartMinute(sleepEnd)
                 .setEndMinute(sleepStart)
@@ -178,11 +179,11 @@ public class DailySchedulerTest {
                 .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
                 .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
                 .create();
-        List<Task> scheduledTasks = Collections.singletonList(new Task(Time.h2Min(7), Time.h2Min(2), Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
+        List<Task> scheduledTasks = Collections.singletonList(new Task(h2Min(7), h2Min(2), Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
         schedule.scheduleTasks(new ArrayList<>(), scheduledTasks);
-        assertFalse(schedule.isFree(sleepEnd, sleepEnd + Time.h2Min(1)));
-        assertTrue(schedule.isFree(sleepEnd + Time.h2Min(1), sleepStart));
-        assertFalse(schedule.isFree(sleepStart, sleepStart + Time.h2Min(2)));
+        assertFalse(schedule.isFree(sleepEnd, sleepEnd + h2Min(1)));
+        assertTrue(schedule.isFree(sleepEnd + h2Min(1), sleepStart));
+        assertFalse(schedule.isFree(sleepStart, sleepStart + h2Min(2)));
     }
 
     @Test
@@ -233,17 +234,17 @@ public class DailySchedulerTest {
     @Test
     public void shouldScheduleWorkTaskInWorkRange() {
         DailyScheduler schedule = new DailySchedulerBuilder()
-                .setStartMinute(Time.h2Min(22))
-                .setEndMinute(Time.h2Min(6))
-                .setWorkStartMinute(Time.h2Min(23))
-                .setWorkEndMinute(Time.h2Min(2))
+                .setStartMinute(h2Min(22))
+                .setEndMinute(h2Min(6))
+                .setWorkStartMinute(h2Min(23))
+                .setWorkEndMinute(h2Min(2))
                 .setWorkDays(new HashSet<>(Collections.singleton(LocalDate.now().getDayOfWeek())))
                 .setSeed(Constants.RANDOM_SEED)
                 .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
                 .create();
         List<Task> tasksToSchedule = Collections.singletonList(new Task(90, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.WORK));
-        List<Task> tasks = schedule.scheduleTasks(tasksToSchedule, Time.of(Time.h2Min(22)));
-        assertThat(tasks.get(0).getCurrentTimeSlot().getStartMinute(), is(greaterThanOrEqualTo(Time.h2Min(23))));
+        List<Task> tasks = schedule.scheduleTasks(tasksToSchedule, Time.of(h2Min(22)));
+        assertThat(tasks.get(0).getCurrentTimeSlot().getStartMinute(), is(greaterThanOrEqualTo(h2Min(23))));
     }
 
     @Test
@@ -383,6 +384,22 @@ public class DailySchedulerTest {
         TimeSlot oldTimeSlot = t.getCurrentTimeSlot();
         Task updatedTask = schedule.chooseNewTimeSlot(t.getId(), Time.of(0));
         assertTimeSlotsAreNotEqual(oldTimeSlot, updatedTask.getCurrentTimeSlot());
+    }
+
+    @Test
+    public void shouldHaveFreeSlotsWhenSleepEndIsNotExactSlot() {
+        int sleepStart = h2Min(0);
+        int sleepEnd = h2Min(1) + 20;
+        DailyScheduler schedule = new DailySchedulerBuilder()
+                .setStartMinute(sleepEnd)
+                .setEndMinute(sleepStart)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .create();
+        schedule.scheduleTasks(new ArrayList<>());
+        assertFalse(schedule.isFree(0, sleepEnd - 5));
+        assertTrue(schedule.isFree(sleepEnd + 10, h2Min(2)));
     }
 
     private Task toTask(Quest quest) {
