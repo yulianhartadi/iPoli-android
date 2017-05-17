@@ -1,10 +1,10 @@
 package io.ipoli.android;
 
-import java.util.ArrayList;
+import org.threeten.bp.DayOfWeek;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import io.ipoli.android.app.TimeOfDay;
@@ -80,20 +80,20 @@ public interface Constants {
     int DEFAULT_AVATAR_LEVEL = 1;
     long DEFAULT_PLAYER_COINS = 10;
     String DEFAULT_PLAYER_PICTURE = "avatar_12";
-    List<TimeOfDay> DEFAULT_PLAYER_PRODUCTIVE_TIME = new ArrayList<>(Collections.singletonList(TimeOfDay.MORNING));
+    Set<TimeOfDay> DEFAULT_PLAYER_PRODUCTIVE_TIMES = new HashSet<>(Collections.singletonList(TimeOfDay.MORNING));
     int DEFAULT_PLAYER_WORK_START_MINUTE = 10 * 60;
     int DEFAULT_PLAYER_WORK_END_MINUTE = 18 * 60;
-    int DEFAULT_PLAYER_SLEEP_START_MINUTE = 0;
+    int DEFAULT_PLAYER_SLEEP_START_MINUTE = 23 * 60;
     int DEFAULT_PLAYER_SLEEP_END_MINUTE = 8 * 60;
     int DEFAULT_PLAYER_COMPLETE_DAILY_QUESTS_MINUTE = 0;
 
-    List<Integer> DEFAULT_PLAYER_WORK_DAYS = new ArrayList<>(Arrays.asList(new Integer[]{
-            DaysOfWeek.MONDAY.getIsoOrder(),
-            DaysOfWeek.TUESDAY.getIsoOrder(),
-            DaysOfWeek.WEDNESDAY.getIsoOrder(),
-            DaysOfWeek.THURSDAY.getIsoOrder(),
-            DaysOfWeek.FRIDAY.getIsoOrder()
-    }));
+    Set<Integer> DEFAULT_PLAYER_WORK_DAYS = new HashSet<>(Arrays.asList(
+            DayOfWeek.MONDAY.getValue(),
+            DayOfWeek.TUESDAY.getValue(),
+            DayOfWeek.WEDNESDAY.getValue(),
+            DayOfWeek.THURSDAY.getValue(),
+            DayOfWeek.FRIDAY.getValue()
+    ));
 
     int AVATAR_COUNT = 12;
 
@@ -114,13 +114,14 @@ public interface Constants {
 
     int MIN_FLEXIBLE_TIMES_A_MONTH_COUNT = 1;
     int MAX_FLEXIBLE_TIMES_A_MONTH_COUNT = 15;
-    Set<Integer> DEFAULT_DAILY_CHALLENGE_DAYS = new HashSet<>(Arrays.asList(new Integer[]{
-            DaysOfWeek.MONDAY.getIsoOrder(),
-            DaysOfWeek.TUESDAY.getIsoOrder(),
-            DaysOfWeek.WEDNESDAY.getIsoOrder(),
-            DaysOfWeek.THURSDAY.getIsoOrder(),
-            DaysOfWeek.FRIDAY.getIsoOrder()
-    }));
+
+    Set<Integer> DEFAULT_DAILY_CHALLENGE_DAYS = new HashSet<>(Arrays.asList(
+            DayOfWeek.MONDAY.getValue(),
+            DayOfWeek.TUESDAY.getValue(),
+            DayOfWeek.WEDNESDAY.getValue(),
+            DayOfWeek.THURSDAY.getValue(),
+            DayOfWeek.FRIDAY.getValue()
+    ));
 
     int DAILY_CHALLENGE_QUEST_COUNT = 3;
     int DEFAULT_CHALLENGE_DEADLINE_DAY_DURATION = 30;
@@ -153,58 +154,5 @@ public interface Constants {
     String KEY_WIDGET_AGENDA_QUEST_LIST = "widget_agenda_quest_list";
     int API_READ_TIMEOUT_SECONDS = 30;
     String DEFAULT_VIEW_VERSION = "1.0";
-    int READ_CALENDAR_PERMISSION_REQUEST_CODE = 100;
     String SOURCE_ANDROID_CALENDAR = "android-calendar";
-
-    enum DaysOfWeek {
-        SUNDAY(7), MONDAY(1), TUESDAY(2), WEDNESDAY(3), THURSDAY(4), FRIDAY(5), SATURDAY(6);
-
-        private final int order;
-
-        DaysOfWeek(int order) {
-            this.order = order;
-        }
-
-        public int getIsoOrder() {
-            return order;
-        }
-
-        public static int getNameRes(DaysOfWeek daysOfWeek) {
-            switch (daysOfWeek) {
-                case MONDAY:
-                    return R.string.monday;
-                case TUESDAY:
-                    return R.string.tuesday;
-                case WEDNESDAY:
-                    return R.string.wednesday;
-                case THURSDAY:
-                    return R.string.thursday;
-                case FRIDAY:
-                    return R.string.friday;
-                case SATURDAY:
-                    return R.string.saturday;
-                default:
-                    return R.string.sunday;
-            }
-        }
-
-        public static int getShortNameRes(DaysOfWeek daysOfWeek) {
-            switch (daysOfWeek) {
-                case MONDAY:
-                    return R.string.monday_short;
-                case TUESDAY:
-                    return R.string.tuesday_short;
-                case WEDNESDAY:
-                    return R.string.wednesday_short;
-                case THURSDAY:
-                    return R.string.thursday_short;
-                case FRIDAY:
-                    return R.string.friday_short;
-                case SATURDAY:
-                    return R.string.saturday_short;
-                default:
-                    return R.string.sunday_short;
-            }
-        }
-    }
 }
