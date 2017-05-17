@@ -10,8 +10,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import io.ipoli.android.app.scheduling.Task;
+import io.ipoli.android.app.scheduling.constraints.Constraint;
 import io.ipoli.android.app.scheduling.constraints.WorkConstraint;
 import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
@@ -64,5 +66,15 @@ public class WorkConstraintTest {
     public void shouldHaveZeroProbabilityAtEndOfWorkTime() {
         DiscreteDistribution dist = constraint.apply();
         assertThat(dist.at(constraint.getSlotForMinute(30)), is(0.0));
+    }
+
+    @Test
+    public void shouldHaveNonZeroProbabilityWhenOverlapsWithMidnight() {
+        Set<DayOfWeek> workDays = new HashSet<>(Collections.singleton(LocalDate.now().getDayOfWeek()));
+        Constraint constraint = new WorkConstraint(Time.h2Min(23), Time.h2Min(2), workDays, 15);
+        DiscreteDistribution dist = constraint.apply();
+        assertThat(dist.at(0), is(greaterThan(0.0)));
+        assertThat(dist.at(constraint.getSlotForMinute(Time.h2Min(23))), is(greaterThan(0.0)));
+        assertThat(dist.at(constraint.getSlotForMinute(Time.h2Min(22))), is(0.0));
     }
 }

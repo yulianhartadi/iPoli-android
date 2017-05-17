@@ -1,11 +1,12 @@
 package io.ipoli.android.scheduling;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -230,13 +231,13 @@ public class DailySchedulerTest {
     }
 
     @Test
-    @Ignore
     public void shouldScheduleWorkTaskInWorkRange() {
         DailyScheduler schedule = new DailySchedulerBuilder()
                 .setStartMinute(Time.h2Min(22))
                 .setEndMinute(Time.h2Min(6))
                 .setWorkStartMinute(Time.h2Min(23))
                 .setWorkEndMinute(Time.h2Min(2))
+                .setWorkDays(new HashSet<>(Collections.singleton(LocalDate.now().getDayOfWeek())))
                 .setSeed(Constants.RANDOM_SEED)
                 .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
                 .create();

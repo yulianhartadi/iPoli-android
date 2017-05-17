@@ -27,7 +27,15 @@ public abstract class BaseConstraint implements Constraint {
      * @param endMinute   exclusive
      * @return number of time slots between the minutes
      */
+
+    @Override
     public int getSlotCountBetween(int startMinute, int endMinute) {
-        return (endMinute - startMinute) / slotDuration;
+        if (startMinute > endMinute) {
+            int totalSlots = getSlotCountBetween(startMinute, Time.MINUTES_IN_A_DAY);
+            totalSlots += getSlotCountBetween(0, endMinute);
+            return totalSlots;
+        } else {
+            return (int) Math.ceil((endMinute - startMinute) / (float) slotDuration);
+        }
     }
 }
