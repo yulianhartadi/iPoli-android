@@ -157,7 +157,7 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
 
         if (q.getActualDuration() <= Constants.CALENDAR_EVENT_MIN_SINGLE_LINE_DURATION) {
             name.setSingleLine(true);
-        } else if(q.getActualDuration() <= Constants.CALENDAR_EVENT_MIN_TWO_LINES_DURATION) {
+        } else if (q.getActualDuration() <= Constants.CALENDAR_EVENT_MIN_TWO_LINES_DURATION) {
             name.setMaxLines(2);
         }
 
@@ -207,6 +207,16 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
     public void updateEvents(List<QuestCalendarViewModel> calendarEvents) {
         this.questCalendarViewModels = calendarEvents;
         notifyDataSetChanged();
+    }
+
+    public void updateEvent(QuestCalendarViewModel viewModel) {
+        for (int i = 0; i < questCalendarViewModels.size(); i++) {
+            if (viewModel.getId().equals(questCalendarViewModels.get(i).getId())) {
+                questCalendarViewModels.set(i, viewModel);
+                notifyDataSetChanged();
+                return;
+            }
+        }
     }
 
     @Override
