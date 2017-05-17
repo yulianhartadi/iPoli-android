@@ -118,6 +118,10 @@ public class Time {
         return Time.of(time.minutes + minutes);
     }
 
+    public static int h2Min(int hours) {
+        return (int) TimeUnit.HOURS.toMinutes(hours);
+    }
+
     public String toString(boolean use24HourFormat) {
         Calendar c = Calendar.getInstance();
         c.set(Calendar.MINUTE, getMinutes());
