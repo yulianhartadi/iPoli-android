@@ -180,17 +180,6 @@ public class RepeatingQuestScheduler {
         return result;
     }
 
-    private int getScheduleCount(LocalDate startDate, LocalDate endDate, List<Quest> scheduledQuests, Recurrence recurrence) {
-        int countForMonth = recurrence.getFlexibleCount();
-
-        for (Quest q : scheduledQuests) {
-            if (DateUtils.isBetween(q.getOriginalScheduledDate(), startDate, endDate)) {
-                countForMonth--;
-            }
-        }
-        return countForMonth;
-    }
-
     @NonNull
     private List<LocalDate> findMonthlyPossibleDates(Recurrence recurrence, int maxDatesToFind, LocalDate startDate, LocalDate endDate, LocalDate currentDate) {
         Set<LocalDate> possibleDates = new HashSet<>();
@@ -232,6 +221,17 @@ public class RepeatingQuestScheduler {
             return result.subList(0, maxDatesToFind);
         }
         return result;
+    }
+
+    private int getScheduleCount(LocalDate startDate, LocalDate endDate, List<Quest> scheduledQuests, Recurrence recurrence) {
+        int countForMonth = recurrence.getFlexibleCount();
+
+        for (Quest q : scheduledQuests) {
+            if (DateUtils.isBetween(q.getOriginalScheduledDate(), startDate, endDate)) {
+                countForMonth--;
+            }
+        }
+        return countForMonth;
     }
 
     @NonNull
@@ -289,7 +289,6 @@ public class RepeatingQuestScheduler {
         }
         return result;
     }
-
 
     private WeekDayList getWeekDayList(String rrule) {
         try {
