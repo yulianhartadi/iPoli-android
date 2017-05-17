@@ -79,15 +79,15 @@ public class DailyScheduler {
             int startMinute = t.getStartMinute();
             int endMinute = t.getEndMinute();
 
-            if(!isInSchedule(startMinute) && !isInSchedule(endMinute)) {
+            if (!isInSchedule(startMinute) && !isInSchedule(endMinute)) {
                 continue;
             }
 
-            if(isInSchedule(startMinute) && !isInSchedule(endMinute)) {
+            if (isInSchedule(startMinute) && !isInSchedule(endMinute)) {
                 endMinute = this.endMinute;
             }
 
-            if(!isInSchedule(startMinute) && isInSchedule(endMinute)) {
+            if (!isInSchedule(startMinute) && isInSchedule(endMinute)) {
                 startMinute = this.startMinute;
             }
             occupySlots(freeSlots, startMinute, endMinute);
@@ -100,11 +100,11 @@ public class DailyScheduler {
     }
 
     private boolean isInSchedule(int minute) {
-        if(startMinute < endMinute && (minute < startMinute || minute > endMinute)) {
+        if (startMinute < endMinute && (minute < startMinute || minute > endMinute)) {
             return false;
         }
 
-        if(startMinute > endMinute && (minute > endMinute && minute < startMinute)) {
+        if (startMinute > endMinute && (minute > endMinute && minute < startMinute)) {
             return false;
         }
         return true;
@@ -164,28 +164,9 @@ public class DailyScheduler {
             }
         }
 
-//        if (startMinute > endMinute) {
-//            return false;
-//        }
-
-//        if()
-//
-//
-//        if (startMinute < this.startMinute || startMinute > this.endMinute) {
-//            return false;
-//        }
-//
-//        if (endMinute < this.startMinute || endMinute > this.endMinute) {
-//            return false;
-//        }
-
-
         int startIndex = getSlotForMinute(startMinute);
         int endIndex = startIndex + getSlotCountBetween(startMinute, endMinute);
         for (int slotIndex = startIndex; slotIndex < endIndex; slotIndex++) {
-//            if (getSlotForMinute(slotIndex * timeSlotDuration) < 0) {
-//                return false;
-//            }
             if (!freeSlots[slotIndex]) {
                 return false;
             }
@@ -198,16 +179,6 @@ public class DailyScheduler {
         if (minute < 0 || minute > Time.MINUTES_IN_A_DAY) {
             throw new IllegalArgumentException("Minute out of bounds: " + minute);
         }
-
-//        if (startMinute < endMinute) {
-//            if (minute < startMinute || minute > endMinute) {
-//                return -1;
-//            }
-//        } else {
-//            if (minute < startMinute && minute > endMinute) {
-//                return -1;
-//            }
-//        }
 
         if (startMinute > minute) {
             int mins = Time.MINUTES_IN_A_DAY - startMinute;
@@ -292,11 +263,13 @@ public class DailyScheduler {
     }
 
     private boolean isNotAvailableSlot(DiscreteDistribution dist, int endSlot) {
-        return dist.at(endSlot + getSlotCountBetween(startMinute, 0)) <= 0;
+        int slotIdx = (endSlot + getSlotCountBetween(0, startMinute)) % dist.size();
+        return dist.at(slotIdx) <= 0;
     }
 
     private boolean isAvailableSlot(DiscreteDistribution dist, int startSlot) {
-        return dist.at(startSlot + getSlotCountBetween(startMinute, 0)) > 0;
+        int slotIdx = (startSlot + getSlotCountBetween(0, startMinute)) % dist.size();
+        return dist.at(slotIdx) > 0;
     }
 
     public List<Task> scheduleTasks(List<Task> tasksToSchedule) {

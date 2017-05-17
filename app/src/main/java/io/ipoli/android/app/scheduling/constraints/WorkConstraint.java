@@ -8,7 +8,6 @@ import java.util.Set;
 import io.ipoli.android.app.scheduling.Task;
 import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 import io.ipoli.android.app.scheduling.distributions.FlatPeakDiscreteDistribution;
-import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.data.Category;
 
 /**
@@ -33,16 +32,17 @@ public class WorkConstraint extends BaseConstraint {
 
     @Override
     public boolean shouldApply(Task task) {
-        return task.getCategory() == Category.WORK && task.getStartTimePreference() != TimePreference.ANY && workDays.contains(today.getDayOfWeek());
+        return task.getCategory() == Category.WORK && workDays.contains(today.getDayOfWeek());
     }
 
     @Override
     public DiscreteDistribution apply() {
         return FlatPeakDiscreteDistribution.create(getSlotForMinute(workStartMinute),
-                getSlotForMinute(workEndMinute - workStartMinute),
+                getSlotCountBetween(workStartMinute, workEndMinute),
                 1,
                 0,
                 getTotalSlotCount(),
                 0);
     }
+
 }

@@ -40,7 +40,7 @@ public class NotWorkConstraint extends BaseConstraint {
     @Override
     public DiscreteDistribution apply() {
         return FlatPeakDiscreteDistribution.create(getSlotForMinute(workStartMinute),
-                getSlotForMinute(workEndMinute - workStartMinute),
+                getSlotCountBetween(workStartMinute, workEndMinute),
                 1,
                 0,
                 getTotalSlotCount(),
