@@ -1,6 +1,7 @@
 package io.ipoli.android.scheduling;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -226,6 +227,22 @@ public class DailySchedulerTest {
         schedule.scheduleTasks(new ArrayList<>(), scheduledTasks);
         assertTrue(schedule.isFree(30, 60));
         assertFalse(schedule.isFree(0, 30));
+    }
+
+    @Test
+    @Ignore
+    public void shouldScheduleWorkTaskInWorkRange() {
+        DailyScheduler schedule = new DailySchedulerBuilder()
+                .setStartMinute(Time.h2Min(22))
+                .setEndMinute(Time.h2Min(6))
+                .setWorkStartMinute(Time.h2Min(23))
+                .setWorkEndMinute(Time.h2Min(2))
+                .setSeed(Constants.RANDOM_SEED)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .create();
+        List<Task> tasksToSchedule = Collections.singletonList(new Task(90, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.WORK));
+        List<Task> tasks = schedule.scheduleTasks(tasksToSchedule, Time.of(Time.h2Min(22)));
+        assertThat(tasks.get(0).getCurrentTimeSlot().getStartMinute(), is(greaterThanOrEqualTo(Time.h2Min(23))));
     }
 
     @Test

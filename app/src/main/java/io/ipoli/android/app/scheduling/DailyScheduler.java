@@ -292,11 +292,11 @@ public class DailyScheduler {
     }
 
     private boolean isNotAvailableSlot(DiscreteDistribution dist, int endSlot) {
-        return dist.at(endSlot + getSlotCountBetween(0, startMinute)) <= 0;
+        return dist.at(endSlot + getSlotCountBetween(startMinute, 0)) <= 0;
     }
 
     private boolean isAvailableSlot(DiscreteDistribution dist, int startSlot) {
-        return dist.at(startSlot + getSlotCountBetween(0, startMinute)) > 0;
+        return dist.at(startSlot + getSlotCountBetween(startMinute, 0)) > 0;
     }
 
     public List<Task> scheduleTasks(List<Task> tasksToSchedule) {
@@ -378,8 +378,8 @@ public class DailyScheduler {
         List<TimeSlot> blocks = new ArrayList<>();
         int endTimeBlockSlot = startSlot + slotCount;
         for (int i = startSlot; i < endTimeBlockSlot; i++) {
-            int startMinute = this.startMinute + i * timeSlotDuration;
-            int endMinute = startMinute + taskSlotCount * timeSlotDuration;
+            int startMinute = (this.startMinute + i * timeSlotDuration) % Time.MINUTES_IN_A_DAY;
+            int endMinute = (startMinute + taskSlotCount * timeSlotDuration) % Time.MINUTES_IN_A_DAY;
             blocks.add(new TimeSlot(startMinute, endMinute));
         }
         return blocks;
