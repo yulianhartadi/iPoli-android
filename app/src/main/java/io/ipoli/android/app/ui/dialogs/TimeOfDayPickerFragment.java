@@ -11,10 +11,13 @@ import android.support.v7.app.AlertDialog;
 import android.util.SparseBooleanArray;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.TimeOfDay;
+import io.ipoli.android.app.utils.StringUtils;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -35,14 +38,14 @@ public class TimeOfDayPickerFragment extends DialogFragment {
     private int title;
 
     public static TimeOfDayPickerFragment newInstance(@StringRes int title, OnTimesOfDayPickedListener listener) {
-        return newInstance(title, new ArrayList<TimeOfDay>(), listener);
+        return newInstance(title, new HashSet<>(), listener);
     }
 
-    public static TimeOfDayPickerFragment newInstance(@StringRes int title, List<TimeOfDay> selectedTimesOfDay, OnTimesOfDayPickedListener listener) {
+    public static TimeOfDayPickerFragment newInstance(@StringRes int title, Set<TimeOfDay> selectedTimesOfDay, OnTimesOfDayPickedListener listener) {
         TimeOfDayPickerFragment fragment = new TimeOfDayPickerFragment();
         Bundle args = new Bundle();
         ArrayList<String> selectedTimes = new ArrayList<>();
-        for(TimeOfDay timeOfDay : selectedTimesOfDay) {
+        for (TimeOfDay timeOfDay : selectedTimesOfDay) {
             selectedTimes.add(timeOfDay.name());
         }
         args.putStringArrayList(SELECTED_TIMES, selectedTimes);
@@ -53,7 +56,7 @@ public class TimeOfDayPickerFragment extends DialogFragment {
     }
 
     public interface OnTimesOfDayPickedListener {
-        void onTimesOfDayPicked(List<TimeOfDay> selectedTimes);
+        void onTimesOfDayPicked(Set<TimeOfDay> selectedTimes);
     }
 
     @Override
@@ -83,7 +86,7 @@ public class TimeOfDayPickerFragment extends DialogFragment {
                 .setTitle(title)
                 .setPositiveButton(R.string.help_dialog_ok, (dialog, which) -> {
                     SparseBooleanArray selectedPositions = alertDialog.getListView().getCheckedItemPositions();
-                    List<TimeOfDay> selectedTimes = new ArrayList<>();
+                    Set<TimeOfDay> selectedTimes = new HashSet<>();
                     for (int i = 0; i < alertDialog.getListView().getAdapter().getCount(); i++) {
                         if (selectedPositions.get(i)) {
                             selectedTimes.add(TimeOfDay.values()[i]);

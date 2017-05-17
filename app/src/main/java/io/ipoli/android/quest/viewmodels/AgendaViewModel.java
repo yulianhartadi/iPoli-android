@@ -53,4 +53,12 @@ public class AgendaViewModel {
     public boolean isCompleted() {
         return quest.isCompleted();
     }
+
+    public boolean isFromRepeatingQuest() {
+        return quest.isFromRepeatingQuest();
+    }
+
+    public boolean isFromChallenge() {
+        return quest.isFromChallenge();
+    }
 }

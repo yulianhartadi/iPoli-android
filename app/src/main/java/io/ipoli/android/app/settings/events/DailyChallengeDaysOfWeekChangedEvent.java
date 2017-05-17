@@ -1,5 +1,7 @@
 package io.ipoli.android.app.settings.events;
 
+import org.threeten.bp.DayOfWeek;
+
 import java.util.Set;
 
 /**
@@ -8,9 +10,9 @@ import java.util.Set;
  */
 public class DailyChallengeDaysOfWeekChangedEvent {
 
-    public final Set<Integer> selectedDaysOfWeek;
+    public final Set<DayOfWeek> selectedDaysOfWeek;
 
-    public DailyChallengeDaysOfWeekChangedEvent(Set<Integer> selectedDaysOfWeek) {
+    public DailyChallengeDaysOfWeekChangedEvent(Set<DayOfWeek> selectedDaysOfWeek) {
         this.selectedDaysOfWeek = selectedDaysOfWeek;
     }
 }
