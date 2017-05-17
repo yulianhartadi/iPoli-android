@@ -11,7 +11,6 @@ import static io.ipoli.android.app.utils.Time.h2Min;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 4/24/17.
  */
-
 public class WellnessConstraint extends BaseConstraint {
 
     private final int sleepEndMinute;
