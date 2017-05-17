@@ -76,16 +76,38 @@ public class DailyScheduler {
         boolean[] freeSlots = new boolean[getSlotCount()];
         Arrays.fill(freeSlots, true);
         for (Task t : scheduledTasks) {
-            if (doNotOverlap(t.getStartMinute(), t.getEndMinute())) {
+            int startMinute = t.getStartMinute();
+            int endMinute = t.getEndMinute();
+
+            if(!isInSchedule(startMinute) && !isInSchedule(endMinute)) {
                 continue;
             }
-            occupySlots(freeSlots, t.getStartMinute(), t.getEndMinute());
+
+            if(isInSchedule(startMinute) && !isInSchedule(endMinute)) {
+                endMinute = this.endMinute;
+            }
+
+            if(!isInSchedule(startMinute) && isInSchedule(endMinute)) {
+                startMinute = this.startMinute;
+            }
+            occupySlots(freeSlots, startMinute, endMinute);
         }
         return freeSlots;
     }
 
     private boolean doNotOverlap(int startMinute, int endMinute) {
         return this.endMinute < startMinute || endMinute < this.startMinute;
+    }
+
+    private boolean isInSchedule(int minute) {
+        if(startMinute < endMinute && (minute < startMinute || minute > endMinute)) {
+            return false;
+        }
+
+        if(startMinute > endMinute && (minute > endMinute && minute < startMinute)) {
+            return false;
+        }
+        return true;
     }
 
     private int getSlotCount() {
