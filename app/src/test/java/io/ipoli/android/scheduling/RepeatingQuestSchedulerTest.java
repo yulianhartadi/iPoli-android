@@ -31,6 +31,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
 import static org.hamcrest.number.OrderingComparison.lessThanOrEqualTo;
+import static org.junit.Assert.assertFalse;
 import static org.threeten.bp.temporal.TemporalAdjusters.firstDayOfMonth;
 import static org.threeten.bp.temporal.TemporalAdjusters.firstDayOfYear;
 import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth;
@@ -272,6 +273,25 @@ public class RepeatingQuestSchedulerTest {
         rq.setRecurrence(recurrence);
         List<Quest> result = rqScheduler.schedule(rq, startOfWeek);
         assertThat(result.size(), is(12));
+    }
+
+    @Test
+    public void scheduleFlexibleWeeklyQuestWithNoPreferredDaysInRandomDays() {
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+        RepeatingQuest rq = createRepeatingQuest();
+        Recurrence recurrence = Recurrence.create();
+        recurrence.setRecurrenceType(Recurrence.RepeatType.WEEKLY);
+        Recur recur = new Recur(Recur.WEEKLY, null);
+        recurrence.setRrule(recur.toString());
+        recurrence.setDtstartDate(startOfWeek);
+        recurrence.setFlexibleCount(3);
+        rq.setRecurrence(recurrence);
+        List<Quest> result = rqScheduler.schedule(rq, startOfWeek);
+        Collections.sort(result, (o1, o2) -> Long.compare(o1.getScheduled(), o2.getScheduled()));
+
+        assertFalse(result.get(0).getScheduledDate().getDayOfWeek() == DayOfWeek.MONDAY &&
+                result.get(1).getScheduledDate().getDayOfWeek() == DayOfWeek.TUESDAY &&
+                result.get(2).getScheduledDate().getDayOfWeek() == DayOfWeek.WEDNESDAY);
     }
 
     @Test
@@ -519,6 +539,32 @@ public class RepeatingQuestSchedulerTest {
         assertThat(scheduled.size(), is(11));
         assertThat(scheduled.get(0).getEnd(), is(greaterThanOrEqualTo(DateUtils.toMillis(tuesday))));
         assertThat(scheduled.get(1).getEnd(), is(greaterThanOrEqualTo(DateUtils.toMillis(tuesday))));
+    }
+
+    @Test
+    public void shouldNotHaveRepeatingScheduledDatesForWeeklyFlexibleQuest() {
+        RepeatingQuest rq = createRepeatingQuest();
+        Recurrence recurrence = Recurrence.create();
+        recurrence.setRecurrenceType(Recurrence.RepeatType.WEEKLY);
+        Recur recur = new Recur(Recur.WEEKLY, null);
+        recur.getDayList().add(WeekDay.MO);
+        recur.getDayList().add(WeekDay.TU);
+        recur.getDayList().add(WeekDay.WE);
+        recur.getDayList().add(WeekDay.TH);
+        recur.getDayList().add(WeekDay.FR);
+        recurrence.setRrule(recur.toString());
+        recurrence.setDtstartDate(startOfWeek);
+        recurrence.setFlexibleCount(6);
+        rq.setRecurrence(recurrence);
+        List<Quest> scheduled = rqScheduler.schedule(rq, startOfWeek);
+        List<LocalDate> scheduledDates = new ArrayList<>();
+        for(Quest q : scheduled) {
+            scheduledDates.add(q.getScheduledDate());
+        }
+
+        Set<LocalDate> uniqueDates = new HashSet<>();
+        uniqueDates.addAll(scheduledDates);
+        assertThat(scheduledDates.size(), is(uniqueDates.size()));
     }
 
     @Test
