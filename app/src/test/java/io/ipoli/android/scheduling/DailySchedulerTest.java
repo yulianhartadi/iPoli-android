@@ -1,7 +1,6 @@
 package io.ipoli.android.scheduling;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -149,8 +148,7 @@ public class DailySchedulerTest {
     }
 
     @Test
-    @Ignore
-    public void shouldOccupySlotsForTaskOverlappingWithSleep() {
+    public void shouldOccupySlotsForTaskOverlappingWithSleepStart() {
         int sleepStart = Time.h2Min(1);
         int sleepEnd = Time.h2Min(8);
         DailyScheduler schedule = new DailySchedulerBuilder()
@@ -164,11 +162,11 @@ public class DailySchedulerTest {
         schedule.scheduleTasks(new ArrayList<>(), scheduledTasks);
         assertFalse(schedule.isFree(0, sleepStart));
         assertTrue(schedule.isFree(sleepEnd, 0));
+        assertFalse(schedule.isFree(Time.h2Min(23), sleepStart));
     }
 
     @Test
-    @Ignore
-    public void should() {
+    public void shouldOccupySlotsForTaskOverlappingWithSleepEnd() {
         int sleepStart = Time.h2Min(1);
         int sleepEnd = Time.h2Min(8);
         DailyScheduler schedule = new DailySchedulerBuilder()
@@ -178,10 +176,11 @@ public class DailySchedulerTest {
                 .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
                 .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
                 .create();
-        List<Task> scheduledTasks = Collections.singletonList(new Task(0, Time.h2Min(2), Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
+        List<Task> scheduledTasks = Collections.singletonList(new Task(Time.h2Min(7), Time.h2Min(2), Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
         schedule.scheduleTasks(new ArrayList<>(), scheduledTasks);
-        assertFalse(schedule.isFree(0, sleepStart));
-        assertFalse(schedule.isFree(Time.h2Min(23), sleepStart));
+        assertFalse(schedule.isFree(sleepEnd, sleepEnd + Time.h2Min(1)));
+        assertTrue(schedule.isFree(sleepEnd + Time.h2Min(1), sleepStart));
+        assertFalse(schedule.isFree(sleepStart, sleepStart + Time.h2Min(2)));
     }
 
     @Test
