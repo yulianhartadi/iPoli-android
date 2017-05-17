@@ -1,6 +1,7 @@
 package io.ipoli.android.scheduling;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -39,6 +40,148 @@ public class DailySchedulerTest {
     public void setUp() throws Exception {
         random = new Random(Constants.RANDOM_SEED);
         defaultTime = Time.of(0);
+    }
+
+    @Test
+    public void shouldNotScheduleInSleepMinutes() {
+        int sleepStart = Time.h2Min(2);
+        int sleepEnd = Time.h2Min(6);
+        DailyScheduler schedule = new DailySchedulerBuilder()
+                .setStartMinute(sleepEnd)
+                .setEndMinute(sleepStart)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .create();
+        schedule.scheduleTasks(new ArrayList<>());
+        assertFalse(schedule.isFree(sleepStart, sleepEnd));
+    }
+
+    @Test
+    public void shouldNotScheduleInDefaultSleepMinutes() {
+        int sleepStart = Constants.DEFAULT_PLAYER_SLEEP_START_MINUTE;
+        int sleepEnd = Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE;
+        DailyScheduler schedule = new DailySchedulerBuilder()
+                .setStartMinute(sleepEnd)
+                .setEndMinute(sleepStart)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .create();
+        schedule.scheduleTasks(new ArrayList<>());
+        assertFalse(schedule.isFree(sleepStart, sleepEnd));
+    }
+
+    @Test
+    public void shouldNotScheduleWithinSleepMinutes() {
+        int sleepStart = Time.h2Min(23);
+        int sleepEnd = Time.h2Min(8);
+        DailyScheduler schedule = new DailySchedulerBuilder()
+                .setStartMinute(sleepEnd)
+                .setEndMinute(sleepStart)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .create();
+        schedule.scheduleTasks(new ArrayList<>());
+        assertFalse(schedule.isFree(sleepStart + 60, sleepEnd - 60));
+    }
+
+    @Test
+    public void shouldNotScheduleOnStartBound() {
+        int sleepStart = Time.h2Min(23);
+        int sleepEnd = Time.h2Min(8);
+        DailyScheduler schedule = new DailySchedulerBuilder()
+                .setStartMinute(sleepEnd)
+                .setEndMinute(sleepStart)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .create();
+        schedule.scheduleTasks(new ArrayList<>());
+        assertFalse(schedule.isFree(sleepStart, sleepEnd + 60));
+    }
+
+    @Test
+    public void shouldNotScheduleOnEndBound() {
+        int sleepStart = Time.h2Min(23);
+        int sleepEnd = Time.h2Min(8);
+        DailyScheduler schedule = new DailySchedulerBuilder()
+                .setStartMinute(sleepEnd)
+                .setEndMinute(sleepStart)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .create();
+        schedule.scheduleTasks(new ArrayList<>());
+        assertFalse(schedule.isFree(sleepStart - 60, sleepEnd));
+    }
+
+    @Test
+    public void shouldScheduleOnStartBound() {
+        int sleepStart = Time.h2Min(23);
+        int sleepEnd = Time.h2Min(8);
+        DailyScheduler schedule = new DailySchedulerBuilder()
+                .setStartMinute(sleepEnd)
+                .setEndMinute(sleepStart)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .create();
+        schedule.scheduleTasks(new ArrayList<>());
+        assertTrue(schedule.isFree(sleepStart - 60, sleepStart));
+    }
+
+    @Test
+    public void shouldHaveTaskAtSleepingTime() {
+        int sleepStart = Time.h2Min(23);
+        int sleepEnd = Time.h2Min(8);
+        DailyScheduler schedule = new DailySchedulerBuilder()
+                .setStartMinute(sleepEnd)
+                .setEndMinute(sleepStart)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .create();
+        List<Task> scheduledTasks = Collections.singletonList(new Task(0, 30, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
+        schedule.scheduleTasks(new ArrayList<>(), scheduledTasks);
+        assertTrue(schedule.isFree(sleepEnd, sleepStart));
+    }
+
+    @Test
+    @Ignore
+    public void shouldOccupySlotsForTaskOverlappingWithSleep() {
+        int sleepStart = Time.h2Min(1);
+        int sleepEnd = Time.h2Min(8);
+        DailyScheduler schedule = new DailySchedulerBuilder()
+                .setStartMinute(sleepEnd)
+                .setEndMinute(sleepStart)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .create();
+        List<Task> scheduledTasks = Collections.singletonList(new Task(0, Time.h2Min(2), Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
+        schedule.scheduleTasks(new ArrayList<>(), scheduledTasks);
+        assertFalse(schedule.isFree(0, sleepStart));
+        assertTrue(schedule.isFree(sleepEnd, 0));
+    }
+
+    @Test
+    @Ignore
+    public void should() {
+        int sleepStart = Time.h2Min(1);
+        int sleepEnd = Time.h2Min(8);
+        DailyScheduler schedule = new DailySchedulerBuilder()
+                .setStartMinute(sleepEnd)
+                .setEndMinute(sleepStart)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .create();
+        List<Task> scheduledTasks = Collections.singletonList(new Task(0, Time.h2Min(2), Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.PERSONAL));
+        schedule.scheduleTasks(new ArrayList<>(), scheduledTasks);
+        assertFalse(schedule.isFree(0, sleepStart));
+        assertFalse(schedule.isFree(Time.h2Min(23), sleepStart));
     }
 
     @Test
