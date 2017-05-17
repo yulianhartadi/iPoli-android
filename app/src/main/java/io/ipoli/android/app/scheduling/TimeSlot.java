@@ -35,8 +35,4 @@ public class TimeSlot {
     public Time getEndTime() {
         return Time.of(endMinute);
     }
-
-    public boolean doOverlap(int startMinute, int endMinute) {
-        return !(getEndMinute() < startMinute || endMinute < getStartMinute());
-    }
 }
