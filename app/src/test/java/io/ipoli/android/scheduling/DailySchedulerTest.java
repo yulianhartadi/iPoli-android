@@ -1,6 +1,7 @@
 package io.ipoli.android.scheduling;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.threeten.bp.LocalDate;
 
@@ -20,6 +21,7 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.QuestTask;
 
 import static io.ipoli.android.app.utils.Time.h2Min;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -400,6 +402,63 @@ public class DailySchedulerTest {
         schedule.scheduleTasks(new ArrayList<>());
         assertFalse(schedule.isFree(0, sleepEnd - 5));
         assertTrue(schedule.isFree(sleepEnd + 10, h2Min(2)));
+    }
+
+    @Test
+    public void shouldNotMoveTask() {
+        DailyScheduler schedule = new DailySchedulerBuilder()
+                .setStartMinute(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE)
+                .setEndMinute(Constants.DEFAULT_PLAYER_SLEEP_START_MINUTE)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .setSeed(random)
+                .create();
+
+        Quest q = new Quest("q1", Category.WELLNESS);
+        q.setPriority(Quest.PRIORITY_IMPORTANT_NOT_URGENT);
+        q.setStartTimePreference(TimePreference.MORNING);
+        q.setDuration(30);
+
+        List<Task> tasks = schedule.scheduleTasks(Collections.singletonList(new QuestTask("id", q.getDuration(), q.getPriority(), q.getStartTimePreference(), q.getCategoryType(), q)), Time.of(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE));
+
+        Quest q2 = new Quest("q1", Category.WELLNESS);
+        q2.setPriority(Quest.PRIORITY_IMPORTANT_NOT_URGENT);
+        q2.setStartTimePreference(TimePreference.MORNING);
+        q2.setDuration(30);
+
+        List<Task> updatedTasks = schedule.scheduleTasks(Collections.singletonList(new QuestTask("id", q2.getDuration(), q2.getPriority(), q2.getStartTimePreference(), q2.getCategoryType(), q2)));
+
+        assertThat(updatedTasks.get(0).getCurrentTimeSlot().getStartMinute(), is(tasks.get(0).getCurrentTimeSlot().getStartMinute()));
+    }
+
+    @Test
+    @Ignore
+    public void shouldMoveTask() {
+        DailyScheduler schedule = new DailySchedulerBuilder()
+                .setStartMinute(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE)
+                .setEndMinute(Constants.DEFAULT_PLAYER_SLEEP_START_MINUTE)
+                .setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE)
+                .setWorkEndMinute(Constants.DEFAULT_PLAYER_WORK_END_MINUTE)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .setSeed(random)
+                .create();
+
+        Quest q = new Quest("q1", Category.WELLNESS);
+        q.setPriority(Quest.PRIORITY_IMPORTANT_NOT_URGENT);
+        q.setStartTimePreference(TimePreference.MORNING);
+        q.setDuration(30);
+
+        List<Task> tasks = schedule.scheduleTasks(Collections.singletonList(new QuestTask("id", q.getDuration(), q.getPriority(), q.getStartTimePreference(), q.getCategoryType(), q)), Time.of(Constants.DEFAULT_PLAYER_SLEEP_END_MINUTE));
+
+        Quest q2 = new Quest("q1", Category.WELLNESS);
+        q2.setPriority(Quest.PRIORITY_IMPORTANT_NOT_URGENT);
+        q2.setStartTimePreference(TimePreference.MORNING);
+        q2.setDuration(20);
+
+        List<Task> updatedTasks = schedule.scheduleTasks(Collections.singletonList(new QuestTask("id", q2.getDuration(), q2.getPriority(), q2.getStartTimePreference(), q2.getCategoryType(), q2)));
+
+        assertThat(updatedTasks.get(0).getCurrentTimeSlot().getStartMinute(), is(not(tasks.get(0).getCurrentTimeSlot().getStartMinute())));
     }
 
     private Task toTask(Quest quest) {
