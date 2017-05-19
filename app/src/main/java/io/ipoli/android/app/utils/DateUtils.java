@@ -14,8 +14,10 @@ import org.threeten.bp.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import static org.threeten.bp.temporal.TemporalAdjusters.firstDayOfMonth;
 import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth;
@@ -50,12 +52,6 @@ public class DateUtils {
 
     public static boolean isTomorrow(LocalDate date) {
         return LocalDate.now().plusDays(1).isEqual(date);
-    }
-
-    public static Date getTomorrow() {
-        Calendar c = Calendar.getInstance();
-        c.add(Calendar.DAY_OF_YEAR, 1);
-        return c.getTime();
     }
 
     public static Date nowUTC() {
@@ -149,5 +145,21 @@ public class DateUtils {
 
     public static LocalDate fromUserZoneToLocalDate(Date date) {
         return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    public static Set<DayOfWeek> toDaysOfWeek(Set<Integer> daysOfWeek) {
+        Set<DayOfWeek> result = new HashSet<>();
+        for (int day : daysOfWeek) {
+            result.add(DayOfWeek.of(day));
+        }
+        return result;
+    }
+
+    public static Set<Integer> toIntegers(Set<DayOfWeek> daysOfWeek) {
+        Set<Integer> result = new HashSet<>();
+        for (DayOfWeek day : daysOfWeek) {
+            result.add(day.getValue());
+        }
+        return result;
     }
 }

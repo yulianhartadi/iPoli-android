@@ -1,4 +1,4 @@
-package io.ipoli.android;
+package io.ipoli.android.scheduling;
 
 import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
@@ -31,10 +31,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
 import static org.hamcrest.number.OrderingComparison.lessThanOrEqualTo;
+import static org.junit.Assert.assertFalse;
 import static org.threeten.bp.temporal.TemporalAdjusters.firstDayOfMonth;
 import static org.threeten.bp.temporal.TemporalAdjusters.firstDayOfYear;
 import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth;
-import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfYear;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -52,7 +52,6 @@ public class RepeatingQuestSchedulerTest {
     private static LocalDate startOfMonth;
     private static LocalDate endOfMonth;
     private static LocalDate startOfYear;
-    private static LocalDate endOfYear;
 
     @BeforeClass
     public static void setUp() {
@@ -63,7 +62,6 @@ public class RepeatingQuestSchedulerTest {
         startOfMonth = today.with(firstDayOfMonth());
         endOfMonth = today.with(lastDayOfMonth());
         startOfYear = today.with(firstDayOfYear());
-        endOfYear = today.with(lastDayOfYear());
     }
 
     @Test
@@ -275,6 +273,25 @@ public class RepeatingQuestSchedulerTest {
         rq.setRecurrence(recurrence);
         List<Quest> result = rqScheduler.schedule(rq, startOfWeek);
         assertThat(result.size(), is(12));
+    }
+
+    @Test
+    public void scheduleFlexibleWeeklyQuestWithNoPreferredDaysInRandomDays() {
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+        RepeatingQuest rq = createRepeatingQuest();
+        Recurrence recurrence = Recurrence.create();
+        recurrence.setRecurrenceType(Recurrence.RepeatType.WEEKLY);
+        Recur recur = new Recur(Recur.WEEKLY, null);
+        recurrence.setRrule(recur.toString());
+        recurrence.setDtstartDate(startOfWeek);
+        recurrence.setFlexibleCount(3);
+        rq.setRecurrence(recurrence);
+        List<Quest> result = rqScheduler.schedule(rq, startOfWeek);
+        Collections.sort(result, (o1, o2) -> Long.compare(o1.getScheduled(), o2.getScheduled()));
+
+        assertFalse(result.get(0).getScheduledDate().getDayOfWeek() == DayOfWeek.MONDAY &&
+                result.get(1).getScheduledDate().getDayOfWeek() == DayOfWeek.TUESDAY &&
+                result.get(2).getScheduledDate().getDayOfWeek() == DayOfWeek.WEDNESDAY);
     }
 
     @Test
@@ -525,6 +542,32 @@ public class RepeatingQuestSchedulerTest {
     }
 
     @Test
+    public void shouldNotHaveRepeatingScheduledDatesForWeeklyFlexibleQuest() {
+        RepeatingQuest rq = createRepeatingQuest();
+        Recurrence recurrence = Recurrence.create();
+        recurrence.setRecurrenceType(Recurrence.RepeatType.WEEKLY);
+        Recur recur = new Recur(Recur.WEEKLY, null);
+        recur.getDayList().add(WeekDay.MO);
+        recur.getDayList().add(WeekDay.TU);
+        recur.getDayList().add(WeekDay.WE);
+        recur.getDayList().add(WeekDay.TH);
+        recur.getDayList().add(WeekDay.FR);
+        recurrence.setRrule(recur.toString());
+        recurrence.setDtstartDate(startOfWeek);
+        recurrence.setFlexibleCount(6);
+        rq.setRecurrence(recurrence);
+        List<Quest> scheduled = rqScheduler.schedule(rq, startOfWeek);
+        List<LocalDate> scheduledDates = new ArrayList<>();
+        for(Quest q : scheduled) {
+            scheduledDates.add(q.getScheduledDate());
+        }
+
+        Set<LocalDate> uniqueDates = new HashSet<>();
+        uniqueDates.addAll(scheduledDates);
+        assertThat(scheduledDates.size(), is(uniqueDates.size()));
+    }
+
+    @Test
     public void shouldNotOverscheduleMonthlyFlexibleQuest() {
         RepeatingQuest rq = createRepeatingQuest();
         rq.setRecurrence(createFlexibleMonthlyRecurrence(startOfMonth, 10));
@@ -545,7 +588,7 @@ public class RepeatingQuestSchedulerTest {
     @Test
     public void shouldScheduleForNextMonthWhenCloseToEndOfThis() {
         RepeatingQuest rq = createRepeatingQuest();
-        rq.addScheduledPeriodEndDate(today.with(lastDayOfMonth()));
+        rq.addScheduledPeriodEndDate(endOfMonth);
         rq.setRecurrence(createFlexibleMonthlyRecurrence(today.with(firstDayOfMonth()), 10));
         List<Quest> scheduled = rqScheduler.schedule(rq, today.with(lastDayOfMonth()).minusDays(2));
         assertThat(scheduled.size(), is(greaterThanOrEqualTo(10)));
