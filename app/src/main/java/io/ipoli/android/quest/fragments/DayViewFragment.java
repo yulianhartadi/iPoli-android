@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,7 +21,6 @@ import org.threeten.bp.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -35,11 +33,10 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.StartQuickAddEvent;
-import io.ipoli.android.app.scheduling.DiscreteDistribution;
-import io.ipoli.android.app.scheduling.PosteriorEstimator;
-import io.ipoli.android.app.scheduling.ProbabilisticTaskScheduler;
+import io.ipoli.android.app.scheduling.DailyScheduler;
+import io.ipoli.android.app.scheduling.DailySchedulerBuilder;
 import io.ipoli.android.app.scheduling.Task;
-import io.ipoli.android.app.scheduling.TimeBlock;
+import io.ipoli.android.app.scheduling.TimeSlot;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.ui.calendar.CalendarEvent;
 import io.ipoli.android.app.ui.calendar.CalendarLayout;
@@ -52,6 +49,7 @@ import io.ipoli.android.player.Player;
 import io.ipoli.android.quest.adapters.QuestCalendarAdapter;
 import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.QuestTask;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
@@ -116,7 +114,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     List<Quest> futureQuests = new ArrayList<>();
     List<Quest> futurePlaceholderQuests = new ArrayList<>();
-    private PosteriorEstimator posteriorEstimator;
+
+    private DailyScheduler dailyScheduler;
 
     public static DayViewFragment newInstance(LocalDate date) {
         DayViewFragment fragment = new DayViewFragment();
@@ -157,6 +156,17 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         Player player = getPlayer();
 
+        dailyScheduler = new DailySchedulerBuilder()
+                .setStartMinute(player.getSleepEndMinute())
+                .setEndMinute(player.getSleepStartMinute())
+                .setProductiveTimes(player.getMostProductiveTimesOfDaySet())
+                .setSeed(Constants.RANDOM_SEED)
+                .setWorkDays(player.getDayOfWeekWorkDays())
+                .setWorkStartMinute(player.getWorkStartMinute())
+                .setWorkEndMinute(player.getWorkEndMinute())
+                .create();
+
+
         calendarContainer.setCalendarListener(this);
         calendarContainer.setTimeFormat(player.getUse24HourFormat());
 
@@ -170,16 +180,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         calendarDayView.setAdapter(calendarAdapter);
         calendarDayView.setOnHourCellLongClickListener(this);
         calendarDayView.scrollToNow();
-
-        PosteriorEstimator.PosteriorSettings posteriorSettings = PosteriorEstimator.PosteriorSettings.create()
-                .setWorkDays(player.getWorkDays())
-                .setSleepStartMinute(player.getSleepStartMinute())
-                .setSleepEndMinute(player.getSleepEndMinute())
-                .setWorkStartMinute(player.getWorkStartMinute())
-                .setWorkEndMinute(player.getWorkEndMinute())
-                .setMostProductiveTimesOfDay(player.getMostProductiveTimesOfDay());
-
-        posteriorEstimator = new PosteriorEstimator(posteriorSettings, currentDate, new Random(Constants.RANDOM_SEED));
 
         if (!currentDate.isEqual(LocalDate.now())) {
             calendarDayView.hideTimeLine();
@@ -273,8 +273,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
                 event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinuteOfDay());
             }
             calendarEvents.add(event);
-            updateSchedule(new Schedule(new ArrayList<>(), calendarEvents));
         }
+        updateSchedule(new Schedule(new ArrayList<>(), calendarEvents));
     }
 
     @Override
@@ -300,6 +300,9 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         ViewGroup.LayoutParams layoutParams = unscheduledQuestList.getLayoutParams();
         layoutParams.height = unscheduledQuestsToShow * itemHeight;
+        if (unscheduledQuestsToShow == Constants.MAX_UNSCHEDULED_QUEST_VISIBLE_COUNT) {
+            layoutParams.height = layoutParams.height - itemHeight / 2;
+        }
         unscheduledQuestList.setLayoutParams(layoutParams);
     }
 
@@ -339,22 +342,30 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         }
         Collections.sort(schedule.getUnscheduledQuests(), (q1, q2) ->
                 -Integer.compare(q1.getDuration(), q2.getDuration()));
-        List<UnscheduledQuestViewModel> unscheduledViewModels = new ArrayList<>();
         List<QuestCalendarViewModel> scheduledEvents = schedule.getCalendarEvents();
 
-        List<Task> tasks = new ArrayList<>();
-        for (QuestCalendarViewModel vm : schedule.getCalendarEvents()) {
-            tasks.add(new Task(vm.getStartMinute(), vm.getDuration()));
-        }
-
-        ProbabilisticTaskScheduler probabilisticTaskScheduler = new ProbabilisticTaskScheduler(0, 24, tasks, new Random(Constants.RANDOM_SEED));
-
-        List<QuestCalendarViewModel> proposedEvents = new ArrayList<>();
+        List<UnscheduledQuestViewModel> unscheduledViewModels = new ArrayList<>();
+        List<Task> tasksToSchedule = new ArrayList<>();
         for (Quest q : schedule.getUnscheduledQuests()) {
             unscheduledViewModels.add(new UnscheduledQuestViewModel(q));
-            if (!q.shouldBeDoneMultipleTimesPerDay()) {
-                proposeSlotForQuest(scheduledEvents, probabilisticTaskScheduler, proposedEvents, q);
+            if (!q.shouldBeDoneMultipleTimesPerDay() && !q.isPlaceholder()) {
+                tasksToSchedule.add(new QuestTask(q.getDuration(), q.getPriority(), q.getStartTimePreference(), q.getCategoryType(), q));
             }
+        }
+
+        List<Task> calendarTasks = new ArrayList<>();
+        for (QuestCalendarViewModel vm : scheduledEvents) {
+            calendarTasks.add(new Task(vm.getId(), vm.getStartMinute(), vm.getDuration(), vm.getPriority(), vm.getStartTimePreference(), vm.getCategory()));
+        }
+
+        List<Task> scheduledTasks = dailyScheduler.scheduleTasks(tasksToSchedule, calendarTasks);
+        for (Task t : scheduledTasks) {
+            QuestTask qt = (QuestTask) t;
+            if (qt.getCurrentTimeSlot() == null) {
+                continue;
+            }
+            QuestCalendarViewModel vm = QuestCalendarViewModel.createWithProposedTime(qt.quest, qt.getCurrentTimeSlot().getStartMinute());
+            scheduledEvents.add(vm);
         }
 
         unscheduledQuestsAdapter.updateQuests(unscheduledViewModels);
@@ -362,43 +373,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         setUnscheduledQuestsHeight();
         calendarDayView.onMinuteChanged();
-    }
-
-    private void proposeSlotForQuest(List<QuestCalendarViewModel> scheduledEvents, ProbabilisticTaskScheduler probabilisticTaskScheduler, List<QuestCalendarViewModel> proposedEvents, Quest q) {
-        DiscreteDistribution posterior = posteriorEstimator.posteriorFor(q);
-
-        List<TimeBlock> timeBlocks = probabilisticTaskScheduler.chooseSlotsFor(new Task(q.getDuration()), 15, Time.now(), posterior);
-
-        TimeBlock timeBlock = chooseNonOverlappingTimeBlock(proposedEvents, timeBlocks);
-
-        if (timeBlock != null) {
-            timeBlocks.remove(0);
-            QuestCalendarViewModel vm = QuestCalendarViewModel.createWithProposedTime(q, timeBlock.getStartMinute(), timeBlocks);
-            scheduledEvents.add(vm);
-            proposedEvents.add(vm);
-        }
-    }
-
-    @Nullable
-    private TimeBlock chooseNonOverlappingTimeBlock(List<QuestCalendarViewModel> proposedEvents, List<TimeBlock> timeBlocks) {
-        for (TimeBlock tb : timeBlocks) {
-            if (!doOverlap(proposedEvents, tb)) {
-                return tb;
-            }
-        }
-        return null;
-    }
-
-    private boolean doOverlap(List<QuestCalendarViewModel> proposedEvents, TimeBlock tb) {
-        for (QuestCalendarViewModel vm : proposedEvents) {
-            int sm = vm.getStartMinute();
-            int em = vm.getStartMinute() + vm.getDuration() - 1;
-
-            if (tb.doOverlap(sm, em)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
@@ -444,12 +418,15 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Subscribe
     public void onRescheduleQuest(RescheduleQuestEvent e) {
-        if (e.calendarEvent.useNextSlot(calendarAdapter.getEventsWithProposedSlots())) {
-            calendarAdapter.notifyDataSetChanged();
-            calendarDayView.smoothScrollToTime(Time.of(e.calendarEvent.getStartMinute()));
-        } else {
+        Task task = dailyScheduler.chooseNewTimeSlot(e.calendarEvent.getId(), Time.now());
+        TimeSlot currentTimeSlot = task.getCurrentTimeSlot();
+        if(currentTimeSlot == null) {
             Toast.makeText(getContext(), "No more suggestions", Toast.LENGTH_SHORT).show();
+            return;
         }
+        QuestCalendarViewModel vm = QuestCalendarViewModel.createWithProposedTime(e.calendarEvent.getQuest(), currentTimeSlot.getStartMinute());
+        calendarAdapter.updateEvent(vm);
+        calendarDayView.smoothScrollToTime(Time.of(currentTimeSlot.getStartMinute()));
     }
 
     @Override
