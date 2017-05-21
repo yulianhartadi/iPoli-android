@@ -348,7 +348,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         List<Task> tasksToSchedule = new ArrayList<>();
         for (Quest q : schedule.getUnscheduledQuests()) {
             unscheduledViewModels.add(new UnscheduledQuestViewModel(q));
-            if (!q.shouldBeDoneMultipleTimesPerDay()) {
+            if (!q.shouldBeDoneMultipleTimesPerDay() && !q.isPlaceholder()) {
                 tasksToSchedule.add(new QuestTask(q.getDuration(), q.getPriority(), q.getStartTimePreference(), q.getCategoryType(), q));
             }
         }

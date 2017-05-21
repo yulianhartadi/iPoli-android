@@ -99,7 +99,7 @@ public interface Constants {
 
     String PICTURE_NAME_EXTRA_KEY = "avatar_name";
 
-    int[] DURATIONS = {10, 15, 20, 30, 60, 90, 120, 180, 240};
+    int[] DURATIONS = {10, 15, 20, 25, 30, 60, 90, 120, 180, 240};
 
     int DEFAULT_MIN_REWARD_PRICE = 10;
 

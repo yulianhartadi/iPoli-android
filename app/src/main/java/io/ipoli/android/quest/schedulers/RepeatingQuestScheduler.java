@@ -180,17 +180,6 @@ public class RepeatingQuestScheduler {
         return result;
     }
 
-    private int getScheduleCount(LocalDate startDate, LocalDate endDate, List<Quest> scheduledQuests, Recurrence recurrence) {
-        int countForMonth = recurrence.getFlexibleCount();
-
-        for (Quest q : scheduledQuests) {
-            if (DateUtils.isBetween(q.getOriginalScheduledDate(), startDate, endDate)) {
-                countForMonth--;
-            }
-        }
-        return countForMonth;
-    }
-
     @NonNull
     private List<LocalDate> findMonthlyPossibleDates(Recurrence recurrence, int maxDatesToFind, LocalDate startDate, LocalDate endDate, LocalDate currentDate) {
         Set<LocalDate> possibleDates = new HashSet<>();
@@ -234,6 +223,17 @@ public class RepeatingQuestScheduler {
         return result;
     }
 
+    private int getScheduleCount(LocalDate startDate, LocalDate endDate, List<Quest> scheduledQuests, Recurrence recurrence) {
+        int countForMonth = recurrence.getFlexibleCount();
+
+        for (Quest q : scheduledQuests) {
+            if (DateUtils.isBetween(q.getOriginalScheduledDate(), startDate, endDate)) {
+                countForMonth--;
+            }
+        }
+        return countForMonth;
+    }
+
     @NonNull
     private List<Quest> scheduleWeeklyFlexibleQuest(RepeatingQuest repeatingQuest, LocalDate startDate, LocalDate endDate, LocalDate currentDate, List<Quest> scheduledQuests) {
 
@@ -247,35 +247,45 @@ public class RepeatingQuestScheduler {
         int questsToScheduleCount = getScheduleCount(startDate, endDate, scheduledQuests, recurrence);
 
         LocalDate start = startDate.isAfter(currentDate) ? startDate : currentDate;
-        List<LocalDate> possibleDates = findWeeklyPossibleDates(recurrence.getRrule(), questsToScheduleCount, start, endDate);
-
-        Collections.shuffle(possibleDates, new Random(seed));
-
+        List<LocalDate> resultDates = findWeeklyPossibleDates(start, endDate, recurrence, questsToScheduleCount);
         List<Quest> result = new ArrayList<>();
-        for (LocalDate scheduledDate : possibleDates) {
+        for (LocalDate scheduledDate : resultDates) {
             result.add(createQuestFromRepeating(repeatingQuest, scheduledDate));
         }
         return result;
     }
 
     @NonNull
-    private List<LocalDate> findWeeklyPossibleDates(String rrule, int maxDatesToFind, LocalDate start, LocalDate end) {
-        Set<LocalDate> possibleDates = new HashSet<>();
+    private List<LocalDate> findWeeklyPossibleDates(LocalDate startDate, LocalDate endDate, Recurrence recurrence, int questsCount) {
+        WeekDayList weekDayList = getWeekDayList(recurrence.getRrule());
+        List<LocalDate> resultDates = new ArrayList<>();
+        resultDates.addAll(getPreferredDays(startDate, endDate, weekDayList));
 
-        WeekDayList weekDayList = getWeekDayList(rrule);
-        addPreferredDays(start, possibleDates, weekDayList);
-        if (weekDayList.size() < maxDatesToFind) {
-            addAdditionalDays(maxDatesToFind, start, possibleDates);
+        if (weekDayList.size() < questsCount) {
+            int remainingCount = questsCount - weekDayList.size();
+            List<LocalDate> possibleDates = findRemainingWeeklyPossibleDates(startDate, endDate, resultDates);
+            if (possibleDates.size() > remainingCount) {
+                Collections.shuffle(possibleDates, new Random(seed));
+                possibleDates = possibleDates.subList(0, remainingCount);
+            }
+            resultDates.addAll(possibleDates);
         }
 
+        if (resultDates.size() > questsCount) {
+            Collections.shuffle(resultDates, new Random(seed));
+            resultDates = resultDates.subList(0, questsCount);
+        }
+        return resultDates;
+    }
+
+    @NonNull
+    private List<LocalDate> findRemainingWeeklyPossibleDates(LocalDate start, LocalDate end, List<LocalDate> datesToExclude) {
+        Set<LocalDate> possibleDates = getAdditionalWeekDays(start);
         List<LocalDate> result = new ArrayList<>();
         for (LocalDate possibleDate : possibleDates) {
-            if (!possibleDate.isBefore(start) && !possibleDate.isAfter(end)) {
+            if (!possibleDate.isBefore(start) && !possibleDate.isAfter(end) && !datesToExclude.contains(possibleDate)) {
                 result.add(possibleDate);
             }
-        }
-        if (result.size() > maxDatesToFind) {
-            return result.subList(0, maxDatesToFind);
         }
         return result;
     }
@@ -288,16 +298,16 @@ public class RepeatingQuestScheduler {
         }
     }
 
-    private void addAdditionalDays(int countForWeek, LocalDate start, Set<LocalDate> possibleDates) {
+    private Set<LocalDate> getAdditionalWeekDays(LocalDate start) {
+        Set<LocalDate> possibleDates = new HashSet<>();
         for (int i = start.getDayOfWeek().getValue(); i <= DayOfWeek.SUNDAY.getValue(); i++) {
             possibleDates.add(start.with(DayOfWeek.of(i)));
-            if (possibleDates.size() == countForWeek) {
-                return;
-            }
         }
+        return possibleDates;
     }
 
-    private void addPreferredDays(LocalDate start, Set<LocalDate> possibleDates, WeekDayList weekDayList) {
+    private Set<LocalDate> getPreferredDays(LocalDate startDate, LocalDate endDate, WeekDayList weekDayList) {
+        Set<LocalDate> possibleDates = new HashSet<>();
         for (Object weekDayObj : weekDayList) {
             WeekDay weekDay = (WeekDay) weekDayObj;
             int weekDayValue = WeekDay.getCalendarDay(weekDay);
@@ -306,8 +316,14 @@ public class RepeatingQuestScheduler {
             } else {
                 weekDayValue--;
             }
-            possibleDates.add(start.with(DayOfWeek.of(weekDayValue)));
+
+
+            LocalDate date = startDate.with(DayOfWeek.of(weekDayValue));
+            if (!date.isBefore(startDate) && !date.isAfter(endDate)) {
+                possibleDates.add(date);
+            }
         }
+        return possibleDates;
     }
 
     @NonNull

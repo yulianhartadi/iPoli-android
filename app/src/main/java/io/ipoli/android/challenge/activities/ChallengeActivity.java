@@ -2,7 +2,6 @@ package io.ipoli.android.challenge.activities;
 
 import android.animation.ObjectAnimator;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -23,13 +22,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
 import com.squareup.otto.Bus;
 
 import org.threeten.bp.LocalDate;
@@ -56,7 +50,6 @@ import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.viewmodels.ChallengeQuestViewModel;
 import io.ipoli.android.quest.data.Category;
-import io.ipoli.android.quest.data.PeriodHistory;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 
@@ -295,68 +288,68 @@ public class ChallengeActivity extends BaseActivity {
     }
 
     private void setupChart() {
-        history.setDescription("");
-        history.setTouchEnabled(false);
-        history.setPinchZoom(false);
-        history.setExtraBottomOffset(20);
-
-        history.setDrawGridBackground(false);
-        history.setDrawBarShadow(true);
-
-        history.setDrawValueAboveBar(false);
-        history.setDrawGridBackground(false);
-
-        YAxis leftAxis = history.getAxisLeft();
-        leftAxis.setAxisMinValue(0f);
-        leftAxis.setSpaceTop(0);
-        leftAxis.setEnabled(false);
-        history.getAxisRight().setEnabled(false);
-
-        XAxis xLabels = history.getXAxis();
-        xLabels.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xLabels.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_54));
-        xLabels.setLabelsToSkip(0);
-        xLabels.setTextSize(13f);
-        xLabels.setDrawAxisLine(false);
-        xLabels.setDrawGridLines(false);
-        xLabels.setYOffset(5);
-        history.getLegend().setEnabled(false);
-
-        List<PeriodHistory> periodHistories = challenge.getPeriodHistories(LocalDate.now());
-
-        List<BarEntry> yValues = new ArrayList<>();
-        for (int i = 0; i < periodHistories.size(); i++) {
-            PeriodHistory p = periodHistories.get(i);
-            yValues.add(new BarEntry(p.getCompletedCount(), i));
-        }
-
-        BarDataSet dataSet = new BarDataSet(yValues, "");
-        dataSet.setColors(getColors());
-        dataSet.setBarShadowColor(ContextCompat.getColor(this, Challenge.getCategory(challenge).color100));
-
-        List<String> xValues = new ArrayList<>();
-        xValues.add(getWeekRangeText(periodHistories.get(0).getStartDate(), periodHistories.get(0).getEndDate()));
-        xValues.add(getWeekRangeText(periodHistories.get(1).getStartDate(), periodHistories.get(1).getEndDate()));
-        xValues.add(getString(R.string.last_week));
-        xValues.add(getString(R.string.this_week));
-        setHistoryData(dataSet, xValues);
+//        history.setDescription("");
+//        history.setTouchEnabled(false);
+//        history.setPinchZoom(false);
+//        history.setExtraBottomOffset(20);
+//
+//        history.setDrawGridBackground(false);
+//        history.setDrawBarShadow(true);
+//
+//        history.setDrawValueAboveBar(false);
+//        history.setDrawGridBackground(false);
+//
+//        YAxis leftAxis = history.getAxisLeft();
+//        leftAxis.setAxisMinValue(0f);
+//        leftAxis.setSpaceTop(0);
+//        leftAxis.setEnabled(false);
+//        history.getAxisRight().setEnabled(false);
+//
+//        XAxis xLabels = history.getXAxis();
+//        xLabels.setPosition(XAxis.XAxisPosition.BOTTOM);
+//        xLabels.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_54));
+//        xLabels.setLabelsToSkip(0);
+//        xLabels.setTextSize(13f);
+//        xLabels.setDrawAxisLine(false);
+//        xLabels.setDrawGridLines(false);
+//        xLabels.setYOffset(5);
+//        history.getLegend().setEnabled(false);
+//
+//        List<PeriodHistory> periodHistories = challenge.getPeriodHistories(LocalDate.now());
+//
+//        List<BarEntry> yValues = new ArrayList<>();
+//        for (int i = 0; i < periodHistories.size(); i++) {
+//            PeriodHistory p = periodHistories.get(i);
+//            yValues.add(new BarEntry(p.getCompletedCount(), i));
+//        }
+//
+//        BarDataSet dataSet = new BarDataSet(yValues, "");
+//        dataSet.setColors(getColors());
+//        dataSet.setBarShadowColor(ContextCompat.getColor(this, Challenge.getCategory(challenge).color100));
+//
+//        List<String> xValues = new ArrayList<>();
+//        xValues.add(getWeekRangeText(periodHistories.get(0).getStartDate(), periodHistories.get(0).getEndDate()));
+//        xValues.add(getWeekRangeText(periodHistories.get(1).getStartDate(), periodHistories.get(1).getEndDate()));
+//        xValues.add(getString(R.string.last_week));
+//        xValues.add(getString(R.string.this_week));
+//        setHistoryData(dataSet, xValues);
 
     }
 
     private void setHistoryData(BarDataSet dataSet, List<String> xValues) {
-        BarData data = new BarData(xValues, dataSet);
-        data.setValueTextSize(14f);
-        data.setValueTextColor(Color.WHITE);
-        data.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
-            if (value == 0) {
-                return "";
-            }
-            return String.valueOf((int) value);
-        });
-
-        history.setData(data);
-        history.invalidate();
-        history.animateY(1400, Easing.EasingOption.EaseInOutQuart);
+//        BarData data = new BarData(xValues, dataSet);
+//        data.setValueTextSize(14f);
+//        data.setValueTextColor(Color.WHITE);
+//        data.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
+//            if (value == 0) {
+//                return "";
+//            }
+//            return String.valueOf((int) value);
+//        });
+//
+//        history.setData(data);
+//        history.invalidate();
+//        history.animateY(1400, Easing.EasingOption.EaseInOutQuart);
     }
 
     private int[] getColors() {
