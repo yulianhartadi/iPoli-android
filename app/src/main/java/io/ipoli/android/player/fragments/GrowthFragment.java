@@ -1,18 +1,12 @@
 package io.ipoli.android.player.fragments;
 
 import android.content.Context;
-import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,11 +14,16 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -64,13 +63,7 @@ public class GrowthFragment extends BaseFragment {
     CollapsingToolbarLayout collapsingToolbarLayout;
 
     @BindView(R.id.awesomeness_chart)
-    LineChart awesomenessChart;
-
-    @BindView(R.id.awesomeness_vs_week)
-    TextView awesomenessVsWeek;
-
-    @BindView(R.id.awesomeness_vs_month)
-    TextView awesomenessVsMonth;
+    CombinedChart awesomenessChart;
 
     @BindView(R.id.completed_quests_chart)
     LineChart completedQuestsChart;
@@ -218,42 +211,29 @@ public class GrowthFragment extends BaseFragment {
     }
 
     private void setupAwesomenessChart() {
-
-        SpannableString lastWeekSpan = new SpannableString("+18%\nvs\nlast week");
-        lastWeekSpan.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.md_green_500)), 0, 4, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        lastWeekSpan.setSpan(new StyleSpan(Typeface.BOLD), 0, 4, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-        lastWeekSpan.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.md_dark_text_54)), 5, lastWeekSpan.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        awesomenessVsWeek.setText(lastWeekSpan);
-
-        SpannableString lastMonthSpan = new SpannableString("-35%\nvs\nlast month");
-        lastMonthSpan.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.md_red_500)), 0, 4, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        lastMonthSpan.setSpan(new StyleSpan(Typeface.BOLD), 0, 4, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-        lastMonthSpan.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), R.color.md_dark_text_54)), 5, lastMonthSpan.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        awesomenessVsMonth.setText(lastMonthSpan);
-
         applyDefaultStyle(awesomenessChart);
 
         List<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(1, 12, R.color.md_green_700));
-        entries.add(new Entry(2, 24, R.color.md_green_700));
-        entries.add(new Entry(3, 38, R.color.md_green_700));
+        entries.add(new Entry(1, 20, R.color.md_green_700));
+        entries.add(new Entry(2, 32, R.color.md_green_700));
+        entries.add(new Entry(3, 42, R.color.md_green_700));
         entries.add(new Entry(4, 55, R.color.md_green_700));
         entries.add(new Entry(5, 74, R.color.md_green_700));
         entries.add(new Entry(6, 80, R.color.md_green_700));
         entries.add(new Entry(7, 85, R.color.md_green_700));
-        LineDataSet dataSet = new LineDataSet(entries, "");
-        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        dataSet.setDrawCircleHole(false);
-        dataSet.setCircleColor(ContextCompat.getColor(getContext(), R.color.md_green_700));
-        dataSet.setDrawFilled(true);
-        dataSet.setLineWidth(1.5f);
-        dataSet.setHighLightColor(ContextCompat.getColor(getContext(), R.color.md_green_700));
-        dataSet.setDrawValues(false);
+        LineDataSet lineDataSet = new LineDataSet(entries, "");
+        lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        lineDataSet.setDrawCircleHole(false);
+        lineDataSet.setCircleColor(ContextCompat.getColor(getContext(), R.color.md_green_700));
+//        lineDataSet.setDrawFilled(true);
+        lineDataSet.setLineWidth(1.5f);
+        lineDataSet.setHighLightColor(ContextCompat.getColor(getContext(), R.color.md_green_700));
+        lineDataSet.setDrawValues(false);
 
-        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_green_500));
-        dataSet.setFillColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
+        lineDataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_green_500));
+//        lineDataSet.setFillColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
 
-        LineData lineData = new LineData(dataSet);
+
         awesomenessChart.setDescription(null);
         awesomenessChart.getLegend().setEnabled(false);
         awesomenessChart.setDrawBorders(false);
@@ -281,8 +261,69 @@ public class GrowthFragment extends BaseFragment {
 
         CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
         awesomenessChart.setMarker(customMarkerView);
-        awesomenessChart.setData(lineData);
+
+        List<BarEntry> barEntries = new ArrayList<>();
+        barEntries.add(new BarEntry(1, 15, R.color.md_blue_500));
+        barEntries.add(new BarEntry(2, 12, R.color.md_blue_500));
+        barEntries.add(new BarEntry(3, 21, R.color.md_blue_500));
+        barEntries.add(new BarEntry(4, 40, R.color.md_blue_500));
+        barEntries.add(new BarEntry(5, 64, R.color.md_blue_500));
+        barEntries.add(new BarEntry(6, 18, R.color.md_blue_500));
+        barEntries.add(new BarEntry(7, 21, R.color.md_blue_500));
+        BarDataSet barDataSet = new BarDataSet(barEntries, "");
+        barDataSet.setDrawValues(false);
+        barDataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_blue_500));
+        BarData perDayThisWeek = new BarData(barDataSet);
+        perDayThisWeek.setBarWidth(perDayThisWeek.getBarWidth() / 1.5f);
+
+        List<Entry> lastWeekEntries = new ArrayList<>();
+        lastWeekEntries.add(new Entry(1, 12, R.color.md_orange_700));
+        lastWeekEntries.add(new Entry(2, 21, R.color.md_orange_700));
+        lastWeekEntries.add(new Entry(3, 38, R.color.md_orange_700));
+        lastWeekEntries.add(new Entry(4, 42, R.color.md_orange_700));
+        lastWeekEntries.add(new Entry(5, 64, R.color.md_orange_700));
+        lastWeekEntries.add(new Entry(6, 72, R.color.md_orange_700));
+        lastWeekEntries.add(new Entry(7, 89, R.color.md_orange_700));
+        LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, "");
+        lastWeekDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        lastWeekDataSet.setDrawCircleHole(false);
+        lastWeekDataSet.setCircleColor(ContextCompat.getColor(getContext(), R.color.md_orange_500));
+        lastWeekDataSet.setLineWidth(1.5f);
+        lastWeekDataSet.setHighLightColor(ContextCompat.getColor(getContext(), R.color.md_orange_700));
+        lastWeekDataSet.setDrawValues(false);
+
+        lastWeekDataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_orange_500));
+
+        LineData lineData = new LineData(lineDataSet, lastWeekDataSet);
+
+        CombinedData data = new CombinedData();
+        data.setData(lineData);
+        data.setData(perDayThisWeek);
+
+        awesomenessChart.setData(data);
         awesomenessChart.invalidate();
+    }
+
+    private void applyDefaultStyle(CombinedChart chart) {
+        chart.setDrawBorders(false);
+        chart.setExtraBottomOffset(8);
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setDrawAxisLine(false);
+        xAxis.setGridColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
+        xAxis.setTextSize(12);
+        xAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
+        xAxis.setYOffset(12);
+        xAxis.setLabelRotationAngle(330);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+        YAxis yAxis = chart.getAxisLeft();
+        yAxis.setTextSize(12);
+        yAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
+        yAxis.setGridColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
+        yAxis.setXOffset(12);
+        yAxis.setDrawAxisLine(false);
+        yAxis.setAxisMinimum(0);
+        chart.getAxisRight().setEnabled(false);
     }
 
     private void applyDefaultStyle(LineChart chart) {
