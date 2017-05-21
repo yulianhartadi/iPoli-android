@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -109,6 +110,7 @@ public class GrowthFragment extends BaseFragment {
         XAxis xAxis = awesomenessChart.getXAxis();
         xAxis.setGridColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
         xAxis.setTextSize(12);
+        xAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
         xAxis.setYOffset(12);
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
@@ -119,14 +121,17 @@ public class GrowthFragment extends BaseFragment {
         xAxis.setLabelRotationAngle(330);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
 
-        awesomenessChart.getAxisLeft().setGridColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
-        awesomenessChart.getAxisLeft().setValueFormatter(new IAxisValueFormatter() {
+        YAxis yAxis = awesomenessChart.getAxisLeft();
+        yAxis.setTextSize(12);
+        yAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
+        yAxis.setGridColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
+        yAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float v, AxisBase axisBase) {
                 return String.valueOf((int) v) + "%";
             }
         });
-        awesomenessChart.getAxisLeft().setXOffset(12);
+        yAxis.setXOffset(12);
         awesomenessChart.getAxisRight().setEnabled(false);
 //        awesomenessChart.setDrawGridBackground(true);
 //        awesomenessChart.setGridBackgroundColor(ContextCompat.getColor(getContext(), R.color.md_amber_700));
@@ -138,9 +143,9 @@ public class GrowthFragment extends BaseFragment {
         awesomenessChart.invalidate();
 
         xAxis.setLabelCount(entries.size(), true);
-        awesomenessChart.getAxisLeft().setAxisMinimum(0);
-        awesomenessChart.getAxisLeft().setAxisMaximum(100);
-        awesomenessChart.getAxisLeft().setLabelCount(6, true);
+        yAxis.setAxisMinimum(0);
+        yAxis.setAxisMaximum(100);
+        yAxis.setLabelCount(6, true);
     }
 
     @Override
