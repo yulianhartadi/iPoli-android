@@ -50,8 +50,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:drawableTop="@drawable/indicator_dot_white"
-                android:text="42\nOverdue"
-                android:textAlignment="center" />
+                android:gravity="center_horizontal"
+                android:text="42\nOverdue" />
 
             <TextView
                 style="@style/TextAppearance.AppCompat.Body1"
@@ -98,7 +98,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        style="@style/TextAppearance.AppCompat.Title"
+                        style="@style/TextAppearance.AppCompat.Subhead"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
