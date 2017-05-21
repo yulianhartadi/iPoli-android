@@ -45,6 +45,7 @@ public class Player extends PersistedObject {
     private AuthProvider currentAuthProvider;
     private List<AuthProvider> authProviders;
     private Map<Long, Category> androidCalendars;
+    private Set<Integer> upgrades;
 
     public Player() {
         super(TYPE);
@@ -71,7 +72,7 @@ public class Player extends PersistedObject {
         setCompleteDailyQuestsEndMinute(Constants.DEFAULT_PLAYER_COMPLETE_DAILY_QUESTS_MINUTE);
         setUse24HourFormat(use24HourFormat);
         setAndroidCalendars(new HashMap<>());
-
+        setUpgrades(new HashSet<>());
     }
 
     public List<Pet> getPets() {
@@ -362,5 +363,16 @@ public class Player extends PersistedObject {
 
     public void setAndroidCalendars(Map<Long, Category> androidCalendars) {
         this.androidCalendars = androidCalendars;
+    }
+
+    public Set<Integer> getUpgrades() {
+        if(upgrades == null) {
+            upgrades = new HashSet<>();
+        }
+        return upgrades;
+    }
+
+    public void setUpgrades(Set<Integer> upgrades) {
+        this.upgrades = upgrades;
     }
 }
