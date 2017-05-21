@@ -158,7 +158,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        startCalendar();
+//        startCalendar();
+        changeCurrentFragment(new GrowthFragment());
+
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
 
             @Override
