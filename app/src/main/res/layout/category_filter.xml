@@ -5,8 +5,7 @@
     android:layout_height="wrap_content"
     android:background="@color/md_white"
     android:orientation="vertical"
-    android:paddingEnd="8dp"
-    android:paddingStart="8dp">
+    android:padding="16dp">
 
     <Switch
         android:layout_width="wrap_content"
