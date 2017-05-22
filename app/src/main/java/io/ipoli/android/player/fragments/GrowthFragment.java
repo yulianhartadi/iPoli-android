@@ -75,11 +75,17 @@ public class GrowthFragment extends BaseFragment {
     @BindView(R.id.awesomeness_vs_last_chart)
     BarChart awesomenessVsLastChart;
 
-    @BindView(R.id.completed_quests_chart)
-    LineChart completedQuestsChart;
+    @BindView(R.id.completed_quests_range_chart)
+    LineChart completedQuestsRangeChart;
 
-    @BindView(R.id.time_spent_chart)
-    LineChart timeSpentChart;
+    @BindView(R.id.completed_quests_vs_last_chart)
+    BarChart completedQuestsVsLastChart;
+
+    @BindView(R.id.time_spent_range_chart)
+    LineChart timeSpentRangeChart;
+
+    @BindView(R.id.time_spent_vs_last_chart)
+    BarChart timeSpentVsLastChart;
 
     @BindView(R.id.coins_earned_chart)
     LineChart coinsEarnedChart;
@@ -127,13 +133,93 @@ public class GrowthFragment extends BaseFragment {
         collapsingToolbarLayout.setTitleEnabled(false);
         awesomenessRangeChart.setVisibility(View.GONE);
         awesomenessVsLastChart.setVisibility(View.VISIBLE);
+        completedQuestsRangeChart.setVisibility(View.GONE);
+        completedQuestsVsLastChart.setVisibility(View.VISIBLE);
+        timeSpentRangeChart.setVisibility(View.GONE);
+        timeSpentVsLastChart.setVisibility(View.VISIBLE);
         setupAwesomenessRangeChart();
         setupAwesomenessVsLastChart();
-        setupCompletedQuestsChart();
-        setupTimeSpentChart();
+        setupCompletedQuestsRangeChart();
+        setupCompletedQuestsVsLastChart();
+        setupTimeSpentRangeChart();
+        setupTimeSPentVsLastChart();
         setupCoinsEarnedChart();
         setupXpEarnedChart();
         return view;
+    }
+
+    private void setupTimeSPentVsLastChart() {
+        applyDefaultStyle(timeSpentVsLastChart);
+        List<BarEntry> entries = new ArrayList<>();
+        entries.add(new BarEntry(1, new float[]{5, 44, 55}));
+        entries.add(new BarEntry(2, new float[]{40, 32, 55}));
+        entries.add(new BarEntry(3, new float[]{12, 44, 55}));
+        entries.add(new BarEntry(4, new float[]{40, 12, 75}));
+        entries.add(new BarEntry(5, new float[]{33, 44, 55}));
+        entries.add(new BarEntry(6, new float[]{47, 44, 12}));
+        entries.add(new BarEntry(7, new float[]{9, 81, 55}));
+
+//        entries.add(new BarEntry(1, new float[]{5, 44, 55, 3, 33, 12}));
+//        entries.add(new BarEntry(2, new float[]{40, 32, 55, 8, 10, 12}));
+//        entries.add(new BarEntry(3, new float[]{12, 44, 55, 15, 33, 12}));
+//        entries.add(new BarEntry(4, new float[]{40, 12, 75, 32, 33, 12}));
+//        entries.add(new BarEntry(5, new float[]{33, 44, 55, 60, 33, 12}));
+//        entries.add(new BarEntry(6, new float[]{47, 44, 12, 44, 21, 12}));
+//        entries.add(new BarEntry(7, new float[]{9, 81, 55, 60, 33, 12}));
+
+        BarDataSet dataSet = new BarDataSet(entries, "");
+//        dataSet.setColors(ContextCompat.getColor(getContext(), R.color.md_blue_A200), ContextCompat.getColor(getContext(), R.color.md_green_500), ContextCompat.getColor(getContext(), R.color.md_orange_500), ContextCompat.getColor(getContext(), R.color.md_red_A200),
+//                ContextCompat.getColor(getContext(), R.color.md_purple_300), ContextCompat.getColor(getContext(), R.color.md_brown_500));
+        dataSet.setColors(ContextCompat.getColor(getContext(), R.color.md_blue_A200), ContextCompat.getColor(getContext(), R.color.md_green_500), ContextCompat.getColor(getContext(), R.color.md_orange_500));
+        dataSet.setDrawValues(false);
+//        dataSet.setValueTextSize(12f);
+//        dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
+        BarData data = new BarData(dataSet);
+        data.setValueFormatter(new IValueFormatter() {
+            @Override
+            public String getFormattedValue(float v, Entry entry, int i, ViewPortHandler viewPortHandler) {
+                return String.valueOf((int) v);
+            }
+        });
+        timeSpentVsLastChart.setData(data);
+        timeSpentVsLastChart.invalidate();
+    }
+
+    private void setupCompletedQuestsVsLastChart() {
+        applyDefaultStyle(completedQuestsVsLastChart);
+        List<BarEntry> entries = new ArrayList<>();
+        entries.add(new BarEntry(1, new float[]{5, 44, 55}));
+        entries.add(new BarEntry(2, new float[]{40, 32, 55}));
+        entries.add(new BarEntry(3, new float[]{12, 44, 55}));
+        entries.add(new BarEntry(4, new float[]{40, 12, 75}));
+        entries.add(new BarEntry(5, new float[]{33, 44, 55}));
+        entries.add(new BarEntry(6, new float[]{47, 44, 12}));
+        entries.add(new BarEntry(7, new float[]{9, 81, 55}));
+
+//        entries.add(new BarEntry(1, new float[]{5, 44, 55, 3, 33, 12}));
+//        entries.add(new BarEntry(2, new float[]{40, 32, 55, 8, 10, 12}));
+//        entries.add(new BarEntry(3, new float[]{12, 44, 55, 15, 33, 12}));
+//        entries.add(new BarEntry(4, new float[]{40, 12, 75, 32, 33, 12}));
+//        entries.add(new BarEntry(5, new float[]{33, 44, 55, 60, 33, 12}));
+//        entries.add(new BarEntry(6, new float[]{47, 44, 12, 44, 21, 12}));
+//        entries.add(new BarEntry(7, new float[]{9, 81, 55, 60, 33, 12}));
+
+        BarDataSet dataSet = new BarDataSet(entries, "");
+//        dataSet.setColors(ContextCompat.getColor(getContext(), R.color.md_blue_A200), ContextCompat.getColor(getContext(), R.color.md_green_500), ContextCompat.getColor(getContext(), R.color.md_orange_500), ContextCompat.getColor(getContext(), R.color.md_red_A200),
+//                ContextCompat.getColor(getContext(), R.color.md_purple_300), ContextCompat.getColor(getContext(), R.color.md_brown_500));
+        dataSet.setColors(ContextCompat.getColor(getContext(), R.color.md_blue_A200), ContextCompat.getColor(getContext(), R.color.md_green_500), ContextCompat.getColor(getContext(), R.color.md_orange_500));
+        dataSet.setDrawValues(false);
+//        dataSet.setValueTextSize(12f);
+//        dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
+        BarData data = new BarData(dataSet);
+        data.setValueFormatter(new IValueFormatter() {
+            @Override
+            public String getFormattedValue(float v, Entry entry, int i, ViewPortHandler viewPortHandler) {
+                return String.valueOf((int) v);
+            }
+        });
+        completedQuestsVsLastChart.setData(data);
+        completedQuestsVsLastChart.invalidate();
     }
 
     private void setupAwesomenessVsLastChart() {
@@ -147,7 +233,7 @@ public class GrowthFragment extends BaseFragment {
         entries.add(new BarEntry(6, 87));
         entries.add(new BarEntry(7, 65));
         BarDataSet dataSet = new BarDataSet(entries, "");
-        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_red_A200));
+        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_green_500));
         dataSet.setValueTextSize(12f);
         dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
         BarData data = new BarData(dataSet);
@@ -277,8 +363,8 @@ public class GrowthFragment extends BaseFragment {
         coinsEarnedChart.invalidate();
     }
 
-    private void setupTimeSpentChart() {
-        applyDefaultStyle(timeSpentChart);
+    private void setupTimeSpentRangeChart() {
+        applyDefaultStyle(timeSpentRangeChart);
 
         List<Entry> wellnessEntries = new ArrayList<>();
         wellnessEntries.add(new Entry(1, 4, R.color.md_green_700));
@@ -318,7 +404,7 @@ public class GrowthFragment extends BaseFragment {
 
         LineData lineData = new LineData(wellnessDataSet, learningDataSet, workDataSet);
 
-        XAxis xAxis = timeSpentChart.getXAxis();
+        XAxis xAxis = timeSpentRangeChart.getXAxis();
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float v, AxisBase axisBase) {
@@ -327,15 +413,15 @@ public class GrowthFragment extends BaseFragment {
         });
 
         CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
-        timeSpentChart.setMarker(customMarkerView);
+        timeSpentRangeChart.setMarker(customMarkerView);
 
-        timeSpentChart.setDescription(null);
-        timeSpentChart.setData(lineData);
-        timeSpentChart.invalidate();
+        timeSpentRangeChart.setDescription(null);
+        timeSpentRangeChart.setData(lineData);
+        timeSpentRangeChart.invalidate();
     }
 
-    private void setupCompletedQuestsChart() {
-        applyDefaultStyle(completedQuestsChart);
+    private void setupCompletedQuestsRangeChart() {
+        applyDefaultStyle(completedQuestsRangeChart);
 
         List<Entry> wellnessEntries = new ArrayList<>();
         wellnessEntries.add(new Entry(1, 4, R.color.md_green_700));
@@ -375,7 +461,7 @@ public class GrowthFragment extends BaseFragment {
 
         LineData lineData = new LineData(wellnessDataSet, learningDataSet, workDataSet);
 
-        XAxis xAxis = completedQuestsChart.getXAxis();
+        XAxis xAxis = completedQuestsRangeChart.getXAxis();
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float v, AxisBase axisBase) {
@@ -384,11 +470,11 @@ public class GrowthFragment extends BaseFragment {
         });
 
         CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
-        completedQuestsChart.setMarker(customMarkerView);
+        completedQuestsRangeChart.setMarker(customMarkerView);
 
-        completedQuestsChart.setDescription(null);
-        completedQuestsChart.setData(lineData);
-        completedQuestsChart.invalidate();
+        completedQuestsRangeChart.setDescription(null);
+        completedQuestsRangeChart.setData(lineData);
+        completedQuestsRangeChart.invalidate();
     }
 
     private void setupAwesomenessRangeChart() {
