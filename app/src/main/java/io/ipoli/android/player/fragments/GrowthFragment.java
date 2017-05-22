@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
@@ -50,6 +51,8 @@ import io.ipoli.android.app.help.HelpDialog;
  */
 public class GrowthFragment extends BaseFragment {
 
+    public static final int CHART_ANIMATION_DURATION = 500;
+    public static final Easing.EasingOption DEFAULT_EASING_OPTION = Easing.EasingOption.EaseInQuart;
     @BindView(R.id.root_container)
     ViewGroup rootContainer;
 
@@ -64,6 +67,15 @@ public class GrowthFragment extends BaseFragment {
 
     @BindView(R.id.completed_quests_chart)
     LineChart completedQuestsChart;
+
+    @BindView(R.id.time_spent_chart)
+    LineChart timeSpentChart;
+
+    @BindView(R.id.coins_earned_chart)
+    LineChart coinsEarnedChart;
+
+    @BindView(R.id.xp_earned_chart)
+    LineChart xpEarnedChart;
 
     @Inject
     Bus eventBus;
@@ -84,7 +96,7 @@ public class GrowthFragment extends BaseFragment {
             @ColorRes int backgroundColor = (int) e.getData();
             GradientDrawable drawable = (GradientDrawable) popupContent.getBackground();
             drawable.setColor(ContextCompat.getColor(getContext(), backgroundColor));
-            popupContent.setText(String.valueOf((int) e.getY())); // set the entry-value as the display text
+            popupContent.setText(String.valueOf((int) e.getY()));
             super.refreshContent(e, highlight);
         }
 
@@ -105,7 +117,183 @@ public class GrowthFragment extends BaseFragment {
         collapsingToolbarLayout.setTitleEnabled(false);
         setupAwesomenessChart();
         setupCompletedQuestsChart();
+        setupTimeSpentChart();
+        setupCoinsEarnedChart();
+        setupXpEarnedChart();
         return view;
+    }
+
+    private void setupXpEarnedChart() {
+        applyDefaultStyle(xpEarnedChart);
+
+        List<Entry> entries = new ArrayList<>();
+        entries.add(new Entry(1, 42, R.color.md_green_500));
+        entries.add(new Entry(2, 32, R.color.md_green_500));
+        entries.add(new Entry(3, 20, R.color.md_green_500));
+        entries.add(new Entry(4, 55, R.color.md_green_500));
+        entries.add(new Entry(5, 67, R.color.md_green_500));
+        LineDataSet thisWeekDataSet = new LineDataSet(entries, "This week");
+
+        applyLineDataSetStyle(thisWeekDataSet, R.color.md_green_300, R.color.md_green_500);
+
+
+        List<Entry> lastWeekEntries = new ArrayList<>();
+        lastWeekEntries.add(new Entry(1, 12, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(2, 21, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(3, 38, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(4, 93, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(5, 64, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(6, 22, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(7, 12, R.color.md_orange_500));
+        LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, "Last week");
+        applyLineDataSetStyle(lastWeekDataSet, R.color.md_orange_300, R.color.md_orange_500);
+
+        XAxis xAxis = xpEarnedChart.getXAxis();
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float v, AxisBase axisBase) {
+                return "12 Feb";
+            }
+        });
+
+        YAxis yAxis = xpEarnedChart.getAxisLeft();
+        yAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float v, AxisBase axisBase) {
+                return String.valueOf((int) v) + "%";
+            }
+        });
+
+
+        xAxis.setLabelCount(lastWeekEntries.size(), true);
+        yAxis.setAxisMinimum(0);
+        yAxis.setAxisMaximum(100);
+        yAxis.setLabelCount(6, true);
+
+        CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
+        xpEarnedChart.setMarker(customMarkerView);
+        xpEarnedChart.setDescription(null);
+        xpEarnedChart.setDrawBorders(false);
+
+        LineData lineData = new LineData(lastWeekDataSet, thisWeekDataSet);
+
+        xpEarnedChart.setData(lineData);
+        xpEarnedChart.invalidate();
+    }
+
+    private void setupCoinsEarnedChart() {
+        applyDefaultStyle(coinsEarnedChart);
+
+        List<Entry> entries = new ArrayList<>();
+        entries.add(new Entry(1, 42, R.color.md_green_500));
+        entries.add(new Entry(2, 32, R.color.md_green_500));
+        entries.add(new Entry(3, 20, R.color.md_green_500));
+        entries.add(new Entry(4, 55, R.color.md_green_500));
+        entries.add(new Entry(5, 67, R.color.md_green_500));
+        LineDataSet thisWeekDataSet = new LineDataSet(entries, "This week");
+
+        applyLineDataSetStyle(thisWeekDataSet, R.color.md_green_300, R.color.md_green_500);
+
+
+        List<Entry> lastWeekEntries = new ArrayList<>();
+        lastWeekEntries.add(new Entry(1, 12, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(2, 21, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(3, 38, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(4, 93, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(5, 64, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(6, 22, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(7, 12, R.color.md_orange_500));
+        LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, "Last week");
+        applyLineDataSetStyle(lastWeekDataSet, R.color.md_orange_300, R.color.md_orange_500);
+
+        XAxis xAxis = coinsEarnedChart.getXAxis();
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float v, AxisBase axisBase) {
+                return "12 Feb";
+            }
+        });
+
+        YAxis yAxis = coinsEarnedChart.getAxisLeft();
+        yAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float v, AxisBase axisBase) {
+                return String.valueOf((int) v) + "%";
+            }
+        });
+
+
+        xAxis.setLabelCount(lastWeekEntries.size(), true);
+        yAxis.setAxisMinimum(0);
+        yAxis.setAxisMaximum(100);
+        yAxis.setLabelCount(6, true);
+
+        CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
+        coinsEarnedChart.setMarker(customMarkerView);
+        coinsEarnedChart.setDescription(null);
+        coinsEarnedChart.setDrawBorders(false);
+
+        LineData lineData = new LineData(lastWeekDataSet, thisWeekDataSet);
+
+        coinsEarnedChart.setData(lineData);
+        coinsEarnedChart.invalidate();
+    }
+
+    private void setupTimeSpentChart() {
+        applyDefaultStyle(timeSpentChart);
+
+        List<Entry> wellnessEntries = new ArrayList<>();
+        wellnessEntries.add(new Entry(1, 4, R.color.md_green_500));
+        wellnessEntries.add(new Entry(2, 9, R.color.md_green_500));
+        wellnessEntries.add(new Entry(3, 12, R.color.md_green_500));
+        wellnessEntries.add(new Entry(4, 4, R.color.md_green_500));
+        wellnessEntries.add(new Entry(5, 8, R.color.md_green_500));
+        wellnessEntries.add(new Entry(6, 1, R.color.md_green_500));
+        wellnessEntries.add(new Entry(7, 3, R.color.md_green_500));
+        LineDataSet wellnessDataSet = new LineDataSet(wellnessEntries, "Wellness");
+
+        applyLineDataSetStyle(wellnessDataSet, R.color.md_green_300, R.color.md_green_500);
+
+        List<Entry> learningEntries = new ArrayList<>();
+        learningEntries.add(new Entry(1, 2, R.color.md_blue_500));
+        learningEntries.add(new Entry(2, 4, R.color.md_blue_500));
+        learningEntries.add(new Entry(3, 5, R.color.md_blue_500));
+        learningEntries.add(new Entry(4, 10, R.color.md_blue_500));
+        learningEntries.add(new Entry(5, 3, R.color.md_blue_500));
+        learningEntries.add(new Entry(6, 1, R.color.md_blue_500));
+        learningEntries.add(new Entry(7, 1, R.color.md_blue_500));
+        LineDataSet learningDataSet = new LineDataSet(learningEntries, "Learning");
+
+        applyLineDataSetStyle(learningDataSet, R.color.md_blue_300, R.color.md_blue_500);
+
+        List<Entry> workEntries = new ArrayList<>();
+        workEntries.add(new Entry(1, 1, R.color.md_red_500));
+        workEntries.add(new Entry(2, 4, R.color.md_red_500));
+        workEntries.add(new Entry(3, 7, R.color.md_red_500));
+        workEntries.add(new Entry(4, 12, R.color.md_red_500));
+        workEntries.add(new Entry(5, 4, R.color.md_red_500));
+        workEntries.add(new Entry(6, 7, R.color.md_red_500));
+        workEntries.add(new Entry(7, 9, R.color.md_red_500));
+        LineDataSet workDataSet = new LineDataSet(workEntries, "Work");
+
+        applyLineDataSetStyle(workDataSet, R.color.md_red_300, R.color.md_red_500);
+
+        LineData lineData = new LineData(wellnessDataSet, learningDataSet, workDataSet);
+
+        XAxis xAxis = timeSpentChart.getXAxis();
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float v, AxisBase axisBase) {
+                return "12 Feb";
+            }
+        });
+
+        CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
+        timeSpentChart.setMarker(customMarkerView);
+
+        timeSpentChart.setDescription(null);
+        timeSpentChart.setData(lineData);
+        timeSpentChart.invalidate();
     }
 
     private void setupCompletedQuestsChart() {
@@ -146,8 +334,6 @@ public class GrowthFragment extends BaseFragment {
         LineDataSet workDataSet = new LineDataSet(workEntries, "Work");
 
         applyLineDataSetStyle(workDataSet, R.color.md_red_300, R.color.md_red_500);
-//        workDataSet.setFillColor(ContextCompat.getColor(getContext(), R.color.md_red_300));
-//        workDataSet.setDrawFilled(true);
 
         LineData lineData = new LineData(wellnessDataSet, learningDataSet, workDataSet);
 
@@ -176,8 +362,6 @@ public class GrowthFragment extends BaseFragment {
         entries.add(new Entry(3, 20, R.color.md_green_500));
         entries.add(new Entry(4, 55, R.color.md_green_500));
         entries.add(new Entry(5, 67, R.color.md_green_500));
-//        entries.add(new Entry(6, 80, R.color.md_green_500));
-//        entries.add(new Entry(7, 17, R.color.md_green_500));
         LineDataSet thisWeekDataSet = new LineDataSet(entries, "This week");
 
         applyLineDataSetStyle(thisWeekDataSet, R.color.md_green_300, R.color.md_green_500);
@@ -225,6 +409,8 @@ public class GrowthFragment extends BaseFragment {
 
         awesomenessChart.setData(lineData);
         awesomenessChart.invalidate();
+//        awesomenessChart.animateX(500, Easing.EasingOption.EaseInOutQuart);
+        awesomenessChart.animateX(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
     }
 
     private void applyLineDataSetStyle(LineDataSet lastWeekDataSet, @ColorRes int color, @ColorRes int highlightColor) {
