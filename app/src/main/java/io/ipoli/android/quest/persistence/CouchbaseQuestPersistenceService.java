@@ -163,7 +163,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                         document.get("source").equals(Constants.SOURCE_ANDROID_CALENDAR)) {
                     Map<String, Object> sourceMapping = (Map<String, Object>) document.get("sourceMapping");
                     Map<String, Object> androidCalendarMapping = (Map<String, Object>) sourceMapping.get("androidCalendarMapping");
-                    if(androidCalendarMapping != null) {
+                    if (androidCalendarMapping != null) {
                         List<Object> key = new ArrayList<>();
                         key.add(String.valueOf(androidCalendarMapping.get("calendarId")));
                         key.add(String.valueOf(androidCalendarMapping.get("eventId")));
@@ -247,8 +247,9 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     }
 
     @Override
-    public void findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
-        Query query = completedDayQuestsView.createQuery();
+    public void findAllBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
+        Query query = dayQuestsView.createQuery();
+        query.setMapOnly(true);
         query.setStartKey(toStartOfDayUTC(startDate).getTime());
         query.setEndKey(toStartOfDayUTC(endDate).getTime());
         runQuery(query, listener);
