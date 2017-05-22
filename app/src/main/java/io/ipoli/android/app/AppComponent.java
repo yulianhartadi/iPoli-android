@@ -45,6 +45,7 @@ import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.challenge.receivers.DailyChallengeReminderReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.pet.PetActivity;
+import io.ipoli.android.player.UpgradeDialog;
 import io.ipoli.android.player.activities.PickAvatarPictureActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.activities.AddQuestActivity;
@@ -232,5 +233,7 @@ public interface AppComponent {
     void inject(SettingsActivity settingsActivity);
 
     void inject(CoinStoreActivity coinStoreActivity);
+
+    void inject(UpgradeDialog upgradeDialog);
 }
 

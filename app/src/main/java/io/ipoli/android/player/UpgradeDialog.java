@@ -9,12 +9,18 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.NoSuchElementException;
 
+import javax.inject.Inject;
+
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
+import io.ipoli.android.app.App;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -23,7 +29,16 @@ import io.ipoli.android.R;
 
 public class UpgradeDialog extends DialogFragment {
     private static final String TAG = "upgrade-dialog";
-    public static final String UPGRADE_CODE = "upgrade_code";
+    private static final String UPGRADE_CODE = "upgrade_code";
+
+    @Inject
+    UpgradesManager upgradesManager;
+
+    @BindView(R.id.upgrade_price)
+    TextView price;
+
+    @BindView(R.id.upgrade_price_not_enough_coins)
+    TextView notEnoughCoins;
 
     private Upgrade upgrade;
 
@@ -37,20 +52,21 @@ public class UpgradeDialog extends DialogFragment {
         return fragment;
     }
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        App.getAppComponent(getContext()).inject(this);
 
-        if(getArguments() == null) {
+        if (getArguments() == null) {
             dismiss();
         }
 
         int code = getArguments().getInt(UPGRADE_CODE);
         upgrade = Upgrade.get(code);
-        if(upgrade == null) {
+        if (upgrade == null) {
             throw new NoSuchElementException("There is no upgrade with code: " + code);
         }
+
     }
 
     @NonNull
@@ -62,17 +78,31 @@ public class UpgradeDialog extends DialogFragment {
         View titleView = inflater.inflate(R.layout.upgrade_title, null);
         unbinder = ButterKnife.bind(this, v);
 
+        boolean hasEnoughCoins = upgradesManager.hasEnoughCoinsForUpgrade(upgrade);
+        String positiveBtnText = hasEnoughCoins ? "Buy" : "Buy coins";
+
+        price.setVisibility(hasEnoughCoins ? View.VISIBLE : View.GONE);
+        notEnoughCoins.setVisibility(hasEnoughCoins ? View.GONE : View.VISIBLE);
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setView(v)
                 .setCustomTitle(titleView)
-                .setPositiveButton("Buy", (dialog, which) -> {
-
+                .setPositiveButton(positiveBtnText, (dialog, which) -> {
+                    if(hasEnoughCoins) {
+                        upgradesManager.buy(upgrade);
+                        Toast.makeText(getContext(), "You can now enjoy Repeating quests", Toast.LENGTH_SHORT).show();
+                    } else {
+                        //go to Buy Coins in Store
+                    }
                 })
                 .setNegativeButton("Not now", (dialog, which) -> {
-
-                })
-                .setNeutralButton("Go to Store", (dialog, which) -> {
                 });
+
+        if (hasEnoughCoins) {
+            builder.setNeutralButton("Go to Store", (dialog, which) -> {
+            });
+        }
+
         return builder.create();
     }
 

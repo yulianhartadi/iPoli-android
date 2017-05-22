@@ -21,4 +21,23 @@
         android:layout_height="wrap_content"
         android:text="Repeating Quests are called all your repeating tasks. iPoli automatically makes a quest in your calendar for the repeating one if you have to do it on a particular date." />
 
+    <TextView
+        android:id="@+id/upgrade_price"
+        android:layout_marginTop="16dp"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/md_dark_text_54"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Do you want to buy it now for 400 of your coins?" />
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/upgrade_price_not_enough_coins"
+        android:layout_marginTop="16dp"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@color/md_dark_text_54"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="This upgrade costs 400 coins. Unfortunately, you have not collected enough. Do you want to buy some? " />
+
 </LinearLayout>
