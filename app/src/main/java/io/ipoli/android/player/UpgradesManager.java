@@ -18,4 +18,15 @@ public class UpgradesManager {
     public boolean has(Upgrade upgrade) {
         return playerPersistenceService.get().getUpgrades().contains(upgrade.getCode());
     }
+
+    public boolean hasEnoughCoinsForUpgrade(Upgrade upgrade) {
+        return playerPersistenceService.get().getCoins() >= upgrade.getPrice();
+    }
+
+    public void buy(Upgrade upgrade) {
+        Player player = playerPersistenceService.get();
+//        player.removeCoins(upgrade.getPrice());
+//        player.getUpgrades().add(upgrade.getCode());
+        playerPersistenceService.save(player);
+    }
 }
