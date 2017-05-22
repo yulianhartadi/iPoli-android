@@ -71,6 +71,9 @@ import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
+import io.ipoli.android.player.Upgrade;
+import io.ipoli.android.player.UpgradeDialog;
+import io.ipoli.android.player.UpgradesManager;
 import io.ipoli.android.player.activities.PickAvatarPictureActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
@@ -124,6 +127,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Inject
     PlayerPersistenceService playerPersistenceService;
+
+    @Inject
+    UpgradesManager upgradesManager;
 
     Fragment currentFragment;
 
@@ -206,6 +212,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
 
             case R.id.repeating_quests:
+                if(!upgradesManager.has(Upgrade.REPEATING_QUESTS)) {
+                    UpgradeDialog upgradeDialog = UpgradeDialog.newInstance(Upgrade.REPEATING_QUESTS);
+                    upgradeDialog.show(getSupportFragmentManager());
+                    break;
+                }
                 source = EventSource.REPEATING_QUESTS;
                 changeCurrentFragment(new RepeatingQuestListFragment());
                 break;
