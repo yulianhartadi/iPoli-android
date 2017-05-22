@@ -127,26 +127,25 @@ public class GrowthFragment extends BaseFragment {
         applyDefaultStyle(xpEarnedChart);
 
         List<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(1, 42, R.color.md_green_500));
-        entries.add(new Entry(2, 32, R.color.md_green_500));
-        entries.add(new Entry(3, 20, R.color.md_green_500));
-        entries.add(new Entry(4, 55, R.color.md_green_500));
-        entries.add(new Entry(5, 67, R.color.md_green_500));
+        entries.add(new Entry(1, 42, R.color.md_red_A400));
+        entries.add(new Entry(2, 32, R.color.md_red_A400));
+        entries.add(new Entry(3, 20, R.color.md_red_A400));
+        entries.add(new Entry(4, 55, R.color.md_red_A400));
+        entries.add(new Entry(5, 67, R.color.md_red_A400));
         LineDataSet thisWeekDataSet = new LineDataSet(entries, "This week");
 
-        applyLineDataSetStyle(thisWeekDataSet, R.color.md_green_300, R.color.md_green_500);
-
+        applyLineDataSetStyle(thisWeekDataSet, R.color.md_red_A200, R.color.md_red_A400);
 
         List<Entry> lastWeekEntries = new ArrayList<>();
-        lastWeekEntries.add(new Entry(1, 12, R.color.md_orange_500));
-        lastWeekEntries.add(new Entry(2, 21, R.color.md_orange_500));
-        lastWeekEntries.add(new Entry(3, 38, R.color.md_orange_500));
-        lastWeekEntries.add(new Entry(4, 93, R.color.md_orange_500));
-        lastWeekEntries.add(new Entry(5, 64, R.color.md_orange_500));
-        lastWeekEntries.add(new Entry(6, 22, R.color.md_orange_500));
-        lastWeekEntries.add(new Entry(7, 12, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(1, 12, R.color.md_blue_A400));
+        lastWeekEntries.add(new Entry(2, 21, R.color.md_blue_A400));
+        lastWeekEntries.add(new Entry(3, 38, R.color.md_blue_A400));
+        lastWeekEntries.add(new Entry(4, 93, R.color.md_blue_A400));
+        lastWeekEntries.add(new Entry(5, 64, R.color.md_blue_A400));
+        lastWeekEntries.add(new Entry(6, 22, R.color.md_blue_A400));
+        lastWeekEntries.add(new Entry(7, 12, R.color.md_blue_A400));
         LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, "Last week");
-        applyLineDataSetStyle(lastWeekDataSet, R.color.md_orange_300, R.color.md_orange_500);
+        applyLineDataSetStyle(lastWeekDataSet, R.color.md_blue_A200, R.color.md_blue_A400);
 
         XAxis xAxis = xpEarnedChart.getXAxis();
         xAxis.setValueFormatter(new IAxisValueFormatter() {
@@ -185,26 +184,26 @@ public class GrowthFragment extends BaseFragment {
         applyDefaultStyle(coinsEarnedChart);
 
         List<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(1, 42, R.color.md_green_500));
-        entries.add(new Entry(2, 32, R.color.md_green_500));
-        entries.add(new Entry(3, 20, R.color.md_green_500));
-        entries.add(new Entry(4, 55, R.color.md_green_500));
-        entries.add(new Entry(5, 67, R.color.md_green_500));
+        entries.add(new Entry(1, 42, R.color.md_red_A400));
+        entries.add(new Entry(2, 32, R.color.md_red_A400));
+        entries.add(new Entry(3, 20, R.color.md_red_A400));
+        entries.add(new Entry(4, 55, R.color.md_red_A400));
+        entries.add(new Entry(5, 67, R.color.md_red_A400));
         LineDataSet thisWeekDataSet = new LineDataSet(entries, "This week");
 
-        applyLineDataSetStyle(thisWeekDataSet, R.color.md_green_300, R.color.md_green_500);
+        applyLineDataSetStyle(thisWeekDataSet, R.color.md_red_A200, R.color.md_red_A400);
 
 
         List<Entry> lastWeekEntries = new ArrayList<>();
-        lastWeekEntries.add(new Entry(1, 12, R.color.md_orange_500));
-        lastWeekEntries.add(new Entry(2, 21, R.color.md_orange_500));
-        lastWeekEntries.add(new Entry(3, 38, R.color.md_orange_500));
-        lastWeekEntries.add(new Entry(4, 93, R.color.md_orange_500));
-        lastWeekEntries.add(new Entry(5, 64, R.color.md_orange_500));
-        lastWeekEntries.add(new Entry(6, 22, R.color.md_orange_500));
-        lastWeekEntries.add(new Entry(7, 12, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(1, 12, R.color.md_blue_A400));
+        lastWeekEntries.add(new Entry(2, 21, R.color.md_blue_A400));
+        lastWeekEntries.add(new Entry(3, 38, R.color.md_blue_A400));
+        lastWeekEntries.add(new Entry(4, 93, R.color.md_blue_A400));
+        lastWeekEntries.add(new Entry(5, 64, R.color.md_blue_A400));
+        lastWeekEntries.add(new Entry(6, 22, R.color.md_blue_A400));
+        lastWeekEntries.add(new Entry(7, 12, R.color.md_blue_A400));
         LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, "Last week");
-        applyLineDataSetStyle(lastWeekDataSet, R.color.md_orange_300, R.color.md_orange_500);
+        applyLineDataSetStyle(lastWeekDataSet, R.color.md_blue_A200, R.color.md_blue_A400);
 
         XAxis xAxis = coinsEarnedChart.getXAxis();
         xAxis.setValueFormatter(new IAxisValueFormatter() {
@@ -243,40 +242,40 @@ public class GrowthFragment extends BaseFragment {
         applyDefaultStyle(timeSpentChart);
 
         List<Entry> wellnessEntries = new ArrayList<>();
-        wellnessEntries.add(new Entry(1, 4, R.color.md_green_500));
-        wellnessEntries.add(new Entry(2, 9, R.color.md_green_500));
-        wellnessEntries.add(new Entry(3, 12, R.color.md_green_500));
-        wellnessEntries.add(new Entry(4, 4, R.color.md_green_500));
-        wellnessEntries.add(new Entry(5, 8, R.color.md_green_500));
-        wellnessEntries.add(new Entry(6, 1, R.color.md_green_500));
-        wellnessEntries.add(new Entry(7, 3, R.color.md_green_500));
+        wellnessEntries.add(new Entry(1, 4, R.color.md_green_700));
+        wellnessEntries.add(new Entry(2, 9, R.color.md_green_700));
+        wellnessEntries.add(new Entry(3, 12, R.color.md_green_700));
+        wellnessEntries.add(new Entry(4, 4, R.color.md_green_700));
+        wellnessEntries.add(new Entry(5, 8, R.color.md_green_700));
+        wellnessEntries.add(new Entry(6, 1, R.color.md_green_700));
+        wellnessEntries.add(new Entry(7, 3, R.color.md_green_700));
         LineDataSet wellnessDataSet = new LineDataSet(wellnessEntries, "Wellness");
 
-        applyLineDataSetStyle(wellnessDataSet, R.color.md_green_300, R.color.md_green_500);
+        applyLineDataSetStyle(wellnessDataSet, R.color.md_green_500, R.color.md_green_700);
 
         List<Entry> learningEntries = new ArrayList<>();
-        learningEntries.add(new Entry(1, 2, R.color.md_blue_500));
-        learningEntries.add(new Entry(2, 4, R.color.md_blue_500));
-        learningEntries.add(new Entry(3, 5, R.color.md_blue_500));
-        learningEntries.add(new Entry(4, 10, R.color.md_blue_500));
-        learningEntries.add(new Entry(5, 3, R.color.md_blue_500));
-        learningEntries.add(new Entry(6, 1, R.color.md_blue_500));
-        learningEntries.add(new Entry(7, 1, R.color.md_blue_500));
+        learningEntries.add(new Entry(1, 2, R.color.md_blue_A400));
+        learningEntries.add(new Entry(2, 4, R.color.md_blue_A400));
+        learningEntries.add(new Entry(3, 5, R.color.md_blue_A400));
+        learningEntries.add(new Entry(4, 10, R.color.md_blue_A400));
+        learningEntries.add(new Entry(5, 3, R.color.md_blue_A400));
+        learningEntries.add(new Entry(6, 1, R.color.md_blue_A400));
+        learningEntries.add(new Entry(7, 1, R.color.md_blue_A400));
         LineDataSet learningDataSet = new LineDataSet(learningEntries, "Learning");
 
-        applyLineDataSetStyle(learningDataSet, R.color.md_blue_300, R.color.md_blue_500);
+        applyLineDataSetStyle(learningDataSet, R.color.md_blue_A200, R.color.md_blue_A400);
 
         List<Entry> workEntries = new ArrayList<>();
-        workEntries.add(new Entry(1, 1, R.color.md_red_500));
-        workEntries.add(new Entry(2, 4, R.color.md_red_500));
-        workEntries.add(new Entry(3, 7, R.color.md_red_500));
-        workEntries.add(new Entry(4, 12, R.color.md_red_500));
-        workEntries.add(new Entry(5, 4, R.color.md_red_500));
-        workEntries.add(new Entry(6, 7, R.color.md_red_500));
-        workEntries.add(new Entry(7, 9, R.color.md_red_500));
+        workEntries.add(new Entry(1, 1, R.color.md_red_A400));
+        workEntries.add(new Entry(2, 4, R.color.md_red_A400));
+        workEntries.add(new Entry(3, 7, R.color.md_red_A400));
+        workEntries.add(new Entry(4, 12, R.color.md_red_A400));
+        workEntries.add(new Entry(5, 4, R.color.md_red_A400));
+        workEntries.add(new Entry(6, 7, R.color.md_red_A400));
+        workEntries.add(new Entry(7, 9, R.color.md_red_A400));
         LineDataSet workDataSet = new LineDataSet(workEntries, "Work");
 
-        applyLineDataSetStyle(workDataSet, R.color.md_red_300, R.color.md_red_500);
+        applyLineDataSetStyle(workDataSet, R.color.md_red_A200, R.color.md_red_A400);
 
         LineData lineData = new LineData(wellnessDataSet, learningDataSet, workDataSet);
 
@@ -300,40 +299,40 @@ public class GrowthFragment extends BaseFragment {
         applyDefaultStyle(completedQuestsChart);
 
         List<Entry> wellnessEntries = new ArrayList<>();
-        wellnessEntries.add(new Entry(1, 4, R.color.md_green_500));
-        wellnessEntries.add(new Entry(2, 9, R.color.md_green_500));
-        wellnessEntries.add(new Entry(3, 12, R.color.md_green_500));
-        wellnessEntries.add(new Entry(4, 4, R.color.md_green_500));
-        wellnessEntries.add(new Entry(5, 8, R.color.md_green_500));
-        wellnessEntries.add(new Entry(6, 1, R.color.md_green_500));
-        wellnessEntries.add(new Entry(7, 3, R.color.md_green_500));
+        wellnessEntries.add(new Entry(1, 4, R.color.md_green_700));
+        wellnessEntries.add(new Entry(2, 9, R.color.md_green_700));
+        wellnessEntries.add(new Entry(3, 12, R.color.md_green_700));
+        wellnessEntries.add(new Entry(4, 4, R.color.md_green_700));
+        wellnessEntries.add(new Entry(5, 8, R.color.md_green_700));
+        wellnessEntries.add(new Entry(6, 1, R.color.md_green_700));
+        wellnessEntries.add(new Entry(7, 3, R.color.md_green_700));
         LineDataSet wellnessDataSet = new LineDataSet(wellnessEntries, "Wellness");
 
-        applyLineDataSetStyle(wellnessDataSet, R.color.md_green_300, R.color.md_green_500);
+        applyLineDataSetStyle(wellnessDataSet, R.color.md_green_500, R.color.md_green_700);
 
         List<Entry> learningEntries = new ArrayList<>();
-        learningEntries.add(new Entry(1, 2, R.color.md_blue_500));
-        learningEntries.add(new Entry(2, 4, R.color.md_blue_500));
-        learningEntries.add(new Entry(3, 5, R.color.md_blue_500));
-        learningEntries.add(new Entry(4, 10, R.color.md_blue_500));
-        learningEntries.add(new Entry(5, 3, R.color.md_blue_500));
-        learningEntries.add(new Entry(6, 1, R.color.md_blue_500));
-        learningEntries.add(new Entry(7, 1, R.color.md_blue_500));
+        learningEntries.add(new Entry(1, 2, R.color.md_blue_A400));
+        learningEntries.add(new Entry(2, 4, R.color.md_blue_A400));
+        learningEntries.add(new Entry(3, 5, R.color.md_blue_A400));
+        learningEntries.add(new Entry(4, 10, R.color.md_blue_A400));
+        learningEntries.add(new Entry(5, 3, R.color.md_blue_A400));
+        learningEntries.add(new Entry(6, 1, R.color.md_blue_A400));
+        learningEntries.add(new Entry(7, 1, R.color.md_blue_A400));
         LineDataSet learningDataSet = new LineDataSet(learningEntries, "Learning");
 
-        applyLineDataSetStyle(learningDataSet, R.color.md_blue_300, R.color.md_blue_500);
+        applyLineDataSetStyle(learningDataSet, R.color.md_blue_A200, R.color.md_blue_A400);
 
         List<Entry> workEntries = new ArrayList<>();
-        workEntries.add(new Entry(1, 1, R.color.md_red_500));
-        workEntries.add(new Entry(2, 4, R.color.md_red_500));
-        workEntries.add(new Entry(3, 7, R.color.md_red_500));
-        workEntries.add(new Entry(4, 12, R.color.md_red_500));
-        workEntries.add(new Entry(5, 4, R.color.md_red_500));
-        workEntries.add(new Entry(6, 7, R.color.md_red_500));
-        workEntries.add(new Entry(7, 9, R.color.md_red_500));
+        workEntries.add(new Entry(1, 1, R.color.md_red_A400));
+        workEntries.add(new Entry(2, 4, R.color.md_red_A400));
+        workEntries.add(new Entry(3, 7, R.color.md_red_A400));
+        workEntries.add(new Entry(4, 12, R.color.md_red_A400));
+        workEntries.add(new Entry(5, 4, R.color.md_red_A400));
+        workEntries.add(new Entry(6, 7, R.color.md_red_A400));
+        workEntries.add(new Entry(7, 9, R.color.md_red_A400));
         LineDataSet workDataSet = new LineDataSet(workEntries, "Work");
 
-        applyLineDataSetStyle(workDataSet, R.color.md_red_300, R.color.md_red_500);
+        applyLineDataSetStyle(workDataSet, R.color.md_red_A200, R.color.md_red_A400);
 
         LineData lineData = new LineData(wellnessDataSet, learningDataSet, workDataSet);
 
@@ -357,26 +356,25 @@ public class GrowthFragment extends BaseFragment {
         applyDefaultStyle(awesomenessChart);
 
         List<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(1, 42, R.color.md_green_500));
-        entries.add(new Entry(2, 32, R.color.md_green_500));
-        entries.add(new Entry(3, 20, R.color.md_green_500));
-        entries.add(new Entry(4, 55, R.color.md_green_500));
-        entries.add(new Entry(5, 67, R.color.md_green_500));
+        entries.add(new Entry(1, 42, R.color.md_red_A400));
+        entries.add(new Entry(2, 32, R.color.md_red_A400));
+        entries.add(new Entry(3, 20, R.color.md_red_A400));
+        entries.add(new Entry(4, 55, R.color.md_red_A400));
+        entries.add(new Entry(5, 67, R.color.md_red_A400));
         LineDataSet thisWeekDataSet = new LineDataSet(entries, "This week");
 
-        applyLineDataSetStyle(thisWeekDataSet, R.color.md_green_300, R.color.md_green_500);
-
+        applyLineDataSetStyle(thisWeekDataSet, R.color.md_red_A200, R.color.md_red_A400);
 
         List<Entry> lastWeekEntries = new ArrayList<>();
-        lastWeekEntries.add(new Entry(1, 12, R.color.md_orange_500));
-        lastWeekEntries.add(new Entry(2, 21, R.color.md_orange_500));
-        lastWeekEntries.add(new Entry(3, 38, R.color.md_orange_500));
-        lastWeekEntries.add(new Entry(4, 93, R.color.md_orange_500));
-        lastWeekEntries.add(new Entry(5, 64, R.color.md_orange_500));
-        lastWeekEntries.add(new Entry(6, 22, R.color.md_orange_500));
-        lastWeekEntries.add(new Entry(7, 12, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(1, 12, R.color.md_blue_A400));
+        lastWeekEntries.add(new Entry(2, 21, R.color.md_blue_A400));
+        lastWeekEntries.add(new Entry(3, 38, R.color.md_blue_A400));
+        lastWeekEntries.add(new Entry(4, 93, R.color.md_blue_A400));
+        lastWeekEntries.add(new Entry(5, 64, R.color.md_blue_A400));
+        lastWeekEntries.add(new Entry(6, 22, R.color.md_blue_A400));
+        lastWeekEntries.add(new Entry(7, 12, R.color.md_blue_A400));
         LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, "Last week");
-        applyLineDataSetStyle(lastWeekDataSet, R.color.md_orange_300, R.color.md_orange_500);
+        applyLineDataSetStyle(lastWeekDataSet, R.color.md_blue_A200, R.color.md_blue_A400);
 
         XAxis xAxis = awesomenessChart.getXAxis();
         xAxis.setValueFormatter(new IAxisValueFormatter() {
@@ -393,7 +391,6 @@ public class GrowthFragment extends BaseFragment {
                 return String.valueOf((int) v) + "%";
             }
         });
-
 
         xAxis.setLabelCount(lastWeekEntries.size(), true);
         yAxis.setAxisMinimum(0);
@@ -420,7 +417,7 @@ public class GrowthFragment extends BaseFragment {
         lastWeekDataSet.setCircleColorHole(Color.WHITE);
         lastWeekDataSet.setCircleColor(ContextCompat.getColor(getContext(), color));
         lastWeekDataSet.setCircleRadius(6f);
-        lastWeekDataSet.setLineWidth(3f);
+        lastWeekDataSet.setLineWidth(2f);
         lastWeekDataSet.setHighLightColor(ContextCompat.getColor(getContext(), highlightColor));
         lastWeekDataSet.setDrawValues(false);
         lastWeekDataSet.setColor(ContextCompat.getColor(getContext(), color));
