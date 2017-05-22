@@ -50,7 +50,6 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginEnd="32dp"
                     android:layout_marginStart="32dp"
-                    android:drawableTop="@drawable/indicator_dot_white"
                     android:text="42\nOverdue"
                     android:textAlignment="center" />
 
@@ -61,7 +60,6 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/summary_title"
                     android:layout_toStartOf="@id/summary_overdue"
-                    android:drawableTop="@drawable/indicator_dot_white"
                     android:text="123\nCompleted"
                     android:textAlignment="center" />
 
@@ -72,7 +70,6 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/summary_title"
                     android:layout_toEndOf="@id/summary_overdue"
-                    android:drawableTop="@drawable/indicator_dot_white"
                     android:text="28\nTracked"
                     android:textAlignment="center" />
             </RelativeLayout>
@@ -101,7 +98,7 @@
 
             <android.support.v7.widget.CardView
                 android:id="@+id/awesomeness_container"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginLeft="8dp"
@@ -126,7 +123,17 @@
                         android:text="Awesomeness score" />
 
                     <com.github.mikephil.charting.charts.LineChart
-                        android:id="@+id/awesomeness_chart"
+                        android:id="@+id/awesomeness_range_chart"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="16dp"
+                        android:minHeight="300dp" />
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/awesomeness_vs_last_chart"
+                        android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginEnd="8dp"
@@ -140,7 +147,7 @@
 
             <android.support.v7.widget.CardView
                 android:id="@+id/completed_quests_container"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginLeft="8dp"
@@ -181,7 +188,7 @@
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/completed_quests_chart"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_below="@id/completed_quests_title"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
@@ -192,7 +199,7 @@
 
             <android.support.v7.widget.CardView
                 android:id="@+id/time_spent_container"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginLeft="8dp"
@@ -233,7 +240,7 @@
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/time_spent_chart"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_below="@id/time_spent_title"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
@@ -244,7 +251,7 @@
 
             <android.support.v7.widget.CardView
                 android:id="@+id/coins_earned_container"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginLeft="8dp"
@@ -271,7 +278,7 @@
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/coins_earned_chart"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="16dp"
@@ -282,7 +289,7 @@
 
             <android.support.v7.widget.CardView
                 android:id="@+id/xp_earned_container"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginLeft="8dp"
@@ -309,7 +316,7 @@
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/xp_earned_chart"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="16dp"
