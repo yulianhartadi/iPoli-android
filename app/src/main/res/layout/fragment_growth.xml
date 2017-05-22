@@ -186,10 +186,20 @@
                         android:src="@drawable/ic_filter_list_black_24dp" />
 
                     <com.github.mikephil.charting.charts.LineChart
-                        android:id="@+id/completed_quests_chart"
+                        android:id="@+id/completed_quests_range_chart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/completed_quests_title"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="16dp"
+                        android:minHeight="300dp" />
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/completed_quests_vs_last_chart"
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="16dp"
@@ -238,10 +248,20 @@
                         android:src="@drawable/ic_filter_list_black_24dp" />
 
                     <com.github.mikephil.charting.charts.LineChart
-                        android:id="@+id/time_spent_chart"
+                        android:id="@+id/time_spent_range_chart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/time_spent_title"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="16dp"
+                        android:minHeight="300dp" />
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/time_spent_vs_last_chart"
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="16dp"
