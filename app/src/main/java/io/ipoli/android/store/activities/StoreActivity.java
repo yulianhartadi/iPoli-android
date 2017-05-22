@@ -63,11 +63,13 @@ public class StoreActivity extends BaseActivity {
         itemList.setEmptyView(rootLayout, R.string.empty_store_items, R.drawable.ic_coins_grey_24dp);
 
         List<StoreViewModel> storeViewModels = new ArrayList<>();
-        storeViewModels.add(new StoreViewModel("Coins", R.drawable.ic_coins_grey_24dp));
-        storeViewModels.add(new StoreViewModel("Upgrades", R.drawable.ic_calendar_blank_grey_24dp));
-        storeViewModels.add(new StoreViewModel("Pets", R.drawable.ic_assignment_white_24dp));
+        storeViewModels.add(new StoreViewModel("Coins", R.drawable.pet_1));
+        storeViewModels.add(new StoreViewModel("Upgrades", R.drawable.pet_2));
+        storeViewModels.add(new StoreViewModel("Avatars", R.drawable.avatar_01));
+        storeViewModels.add(new StoreViewModel("Pets", R.drawable.pet_3));
         adapter = new StoreAdapter(storeViewModels);
         itemList.setAdapter(adapter);
+
 
         eventBus.post(new ScreenShownEvent(EventSource.STORE));
     }
