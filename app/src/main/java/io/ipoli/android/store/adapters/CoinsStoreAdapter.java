@@ -1,4 +1,4 @@
-package io.ipoli.android.shop.adapters;
+package io.ipoli.android.store.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,8 +14,8 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
-import io.ipoli.android.shop.events.BuyCoinsTappedEvent;
-import io.ipoli.android.shop.viewmodels.ProductViewModels;
+import io.ipoli.android.store.events.BuyCoinsTappedEvent;
+import io.ipoli.android.store.viewmodels.CoinsViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -23,10 +23,10 @@ import io.ipoli.android.shop.viewmodels.ProductViewModels;
  */
 public class CoinsStoreAdapter extends RecyclerView.Adapter<CoinsStoreAdapter.ViewHolder> {
 
-    private List<ProductViewModels> viewModels;
+    private List<CoinsViewModel> viewModels;
     private final Bus eventBus;
 
-    public CoinsStoreAdapter(List<ProductViewModels> viewModels, Bus eventBus) {
+    public CoinsStoreAdapter(List<CoinsViewModel> viewModels, Bus eventBus) {
         this.viewModels = viewModels;
         this.eventBus = eventBus;
     }
@@ -34,12 +34,12 @@ public class CoinsStoreAdapter extends RecyclerView.Adapter<CoinsStoreAdapter.Vi
     @Override
     public CoinsStoreAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                            int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.store_item, parent, false));
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.coins_store_item, parent, false));
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        final ProductViewModels vm = viewModels.get(position);
+        final CoinsViewModel vm = viewModels.get(holder.getAdapterPosition());
 
         holder.name.setText(String.valueOf(vm.getValue()));
         holder.buy.setText(vm.getPrice());
@@ -51,7 +51,7 @@ public class CoinsStoreAdapter extends RecyclerView.Adapter<CoinsStoreAdapter.Vi
         return viewModels.size();
     }
 
-    public void setViewModels(List<ProductViewModels> viewModels) {
+    public void setViewModels(List<CoinsViewModel> viewModels) {
         this.viewModels = viewModels;
         notifyDataSetChanged();
     }

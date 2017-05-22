@@ -1,6 +1,7 @@
 package io.ipoli.android.player;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,6 +22,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.store.activities.StoreActivity;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -93,6 +95,7 @@ public class UpgradeDialog extends DialogFragment {
                         Toast.makeText(getContext(), "You can now enjoy Repeating quests", Toast.LENGTH_SHORT).show();
                     } else {
                         //go to Buy Coins in Store
+                        getContext().startActivity(new Intent(getContext(), StoreActivity.class));
                     }
                 })
                 .setNegativeButton("Not now", (dialog, which) -> {

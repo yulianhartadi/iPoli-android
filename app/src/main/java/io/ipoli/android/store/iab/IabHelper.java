@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package io.ipoli.android.shop.iab;
+package io.ipoli.android.store.iab;
 
 import android.app.Activity;
 import android.app.PendingIntent;

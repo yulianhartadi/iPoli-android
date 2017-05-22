@@ -1,6 +1,6 @@
-package io.ipoli.android.shop.events;
+package io.ipoli.android.store.events;
 
-import io.ipoli.android.shop.viewmodels.PetViewModel;
+import io.ipoli.android.store.viewmodels.PetViewModel;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
