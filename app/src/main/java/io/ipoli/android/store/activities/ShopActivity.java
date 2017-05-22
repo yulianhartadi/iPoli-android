@@ -1,4 +1,4 @@
-package io.ipoli.android.shop.activities;
+package io.ipoli.android.store.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,16 +22,14 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
-import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.shop.adapters.ShopPetAdapter;
-import io.ipoli.android.shop.events.BuyPetRequestEvent;
-import io.ipoli.android.shop.events.PetBoughtEvent;
-import io.ipoli.android.shop.viewmodels.PetViewModel;
+import io.ipoli.android.store.adapters.ShopPetAdapter;
+import io.ipoli.android.store.events.BuyPetRequestEvent;
+import io.ipoli.android.store.events.PetBoughtEvent;
+import io.ipoli.android.store.viewmodels.PetViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -74,7 +72,7 @@ public class ShopActivity extends BaseActivity {
                     ResourceUtils.extractDrawableResource(this, pictureName + "_happy"), pictureName));
         }
         viewPager.setAdapter(new ShopPetAdapter(this, petViewModels, eventBus));
-        eventBus.post(new ScreenShownEvent(EventSource.SHOP));
+//        eventBus.post(new ScreenShownEvent(EventSource.SHOP));
     }
 
     @Override

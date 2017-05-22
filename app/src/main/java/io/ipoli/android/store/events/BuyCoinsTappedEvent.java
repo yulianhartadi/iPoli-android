@@ -1,4 +1,4 @@
-package io.ipoli.android.shop.events;
+package io.ipoli.android.store.events;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

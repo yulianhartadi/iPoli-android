@@ -99,7 +99,8 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reminder.data.Reminder;
 import io.ipoli.android.reward.fragments.RewardListFragment;
-import io.ipoli.android.shop.activities.CoinStoreActivity;
+import io.ipoli.android.store.activities.CoinStoreActivity;
+import io.ipoli.android.store.activities.StoreActivity;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -237,7 +238,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             case R.id.store:
                 source = EventSource.STORE;
-                startActivity(new Intent(this, CoinStoreActivity.class));
+                startActivity(new Intent(this, StoreActivity.class));
                 break;
 
             case R.id.invite_friends:

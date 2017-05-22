@@ -1,4 +1,4 @@
-package io.ipoli.android.shop.viewmodels;
+package io.ipoli.android.store.viewmodels;
 
 import android.support.annotation.DrawableRes;
 

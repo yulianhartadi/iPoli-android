@@ -1,4 +1,4 @@
-package io.ipoli.android.shop.adapters;
+package io.ipoli.android.store.adapters;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
@@ -15,8 +15,8 @@ import com.squareup.otto.Bus;
 import java.util.List;
 
 import io.ipoli.android.R;
-import io.ipoli.android.shop.events.BuyPetRequestEvent;
-import io.ipoli.android.shop.viewmodels.PetViewModel;
+import io.ipoli.android.store.events.BuyPetRequestEvent;
+import io.ipoli.android.store.viewmodels.PetViewModel;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 /**

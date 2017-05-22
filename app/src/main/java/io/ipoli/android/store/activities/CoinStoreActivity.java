@@ -1,4 +1,4 @@
-package io.ipoli.android.shop.activities;
+package io.ipoli.android.store.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,14 +37,14 @@ import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.shop.adapters.CoinsStoreAdapter;
-import io.ipoli.android.shop.events.BuyCoinsTappedEvent;
-import io.ipoli.android.shop.events.CoinsPurchasedEvent;
-import io.ipoli.android.shop.iab.IabHelper;
-import io.ipoli.android.shop.iab.Inventory;
-import io.ipoli.android.shop.iab.Purchase;
-import io.ipoli.android.shop.iab.SkuDetails;
-import io.ipoli.android.shop.viewmodels.ProductViewModels;
+import io.ipoli.android.store.adapters.CoinsStoreAdapter;
+import io.ipoli.android.store.events.BuyCoinsTappedEvent;
+import io.ipoli.android.store.events.CoinsPurchasedEvent;
+import io.ipoli.android.store.iab.IabHelper;
+import io.ipoli.android.store.iab.Inventory;
+import io.ipoli.android.store.iab.Purchase;
+import io.ipoli.android.store.iab.SkuDetails;
+import io.ipoli.android.store.viewmodels.CoinsViewModel;
 
 public class CoinStoreActivity extends BaseActivity {
     private static final String SKU_COINS_100 = "coins_100";
@@ -155,11 +155,11 @@ public class CoinStoreActivity extends BaseActivity {
         SkuDetails coins500 = inventory.getSkuDetails(SKU_COINS_500);
         SkuDetails coins1000 = inventory.getSkuDetails(SKU_COINS_1000);
 
-        List<ProductViewModels> viewModels = new ArrayList<>();
-        viewModels.add(new ProductViewModels(SKU_COINS_100, coins100.getTitle(), coins100.getPrice(), 100));
-        viewModels.add(new ProductViewModels(SKU_COINS_300, coins300.getTitle(), coins300.getPrice(), 300));
-        viewModels.add(new ProductViewModels(SKU_COINS_500, coins500.getTitle(), coins500.getPrice(), 500));
-        viewModels.add(new ProductViewModels(SKU_COINS_1000, coins1000.getTitle(), coins1000.getPrice(), 1000));
+        List<CoinsViewModel> viewModels = new ArrayList<>();
+        viewModels.add(new CoinsViewModel(SKU_COINS_100, coins100.getTitle(), coins100.getPrice(), 100));
+        viewModels.add(new CoinsViewModel(SKU_COINS_300, coins300.getTitle(), coins300.getPrice(), 300));
+        viewModels.add(new CoinsViewModel(SKU_COINS_500, coins500.getTitle(), coins500.getPrice(), 500));
+        viewModels.add(new CoinsViewModel(SKU_COINS_1000, coins1000.getTitle(), coins1000.getPrice(), 1000));
         adapter.setViewModels(viewModels);
 
         hideLoaderContainer();

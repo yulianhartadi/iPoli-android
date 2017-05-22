@@ -134,9 +134,9 @@ import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
 import io.ipoli.android.reward.events.EditRewardRequestEvent;
 import io.ipoli.android.reward.events.NewRewardSavedEvent;
-import io.ipoli.android.shop.events.BuyCoinsTappedEvent;
-import io.ipoli.android.shop.events.CoinsPurchasedEvent;
-import io.ipoli.android.shop.events.PetBoughtEvent;
+import io.ipoli.android.store.events.BuyCoinsTappedEvent;
+import io.ipoli.android.store.events.CoinsPurchasedEvent;
+import io.ipoli.android.store.events.PetBoughtEvent;
 
 public class AmplitudeAnalyticsService implements AnalyticsService {
 

@@ -78,8 +78,9 @@ import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.fragments.RewardListFragment;
-import io.ipoli.android.shop.activities.CoinStoreActivity;
-import io.ipoli.android.shop.activities.ShopActivity;
+import io.ipoli.android.store.activities.CoinStoreActivity;
+import io.ipoli.android.store.activities.ShopActivity;
+import io.ipoli.android.store.activities.StoreActivity;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -235,5 +236,7 @@ public interface AppComponent {
     void inject(CoinStoreActivity coinStoreActivity);
 
     void inject(UpgradeDialog upgradeDialog);
+
+    void inject(StoreActivity storeActivity);
 }
 

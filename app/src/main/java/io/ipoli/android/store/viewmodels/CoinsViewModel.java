@@ -1,17 +1,17 @@
-package io.ipoli.android.shop.viewmodels;
+package io.ipoli.android.store.viewmodels;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 12/6/16.
  */
 
-public class ProductViewModels {
+public class CoinsViewModel {
     private final String sku;
     private final String name;
     private final String price;
     private final long value;
 
-    public ProductViewModels(String sku, String name, String price, long value) {
+    public CoinsViewModel(String sku, String name, String price, long value) {
         this.sku = sku;
         this.name = name;
         this.price = price;

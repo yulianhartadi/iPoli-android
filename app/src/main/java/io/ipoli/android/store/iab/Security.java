@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package io.ipoli.android.shop.iab;
+package io.ipoli.android.store.iab;
 
 import android.text.TextUtils;
 import android.util.Base64;
