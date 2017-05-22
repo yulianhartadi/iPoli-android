@@ -16,18 +16,24 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.MPPointF;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
@@ -53,6 +59,7 @@ public class GrowthFragment extends BaseFragment {
 
     public static final int CHART_ANIMATION_DURATION = 500;
     public static final Easing.EasingOption DEFAULT_EASING_OPTION = Easing.EasingOption.EaseInQuart;
+
     @BindView(R.id.root_container)
     ViewGroup rootContainer;
 
@@ -62,8 +69,11 @@ public class GrowthFragment extends BaseFragment {
     @BindView(R.id.toolbar_collapsing_container)
     CollapsingToolbarLayout collapsingToolbarLayout;
 
-    @BindView(R.id.awesomeness_chart)
-    LineChart awesomenessChart;
+    @BindView(R.id.awesomeness_range_chart)
+    LineChart awesomenessRangeChart;
+
+    @BindView(R.id.awesomeness_vs_last_chart)
+    BarChart awesomenessVsLastChart;
 
     @BindView(R.id.completed_quests_chart)
     LineChart completedQuestsChart;
@@ -115,12 +125,41 @@ public class GrowthFragment extends BaseFragment {
         App.getAppComponent(getContext()).inject(this);
         ((MainActivity) getActivity()).initToolbar(toolbar, R.string.growth);
         collapsingToolbarLayout.setTitleEnabled(false);
-        setupAwesomenessChart();
+        awesomenessRangeChart.setVisibility(View.GONE);
+        awesomenessVsLastChart.setVisibility(View.VISIBLE);
+        setupAwesomenessRangeChart();
+        setupAwesomenessVsLastChart();
         setupCompletedQuestsChart();
         setupTimeSpentChart();
         setupCoinsEarnedChart();
         setupXpEarnedChart();
         return view;
+    }
+
+    private void setupAwesomenessVsLastChart() {
+        applyDefaultStyle(awesomenessVsLastChart);
+        List<BarEntry> entries = new ArrayList<>();
+        entries.add(new BarEntry(1, 40));
+        entries.add(new BarEntry(2, 51));
+        entries.add(new BarEntry(3, 23));
+        entries.add(new BarEntry(4, 44));
+        entries.add(new BarEntry(5, 12));
+        entries.add(new BarEntry(6, 87));
+        entries.add(new BarEntry(7, 65));
+        BarDataSet dataSet = new BarDataSet(entries, "");
+        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_red_A200));
+        dataSet.setValueTextSize(12f);
+        dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
+        BarData data = new BarData(dataSet);
+        data.setValueFormatter(new IValueFormatter() {
+            @Override
+            public String getFormattedValue(float v, Entry entry, int i, ViewPortHandler viewPortHandler) {
+                return String.valueOf((int) v);
+            }
+        });
+        awesomenessVsLastChart.setData(data);
+        awesomenessVsLastChart.invalidate();
+        awesomenessVsLastChart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
     }
 
     private void setupXpEarnedChart() {
@@ -352,8 +391,8 @@ public class GrowthFragment extends BaseFragment {
         completedQuestsChart.invalidate();
     }
 
-    private void setupAwesomenessChart() {
-        applyDefaultStyle(awesomenessChart);
+    private void setupAwesomenessRangeChart() {
+        applyDefaultStyle(awesomenessRangeChart);
 
         List<Entry> entries = new ArrayList<>();
         entries.add(new Entry(1, 42, R.color.md_red_A400));
@@ -376,7 +415,7 @@ public class GrowthFragment extends BaseFragment {
         LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, "Last week");
         applyLineDataSetStyle(lastWeekDataSet, R.color.md_blue_A200, R.color.md_blue_A400);
 
-        XAxis xAxis = awesomenessChart.getXAxis();
+        XAxis xAxis = awesomenessRangeChart.getXAxis();
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float v, AxisBase axisBase) {
@@ -384,7 +423,7 @@ public class GrowthFragment extends BaseFragment {
             }
         });
 
-        YAxis yAxis = awesomenessChart.getAxisLeft();
+        YAxis yAxis = awesomenessRangeChart.getAxisLeft();
         yAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float v, AxisBase axisBase) {
@@ -398,16 +437,16 @@ public class GrowthFragment extends BaseFragment {
         yAxis.setLabelCount(6, true);
 
         CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
-        awesomenessChart.setMarker(customMarkerView);
-        awesomenessChart.setDescription(null);
-        awesomenessChart.setDrawBorders(false);
+        awesomenessRangeChart.setMarker(customMarkerView);
+        awesomenessRangeChart.setDescription(null);
+        awesomenessRangeChart.setDrawBorders(false);
 
         LineData lineData = new LineData(lastWeekDataSet, thisWeekDataSet);
 
-        awesomenessChart.setData(lineData);
-        awesomenessChart.invalidate();
-//        awesomenessChart.animateX(500, Easing.EasingOption.EaseInOutQuart);
-        awesomenessChart.animateX(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
+        awesomenessRangeChart.setData(lineData);
+        awesomenessRangeChart.invalidate();
+//        awesomenessRangeChart.animateX(500, Easing.EasingOption.EaseInOutQuart);
+        awesomenessRangeChart.animateX(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
     }
 
     private void applyLineDataSetStyle(LineDataSet lastWeekDataSet, @ColorRes int color, @ColorRes int highlightColor) {
@@ -424,6 +463,7 @@ public class GrowthFragment extends BaseFragment {
     }
 
     private void applyDefaultStyle(LineChart chart) {
+        chart.setDescription(null);
         chart.setDrawBorders(false);
         chart.setExtraBottomOffset(8);
         XAxis xAxis = chart.getXAxis();
@@ -449,6 +489,34 @@ public class GrowthFragment extends BaseFragment {
         Legend legend = chart.getLegend();
         legend.setYOffset(8f);
         legend.setTextSize(12f);
+    }
+
+    private void applyDefaultStyle(BarChart chart) {
+        chart.setDescription(null);
+        chart.setDrawBorders(false);
+        chart.setExtraBottomOffset(8);
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setDrawAxisLine(false);
+//        xAxis.setGridColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
+        xAxis.setDrawGridLines(false);
+        xAxis.setTextSize(12f);
+        xAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
+        xAxis.setYOffset(12f);
+        xAxis.setLabelRotationAngle(330);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+        YAxis yAxis = chart.getAxisLeft();
+        yAxis.setTextSize(12f);
+        yAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
+        yAxis.setGridColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
+        yAxis.setXOffset(12f);
+        yAxis.setDrawAxisLine(false);
+        yAxis.setAxisMinimum(0);
+
+        chart.getAxisRight().setEnabled(false);
+
+        Legend legend = chart.getLegend();
+        legend.setEnabled(false);
     }
 
     @OnClick(R.id.filter_completed_quests)
