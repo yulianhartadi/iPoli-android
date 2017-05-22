@@ -1,6 +1,7 @@
 package io.ipoli.android.player.fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
@@ -14,16 +15,12 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -63,7 +60,7 @@ public class GrowthFragment extends BaseFragment {
     CollapsingToolbarLayout collapsingToolbarLayout;
 
     @BindView(R.id.awesomeness_chart)
-    CombinedChart awesomenessChart;
+    LineChart awesomenessChart;
 
     @BindView(R.id.completed_quests_chart)
     LineChart completedQuestsChart;
@@ -113,84 +110,44 @@ public class GrowthFragment extends BaseFragment {
 
     private void setupCompletedQuestsChart() {
         applyDefaultStyle(completedQuestsChart);
-//        List<Entry> totalEntries = new ArrayList<>();
-//        totalEntries.add(new Entry(1, 12, R.color.colorAccentDark));
-//        totalEntries.add(new Entry(2, 24, R.color.colorAccentDark));
-//        totalEntries.add(new Entry(3, 19, R.color.colorAccentDark));
-//        totalEntries.add(new Entry(4, 23, R.color.colorAccentDark));
-//        totalEntries.add(new Entry(5, 12, R.color.colorAccentDark));
-//        totalEntries.add(new Entry(6, 4, R.color.colorAccentDark));
-//        totalEntries.add(new Entry(7, 5, R.color.colorAccentDark));
-//        LineDataSet totalDataSet = new LineDataSet(totalEntries, "Total");
-//        totalDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-//        totalDataSet.setCircleRadius(4);
-//        totalDataSet.setDrawCircleHole(false);
-//        totalDataSet.setDrawValues(false);
-//        totalDataSet.setColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-//        totalDataSet.setCircleColor(ContextCompat.getColor(getContext(), R.color.colorAccentDark));
-//        totalDataSet.setHighLightColor(ContextCompat.getColor(getContext(), R.color.colorAccentDark));
 
         List<Entry> wellnessEntries = new ArrayList<>();
-        wellnessEntries.add(new Entry(1, 4, R.color.md_green_700));
-        wellnessEntries.add(new Entry(2, 9, R.color.md_green_700));
-        wellnessEntries.add(new Entry(3, 12, R.color.md_green_700));
-        wellnessEntries.add(new Entry(4, 4, R.color.md_green_700));
-        wellnessEntries.add(new Entry(5, 8, R.color.md_green_700));
-        wellnessEntries.add(new Entry(6, 1, R.color.md_green_700));
-        wellnessEntries.add(new Entry(7, 3, R.color.md_green_700));
+        wellnessEntries.add(new Entry(1, 4, R.color.md_green_500));
+        wellnessEntries.add(new Entry(2, 9, R.color.md_green_500));
+        wellnessEntries.add(new Entry(3, 12, R.color.md_green_500));
+        wellnessEntries.add(new Entry(4, 4, R.color.md_green_500));
+        wellnessEntries.add(new Entry(5, 8, R.color.md_green_500));
+        wellnessEntries.add(new Entry(6, 1, R.color.md_green_500));
+        wellnessEntries.add(new Entry(7, 3, R.color.md_green_500));
         LineDataSet wellnessDataSet = new LineDataSet(wellnessEntries, "Wellness");
-        wellnessDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-//        wellnessDataSet.setCircleRadius(4);
-        wellnessDataSet.setDrawCircleHole(false);
-        wellnessDataSet.setDrawValues(false);
-        wellnessDataSet.setLineWidth(1.5f);
-        wellnessDataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_green_500));
-        wellnessDataSet.setCircleColor(ContextCompat.getColor(getContext(), R.color.md_green_700));
-        wellnessDataSet.setHighLightColor(ContextCompat.getColor(getContext(), R.color.md_green_700));
-        wellnessDataSet.setFillColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
-        wellnessDataSet.setDrawFilled(true);
+
+        applyLineDataSetStyle(wellnessDataSet, R.color.md_green_300, R.color.md_green_500);
 
         List<Entry> learningEntries = new ArrayList<>();
-        learningEntries.add(new Entry(1, 2, R.color.md_blue_700));
-        learningEntries.add(new Entry(2, 4, R.color.md_blue_700));
-        learningEntries.add(new Entry(3, 5, R.color.md_blue_700));
-        learningEntries.add(new Entry(4, 10, R.color.md_blue_700));
-        learningEntries.add(new Entry(5, 3, R.color.md_blue_700));
-        learningEntries.add(new Entry(6, 1, R.color.md_blue_700));
-        learningEntries.add(new Entry(7, 1, R.color.md_blue_700));
+        learningEntries.add(new Entry(1, 2, R.color.md_blue_500));
+        learningEntries.add(new Entry(2, 4, R.color.md_blue_500));
+        learningEntries.add(new Entry(3, 5, R.color.md_blue_500));
+        learningEntries.add(new Entry(4, 10, R.color.md_blue_500));
+        learningEntries.add(new Entry(5, 3, R.color.md_blue_500));
+        learningEntries.add(new Entry(6, 1, R.color.md_blue_500));
+        learningEntries.add(new Entry(7, 1, R.color.md_blue_500));
         LineDataSet learningDataSet = new LineDataSet(learningEntries, "Learning");
-        learningDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-//        learningDataSet.setCircleRadius(4);
-        learningDataSet.setDrawCircleHole(false);
-//        learningDataSet.setDrawCircles(false);
-        learningDataSet.setLineWidth(1.5f);
-        learningDataSet.setDrawValues(false);
-        learningDataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_blue_500));
-        learningDataSet.setCircleColor(ContextCompat.getColor(getContext(), R.color.md_blue_700));
-        learningDataSet.setHighLightColor(ContextCompat.getColor(getContext(), R.color.md_blue_700));
-        learningDataSet.setFillColor(ContextCompat.getColor(getContext(), R.color.md_blue_300));
-        learningDataSet.setDrawFilled(true);
+
+        applyLineDataSetStyle(learningDataSet, R.color.md_blue_300, R.color.md_blue_500);
 
         List<Entry> workEntries = new ArrayList<>();
-        workEntries.add(new Entry(1, 1, R.color.md_red_700));
-        workEntries.add(new Entry(2, 4, R.color.md_red_700));
-        workEntries.add(new Entry(3, 7, R.color.md_red_700));
-        workEntries.add(new Entry(4, 12, R.color.md_red_700));
-        workEntries.add(new Entry(5, 4, R.color.md_red_700));
-        workEntries.add(new Entry(6, 7, R.color.md_red_700));
-        workEntries.add(new Entry(7, 9, R.color.md_red_700));
+        workEntries.add(new Entry(1, 1, R.color.md_red_500));
+        workEntries.add(new Entry(2, 4, R.color.md_red_500));
+        workEntries.add(new Entry(3, 7, R.color.md_red_500));
+        workEntries.add(new Entry(4, 12, R.color.md_red_500));
+        workEntries.add(new Entry(5, 4, R.color.md_red_500));
+        workEntries.add(new Entry(6, 7, R.color.md_red_500));
+        workEntries.add(new Entry(7, 9, R.color.md_red_500));
         LineDataSet workDataSet = new LineDataSet(workEntries, "Work");
-        workDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-//        workDataSet.setCircleRadius(4);
-        workDataSet.setDrawCircleHole(false);
-//        workDataSet.setDrawCircles(false);
-        workDataSet.setLineWidth(1.5f);
-        workDataSet.setDrawValues(false);
-        workDataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_red_500));
-        workDataSet.setCircleColor(ContextCompat.getColor(getContext(), R.color.md_red_700));
-        workDataSet.setHighLightColor(ContextCompat.getColor(getContext(), R.color.md_red_700));
-        workDataSet.setFillColor(ContextCompat.getColor(getContext(), R.color.md_red_300));
-        workDataSet.setDrawFilled(true);
+
+        applyLineDataSetStyle(workDataSet, R.color.md_red_300, R.color.md_red_500);
+//        workDataSet.setFillColor(ContextCompat.getColor(getContext(), R.color.md_red_300));
+//        workDataSet.setDrawFilled(true);
 
         LineData lineData = new LineData(wellnessDataSet, learningDataSet, workDataSet);
 
@@ -214,29 +171,29 @@ public class GrowthFragment extends BaseFragment {
         applyDefaultStyle(awesomenessChart);
 
         List<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(1, 20, R.color.md_green_700));
-        entries.add(new Entry(2, 32, R.color.md_green_700));
-        entries.add(new Entry(3, 42, R.color.md_green_700));
-        entries.add(new Entry(4, 55, R.color.md_green_700));
-        entries.add(new Entry(5, 74, R.color.md_green_700));
-        entries.add(new Entry(6, 80, R.color.md_green_700));
-        entries.add(new Entry(7, 85, R.color.md_green_700));
-        LineDataSet lineDataSet = new LineDataSet(entries, "");
-        lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        lineDataSet.setDrawCircleHole(false);
-        lineDataSet.setCircleColor(ContextCompat.getColor(getContext(), R.color.md_green_700));
-//        lineDataSet.setDrawFilled(true);
-        lineDataSet.setLineWidth(1.5f);
-        lineDataSet.setHighLightColor(ContextCompat.getColor(getContext(), R.color.md_green_700));
-        lineDataSet.setDrawValues(false);
+        entries.add(new Entry(1, 42, R.color.md_green_500));
+        entries.add(new Entry(2, 32, R.color.md_green_500));
+        entries.add(new Entry(3, 20, R.color.md_green_500));
+        entries.add(new Entry(4, 55, R.color.md_green_500));
+        entries.add(new Entry(5, 67, R.color.md_green_500));
+//        entries.add(new Entry(6, 80, R.color.md_green_500));
+//        entries.add(new Entry(7, 17, R.color.md_green_500));
+        LineDataSet thisWeekDataSet = new LineDataSet(entries, "This week");
 
-        lineDataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_green_500));
-//        lineDataSet.setFillColor(ContextCompat.getColor(getContext(), R.color.md_green_300));
+        applyLineDataSetStyle(thisWeekDataSet, R.color.md_green_300, R.color.md_green_500);
 
 
-        awesomenessChart.setDescription(null);
-        awesomenessChart.getLegend().setEnabled(false);
-        awesomenessChart.setDrawBorders(false);
+        List<Entry> lastWeekEntries = new ArrayList<>();
+        lastWeekEntries.add(new Entry(1, 12, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(2, 21, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(3, 38, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(4, 93, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(5, 64, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(6, 22, R.color.md_orange_500));
+        lastWeekEntries.add(new Entry(7, 12, R.color.md_orange_500));
+        LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, "Last week");
+        applyLineDataSetStyle(lastWeekDataSet, R.color.md_orange_300, R.color.md_orange_500);
+
         XAxis xAxis = awesomenessChart.getXAxis();
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
@@ -254,76 +211,33 @@ public class GrowthFragment extends BaseFragment {
         });
 
 
-        xAxis.setLabelCount(entries.size(), true);
+        xAxis.setLabelCount(lastWeekEntries.size(), true);
         yAxis.setAxisMinimum(0);
         yAxis.setAxisMaximum(100);
         yAxis.setLabelCount(6, true);
 
         CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
         awesomenessChart.setMarker(customMarkerView);
+        awesomenessChart.setDescription(null);
+        awesomenessChart.setDrawBorders(false);
 
-        List<BarEntry> barEntries = new ArrayList<>();
-        barEntries.add(new BarEntry(1, 15, R.color.md_blue_500));
-        barEntries.add(new BarEntry(2, 12, R.color.md_blue_500));
-        barEntries.add(new BarEntry(3, 21, R.color.md_blue_500));
-        barEntries.add(new BarEntry(4, 40, R.color.md_blue_500));
-        barEntries.add(new BarEntry(5, 64, R.color.md_blue_500));
-        barEntries.add(new BarEntry(6, 18, R.color.md_blue_500));
-        barEntries.add(new BarEntry(7, 21, R.color.md_blue_500));
-        BarDataSet barDataSet = new BarDataSet(barEntries, "");
-        barDataSet.setDrawValues(false);
-        barDataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_blue_500));
-        BarData perDayThisWeek = new BarData(barDataSet);
-        perDayThisWeek.setBarWidth(perDayThisWeek.getBarWidth() / 1.5f);
+        LineData lineData = new LineData(lastWeekDataSet, thisWeekDataSet);
 
-        List<Entry> lastWeekEntries = new ArrayList<>();
-        lastWeekEntries.add(new Entry(1, 12, R.color.md_orange_700));
-        lastWeekEntries.add(new Entry(2, 21, R.color.md_orange_700));
-        lastWeekEntries.add(new Entry(3, 38, R.color.md_orange_700));
-        lastWeekEntries.add(new Entry(4, 42, R.color.md_orange_700));
-        lastWeekEntries.add(new Entry(5, 64, R.color.md_orange_700));
-        lastWeekEntries.add(new Entry(6, 72, R.color.md_orange_700));
-        lastWeekEntries.add(new Entry(7, 89, R.color.md_orange_700));
-        LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, "");
-        lastWeekDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        lastWeekDataSet.setDrawCircleHole(false);
-        lastWeekDataSet.setCircleColor(ContextCompat.getColor(getContext(), R.color.md_orange_500));
-        lastWeekDataSet.setLineWidth(1.5f);
-        lastWeekDataSet.setHighLightColor(ContextCompat.getColor(getContext(), R.color.md_orange_700));
-        lastWeekDataSet.setDrawValues(false);
-
-        lastWeekDataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_orange_500));
-
-        LineData lineData = new LineData(lineDataSet, lastWeekDataSet);
-
-        CombinedData data = new CombinedData();
-        data.setData(lineData);
-        data.setData(perDayThisWeek);
-
-        awesomenessChart.setData(data);
+        awesomenessChart.setData(lineData);
         awesomenessChart.invalidate();
     }
 
-    private void applyDefaultStyle(CombinedChart chart) {
-        chart.setDrawBorders(false);
-        chart.setExtraBottomOffset(8);
-        XAxis xAxis = chart.getXAxis();
-        xAxis.setDrawAxisLine(false);
-        xAxis.setGridColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
-        xAxis.setTextSize(12);
-        xAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
-        xAxis.setYOffset(12);
-        xAxis.setLabelRotationAngle(330);
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-
-        YAxis yAxis = chart.getAxisLeft();
-        yAxis.setTextSize(12);
-        yAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
-        yAxis.setGridColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
-        yAxis.setXOffset(12);
-        yAxis.setDrawAxisLine(false);
-        yAxis.setAxisMinimum(0);
-        chart.getAxisRight().setEnabled(false);
+    private void applyLineDataSetStyle(LineDataSet lastWeekDataSet, @ColorRes int color, @ColorRes int highlightColor) {
+        lastWeekDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        lastWeekDataSet.setDrawCircleHole(true);
+        lastWeekDataSet.setCircleHoleRadius(3f);
+        lastWeekDataSet.setCircleColorHole(Color.WHITE);
+        lastWeekDataSet.setCircleColor(ContextCompat.getColor(getContext(), color));
+        lastWeekDataSet.setCircleRadius(6f);
+        lastWeekDataSet.setLineWidth(3f);
+        lastWeekDataSet.setHighLightColor(ContextCompat.getColor(getContext(), highlightColor));
+        lastWeekDataSet.setDrawValues(false);
+        lastWeekDataSet.setColor(ContextCompat.getColor(getContext(), color));
     }
 
     private void applyDefaultStyle(LineChart chart) {
@@ -331,21 +245,27 @@ public class GrowthFragment extends BaseFragment {
         chart.setExtraBottomOffset(8);
         XAxis xAxis = chart.getXAxis();
         xAxis.setDrawAxisLine(false);
-        xAxis.setGridColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
-        xAxis.setTextSize(12);
+//        xAxis.setGridColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
+        xAxis.setDrawGridLines(false);
+        xAxis.setTextSize(12f);
         xAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
-        xAxis.setYOffset(12);
+        xAxis.setYOffset(12f);
         xAxis.setLabelRotationAngle(330);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
 
         YAxis yAxis = chart.getAxisLeft();
-        yAxis.setTextSize(12);
+        yAxis.setTextSize(12f);
         yAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
         yAxis.setGridColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
-        yAxis.setXOffset(12);
+        yAxis.setXOffset(12f);
         yAxis.setDrawAxisLine(false);
         yAxis.setAxisMinimum(0);
+
         chart.getAxisRight().setEnabled(false);
+
+        Legend legend = chart.getLegend();
+        legend.setYOffset(8f);
+        legend.setTextSize(12f);
     }
 
     @OnClick(R.id.filter_completed_quests)

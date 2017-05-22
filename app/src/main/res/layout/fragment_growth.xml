@@ -24,51 +24,58 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:statusBarScrim="@color/md_white">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginTop="?attr/actionBarSize"
-                android:orientation="horizontal"
-                android:weightSum="5">
-
-                <android.support.v4.widget.Space
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1" />
+                android:layout_marginBottom="32dp"
+                android:layout_marginTop="?attr/actionBarSize">
 
                 <TextView
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_width="0dp"
+                    android:id="@+id/summary_title"
+                    style="@style/TextAppearance.AppCompat.Title"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="32dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Weekly summary" />
+
+                <TextView
+                    android:id="@+id/summary_overdue"
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/summary_title"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginStart="32dp"
+                    android:drawableTop="@drawable/indicator_dot_white"
+                    android:text="42\nOverdue"
+                    android:textAlignment="center" />
+
+                <TextView
+                    android:id="@+id/summary_completed"
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/summary_title"
+                    android:layout_toStartOf="@id/summary_overdue"
                     android:drawableTop="@drawable/indicator_dot_white"
                     android:text="123\nCompleted"
                     android:textAlignment="center" />
 
                 <TextView
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_width="0dp"
+                    android:id="@+id/summary_time_tracked"
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableTop="@drawable/indicator_dot_white"
-                    android:gravity="center_horizontal"
-                    android:text="42\nOverdue" />
-
-                <TextView
-                    style="@style/TextAppearance.AppCompat.Body1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_below="@id/summary_title"
+                    android:layout_toEndOf="@id/summary_overdue"
                     android:drawableTop="@drawable/indicator_dot_white"
                     android:text="28\nTracked"
                     android:textAlignment="center" />
-
-                <android.support.v4.widget.Space
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1" />
-            </LinearLayout>
+            </RelativeLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -117,7 +124,7 @@
                         android:gravity="center_horizontal"
                         android:text="Awesomeness score progress" />
 
-                    <com.github.mikephil.charting.charts.CombinedChart
+                    <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/awesomeness_chart"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -131,6 +138,7 @@
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
+                android:id="@+id/completed_quests_container"
                 android:layout_width="395dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -175,6 +183,59 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_below="@id/completed_quests_title"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="16dp"
+                        android:minHeight="280dp" />
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/time_spent_container"
+                android:layout_width="395dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                app:cardElevation="6dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/completed_quests_container">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/time_spent_title"
+                        style="@style/TextAppearance.AppCompat.Subhead"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center_horizontal"
+                        android:text="Time spent" />
+
+                    <ImageButton
+                        android:id="@+id/filter_time_spent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginTop="16dp"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_filter_list_black_24dp" />
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/time_spent_chart"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_below="@id/time_spent_title"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="16dp"
