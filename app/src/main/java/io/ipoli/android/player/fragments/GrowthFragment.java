@@ -41,6 +41,10 @@ import com.github.mikephil.charting.utils.MPPointF;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.squareup.otto.Bus;
 
+import org.threeten.bp.DayOfWeek;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.format.DateTimeFormatter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +59,12 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.persistence.OnDataChangedListener;
+import io.ipoli.android.app.scheduling.PriorityEstimator;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
+
+import static org.threeten.bp.temporal.ChronoUnit.DAYS;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -110,17 +120,10 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     @Inject
     Bus eventBus;
 
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
     private Unbinder unbinder;
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
 
     public class CustomMarkerView extends MarkerView {
 
@@ -171,28 +174,44 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             spinner.setOnItemSelectedListener(this);
             ((MainActivity) getActivity()).actionBarDrawerToggle.syncState();
         }
-
-        awesomenessRangeChart.setVisibility(View.GONE);
-        awesomenessVsLastChart.setVisibility(View.VISIBLE);
-        completedQuestsRangeChart.setVisibility(View.GONE);
-        completedQuestsVsLastChart.setVisibility(View.VISIBLE);
-        timeSpentRangeChart.setVisibility(View.GONE);
-        timeSpentVsLastChart.setVisibility(View.VISIBLE);
-        coinsEarnedRangeChart.setVisibility(View.GONE);
-        coinsEarnedVsLastChart.setVisibility(View.VISIBLE);
-        xpEarnedRangeChart.setVisibility(View.GONE);
-        xpEarnedVsLastChart.setVisibility(View.VISIBLE);
-        setupAwesomenessRangeChart();
-        setupAwesomenessVsLastChart();
-        setupCompletedQuestsRangeChart();
-        setupCompletedQuestsVsLastChart();
-        setupTimeSpentRangeChart();
-        setupTimeSPentVsLastChart();
-        setupCoinsEarnedRangeChart();
-        setupCoinsEarnedVsLastChart();
-        setupXpEarnedRangeChart();
-        setupXpEarnedVsLastChart();
+        showCharts(0);
         return view;
+    }
+
+    private void showCharts(int position) {
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
+        LocalDate startOfPrevWeek = today.minusWeeks(1).with(DayOfWeek.MONDAY);
+
+        PriorityEstimator estimator = new PriorityEstimator();
+
+        questPersistenceService.findAllBetween(startOfPrevWeek, today, new OnDataChangedListener<List<Quest>>() {
+            @Override
+            public void onDataChanged(List<Quest> quests) {
+                int[] awesomenessPerDay = new int[7 + today.getDayOfWeek().getValue()];
+                for (Quest q : quests) {
+                    if (q.isCompleted()) {
+                        int idx = (int) DAYS.between(startOfPrevWeek, q.getCompletedAtDate());
+                        awesomenessPerDay[idx] += estimator.estimate(q);
+                    }
+                }
+                String[] xLabels = new String[7];
+                for (int i = 0; i < 7; i++) {
+                    xLabels[i] = startOfWeek.plusDays(i).format(DateTimeFormatter.ofPattern("dd MMM"));
+                }
+
+                setupAwesomenessRangeChart(awesomenessPerDay, 7, "This week", "Last week", xLabels);
+//        setupAwesomenessVsLastChart();
+//        setupCompletedQuestsRangeChart();
+//        setupCompletedQuestsVsLastChart();
+//        setupTimeSpentRangeChart();
+//        setupTimeSpentVsLastChart();
+//        setupCoinsEarnedRangeChart();
+//        setupCoinsEarnedVsLastChart();
+//        setupXpEarnedRangeChart();
+//        setupXpEarnedVsLastChart();
+            }
+        });
     }
 
     private void setupXpEarnedVsLastChart() {
@@ -245,7 +264,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         coinsEarnedVsLastChart.invalidate();
     }
 
-    private void setupTimeSPentVsLastChart() {
+    private void setupTimeSpentVsLastChart() {
         applyDefaultStyle(timeSpentVsLastChart);
         List<BarEntry> entries = new ArrayList<>();
         entries.add(new BarEntry(1, new float[]{5, 44, 55}));
@@ -574,50 +593,37 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         completedQuestsRangeChart.invalidate();
     }
 
-    private void setupAwesomenessRangeChart() {
+    private void setupAwesomenessRangeChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels) {
         applyDefaultStyle(awesomenessRangeChart);
 
         List<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(1, 42, R.color.md_red_A400));
-        entries.add(new Entry(2, 32, R.color.md_red_A400));
-        entries.add(new Entry(3, 20, R.color.md_red_A400));
-        entries.add(new Entry(4, 55, R.color.md_red_A400));
-        entries.add(new Entry(5, 67, R.color.md_red_A400));
-        LineDataSet thisWeekDataSet = new LineDataSet(entries, "This week");
+        for (int i = range; i < data.length; i++) {
+            entries.add(new Entry(i - range, data[i], R.color.md_red_A400));
+        }
+        LineDataSet thisWeekDataSet = new LineDataSet(entries, currentRangeLabel);
 
         applyLineDataSetStyle(thisWeekDataSet, R.color.md_red_A200, R.color.md_red_A400);
 
         List<Entry> lastWeekEntries = new ArrayList<>();
-        lastWeekEntries.add(new Entry(1, 12, R.color.md_blue_A400));
-        lastWeekEntries.add(new Entry(2, 21, R.color.md_blue_A400));
-        lastWeekEntries.add(new Entry(3, 38, R.color.md_blue_A400));
-        lastWeekEntries.add(new Entry(4, 93, R.color.md_blue_A400));
-        lastWeekEntries.add(new Entry(5, 64, R.color.md_blue_A400));
-        lastWeekEntries.add(new Entry(6, 22, R.color.md_blue_A400));
-        lastWeekEntries.add(new Entry(7, 12, R.color.md_blue_A400));
-        LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, "Last week");
+        for (int i = 0; i < range; i++) {
+            lastWeekEntries.add(new Entry(i, data[i], R.color.md_blue_A400));
+        }
+        LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, prevRangeLabel);
         applyLineDataSetStyle(lastWeekDataSet, R.color.md_blue_A200, R.color.md_blue_A400);
 
         XAxis xAxis = awesomenessRangeChart.getXAxis();
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float v, AxisBase axisBase) {
-                return "12 Feb";
+                int idx = (int) v;
+                return xLabels[idx];
             }
         });
 
         YAxis yAxis = awesomenessRangeChart.getAxisLeft();
-        yAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float v, AxisBase axisBase) {
-                return String.valueOf((int) v) + "%";
-            }
-        });
 
-        xAxis.setLabelCount(lastWeekEntries.size(), true);
+        xAxis.setLabelCount(range, true);
         yAxis.setAxisMinimum(0);
-        yAxis.setAxisMaximum(100);
-        yAxis.setLabelCount(6, true);
 
         CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
         awesomenessRangeChart.setMarker(customMarkerView);
@@ -628,7 +634,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         awesomenessRangeChart.setData(lineData);
         awesomenessRangeChart.invalidate();
-//        awesomenessRangeChart.animateX(500, Easing.EasingOption.EaseInOutQuart);
         awesomenessRangeChart.animateX(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
     }
 
@@ -739,5 +744,16 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     @Override
     protected void showHelpDialog() {
         HelpDialog.newInstance(R.layout.fragment_help_dialog_growth, R.string.help_dialog_growth_title, "growth").show(getActivity().getSupportFragmentManager());
+    }
+
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        showCharts(position);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }
