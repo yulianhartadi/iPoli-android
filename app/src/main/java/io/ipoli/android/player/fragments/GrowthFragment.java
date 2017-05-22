@@ -87,11 +87,17 @@ public class GrowthFragment extends BaseFragment {
     @BindView(R.id.time_spent_vs_last_chart)
     BarChart timeSpentVsLastChart;
 
-    @BindView(R.id.coins_earned_chart)
-    LineChart coinsEarnedChart;
+    @BindView(R.id.coins_earned_range_chart)
+    LineChart coinsEarnedRangeChart;
 
-    @BindView(R.id.xp_earned_chart)
-    LineChart xpEarnedChart;
+    @BindView(R.id.coins_earned_vs_last_chart)
+    BarChart coinsEarnedVsLastChart;
+
+    @BindView(R.id.xp_earned_range_chart)
+    LineChart xpEarnedRangeChart;
+
+    @BindView(R.id.xp_earned_vs_last_chart)
+    BarChart xpEarnedVsLastChart;
 
     @Inject
     Bus eventBus;
@@ -137,15 +143,71 @@ public class GrowthFragment extends BaseFragment {
         completedQuestsVsLastChart.setVisibility(View.VISIBLE);
         timeSpentRangeChart.setVisibility(View.GONE);
         timeSpentVsLastChart.setVisibility(View.VISIBLE);
+        coinsEarnedRangeChart.setVisibility(View.GONE);
+        coinsEarnedVsLastChart.setVisibility(View.VISIBLE);
+        xpEarnedRangeChart.setVisibility(View.GONE);
+        xpEarnedVsLastChart.setVisibility(View.VISIBLE);
         setupAwesomenessRangeChart();
         setupAwesomenessVsLastChart();
         setupCompletedQuestsRangeChart();
         setupCompletedQuestsVsLastChart();
         setupTimeSpentRangeChart();
         setupTimeSPentVsLastChart();
-        setupCoinsEarnedChart();
-        setupXpEarnedChart();
+        setupCoinsEarnedRangeChart();
+        setupCoinsEarnedVsLastChart();
+        setupXpEarnedRangeChart();
+        setupXpEarnedVsLastChart();
         return view;
+    }
+
+    private void setupXpEarnedVsLastChart() {
+        applyDefaultStyle(xpEarnedVsLastChart);
+        List<BarEntry> entries = new ArrayList<>();
+        entries.add(new BarEntry(1, 40));
+        entries.add(new BarEntry(2, 51));
+        entries.add(new BarEntry(3, 23));
+        entries.add(new BarEntry(4, 44));
+        entries.add(new BarEntry(5, 12));
+        entries.add(new BarEntry(6, 87));
+        entries.add(new BarEntry(7, 65));
+        BarDataSet dataSet = new BarDataSet(entries, "");
+        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_green_500));
+        dataSet.setValueTextSize(12f);
+        dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
+        BarData data = new BarData(dataSet);
+        data.setValueFormatter(new IValueFormatter() {
+            @Override
+            public String getFormattedValue(float v, Entry entry, int i, ViewPortHandler viewPortHandler) {
+                return String.valueOf((int) v);
+            }
+        });
+        xpEarnedVsLastChart.setData(data);
+        xpEarnedVsLastChart.invalidate();
+    }
+
+    private void setupCoinsEarnedVsLastChart() {
+        applyDefaultStyle(coinsEarnedVsLastChart);
+        List<BarEntry> entries = new ArrayList<>();
+        entries.add(new BarEntry(1, 40));
+        entries.add(new BarEntry(2, 51));
+        entries.add(new BarEntry(3, 23));
+        entries.add(new BarEntry(4, 44));
+        entries.add(new BarEntry(5, 12));
+        entries.add(new BarEntry(6, 87));
+        entries.add(new BarEntry(7, 65));
+        BarDataSet dataSet = new BarDataSet(entries, "");
+        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_green_500));
+        dataSet.setValueTextSize(12f);
+        dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
+        BarData data = new BarData(dataSet);
+        data.setValueFormatter(new IValueFormatter() {
+            @Override
+            public String getFormattedValue(float v, Entry entry, int i, ViewPortHandler viewPortHandler) {
+                return String.valueOf((int) v);
+            }
+        });
+        coinsEarnedVsLastChart.setData(data);
+        coinsEarnedVsLastChart.invalidate();
     }
 
     private void setupTimeSPentVsLastChart() {
@@ -248,8 +310,8 @@ public class GrowthFragment extends BaseFragment {
         awesomenessVsLastChart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
     }
 
-    private void setupXpEarnedChart() {
-        applyDefaultStyle(xpEarnedChart);
+    private void setupXpEarnedRangeChart() {
+        applyDefaultStyle(xpEarnedRangeChart);
 
         List<Entry> entries = new ArrayList<>();
         entries.add(new Entry(1, 42, R.color.md_red_A400));
@@ -272,7 +334,7 @@ public class GrowthFragment extends BaseFragment {
         LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, "Last week");
         applyLineDataSetStyle(lastWeekDataSet, R.color.md_blue_A200, R.color.md_blue_A400);
 
-        XAxis xAxis = xpEarnedChart.getXAxis();
+        XAxis xAxis = xpEarnedRangeChart.getXAxis();
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float v, AxisBase axisBase) {
@@ -280,7 +342,7 @@ public class GrowthFragment extends BaseFragment {
             }
         });
 
-        YAxis yAxis = xpEarnedChart.getAxisLeft();
+        YAxis yAxis = xpEarnedRangeChart.getAxisLeft();
         yAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float v, AxisBase axisBase) {
@@ -295,18 +357,18 @@ public class GrowthFragment extends BaseFragment {
         yAxis.setLabelCount(6, true);
 
         CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
-        xpEarnedChart.setMarker(customMarkerView);
-        xpEarnedChart.setDescription(null);
-        xpEarnedChart.setDrawBorders(false);
+        xpEarnedRangeChart.setMarker(customMarkerView);
+        xpEarnedRangeChart.setDescription(null);
+        xpEarnedRangeChart.setDrawBorders(false);
 
         LineData lineData = new LineData(lastWeekDataSet, thisWeekDataSet);
 
-        xpEarnedChart.setData(lineData);
-        xpEarnedChart.invalidate();
+        xpEarnedRangeChart.setData(lineData);
+        xpEarnedRangeChart.invalidate();
     }
 
-    private void setupCoinsEarnedChart() {
-        applyDefaultStyle(coinsEarnedChart);
+    private void setupCoinsEarnedRangeChart() {
+        applyDefaultStyle(coinsEarnedRangeChart);
 
         List<Entry> entries = new ArrayList<>();
         entries.add(new Entry(1, 42, R.color.md_red_A400));
@@ -330,7 +392,7 @@ public class GrowthFragment extends BaseFragment {
         LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, "Last week");
         applyLineDataSetStyle(lastWeekDataSet, R.color.md_blue_A200, R.color.md_blue_A400);
 
-        XAxis xAxis = coinsEarnedChart.getXAxis();
+        XAxis xAxis = coinsEarnedRangeChart.getXAxis();
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float v, AxisBase axisBase) {
@@ -338,7 +400,7 @@ public class GrowthFragment extends BaseFragment {
             }
         });
 
-        YAxis yAxis = coinsEarnedChart.getAxisLeft();
+        YAxis yAxis = coinsEarnedRangeChart.getAxisLeft();
         yAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float v, AxisBase axisBase) {
@@ -353,14 +415,14 @@ public class GrowthFragment extends BaseFragment {
         yAxis.setLabelCount(6, true);
 
         CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
-        coinsEarnedChart.setMarker(customMarkerView);
-        coinsEarnedChart.setDescription(null);
-        coinsEarnedChart.setDrawBorders(false);
+        coinsEarnedRangeChart.setMarker(customMarkerView);
+        coinsEarnedRangeChart.setDescription(null);
+        coinsEarnedRangeChart.setDrawBorders(false);
 
         LineData lineData = new LineData(lastWeekDataSet, thisWeekDataSet);
 
-        coinsEarnedChart.setData(lineData);
-        coinsEarnedChart.invalidate();
+        coinsEarnedRangeChart.setData(lineData);
+        coinsEarnedRangeChart.invalidate();
     }
 
     private void setupTimeSpentRangeChart() {

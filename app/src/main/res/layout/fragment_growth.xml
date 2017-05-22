@@ -296,9 +296,19 @@
                         android:text="Coins earned" />
 
                     <com.github.mikephil.charting.charts.LineChart
-                        android:id="@+id/coins_earned_chart"
+                        android:id="@+id/coins_earned_range_chart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="16dp"
+                        android:minHeight="300dp" />
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/coins_earned_vs_last_chart"
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="16dp"
@@ -334,9 +344,19 @@
                         android:text="Experience earned" />
 
                     <com.github.mikephil.charting.charts.LineChart
-                        android:id="@+id/xp_earned_chart"
+                        android:id="@+id/xp_earned_range_chart"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="16dp"
+                        android:minHeight="300dp" />
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/xp_earned_vs_last_chart"
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="16dp"
