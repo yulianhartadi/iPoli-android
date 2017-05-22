@@ -39,7 +39,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginBottom="32dp"
                     android:layout_marginTop="16dp"
-                    android:text="Weekly summary" />
+                    android:text="Summary" />
 
                 <TextView
                     android:id="@+id/summary_overdue"
@@ -80,7 +80,15 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/Theme.iPoli.PopupOverlay" />
+                app:popupTheme="@style/Theme.iPoli.PopupOverlay">
+
+                <Spinner
+                    android:id="@+id/toolbar_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:theme="@style/Theme.iPoli.AppBarOverlay"
+                    app:popupTheme="@style/Theme.iPoli.PopupOverlay" />
+            </android.support.v7.widget.Toolbar>
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -133,13 +141,13 @@
 
                     <com.github.mikephil.charting.charts.BarChart
                         android:id="@+id/awesomeness_vs_last_chart"
-                        android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="16dp"
-                        android:minHeight="300dp" />
+                        android:minHeight="300dp"
+                        android:visibility="gone" />
                 </LinearLayout>
 
 
@@ -197,13 +205,13 @@
 
                     <com.github.mikephil.charting.charts.BarChart
                         android:id="@+id/completed_quests_vs_last_chart"
-                        android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="16dp"
-                        android:minHeight="300dp" />
+                        android:minHeight="300dp"
+                        android:visibility="gone" />
                 </RelativeLayout>
             </android.support.v7.widget.CardView>
 
@@ -259,13 +267,13 @@
 
                     <com.github.mikephil.charting.charts.BarChart
                         android:id="@+id/time_spent_vs_last_chart"
-                        android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="16dp"
-                        android:minHeight="300dp" />
+                        android:minHeight="300dp"
+                        android:visibility="gone" />
                 </RelativeLayout>
             </android.support.v7.widget.CardView>
 
@@ -306,13 +314,13 @@
 
                     <com.github.mikephil.charting.charts.BarChart
                         android:id="@+id/coins_earned_vs_last_chart"
-                        android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="16dp"
-                        android:minHeight="300dp" />
+                        android:minHeight="300dp"
+                        android:visibility="gone" />
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
@@ -354,13 +362,13 @@
 
                     <com.github.mikephil.charting.charts.BarChart
                         android:id="@+id/xp_earned_vs_last_chart"
-                        android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="16dp"
-                        android:minHeight="300dp" />
+                        android:minHeight="300dp"
+                        android:visibility="gone" />
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>

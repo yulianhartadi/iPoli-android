@@ -2,17 +2,22 @@ package io.ipoli.android.player.fragments;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
@@ -55,7 +60,7 @@ import io.ipoli.android.app.help.HelpDialog;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/4/16.
  */
-public class GrowthFragment extends BaseFragment {
+public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSelectedListener {
 
     public static final int CHART_ANIMATION_DURATION = 500;
     public static final Easing.EasingOption DEFAULT_EASING_OPTION = Easing.EasingOption.EaseInQuart;
@@ -65,6 +70,9 @@ public class GrowthFragment extends BaseFragment {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
+    @BindView(R.id.toolbar_spinner)
+    Spinner spinner;
 
     @BindView(R.id.toolbar_collapsing_container)
     CollapsingToolbarLayout collapsingToolbarLayout;
@@ -104,6 +112,16 @@ public class GrowthFragment extends BaseFragment {
 
     private Unbinder unbinder;
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
     public class CustomMarkerView extends MarkerView {
 
         private TextView popupContent;
@@ -135,8 +153,25 @@ public class GrowthFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_growth, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        ((MainActivity) getActivity()).initToolbar(toolbar, R.string.growth);
-        collapsingToolbarLayout.setTitleEnabled(false);
+        ((MainActivity) getActivity()).setSupportActionBar(toolbar);
+        ActionBar actionBar = ((MainActivity) getActivity()).getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(actionBar.getThemedContext(),
+                    R.layout.growth_spinner_item,
+                    R.id.growth_interval,
+                    getResources().getStringArray(R.array.growth_intervals));
+            adapter.setDropDownViewResource(R.layout.growth_spinner_dropdown_item);
+            spinner.setAdapter(adapter);
+            spinner.getBackground().setColorFilter(ContextCompat.getColor(getContext(), R.color.md_white), PorterDuff.Mode.SRC_ATOP);
+            spinner.setSelection(0, false);
+            spinner.setOnItemSelectedListener(this);
+            ((MainActivity) getActivity()).actionBarDrawerToggle.syncState();
+        }
+
         awesomenessRangeChart.setVisibility(View.GONE);
         awesomenessVsLastChart.setVisibility(View.VISIBLE);
         completedQuestsRangeChart.setVisibility(View.GONE);
