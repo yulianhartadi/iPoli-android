@@ -191,7 +191,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     private void onItemSelectedFromDrawer() {
-        navigationView.setCheckedItem(navigationItemSelected.getItemId());
 
         EventSource source = null;
         switch (navigationItemSelected.getItemId()) {
@@ -215,7 +214,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if(!upgradesManager.has(Upgrade.REPEATING_QUESTS)) {
                     UpgradeDialog upgradeDialog = UpgradeDialog.newInstance(Upgrade.REPEATING_QUESTS);
                     upgradeDialog.show(getSupportFragmentManager());
-                    break;
+                    return;
                 }
                 source = EventSource.REPEATING_QUESTS;
                 changeCurrentFragment(new RepeatingQuestListFragment());
@@ -261,6 +260,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
         }
 
+        navigationView.setCheckedItem(navigationItemSelected.getItemId());
         if (source != null) {
             eventBus.post(new ScreenShownEvent(source));
         }
@@ -557,7 +557,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         navigationItemSelected = item;
         drawerLayout.closeDrawer(GravityCompat.START);
-        return true;
+        return false;
     }
 
     private void inviteFriends() {

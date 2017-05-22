@@ -11,7 +11,7 @@ public enum Upgrade {
     REMINDERS(3, 100),
     CALENDAR_SYNC(4, 500),
     SUB_QUESTS(5, 300),
-    REPEATING_QUESTS(6, 100),
+    REPEATING_QUESTS(6, 2),
     TIMER(7, 200),
     CUSTOM_DURATION(8, 200);
 
