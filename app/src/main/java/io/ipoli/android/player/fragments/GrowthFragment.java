@@ -24,7 +24,6 @@ import android.widget.TextView;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.components.XAxis;
@@ -35,7 +34,6 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.MPPointF;
@@ -378,55 +376,23 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     private void setupXpEarnedRangeChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels) {
         applyDefaultStyle(xpEarnedRangeChart);
 
-        List<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(1, 42, R.color.md_red_A400));
-        entries.add(new Entry(2, 32, R.color.md_red_A400));
-        entries.add(new Entry(3, 20, R.color.md_red_A400));
-        entries.add(new Entry(4, 55, R.color.md_red_A400));
-        entries.add(new Entry(5, 67, R.color.md_red_A400));
-        LineDataSet thisWeekDataSet = new LineDataSet(entries, "This week");
-
-        applyLineDataSetStyle(thisWeekDataSet, R.color.md_red_A200, R.color.md_red_A400);
-
-        List<Entry> lastWeekEntries = new ArrayList<>();
-        lastWeekEntries.add(new Entry(1, 12, R.color.md_blue_A400));
-        lastWeekEntries.add(new Entry(2, 21, R.color.md_blue_A400));
-        lastWeekEntries.add(new Entry(3, 38, R.color.md_blue_A400));
-        lastWeekEntries.add(new Entry(4, 93, R.color.md_blue_A400));
-        lastWeekEntries.add(new Entry(5, 64, R.color.md_blue_A400));
-        lastWeekEntries.add(new Entry(6, 22, R.color.md_blue_A400));
-        lastWeekEntries.add(new Entry(7, 12, R.color.md_blue_A400));
-        LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, "Last week");
-        applyLineDataSetStyle(lastWeekDataSet, R.color.md_blue_A200, R.color.md_blue_A400);
+        LineData lineData = createThisVsLastWeekLineData(data, range, currentRangeLabel, prevRangeLabel);
 
         XAxis xAxis = xpEarnedRangeChart.getXAxis();
-        xAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float v, AxisBase axisBase) {
-                return "12 Feb";
-            }
+        xAxis.setValueFormatter((v, axisBase) -> {
+            int idx = (int) v;
+            return xLabels[idx];
         });
 
         YAxis yAxis = xpEarnedRangeChart.getAxisLeft();
-        yAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float v, AxisBase axisBase) {
-                return String.valueOf((int) v) + "%";
-            }
-        });
 
-
-        xAxis.setLabelCount(lastWeekEntries.size(), true);
+        xAxis.setLabelCount(range, true);
         yAxis.setAxisMinimum(0);
-        yAxis.setAxisMaximum(100);
-        yAxis.setLabelCount(6, true);
 
         CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
         xpEarnedRangeChart.setMarker(customMarkerView);
         xpEarnedRangeChart.setDescription(null);
         xpEarnedRangeChart.setDrawBorders(false);
-
-        LineData lineData = new LineData(lastWeekDataSet, thisWeekDataSet);
 
         xpEarnedRangeChart.setData(lineData);
         xpEarnedRangeChart.invalidate();
@@ -455,10 +421,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         coinsEarnedRangeChart.setData(lineData);
         coinsEarnedRangeChart.invalidate();
-
-//        awesomenessRangeChart.setData(lineData);
-//        awesomenessRangeChart.invalidate();
-//        awesomenessRangeChart.animateX(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
     }
 
     @NonNull
