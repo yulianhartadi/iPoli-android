@@ -7,12 +7,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.otto.Bus;
+
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
-import io.ipoli.android.store.StoreItemType;
+import io.ipoli.android.store.events.StoreItemSelectedEvent;
 import io.ipoli.android.store.viewmodels.StoreViewModel;
 
 /**
@@ -22,11 +24,11 @@ import io.ipoli.android.store.viewmodels.StoreViewModel;
 
 public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> {
     private List<StoreViewModel> viewModels;
-    private final ItemSelectedListener listener;
+    private final Bus eventBus;
 
-    public StoreAdapter(List<StoreViewModel> viewModels, ItemSelectedListener listener) {
+    public StoreAdapter(Bus eventBus, List<StoreViewModel> viewModels) {
         this.viewModels = viewModels;
-        this.listener = listener;
+        this.eventBus = eventBus;
     }
 
     @Override
@@ -40,7 +42,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
 
         holder.title.setText(vm.getTitle());
         holder.image.setImageResource(vm.getImage());
-        holder.container.setOnClickListener(v -> listener.onItemSelected(vm.getType()));
+        holder.container.setOnClickListener(v -> eventBus.post(new StoreItemSelectedEvent(vm.getType())));
     }
 
     @Override
@@ -63,9 +65,5 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             super(v);
             ButterKnife.bind(this, v);
         }
-    }
-
-    public interface ItemSelectedListener {
-        void onItemSelected(StoreItemType storeItemType);
     }
 }

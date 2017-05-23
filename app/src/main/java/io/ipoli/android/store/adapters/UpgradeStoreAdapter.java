@@ -11,11 +11,14 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.otto.Bus;
+
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
+import io.ipoli.android.store.events.BuyUpgradeEvent;
 import io.ipoli.android.store.viewmodels.UpgradeViewModel;
 
 /**
@@ -24,11 +27,11 @@ import io.ipoli.android.store.viewmodels.UpgradeViewModel;
  */
 
 public class UpgradeStoreAdapter extends RecyclerView.Adapter<UpgradeStoreAdapter.ViewHolder> {
-
-
+    private final Bus eventBus;
     private final List<UpgradeViewModel> viewModels;
 
-    public UpgradeStoreAdapter(List<UpgradeViewModel> viewModels) {
+    public UpgradeStoreAdapter(Bus eventBus, List<UpgradeViewModel> viewModels) {
+        this.eventBus = eventBus;
         this.viewModels = viewModels;
     }
 
@@ -57,6 +60,8 @@ public class UpgradeStoreAdapter extends RecyclerView.Adapter<UpgradeStoreAdapte
                 holder.expand.setImageResource(R.drawable.ic_expand_more_black_24dp);
             }
         });
+
+        holder.buy.setOnClickListener(v -> eventBus.post(new BuyUpgradeEvent(vm.getUpgrade())));
     }
 
     @Override

@@ -49,8 +49,8 @@
 
             <ImageView
                 android:id="@+id/upgrade_image"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_centerInParent="true"
                 android:scaleType="fitXY"
                 app:srcCompat="@drawable/ic_repeat_black_24dp" />

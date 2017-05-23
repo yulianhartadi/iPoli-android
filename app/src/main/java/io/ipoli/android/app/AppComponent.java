@@ -83,6 +83,7 @@ import io.ipoli.android.store.activities.ShopActivity;
 import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.fragments.CoinStoreFragment;
 import io.ipoli.android.store.fragments.StoreFragment;
+import io.ipoli.android.store.fragments.UpgradeStoreFragment;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -244,5 +245,7 @@ public interface AppComponent {
     void inject(CoinStoreFragment coinStoreFragment);
 
     void inject(StoreFragment storeFragment);
+
+    void inject(UpgradeStoreFragment upgradeStoreFragment);
 }
 
