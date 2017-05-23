@@ -193,10 +193,14 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 int[] awesomenessPerDay = new int[7 + today.getDayOfWeek().getValue()];
                 int[][] completedPerDay = new int[Category.values().length][7];
                 int[][] timeSpentPerDay = new int[Category.values().length][7];
+                int[] xpPerDay = new int[7 + today.getDayOfWeek().getValue()];
+                int[] coinsPerDay = new int[7 + today.getDayOfWeek().getValue()];
                 for (Quest q : quests) {
                     if (q.isCompleted()) {
                         int idx = (int) DAYS.between(startOfPrevWeek, q.getCompletedAtDate());
                         awesomenessPerDay[idx] += estimator.estimate(q);
+                        coinsPerDay[idx] += q.getCoins();
+                        xpPerDay[idx] += q.getExperience();
                         int thisWeekIdx = (int) DAYS.between(startOfWeek, q.getCompletedAtDate());
                         completedPerDay[q.getCategoryType().ordinal()][thisWeekIdx]++;
                         timeSpentPerDay[q.getCategoryType().ordinal()][thisWeekIdx] += q.getActualDuration();
@@ -213,9 +217,9 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 //        setupCompletedQuestsVsLastChart();
                 setupTimeSpentRangeChart(timeSpentPerDay, xLabels);
 //        setupTimeSpentVsLastChart();
-//        setupCoinsEarnedRangeChart();
+                setupCoinsEarnedRangeChart(coinsPerDay, 7, "This week", "Last week", xLabels);
 //        setupCoinsEarnedVsLastChart();
-//        setupXpEarnedRangeChart();
+                setupXpEarnedRangeChart(xpPerDay, 7, "This week", "Last week", xLabels);
 //        setupXpEarnedVsLastChart();
             }
         });
@@ -371,7 +375,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         awesomenessVsLastChart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
     }
 
-    private void setupXpEarnedRangeChart() {
+    private void setupXpEarnedRangeChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels) {
         applyDefaultStyle(xpEarnedRangeChart);
 
         List<Entry> entries = new ArrayList<>();
@@ -428,62 +432,53 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         xpEarnedRangeChart.invalidate();
     }
 
-    private void setupCoinsEarnedRangeChart() {
+    private void setupCoinsEarnedRangeChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels) {
         applyDefaultStyle(coinsEarnedRangeChart);
 
-        List<Entry> entries = new ArrayList<>();
-        entries.add(new Entry(1, 42, R.color.md_red_A400));
-        entries.add(new Entry(2, 32, R.color.md_red_A400));
-        entries.add(new Entry(3, 20, R.color.md_red_A400));
-        entries.add(new Entry(4, 55, R.color.md_red_A400));
-        entries.add(new Entry(5, 67, R.color.md_red_A400));
-        LineDataSet thisWeekDataSet = new LineDataSet(entries, "This week");
-
-        applyLineDataSetStyle(thisWeekDataSet, R.color.md_red_A200, R.color.md_red_A400);
-
-
-        List<Entry> lastWeekEntries = new ArrayList<>();
-        lastWeekEntries.add(new Entry(1, 12, R.color.md_blue_A400));
-        lastWeekEntries.add(new Entry(2, 21, R.color.md_blue_A400));
-        lastWeekEntries.add(new Entry(3, 38, R.color.md_blue_A400));
-        lastWeekEntries.add(new Entry(4, 93, R.color.md_blue_A400));
-        lastWeekEntries.add(new Entry(5, 64, R.color.md_blue_A400));
-        lastWeekEntries.add(new Entry(6, 22, R.color.md_blue_A400));
-        lastWeekEntries.add(new Entry(7, 12, R.color.md_blue_A400));
-        LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, "Last week");
-        applyLineDataSetStyle(lastWeekDataSet, R.color.md_blue_A200, R.color.md_blue_A400);
+        LineData lineData = createThisVsLastWeekLineData(data, range, currentRangeLabel, prevRangeLabel);
 
         XAxis xAxis = coinsEarnedRangeChart.getXAxis();
-        xAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float v, AxisBase axisBase) {
-                return "12 Feb";
-            }
+        xAxis.setValueFormatter((v, axisBase) -> {
+            int idx = (int) v;
+            return xLabels[idx];
         });
 
         YAxis yAxis = coinsEarnedRangeChart.getAxisLeft();
-        yAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float v, AxisBase axisBase) {
-                return String.valueOf((int) v) + "%";
-            }
-        });
 
-
-        xAxis.setLabelCount(lastWeekEntries.size(), true);
+        xAxis.setLabelCount(range, true);
         yAxis.setAxisMinimum(0);
-        yAxis.setAxisMaximum(100);
-        yAxis.setLabelCount(6, true);
 
         CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
         coinsEarnedRangeChart.setMarker(customMarkerView);
         coinsEarnedRangeChart.setDescription(null);
         coinsEarnedRangeChart.setDrawBorders(false);
 
-        LineData lineData = new LineData(lastWeekDataSet, thisWeekDataSet);
-
         coinsEarnedRangeChart.setData(lineData);
         coinsEarnedRangeChart.invalidate();
+
+//        awesomenessRangeChart.setData(lineData);
+//        awesomenessRangeChart.invalidate();
+//        awesomenessRangeChart.animateX(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
+    }
+
+    @NonNull
+    private LineData createThisVsLastWeekLineData(int[] data, int range, String currentRangeLabel, String prevRangeLabel) {
+        List<Entry> entries = new ArrayList<>();
+        for (int i = range; i < data.length; i++) {
+            entries.add(new Entry(i - range, data[i], R.color.md_red_A400));
+        }
+        LineDataSet thisWeekDataSet = new LineDataSet(entries, currentRangeLabel);
+
+        applyLineDataSetStyle(thisWeekDataSet, R.color.md_red_A200, R.color.md_red_A400);
+
+        List<Entry> lastWeekEntries = new ArrayList<>();
+        for (int i = 0; i < range; i++) {
+            lastWeekEntries.add(new Entry(i, data[i], R.color.md_blue_A400));
+        }
+        LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, prevRangeLabel);
+        applyLineDataSetStyle(lastWeekDataSet, R.color.md_blue_A200, R.color.md_blue_A400);
+
+        return new LineData(lastWeekDataSet, thisWeekDataSet);
     }
 
     private void setupTimeSpentRangeChart(int[][] data, String[] xLabels) {
@@ -586,20 +581,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     private void setupAwesomenessRangeChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels) {
         applyDefaultStyle(awesomenessRangeChart);
 
-        List<Entry> entries = new ArrayList<>();
-        for (int i = range; i < data.length; i++) {
-            entries.add(new Entry(i - range, data[i], R.color.md_red_A400));
-        }
-        LineDataSet thisWeekDataSet = new LineDataSet(entries, currentRangeLabel);
-
-        applyLineDataSetStyle(thisWeekDataSet, R.color.md_red_A200, R.color.md_red_A400);
-
-        List<Entry> lastWeekEntries = new ArrayList<>();
-        for (int i = 0; i < range; i++) {
-            lastWeekEntries.add(new Entry(i, data[i], R.color.md_blue_A400));
-        }
-        LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, prevRangeLabel);
-        applyLineDataSetStyle(lastWeekDataSet, R.color.md_blue_A200, R.color.md_blue_A400);
+        LineData lineData = createThisVsLastWeekLineData(data, range, currentRangeLabel, prevRangeLabel);
 
         XAxis xAxis = awesomenessRangeChart.getXAxis();
         xAxis.setValueFormatter((v, axisBase) -> {
@@ -616,8 +598,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         awesomenessRangeChart.setMarker(customMarkerView);
         awesomenessRangeChart.setDescription(null);
         awesomenessRangeChart.setDrawBorders(false);
-
-        LineData lineData = new LineData(lastWeekDataSet, thisWeekDataSet);
 
         awesomenessRangeChart.setData(lineData);
         awesomenessRangeChart.invalidate();
