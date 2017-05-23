@@ -81,6 +81,8 @@ import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.store.activities.CoinStoreActivity;
 import io.ipoli.android.store.activities.ShopActivity;
 import io.ipoli.android.store.activities.StoreActivity;
+import io.ipoli.android.store.fragments.BuyCoinsFragment;
+import io.ipoli.android.store.fragments.StoreFragment;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -238,5 +240,9 @@ public interface AppComponent {
     void inject(UpgradeDialog upgradeDialog);
 
     void inject(StoreActivity storeActivity);
+
+    void inject(BuyCoinsFragment buyCoinsFragment);
+
+    void inject(StoreFragment storeFragment);
 }
 
