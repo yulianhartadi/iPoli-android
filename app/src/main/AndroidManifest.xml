@@ -144,7 +144,7 @@
         <!--</activity>-->
         <activity
             android:name=".store.activities.StoreActivity"
-            android:label="@string/title_activity_store"
+            android:label="@string/title_buy_coins"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data

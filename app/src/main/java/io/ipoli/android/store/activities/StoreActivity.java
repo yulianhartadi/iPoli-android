@@ -2,6 +2,7 @@ package io.ipoli.android.store.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -23,6 +24,7 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.store.adapters.StoreAdapter;
+import io.ipoli.android.store.fragments.BuyCoinsFragment;
 import io.ipoli.android.store.viewmodels.StoreViewModel;
 
 /**
@@ -70,8 +72,16 @@ public class StoreActivity extends BaseActivity {
         adapter = new StoreAdapter(storeViewModels);
         itemList.setAdapter(adapter);
 
+        changeCurrentFragment(new BuyCoinsFragment());
 
         eventBus.post(new ScreenShownEvent(EventSource.STORE));
+    }
+
+    private void changeCurrentFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_container, fragment).commit();
+//        currentFragment = fragment;
+        getSupportFragmentManager().executePendingTransactions();
     }
 
     @Override
