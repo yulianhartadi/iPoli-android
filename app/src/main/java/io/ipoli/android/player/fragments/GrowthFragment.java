@@ -61,6 +61,7 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.scheduling.PriorityEstimator;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
@@ -189,10 +190,13 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             @Override
             public void onDataChanged(List<Quest> quests) {
                 int[] awesomenessPerDay = new int[7 + today.getDayOfWeek().getValue()];
+                int[][] completedPerDay = new int[Category.values().length][7];
                 for (Quest q : quests) {
                     if (q.isCompleted()) {
                         int idx = (int) DAYS.between(startOfPrevWeek, q.getCompletedAtDate());
                         awesomenessPerDay[idx] += estimator.estimate(q);
+                        int thisWeekIdx = (int) DAYS.between(startOfWeek, q.getCompletedAtDate());
+                        completedPerDay[q.getCategoryType().ordinal()][thisWeekIdx]++;
                     }
                 }
                 String[] xLabels = new String[7];
@@ -202,7 +206,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
                 setupAwesomenessRangeChart(awesomenessPerDay, 7, "This week", "Last week", xLabels);
 //        setupAwesomenessVsLastChart();
-//        setupCompletedQuestsRangeChart();
+                setupCompletedQuestsPerCategoryRangeChart(completedPerDay, xLabels);
 //        setupCompletedQuestsVsLastChart();
 //        setupTimeSpentRangeChart();
 //        setupTimeSpentVsLastChart();
@@ -536,53 +540,69 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         timeSpentRangeChart.invalidate();
     }
 
-    private void setupCompletedQuestsRangeChart() {
+    private void setupCompletedQuestsPerCategoryRangeChart(int[][] data, String[] xLabels) {
         applyDefaultStyle(completedQuestsRangeChart);
 
+        int[] wellnessData = data[Category.WELLNESS.ordinal()];
         List<Entry> wellnessEntries = new ArrayList<>();
-        wellnessEntries.add(new Entry(1, 4, R.color.md_green_700));
-        wellnessEntries.add(new Entry(2, 9, R.color.md_green_700));
-        wellnessEntries.add(new Entry(3, 12, R.color.md_green_700));
-        wellnessEntries.add(new Entry(4, 4, R.color.md_green_700));
-        wellnessEntries.add(new Entry(5, 8, R.color.md_green_700));
-        wellnessEntries.add(new Entry(6, 1, R.color.md_green_700));
-        wellnessEntries.add(new Entry(7, 3, R.color.md_green_700));
+        for (int i = 0; i < wellnessData.length; i++) {
+            wellnessEntries.add(new Entry(i, wellnessData[i], R.color.md_green_700));
+        }
         LineDataSet wellnessDataSet = new LineDataSet(wellnessEntries, "Wellness");
 
         applyLineDataSetStyle(wellnessDataSet, R.color.md_green_500, R.color.md_green_700);
 
+        int[] learningData = data[Category.LEARNING.ordinal()];
         List<Entry> learningEntries = new ArrayList<>();
-        learningEntries.add(new Entry(1, 2, R.color.md_blue_A400));
-        learningEntries.add(new Entry(2, 4, R.color.md_blue_A400));
-        learningEntries.add(new Entry(3, 5, R.color.md_blue_A400));
-        learningEntries.add(new Entry(4, 10, R.color.md_blue_A400));
-        learningEntries.add(new Entry(5, 3, R.color.md_blue_A400));
-        learningEntries.add(new Entry(6, 1, R.color.md_blue_A400));
-        learningEntries.add(new Entry(7, 1, R.color.md_blue_A400));
+        for (int i = 0; i < learningData.length; i++) {
+            learningEntries.add(new Entry(i, learningData[i], R.color.md_blue_A400));
+        }
         LineDataSet learningDataSet = new LineDataSet(learningEntries, "Learning");
 
         applyLineDataSetStyle(learningDataSet, R.color.md_blue_A200, R.color.md_blue_A400);
 
+        int[] workData = data[Category.WORK.ordinal()];
         List<Entry> workEntries = new ArrayList<>();
-        workEntries.add(new Entry(1, 1, R.color.md_red_A400));
-        workEntries.add(new Entry(2, 4, R.color.md_red_A400));
-        workEntries.add(new Entry(3, 7, R.color.md_red_A400));
-        workEntries.add(new Entry(4, 12, R.color.md_red_A400));
-        workEntries.add(new Entry(5, 4, R.color.md_red_A400));
-        workEntries.add(new Entry(6, 7, R.color.md_red_A400));
-        workEntries.add(new Entry(7, 9, R.color.md_red_A400));
+        for (int i = 0; i < workData.length; i++) {
+            workEntries.add(new Entry(i, workData[i], R.color.md_red_A400));
+        }
         LineDataSet workDataSet = new LineDataSet(workEntries, "Work");
 
         applyLineDataSetStyle(workDataSet, R.color.md_red_A200, R.color.md_red_A400);
 
-        LineData lineData = new LineData(wellnessDataSet, learningDataSet, workDataSet);
+        int[] personalData = data[Category.PERSONAL.ordinal()];
+        List<Entry> personalEntries = new ArrayList<>();
+        for (int i = 0; i < personalData.length; i++) {
+            personalEntries.add(new Entry(i, personalData[i], R.color.md_orange_A400));
+        }
+        LineDataSet personalDataSet = new LineDataSet(personalEntries, "Personal");
+
+        applyLineDataSetStyle(personalDataSet, R.color.md_orange_A200, R.color.md_orange_A400);
+
+        int[] funData = data[Category.FUN.ordinal()];
+        List<Entry> funEntries = new ArrayList<>();
+        for (int i = 0; i < funData.length; i++) {
+            funEntries.add(new Entry(i, funData[i], R.color.md_purple_500));
+        }
+        LineDataSet funDataSet = new LineDataSet(funEntries, "Fun");
+
+        applyLineDataSetStyle(funDataSet, R.color.md_purple_300, R.color.md_purple_500);
+
+        int[] choresData = data[Category.CHORES.ordinal()];
+        List<Entry> choresEntries = new ArrayList<>();
+        for (int i = 0; i < choresData.length; i++) {
+            choresEntries.add(new Entry(i, choresData[i], R.color.md_brown_500));
+        }
+        LineDataSet choresDataSet = new LineDataSet(choresEntries, "Chores");
+
+        applyLineDataSetStyle(choresDataSet, R.color.md_brown_300, R.color.md_brown_500);
+
+        LineData lineData = new LineData(wellnessDataSet, learningDataSet, workDataSet, personalDataSet, funDataSet, choresDataSet);
 
         XAxis xAxis = completedQuestsRangeChart.getXAxis();
-        xAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float v, AxisBase axisBase) {
-                return "12 Feb";
-            }
+        xAxis.setValueFormatter((v, axisBase) -> {
+            int idx = (int) v;
+            return xLabels[idx];
         });
 
         CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
@@ -612,12 +632,9 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         applyLineDataSetStyle(lastWeekDataSet, R.color.md_blue_A200, R.color.md_blue_A400);
 
         XAxis xAxis = awesomenessRangeChart.getXAxis();
-        xAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float v, AxisBase axisBase) {
-                int idx = (int) v;
-                return xLabels[idx];
-            }
+        xAxis.setValueFormatter((v, axisBase) -> {
+            int idx = (int) v;
+            return xLabels[idx];
         });
 
         YAxis yAxis = awesomenessRangeChart.getAxisLeft();
