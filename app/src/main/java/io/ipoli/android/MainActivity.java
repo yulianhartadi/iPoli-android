@@ -99,7 +99,7 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reminder.data.Reminder;
 import io.ipoli.android.reward.fragments.RewardListFragment;
-import io.ipoli.android.store.activities.CoinStoreActivity;
+import io.ipoli.android.store.StoreItemType;
 import io.ipoli.android.store.activities.StoreActivity;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -288,7 +288,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         TextView coins = (TextView) header.findViewById(R.id.player_coins);
         coins.setText(String.valueOf(player.getCoins()));
         coins.setOnClickListener(view -> {
-            startActivity(new Intent(this, CoinStoreActivity.class));
+            Intent intent = new Intent(this, StoreActivity.class);
+            intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.COINS.name());
+            startActivity(intent);
             eventBus.post(new AvatarCoinsTappedEvent());
         });
 

@@ -5,8 +5,6 @@
     android:orientation="vertical"
     android:id="@+id/root_layout">
 
-    <!--<include layout="@layout/default_app_bar" />-->
-
     <RelativeLayout
         android:id="@+id/loader_container"
         android:layout_width="match_parent"

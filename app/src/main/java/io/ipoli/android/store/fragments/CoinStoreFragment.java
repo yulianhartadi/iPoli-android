@@ -50,7 +50,7 @@ import io.ipoli.android.store.viewmodels.CoinsViewModel;
  * on 5/23/17.
  */
 
-public class BuyCoinsFragment extends BaseFragment {
+public class CoinStoreFragment extends BaseFragment {
     private static final String SKU_COINS_100 = "coins_100";
     private static final String SKU_COINS_300 = "coins_300";
     private static final String SKU_COINS_500 = "coins_500";

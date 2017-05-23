@@ -81,7 +81,7 @@ import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.store.activities.CoinStoreActivity;
 import io.ipoli.android.store.activities.ShopActivity;
 import io.ipoli.android.store.activities.StoreActivity;
-import io.ipoli.android.store.fragments.BuyCoinsFragment;
+import io.ipoli.android.store.fragments.CoinStoreFragment;
 import io.ipoli.android.store.fragments.StoreFragment;
 
 /**
@@ -241,7 +241,7 @@ public interface AppComponent {
 
     void inject(StoreActivity storeActivity);
 
-    void inject(BuyCoinsFragment buyCoinsFragment);
+    void inject(CoinStoreFragment coinStoreFragment);
 
     void inject(StoreFragment storeFragment);
 }
