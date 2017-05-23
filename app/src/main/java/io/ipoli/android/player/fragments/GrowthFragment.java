@@ -6,6 +6,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -191,12 +192,14 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             public void onDataChanged(List<Quest> quests) {
                 int[] awesomenessPerDay = new int[7 + today.getDayOfWeek().getValue()];
                 int[][] completedPerDay = new int[Category.values().length][7];
+                int[][] timeSpentPerDay = new int[Category.values().length][7];
                 for (Quest q : quests) {
                     if (q.isCompleted()) {
                         int idx = (int) DAYS.between(startOfPrevWeek, q.getCompletedAtDate());
                         awesomenessPerDay[idx] += estimator.estimate(q);
                         int thisWeekIdx = (int) DAYS.between(startOfWeek, q.getCompletedAtDate());
                         completedPerDay[q.getCategoryType().ordinal()][thisWeekIdx]++;
+                        timeSpentPerDay[q.getCategoryType().ordinal()][thisWeekIdx] += q.getActualDuration();
                     }
                 }
                 String[] xLabels = new String[7];
@@ -208,7 +211,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 //        setupAwesomenessVsLastChart();
                 setupCompletedQuestsPerCategoryRangeChart(completedPerDay, xLabels);
 //        setupCompletedQuestsVsLastChart();
-//        setupTimeSpentRangeChart();
+                setupTimeSpentRangeChart(timeSpentPerDay, xLabels);
 //        setupTimeSpentVsLastChart();
 //        setupCoinsEarnedRangeChart();
 //        setupCoinsEarnedVsLastChart();
@@ -483,53 +486,15 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         coinsEarnedRangeChart.invalidate();
     }
 
-    private void setupTimeSpentRangeChart() {
+    private void setupTimeSpentRangeChart(int[][] data, String[] xLabels) {
         applyDefaultStyle(timeSpentRangeChart);
 
-        List<Entry> wellnessEntries = new ArrayList<>();
-        wellnessEntries.add(new Entry(1, 4, R.color.md_green_700));
-        wellnessEntries.add(new Entry(2, 9, R.color.md_green_700));
-        wellnessEntries.add(new Entry(3, 12, R.color.md_green_700));
-        wellnessEntries.add(new Entry(4, 4, R.color.md_green_700));
-        wellnessEntries.add(new Entry(5, 8, R.color.md_green_700));
-        wellnessEntries.add(new Entry(6, 1, R.color.md_green_700));
-        wellnessEntries.add(new Entry(7, 3, R.color.md_green_700));
-        LineDataSet wellnessDataSet = new LineDataSet(wellnessEntries, "Wellness");
-
-        applyLineDataSetStyle(wellnessDataSet, R.color.md_green_500, R.color.md_green_700);
-
-        List<Entry> learningEntries = new ArrayList<>();
-        learningEntries.add(new Entry(1, 2, R.color.md_blue_A400));
-        learningEntries.add(new Entry(2, 4, R.color.md_blue_A400));
-        learningEntries.add(new Entry(3, 5, R.color.md_blue_A400));
-        learningEntries.add(new Entry(4, 10, R.color.md_blue_A400));
-        learningEntries.add(new Entry(5, 3, R.color.md_blue_A400));
-        learningEntries.add(new Entry(6, 1, R.color.md_blue_A400));
-        learningEntries.add(new Entry(7, 1, R.color.md_blue_A400));
-        LineDataSet learningDataSet = new LineDataSet(learningEntries, "Learning");
-
-        applyLineDataSetStyle(learningDataSet, R.color.md_blue_A200, R.color.md_blue_A400);
-
-        List<Entry> workEntries = new ArrayList<>();
-        workEntries.add(new Entry(1, 1, R.color.md_red_A400));
-        workEntries.add(new Entry(2, 4, R.color.md_red_A400));
-        workEntries.add(new Entry(3, 7, R.color.md_red_A400));
-        workEntries.add(new Entry(4, 12, R.color.md_red_A400));
-        workEntries.add(new Entry(5, 4, R.color.md_red_A400));
-        workEntries.add(new Entry(6, 7, R.color.md_red_A400));
-        workEntries.add(new Entry(7, 9, R.color.md_red_A400));
-        LineDataSet workDataSet = new LineDataSet(workEntries, "Work");
-
-        applyLineDataSetStyle(workDataSet, R.color.md_red_A200, R.color.md_red_A400);
-
-        LineData lineData = new LineData(wellnessDataSet, learningDataSet, workDataSet);
+        LineData lineData = createCategoryLineData(data);
 
         XAxis xAxis = timeSpentRangeChart.getXAxis();
-        xAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float v, AxisBase axisBase) {
-                return "12 Feb";
-            }
+        xAxis.setValueFormatter((v, axisBase) -> {
+            int idx = (int) v;
+            return xLabels[idx];
         });
 
         CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
@@ -543,6 +508,24 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     private void setupCompletedQuestsPerCategoryRangeChart(int[][] data, String[] xLabels) {
         applyDefaultStyle(completedQuestsRangeChart);
 
+        LineData lineData = createCategoryLineData(data);
+
+        XAxis xAxis = completedQuestsRangeChart.getXAxis();
+        xAxis.setValueFormatter((v, axisBase) -> {
+            int idx = (int) v;
+            return xLabels[idx];
+        });
+
+        CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
+        completedQuestsRangeChart.setMarker(customMarkerView);
+
+        completedQuestsRangeChart.setDescription(null);
+        completedQuestsRangeChart.setData(lineData);
+        completedQuestsRangeChart.invalidate();
+    }
+
+    @NonNull
+    private LineData createCategoryLineData(int[][] data) {
         int[] wellnessData = data[Category.WELLNESS.ordinal()];
         List<Entry> wellnessEntries = new ArrayList<>();
         for (int i = 0; i < wellnessData.length; i++) {
@@ -597,20 +580,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         applyLineDataSetStyle(choresDataSet, R.color.md_brown_300, R.color.md_brown_500);
 
-        LineData lineData = new LineData(wellnessDataSet, learningDataSet, workDataSet, personalDataSet, funDataSet, choresDataSet);
-
-        XAxis xAxis = completedQuestsRangeChart.getXAxis();
-        xAxis.setValueFormatter((v, axisBase) -> {
-            int idx = (int) v;
-            return xLabels[idx];
-        });
-
-        CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
-        completedQuestsRangeChart.setMarker(customMarkerView);
-
-        completedQuestsRangeChart.setDescription(null);
-        completedQuestsRangeChart.setData(lineData);
-        completedQuestsRangeChart.invalidate();
+        return new LineData(wellnessDataSet, learningDataSet, workDataSet, personalDataSet, funDataSet, choresDataSet);
     }
 
     private void setupAwesomenessRangeChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels) {
@@ -688,6 +658,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         yAxis.setXOffset(12f);
         yAxis.setDrawAxisLine(false);
         yAxis.setAxisMinimum(0);
+        yAxis.setValueFormatter((v, axisBase) -> String.valueOf((int) v));
 
         chart.getAxisRight().setEnabled(false);
 
