@@ -1,12 +1,11 @@
-package io.ipoli.android.store.activities;
+package io.ipoli.android.store.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -25,10 +24,12 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import io.ipoli.android.BillingConstants;
+import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
@@ -46,7 +47,12 @@ import io.ipoli.android.store.iab.Purchase;
 import io.ipoli.android.store.iab.SkuDetails;
 import io.ipoli.android.store.viewmodels.CoinsViewModel;
 
-public class CoinStoreActivity extends BaseActivity {
+/**
+ * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * on 5/23/17.
+ */
+
+public class BuyCoinsFragment extends BaseFragment {
     private static final String SKU_COINS_100 = "coins_100";
     private static final String SKU_COINS_300 = "coins_300";
     private static final String SKU_COINS_500 = "coins_500";
@@ -58,6 +64,7 @@ public class CoinStoreActivity extends BaseActivity {
         put(SKU_COINS_300, 300);
         put(SKU_COINS_500, 500);
         put(SKU_COINS_1000, 1000);
+
     }};
 
     @Inject
@@ -84,34 +91,31 @@ public class CoinStoreActivity extends BaseActivity {
     @Inject
     PlayerPersistenceService playerPersistenceService;
 
+    private Unbinder unbinder;
     private IabHelper iabHelper;
     private CoinsStoreAdapter adapter;
 
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_coin_store);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        View view = inflater.inflate(R.layout.fragment_coin_store, container, false);
+        unbinder = ButterKnife.bind(this, view);
+        App.getAppComponent(getContext()).inject(this);
 
-        App.getAppComponent(this).inject(this);
-        ButterKnife.bind(this);
-        setSupportActionBar(toolbar);
-        ActionBar ab = getSupportActionBar();
-        if (ab != null) {
-            ab.setDisplayHomeAsUpEnabled(true);
-        }
+        ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_buy_coins);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         coinsList.setLayoutManager(layoutManager);
-        coinsList.setEmptyView(rootLayout, R.string.empty_store_items, R.drawable.ic_coins_grey_24dp);
+        coinsList.setEmptyView(rootLayout, R.string.empty_store_items, R.drawable.ic_inbox_grey_24dp);
         adapter = new CoinsStoreAdapter(new ArrayList<>(), eventBus);
         coinsList.setAdapter(adapter);
 
-        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+        if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
             showFailureMessage(R.string.no_internet_to_buy_coins);
         } else {
-            iabHelper = new IabHelper(this, BillingConstants.getAppPublicKey());
+            iabHelper = new IabHelper(getContext(), BillingConstants.getAppPublicKey());
             iabHelper.startSetup(result -> {
                 if (!result.isSuccess() || iabHelper == null) {
                     showFailureMessage(R.string.something_went_wrong);
@@ -121,7 +125,9 @@ public class CoinStoreActivity extends BaseActivity {
             });
         }
 
-        eventBus.post(new ScreenShownEvent(EventSource.STORE));
+        eventBus.post(new ScreenShownEvent(EventSource.BUY_COINS));
+
+        return view;
     }
 
     private void showFailureMessage(int messageRes) {
@@ -170,27 +176,23 @@ public class CoinStoreActivity extends BaseActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_help:
-                showHelpDialog();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    protected void showHelpDialog() {
-        HelpDialog.newInstance(R.layout.fragment_help_dialog_store, R.string.help_dialog_store_title, "store").show(getSupportFragmentManager());
+    protected boolean useOptionsMenu() {
+        return true;
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    protected void showHelpDialog() {
+        HelpDialog.newInstance(R.layout.fragment_help_dialog_store, R.string.help_dialog_store_title, "store").show(getActivity().getSupportFragmentManager());
+    }
+
+    @Override
+    public void onDestroyView() {
+        unbinder.unbind();
         if (iabHelper != null) {
             iabHelper.disposeWhenFinished();
             iabHelper = null;
         }
+        super.onDestroyView();
     }
 
     @Override
@@ -261,3 +263,4 @@ public class CoinStoreActivity extends BaseActivity {
         }
     }
 }
+

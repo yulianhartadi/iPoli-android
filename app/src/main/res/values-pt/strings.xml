@@ -275,7 +275,7 @@ Moedas: %2$d"</string>
     <string name="reward_earned">"Ganhou %s! Aproveite!"</string>
     <string name="coins_bought">"+ %d moedas em seu estoque"</string>
     <string name="store">"Loja"</string>
-    <string name="title_activity_store">"Loja"</string>
+    <string name="title_buy_coins">"Loja"</string>
     <string name="no_internet_to_buy_coins">"Se você quiser algumas moedas, tem que ativar a sua internet!"</string>
     <string name="something_went_wrong">"Algo deu errado, por favor, tente depois!"</string>
     <string name="help_dialog_store_title">"O que você pode comprar?"</string>
