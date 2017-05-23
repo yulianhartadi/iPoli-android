@@ -272,7 +272,7 @@
     <string name="reward_earned">%s earned! Enjoy!</string>
     <string name="coins_bought">+ %d coins added to your stash</string>
     <string name="store">Store</string>
-    <string name="title_buy_coins">Store</string>
+    <string name="title_buy_coins">Buy coins</string>
     <string name="no_internet_to_buy_coins">If you want some coins, you should enable your internet!</string>
     <string name="something_went_wrong">Something went wrong, please try again later!</string>
     <string name="help_dialog_store_title">What can you buy?</string>
@@ -678,6 +678,7 @@
     <string name="challenge8_rq3_name">Have family dinner</string>
     <string name="challenge8_rq4_raw_text">Go out with friends 2 times a week</string>
     <string name="challenge8_rq4_name">Go out with friends</string>
+    <string name="title_store_activity">Store</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
