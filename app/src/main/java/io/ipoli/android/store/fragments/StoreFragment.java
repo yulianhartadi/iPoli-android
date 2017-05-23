@@ -1,7 +1,10 @@
 package io.ipoli.android.store.fragments;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +22,7 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
-import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.store.StoreItemType;
 import io.ipoli.android.store.adapters.StoreAdapter;
 import io.ipoli.android.store.viewmodels.StoreViewModel;
 
@@ -28,19 +31,42 @@ import io.ipoli.android.store.viewmodels.StoreViewModel;
  * on 5/23/17.
  */
 
-public class StoreFragment extends BaseFragment {
+public class StoreFragment extends BaseFragment implements StoreAdapter.ItemSelectedListener {
+
+    public static final String START_ITEM_TYPE = "start-item-type";
+    private StoreItemType startStoreItemType;
 
     @Inject
     Bus eventBus;
 
-    @BindView(R.id.root_layout)
-    ViewGroup rootLayout;
-
     @BindView(R.id.items_list)
-    EmptyStateRecyclerView itemList;
+    RecyclerView itemList;
 
     private StoreAdapter adapter;
     private Unbinder unbinder;
+
+    public static StoreFragment newInstance() {
+        return newInstance(null);
+    }
+
+    public static StoreFragment newInstance(StoreItemType storeItemType) {
+        StoreFragment fragment = new StoreFragment();
+        if(storeItemType != null) {
+            Bundle args = new Bundle();
+            args.putString(START_ITEM_TYPE, storeItemType.name());
+            fragment.setArguments(args);
+        }
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if(getArguments() != null && getArguments().containsKey(START_ITEM_TYPE)) {
+            startStoreItemType = StoreItemType.valueOf(getArguments().getString(START_ITEM_TYPE));
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,15 +77,18 @@ public class StoreFragment extends BaseFragment {
         App.getAppComponent(getContext()).inject(this);
 
         itemList.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        itemList.setEmptyView(rootLayout, R.string.empty_store_items, R.drawable.ic_coins_grey_24dp);
-
         List<StoreViewModel> storeViewModels = new ArrayList<>();
-        storeViewModels.add(new StoreViewModel("Coins", R.drawable.pet_1));
-        storeViewModels.add(new StoreViewModel("Upgrades", R.drawable.pet_2));
-        storeViewModels.add(new StoreViewModel("Avatars", R.drawable.avatar_01));
-        storeViewModels.add(new StoreViewModel("Pets", R.drawable.pet_3));
-        adapter = new StoreAdapter(storeViewModels);
+        storeViewModels.add(new StoreViewModel(StoreItemType.COINS, "Coins", R.drawable.pet_1));
+        storeViewModels.add(new StoreViewModel(StoreItemType.UPGRADES, "Upgrades", R.drawable.pet_2));
+        storeViewModels.add(new StoreViewModel(StoreItemType.AVATARS, "Avatars", R.drawable.avatar_01));
+        storeViewModels.add(new StoreViewModel(StoreItemType.PETS, "Pets", R.drawable.pet_3));
+        adapter = new StoreAdapter(storeViewModels, this);
         itemList.setAdapter(adapter);
+
+        if(startStoreItemType != null) {
+            changeCurrentItem(startStoreItemType);
+        }
+
         return view;
     }
 
@@ -80,10 +109,32 @@ public class StoreFragment extends BaseFragment {
         super.onPause();
     }
 
-
-
     @Override
     protected boolean useOptionsMenu() {
         return false;
+    }
+
+    @Override
+    public void onItemSelected(StoreItemType type) {
+        changeCurrentItem(type);
+    }
+
+    private void changeCurrentItem(StoreItemType type) {
+        switch (type) {
+            case COINS:
+                changeCurrentFragment(new BuyCoinsFragment());
+            case UPGRADES:
+            case AVATARS:
+            case PETS:
+                break;
+        }
+    }
+
+    private void changeCurrentFragment(Fragment fragment) {
+        getFragmentManager().beginTransaction()
+                .add(R.id.content_container, fragment)
+                .addToBackStack(fragment.getClass().getName())
+                .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .commit();
     }
 }

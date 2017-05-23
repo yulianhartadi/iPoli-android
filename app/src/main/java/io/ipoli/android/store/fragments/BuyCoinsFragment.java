@@ -1,6 +1,5 @@
 package io.ipoli.android.store.fragments;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -102,13 +101,7 @@ public class BuyCoinsFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
-//        setSupportActionBar(toolbar);
-        ActionBar actionBar = getActivity().getActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-
-//        ((StoreActivity) getActivity()).initToolbar(toolbar, R.string.title_buy_coins);
+        getActivity().setTitle(R.string.title_buy_coins);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);

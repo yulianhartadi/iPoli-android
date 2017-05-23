@@ -12,6 +12,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
+import io.ipoli.android.store.StoreItemType;
 import io.ipoli.android.store.viewmodels.StoreViewModel;
 
 /**
@@ -20,10 +21,12 @@ import io.ipoli.android.store.viewmodels.StoreViewModel;
  */
 
 public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> {
-    List<StoreViewModel> viewModels;
+    private List<StoreViewModel> viewModels;
+    private final ItemSelectedListener listener;
 
-    public StoreAdapter(List<StoreViewModel> viewModels) {
+    public StoreAdapter(List<StoreViewModel> viewModels, ItemSelectedListener listener) {
         this.viewModels = viewModels;
+        this.listener = listener;
     }
 
     @Override
@@ -37,9 +40,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
 
         holder.title.setText(vm.getTitle());
         holder.image.setImageResource(vm.getImage());
-        holder.container.setOnClickListener(v -> {
-
-        });
+        holder.container.setOnClickListener(v -> listener.onItemSelected(vm.getType()));
     }
 
     @Override
@@ -62,5 +63,9 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
             super(v);
             ButterKnife.bind(this, v);
         }
+    }
+
+    public interface ItemSelectedListener {
+        void onItemSelected(StoreItemType storeItemType);
     }
 }
