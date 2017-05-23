@@ -9,12 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.squareup.otto.Bus;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,9 +31,6 @@ public class StoreFragment extends BaseFragment implements StoreAdapter.ItemSele
 
     public static final String START_ITEM_TYPE = "start-item-type";
     private StoreItemType startStoreItemType;
-
-    @Inject
-    Bus eventBus;
 
     @BindView(R.id.items_list)
     RecyclerView itemList;
@@ -98,18 +91,6 @@ public class StoreFragment extends BaseFragment implements StoreAdapter.ItemSele
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        eventBus.register(this);
-    }
-
-    @Override
-    public void onPause() {
-        eventBus.unregister(this);
-        super.onPause();
-    }
-
-    @Override
     protected boolean useOptionsMenu() {
         return false;
     }
@@ -122,8 +103,11 @@ public class StoreFragment extends BaseFragment implements StoreAdapter.ItemSele
     private void changeCurrentItem(StoreItemType type) {
         switch (type) {
             case COINS:
-                changeCurrentFragment(new BuyCoinsFragment());
+                changeCurrentFragment(new CoinStoreFragment());
+                break;
             case UPGRADES:
+                changeCurrentFragment(new UpgradeStoreFragment());
+                break;
             case AVATARS:
             case PETS:
                 break;
