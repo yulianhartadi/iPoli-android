@@ -101,6 +101,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/root_chart_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
