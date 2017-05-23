@@ -3,15 +3,11 @@ package io.ipoli.android.store.activities;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.view.ViewGroup;
 
 import com.squareup.otto.Bus;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -22,10 +18,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
-import io.ipoli.android.app.ui.EmptyStateRecyclerView;
-import io.ipoli.android.store.adapters.StoreAdapter;
-import io.ipoli.android.store.fragments.BuyCoinsFragment;
-import io.ipoli.android.store.viewmodels.StoreViewModel;
+import io.ipoli.android.store.fragments.StoreFragment;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -37,16 +30,8 @@ public class StoreActivity extends BaseActivity {
     @Inject
     Bus eventBus;
 
-    @BindView(R.id.root_layout)
-    ViewGroup rootLayout;
-
-    @BindView(R.id.items_list)
-    EmptyStateRecyclerView itemList;
-
     @BindView(R.id.toolbar)
     Toolbar toolbar;
-
-    private StoreAdapter adapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,26 +46,19 @@ public class StoreActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
-        itemList.setLayoutManager(new GridLayoutManager(this, 2));
-        itemList.setEmptyView(rootLayout, R.string.empty_store_items, R.drawable.ic_coins_grey_24dp);
-
-        List<StoreViewModel> storeViewModels = new ArrayList<>();
-        storeViewModels.add(new StoreViewModel("Coins", R.drawable.pet_1));
-        storeViewModels.add(new StoreViewModel("Upgrades", R.drawable.pet_2));
-        storeViewModels.add(new StoreViewModel("Avatars", R.drawable.avatar_01));
-        storeViewModels.add(new StoreViewModel("Pets", R.drawable.pet_3));
-        adapter = new StoreAdapter(storeViewModels);
-        itemList.setAdapter(adapter);
-
-        changeCurrentFragment(new BuyCoinsFragment());
+        changeCurrentFragment(new StoreFragment(), false);
 
         eventBus.post(new ScreenShownEvent(EventSource.STORE));
     }
 
-    private void changeCurrentFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.content_container, fragment).commit();
-//        currentFragment = fragment;
+    private void changeCurrentFragment(Fragment fragment, boolean addToBackStack) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
+                .replace(R.id.content_container, fragment);
+
+        if(addToBackStack) {
+            transaction.addToBackStack(fragment.getClass().getName());
+        }
+        transaction.commit();
         getSupportFragmentManager().executePendingTransactions();
     }
 
