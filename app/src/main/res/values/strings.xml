@@ -679,6 +679,7 @@
     <string name="challenge8_rq4_raw_text">Go out with friends 2 times a week</string>
     <string name="challenge8_rq4_name">Go out with friends</string>
     <string name="title_store_activity">Store</string>
+    <string name="upgrade_dialog_not_enough_coins">This upgrade costs %d coins. Unfortunately, you have not collected enough. Do you want to buy some?</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
