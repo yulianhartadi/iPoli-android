@@ -53,11 +53,9 @@ public class UpgradeStoreAdapter extends RecyclerView.Adapter<UpgradeStoreAdapte
             if (holder.longDesc.getVisibility() == View.GONE) {
                 TransitionManager.beginDelayedTransition(holder.container);
                 holder.expand.animate().rotationBy(180).setDuration(500);
-                holder.longDesc.animate().alpha(1.0f).setDuration(500).withEndAction(() -> {
-                    holder.longDesc.setVisibility(View.VISIBLE);
-                });
+                holder.longDesc.setAlpha(1.0f);
+                holder.longDesc.setVisibility(View.VISIBLE);
             } else {
-                TransitionManager.beginDelayedTransition(holder.container);
                 holder.expand.animate().rotationBy(-180).setDuration(500);
                 holder.longDesc.animate().alpha(0.0f).setDuration(500).withEndAction(() -> {
                     holder.longDesc.setVisibility(View.GONE);
