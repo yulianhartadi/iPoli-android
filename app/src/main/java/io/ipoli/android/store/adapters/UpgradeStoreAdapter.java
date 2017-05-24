@@ -50,14 +50,18 @@ public class UpgradeStoreAdapter extends RecyclerView.Adapter<UpgradeStoreAdapte
         holder.price.setText(vm.getPrice() + " life coins");
         holder.image.setImageResource(vm.getImage());
         holder.expand.setOnClickListener(v -> {
-            if(holder.longDesc.getVisibility() == View.GONE) {
+            if (holder.longDesc.getVisibility() == View.GONE) {
                 TransitionManager.beginDelayedTransition(holder.container);
-                holder.longDesc.setVisibility(View.VISIBLE);
-                holder.expand.setImageResource(R.drawable.ic_expand_less_black_24dp);
+                holder.expand.animate().rotationBy(180).setDuration(500);
+                holder.longDesc.animate().alpha(1.0f).setDuration(500).withEndAction(() -> {
+                    holder.longDesc.setVisibility(View.VISIBLE);
+                });
             } else {
                 TransitionManager.beginDelayedTransition(holder.container);
-                holder.longDesc.setVisibility(View.GONE);
-                holder.expand.setImageResource(R.drawable.ic_expand_more_black_24dp);
+                holder.expand.animate().rotationBy(-180).setDuration(500);
+                holder.longDesc.animate().alpha(0.0f).setDuration(500).withEndAction(() -> {
+                    holder.longDesc.setVisibility(View.GONE);
+                });
             }
         });
 
