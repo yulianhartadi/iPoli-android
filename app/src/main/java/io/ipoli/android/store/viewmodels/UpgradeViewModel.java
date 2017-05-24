@@ -1,6 +1,6 @@
 package io.ipoli.android.store.viewmodels;
 
-import android.support.annotation.DrawableRes;
+import android.content.Context;
 
 import org.threeten.bp.LocalDate;
 
@@ -21,13 +21,12 @@ public class UpgradeViewModel {
     private final boolean isBought;
     private final LocalDate boughtOn;
 
-    public UpgradeViewModel(String title, String shortDescription, String longDescription, int price,
-                            @DrawableRes int image, Upgrade upgrade, boolean isBought, LocalDate boughtOn) {
-        this.title = title;
-        this.shortDescription = shortDescription;
-        this.longDescription = longDescription;
-        this.price = price;
-        this.image = image;
+    public UpgradeViewModel(Context context, Upgrade upgrade, boolean isBought, LocalDate boughtOn) {
+        this.title = context.getString(upgrade.getTitle());
+        this.shortDescription = context.getString(upgrade.getShortDesc());
+        this.longDescription = context.getString(upgrade.getLongDesc());
+        this.price = upgrade.getPrice();
+        this.image = upgrade.getImage();
         this.upgrade = upgrade;
         this.isBought = isBought;
         this.boughtOn = boughtOn;
