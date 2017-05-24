@@ -45,6 +45,7 @@ import com.squareup.otto.Bus;
 import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.DateTimeFormatter;
+import org.threeten.bp.temporal.TemporalAdjusters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +83,8 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     public static final int LAST_7_DAYS = 2;
     public static final int LAST_4_WEEKS = 3;
     public static final int LAST_3_MONTHS = 4;
-    public static final String X_AXIS_DAY_FORMAT = "dd MMM";
+    public static final String X_AXIS_DAY_FORMAT = "d MMM";
+    public static final String X_AXIS_MONTH = "MMM";
 
     @BindView(R.id.root_container)
     ViewGroup rootContainer;
@@ -243,37 +245,89 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 showVsCharts();
                 showLast4WeeksCharts(today);
                 break;
+            case LAST_3_MONTHS:
+                showVsCharts();
+                showLast3MonthsCharts(today);
+                break;
         }
     }
 
-    private void showLast4WeeksCharts(LocalDate today) {
-        LocalDate startDay = today.minusWeeks(3).with(DayOfWeek.MONDAY);
-        List<Pair<Long, Long>> weekRanges = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            LocalDate curStart = startDay.plusDays(i * 7);
-            weekRanges.add(new Pair<>(DateUtils.toMillis(curStart), DateUtils.toMillis(curStart.with(DayOfWeek.SUNDAY))));
+    private void showLast3MonthsCharts(LocalDate today) {
+        LocalDate startDay = today.minusMonths(2).withDayOfMonth(1);
+        List<Pair<Long, Long>> monthRanges = new ArrayList<>();
+        final int periodLength = 3;
+        for (int i = 0; i < periodLength; i++) {
+            LocalDate curStart = startDay.plusMonths(i);
+            monthRanges.add(new Pair<>(DateUtils.toMillis(curStart), DateUtils.toMillis(curStart.with(TemporalAdjusters.lastDayOfMonth()))));
         }
         questPersistenceService.findAllBetween(startDay, today, new OnDataChangedListener<List<Quest>>() {
             @Override
             public void onDataChanged(List<Quest> quests) {
-                int[] awesomenessPerWeek = new int[4];
-                int[][] completedPerWeek = new int[Category.values().length][4];
-                int[][] timeSpentPerWeek = new int[Category.values().length][4];
-                int[] xpPerWeek = new int[4];
-                int[] coinsPerWeek = new int[4];
+                int[] awesomenessData = new int[periodLength];
+                int[][] completedData = new int[Category.values().length][periodLength];
+                int[][] timeSpentData = new int[Category.values().length][periodLength];
+                int[] xpData = new int[periodLength];
+                int[] coinsData = new int[periodLength];
                 for (Quest q : quests) {
                     if (q.isCompleted()) {
                         Long completedAt = q.getCompletedAt();
 
                         int idx = -1;
-                        for (int i = 0; i < 4; i++) {
+                        for (int i = 0; i < periodLength; i++) {
+                            Pair<Long, Long> range = monthRanges.get(i);
+                            if (completedAt >= range.first && completedAt <= range.second) {
+                                idx = i;
+                            }
+                        }
+                        awesomenessData[idx] += priorityEstimator.estimate(q);
+                        coinsData[idx] += q.getCoins();
+                        xpData[idx] += q.getExperience();
+                        completedData[q.getCategoryType().ordinal()][idx]++;
+                        timeSpentData[q.getCategoryType().ordinal()][idx] += q.getActualDuration();
+                    }
+                }
+
+                String[] xLabels = new String[periodLength];
+                for (int i = 0; i < periodLength; i++) {
+                    xLabels[i] = startDay.plusMonths(i).format(DateTimeFormatter.ofPattern(X_AXIS_MONTH));
+                }
+
+                setupAwesomenessVsLastChart(awesomenessData, xLabels);
+                setupCompletedQuestsVsLastChart(completedData, xLabels);
+                setupTimeSpentVsLastChart(timeSpentData, xLabels);
+                setupCoinsEarnedVsLastChart(coinsData, xLabels);
+                setupXpEarnedVsLastChart(xpData, xLabels);
+            }
+        });
+    }
+
+    private void showLast4WeeksCharts(LocalDate today) {
+        LocalDate startDay = today.minusWeeks(3).with(DayOfWeek.MONDAY);
+        List<Pair<Long, Long>> weekRanges = new ArrayList<>();
+        final int periodLength = 4;
+        for (int i = 0; i < periodLength; i++) {
+            LocalDate curStart = startDay.plusWeeks(i);
+            weekRanges.add(new Pair<>(DateUtils.toMillis(curStart), DateUtils.toMillis(curStart.with(DayOfWeek.SUNDAY))));
+        }
+        questPersistenceService.findAllBetween(startDay, today, new OnDataChangedListener<List<Quest>>() {
+            @Override
+            public void onDataChanged(List<Quest> quests) {
+                int[] awesomenessPerWeek = new int[periodLength];
+                int[][] completedPerWeek = new int[Category.values().length][periodLength];
+                int[][] timeSpentPerWeek = new int[Category.values().length][periodLength];
+                int[] xpPerWeek = new int[periodLength];
+                int[] coinsPerWeek = new int[periodLength];
+                for (Quest q : quests) {
+                    if (q.isCompleted()) {
+                        Long completedAt = q.getCompletedAt();
+
+                        int idx = -1;
+                        for (int i = 0; i < periodLength; i++) {
                             Pair<Long, Long> range = weekRanges.get(i);
                             if (completedAt >= range.first && completedAt <= range.second) {
                                 idx = i;
                             }
                         }
-
-//                        int idx = (int) DAYS.between(startDay, completedAtDate);
                         awesomenessPerWeek[idx] += priorityEstimator.estimate(q);
                         coinsPerWeek[idx] += q.getCoins();
                         xpPerWeek[idx] += q.getExperience();
@@ -281,9 +335,14 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                         timeSpentPerWeek[q.getCategoryType().ordinal()][idx] += q.getActualDuration();
                     }
                 }
-                String[] xLabels = new String[4];
-                for (int i = 0; i < 4; i++) {
-                    xLabels[i] = startDay.plusDays(i * 7).format(DateTimeFormatter.ofPattern(X_AXIS_DAY_FORMAT));
+                String[] xLabels = new String[periodLength];
+                for (int i = 0; i < periodLength; i++) {
+                    LocalDate weekStart = startDay.plusWeeks(i);
+                    LocalDate weekEnd = weekStart.plusDays(6);
+                    String weekStartText = weekStart.format(DateTimeFormatter.ofPattern(X_AXIS_DAY_FORMAT));
+                    String weekEndText = weekEnd.format(DateTimeFormatter.ofPattern(X_AXIS_DAY_FORMAT));
+                    String label = weekStartText + " - " + weekEndText;
+                    xLabels[i] = label;
                 }
 
                 setupAwesomenessVsLastChart(awesomenessPerWeek, xLabels);
@@ -425,6 +484,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             int idx = (int) v;
             return xLabels[idx];
         });
+        xpEarnedVsLastChart.getXAxis().setLabelCount(xLabels.length);
         xpEarnedVsLastChart.setData(barData);
         xpEarnedVsLastChart.invalidate();
     }
@@ -445,6 +505,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             int idx = (int) v;
             return xLabels[idx];
         });
+        coinsEarnedVsLastChart.getXAxis().setLabelCount(xLabels.length);
         coinsEarnedVsLastChart.setData(barData);
         coinsEarnedVsLastChart.invalidate();
     }
@@ -474,6 +535,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             int idx = (int) v;
             return xLabels[idx];
         });
+        timeSpentVsLastChart.getXAxis().setLabelCount(xLabels.length);
         timeSpentVsLastChart.setData(barData);
         timeSpentVsLastChart.invalidate();
     }
@@ -503,6 +565,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             int idx = (int) v;
             return xLabels[idx];
         });
+        completedQuestsVsLastChart.getXAxis().setLabelCount(xLabels.length);
         completedQuestsVsLastChart.setData(barData);
         completedQuestsVsLastChart.invalidate();
     }
@@ -523,6 +586,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             int idx = (int) v;
             return xLabels[idx];
         });
+        awesomenessVsLastChart.getXAxis().setLabelCount(xLabels.length);
         awesomenessVsLastChart.setData(data);
         awesomenessVsLastChart.invalidate();
         awesomenessVsLastChart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
