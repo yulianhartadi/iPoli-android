@@ -76,7 +76,9 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     public static final int CHART_ANIMATION_DURATION = 500;
     public static final Easing.EasingOption DEFAULT_EASING_OPTION = Easing.EasingOption.EaseInQuart;
     public static final int THIS_WEEK = 0;
+    public static final int THIS_MONTH = 1;
     public static final int LAST_7_DAYS = 2;
+    public static final String X_AXIS_DAY_FORMAT = "dd MMM";
 
     @BindView(R.id.root_container)
     ViewGroup rootContainer;
@@ -129,12 +131,13 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     private Unbinder unbinder;
     private List<Chart<?>> rangeCharts;
     private List<Chart<?>> vsCharts;
+    private PriorityEstimator priorityEstimator;
 
-    public class CustomMarkerView extends MarkerView {
+    public class GrowthMarkerView extends MarkerView {
 
         private TextView popupContent;
 
-        public CustomMarkerView(Context context) {
+        public GrowthMarkerView(Context context) {
             super(context, R.layout.chart_popup);
             popupContent = (TextView) findViewById(R.id.popup_content);
         }
@@ -157,12 +160,13 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        App.getAppComponent(getContext()).inject(this);
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_growth, container, false);
         unbinder = ButterKnife.bind(this, view);
-        App.getAppComponent(getContext()).inject(this);
         ((MainActivity) getActivity()).setSupportActionBar(toolbar);
         ActionBar actionBar = ((MainActivity) getActivity()).getSupportActionBar();
+        priorityEstimator = new PriorityEstimator();
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -223,6 +227,10 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 showRangeCharts();
                 showThisWeekCharts(today);
                 break;
+            case THIS_MONTH:
+                showRangeCharts();
+                showThisMonthCharts(today);
+                break;
             case LAST_7_DAYS:
                 showVsCharts();
                 showLast7DaysCharts(today);
@@ -230,10 +238,49 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         }
     }
 
+    private void showThisMonthCharts(LocalDate today) {
+        LocalDate startOfMonth = today.withDayOfMonth(1);
+        LocalDate startOfPrevMonth = today.minusMonths(1).withDayOfMonth(1);
+        int daysInPrevMonth = startOfPrevMonth.lengthOfMonth();
+        int daysInCurrentMonth = startOfMonth.lengthOfMonth();
+
+        questPersistenceService.findAllBetween(startOfPrevMonth, today, new OnDataChangedListener<List<Quest>>() {
+            @Override
+            public void onDataChanged(List<Quest> quests) {
+                int[] awesomenessPerDay = new int[daysInPrevMonth + today.getDayOfMonth()];
+                int[][] completedPerDay = new int[Category.values().length][daysInCurrentMonth];
+                int[][] timeSpentPerDay = new int[Category.values().length][daysInCurrentMonth];
+                int[] xpPerDay = new int[daysInPrevMonth + today.getDayOfMonth()];
+                int[] coinsPerDay = new int[daysInPrevMonth + today.getDayOfMonth()];
+                for (Quest q : quests) {
+                    if (q.isCompleted()) {
+                        int idx = (int) DAYS.between(startOfPrevMonth, q.getCompletedAtDate());
+                        awesomenessPerDay[idx] += priorityEstimator.estimate(q);
+                        coinsPerDay[idx] += q.getCoins();
+                        xpPerDay[idx] += q.getExperience();
+                        int thisMonthIdx = (int) DAYS.between(startOfMonth, q.getCompletedAtDate());
+                        completedPerDay[q.getCategoryType().ordinal()][thisMonthIdx]++;
+                        timeSpentPerDay[q.getCategoryType().ordinal()][thisMonthIdx] += q.getActualDuration();
+                    }
+                }
+                String[] xLabels = new String[daysInCurrentMonth];
+                for (int i = 0; i < daysInCurrentMonth; i++) {
+                    xLabels[i] = startOfMonth.plusDays(i).format(DateTimeFormatter.ofPattern("dd MMM"));
+                }
+
+                boolean drawHandles = false;
+                setupAwesomenessRangeChart(awesomenessPerDay, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
+                setupCompletedQuestsPerCategoryRangeChart(completedPerDay, xLabels, drawHandles);
+                setupTimeSpentRangeChart(timeSpentPerDay, xLabels, drawHandles);
+                setupCoinsEarnedRangeChart(coinsPerDay, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
+                setupXpEarnedRangeChart(xpPerDay, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
+            }
+        });
+    }
+
     private void showLast7DaysCharts(LocalDate today) {
 
         LocalDate startDay = today.minusDays(7);
-        PriorityEstimator estimator = new PriorityEstimator();
 
         questPersistenceService.findAllBetween(startDay, today, new OnDataChangedListener<List<Quest>>() {
             @Override
@@ -246,7 +293,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 for (Quest q : quests) {
                     if (q.isCompleted()) {
                         int idx = (int) DAYS.between(startDay, q.getCompletedAtDate());
-                        awesomenessPerDay[idx] += estimator.estimate(q);
+                        awesomenessPerDay[idx] += priorityEstimator.estimate(q);
                         coinsPerDay[idx] += q.getCoins();
                         xpPerDay[idx] += q.getExperience();
                         int thisWeekIdx = (int) DAYS.between(startDay, q.getCompletedAtDate());
@@ -256,7 +303,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 }
                 String[] xLabels = new String[7];
                 for (int i = 0; i < 7; i++) {
-                    xLabels[i] = startDay.plusDays(i).format(DateTimeFormatter.ofPattern("dd MMM"));
+                    xLabels[i] = startDay.plusDays(i).format(DateTimeFormatter.ofPattern(X_AXIS_DAY_FORMAT));
                 }
 
                 setupAwesomenessVsLastChart(awesomenessPerDay, xLabels);
@@ -272,8 +319,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
         LocalDate startOfPrevWeek = today.minusWeeks(1).with(DayOfWeek.MONDAY);
 
-        PriorityEstimator estimator = new PriorityEstimator();
-
         questPersistenceService.findAllBetween(startOfPrevWeek, today, new OnDataChangedListener<List<Quest>>() {
             @Override
             public void onDataChanged(List<Quest> quests) {
@@ -285,7 +330,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 for (Quest q : quests) {
                     if (q.isCompleted()) {
                         int idx = (int) DAYS.between(startOfPrevWeek, q.getCompletedAtDate());
-                        awesomenessPerDay[idx] += estimator.estimate(q);
+                        awesomenessPerDay[idx] += priorityEstimator.estimate(q);
                         coinsPerDay[idx] += q.getCoins();
                         xpPerDay[idx] += q.getExperience();
                         int thisWeekIdx = (int) DAYS.between(startOfWeek, q.getCompletedAtDate());
@@ -298,11 +343,12 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                     xLabels[i] = startOfWeek.plusDays(i).format(DateTimeFormatter.ofPattern("dd MMM"));
                 }
 
-                setupAwesomenessRangeChart(awesomenessPerDay, 7, "This week", "Last week", xLabels);
-                setupCompletedQuestsPerCategoryRangeChart(completedPerDay, xLabels);
-                setupTimeSpentRangeChart(timeSpentPerDay, xLabels);
-                setupCoinsEarnedRangeChart(coinsPerDay, 7, "This week", "Last week", xLabels);
-                setupXpEarnedRangeChart(xpPerDay, 7, "This week", "Last week", xLabels);
+                boolean drawHandles = true;
+                setupAwesomenessRangeChart(awesomenessPerDay, 7, "This week", "Last week", xLabels, drawHandles);
+                setupCompletedQuestsPerCategoryRangeChart(completedPerDay, xLabels, drawHandles);
+                setupTimeSpentRangeChart(timeSpentPerDay, xLabels, drawHandles);
+                setupCoinsEarnedRangeChart(coinsPerDay, 7, "This week", "Last week", xLabels, drawHandles);
+                setupXpEarnedRangeChart(xpPerDay, 7, "This week", "Last week", xLabels, drawHandles);
             }
         });
     }
@@ -426,10 +472,10 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         awesomenessVsLastChart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
     }
 
-    private void setupXpEarnedRangeChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels) {
+    private void setupXpEarnedRangeChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels, boolean drawHandles) {
         applyDefaultStyle(xpEarnedRangeChart);
 
-        LineData lineData = createThisVsLastWeekLineData(data, range, currentRangeLabel, prevRangeLabel);
+        LineData lineData = createThisVsLastWeekLineData(data, range, currentRangeLabel, prevRangeLabel, drawHandles);
 
         XAxis xAxis = xpEarnedRangeChart.getXAxis();
         xAxis.setValueFormatter((v, axisBase) -> {
@@ -438,12 +484,10 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         });
 
         YAxis yAxis = xpEarnedRangeChart.getAxisLeft();
-
-        xAxis.setLabelCount(range, true);
         yAxis.setAxisMinimum(0);
 
-        CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
-        xpEarnedRangeChart.setMarker(customMarkerView);
+        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
+        xpEarnedRangeChart.setMarker(growthMarkerView);
         xpEarnedRangeChart.setDescription(null);
         xpEarnedRangeChart.setDrawBorders(false);
 
@@ -451,10 +495,10 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         xpEarnedRangeChart.invalidate();
     }
 
-    private void setupCoinsEarnedRangeChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels) {
+    private void setupCoinsEarnedRangeChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels, boolean drawHandles) {
         applyDefaultStyle(coinsEarnedRangeChart);
 
-        LineData lineData = createThisVsLastWeekLineData(data, range, currentRangeLabel, prevRangeLabel);
+        LineData lineData = createThisVsLastWeekLineData(data, range, currentRangeLabel, prevRangeLabel, drawHandles);
 
         XAxis xAxis = coinsEarnedRangeChart.getXAxis();
         xAxis.setValueFormatter((v, axisBase) -> {
@@ -464,11 +508,10 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         YAxis yAxis = coinsEarnedRangeChart.getAxisLeft();
 
-        xAxis.setLabelCount(range, true);
         yAxis.setAxisMinimum(0);
 
-        CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
-        coinsEarnedRangeChart.setMarker(customMarkerView);
+        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
+        coinsEarnedRangeChart.setMarker(growthMarkerView);
         coinsEarnedRangeChart.setDescription(null);
         coinsEarnedRangeChart.setDrawBorders(false);
 
@@ -477,29 +520,29 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     @NonNull
-    private LineData createThisVsLastWeekLineData(int[] data, int range, String currentRangeLabel, String prevRangeLabel) {
+    private LineData createThisVsLastWeekLineData(int[] data, int prevRangeLength, String currentRangeLabel, String prevRangeLabel, boolean drawHandles) {
         List<Entry> entries = new ArrayList<>();
-        for (int i = range; i < data.length; i++) {
-            entries.add(new Entry(i - range, data[i], R.color.md_red_A400));
+        for (int i = prevRangeLength; i < data.length; i++) {
+            entries.add(new Entry(i - prevRangeLength, data[i], R.color.md_red_A400));
         }
         LineDataSet thisWeekDataSet = new LineDataSet(entries, currentRangeLabel);
 
-        applyLineDataSetStyle(thisWeekDataSet, R.color.md_red_A200, R.color.md_red_A400);
+        applyLineDataSetStyle(thisWeekDataSet, R.color.md_red_A200, R.color.md_red_A400, drawHandles);
 
         List<Entry> lastWeekEntries = new ArrayList<>();
-        for (int i = 0; i < range; i++) {
+        for (int i = 0; i < prevRangeLength; i++) {
             lastWeekEntries.add(new Entry(i, data[i], R.color.md_blue_A400));
         }
         LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, prevRangeLabel);
-        applyLineDataSetStyle(lastWeekDataSet, R.color.md_blue_A200, R.color.md_blue_A400);
+        applyLineDataSetStyle(lastWeekDataSet, R.color.md_blue_A200, R.color.md_blue_A400, drawHandles);
 
         return new LineData(lastWeekDataSet, thisWeekDataSet);
     }
 
-    private void setupTimeSpentRangeChart(int[][] data, String[] xLabels) {
+    private void setupTimeSpentRangeChart(int[][] data, String[] xLabels, boolean drawHandles) {
         applyDefaultStyle(timeSpentRangeChart);
 
-        LineData lineData = createCategoryLineData(data);
+        LineData lineData = createCategoryLineData(data, drawHandles);
 
         XAxis xAxis = timeSpentRangeChart.getXAxis();
         xAxis.setValueFormatter((v, axisBase) -> {
@@ -507,18 +550,18 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             return xLabels[idx];
         });
 
-        CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
-        timeSpentRangeChart.setMarker(customMarkerView);
+        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
+        timeSpentRangeChart.setMarker(growthMarkerView);
 
         timeSpentRangeChart.setDescription(null);
         timeSpentRangeChart.setData(lineData);
         timeSpentRangeChart.invalidate();
     }
 
-    private void setupCompletedQuestsPerCategoryRangeChart(int[][] data, String[] xLabels) {
+    private void setupCompletedQuestsPerCategoryRangeChart(int[][] data, String[] xLabels, boolean drawHandles) {
         applyDefaultStyle(completedQuestsRangeChart);
 
-        LineData lineData = createCategoryLineData(data);
+        LineData lineData = createCategoryLineData(data, drawHandles);
 
         XAxis xAxis = completedQuestsRangeChart.getXAxis();
         xAxis.setValueFormatter((v, axisBase) -> {
@@ -526,8 +569,8 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             return xLabels[idx];
         });
 
-        CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
-        completedQuestsRangeChart.setMarker(customMarkerView);
+        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
+        completedQuestsRangeChart.setMarker(growthMarkerView);
 
         completedQuestsRangeChart.setDescription(null);
         completedQuestsRangeChart.setData(lineData);
@@ -535,7 +578,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     @NonNull
-    private LineData createCategoryLineData(int[][] data) {
+    private LineData createCategoryLineData(int[][] data, boolean drawHandles) {
         int[] wellnessData = data[Category.WELLNESS.ordinal()];
         List<Entry> wellnessEntries = new ArrayList<>();
         for (int i = 0; i < wellnessData.length; i++) {
@@ -543,7 +586,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         }
         LineDataSet wellnessDataSet = new LineDataSet(wellnessEntries, "Wellness");
 
-        applyLineDataSetStyle(wellnessDataSet, R.color.md_green_500, R.color.md_green_700);
+        applyLineDataSetStyle(wellnessDataSet, R.color.md_green_500, R.color.md_green_700, drawHandles);
 
         int[] learningData = data[Category.LEARNING.ordinal()];
         List<Entry> learningEntries = new ArrayList<>();
@@ -552,7 +595,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         }
         LineDataSet learningDataSet = new LineDataSet(learningEntries, "Learning");
 
-        applyLineDataSetStyle(learningDataSet, R.color.md_blue_A200, R.color.md_blue_A400);
+        applyLineDataSetStyle(learningDataSet, R.color.md_blue_A200, R.color.md_blue_A400, drawHandles);
 
         int[] workData = data[Category.WORK.ordinal()];
         List<Entry> workEntries = new ArrayList<>();
@@ -561,7 +604,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         }
         LineDataSet workDataSet = new LineDataSet(workEntries, "Work");
 
-        applyLineDataSetStyle(workDataSet, R.color.md_red_A200, R.color.md_red_A400);
+        applyLineDataSetStyle(workDataSet, R.color.md_red_A200, R.color.md_red_A400, drawHandles);
 
         int[] personalData = data[Category.PERSONAL.ordinal()];
         List<Entry> personalEntries = new ArrayList<>();
@@ -570,7 +613,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         }
         LineDataSet personalDataSet = new LineDataSet(personalEntries, "Personal");
 
-        applyLineDataSetStyle(personalDataSet, R.color.md_orange_A200, R.color.md_orange_A400);
+        applyLineDataSetStyle(personalDataSet, R.color.md_orange_A200, R.color.md_orange_A400, drawHandles);
 
         int[] funData = data[Category.FUN.ordinal()];
         List<Entry> funEntries = new ArrayList<>();
@@ -579,7 +622,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         }
         LineDataSet funDataSet = new LineDataSet(funEntries, "Fun");
 
-        applyLineDataSetStyle(funDataSet, R.color.md_purple_300, R.color.md_purple_500);
+        applyLineDataSetStyle(funDataSet, R.color.md_purple_300, R.color.md_purple_500, drawHandles);
 
         int[] choresData = data[Category.CHORES.ordinal()];
         List<Entry> choresEntries = new ArrayList<>();
@@ -588,15 +631,15 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         }
         LineDataSet choresDataSet = new LineDataSet(choresEntries, "Chores");
 
-        applyLineDataSetStyle(choresDataSet, R.color.md_brown_300, R.color.md_brown_500);
+        applyLineDataSetStyle(choresDataSet, R.color.md_brown_300, R.color.md_brown_500, drawHandles);
 
         return new LineData(wellnessDataSet, learningDataSet, workDataSet, personalDataSet, funDataSet, choresDataSet);
     }
 
-    private void setupAwesomenessRangeChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels) {
+    private void setupAwesomenessRangeChart(int[] data, int prevRangeLength, String currentRangeLabel, String prevRangeLabel, String[] xLabels, boolean drawHandles) {
         applyDefaultStyle(awesomenessRangeChart);
 
-        LineData lineData = createThisVsLastWeekLineData(data, range, currentRangeLabel, prevRangeLabel);
+        LineData lineData = createThisVsLastWeekLineData(data, prevRangeLength, currentRangeLabel, prevRangeLabel, drawHandles);
 
         XAxis xAxis = awesomenessRangeChart.getXAxis();
         xAxis.setValueFormatter((v, axisBase) -> {
@@ -606,11 +649,10 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         YAxis yAxis = awesomenessRangeChart.getAxisLeft();
 
-        xAxis.setLabelCount(range, true);
         yAxis.setAxisMinimum(0);
 
-        CustomMarkerView customMarkerView = new CustomMarkerView(getContext());
-        awesomenessRangeChart.setMarker(customMarkerView);
+        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
+        awesomenessRangeChart.setMarker(growthMarkerView);
         awesomenessRangeChart.setDescription(null);
         awesomenessRangeChart.setDrawBorders(false);
 
@@ -619,17 +661,22 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         awesomenessRangeChart.animateX(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
     }
 
-    private void applyLineDataSetStyle(LineDataSet lastWeekDataSet, @ColorRes int color, @ColorRes int highlightColor) {
-        lastWeekDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        lastWeekDataSet.setDrawCircleHole(true);
-        lastWeekDataSet.setCircleHoleRadius(3f);
-        lastWeekDataSet.setCircleColorHole(Color.WHITE);
-        lastWeekDataSet.setCircleColor(ContextCompat.getColor(getContext(), color));
-        lastWeekDataSet.setCircleRadius(6f);
-        lastWeekDataSet.setLineWidth(2f);
-        lastWeekDataSet.setHighLightColor(ContextCompat.getColor(getContext(), highlightColor));
-        lastWeekDataSet.setDrawValues(false);
-        lastWeekDataSet.setColor(ContextCompat.getColor(getContext(), color));
+    private void applyLineDataSetStyle(LineDataSet dataSet, @ColorRes int color, @ColorRes int highlightColor, boolean drawHandles) {
+        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        if (drawHandles) {
+            dataSet.setDrawCircleHole(true);
+        } else {
+            dataSet.setDrawCircleHole(false);
+            dataSet.setDrawCircles(false);
+        }
+        dataSet.setCircleHoleRadius(3f);
+        dataSet.setCircleColorHole(Color.WHITE);
+        dataSet.setCircleColor(ContextCompat.getColor(getContext(), color));
+        dataSet.setCircleRadius(6f);
+        dataSet.setLineWidth(2f);
+        dataSet.setHighLightColor(ContextCompat.getColor(getContext(), highlightColor));
+        dataSet.setDrawValues(false);
+        dataSet.setColor(ContextCompat.getColor(getContext(), color));
     }
 
     private void applyDefaultStyle(LineChart chart) {
