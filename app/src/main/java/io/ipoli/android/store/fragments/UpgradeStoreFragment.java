@@ -12,8 +12,6 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import org.threeten.bp.LocalDate;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +23,7 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.Upgrade;
 import io.ipoli.android.player.UpgradesManager;
 import io.ipoli.android.store.adapters.UpgradeStoreAdapter;
@@ -64,16 +63,27 @@ public class UpgradeStoreFragment extends BaseFragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         upgradeList.setLayoutManager(layoutManager);
         List<UpgradeViewModel> upgrades = new ArrayList<>();
+        List<Upgrade> lockedUpgrades = new ArrayList<>();
+        List<Upgrade> boughtUpgrades = new ArrayList<>();
 
-        upgrades.add(new UpgradeViewModel(getContext(), Upgrade.CHALLENGES, false, null));
+        for(Upgrade upgrade : Upgrade.values()) {
+            if(upgradesManager.has(upgrade)) {
+                boughtUpgrades.add(upgrade);
+            } else {
+                lockedUpgrades.add(upgrade);
+            }
+        }
 
-        upgrades.add(new UpgradeViewModel(getContext(), Upgrade.REMINDERS, false, null));
+        boughtUpgrades.sort((u1, u2) ->
+                - Long.compare(upgradesManager.getBoughtDate(u1), upgradesManager.getBoughtDate(u2)));
 
-        upgrades.add(new UpgradeViewModel(getContext(), Upgrade.REMINDERS, false, null));
+        for(Upgrade upgrade : lockedUpgrades) {
+            upgrades.add(new UpgradeViewModel(getContext(), upgrade));
+        }
 
-        upgrades.add(new UpgradeViewModel(getContext(), Upgrade.NOTES, true, LocalDate.now().minusDays(1)));
-
-        upgrades.add(new UpgradeViewModel(getContext(), Upgrade.REPEATING_QUESTS, true, LocalDate.now().minusDays(2)));
+        for(Upgrade upgrade : boughtUpgrades) {
+            upgrades.add(new UpgradeViewModel(getContext(), upgrade, true, DateUtils.fromMillis(upgradesManager.getBoughtDate(upgrade))));
+        }
 
         adapter = new UpgradeStoreAdapter(getContext(), eventBus, upgrades);
         upgradeList.setAdapter(adapter);

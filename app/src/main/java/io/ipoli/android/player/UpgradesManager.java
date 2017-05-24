@@ -32,4 +32,12 @@ public class UpgradesManager {
         player.getUpgrades().put(upgrade.getCode(), DateUtils.toMillis(LocalDate.now()));
         playerPersistenceService.save(player);
     }
+
+    public Long getBoughtDate(Upgrade upgrade) {
+        Player player = playerPersistenceService.get();
+        if(!player.getUpgrades().containsKey(upgrade.getCode())) {
+            return null;
+        }
+        return player.getUpgrades().get(upgrade.getCode());
+    }
 }
