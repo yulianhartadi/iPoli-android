@@ -21,6 +21,10 @@ public class UpgradeViewModel {
     private final boolean isBought;
     private final LocalDate boughtOn;
 
+    public UpgradeViewModel(Context context, Upgrade upgrade) {
+        this(context, upgrade, false, null);
+    }
+
     public UpgradeViewModel(Context context, Upgrade upgrade, boolean isBought, LocalDate boughtOn) {
         this.title = context.getString(upgrade.getTitle());
         this.shortDescription = context.getString(upgrade.getShortDesc());

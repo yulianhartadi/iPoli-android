@@ -21,7 +21,7 @@ public enum Upgrade {
             R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_calendar_blank_grey_24dp),
     SUB_QUESTS(5, 300, R.string.help_dialog_challenge_title,
             R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_format_list_bulleted_white_24dp),
-    REPEATING_QUESTS(6, 20, R.string.help_dialog_challenge_title,
+    REPEATING_QUESTS(6, 2, R.string.help_dialog_challenge_title,
             R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_repeat_white_24dp),
     TIMER(7, 200, R.string.help_dialog_challenge_title,
             R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_timer_white_24dp),
@@ -30,6 +30,7 @@ public enum Upgrade {
 
     private final int code;
     private final int price;
+
     @StringRes
     private final int title;
 
