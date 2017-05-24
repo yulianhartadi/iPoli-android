@@ -8,49 +8,49 @@
     android:padding="16dp">
 
     <Switch
+        android:id="@+id/filter_wellness"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:checked="true"
-        android:text="Wellness" />
+        android:text="@string/category_wellness" />
 
     <Switch
+        android:id="@+id/filter_learning"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginTop="8dp"
-        android:checked="true"
-        android:text="Learning" />
-
+        android:text="@string/category_learning" />
 
     <Switch
+        android:id="@+id/filter_personal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginTop="8dp"
-        android:checked="true"
-        android:text="Work" />
+        android:text="@string/category_personal" />
 
     <Switch
+        android:id="@+id/filter_work"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginTop="8dp"
-        android:text="Personal" />
+        android:text="@string/category_work" />
 
     <Switch
+        android:id="@+id/filter_fun"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginTop="8dp"
-        android:enabled="true"
-        android:text="Fun" />
+        android:text="@string/category_fun" />
 
     <Switch
+        android:id="@+id/filter_chores"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginTop="8dp"
-        android:enabled="true"
-        android:text="Chores" />
+        android:text="@string/category_chores" />
 </LinearLayout>
