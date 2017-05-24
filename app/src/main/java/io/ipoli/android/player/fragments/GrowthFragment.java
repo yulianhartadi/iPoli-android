@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
@@ -920,6 +921,76 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         LayoutInflater inflater = (LayoutInflater)
                 getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.category_filter, (ViewGroup) getActivity().findViewById(R.id.filters_container));
+        ViewGroup filterContainer = (ViewGroup) layout.findViewById(R.id.filters_container);
+        for (int i = 0; i < filterContainer.getChildCount(); i++) {
+            Switch child = (Switch) filterContainer.getChildAt(i);
+            Category category = Category.values()[i];
+            if (selectedCompleted.get(category)) {
+                child.setChecked(true);
+            }
+            child.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                Category selectedCategory = Category.CHORES;
+                switch (buttonView.getId()) {
+                    case R.id.filter_wellness:
+                        selectedCategory = Category.WELLNESS;
+                        break;
+                    case R.id.filter_learning:
+                        selectedCategory = Category.LEARNING;
+                        break;
+                    case R.id.filter_work:
+                        selectedCategory = Category.WORK;
+                        break;
+                    case R.id.filter_personal:
+                        selectedCategory = Category.PERSONAL;
+                        break;
+                    case R.id.filter_fun:
+                        selectedCategory = Category.FUN;
+                        break;
+                }
+                selectedCompleted.put(selectedCategory, isChecked);
+                showCharts(spinner.getSelectedItemPosition());
+            });
+        }
+        PopupWindow popupWindow = new PopupWindow(layout, LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT, true);
+        popupWindow.showAsDropDown(view);
+    }
+
+    @OnClick(R.id.filter_time_spent)
+    public void onFilterTimeSpentClick(View view) {
+        LayoutInflater inflater = (LayoutInflater)
+                getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.category_filter, (ViewGroup) getActivity().findViewById(R.id.filters_container));
+        ViewGroup filterContainer = (ViewGroup) layout.findViewById(R.id.filters_container);
+        for (int i = 0; i < filterContainer.getChildCount(); i++) {
+            Switch child = (Switch) filterContainer.getChildAt(i);
+            Category category = Category.values()[i];
+            if (selectedTimeSpent.get(category)) {
+                child.setChecked(true);
+            }
+            child.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                Category selectedCategory = Category.CHORES;
+                switch (buttonView.getId()) {
+                    case R.id.filter_wellness:
+                        selectedCategory = Category.WELLNESS;
+                        break;
+                    case R.id.filter_learning:
+                        selectedCategory = Category.LEARNING;
+                        break;
+                    case R.id.filter_work:
+                        selectedCategory = Category.WORK;
+                        break;
+                    case R.id.filter_personal:
+                        selectedCategory = Category.PERSONAL;
+                        break;
+                    case R.id.filter_fun:
+                        selectedCategory = Category.FUN;
+                        break;
+                }
+                selectedTimeSpent.put(selectedCategory, isChecked);
+                showCharts(spinner.getSelectedItemPosition());
+            });
+        }
         PopupWindow popupWindow = new PopupWindow(layout, LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT, true);
         popupWindow.showAsDropDown(view);
