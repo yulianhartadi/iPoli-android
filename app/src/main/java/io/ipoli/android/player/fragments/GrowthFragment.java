@@ -48,6 +48,7 @@ import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.temporal.TemporalAdjusters;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,6 +144,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
     private Map<Category, Boolean> selectedCompleted = new LinkedHashMap<>();
     private Map<Category, Boolean> selectedTimeSpent = new LinkedHashMap<>();
+    private Map<Category, Integer> categoryToColor = new HashMap<>();
 
     public class GrowthMarkerView extends MarkerView {
 
@@ -222,6 +224,13 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         selectedTimeSpent.put(Category.PERSONAL, false);
         selectedTimeSpent.put(Category.FUN, false);
         selectedTimeSpent.put(Category.CHORES, false);
+
+        categoryToColor.put(Category.WELLNESS, R.color.md_green_500);
+        categoryToColor.put(Category.LEARNING, R.color.md_blue_A200);
+        categoryToColor.put(Category.WORK, R.color.md_red_A200);
+        categoryToColor.put(Category.PERSONAL, R.color.md_orange_A200);
+        categoryToColor.put(Category.FUN, R.color.md_purple_300);
+        categoryToColor.put(Category.CHORES, R.color.md_brown_300);
 
         showCharts(THIS_WEEK);
         return view;
@@ -535,17 +544,27 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
     private void setupTimeSpentVsLastChart(int[][] data, String[] xLabels) {
         applyDefaultStyle(timeSpentVsLastChart);
+
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < data[0].length; i++) {
             float[] vals = new float[data.length];
             for (int j = 0; j < vals.length; j++) {
-                vals[j] = data[j][i];
+                Category category = Category.values()[j];
+                if (selectedTimeSpent.get(category)) {
+                    vals[j] = data[j][i];
+                }
             }
             entries.add(new BarEntry(i, vals));
         }
 
         BarDataSet dataSet = new BarDataSet(entries, "");
-        dataSet.setColors(ContextCompat.getColor(getContext(), R.color.md_blue_A200), ContextCompat.getColor(getContext(), R.color.md_green_500), ContextCompat.getColor(getContext(), R.color.md_orange_500));
+        List<Integer> colors = new ArrayList<>();
+        for (Category category : selectedTimeSpent.keySet()) {
+            if (selectedTimeSpent.get(category)) {
+                colors.add(ContextCompat.getColor(getContext(), categoryToColor.get(category)));
+            }
+        }
+        dataSet.setColors(colors);
         dataSet.setDrawValues(false);
         BarData barData = new BarData(dataSet);
         barData.setValueFormatter(new IValueFormatter() {
@@ -569,13 +588,22 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         for (int i = 0; i < data[0].length; i++) {
             float[] vals = new float[data.length];
             for (int j = 0; j < vals.length; j++) {
-                vals[j] = data[j][i];
+                Category category = Category.values()[j];
+                if (selectedCompleted.get(category)) {
+                    vals[j] = data[j][i];
+                }
             }
             entries.add(new BarEntry(i, vals));
         }
 
         BarDataSet dataSet = new BarDataSet(entries, "");
-        dataSet.setColors(ContextCompat.getColor(getContext(), R.color.md_blue_A200), ContextCompat.getColor(getContext(), R.color.md_green_500), ContextCompat.getColor(getContext(), R.color.md_orange_500));
+        List<Integer> colors = new ArrayList<>();
+        for (Category category : selectedCompleted.keySet()) {
+            if (selectedCompleted.get(category)) {
+                colors.add(ContextCompat.getColor(getContext(), categoryToColor.get(category)));
+            }
+        }
+        dataSet.setColors(colors);
         dataSet.setDrawValues(false);
         BarData barData = new BarData(dataSet);
         barData.setValueFormatter(new IValueFormatter() {
@@ -726,32 +754,32 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         LineData lineData = new LineData();
 
         if (visibleCategories.get(Category.WELLNESS)) {
-            LineDataSet wellnessDataSet = createLineDataSetForCategory(data, Category.WELLNESS, drawHandles, R.color.md_green_500, R.color.md_green_700);
+            LineDataSet wellnessDataSet = createLineDataSetForCategory(data, Category.WELLNESS, drawHandles, categoryToColor.get(Category.WELLNESS), R.color.md_green_700);
             lineData.addDataSet(wellnessDataSet);
         }
 
         if (visibleCategories.get(Category.LEARNING)) {
-            LineDataSet learningDataSet = createLineDataSetForCategory(data, Category.LEARNING, drawHandles, R.color.md_blue_A200, R.color.md_blue_A400);
+            LineDataSet learningDataSet = createLineDataSetForCategory(data, Category.LEARNING, drawHandles, categoryToColor.get(Category.LEARNING), R.color.md_blue_A400);
             lineData.addDataSet(learningDataSet);
         }
 
         if (visibleCategories.get(Category.WORK)) {
-            LineDataSet workDataSet = createLineDataSetForCategory(data, Category.WORK, drawHandles, R.color.md_red_A200, R.color.md_red_A400);
+            LineDataSet workDataSet = createLineDataSetForCategory(data, Category.WORK, drawHandles, categoryToColor.get(Category.WORK), R.color.md_red_A400);
             lineData.addDataSet(workDataSet);
         }
 
         if (visibleCategories.get(Category.PERSONAL)) {
-            LineDataSet personalDataSet = createLineDataSetForCategory(data, Category.PERSONAL, drawHandles, R.color.md_orange_A200, R.color.md_orange_A400);
+            LineDataSet personalDataSet = createLineDataSetForCategory(data, Category.PERSONAL, drawHandles, categoryToColor.get(Category.PERSONAL), R.color.md_orange_A400);
             lineData.addDataSet(personalDataSet);
         }
 
         if (visibleCategories.get(Category.FUN)) {
-            LineDataSet funDataSet = createLineDataSetForCategory(data, Category.FUN, drawHandles, R.color.md_purple_300, R.color.md_purple_500);
+            LineDataSet funDataSet = createLineDataSetForCategory(data, Category.FUN, drawHandles, categoryToColor.get(Category.FUN), R.color.md_purple_500);
             lineData.addDataSet(funDataSet);
         }
 
         if (visibleCategories.get(Category.CHORES)) {
-            LineDataSet choresDataSet = createLineDataSetForCategory(data, Category.CHORES, drawHandles, R.color.md_brown_300, R.color.md_brown_500);
+            LineDataSet choresDataSet = createLineDataSetForCategory(data, Category.CHORES, drawHandles, categoryToColor.get(Category.CHORES), R.color.md_brown_500);
             lineData.addDataSet(choresDataSet);
         }
 
@@ -877,10 +905,9 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         LayoutInflater inflater = (LayoutInflater)
                 getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.category_filter, (ViewGroup) getActivity().findViewById(R.id.filters_container));
-        PopupWindow pw = new PopupWindow(layout, LinearLayout.LayoutParams.WRAP_CONTENT,
+        PopupWindow popupWindow = new PopupWindow(layout, LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT, true);
-        // display the popup in the center
-        pw.showAsDropDown(view);
+        popupWindow.showAsDropDown(view);
     }
 
     @Override
