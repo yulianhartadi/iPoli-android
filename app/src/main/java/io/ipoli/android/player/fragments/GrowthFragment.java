@@ -543,7 +543,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private void setupTimeSpentVsLastChart(int[][] data, String[] xLabels) {
-        applyDefaultStyle(timeSpentVsLastChart);
+        applyDefaultStyle(timeSpentVsLastChart, true);
 
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < data[0].length; i++) {
@@ -559,12 +559,15 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         BarDataSet dataSet = new BarDataSet(entries, "");
         List<Integer> colors = new ArrayList<>();
+        List<String> stackLabels = new ArrayList<>();
         for (Category category : selectedTimeSpent.keySet()) {
             if (selectedTimeSpent.get(category)) {
                 colors.add(ContextCompat.getColor(getContext(), categoryToColor.get(category)));
+                stackLabels.add(getString(Category.getNameRes(category)));
             }
         }
         dataSet.setColors(colors);
+        dataSet.setStackLabels(stackLabels.toArray(new String[stackLabels.size()]));
         dataSet.setDrawValues(false);
         BarData barData = new BarData(dataSet);
         barData.setValueFormatter(new IValueFormatter() {
@@ -583,7 +586,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private void setupCompletedQuestsVsLastChart(int[][] data, String[] xLabels) {
-        applyDefaultStyle(completedQuestsVsLastChart);
+        applyDefaultStyle(completedQuestsVsLastChart, true);
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < data[0].length; i++) {
             float[] vals = new float[data.length];
@@ -598,12 +601,15 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         BarDataSet dataSet = new BarDataSet(entries, "");
         List<Integer> colors = new ArrayList<>();
+        List<String> stackLabels = new ArrayList<>();
         for (Category category : selectedCompleted.keySet()) {
             if (selectedCompleted.get(category)) {
                 colors.add(ContextCompat.getColor(getContext(), categoryToColor.get(category)));
+                stackLabels.add(getString(Category.getNameRes(category)));
             }
         }
         dataSet.setColors(colors);
+        dataSet.setStackLabels(stackLabels.toArray(new String[stackLabels.size()]));
         dataSet.setDrawValues(false);
         BarData barData = new BarData(dataSet);
         barData.setValueFormatter(new IValueFormatter() {
@@ -873,6 +879,10 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private void applyDefaultStyle(BarChart chart) {
+        applyDefaultStyle(chart, false);
+    }
+
+    private void applyDefaultStyle(BarChart chart, boolean showLegend) {
         chart.setDescription(null);
         chart.setDrawBorders(false);
         chart.setExtraBottomOffset(8);
@@ -897,7 +907,12 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         chart.getAxisRight().setEnabled(false);
 
         Legend legend = chart.getLegend();
-        legend.setEnabled(false);
+        if (showLegend) {
+            legend.setYOffset(8f);
+            legend.setTextSize(12f);
+        } else {
+            legend.setEnabled(false);
+        }
     }
 
     @OnClick(R.id.filter_completed_quests)
