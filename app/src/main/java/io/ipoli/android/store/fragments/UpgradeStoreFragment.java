@@ -12,6 +12,8 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.threeten.bp.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,20 +58,34 @@ public class UpgradeStoreFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragement_upgrade_store, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
+        getActivity().setTitle("Buy upgrade");
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         upgradeList.setLayoutManager(layoutManager);
         List<UpgradeViewModel> upgrades = new ArrayList<>();
-        upgrades.add(new UpgradeViewModel("Repeating Quests", "Create repeating tasks",
-                "Repeating Quests are called all your repeating tasks. iPoli automatically makes a quest in your calendar for the repeating one if you have to do it on a particular date.",
-                300, R.drawable.ic_repeat_black_24dp, Upgrade.REPEATING_QUESTS));
 
         upgrades.add(new UpgradeViewModel("Challenges", "Challenge yourself",
                 "Repeating Quests are called all your repeating tasks. iPoli automatically makes a quest in your calendar for the repeating one if you have to do it on a particular date.",
-                500, R.drawable.ic_sword_black_24dp, Upgrade.CHALLENGES));
+                500, R.drawable.ic_sword_white_24dp, Upgrade.CHALLENGES, false, null));
 
-        adapter = new UpgradeStoreAdapter(eventBus, upgrades);
+        upgrades.add(new UpgradeViewModel("Reminders", "Challenge yourself",
+                "Repeating Quests are called all your repeating tasks. iPoli automatically makes a quest in your calendar for the repeating one if you have to do it on a particular date.",
+                200, R.drawable.ic_reminders_white_24dp, Upgrade.REMINDERS, false, null));
+
+        upgrades.add(new UpgradeViewModel("Sub Quests", "Challenge yourself",
+                "Repeating Quests are called all your repeating tasks. iPoli automatically makes a quest in your calendar for the repeating one if you have to do it on a particular date.",
+                100, R.drawable.ic_format_list_bulleted_white_24dp, Upgrade.REMINDERS, false, null));
+
+        upgrades.add(new UpgradeViewModel("Notes", "Challenge yourself",
+                "Repeating Quests are called all your repeating tasks. iPoli automatically makes a quest in your calendar for the repeating one if you have to do it on a particular date.",
+                400, R.drawable.ic_note_white_24dp, Upgrade.NOTES, true, LocalDate.now().minusDays(1)));
+
+        upgrades.add(new UpgradeViewModel("Repeating Quests", "Create repeating tasks",
+                "Repeating Quests are called all your repeating tasks. iPoli automatically makes a quest in your calendar for the repeating one if you have to do it on a particular date.",
+                300, R.drawable.ic_repeat_white_24dp, Upgrade.REPEATING_QUESTS, true, LocalDate.now().minusDays(2)));
+
+        adapter = new UpgradeStoreAdapter(getContext(), eventBus, upgrades);
         upgradeList.setAdapter(adapter);
 
         return view;

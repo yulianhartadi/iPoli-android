@@ -1,6 +1,8 @@
 package io.ipoli.android.store.adapters;
 
+import android.content.Context;
 import android.support.transition.TransitionManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,6 +20,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
+import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.store.events.BuyUpgradeEvent;
 import io.ipoli.android.store.viewmodels.UpgradeViewModel;
 
@@ -27,10 +30,12 @@ import io.ipoli.android.store.viewmodels.UpgradeViewModel;
  */
 
 public class UpgradeStoreAdapter extends RecyclerView.Adapter<UpgradeStoreAdapter.ViewHolder> {
+    private final Context context;
     private final Bus eventBus;
     private final List<UpgradeViewModel> viewModels;
 
-    public UpgradeStoreAdapter(Bus eventBus, List<UpgradeViewModel> viewModels) {
+    public UpgradeStoreAdapter(Context context, Bus eventBus, List<UpgradeViewModel> viewModels) {
+        this.context = context;
         this.eventBus = eventBus;
         this.viewModels = viewModels;
     }
@@ -57,11 +62,20 @@ public class UpgradeStoreAdapter extends RecyclerView.Adapter<UpgradeStoreAdapte
                 holder.longDesc.setVisibility(View.VISIBLE);
             } else {
                 holder.expand.animate().rotationBy(-180).setDuration(500);
-                holder.longDesc.animate().alpha(0.0f).setDuration(500).withEndAction(() -> {
-                    holder.longDesc.setVisibility(View.GONE);
-                });
+                holder.longDesc.animate().alpha(0.0f).setDuration(500).withEndAction(() ->
+                        holder.longDesc.setVisibility(View.GONE));
             }
         });
+
+        if(vm.isBought()) {
+            holder.container.setBackgroundColor(ContextCompat.getColor(context, R.color.md_grey_50));
+            holder.buy.setVisibility(View.INVISIBLE);
+            holder.boughtDate.setVisibility(View.VISIBLE);
+            holder.boughtDate.setText("Bought on " + DateFormatter.format(context, vm.getBoughtOn()));
+        } else {
+            holder.buy.setVisibility(View.VISIBLE);
+            holder.boughtDate.setVisibility(View.GONE);
+        }
 
         holder.buy.setOnClickListener(v -> eventBus.post(new BuyUpgradeEvent(vm.getUpgrade())));
     }
@@ -86,6 +100,9 @@ public class UpgradeStoreAdapter extends RecyclerView.Adapter<UpgradeStoreAdapte
 
         @BindView(R.id.upgrade_price)
         TextView price;
+
+        @BindView(R.id.upgrade_bought_date)
+        TextView boughtDate;
 
         @BindView(R.id.upgrade_image)
         ImageView image;

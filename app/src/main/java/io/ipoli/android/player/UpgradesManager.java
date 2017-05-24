@@ -1,5 +1,8 @@
 package io.ipoli.android.player;
 
+import org.threeten.bp.LocalDate;
+
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 
 /**
@@ -16,7 +19,7 @@ public class UpgradesManager {
     }
 
     public boolean has(Upgrade upgrade) {
-        return playerPersistenceService.get().getUpgrades().contains(upgrade.getCode());
+        return playerPersistenceService.get().getUpgrades().containsKey(upgrade.getCode());
     }
 
     public boolean hasEnoughCoinsForUpgrade(Upgrade upgrade) {
@@ -25,8 +28,8 @@ public class UpgradesManager {
 
     public void buy(Upgrade upgrade) {
         Player player = playerPersistenceService.get();
-//        player.removeCoins(upgrade.getPrice());
-//        player.getUpgrades().add(upgrade.getCode());
+        player.removeCoins(upgrade.getPrice());
+        player.getUpgrades().put(upgrade.getCode(), DateUtils.toMillis(LocalDate.now()));
         playerPersistenceService.save(player);
     }
 }

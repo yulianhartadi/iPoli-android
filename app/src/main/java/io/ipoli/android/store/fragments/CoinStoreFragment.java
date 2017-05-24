@@ -74,9 +74,6 @@ public class CoinStoreFragment extends BaseFragment {
     @BindView(R.id.coins_list)
     EmptyStateRecyclerView coinsList;
 
-//    @BindView(R.id.toolbar)
-//    Toolbar toolbar;
-
     @BindView(R.id.loader)
     ProgressBar progressBar;
 
