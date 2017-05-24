@@ -43,14 +43,15 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginEnd="16dp"
+            android:background="@drawable/circle_upgrade_background500"
             android:layout_marginTop="16dp"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/upgrade_image"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_centerInParent="true"
                 android:scaleType="fitXY"
                 app:srcCompat="@drawable/ic_repeat_black_24dp" />
@@ -78,7 +79,7 @@
 
         <TextView
             android:id="@+id/upgrade_long_desc"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="16dp"
@@ -118,6 +119,24 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/upgrade_short_desc" />
+
+        <TextView
+            android:id="@+id/upgrade_bought_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Bought on 22 May 17"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:visibility="visible"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/upgrade_expand"
+            app:layout_constraintTop_toBottomOf="@+id/upgrade_price"
+            app:layout_constraintVertical_bias="0.5"
+            app:layout_constraintBottom_toTopOf="@+id/upgrade_long_desc" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.v7.widget.CardView>

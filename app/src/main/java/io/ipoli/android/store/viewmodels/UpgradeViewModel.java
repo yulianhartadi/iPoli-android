@@ -2,6 +2,8 @@ package io.ipoli.android.store.viewmodels;
 
 import android.support.annotation.DrawableRes;
 
+import org.threeten.bp.LocalDate;
+
 import io.ipoli.android.player.Upgrade;
 
 /**
@@ -16,14 +18,19 @@ public class UpgradeViewModel {
     private final int price;
     private final int image;
     private final Upgrade upgrade;
+    private final boolean isBought;
+    private final LocalDate boughtOn;
 
-    public UpgradeViewModel(String title, String shortDescription, String longDescription, int price, @DrawableRes int image, Upgrade upgrade) {
+    public UpgradeViewModel(String title, String shortDescription, String longDescription, int price,
+                            @DrawableRes int image, Upgrade upgrade, boolean isBought, LocalDate boughtOn) {
         this.title = title;
         this.shortDescription = shortDescription;
         this.longDescription = longDescription;
         this.price = price;
         this.image = image;
         this.upgrade = upgrade;
+        this.isBought = isBought;
+        this.boughtOn = boughtOn;
     }
 
     public String getTitle() {
@@ -48,5 +55,13 @@ public class UpgradeViewModel {
 
     public Upgrade getUpgrade() {
         return upgrade;
+    }
+
+    public boolean isBought() {
+        return isBought;
+    }
+
+    public LocalDate getBoughtOn() {
+        return boughtOn;
     }
 }
