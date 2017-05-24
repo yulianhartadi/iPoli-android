@@ -32,7 +32,7 @@ import io.ipoli.android.store.viewmodels.UpgradeViewModel;
 public class UpgradeStoreAdapter extends RecyclerView.Adapter<UpgradeStoreAdapter.ViewHolder> {
     private final Context context;
     private final Bus eventBus;
-    private final List<UpgradeViewModel> viewModels;
+    private List<UpgradeViewModel> viewModels;
 
     public UpgradeStoreAdapter(Context context, Bus eventBus, List<UpgradeViewModel> viewModels) {
         this.context = context;
@@ -67,7 +67,7 @@ public class UpgradeStoreAdapter extends RecyclerView.Adapter<UpgradeStoreAdapte
             }
         });
 
-        if(vm.isBought()) {
+        if (vm.isBought()) {
             holder.container.setBackgroundColor(ContextCompat.getColor(context, R.color.md_grey_50));
             holder.buy.setVisibility(View.INVISIBLE);
             holder.boughtDate.setVisibility(View.VISIBLE);
@@ -83,6 +83,11 @@ public class UpgradeStoreAdapter extends RecyclerView.Adapter<UpgradeStoreAdapte
     @Override
     public int getItemCount() {
         return viewModels.size();
+    }
+
+    public void setViewModels(List<UpgradeViewModel> upgradeViewModels) {
+        viewModels = upgradeViewModels;
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
