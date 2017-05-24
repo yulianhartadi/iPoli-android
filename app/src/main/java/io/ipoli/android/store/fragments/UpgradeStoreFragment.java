@@ -1,6 +1,7 @@
 package io.ipoli.android.store.fragments;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -62,6 +63,17 @@ public class UpgradeStoreFragment extends BaseFragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         upgradeList.setLayoutManager(layoutManager);
+
+        List<UpgradeViewModel> upgrades = createUpgradeViewModels();
+
+        adapter = new UpgradeStoreAdapter(getContext(), eventBus, upgrades);
+        upgradeList.setAdapter(adapter);
+
+        return view;
+    }
+
+    @NonNull
+    private List<UpgradeViewModel> createUpgradeViewModels() {
         List<UpgradeViewModel> upgrades = new ArrayList<>();
         List<Upgrade> lockedUpgrades = new ArrayList<>();
         List<Upgrade> boughtUpgrades = new ArrayList<>();
@@ -84,18 +96,16 @@ public class UpgradeStoreFragment extends BaseFragment {
         for(Upgrade upgrade : boughtUpgrades) {
             upgrades.add(new UpgradeViewModel(getContext(), upgrade, true, DateUtils.fromMillis(upgradesManager.getBoughtDate(upgrade))));
         }
-
-        adapter = new UpgradeStoreAdapter(getContext(), eventBus, upgrades);
-        upgradeList.setAdapter(adapter);
-
-        return view;
+        return upgrades;
     }
 
     @Subscribe
     public void buyUpgradeEvent(BuyUpgradeEvent e) {
-        if(upgradesManager.hasEnoughCoinsForUpgrade(e.upgrade)) {
-            upgradesManager.buy(e.upgrade);
+        Upgrade upgrade = e.upgrade;
+        if(upgradesManager.hasEnoughCoinsForUpgrade(upgrade)) {
+            upgradesManager.buy(upgrade);
             Toast.makeText(getContext(), "You can now enjoy ", Toast.LENGTH_SHORT).show();
+            adapter.setViewModels(createUpgradeViewModels());
         } else {
             Toast.makeText(getContext(), "Not enough coins to buy", Toast.LENGTH_SHORT).show();
         }

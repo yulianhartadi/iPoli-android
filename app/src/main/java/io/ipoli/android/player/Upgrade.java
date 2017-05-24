@@ -11,21 +11,21 @@ import io.ipoli.android.R;
  */
 
 public enum Upgrade {
-    CHALLENGES(1, 300, R.string.help_dialog_challenge_title,
+    CHALLENGES(1, 3, R.string.help_dialog_challenge_title,
             R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_sword_white_24dp),
-    NOTES(2, 200, R.string.help_dialog_challenge_title,
+    NOTES(2, 2, R.string.help_dialog_challenge_title,
             R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_note_white_24dp),
-    REMINDERS(3, 100, R.string.help_dialog_challenge_title,
+    REMINDERS(3, 1, R.string.help_dialog_challenge_title,
             R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_reminders_white_24dp),
-    CALENDAR_SYNC(4, 500, R.string.help_dialog_challenge_title,
+    CALENDAR_SYNC(4, 5, R.string.help_dialog_challenge_title,
             R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_calendar_blank_grey_24dp),
-    SUB_QUESTS(5, 300, R.string.help_dialog_challenge_title,
+    SUB_QUESTS(5, 3, R.string.help_dialog_challenge_title,
             R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_format_list_bulleted_white_24dp),
     REPEATING_QUESTS(6, 2, R.string.help_dialog_challenge_title,
             R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_repeat_white_24dp),
-    TIMER(7, 200, R.string.help_dialog_challenge_title,
+    TIMER(7, 2, R.string.help_dialog_challenge_title,
             R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_timer_white_24dp),
-    CUSTOM_DURATION(8, 200, R.string.help_dialog_challenge_title,
+    CUSTOM_DURATION(8, 2, R.string.help_dialog_challenge_title,
             R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_today_white_24dp);
 
     private final int code;
