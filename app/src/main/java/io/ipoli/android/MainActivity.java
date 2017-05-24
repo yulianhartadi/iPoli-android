@@ -222,6 +222,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
 
             case R.id.challenges:
+                if(!upgradesManager.has(Upgrade.CHALLENGES)) {
+                    UpgradeDialog upgradeDialog = UpgradeDialog.newInstance(Upgrade.CHALLENGES);
+                    upgradeDialog.show(getSupportFragmentManager());
+                    return;
+                }
                 source = EventSource.CHALLENGES;
                 changeCurrentFragment(new ChallengeListFragment());
                 break;

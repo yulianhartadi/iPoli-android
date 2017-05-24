@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,8 +23,8 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.StoreItemType;
+import io.ipoli.android.store.activities.StoreActivity;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -36,6 +37,12 @@ public class UpgradeDialog extends DialogFragment {
 
     @Inject
     UpgradesManager upgradesManager;
+
+    @BindView(R.id.upgrade_title)
+    TextView title;
+
+    @BindView(R.id.upgrade_desc)
+    TextView description;
 
     @BindView(R.id.upgrade_price)
     TextView price;
@@ -78,8 +85,15 @@ public class UpgradeDialog extends DialogFragment {
         LayoutInflater inflater = getActivity().getLayoutInflater();
 
         View v = inflater.inflate(R.layout.fragment_upgrade_dialog, null);
-        View titleView = inflater.inflate(R.layout.upgrade_title, null);
+        View titleView = inflater.inflate(R.layout.upgrade_dialog_header, null);
+        ImageView image = (ImageView) titleView.findViewById(R.id.upgrade_dialog_image);
+        image.setImageResource(upgrade.getImage());
+
         unbinder = ButterKnife.bind(this, v);
+
+        title.setText("You've discovered " + getString(upgrade.getTitle()));
+        description.setText(upgrade.getShortDesc());
+        notEnoughCoins.setText(String.format(getString(R.string.upgrade_dialog_not_enough_coins), upgrade.getPrice()));
 
         boolean hasEnoughCoins = upgradesManager.hasEnoughCoinsForUpgrade(upgrade);
         String positiveBtnText = hasEnoughCoins ? "Buy" : "Buy coins";
@@ -91,9 +105,9 @@ public class UpgradeDialog extends DialogFragment {
         builder.setView(v)
                 .setCustomTitle(titleView)
                 .setPositiveButton(positiveBtnText, (dialog, which) -> {
-                    if(hasEnoughCoins) {
+                    if (hasEnoughCoins) {
                         upgradesManager.buy(upgrade);
-                        Toast.makeText(getContext(), "You can now enjoy Repeating quests", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "You can now enjoy ", Toast.LENGTH_SHORT).show();
                     } else {
                         Intent intent = new Intent(getContext(), StoreActivity.class);
                         intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.COINS.name());
