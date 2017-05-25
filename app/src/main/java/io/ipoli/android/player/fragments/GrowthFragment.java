@@ -27,6 +27,7 @@ import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.components.XAxis;
@@ -37,6 +38,7 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.MPPointF;
@@ -101,6 +103,15 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
     @BindView(R.id.toolbar_collapsing_container)
     CollapsingToolbarLayout collapsingToolbarLayout;
+
+    @BindView(R.id.summary_completed)
+    TextView summaryCompleted;
+
+    @BindView(R.id.summary_overdue)
+    TextView summaryOverdue;
+
+    @BindView(R.id.summary_time_tracked)
+    TextView summaryTimeTracked;
 
     @BindView(R.id.awesomeness_range_chart)
     LineChart awesomenessRangeChart;
@@ -168,6 +179,24 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         @Override
         public MPPointF getOffset() {
             return new MPPointF(-(getWidth() / 2f), -(getHeight() * 1.5f));
+        }
+    }
+
+    public class XAxisValueFormatter implements IAxisValueFormatter {
+
+        private final String[] labels;
+
+        public XAxisValueFormatter(String[] labels) {
+            this.labels = labels;
+        }
+
+        @Override
+        public String getFormattedValue(float v, AxisBase axisBase) {
+            int idx = (int) v;
+            if (idx < 0 || idx >= labels.length) {
+                return "";
+            }
+            return labels[idx];
         }
     }
 
@@ -358,6 +387,9 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 int[][] timeSpentData = new int[Category.values().length][periodLength];
                 int[] xpData = new int[periodLength];
                 int[] coinsData = new int[periodLength];
+                int completed = 0;
+                int overdue = 0;
+                int minutesSpent = 0;
                 for (Quest q : quests) {
                     if (q.isCompleted()) {
                         Long completedAt = q.getCompletedAt();
@@ -374,9 +406,16 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                         xpData[idx] += q.getExperience();
                         completedData[q.getCategoryType().ordinal()][idx]++;
                         timeSpentData[q.getCategoryType().ordinal()][idx] += q.getActualDuration();
+                        completed++;
+                        if (q.getActualStart() != null) {
+                            minutesSpent += q.getActualDuration();
+                        }
+                    } else {
+                        overdue++;
                     }
                 }
 
+                showSummary(completed, overdue, minutesSpent);
                 String[] xLabels = new String[periodLength];
                 for (int i = 0; i < periodLength; i++) {
                     xLabels[i] = startDay.plusMonths(i).format(DateTimeFormatter.ofPattern(X_AXIS_MONTH));
@@ -402,11 +441,14 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         questPersistenceService.findAllBetween(startDay, today, new OnDataChangedListener<List<Quest>>() {
             @Override
             public void onDataChanged(List<Quest> quests) {
-                int[] awesomenessPerWeek = new int[periodLength];
-                int[][] completedPerWeek = new int[Category.values().length][periodLength];
-                int[][] timeSpentPerWeek = new int[Category.values().length][periodLength];
-                int[] xpPerWeek = new int[periodLength];
-                int[] coinsPerWeek = new int[periodLength];
+                int[] awesomenessData = new int[periodLength];
+                int[][] completedData = new int[Category.values().length][periodLength];
+                int[][] timeSpentData = new int[Category.values().length][periodLength];
+                int[] xpData = new int[periodLength];
+                int[] coinsData = new int[periodLength];
+                int completed = 0;
+                int overdue = 0;
+                int minutesSpent = 0;
                 for (Quest q : quests) {
                     if (q.isCompleted()) {
                         Long completedAt = q.getCompletedAt();
@@ -418,13 +460,21 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                                 idx = i;
                             }
                         }
-                        awesomenessPerWeek[idx] += getAwesomenessForQuest(q);
-                        coinsPerWeek[idx] += q.getCoins();
-                        xpPerWeek[idx] += q.getExperience();
-                        completedPerWeek[q.getCategoryType().ordinal()][idx]++;
-                        timeSpentPerWeek[q.getCategoryType().ordinal()][idx] += q.getActualDuration();
+                        awesomenessData[idx] += getAwesomenessForQuest(q);
+                        coinsData[idx] += q.getCoins();
+                        xpData[idx] += q.getExperience();
+                        completedData[q.getCategoryType().ordinal()][idx]++;
+                        timeSpentData[q.getCategoryType().ordinal()][idx] += q.getActualDuration();
+                        completed++;
+                        if (q.getActualStart() != null) {
+                            minutesSpent += q.getActualDuration();
+                        }
+                    } else {
+                        overdue++;
                     }
                 }
+
+                showSummary(completed, overdue, minutesSpent);
                 String[] xLabels = new String[periodLength];
                 for (int i = 0; i < periodLength; i++) {
                     LocalDate weekStart = startDay.plusWeeks(i);
@@ -435,11 +485,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                     xLabels[i] = label;
                 }
 
-                showAwesomenessVsLastChart(awesomenessPerWeek, xLabels);
-                showCompletedQuestsVsLastChart(completedPerWeek, xLabels);
-                showTimeSpentVsLastChart(timeSpentPerWeek, xLabels);
-                showCoinsEarnedVsLastChart(coinsPerWeek, xLabels);
-                showXpEarnedVsLastChart(xpPerWeek, xLabels);
+                showAwesomenessVsLastChart(awesomenessData, xLabels);
+                showCompletedQuestsVsLastChart(completedData, xLabels);
+                showTimeSpentVsLastChart(timeSpentData, xLabels);
+                showCoinsEarnedVsLastChart(coinsData, xLabels);
+                showXpEarnedVsLastChart(xpData, xLabels);
             }
         });
     }
@@ -491,33 +541,55 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         questPersistenceService.findAllBetween(startDay, today, new OnDataChangedListener<List<Quest>>() {
             @Override
             public void onDataChanged(List<Quest> quests) {
-                int[] awesomenessPerDay = new int[7];
-                int[][] completedPerDay = new int[Category.values().length][7];
-                int[][] timeSpentPerDay = new int[Category.values().length][7];
-                int[] xpPerDay = new int[7];
-                int[] coinsPerDay = new int[7];
+                int[] awesomenessData = new int[7];
+                int[][] completedData = new int[Category.values().length][7];
+                int[][] timeSpentData = new int[Category.values().length][7];
+                int[] xpData = new int[7];
+                int[] coinsData = new int[7];
+                int completed = 0;
+                int overdue = 0;
+                int minutesSpent = 0;
                 for (Quest q : quests) {
                     if (q.isCompleted()) {
                         int idx = (int) DAYS.between(startDay, q.getCompletedAtDate());
-                        awesomenessPerDay[idx] += getAwesomenessForQuest(q);
-                        coinsPerDay[idx] += q.getCoins();
-                        xpPerDay[idx] += q.getExperience();
-                        completedPerDay[q.getCategoryType().ordinal()][idx]++;
-                        timeSpentPerDay[q.getCategoryType().ordinal()][idx] += q.getActualDuration();
+                        awesomenessData[idx] += getAwesomenessForQuest(q);
+                        coinsData[idx] += q.getCoins();
+                        xpData[idx] += q.getExperience();
+                        completedData[q.getCategoryType().ordinal()][idx]++;
+                        timeSpentData[q.getCategoryType().ordinal()][idx] += q.getActualDuration();
+                        completed++;
+                        if (q.getActualStart() != null) {
+                            minutesSpent += q.getActualDuration();
+                        }
+                    } else {
+                        overdue++;
                     }
                 }
+
+                showSummary(completed, overdue, minutesSpent);
+
                 String[] xLabels = new String[7];
                 for (int i = 0; i < 7; i++) {
                     xLabels[i] = startDay.plusDays(i).format(DateTimeFormatter.ofPattern(X_AXIS_DAY_FORMAT));
                 }
 
-                showAwesomenessVsLastChart(awesomenessPerDay, xLabels);
-                showCompletedQuestsVsLastChart(completedPerDay, xLabels);
-                showTimeSpentVsLastChart(timeSpentPerDay, xLabels);
-                showCoinsEarnedVsLastChart(coinsPerDay, xLabels);
-                showXpEarnedVsLastChart(xpPerDay, xLabels);
+                showAwesomenessVsLastChart(awesomenessData, xLabels);
+                showCompletedQuestsVsLastChart(completedData, xLabels);
+                showTimeSpentVsLastChart(timeSpentData, xLabels);
+                showCoinsEarnedVsLastChart(coinsData, xLabels);
+                showXpEarnedVsLastChart(xpData, xLabels);
             }
         });
+    }
+
+    private void showSummary(int completed, int overdue, int minutesSpent) {
+        summaryCompleted.setText(completed + "\nDone");
+        summaryOverdue.setText(overdue + "\nOverdue");
+        if (minutesSpent < 60) {
+            summaryTimeTracked.setText(minutesSpent + " min\nTracked");
+        } else {
+            summaryTimeTracked.setText(minutesSpent / 60 + "h\nTracked");
+        }
     }
 
     private void showThisWeekCharts(final LocalDate today) {
@@ -573,10 +645,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
         BarData barData = new BarData(dataSet);
         barData.setValueFormatter((v, entry, i, viewPortHandler) -> String.valueOf((int) v));
-        xpEarnedVsLastChart.getXAxis().setValueFormatter((v, axisBase) -> {
-            int idx = (int) v;
-            return xLabels[idx];
-        });
+        xpEarnedVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         xpEarnedVsLastChart.getXAxis().setLabelCount(xLabels.length);
         xpEarnedVsLastChart.setData(barData);
         xpEarnedVsLastChart.invalidate();
@@ -593,10 +662,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
         BarData barData = new BarData(dataSet);
         barData.setValueFormatter((v, entry, i, viewPortHandler) -> String.valueOf((int) v));
-        coinsEarnedVsLastChart.getXAxis().setValueFormatter((v, axisBase) -> {
-            int idx = (int) v;
-            return xLabels[idx];
-        });
+        coinsEarnedVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         coinsEarnedVsLastChart.getXAxis().setLabelCount(xLabels.length);
         coinsEarnedVsLastChart.setData(barData);
         coinsEarnedVsLastChart.invalidate();
@@ -634,10 +700,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 return String.valueOf((int) v);
             }
         });
-        timeSpentVsLastChart.getXAxis().setValueFormatter((v, axisBase) -> {
-            int idx = (int) v;
-            return xLabels[idx];
-        });
+        timeSpentVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         timeSpentVsLastChart.getXAxis().setLabelCount(xLabels.length);
         timeSpentVsLastChart.setData(barData);
         timeSpentVsLastChart.invalidate();
@@ -676,10 +739,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 return String.valueOf((int) v);
             }
         });
-        completedQuestsVsLastChart.getXAxis().setValueFormatter((v, axisBase) -> {
-            int idx = (int) v;
-            return xLabels[idx];
-        });
+        completedQuestsVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         completedQuestsVsLastChart.getXAxis().setLabelCount(xLabels.length);
         completedQuestsVsLastChart.setData(barData);
         completedQuestsVsLastChart.invalidate();
@@ -697,10 +757,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
         BarData data = new BarData(dataSet);
         data.setValueFormatter((v, entry, i, viewPortHandler) -> String.valueOf((int) v));
-        awesomenessVsLastChart.getXAxis().setValueFormatter((v, axisBase) -> {
-            int idx = (int) v;
-            return xLabels[idx];
-        });
+        awesomenessVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         awesomenessVsLastChart.getXAxis().setLabelCount(xLabels.length);
         awesomenessVsLastChart.setData(data);
         awesomenessVsLastChart.invalidate();
@@ -710,11 +767,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     private void showXpEarnedRangeChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels, boolean drawHandles) {
         LineData lineData = createThisVsLastWeekLineData(data, range, currentRangeLabel, prevRangeLabel, drawHandles);
 
-        XAxis xAxis = xpEarnedRangeChart.getXAxis();
-        xAxis.setValueFormatter((v, axisBase) -> {
-            int idx = (int) v;
-            return xLabels[idx];
-        });
+        xpEarnedRangeChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
 
         xpEarnedRangeChart.setData(lineData);
         xpEarnedRangeChart.invalidate();
@@ -723,11 +776,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     private void showCoinsEarnedRangeChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels, boolean drawHandles) {
         LineData lineData = createThisVsLastWeekLineData(data, range, currentRangeLabel, prevRangeLabel, drawHandles);
 
-        XAxis xAxis = coinsEarnedRangeChart.getXAxis();
-        xAxis.setValueFormatter((v, axisBase) -> {
-            int idx = (int) v;
-            return xLabels[idx];
-        });
+        coinsEarnedRangeChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
 
         coinsEarnedRangeChart.setData(lineData);
         coinsEarnedRangeChart.invalidate();
@@ -756,11 +805,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     private void showTimeSpentRangeChart(int[][] data, String[] xLabels, boolean drawHandles) {
         LineData lineData = createCategoryLineData(data, drawHandles, selectedTimeSpent);
 
-        XAxis xAxis = timeSpentRangeChart.getXAxis();
-        xAxis.setValueFormatter((v, axisBase) -> {
-            int idx = (int) v;
-            return xLabels[idx];
-        });
+        timeSpentRangeChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
 
         timeSpentRangeChart.setData(lineData);
         timeSpentRangeChart.invalidate();
@@ -769,11 +814,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     private void showCompletedQuestsPerCategoryRangeChart(int[][] data, String[] xLabels, boolean drawHandles) {
         LineData lineData = createCategoryLineData(data, drawHandles, selectedCompleted);
 
-        XAxis xAxis = completedQuestsRangeChart.getXAxis();
-        xAxis.setValueFormatter((v, axisBase) -> {
-            int idx = (int) v;
-            return xLabels[idx];
-        });
+        completedQuestsRangeChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
 
         completedQuestsRangeChart.setData(lineData);
         completedQuestsRangeChart.invalidate();
@@ -783,11 +824,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     private void showAwesomenessRangeChart(int[] data, int prevRangeLength, String currentRangeLabel, String prevRangeLabel, String[] xLabels, boolean drawHandles) {
         LineData lineData = createThisVsLastWeekLineData(data, prevRangeLength, currentRangeLabel, prevRangeLabel, drawHandles);
 
-        XAxis xAxis = awesomenessRangeChart.getXAxis();
-        xAxis.setValueFormatter((v, axisBase) -> {
-            int idx = (int) v;
-            return xLabels[idx];
-        });
+        awesomenessRangeChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
 
         awesomenessRangeChart.setData(lineData);
         awesomenessRangeChart.invalidate();
@@ -879,7 +916,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         YAxis yAxis = chart.getAxisLeft();
         yAxis.setTextSize(12f);
         yAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
-        yAxis.setGridColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
+        yAxis.setGridColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_26));
         yAxis.setXOffset(12f);
         yAxis.setDrawAxisLine(false);
         yAxis.setAxisMinimum(0);
@@ -912,7 +949,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         YAxis yAxis = chart.getAxisLeft();
         yAxis.setTextSize(12f);
         yAxis.setTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
-        yAxis.setGridColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_54));
+        yAxis.setGridColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_26));
         yAxis.setXOffset(12f);
         yAxis.setDrawAxisLine(false);
         yAxis.setAxisMinimum(0);
