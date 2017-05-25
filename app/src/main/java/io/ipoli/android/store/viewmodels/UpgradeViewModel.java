@@ -26,11 +26,11 @@ public class UpgradeViewModel {
     }
 
     public UpgradeViewModel(Context context, Upgrade upgrade, boolean isBought, LocalDate boughtOn) {
-        this.title = context.getString(upgrade.getTitle());
-        this.shortDescription = context.getString(upgrade.getShortDesc());
-        this.longDescription = context.getString(upgrade.getLongDesc());
-        this.price = upgrade.getPrice();
-        this.image = upgrade.getImage();
+        this.title = context.getString(upgrade.title);
+        this.shortDescription = context.getString(upgrade.shortDesc);
+        this.longDescription = context.getString(upgrade.longDesc);
+        this.price = upgrade.price;
+        this.image = upgrade.image;
         this.upgrade = upgrade;
         this.isBought = isBought;
         this.boughtOn = boughtOn;

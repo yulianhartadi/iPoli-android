@@ -57,7 +57,7 @@ public class UpgradeDialog extends DialogFragment {
     public static UpgradeDialog newInstance(Upgrade upgrade) {
         UpgradeDialog fragment = new UpgradeDialog();
         Bundle args = new Bundle();
-        args.putInt(UPGRADE_CODE, upgrade.getCode());
+        args.putInt(UPGRADE_CODE, upgrade.code);
         fragment.setArguments(args);
         return fragment;
     }
@@ -87,13 +87,13 @@ public class UpgradeDialog extends DialogFragment {
         View v = inflater.inflate(R.layout.fragment_upgrade_dialog, null);
         View titleView = inflater.inflate(R.layout.upgrade_dialog_header, null);
         ImageView image = (ImageView) titleView.findViewById(R.id.upgrade_dialog_image);
-        image.setImageResource(upgrade.getImage());
+        image.setImageResource(upgrade.image);
 
         unbinder = ButterKnife.bind(this, v);
 
-        title.setText("You've discovered " + getString(upgrade.getTitle()));
-        description.setText(upgrade.getShortDesc());
-        notEnoughCoins.setText(String.format(getString(R.string.upgrade_dialog_not_enough_coins), upgrade.getPrice()));
+        title.setText("You've discovered " + getString(upgrade.title));
+        description.setText(upgrade.shortDesc);
+        notEnoughCoins.setText(String.format(getString(R.string.upgrade_dialog_not_enough_coins), upgrade.price));
 
         boolean hasEnoughCoins = upgradesManager.hasEnoughCoinsForUpgrade(upgrade);
         String positiveBtnText = hasEnoughCoins ? "Buy" : "Buy coins";

@@ -79,6 +79,7 @@ import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.store.activities.StoreActivity;
+import io.ipoli.android.store.fragments.AvatarStoreFragment;
 import io.ipoli.android.store.fragments.CoinStoreFragment;
 import io.ipoli.android.store.fragments.PetStoreFragment;
 import io.ipoli.android.store.fragments.StoreFragment;
@@ -244,5 +245,7 @@ public interface AppComponent {
     void inject(UpgradeStoreFragment upgradeStoreFragment);
 
     void inject(PetStoreFragment petStoreFragment);
+
+    void inject(AvatarStoreFragment avatarStoreFragment);
 }
 
