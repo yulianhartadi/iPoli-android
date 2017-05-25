@@ -29,7 +29,8 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/upgrade_image_container"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginEnd="8dp" />
 
         <TextView
             android:id="@+id/upgrade_short_desc"
@@ -44,7 +45,8 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/upgrade_image_container"
-            app:layout_constraintTop_toBottomOf="@+id/upgrade_title" />
+            app:layout_constraintTop_toBottomOf="@+id/upgrade_title"
+            android:layout_marginEnd="8dp" />
 
         <RelativeLayout
             android:id="@+id/upgrade_image_container"
@@ -56,20 +58,20 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <RelativeLayout
+            <ImageView
+                android:id="@+id/upgrade_image_background"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_centerInParent="true"
-                android:background="@drawable/circle_upgrade_background500">
+                android:background="@drawable/ic_context_indicator" />
 
-                <ImageView
-                    android:id="@+id/upgrade_image"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_centerInParent="true"
-                    android:scaleType="fitXY"
-                    app:srcCompat="@drawable/ic_repeat_black_24dp" />
-            </RelativeLayout>
+            <ImageView
+                android:id="@+id/upgrade_image"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_centerInParent="true"
+                android:scaleType="fitXY"
+                app:srcCompat="@drawable/ic_repeat_black_24dp" />
         </RelativeLayout>
 
 
@@ -94,14 +96,8 @@
 
         <TextView
             android:id="@+id/upgrade_long_desc"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
             android:text="Text"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:visibility="gone"
@@ -117,8 +113,8 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginEnd="8dp"
-            android:background="@null"
             android:layout_marginRight="8dp"
+            android:background="@null"
             app:layout_constraintBottom_toBottomOf="@+id/upgrade_buy"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@+id/upgrade_buy"
@@ -136,7 +132,9 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/upgrade_image_container"
-            app:layout_constraintTop_toBottomOf="@+id/upgrade_short_desc" />
+            app:layout_constraintTop_toBottomOf="@+id/upgrade_short_desc"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp" />
 
         <TextView
             android:id="@+id/upgrade_bought_date"
@@ -155,7 +153,8 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/upgrade_expand"
             app:layout_constraintTop_toBottomOf="@+id/upgrade_price"
-            app:layout_constraintVertical_bias="0.5" />
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.v7.widget.CardView>

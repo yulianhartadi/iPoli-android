@@ -1,6 +1,7 @@
 package io.ipoli.android.store.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.support.transition.TransitionManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
@@ -33,6 +34,17 @@ public class UpgradeStoreAdapter extends RecyclerView.Adapter<UpgradeStoreAdapte
     private final Context context;
     private final Bus eventBus;
     private List<UpgradeViewModel> viewModels;
+
+    private int[] colors = new int[]{
+            R.color.md_green_300,
+            R.color.md_indigo_300,
+            R.color.md_blue_300,
+            R.color.md_red_300,
+            R.color.md_deep_orange_300,
+            R.color.md_purple_300,
+            R.color.md_orange_300,
+            R.color.md_pink_300,
+    };
 
     public UpgradeStoreAdapter(Context context, Bus eventBus, List<UpgradeViewModel> viewModels) {
         this.context = context;
@@ -78,6 +90,9 @@ public class UpgradeStoreAdapter extends RecyclerView.Adapter<UpgradeStoreAdapte
         }
 
         holder.buy.setOnClickListener(v -> eventBus.post(new BuyUpgradeEvent(vm.getUpgrade())));
+
+        GradientDrawable drawable = (GradientDrawable) holder.imageContainer.getBackground();
+        drawable.setColor(ContextCompat.getColor(context, colors[position % colors.length]));
     }
 
     @Override
@@ -111,6 +126,9 @@ public class UpgradeStoreAdapter extends RecyclerView.Adapter<UpgradeStoreAdapte
 
         @BindView(R.id.upgrade_image)
         ImageView image;
+
+        @BindView(R.id.upgrade_image_background)
+        ImageView imageContainer;
 
         @BindView(R.id.upgrade_buy)
         Button buy;
