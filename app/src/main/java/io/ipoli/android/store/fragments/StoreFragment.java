@@ -41,7 +41,7 @@ public class StoreFragment extends BaseFragment {
     @Inject
     Bus eventBus;
 
-    @BindView(R.id.items_list)
+    @BindView(R.id.item_list)
     RecyclerView itemList;
 
     private StoreAdapter adapter;
@@ -131,6 +131,7 @@ public class StoreFragment extends BaseFragment {
                 break;
             case AVATARS:
             case PETS:
+                changeCurrentFragment(new PetStoreFragment());
                 break;
         }
     }
