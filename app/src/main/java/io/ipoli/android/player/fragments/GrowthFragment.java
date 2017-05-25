@@ -12,6 +12,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -592,6 +596,68 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         }
     }
 
+    private void showSummary(int completed[], int[] overdue, int[] minutesTracked) {
+        int lastPeriodIdx = 0;
+        int thisPeriodIdx = 1;
+        int completedDiff = completed[thisPeriodIdx] - completed[lastPeriodIdx];
+        int overdueDiff = overdue[thisPeriodIdx] - overdue[lastPeriodIdx];
+        int minutesTrackedDiff = minutesTracked[thisPeriodIdx] - minutesTracked[lastPeriodIdx];
+
+        int completedChange = (int) ((completedDiff / (float) completed[thisPeriodIdx]) * 100);
+        int overdueChange = (int) ((overdueDiff / (float) overdue[thisPeriodIdx]) * 100);
+        int minutesTrackedChange = (int) ((minutesTrackedDiff / (float) minutesTracked[thisPeriodIdx]) * 100);
+
+        showCompletedSummary(completed[thisPeriodIdx], completedChange);
+
+        showOverdueSummary(overdue[thisPeriodIdx], overdueChange);
+
+        showTimeTrackedSummary(minutesTracked[thisPeriodIdx], minutesTrackedChange);
+    }
+
+    private void showCompletedSummary(int completedCount, int completedChange) {
+        String completedText = completedCount + " ";
+        int spanStart = completedText.length();
+        completedText += completedChange >= 0 ? "+" : "-";
+        completedText += Math.abs(completedChange) + "%";
+        int spanEnd = completedText.length();
+        completedText += "\nDone";
+        SpannableString finalText = new SpannableString(completedText);
+        finalText.setSpan(new ForegroundColorSpan(Color.GREEN), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        finalText.setSpan(new RelativeSizeSpan(0.8f), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        summaryCompleted.setText(finalText);
+    }
+
+    private void showOverdueSummary(int overdueCount, int overdueChange) {
+        String overdueText = overdueCount + " ";
+        int spanStart = overdueText.length();
+        overdueText += overdueChange >= 0 ? "+" : "-";
+        overdueText += Math.abs(overdueChange) + "%";
+        int spanEnd = overdueText.length();
+        overdueText += "\nOverdue";
+        SpannableString finalText = new SpannableString(overdueText);
+        finalText.setSpan(new ForegroundColorSpan(Color.GREEN), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        finalText.setSpan(new RelativeSizeSpan(0.8f), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        summaryOverdue.setText(finalText);
+    }
+
+    private void showTimeTrackedSummary(int minutesTracked, int minutesTrackedChange) {
+        String minutesTrackedText = "";
+        if (minutesTracked < 60) {
+            minutesTrackedText += minutesTracked + " min ";
+        } else {
+            minutesTrackedText += minutesTracked / 60 + "h ";
+        }
+        int spanStart = minutesTrackedText.length();
+        minutesTrackedText += minutesTrackedChange >= 0 ? "+" : "-";
+        minutesTrackedText += Math.abs(minutesTrackedChange) + "%";
+        int spanEnd = minutesTrackedText.length();
+        minutesTrackedText += "\nTracked";
+        SpannableString finalText = new SpannableString(minutesTrackedText);
+        finalText.setSpan(new ForegroundColorSpan(Color.GREEN), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        finalText.setSpan(new RelativeSizeSpan(0.8f), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        summaryTimeTracked.setText(finalText);
+    }
+
     private void showThisWeekCharts(final LocalDate today) {
         LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
         LocalDate startOfPrevWeek = today.minusWeeks(1).with(DayOfWeek.MONDAY);
@@ -604,17 +670,43 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 int[][] timeSpentData = new int[Category.values().length][7];
                 int[] xpData = new int[7 + today.getDayOfWeek().getValue()];
                 int[] coinsData = new int[7 + today.getDayOfWeek().getValue()];
+                int[] completed = new int[2];
+                int[] overdue = new int[2];
+                int[] minutesTracked = new int[2];
                 for (Quest q : quests) {
                     if (q.isCompleted()) {
-                        int startOfPrevWeekIdx = (int) DAYS.between(startOfPrevWeek, q.getCompletedAtDate());
+                        LocalDate completedAtDate = q.getCompletedAtDate();
+                        int startOfPrevWeekIdx = (int) DAYS.between(startOfPrevWeek, completedAtDate);
                         awesomenessData[startOfPrevWeekIdx] += getAwesomenessForQuest(q);
                         coinsData[startOfPrevWeekIdx] += q.getCoins();
                         xpData[startOfPrevWeekIdx] += q.getExperience();
-                        int thisWeekIdx = (int) DAYS.between(startOfWeek, q.getCompletedAtDate());
+                        int thisWeekIdx = (int) DAYS.between(startOfWeek, completedAtDate);
                         completedData[q.getCategoryType().ordinal()][thisWeekIdx]++;
                         timeSpentData[q.getCategoryType().ordinal()][thisWeekIdx] += q.getActualDuration();
+                        if (completedAtDate.isBefore(startOfWeek)) {
+                            completed[0]++;
+                            if (q.getActualStart() != null) {
+                                minutesTracked[0] += q.getActualDuration();
+                            }
+                        } else {
+                            completed[1]++;
+                            if (q.getActualStart() != null) {
+                                minutesTracked[1] += q.getActualDuration();
+                            }
+                        }
+                    }
+
+                    boolean isCompletedAfterEndDate = q.isCompleted() && q.getEndDate().isBefore(q.getCompletedAtDate());
+                    boolean isOverdue = !q.isCompleted() && q.getEndDate().isBefore(today);
+                    if (isCompletedAfterEndDate || isOverdue) {
+                        if (q.getEndDate().isBefore(startOfWeek)) {
+                            overdue[0]++;
+                        } else {
+                            overdue[1]++;
+                        }
                     }
                 }
+                showSummary(completed, overdue, minutesTracked);
                 String[] xLabels = new String[7];
                 for (int i = 0; i < 7; i++) {
                     xLabels[i] = startOfWeek.plusDays(i).format(DateTimeFormatter.ofPattern(X_AXIS_DAY_FORMAT));
