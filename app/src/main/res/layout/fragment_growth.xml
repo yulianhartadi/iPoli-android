@@ -190,14 +190,15 @@
         android:background="@color/md_grey_200"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <android.support.constraint.ConstraintLayout
+        <LinearLayout
             android:id="@+id/root_chart_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <android.support.v7.widget.CardView
                 android:id="@+id/awesomeness_container"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginLeft="8dp"
@@ -246,7 +247,7 @@
 
             <android.support.v7.widget.CardView
                 android:id="@+id/completed_quests_container"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginLeft="8dp"
@@ -309,7 +310,7 @@
 
             <android.support.v7.widget.CardView
                 android:id="@+id/time_spent_container"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginLeft="8dp"
@@ -372,7 +373,7 @@
 
             <android.support.v7.widget.CardView
                 android:id="@+id/coins_earned_container"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginLeft="8dp"
@@ -420,7 +421,7 @@
 
             <android.support.v7.widget.CardView
                 android:id="@+id/xp_earned_container"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginLeft="8dp"
@@ -466,6 +467,6 @@
 
             </android.support.v7.widget.CardView>
 
-        </android.support.constraint.ConstraintLayout>
+        </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>
