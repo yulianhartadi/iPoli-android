@@ -793,7 +793,7 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onPetBoughtEvent(PetBoughtEvent e) {
-        log("pet_bought", EventParams.of("pet", e.petViewModel.getPictureName()));
+        log("pet_bought", EventParams.of("pet", e.pet.name()));
     }
 
     @Subscribe

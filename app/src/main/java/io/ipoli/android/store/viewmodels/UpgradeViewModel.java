@@ -4,7 +4,7 @@ import android.content.Context;
 
 import org.threeten.bp.LocalDate;
 
-import io.ipoli.android.player.Upgrade;
+import io.ipoli.android.store.Upgrade;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -30,7 +30,7 @@ public class UpgradeViewModel {
         this.shortDescription = context.getString(upgrade.shortDesc);
         this.longDescription = context.getString(upgrade.longDesc);
         this.price = upgrade.price;
-        this.image = upgrade.image;
+        this.image = upgrade.picture;
         this.upgrade = upgrade;
         this.isBought = isBought;
         this.boughtOn = boughtOn;

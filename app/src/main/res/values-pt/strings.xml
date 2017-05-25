@@ -702,14 +702,11 @@ iPoli está comendo um biscoito e melhorando a sua experiência com o app."</str
     <string name="challenge8_rq4_raw_text">"Sair com os amigos duas vezes por semana"</string>
     <string name="challenge8_rq4_name">"Sair com os amigos"</string>
 
-
-    <string-array name="pet_names">
-        <item>Cauda fofa</item>
-        <item>Orelhas chiques</item>
-        <item>Orelhas voadoras</item>
-        <item>Dente malucoh</item>
-        <item>Pintinho invasor</item>
-    </string-array>
+    <string name="pet_seal">Cauda fofa</string>
+    <string name="pet_donkey">Orelhas chiques</string>
+    <string name="pet_elephant">Orelhas voadoras</string>
+    <string name="pet_beaver">Dente malucoh</string>
+    <string name="pet_chicken">Pintinho invasor</string>
 
     <string-array name="repeating_quest_frequencies">
         <item>Diário</item>

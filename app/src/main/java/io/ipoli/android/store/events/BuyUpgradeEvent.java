@@ -1,6 +1,6 @@
 package io.ipoli.android.store.events;
 
-import io.ipoli.android.player.Upgrade;
+import io.ipoli.android.store.Upgrade;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

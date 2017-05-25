@@ -71,7 +71,7 @@ import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
-import io.ipoli.android.player.Upgrade;
+import io.ipoli.android.store.Upgrade;
 import io.ipoli.android.player.UpgradeDialog;
 import io.ipoli.android.player.UpgradesManager;
 import io.ipoli.android.player.activities.PickAvatarPictureActivity;

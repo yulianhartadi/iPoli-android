@@ -22,14 +22,13 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.utils.ResourceUtils;
-import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.store.Pet;
 import io.ipoli.android.store.adapters.PetStoreAdapter;
 import io.ipoli.android.store.events.BuyPetRequestEvent;
 import io.ipoli.android.store.events.PetBoughtEvent;
@@ -74,23 +73,21 @@ public class PetStoreFragment extends BaseFragment {
 
     @NonNull
     private List<PetViewModel> createPetViewModels() {
-        String[] descriptions = getResources().getStringArray(R.array.pet_names);
         List<PetViewModel> petViewModels = new ArrayList<>();
-        for (int i = 0; i < descriptions.length; i++) {
-            int petIndex = i + 1;
-            String pictureName = "pet_" + petIndex;
-            petViewModels.add(new PetViewModel(descriptions[i], PET_PRICE,
-                    ResourceUtils.extractDrawableResource(getContext(), pictureName),
-                    ResourceUtils.extractDrawableResource(getContext(), pictureName + "_happy"), pictureName));
+        for(Pet pet : Pet.values()) {
+            String pictureName = getContext().getResources().getResourceEntryName(pet.picture);
+            int pictureState = ResourceUtils.extractDrawableResource(getContext(), pictureName + "_happy");
+            petViewModels.add(new PetViewModel(getContext(), pet, pictureState));
         }
+
         return petViewModels;
     }
 
     @Subscribe
     public void onBuyPetRequest(BuyPetRequestEvent e) {
         Player player = getPlayer();
-        PetViewModel vm = e.petViewModel;
-        if (player.getCoins() < vm.getPrice()) {
+        Pet pet = e.pet;
+        if (player.getCoins() < pet.price) {
             Toast.makeText(getContext(), R.string.not_enough_coins_to_buy_pet, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -99,12 +96,12 @@ public class PetStoreFragment extends BaseFragment {
                 .setTitle(R.string.buy_pet_confirm_title)
                 .setMessage(R.string.buy_pet_confirm_message)
                 .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
-                    eventBus.post(new PetBoughtEvent(e.petViewModel));
-                    player.removeCoins(vm.getPrice());
-                    Pet pet = player.getPet();
-                    pet.setPicture(vm.getPictureName());
-                    pet.setHealthPointsPercentage(Constants.DEFAULT_PET_HP);
-                    playerPersistenceService.save(player);
+                    eventBus.post(new PetBoughtEvent(e.pet));
+                    player.removeCoins(pet.price);
+//                    Pet pet = player.getPet();
+//                    pet.setPicture(getContext().getResources().getResourceEntryName(pet.picture));
+//                    pet.setHealthPointsPercentage(Constants.DEFAULT_PET_HP);
+//                    playerPersistenceService.save(player);
                     adapter.setViewModels(createPetViewModels());
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {

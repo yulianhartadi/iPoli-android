@@ -1,6 +1,9 @@
 package io.ipoli.android.store.viewmodels;
 
+import android.content.Context;
 import android.support.annotation.DrawableRes;
+
+import io.ipoli.android.store.Pet;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -17,14 +20,14 @@ public class PetViewModel {
     @DrawableRes
     private int pictureState;
 
-    private String pictureName;
+    private Pet pet;
 
-    public PetViewModel(String name, int price, @DrawableRes int picture, @DrawableRes int pictureState, String pictureName) {
-        this.name = name;
-        this.price = price;
-        this.picture = picture;
+    public PetViewModel(Context context, Pet pet, @DrawableRes int pictureState) {
+        this.pet = pet;
+        this.name = context.getString(pet.name);
+        this.price = pet.price;
+        this.picture = pet.picture;
         this.pictureState = pictureState;
-        this.pictureName = pictureName;
     }
 
     public String getName() {
@@ -43,8 +46,7 @@ public class PetViewModel {
         return pictureState;
     }
 
-    public String getPictureName() {
-        return pictureName;
+    public Pet getPet() {
+        return pet;
     }
-
 }

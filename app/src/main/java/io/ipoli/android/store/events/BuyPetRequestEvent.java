@@ -1,15 +1,15 @@
 package io.ipoli.android.store.events;
 
-import io.ipoli.android.store.viewmodels.PetViewModel;
+import io.ipoli.android.store.Pet;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 8/27/16.
  */
 public class BuyPetRequestEvent {
-    public final PetViewModel petViewModel;
+    public final Pet pet;
 
-    public BuyPetRequestEvent(PetViewModel petViewModel) {
-        this.petViewModel = petViewModel;
+    public BuyPetRequestEvent(Pet pet) {
+        this.pet = pet;
     }
 }

@@ -4,6 +4,7 @@ import org.threeten.bp.LocalDate;
 
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.store.Upgrade;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
