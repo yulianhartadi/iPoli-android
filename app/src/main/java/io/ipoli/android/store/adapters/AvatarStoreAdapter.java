@@ -1,6 +1,7 @@
 package io.ipoli.android.store.adapters;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -30,6 +31,17 @@ public class AvatarStoreAdapter extends RecyclerView.Adapter<AvatarStoreAdapter.
     private final Bus eventBus;
     private List<AvatarViewModel> viewModels;
 
+    private int[] colors = new int[]{
+            R.color.md_green_300,
+            R.color.md_indigo_300,
+            R.color.md_blue_300,
+            R.color.md_red_300,
+            R.color.md_deep_orange_300,
+            R.color.md_purple_300,
+            R.color.md_orange_300,
+            R.color.md_pink_300,
+    };
+
     public AvatarStoreAdapter(Context context, Bus eventBus, List<AvatarViewModel> viewModels) {
         this.context = context;
         this.eventBus = eventBus;
@@ -52,6 +64,8 @@ public class AvatarStoreAdapter extends RecyclerView.Adapter<AvatarStoreAdapter.
         holder.picture.setImageDrawable(context.getDrawable(vm.getPicture()));
         holder.price.setText(vm.getPrice() + "");
 
+        holder.container.setBackgroundColor(ContextCompat.getColor(context, colors[position % colors.length]));
+
 //        holder.price.setOnClickListener(v -> eventBus.post(new BuyPetRequestEvent(vm)));
     }
 
@@ -66,6 +80,9 @@ public class AvatarStoreAdapter extends RecyclerView.Adapter<AvatarStoreAdapter.
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.avatar_container)
+        ViewGroup container;
 
         @BindView(R.id.avatar_name)
         TextView name;
