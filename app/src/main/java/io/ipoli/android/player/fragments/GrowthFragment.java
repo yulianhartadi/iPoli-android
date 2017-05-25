@@ -108,7 +108,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     @BindView(R.id.toolbar_collapsing_container)
     CollapsingToolbarLayout collapsingToolbarLayout;
 
-    @BindView(R.id.summary_completed)
+    @BindView(R.id.summary_done)
     TextView summaryCompleted;
 
     @BindView(R.id.summary_overdue)
