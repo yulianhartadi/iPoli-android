@@ -130,6 +130,8 @@ public class StoreFragment extends BaseFragment {
                 changeCurrentFragment(new UpgradeStoreFragment());
                 break;
             case AVATARS:
+                changeCurrentFragment(new AvatarStoreFragment());
+                break;
             case PETS:
                 changeCurrentFragment(new PetStoreFragment());
                 break;

@@ -28,20 +28,20 @@ public enum Upgrade {
     CUSTOM_DURATION(8, 2, R.string.help_dialog_challenge_title,
             R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_today_white_24dp);
 
-    private final int code;
-    private final int price;
+    public final int code;
+    public final int price;
 
     @StringRes
-    private final int title;
+    public final int title;
 
     @StringRes
-    private final int shortDesc;
+    public final int shortDesc;
 
     @StringRes
-    private final int longDesc;
+    public final int longDesc;
 
     @DrawableRes
-    private final int image;
+    public final int image;
 
     Upgrade(int code, int price, @StringRes int title, @StringRes int shortDesc,
             @StringRes int longDesc, @DrawableRes int image) {
@@ -51,30 +51,6 @@ public enum Upgrade {
         this.shortDesc = shortDesc;
         this.longDesc = longDesc;
         this.image = image;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public int getTitle() {
-        return title;
-    }
-
-    public int getShortDesc() {
-        return shortDesc;
-    }
-
-    public int getLongDesc() {
-        return longDesc;
-    }
-
-    public int getImage() {
-        return image;
     }
 
     public static Upgrade get(int code) {

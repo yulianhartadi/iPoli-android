@@ -16,7 +16,7 @@
         android:focusable="true">
 
         <TextView
-            android:id="@+id/pet_name"
+            android:id="@+id/avatar_name"
             style="@style/TextAppearance.AppCompat.Title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -35,8 +35,9 @@
             app:layout_constraintVertical_bias="0.0"
             app:layout_constraintHorizontal_bias="0.5" />
 
-        <ImageView
-            android:id="@+id/pet_picture"
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/avatar_picture"
+            android:background="@null"
             android:layout_width="wrap_content"
             android:layout_height="120dp"
             android:layout_marginBottom="0dp"
@@ -48,31 +49,13 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pet_name"
-            app:srcCompat="@drawable/pet_1"
+            app:layout_constraintTop_toBottomOf="@+id/avatar_name"
+            app:srcCompat="@drawable/avatar_01"
             app:layout_constraintHorizontal_bias="0.501"
             app:layout_constraintVertical_bias="0.0" />
 
-        <ImageView
-            android:id="@+id/pet_picture_state"
-            android:layout_width="wrap_content"
-            android:layout_height="120dp"
-            android:layout_marginBottom="0dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pet_name"
-            app:srcCompat="@drawable/pet_1_awesome"
-            app:layout_constraintVertical_bias="0.0" />
-
         <mehdi.sakout.fancybuttons.FancyButton
-            android:id="@+id/pet_price"
+            android:id="@+id/avatar_price"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="100dp"
             android:layout_height="36dp"
@@ -83,8 +66,8 @@
             android:gravity="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/pet_picture_state"
-            app:layout_constraintVertical_bias="1.0"
+            app:layout_constraintTop_toBottomOf="@+id/avatar_picture"
+            app:layout_constraintVertical_bias="0.5"
             fancy:fb_defaultColor="@color/colorAccent"
             fancy:fb_focusColor="@color/colorAccentDark"
             fancy:fb_iconResource="@drawable/ic_life_coin_white_24dp"

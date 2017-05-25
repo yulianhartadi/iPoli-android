@@ -6,7 +6,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,9 +15,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.R;
-import io.ipoli.android.store.events.BuyPetRequestEvent;
-import io.ipoli.android.store.viewmodels.PetViewModel;
+import io.ipoli.android.store.viewmodels.AvatarViewModel;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 /**
@@ -26,59 +25,55 @@ import mehdi.sakout.fancybuttons.FancyButton;
  * on 5/25/17.
  */
 
-public class PetStoreAdapter extends RecyclerView.Adapter<PetStoreAdapter.ViewHolder> {
+public class AvatarStoreAdapter extends RecyclerView.Adapter<AvatarStoreAdapter.ViewHolder> {
     private final Context context;
     private final Bus eventBus;
-    private List<PetViewModel> petViewModels;
+    private List<AvatarViewModel> viewModels;
 
-    public PetStoreAdapter(Context context, Bus eventBus, List<PetViewModel> petViewModels) {
+    public AvatarStoreAdapter(Context context, Bus eventBus, List<AvatarViewModel> viewModels) {
         this.context = context;
         this.eventBus = eventBus;
-        this.petViewModels = petViewModels;
+        this.viewModels = viewModels;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.pet_store_item, parent, false));
+        return new ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.avatar_store_item, parent, false));
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        PetViewModel vm = petViewModels.get(holder.getAdapterPosition());
+        AvatarViewModel vm = viewModels.get(holder.getAdapterPosition());
 
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) holder.price.getIconImageObject().getLayoutParams();
         params.gravity = Gravity.CENTER_VERTICAL;
 
         holder.name.setText(vm.getName());
         holder.picture.setImageDrawable(context.getDrawable(vm.getPicture()));
-        holder.pictureState.setImageDrawable(context.getDrawable(vm.getPictureState()));
         holder.price.setText(vm.getPrice() + "");
 
-        holder.price.setOnClickListener(v -> eventBus.post(new BuyPetRequestEvent(vm)));
+//        holder.price.setOnClickListener(v -> eventBus.post(new BuyPetRequestEvent(vm)));
     }
 
     @Override
     public int getItemCount() {
-        return petViewModels.size();
+        return viewModels.size();
     }
 
-    public void setViewModels(List<PetViewModel> petViewModels) {
-        this.petViewModels = petViewModels;
+    public void setViewModels(List<AvatarViewModel> avatarViewModels) {
+        this.viewModels = avatarViewModels;
         notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.pet_name)
+        @BindView(R.id.avatar_name)
         TextView name;
 
-        @BindView(R.id.pet_picture)
-        ImageView picture;
+        @BindView(R.id.avatar_picture)
+        CircleImageView picture;
 
-        @BindView(R.id.pet_picture_state)
-        ImageView pictureState;
-
-        @BindView(R.id.pet_price)
+        @BindView(R.id.avatar_price)
         FancyButton price;
 
         public ViewHolder(View itemView) {

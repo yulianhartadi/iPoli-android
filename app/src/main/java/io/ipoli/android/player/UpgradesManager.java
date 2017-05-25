@@ -19,25 +19,25 @@ public class UpgradesManager {
     }
 
     public boolean has(Upgrade upgrade) {
-        return playerPersistenceService.get().getUpgrades().containsKey(upgrade.getCode());
+        return playerPersistenceService.get().getUpgrades().containsKey(upgrade.code);
     }
 
     public boolean hasEnoughCoinsForUpgrade(Upgrade upgrade) {
-        return playerPersistenceService.get().getCoins() >= upgrade.getPrice();
+        return playerPersistenceService.get().getCoins() >= upgrade.price;
     }
 
     public void buy(Upgrade upgrade) {
         Player player = playerPersistenceService.get();
-        player.removeCoins(upgrade.getPrice());
-        player.getUpgrades().put(upgrade.getCode(), DateUtils.toMillis(LocalDate.now()));
+        player.removeCoins(upgrade.price);
+        player.getUpgrades().put(upgrade.code, DateUtils.toMillis(LocalDate.now()));
         playerPersistenceService.save(player);
     }
 
     public Long getBoughtDate(Upgrade upgrade) {
         Player player = playerPersistenceService.get();
-        if(!player.getUpgrades().containsKey(upgrade.getCode())) {
+        if(!player.getUpgrades().containsKey(upgrade.code)) {
             return null;
         }
-        return player.getUpgrades().get(upgrade.getCode());
+        return player.getUpgrades().get(upgrade.code);
     }
 }
