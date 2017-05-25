@@ -24,55 +24,88 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:statusBarScrim="@color/md_white">
 
-            <RelativeLayout
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="32dp"
-                android:layout_marginTop="?attr/actionBarSize">
+                tools:layout_editor_absoluteY="56dp"
+                tools:layout_editor_absoluteX="0dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_growth_summary_background"
+                    tools:layout_editor_absoluteX="72dp"
+                    tools:layout_editor_absoluteY="21dp" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_growth_summary_done"
+                    tools:layout_editor_absoluteY="45dp"
+                    tools:layout_editor_absoluteX="129dp" />
 
                 <TextView
-                    android:id="@+id/summary_title"
-                    style="@style/TextAppearance.AppCompat.Title"
+                    android:id="@+id/summary_done"
+                    style="@style/TextAppearance.AppCompat.Subhead"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginBottom="32dp"
-                    android:layout_marginTop="16dp"
-                    android:text="Growth Summary" />
+                    android:textAlignment="center"
+                    tools:text="123\nDone"
+                    tools:layout_editor_absoluteY="69dp"
+                    tools:layout_editor_absoluteX="72dp" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_growth_summary_background"
+                    tools:layout_editor_absoluteY="0dp"
+                    tools:layout_editor_absoluteX="180dp" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_growth_summary_overdue"
+                    tools:layout_editor_absoluteY="0dp"
+                    tools:layout_editor_absoluteX="184dp" />
 
                 <TextView
                     android:id="@+id/summary_overdue"
                     style="@style/TextAppearance.AppCompat.Subhead"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/summary_title"
                     android:layout_centerHorizontal="true"
                     android:layout_marginEnd="32dp"
                     android:layout_marginStart="32dp"
-                    android:text="42\nOverdue"
-                    android:textAlignment="center" />
+                    android:textAlignment="center"
+                    tools:text="42\nOverdue"
+                    tools:layout_editor_absoluteX="162dp"
+                    tools:layout_editor_absoluteY="69dp" />
 
-                <TextView
-                    android:id="@+id/summary_completed"
-                    style="@style/TextAppearance.AppCompat.Subhead"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/summary_title"
-                    android:layout_toStartOf="@id/summary_overdue"
-                    android:text="123\nCompleted"
-                    android:textAlignment="center" />
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_growth_summary_background"
+                    tools:layout_editor_absoluteY="0dp"
+                    tools:layout_editor_absoluteX="297dp" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_growth_summary_time_tracked"
+                    tools:layout_editor_absoluteY="8dp"
+                    tools:layout_editor_absoluteX="297dp" />
 
                 <TextView
                     android:id="@+id/summary_time_tracked"
                     style="@style/TextAppearance.AppCompat.Subhead"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/summary_title"
                     android:layout_toEndOf="@id/summary_overdue"
-                    android:text="28\nTracked"
-                    android:textAlignment="center" />
-            </RelativeLayout>
+                    android:textAlignment="center"
+                    tools:text="28\nTracked"
+                    tools:layout_editor_absoluteX="279dp"
+                    tools:layout_editor_absoluteY="69dp" />
+            </android.support.constraint.ConstraintLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
