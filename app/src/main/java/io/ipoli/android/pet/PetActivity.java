@@ -38,7 +38,8 @@ import io.ipoli.android.pet.events.PetRenamedEvent;
 import io.ipoli.android.pet.events.RevivePetRequest;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.store.activities.ShopActivity;
+import io.ipoli.android.store.StoreItemType;
+import io.ipoli.android.store.activities.StoreActivity;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 /**
@@ -126,8 +127,10 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
             case R.id.action_rename_pet:
                 showRenamePetDialog();
                 return true;
-            case R.id.action_shop:
-                startActivity(new Intent(this, ShopActivity.class));
+            case R.id.action_store:
+                Intent intent = new Intent(this, StoreActivity.class);
+                intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.PETS.name());
+                startActivity(intent);
                 return true;
             case R.id.action_help:
                 HelpDialog.newInstance(R.layout.fragment_help_dialog_pet, R.string.help_dialog_pet_title, "pet").show(getSupportFragmentManager());
