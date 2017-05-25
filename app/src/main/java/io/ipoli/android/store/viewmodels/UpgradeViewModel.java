@@ -18,22 +18,20 @@ public class UpgradeViewModel {
     private final int price;
     private final int image;
     private final Upgrade upgrade;
-    private final boolean isBought;
-    private final LocalDate boughtOn;
+    private final LocalDate boughtDate;
 
     public UpgradeViewModel(Context context, Upgrade upgrade) {
-        this(context, upgrade, false, null);
+        this(context, upgrade, null);
     }
 
-    public UpgradeViewModel(Context context, Upgrade upgrade, boolean isBought, LocalDate boughtOn) {
+    public UpgradeViewModel(Context context, Upgrade upgrade, LocalDate boughtDate) {
         this.title = context.getString(upgrade.title);
         this.shortDescription = context.getString(upgrade.shortDesc);
         this.longDescription = context.getString(upgrade.longDesc);
         this.price = upgrade.price;
         this.image = upgrade.picture;
         this.upgrade = upgrade;
-        this.isBought = isBought;
-        this.boughtOn = boughtOn;
+        this.boughtDate = boughtDate;
     }
 
     public String getTitle() {
@@ -61,10 +59,10 @@ public class UpgradeViewModel {
     }
 
     public boolean isBought() {
-        return isBought;
+        return boughtDate != null;
     }
 
-    public LocalDate getBoughtOn() {
-        return boughtOn;
+    public LocalDate getBoughtDate() {
+        return boughtDate;
     }
 }

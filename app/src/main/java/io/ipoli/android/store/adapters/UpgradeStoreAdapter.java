@@ -83,7 +83,7 @@ public class UpgradeStoreAdapter extends RecyclerView.Adapter<UpgradeStoreAdapte
             holder.container.setBackgroundColor(ContextCompat.getColor(context, R.color.md_grey_50));
             holder.buy.setVisibility(View.INVISIBLE);
             holder.boughtDate.setVisibility(View.VISIBLE);
-            holder.boughtDate.setText("Bought on " + DateFormatter.format(context, vm.getBoughtOn()));
+            holder.boughtDate.setText("Bought on " + DateFormatter.format(context, vm.getBoughtDate()));
         } else {
             holder.buy.setVisibility(View.VISIBLE);
             holder.boughtDate.setVisibility(View.GONE);

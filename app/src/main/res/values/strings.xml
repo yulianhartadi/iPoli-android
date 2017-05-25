@@ -686,6 +686,8 @@
     <string name="pet_elephant">Flying ears</string>
     <string name="pet_beaver">Crazy teeth</string>
     <string name="pet_chicken">Chicken invader</string>
+    <string name="pet_store_select">Select</string>
+    <string name="pet_selected_message">Pet successfully changed</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

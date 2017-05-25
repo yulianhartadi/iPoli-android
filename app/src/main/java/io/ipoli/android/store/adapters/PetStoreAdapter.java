@@ -1,6 +1,7 @@
 package io.ipoli.android.store.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -19,6 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.store.events.BuyPetRequestEvent;
+import io.ipoli.android.store.events.SelectPetEvent;
 import io.ipoli.android.store.viewmodels.PetViewModel;
 import mehdi.sakout.fancybuttons.FancyButton;
 
@@ -64,11 +66,19 @@ public class PetStoreAdapter extends RecyclerView.Adapter<PetStoreAdapter.ViewHo
         holder.name.setText(vm.getName());
         holder.picture.setImageDrawable(context.getDrawable(vm.getPicture()));
         holder.pictureState.setImageDrawable(context.getDrawable(vm.getPictureState()));
-        holder.price.setText(vm.getPrice() + "");
+
+        if (vm.isBought()) {
+            holder.price.setText(context.getString(R.string.pet_store_select).toUpperCase());
+            holder.price.setIconResource((Drawable) null);
+            holder.price.setOnClickListener(v -> eventBus.post(new SelectPetEvent(vm.getPet())));
+        } else {
+            holder.price.setIconResource(context.getDrawable(R.drawable.ic_life_coin_white_24dp));
+            holder.price.setText(vm.getPrice() + "");
+            holder.price.setOnClickListener(v -> eventBus.post(new BuyPetRequestEvent(vm.getPet())));
+        }
 
         holder.container.setBackgroundColor(ContextCompat.getColor(context, colors[position % colors.length]));
 
-        holder.price.setOnClickListener(v -> eventBus.post(new BuyPetRequestEvent(vm.getPet())));
     }
 
     @Override
