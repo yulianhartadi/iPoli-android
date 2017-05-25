@@ -30,9 +30,7 @@ import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -41,9 +39,6 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.utils.MPPointF;
 import com.squareup.otto.Bus;
 
 import org.threeten.bp.DayOfWeek;
@@ -71,6 +66,8 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.scheduling.PriorityEstimator;
+import io.ipoli.android.app.ui.charts.ChartMarkerView;
+import io.ipoli.android.app.ui.charts.XAxisValueFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
@@ -160,45 +157,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     private Set<Category> selectedTimeSpent = new HashSet<>();
     private Map<Category, Integer> categoryToColor = new HashMap<>();
 
-    public class GrowthMarkerView extends MarkerView {
-
-        private TextView popupContent;
-
-        public GrowthMarkerView(Context context) {
-            super(context, R.layout.chart_popup);
-            popupContent = (TextView) findViewById(R.id.popup_content);
-        }
-
-        @Override
-        public void refreshContent(Entry e, Highlight highlight) {
-            popupContent.setText(String.valueOf((int) e.getY()));
-            super.refreshContent(e, highlight);
-        }
-
-        @Override
-        public MPPointF getOffset() {
-            return new MPPointF(-(getWidth() / 2f), -(getHeight() * 1.5f));
-        }
-    }
-
-    public class XAxisValueFormatter implements IAxisValueFormatter {
-
-        private final String[] labels;
-
-        public XAxisValueFormatter(String[] labels) {
-            this.labels = labels;
-        }
-
-        @Override
-        public String getFormattedValue(float v, AxisBase axisBase) {
-            int idx = (int) v;
-            if (idx < 0 || idx >= labels.length) {
-                return "";
-            }
-            return labels[idx];
-        }
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -270,8 +228,8 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
     private void setupAwesomenessRangeChart() {
         applyDefaultStyle(awesomenessRangeChart);
-        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
-        awesomenessRangeChart.setMarker(growthMarkerView);
+        ChartMarkerView chartMarkerView = new ChartMarkerView(getContext());
+        awesomenessRangeChart.setMarker(chartMarkerView);
     }
 
     private void setupAwesomenessVsLastChart() {
@@ -280,8 +238,8 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
     private void setupCompletedQuestsPerCategoryRangeChart() {
         applyDefaultStyle(completedQuestsRangeChart);
-        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
-        completedQuestsRangeChart.setMarker(growthMarkerView);
+        ChartMarkerView chartMarkerView = new ChartMarkerView(getContext());
+        completedQuestsRangeChart.setMarker(chartMarkerView);
         completedQuestsRangeChart.setNoDataText(getString(R.string.growth_no_categories_selected));
         completedQuestsRangeChart.setNoDataTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
     }
@@ -291,14 +249,14 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         completedQuestsVsLastChart.setTouchEnabled(true);
         completedQuestsVsLastChart.setNoDataText(getString(R.string.growth_no_categories_selected));
         completedQuestsVsLastChart.setNoDataTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
-        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
-        completedQuestsVsLastChart.setMarker(growthMarkerView);
+        ChartMarkerView chartMarkerView = new ChartMarkerView(getContext());
+        completedQuestsVsLastChart.setMarker(chartMarkerView);
     }
 
     private void setupTimeSpentRangeChart() {
         applyDefaultStyle(timeSpentRangeChart);
-        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
-        timeSpentRangeChart.setMarker(growthMarkerView);
+        ChartMarkerView chartMarkerView = new ChartMarkerView(getContext());
+        timeSpentRangeChart.setMarker(chartMarkerView);
         timeSpentRangeChart.setNoDataText(getString(R.string.growth_no_categories_selected));
         timeSpentRangeChart.setNoDataTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
     }
@@ -308,14 +266,14 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         timeSpentVsLastChart.setTouchEnabled(true);
         timeSpentVsLastChart.setNoDataText(getString(R.string.growth_no_categories_selected));
         timeSpentVsLastChart.setNoDataTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
-        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
-        timeSpentVsLastChart.setMarker(growthMarkerView);
+        ChartMarkerView chartMarkerView = new ChartMarkerView(getContext());
+        timeSpentVsLastChart.setMarker(chartMarkerView);
     }
 
     private void setupCoinsEarnedRangeChart() {
         applyDefaultStyle(coinsEarnedRangeChart);
-        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
-        coinsEarnedRangeChart.setMarker(growthMarkerView);
+        ChartMarkerView chartMarkerView = new ChartMarkerView(getContext());
+        coinsEarnedRangeChart.setMarker(chartMarkerView);
     }
 
     private void setupCoinsEarnedVsLastChart() {
@@ -324,8 +282,8 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
     private void setupXpEarnedRangeChart() {
         applyDefaultStyle(xpEarnedRangeChart);
-        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
-        xpEarnedRangeChart.setMarker(growthMarkerView);
+        ChartMarkerView chartMarkerView = new ChartMarkerView(getContext());
+        xpEarnedRangeChart.setMarker(chartMarkerView);
     }
 
     private void setupXpEarnedVsLastChart() {
