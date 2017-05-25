@@ -295,20 +295,28 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         applyDefaultStyle(completedQuestsRangeChart);
         GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
         completedQuestsRangeChart.setMarker(growthMarkerView);
+        completedQuestsRangeChart.setNoDataText(getString(R.string.growth_no_categories_selected));
+        completedQuestsRangeChart.setNoDataTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
     }
 
     private void setupCompletedQuestsVsLastChart() {
         applyDefaultStyle(completedQuestsVsLastChart, true);
+        completedQuestsVsLastChart.setNoDataText(getString(R.string.growth_no_categories_selected));
+        completedQuestsVsLastChart.setNoDataTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
     }
 
     private void setupTimeSpentRangeChart() {
         applyDefaultStyle(timeSpentRangeChart);
         GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
         timeSpentRangeChart.setMarker(growthMarkerView);
+        timeSpentRangeChart.setNoDataText(getString(R.string.growth_no_categories_selected));
+        timeSpentRangeChart.setNoDataTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
     }
 
     private void setupTimeSpentVsLastChart() {
         applyDefaultStyle(timeSpentVsLastChart, true);
+        timeSpentVsLastChart.setNoDataText(getString(R.string.growth_no_categories_selected));
+        timeSpentVsLastChart.setNoDataTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
     }
 
     private void setupCoinsEarnedRangeChart() {
@@ -818,7 +826,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         });
         timeSpentVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         timeSpentVsLastChart.getXAxis().setLabelCount(xLabels.length);
+//        if (!valueAdded) {
+//            timeSpentVsLastChart.setData(null);
+//        } else {
         timeSpentVsLastChart.setData(barData);
+//        }
         timeSpentVsLastChart.invalidate();
     }
 
@@ -922,8 +934,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         LineData lineData = createCategoryLineData(data, drawHandles, selectedTimeSpent);
 
         timeSpentRangeChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
-
-        timeSpentRangeChart.setData(lineData);
+        if (lineData.getDataSetCount() == 0) {
+            timeSpentRangeChart.setData(null);
+        } else {
+            timeSpentRangeChart.setData(lineData);
+        }
         timeSpentRangeChart.invalidate();
     }
 
@@ -931,8 +946,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         LineData lineData = createCategoryLineData(data, drawHandles, selectedCompleted);
 
         completedQuestsRangeChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
-
-        completedQuestsRangeChart.setData(lineData);
+        if (lineData.getDataSetCount() == 0) {
+            completedQuestsRangeChart.setData(null);
+        } else {
+            completedQuestsRangeChart.setData(lineData);
+        }
         completedQuestsRangeChart.invalidate();
     }
 

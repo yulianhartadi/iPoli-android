@@ -680,6 +680,7 @@
     <string name="challenge8_rq3_name">Have family dinner</string>
     <string name="challenge8_rq4_raw_text">Go out with friends 2 times a week</string>
     <string name="challenge8_rq4_name">Go out with friends</string>
+    <string name="growth_no_categories_selected">Select a category to view more data</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
