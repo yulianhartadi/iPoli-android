@@ -709,7 +709,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         int spanEnd = completedText.length();
         completedText += "\nDone";
         SpannableString finalText = new SpannableString(completedText);
-        finalText.setSpan(new ForegroundColorSpan(Color.GREEN), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        finalText.setSpan(new ForegroundColorSpan(completedChange >= 0 ? Color.GREEN : Color.RED), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         finalText.setSpan(new RelativeSizeSpan(0.8f), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         summaryCompleted.setText(finalText);
     }
@@ -722,7 +722,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         int spanEnd = overdueText.length();
         overdueText += "\nOverdue";
         SpannableString finalText = new SpannableString(overdueText);
-        finalText.setSpan(new ForegroundColorSpan(Color.GREEN), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        finalText.setSpan(new ForegroundColorSpan(overdueChange > 0 ? Color.RED : Color.GREEN), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         finalText.setSpan(new RelativeSizeSpan(0.8f), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         summaryOverdue.setText(finalText);
     }
@@ -740,7 +740,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         int spanEnd = minutesTrackedText.length();
         minutesTrackedText += "\nTracked";
         SpannableString finalText = new SpannableString(minutesTrackedText);
-        finalText.setSpan(new ForegroundColorSpan(Color.GREEN), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        finalText.setSpan(new ForegroundColorSpan(minutesTrackedChange >= 0 ? Color.GREEN : Color.RED), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         finalText.setSpan(new RelativeSizeSpan(0.8f), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         summaryTimeTracked.setText(finalText);
     }
@@ -1052,6 +1052,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         yAxis.setXOffset(12f);
         yAxis.setDrawAxisLine(false);
         yAxis.setAxisMinimum(0);
+        yAxis.setGranularity(1f);
         yAxis.setValueFormatter((v, axisBase) -> String.valueOf((int) v));
 
         chart.getAxisRight().setEnabled(false);
@@ -1066,6 +1067,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private void applyDefaultStyle(BarChart chart, boolean showLegend) {
+        chart.setTouchEnabled(false);
         chart.setDescription(null);
         chart.setDrawBorders(false);
         chart.setExtraBottomOffset(8);
@@ -1085,6 +1087,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         yAxis.setXOffset(12f);
         yAxis.setDrawAxisLine(false);
         yAxis.setAxisMinimum(0);
+        yAxis.setGranularity(1f);
 
         chart.getAxisRight().setEnabled(false);
 
