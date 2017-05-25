@@ -79,9 +79,6 @@ public class PetStoreFragment extends BaseFragment {
         for (int i = 0; i < descriptions.length; i++) {
             int petIndex = i + 1;
             String pictureName = "pet_" + petIndex;
-            if (getPlayer().getPet().getPicture().equals(pictureName)) {
-                continue;
-            }
             petViewModels.add(new PetViewModel(descriptions[i], PET_PRICE,
                     ResourceUtils.extractDrawableResource(getContext(), pictureName),
                     ResourceUtils.extractDrawableResource(getContext(), pictureName + "_happy"), pictureName));

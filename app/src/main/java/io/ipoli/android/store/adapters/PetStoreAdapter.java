@@ -1,6 +1,7 @@
 package io.ipoli.android.store.adapters;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -31,6 +32,17 @@ public class PetStoreAdapter extends RecyclerView.Adapter<PetStoreAdapter.ViewHo
     private final Bus eventBus;
     private List<PetViewModel> petViewModels;
 
+    private int[] colors = new int[]{
+            R.color.md_green_300,
+            R.color.md_indigo_300,
+            R.color.md_blue_300,
+            R.color.md_red_300,
+            R.color.md_deep_orange_300,
+            R.color.md_purple_300,
+            R.color.md_orange_300,
+            R.color.md_pink_300,
+    };
+
     public PetStoreAdapter(Context context, Bus eventBus, List<PetViewModel> petViewModels) {
         this.context = context;
         this.eventBus = eventBus;
@@ -54,6 +66,8 @@ public class PetStoreAdapter extends RecyclerView.Adapter<PetStoreAdapter.ViewHo
         holder.pictureState.setImageDrawable(context.getDrawable(vm.getPictureState()));
         holder.price.setText(vm.getPrice() + "");
 
+        holder.container.setBackgroundColor(ContextCompat.getColor(context, colors[position % colors.length]));
+
         holder.price.setOnClickListener(v -> eventBus.post(new BuyPetRequestEvent(vm)));
     }
 
@@ -68,6 +82,8 @@ public class PetStoreAdapter extends RecyclerView.Adapter<PetStoreAdapter.ViewHo
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.pet_container)
+        ViewGroup container;
 
         @BindView(R.id.pet_name)
         TextView name;
