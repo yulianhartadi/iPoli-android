@@ -27,14 +27,14 @@
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="?attr/actionBarSize"
                 android:paddingBottom="32dp"
-                android:paddingTop="16dp"
-                android:layout_marginTop="?attr/actionBarSize">
+                android:paddingTop="16dp">
 
                 <ImageView
                     android:id="@+id/imageView7"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:layout_marginBottom="8dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
@@ -48,8 +48,8 @@
 
                 <ImageView
                     android:id="@+id/imageView6"
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
                     android:layout_marginBottom="8dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
@@ -74,8 +74,8 @@
 
                 <ImageView
                     android:id="@+id/imageView3"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
                     android:layout_marginBottom="8dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
@@ -89,8 +89,8 @@
 
                 <ImageView
                     android:id="@+id/imageView8"
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
                     android:layout_marginBottom="8dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
@@ -112,30 +112,30 @@
                     android:layout_marginRight="0dp"
                     android:textAlignment="center"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHorizontal_bias="0.504"
                     app:layout_constraintLeft_toRightOf="@+id/summary_done"
                     app:layout_constraintRight_toLeftOf="@+id/summary_time_tracked"
-                    tools:text="42\nOverdue"
-                    app:layout_constraintHorizontal_bias="0.504" />
+                    tools:text="42\nOverdue" />
 
                 <ImageView
                     android:id="@+id/imageView5"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginBottom="8dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_marginTop="0dp"
                     android:src="@drawable/ic_growth_summary_background"
+                    app:layout_constraintBottom_toTopOf="@+id/summary_time_tracked"
+                    app:layout_constraintHorizontal_bias="0.47"
                     app:layout_constraintLeft_toLeftOf="@+id/summary_time_tracked"
                     app:layout_constraintRight_toRightOf="@+id/summary_time_tracked"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintHorizontal_bias="0.47"
-                    android:layout_marginBottom="8dp"
-                    app:layout_constraintBottom_toTopOf="@+id/summary_time_tracked"
                     app:layout_constraintVertical_bias="0.0" />
 
                 <ImageView
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
                     android:layout_marginBottom="8dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"

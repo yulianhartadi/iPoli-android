@@ -43,10 +43,8 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.utils.MPPointF;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.squareup.otto.Bus;
 
 import org.threeten.bp.DayOfWeek;
@@ -56,9 +54,10 @@ import org.threeten.bp.temporal.TemporalAdjusters;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -158,8 +157,8 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     private List<Chart<?>> vsCharts;
     private PriorityEstimator priorityEstimator;
 
-    private Map<Category, Boolean> selectedCompleted = new LinkedHashMap<>();
-    private Map<Category, Boolean> selectedTimeSpent = new LinkedHashMap<>();
+    private Set<Category> selectedCompleted = new HashSet<>();
+    private Set<Category> selectedTimeSpent = new HashSet<>();
     private Map<Category, Integer> categoryToColor = new HashMap<>();
 
     public class GrowthMarkerView extends MarkerView {
@@ -245,19 +244,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         vsCharts.add(coinsEarnedVsLastChart);
         vsCharts.add(xpEarnedVsLastChart);
 
-        selectedCompleted.put(Category.WELLNESS, true);
-        selectedCompleted.put(Category.LEARNING, true);
-        selectedCompleted.put(Category.WORK, true);
-        selectedCompleted.put(Category.PERSONAL, false);
-        selectedCompleted.put(Category.FUN, false);
-        selectedCompleted.put(Category.CHORES, false);
+        selectedCompleted.add(Category.WELLNESS);
+        selectedCompleted.add(Category.LEARNING);
+        selectedCompleted.add(Category.WORK);
 
-        selectedTimeSpent.put(Category.WELLNESS, true);
-        selectedTimeSpent.put(Category.LEARNING, true);
-        selectedTimeSpent.put(Category.WORK, true);
-        selectedTimeSpent.put(Category.PERSONAL, false);
-        selectedTimeSpent.put(Category.FUN, false);
-        selectedTimeSpent.put(Category.CHORES, false);
+        selectedTimeSpent.addAll(selectedCompleted);
 
         categoryToColor.put(Category.WELLNESS, R.color.md_green_500);
         categoryToColor.put(Category.LEARNING, R.color.md_blue_A200);
@@ -793,83 +784,94 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private void showTimeSpentVsLastChart(int[][] data, String[] xLabels) {
-        List<BarEntry> entries = new ArrayList<>();
-        for (int i = 0; i < data[0].length; i++) {
-            float[] vals = new float[data.length];
-            for (int j = 0; j < vals.length; j++) {
-                Category category = Category.values()[j];
-                if (selectedTimeSpent.get(category)) {
-                    vals[j] = data[j][i];
+
+        if (selectedTimeSpent.isEmpty()) {
+            timeSpentVsLastChart.setData(null);
+        } else {
+
+            List<Category> availableCategories = new ArrayList<>();
+            for (Category category : Category.values()) {
+                if (selectedTimeSpent.contains(category)) {
+                    availableCategories.add(category);
                 }
             }
-            entries.add(new BarEntry(i, vals));
-        }
 
-        BarDataSet dataSet = new BarDataSet(entries, "");
-        List<Integer> colors = new ArrayList<>();
-        List<String> stackLabels = new ArrayList<>();
-        for (Category category : selectedTimeSpent.keySet()) {
-            if (selectedTimeSpent.get(category)) {
+            List<BarEntry> entries = new ArrayList<>();
+            for (int i = 0; i < data[0].length; i++) {
+                float[] vals = new float[availableCategories.size()];
+                for (int j = 0; j < vals.length; j++) {
+                    Category category = availableCategories.get(j);
+                    vals[j] = data[category.ordinal()][i];
+                }
+                entries.add(new BarEntry(i, vals));
+            }
+
+            BarDataSet dataSet = new BarDataSet(entries, "");
+            List<Integer> colors = new ArrayList<>();
+            List<String> stackLabels = new ArrayList<>();
+            for (Category category : availableCategories) {
                 colors.add(ContextCompat.getColor(getContext(), categoryToColor.get(category)));
                 stackLabels.add(getString(Category.getNameRes(category)));
             }
-        }
-        dataSet.setColors(colors);
-        dataSet.setStackLabels(stackLabels.toArray(new String[stackLabels.size()]));
-        dataSet.setDrawValues(false);
-        BarData barData = new BarData(dataSet);
-        barData.setValueFormatter(new IValueFormatter() {
-            @Override
-            public String getFormattedValue(float v, Entry entry, int i, ViewPortHandler viewPortHandler) {
-                return String.valueOf((int) v);
+            dataSet.setColors(colors);
+            if (stackLabels.size() > 1) {
+                dataSet.setStackLabels(stackLabels.toArray(new String[stackLabels.size()]));
+            } else {
+                dataSet.setLabel(stackLabels.get(0));
             }
-        });
-        timeSpentVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
-        timeSpentVsLastChart.getXAxis().setLabelCount(xLabels.length);
-//        if (!valueAdded) {
-//            timeSpentVsLastChart.setData(null);
-//        } else {
-        timeSpentVsLastChart.setData(barData);
-//        }
+            dataSet.setDrawValues(false);
+            BarData barData = new BarData(dataSet);
+            barData.setValueFormatter((v, entry, i, viewPortHandler) -> String.valueOf((int) v));
+            timeSpentVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
+            timeSpentVsLastChart.getXAxis().setLabelCount(xLabels.length);
+            timeSpentVsLastChart.setData(barData);
+        }
         timeSpentVsLastChart.invalidate();
     }
 
 
     private void showCompletedQuestsVsLastChart(int[][] data, String[] xLabels) {
-        List<BarEntry> entries = new ArrayList<>();
-        for (int i = 0; i < data[0].length; i++) {
-            float[] vals = new float[data.length];
-            for (int j = 0; j < vals.length; j++) {
-                Category category = Category.values()[j];
-                if (selectedCompleted.get(category)) {
-                    vals[j] = data[j][i];
+
+        if (selectedCompleted.isEmpty()) {
+            completedQuestsVsLastChart.setData(null);
+        } else {
+            List<Category> availableCategories = new ArrayList<>();
+            for (Category category : Category.values()) {
+                if (selectedCompleted.contains(category)) {
+                    availableCategories.add(category);
                 }
             }
-            entries.add(new BarEntry(i, vals));
-        }
 
-        BarDataSet dataSet = new BarDataSet(entries, "");
-        List<Integer> colors = new ArrayList<>();
-        List<String> stackLabels = new ArrayList<>();
-        for (Category category : selectedCompleted.keySet()) {
-            if (selectedCompleted.get(category)) {
+            List<BarEntry> entries = new ArrayList<>();
+            for (int i = 0; i < data[0].length; i++) {
+                float[] vals = new float[availableCategories.size()];
+                for (int j = 0; j < vals.length; j++) {
+                    Category category = availableCategories.get(j);
+                    vals[j] = data[category.ordinal()][i];
+                }
+                entries.add(new BarEntry(i, vals));
+            }
+
+            BarDataSet dataSet = new BarDataSet(entries, "");
+            List<Integer> colors = new ArrayList<>();
+            List<String> stackLabels = new ArrayList<>();
+            for (Category category : availableCategories) {
                 colors.add(ContextCompat.getColor(getContext(), categoryToColor.get(category)));
                 stackLabels.add(getString(Category.getNameRes(category)));
             }
-        }
-        dataSet.setColors(colors);
-        dataSet.setStackLabels(stackLabels.toArray(new String[stackLabels.size()]));
-        dataSet.setDrawValues(false);
-        BarData barData = new BarData(dataSet);
-        barData.setValueFormatter(new IValueFormatter() {
-            @Override
-            public String getFormattedValue(float v, Entry entry, int i, ViewPortHandler viewPortHandler) {
-                return String.valueOf((int) v);
+            dataSet.setColors(colors);
+            if (stackLabels.size() > 1) {
+                dataSet.setStackLabels(stackLabels.toArray(new String[stackLabels.size()]));
+            } else {
+                dataSet.setLabel(stackLabels.get(0));
             }
-        });
-        completedQuestsVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
-        completedQuestsVsLastChart.getXAxis().setLabelCount(xLabels.length);
-        completedQuestsVsLastChart.setData(barData);
+            dataSet.setDrawValues(false);
+            BarData barData = new BarData(dataSet);
+            barData.setValueFormatter((v, entry, i, viewPortHandler) -> String.valueOf((int) v));
+            completedQuestsVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
+            completedQuestsVsLastChart.getXAxis().setLabelCount(xLabels.length);
+            completedQuestsVsLastChart.setData(barData);
+        }
         completedQuestsVsLastChart.invalidate();
     }
 
@@ -889,7 +891,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         awesomenessVsLastChart.getXAxis().setLabelCount(xLabels.length);
         awesomenessVsLastChart.setData(data);
         awesomenessVsLastChart.invalidate();
-        awesomenessVsLastChart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
     }
 
     private void showXpEarnedRangeChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels, boolean drawHandles) {
@@ -931,24 +932,22 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private void showTimeSpentRangeChart(int[][] data, String[] xLabels, boolean drawHandles) {
-        LineData lineData = createCategoryLineData(data, drawHandles, selectedTimeSpent);
-
-        timeSpentRangeChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
-        if (lineData.getDataSetCount() == 0) {
+        if (selectedTimeSpent.isEmpty()) {
             timeSpentRangeChart.setData(null);
         } else {
+            LineData lineData = createCategoryLineData(data, drawHandles, selectedTimeSpent);
+            timeSpentRangeChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
             timeSpentRangeChart.setData(lineData);
         }
         timeSpentRangeChart.invalidate();
     }
 
     private void showCompletedQuestsPerCategoryRangeChart(int[][] data, String[] xLabels, boolean drawHandles) {
-        LineData lineData = createCategoryLineData(data, drawHandles, selectedCompleted);
-
-        completedQuestsRangeChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
-        if (lineData.getDataSetCount() == 0) {
+        if (selectedCompleted.isEmpty()) {
             completedQuestsRangeChart.setData(null);
         } else {
+            LineData lineData = createCategoryLineData(data, drawHandles, selectedCompleted);
+            completedQuestsRangeChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
             completedQuestsRangeChart.setData(lineData);
         }
         completedQuestsRangeChart.invalidate();
@@ -962,40 +961,39 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         awesomenessRangeChart.setData(lineData);
         awesomenessRangeChart.invalidate();
-        awesomenessRangeChart.animateX(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
     }
 
     @NonNull
-    private LineData createCategoryLineData(int[][] data, boolean drawHandles, Map<Category, Boolean> visibleCategories) {
+    private LineData createCategoryLineData(int[][] data, boolean drawHandles, Set<Category> visibleCategories) {
 
         LineData lineData = new LineData();
 
-        if (visibleCategories.get(Category.WELLNESS)) {
+        if (visibleCategories.contains(Category.WELLNESS)) {
             LineDataSet wellnessDataSet = createLineDataSetForCategory(data, Category.WELLNESS, drawHandles, categoryToColor.get(Category.WELLNESS), R.color.md_green_700);
             lineData.addDataSet(wellnessDataSet);
         }
 
-        if (visibleCategories.get(Category.LEARNING)) {
+        if (visibleCategories.contains(Category.LEARNING)) {
             LineDataSet learningDataSet = createLineDataSetForCategory(data, Category.LEARNING, drawHandles, categoryToColor.get(Category.LEARNING), R.color.md_blue_A400);
             lineData.addDataSet(learningDataSet);
         }
 
-        if (visibleCategories.get(Category.WORK)) {
+        if (visibleCategories.contains(Category.WORK)) {
             LineDataSet workDataSet = createLineDataSetForCategory(data, Category.WORK, drawHandles, categoryToColor.get(Category.WORK), R.color.md_red_A400);
             lineData.addDataSet(workDataSet);
         }
 
-        if (visibleCategories.get(Category.PERSONAL)) {
+        if (visibleCategories.contains(Category.PERSONAL)) {
             LineDataSet personalDataSet = createLineDataSetForCategory(data, Category.PERSONAL, drawHandles, categoryToColor.get(Category.PERSONAL), R.color.md_orange_A400);
             lineData.addDataSet(personalDataSet);
         }
 
-        if (visibleCategories.get(Category.FUN)) {
+        if (visibleCategories.contains(Category.FUN)) {
             LineDataSet funDataSet = createLineDataSetForCategory(data, Category.FUN, drawHandles, categoryToColor.get(Category.FUN), R.color.md_purple_500);
             lineData.addDataSet(funDataSet);
         }
 
-        if (visibleCategories.get(Category.CHORES)) {
+        if (visibleCategories.contains(Category.CHORES)) {
             LineDataSet choresDataSet = createLineDataSetForCategory(data, Category.CHORES, drawHandles, categoryToColor.get(Category.CHORES), R.color.md_brown_500);
             lineData.addDataSet(choresDataSet);
         }
@@ -1108,7 +1106,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         for (int i = 0; i < filterContainer.getChildCount(); i++) {
             Switch child = (Switch) filterContainer.getChildAt(i);
             Category category = Category.values()[i];
-            if (selectedCompleted.get(category)) {
+            if (selectedCompleted.contains(category)) {
                 child.setChecked(true);
             }
             child.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -1130,7 +1128,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                         selectedCategory = Category.FUN;
                         break;
                 }
-                selectedCompleted.put(selectedCategory, isChecked);
+                if (isChecked) {
+                    selectedCompleted.add(selectedCategory);
+                } else {
+                    selectedCompleted.remove(selectedCategory);
+                }
                 showCharts(spinner.getSelectedItemPosition());
             });
         }
@@ -1148,7 +1150,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         for (int i = 0; i < filterContainer.getChildCount(); i++) {
             Switch child = (Switch) filterContainer.getChildAt(i);
             Category category = Category.values()[i];
-            if (selectedTimeSpent.get(category)) {
+            if (selectedTimeSpent.contains(category)) {
                 child.setChecked(true);
             }
             child.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -1170,7 +1172,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                         selectedCategory = Category.FUN;
                         break;
                 }
-                selectedTimeSpent.put(selectedCategory, isChecked);
+                if (isChecked) {
+                    selectedTimeSpent.add(selectedCategory);
+                } else {
+                    selectedTimeSpent.remove(selectedCategory);
+                }
                 showCharts(spinner.getSelectedItemPosition());
             });
         }
