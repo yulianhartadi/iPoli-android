@@ -233,6 +233,17 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         categoryToColor.put(Category.FUN, R.color.md_purple_300);
         categoryToColor.put(Category.CHORES, R.color.md_brown_300);
 
+        setupAwesomenessRangeChart();
+        setupAwesomenessVsLastChart();
+        setupCompletedQuestsPerCategoryRangeChart();
+        setupCompletedQuestsVsLastChart();
+        setupTimeSpentRangeChart();
+        setupTimeSpentVsLastChart();
+        setupCoinsEarnedRangeChart();
+        setupCoinsEarnedVsLastChart();
+        setupXpEarnedRangeChart();
+        setupXpEarnedVsLastChart();
+
         showCharts(THIS_WEEK);
         return view;
     }
@@ -321,11 +332,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                     xLabels[i] = startDay.plusMonths(i).format(DateTimeFormatter.ofPattern(X_AXIS_MONTH));
                 }
 
-                setupAwesomenessVsLastChart(awesomenessData, xLabels);
-                setupCompletedQuestsVsLastChart(completedData, xLabels);
-                setupTimeSpentVsLastChart(timeSpentData, xLabels);
-                setupCoinsEarnedVsLastChart(coinsData, xLabels);
-                setupXpEarnedVsLastChart(xpData, xLabels);
+                showAwesomenessVsLastChart(awesomenessData, xLabels);
+                showCompletedQuestsVsLastChart(completedData, xLabels);
+                showTimeSpentVsLastChart(timeSpentData, xLabels);
+                showCoinsEarnedVsLastChart(coinsData, xLabels);
+                showXpEarnedVsLastChart(xpData, xLabels);
             }
         });
     }
@@ -374,11 +385,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                     xLabels[i] = label;
                 }
 
-                setupAwesomenessVsLastChart(awesomenessPerWeek, xLabels);
-                setupCompletedQuestsVsLastChart(completedPerWeek, xLabels);
-                setupTimeSpentVsLastChart(timeSpentPerWeek, xLabels);
-                setupCoinsEarnedVsLastChart(coinsPerWeek, xLabels);
-                setupXpEarnedVsLastChart(xpPerWeek, xLabels);
+                showAwesomenessVsLastChart(awesomenessPerWeek, xLabels);
+                showCompletedQuestsVsLastChart(completedPerWeek, xLabels);
+                showTimeSpentVsLastChart(timeSpentPerWeek, xLabels);
+                showCoinsEarnedVsLastChart(coinsPerWeek, xLabels);
+                showXpEarnedVsLastChart(xpPerWeek, xLabels);
             }
         });
     }
@@ -414,11 +425,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 }
 
                 boolean drawHandles = false;
-                setupAwesomenessRangeChart(awesomenessPerDay, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
-                setupCompletedQuestsPerCategoryRangeChart(completedPerDay, xLabels, drawHandles);
-                setupTimeSpentRangeChart(timeSpentPerDay, xLabels, drawHandles);
-                setupCoinsEarnedRangeChart(coinsPerDay, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
-                setupXpEarnedRangeChart(xpPerDay, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
+                showAwesomenessRangeChart(awesomenessPerDay, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
+                showCompletedQuestsPerCategoryRangeChart(completedPerDay, xLabels, drawHandles);
+                showTimeSpentRangeChart(timeSpentPerDay, xLabels, drawHandles);
+                showCoinsEarnedRangeChart(coinsPerDay, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
+                showXpEarnedRangeChart(xpPerDay, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
             }
         });
     }
@@ -450,11 +461,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                     xLabels[i] = startDay.plusDays(i).format(DateTimeFormatter.ofPattern(X_AXIS_DAY_FORMAT));
                 }
 
-                setupAwesomenessVsLastChart(awesomenessPerDay, xLabels);
-                setupCompletedQuestsVsLastChart(completedPerDay, xLabels);
-                setupTimeSpentVsLastChart(timeSpentPerDay, xLabels);
-                setupCoinsEarnedVsLastChart(coinsPerDay, xLabels);
-                setupXpEarnedVsLastChart(xpPerDay, xLabels);
+                showAwesomenessVsLastChart(awesomenessPerDay, xLabels);
+                showCompletedQuestsVsLastChart(completedPerDay, xLabels);
+                showTimeSpentVsLastChart(timeSpentPerDay, xLabels);
+                showCoinsEarnedVsLastChart(coinsPerDay, xLabels);
+                showXpEarnedVsLastChart(xpPerDay, xLabels);
             }
         });
     }
@@ -488,11 +499,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 }
 
                 boolean drawHandles = true;
-                setupAwesomenessRangeChart(awesomenessPerDay, 7, "This week", "Last week", xLabels, drawHandles);
-                setupCompletedQuestsPerCategoryRangeChart(completedPerDay, xLabels, drawHandles);
-                setupTimeSpentRangeChart(timeSpentPerDay, xLabels, drawHandles);
-                setupCoinsEarnedRangeChart(coinsPerDay, 7, "This week", "Last week", xLabels, drawHandles);
-                setupXpEarnedRangeChart(xpPerDay, 7, "This week", "Last week", xLabels, drawHandles);
+                showAwesomenessRangeChart(awesomenessPerDay, 7, "This week", "Last week", xLabels, drawHandles);
+                showCompletedQuestsPerCategoryRangeChart(completedPerDay, xLabels, drawHandles);
+                showTimeSpentRangeChart(timeSpentPerDay, xLabels, drawHandles);
+                showCoinsEarnedRangeChart(coinsPerDay, 7, "This week", "Last week", xLabels, drawHandles);
+                showXpEarnedRangeChart(xpPerDay, 7, "This week", "Last week", xLabels, drawHandles);
             }
         });
     }
@@ -501,8 +512,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         return Math.max(0, priorityEstimator.estimate(quest));
     }
 
-    private void setupXpEarnedVsLastChart(int[] data, String[] xLabels) {
+    private void setupXpEarnedVsLastChart() {
         applyDefaultStyle(xpEarnedVsLastChart);
+    }
+
+    private void showXpEarnedVsLastChart(int[] data, String[] xLabels) {
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < data.length; i++) {
             entries.add(new BarEntry(i, data[i]));
@@ -522,8 +536,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         xpEarnedVsLastChart.invalidate();
     }
 
-    private void setupCoinsEarnedVsLastChart(int[] data, String[] xLabels) {
+    private void setupCoinsEarnedVsLastChart() {
         applyDefaultStyle(coinsEarnedVsLastChart);
+    }
+
+    private void showCoinsEarnedVsLastChart(int[] data, String[] xLabels) {
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < data.length; i++) {
             entries.add(new BarEntry(i, data[i]));
@@ -543,9 +560,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         coinsEarnedVsLastChart.invalidate();
     }
 
-    private void setupTimeSpentVsLastChart(int[][] data, String[] xLabels) {
+    private void setupTimeSpentVsLastChart() {
         applyDefaultStyle(timeSpentVsLastChart, true);
+    }
 
+    private void showTimeSpentVsLastChart(int[][] data, String[] xLabels) {
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < data[0].length; i++) {
             float[] vals = new float[data.length];
@@ -586,8 +605,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         timeSpentVsLastChart.invalidate();
     }
 
-    private void setupCompletedQuestsVsLastChart(int[][] data, String[] xLabels) {
+    private void setupCompletedQuestsVsLastChart() {
         applyDefaultStyle(completedQuestsVsLastChart, true);
+    }
+
+    private void showCompletedQuestsVsLastChart(int[][] data, String[] xLabels) {
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < data[0].length; i++) {
             float[] vals = new float[data.length];
@@ -628,8 +650,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         completedQuestsVsLastChart.invalidate();
     }
 
-    private void setupAwesomenessVsLastChart(int[] awesomenessPerDay, String[] xLabels) {
+    private void setupAwesomenessVsLastChart() {
         applyDefaultStyle(awesomenessVsLastChart);
+    }
+
+    private void showAwesomenessVsLastChart(int[] awesomenessPerDay, String[] xLabels) {
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < awesomenessPerDay.length; i++) {
             entries.add(new BarEntry(i, awesomenessPerDay[i]));
@@ -650,9 +675,18 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         awesomenessVsLastChart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
     }
 
-    private void setupXpEarnedRangeChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels, boolean drawHandles) {
+    private void setupXpEarnedRangeChart() {
         applyDefaultStyle(xpEarnedRangeChart);
+        YAxis yAxis = xpEarnedRangeChart.getAxisLeft();
+        yAxis.setAxisMinimum(0);
 
+        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
+        xpEarnedRangeChart.setMarker(growthMarkerView);
+        xpEarnedRangeChart.setDescription(null);
+        xpEarnedRangeChart.setDrawBorders(false);
+    }
+
+    private void showXpEarnedRangeChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels, boolean drawHandles) {
         LineData lineData = createThisVsLastWeekLineData(data, range, currentRangeLabel, prevRangeLabel, drawHandles);
 
         XAxis xAxis = xpEarnedRangeChart.getXAxis();
@@ -661,29 +695,12 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             return xLabels[idx];
         });
 
-        YAxis yAxis = xpEarnedRangeChart.getAxisLeft();
-        yAxis.setAxisMinimum(0);
-
-        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
-        xpEarnedRangeChart.setMarker(growthMarkerView);
-        xpEarnedRangeChart.setDescription(null);
-        xpEarnedRangeChart.setDrawBorders(false);
-
         xpEarnedRangeChart.setData(lineData);
         xpEarnedRangeChart.invalidate();
     }
 
-    private void setupCoinsEarnedRangeChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels, boolean drawHandles) {
+    private void setupCoinsEarnedRangeChart() {
         applyDefaultStyle(coinsEarnedRangeChart);
-
-        LineData lineData = createThisVsLastWeekLineData(data, range, currentRangeLabel, prevRangeLabel, drawHandles);
-
-        XAxis xAxis = coinsEarnedRangeChart.getXAxis();
-        xAxis.setValueFormatter((v, axisBase) -> {
-            int idx = (int) v;
-            return xLabels[idx];
-        });
-
         YAxis yAxis = coinsEarnedRangeChart.getAxisLeft();
 
         yAxis.setAxisMinimum(0);
@@ -692,6 +709,16 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         coinsEarnedRangeChart.setMarker(growthMarkerView);
         coinsEarnedRangeChart.setDescription(null);
         coinsEarnedRangeChart.setDrawBorders(false);
+    }
+
+    private void showCoinsEarnedRangeChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels, boolean drawHandles) {
+        LineData lineData = createThisVsLastWeekLineData(data, range, currentRangeLabel, prevRangeLabel, drawHandles);
+
+        XAxis xAxis = coinsEarnedRangeChart.getXAxis();
+        xAxis.setValueFormatter((v, axisBase) -> {
+            int idx = (int) v;
+            return xLabels[idx];
+        });
 
         coinsEarnedRangeChart.setData(lineData);
         coinsEarnedRangeChart.invalidate();
@@ -717,9 +744,15 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         return new LineData(lastWeekDataSet, thisWeekDataSet);
     }
 
-    private void setupTimeSpentRangeChart(int[][] data, String[] xLabels, boolean drawHandles) {
+    private void setupTimeSpentRangeChart() {
         applyDefaultStyle(timeSpentRangeChart);
 
+        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
+        timeSpentRangeChart.setMarker(growthMarkerView);
+        timeSpentRangeChart.setDrawBorders(false);
+    }
+
+    private void showTimeSpentRangeChart(int[][] data, String[] xLabels, boolean drawHandles) {
         LineData lineData = createCategoryLineData(data, drawHandles, selectedTimeSpent);
 
         XAxis xAxis = timeSpentRangeChart.getXAxis();
@@ -728,17 +761,20 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             return xLabels[idx];
         });
 
-        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
-        timeSpentRangeChart.setMarker(growthMarkerView);
-
         timeSpentRangeChart.setDescription(null);
         timeSpentRangeChart.setData(lineData);
         timeSpentRangeChart.invalidate();
     }
 
-    private void setupCompletedQuestsPerCategoryRangeChart(int[][] data, String[] xLabels, boolean drawHandles) {
+    private void setupCompletedQuestsPerCategoryRangeChart() {
         applyDefaultStyle(completedQuestsRangeChart);
 
+        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
+        completedQuestsRangeChart.setMarker(growthMarkerView);
+        completedQuestsRangeChart.setDrawBorders(false);
+    }
+
+    private void showCompletedQuestsPerCategoryRangeChart(int[][] data, String[] xLabels, boolean drawHandles) {
         LineData lineData = createCategoryLineData(data, drawHandles, selectedCompleted);
 
         XAxis xAxis = completedQuestsRangeChart.getXAxis();
@@ -747,12 +783,36 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             return xLabels[idx];
         });
 
-        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
-        completedQuestsRangeChart.setMarker(growthMarkerView);
-
         completedQuestsRangeChart.setDescription(null);
         completedQuestsRangeChart.setData(lineData);
         completedQuestsRangeChart.invalidate();
+    }
+
+    private void setupAwesomenessRangeChart() {
+        applyDefaultStyle(awesomenessRangeChart);
+
+        YAxis yAxis = awesomenessRangeChart.getAxisLeft();
+
+        yAxis.setAxisMinimum(0);
+
+        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
+        awesomenessRangeChart.setMarker(growthMarkerView);
+        awesomenessRangeChart.setDescription(null);
+        awesomenessRangeChart.setDrawBorders(false);
+    }
+
+    private void showAwesomenessRangeChart(int[] data, int prevRangeLength, String currentRangeLabel, String prevRangeLabel, String[] xLabels, boolean drawHandles) {
+        LineData lineData = createThisVsLastWeekLineData(data, prevRangeLength, currentRangeLabel, prevRangeLabel, drawHandles);
+
+        XAxis xAxis = awesomenessRangeChart.getXAxis();
+        xAxis.setValueFormatter((v, axisBase) -> {
+            int idx = (int) v;
+            return xLabels[idx];
+        });
+
+        awesomenessRangeChart.setData(lineData);
+        awesomenessRangeChart.invalidate();
+        awesomenessRangeChart.animateX(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
     }
 
     @NonNull
@@ -804,31 +864,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         applyLineDataSetStyle(dataSet, color, highlightColor, drawHandles);
         return dataSet;
-    }
-
-    private void setupAwesomenessRangeChart(int[] data, int prevRangeLength, String currentRangeLabel, String prevRangeLabel, String[] xLabels, boolean drawHandles) {
-        applyDefaultStyle(awesomenessRangeChart);
-
-        LineData lineData = createThisVsLastWeekLineData(data, prevRangeLength, currentRangeLabel, prevRangeLabel, drawHandles);
-
-        XAxis xAxis = awesomenessRangeChart.getXAxis();
-        xAxis.setValueFormatter((v, axisBase) -> {
-            int idx = (int) v;
-            return xLabels[idx];
-        });
-
-        YAxis yAxis = awesomenessRangeChart.getAxisLeft();
-
-        yAxis.setAxisMinimum(0);
-
-        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
-        awesomenessRangeChart.setMarker(growthMarkerView);
-        awesomenessRangeChart.setDescription(null);
-        awesomenessRangeChart.setDrawBorders(false);
-
-        awesomenessRangeChart.setData(lineData);
-        awesomenessRangeChart.invalidate();
-        awesomenessRangeChart.animateX(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
     }
 
     private void applyLineDataSetStyle(LineDataSet dataSet, @ColorRes int color, @ColorRes int highlightColor, boolean drawHandles) {
