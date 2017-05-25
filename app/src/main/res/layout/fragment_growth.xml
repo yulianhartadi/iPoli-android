@@ -26,47 +26,80 @@
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:layout_editor_absoluteY="56dp"
-                tools:layout_editor_absoluteX="0dp">
+                android:layout_height="match_parent"
+                android:paddingBottom="32dp"
+                android:paddingTop="16dp"
+                android:layout_marginTop="?attr/actionBarSize">
 
                 <ImageView
+                    android:id="@+id/imageView7"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="0dp"
                     android:src="@drawable/ic_growth_summary_background"
-                    tools:layout_editor_absoluteX="72dp"
-                    tools:layout_editor_absoluteY="21dp" />
+                    app:layout_constraintBottom_toTopOf="@+id/summary_done"
+                    app:layout_constraintLeft_toLeftOf="@+id/summary_done"
+                    app:layout_constraintRight_toRightOf="@+id/summary_done"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
 
                 <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:id="@+id/imageView6"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="8dp"
                     android:src="@drawable/ic_growth_summary_done"
-                    tools:layout_editor_absoluteY="45dp"
-                    tools:layout_editor_absoluteX="129dp" />
+                    app:layout_constraintBottom_toBottomOf="@+id/imageView7"
+                    app:layout_constraintLeft_toLeftOf="@+id/imageView7"
+                    app:layout_constraintRight_toRightOf="@+id/imageView7"
+                    app:layout_constraintTop_toTopOf="@+id/imageView7" />
 
                 <TextView
                     android:id="@+id/summary_done"
                     style="@style/TextAppearance.AppCompat.Subhead"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginLeft="64dp"
                     android:textAlignment="center"
-                    tools:text="123\nDone"
-                    tools:layout_editor_absoluteY="69dp"
-                    tools:layout_editor_absoluteX="72dp" />
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    tools:text="123\nDone" />
 
                 <ImageView
+                    android:id="@+id/imageView3"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="0dp"
                     android:src="@drawable/ic_growth_summary_background"
-                    tools:layout_editor_absoluteY="0dp"
-                    tools:layout_editor_absoluteX="180dp" />
+                    app:layout_constraintBottom_toTopOf="@+id/summary_overdue"
+                    app:layout_constraintLeft_toLeftOf="@+id/summary_overdue"
+                    app:layout_constraintRight_toRightOf="@+id/summary_overdue"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
 
                 <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:id="@+id/imageView8"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="8dp"
                     android:src="@drawable/ic_growth_summary_overdue"
-                    tools:layout_editor_absoluteY="0dp"
-                    tools:layout_editor_absoluteX="184dp" />
+                    app:layout_constraintBottom_toBottomOf="@+id/imageView3"
+                    app:layout_constraintLeft_toLeftOf="@+id/imageView3"
+                    app:layout_constraintRight_toRightOf="@+id/imageView3"
+                    app:layout_constraintTop_toTopOf="@+id/imageView3" />
 
                 <TextView
                     android:id="@+id/summary_overdue"
@@ -74,37 +107,61 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginEnd="32dp"
-                    android:layout_marginStart="32dp"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="0dp"
                     android:textAlignment="center"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toRightOf="@+id/summary_done"
+                    app:layout_constraintRight_toLeftOf="@+id/summary_time_tracked"
                     tools:text="42\nOverdue"
-                    tools:layout_editor_absoluteX="162dp"
-                    tools:layout_editor_absoluteY="69dp" />
+                    app:layout_constraintHorizontal_bias="0.504" />
 
                 <ImageView
+                    android:id="@+id/imageView5"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="0dp"
                     android:src="@drawable/ic_growth_summary_background"
-                    tools:layout_editor_absoluteY="0dp"
-                    tools:layout_editor_absoluteX="297dp" />
+                    app:layout_constraintLeft_toLeftOf="@+id/summary_time_tracked"
+                    app:layout_constraintRight_toRightOf="@+id/summary_time_tracked"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintHorizontal_bias="0.47"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toTopOf="@+id/summary_time_tracked"
+                    app:layout_constraintVertical_bias="0.0" />
 
                 <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="8dp"
                     android:src="@drawable/ic_growth_summary_time_tracked"
-                    tools:layout_editor_absoluteY="8dp"
-                    tools:layout_editor_absoluteX="297dp" />
+                    app:layout_constraintBottom_toBottomOf="@+id/imageView5"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintLeft_toLeftOf="@+id/imageView5"
+                    app:layout_constraintRight_toRightOf="@+id/imageView5"
+                    app:layout_constraintTop_toTopOf="@+id/imageView5"
+                    app:layout_constraintVertical_bias="0.5" />
 
                 <TextView
                     android:id="@+id/summary_time_tracked"
                     style="@style/TextAppearance.AppCompat.Subhead"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginRight="64dp"
                     android:layout_toEndOf="@id/summary_overdue"
                     android:textAlignment="center"
-                    tools:text="28\nTracked"
-                    tools:layout_editor_absoluteX="279dp"
-                    tools:layout_editor_absoluteY="69dp" />
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    tools:text="28\nTracked" />
+
+
             </android.support.constraint.ConstraintLayout>
 
             <android.support.v7.widget.Toolbar
