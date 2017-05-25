@@ -26,7 +26,6 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
@@ -80,8 +79,6 @@ import static org.threeten.bp.temporal.ChronoUnit.DAYS;
  */
 public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSelectedListener {
 
-    public static final int CHART_ANIMATION_DURATION = 500;
-    public static final Easing.EasingOption DEFAULT_EASING_OPTION = Easing.EasingOption.EaseInQuart;
     public static final int THIS_WEEK = 0;
     public static final int THIS_MONTH = 1;
     public static final int LAST_7_DAYS = 2;
@@ -446,6 +443,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             }
 
             boolean drawHandles = false;
+            showSummary(completed, overdue, minutesTracked);
             showAwesomenessRangeChart(awesomenessData, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
             showCompletedQuestsPerCategoryRangeChart(completedData, xLabels, drawHandles);
             showTimeSpentRangeChart(timeSpentData, xLabels, drawHandles);
