@@ -64,7 +64,6 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.help.HelpDialog;
-import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.scheduling.PriorityEstimator;
 import io.ipoli.android.app.ui.charts.ChartMarkerView;
 import io.ipoli.android.app.ui.charts.XAxisValueFormatter;
@@ -170,7 +169,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
             actionBar.setDisplayHomeAsUpEnabled(true);
-
 
             ArrayAdapter<String> adapter = new ArrayAdapter<>(actionBar.getThemedContext(),
                     R.layout.growth_spinner_item,
@@ -338,63 +336,60 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
         LocalDate startOfPrevWeek = today.minusWeeks(1).with(DayOfWeek.MONDAY);
 
-        questPersistenceService.findAllBetween(startOfPrevWeek, today, new OnDataChangedListener<List<Quest>>() {
-            @Override
-            public void onDataChanged(List<Quest> quests) {
-                int[] awesomenessData = new int[7 + today.getDayOfWeek().getValue()];
-                int[][] completedData = new int[Category.values().length][7];
-                int[][] timeSpentData = new int[Category.values().length][7];
-                int[] xpData = new int[7 + today.getDayOfWeek().getValue()];
-                int[] coinsData = new int[7 + today.getDayOfWeek().getValue()];
-                int[] completed = new int[2];
-                int[] overdue = new int[2];
-                int[] minutesTracked = new int[2];
-                for (Quest q : quests) {
-                    if (q.isCompleted()) {
-                        LocalDate completedAtDate = q.getCompletedAtDate();
-                        int startOfPrevWeekIdx = (int) DAYS.between(startOfPrevWeek, completedAtDate);
-                        awesomenessData[startOfPrevWeekIdx] += getAwesomenessForQuest(q);
-                        coinsData[startOfPrevWeekIdx] += q.getCoins();
-                        xpData[startOfPrevWeekIdx] += q.getExperience();
-                        int thisWeekIdx = (int) DAYS.between(startOfWeek, completedAtDate);
-                        completedData[q.getCategoryType().ordinal()][thisWeekIdx]++;
-                        timeSpentData[q.getCategoryType().ordinal()][thisWeekIdx] += q.getActualDuration();
-                        if (completedAtDate.isBefore(startOfWeek)) {
-                            completed[0]++;
-                            if (q.getActualStart() != null) {
-                                minutesTracked[0] += q.getActualDuration();
-                            }
-                        } else {
-                            completed[1]++;
-                            if (q.getActualStart() != null) {
-                                minutesTracked[1] += q.getActualDuration();
-                            }
+        questPersistenceService.findAllScheduledBetween(startOfPrevWeek, today, quests -> {
+            int[] awesomenessData = new int[7 + today.getDayOfWeek().getValue()];
+            int[][] completedData = new int[Category.values().length][7];
+            int[][] timeSpentData = new int[Category.values().length][7];
+            int[] xpData = new int[7 + today.getDayOfWeek().getValue()];
+            int[] coinsData = new int[7 + today.getDayOfWeek().getValue()];
+            int[] completed = new int[2];
+            int[] overdue = new int[2];
+            int[] minutesTracked = new int[2];
+            for (Quest q : quests) {
+                if (q.isCompleted()) {
+                    LocalDate completedAtDate = q.getCompletedAtDate();
+                    int startOfPrevWeekIdx = (int) DAYS.between(startOfPrevWeek, completedAtDate);
+                    awesomenessData[startOfPrevWeekIdx] += getAwesomenessForQuest(q);
+                    coinsData[startOfPrevWeekIdx] += q.getCoins();
+                    xpData[startOfPrevWeekIdx] += q.getExperience();
+                    int thisWeekIdx = (int) DAYS.between(startOfWeek, completedAtDate);
+                    completedData[q.getCategoryType().ordinal()][thisWeekIdx]++;
+                    timeSpentData[q.getCategoryType().ordinal()][thisWeekIdx] += q.getActualDuration();
+                    if (completedAtDate.isBefore(startOfWeek)) {
+                        completed[0]++;
+                        if (q.getActualStart() != null) {
+                            minutesTracked[0] += q.getActualDuration();
                         }
-                    }
-
-                    boolean isCompletedAfterEndDate = q.isCompleted() && q.getEndDate().isBefore(q.getCompletedAtDate());
-                    boolean isOverdue = !q.isCompleted() && q.getEndDate().isBefore(today);
-                    if (isCompletedAfterEndDate || isOverdue) {
-                        if (q.getEndDate().isBefore(startOfWeek)) {
-                            overdue[0]++;
-                        } else {
-                            overdue[1]++;
+                    } else {
+                        completed[1]++;
+                        if (q.getActualStart() != null) {
+                            minutesTracked[1] += q.getActualDuration();
                         }
                     }
                 }
-                showSummary(completed, overdue, minutesTracked);
-                String[] xLabels = new String[7];
-                for (int i = 0; i < 7; i++) {
-                    xLabels[i] = startOfWeek.plusDays(i).format(DateTimeFormatter.ofPattern(X_AXIS_DAY_FORMAT));
-                }
 
-                boolean drawHandles = true;
-                showAwesomenessRangeChart(awesomenessData, 7, "This week", "Last week", xLabels, drawHandles);
-                showCompletedQuestsPerCategoryRangeChart(completedData, xLabels, drawHandles);
-                showTimeSpentRangeChart(timeSpentData, xLabels, drawHandles);
-                showCoinsEarnedRangeChart(coinsData, 7, "This week", "Last week", xLabels, drawHandles);
-                showXpEarnedRangeChart(xpData, 7, "This week", "Last week", xLabels, drawHandles);
+                boolean isCompletedAfterEndDate = q.isCompleted() && q.getEndDate().isBefore(q.getCompletedAtDate());
+                boolean isOverdue = !q.isCompleted() && q.getEndDate().isBefore(today);
+                if (isCompletedAfterEndDate || isOverdue) {
+                    if (q.getEndDate().isBefore(startOfWeek)) {
+                        overdue[0]++;
+                    } else {
+                        overdue[1]++;
+                    }
+                }
             }
+            showSummary(completed, overdue, minutesTracked);
+            String[] xLabels = new String[7];
+            for (int i = 0; i < 7; i++) {
+                xLabels[i] = startOfWeek.plusDays(i).format(DateTimeFormatter.ofPattern(X_AXIS_DAY_FORMAT));
+            }
+
+            boolean drawHandles = true;
+            showAwesomenessRangeChart(awesomenessData, 7, "This week", "Last week", xLabels, drawHandles);
+            showCompletedQuestsPerCategoryRangeChart(completedData, xLabels, drawHandles);
+            showTimeSpentRangeChart(timeSpentData, xLabels, drawHandles);
+            showCoinsEarnedRangeChart(coinsData, 7, "This week", "Last week", xLabels, drawHandles);
+            showXpEarnedRangeChart(xpData, 7, "This week", "Last week", xLabels, drawHandles);
         });
     }
 
@@ -404,61 +399,58 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         int daysInPrevMonth = startOfPrevMonth.lengthOfMonth();
         int daysInCurrentMonth = startOfMonth.lengthOfMonth();
 
-        questPersistenceService.findAllBetween(startOfPrevMonth, today, new OnDataChangedListener<List<Quest>>() {
-            @Override
-            public void onDataChanged(List<Quest> quests) {
-                int[] awesomenessData = new int[daysInPrevMonth + today.getDayOfMonth()];
-                int[][] completedData = new int[Category.values().length][daysInCurrentMonth];
-                int[][] timeSpentData = new int[Category.values().length][daysInCurrentMonth];
-                int[] xpData = new int[daysInPrevMonth + today.getDayOfMonth()];
-                int[] coinsData = new int[daysInPrevMonth + today.getDayOfMonth()];
-                int[] completed = new int[2];
-                int[] overdue = new int[2];
-                int[] minutesTracked = new int[2];
-                for (Quest q : quests) {
-                    if (q.isCompleted()) {
-                        LocalDate completedAtDate = q.getCompletedAtDate();
-                        int idx = (int) DAYS.between(startOfPrevMonth, completedAtDate);
-                        awesomenessData[idx] += getAwesomenessForQuest(q);
-                        coinsData[idx] += q.getCoins();
-                        xpData[idx] += q.getExperience();
-                        int thisMonthIdx = (int) DAYS.between(startOfMonth, completedAtDate);
-                        completedData[q.getCategoryType().ordinal()][thisMonthIdx]++;
-                        timeSpentData[q.getCategoryType().ordinal()][thisMonthIdx] += q.getActualDuration();
-                        if (completedAtDate.isBefore(startOfMonth)) {
-                            completed[0]++;
-                            if (q.getActualStart() != null) {
-                                minutesTracked[0] += q.getActualDuration();
-                            }
-                        } else {
-                            completed[1]++;
-                            if (q.getActualStart() != null) {
-                                minutesTracked[1] += q.getActualDuration();
-                            }
+        questPersistenceService.findAllScheduledBetween(startOfPrevMonth, today, quests -> {
+            int[] awesomenessData = new int[daysInPrevMonth + today.getDayOfMonth()];
+            int[][] completedData = new int[Category.values().length][daysInCurrentMonth];
+            int[][] timeSpentData = new int[Category.values().length][daysInCurrentMonth];
+            int[] xpData = new int[daysInPrevMonth + today.getDayOfMonth()];
+            int[] coinsData = new int[daysInPrevMonth + today.getDayOfMonth()];
+            int[] completed = new int[2];
+            int[] overdue = new int[2];
+            int[] minutesTracked = new int[2];
+            for (Quest q : quests) {
+                if (q.isCompleted()) {
+                    LocalDate completedAtDate = q.getCompletedAtDate();
+                    int idx = (int) DAYS.between(startOfPrevMonth, completedAtDate);
+                    awesomenessData[idx] += getAwesomenessForQuest(q);
+                    coinsData[idx] += q.getCoins();
+                    xpData[idx] += q.getExperience();
+                    int thisMonthIdx = (int) DAYS.between(startOfMonth, completedAtDate);
+                    completedData[q.getCategoryType().ordinal()][thisMonthIdx]++;
+                    timeSpentData[q.getCategoryType().ordinal()][thisMonthIdx] += q.getActualDuration();
+                    if (completedAtDate.isBefore(startOfMonth)) {
+                        completed[0]++;
+                        if (q.getActualStart() != null) {
+                            minutesTracked[0] += q.getActualDuration();
                         }
-                    }
-                    boolean isCompletedAfterEndDate = q.isCompleted() && q.getEndDate().isBefore(q.getCompletedAtDate());
-                    boolean isOverdue = !q.isCompleted() && q.getEndDate().isBefore(today);
-                    if (isCompletedAfterEndDate || isOverdue) {
-                        if (q.getEndDate().isBefore(startOfMonth)) {
-                            overdue[0]++;
-                        } else {
-                            overdue[1]++;
+                    } else {
+                        completed[1]++;
+                        if (q.getActualStart() != null) {
+                            minutesTracked[1] += q.getActualDuration();
                         }
                     }
                 }
-                String[] xLabels = new String[daysInCurrentMonth];
-                for (int i = 0; i < daysInCurrentMonth; i++) {
-                    xLabels[i] = startOfMonth.plusDays(i).format(DateTimeFormatter.ofPattern(X_AXIS_DAY_FORMAT));
+                boolean isCompletedAfterEndDate = q.isCompleted() && q.getEndDate().isBefore(q.getCompletedAtDate());
+                boolean isOverdue = !q.isCompleted() && q.getEndDate().isBefore(today);
+                if (isCompletedAfterEndDate || isOverdue) {
+                    if (q.getEndDate().isBefore(startOfMonth)) {
+                        overdue[0]++;
+                    } else {
+                        overdue[1]++;
+                    }
                 }
-
-                boolean drawHandles = false;
-                showAwesomenessRangeChart(awesomenessData, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
-                showCompletedQuestsPerCategoryRangeChart(completedData, xLabels, drawHandles);
-                showTimeSpentRangeChart(timeSpentData, xLabels, drawHandles);
-                showCoinsEarnedRangeChart(coinsData, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
-                showXpEarnedRangeChart(xpData, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
             }
+            String[] xLabels = new String[daysInCurrentMonth];
+            for (int i = 0; i < daysInCurrentMonth; i++) {
+                xLabels[i] = startOfMonth.plusDays(i).format(DateTimeFormatter.ofPattern(X_AXIS_DAY_FORMAT));
+            }
+
+            boolean drawHandles = false;
+            showAwesomenessRangeChart(awesomenessData, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
+            showCompletedQuestsPerCategoryRangeChart(completedData, xLabels, drawHandles);
+            showTimeSpentRangeChart(timeSpentData, xLabels, drawHandles);
+            showCoinsEarnedRangeChart(coinsData, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
+            showXpEarnedRangeChart(xpData, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
         });
     }
 
@@ -470,55 +462,52 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             LocalDate curStart = startDay.plusMonths(i);
             monthRanges.add(new Pair<>(DateUtils.toMillis(curStart), DateUtils.toMillis(curStart.with(TemporalAdjusters.lastDayOfMonth()))));
         }
-        questPersistenceService.findAllBetween(startDay, today, new OnDataChangedListener<List<Quest>>() {
-            @Override
-            public void onDataChanged(List<Quest> quests) {
-                int[] awesomenessData = new int[periodLength];
-                int[][] completedData = new int[Category.values().length][periodLength];
-                int[][] timeSpentData = new int[Category.values().length][periodLength];
-                int[] xpData = new int[periodLength];
-                int[] coinsData = new int[periodLength];
-                int completed = 0;
-                int overdue = 0;
-                int minutesTracked = 0;
-                for (Quest q : quests) {
-                    if (q.isCompleted()) {
-                        Long completedAt = q.getCompletedAt();
+        questPersistenceService.findAllScheduledBetween(startDay, today, quests -> {
+            int[] awesomenessData = new int[periodLength];
+            int[][] completedData = new int[Category.values().length][periodLength];
+            int[][] timeSpentData = new int[Category.values().length][periodLength];
+            int[] xpData = new int[periodLength];
+            int[] coinsData = new int[periodLength];
+            int completed = 0;
+            int overdue = 0;
+            int minutesTracked = 0;
+            for (Quest q : quests) {
+                if (q.isCompleted()) {
+                    Long completedAt = q.getCompletedAt();
 
-                        int idx = -1;
-                        for (int i = 0; i < periodLength; i++) {
-                            Pair<Long, Long> range = monthRanges.get(i);
-                            if (completedAt >= range.first && completedAt <= range.second) {
-                                idx = i;
-                            }
-                        }
-                        awesomenessData[idx] += getAwesomenessForQuest(q);
-                        coinsData[idx] += q.getCoins();
-                        xpData[idx] += q.getExperience();
-                        completedData[q.getCategoryType().ordinal()][idx]++;
-                        timeSpentData[q.getCategoryType().ordinal()][idx] += q.getActualDuration();
-                        completed++;
-                        if (q.getActualStart() != null) {
-                            minutesTracked += q.getActualDuration();
+                    int idx = -1;
+                    for (int i = 0; i < periodLength; i++) {
+                        Pair<Long, Long> range = monthRanges.get(i);
+                        if (completedAt >= range.first && completedAt <= range.second) {
+                            idx = i;
                         }
                     }
-                    if (isOverdue(q, today)) {
-                        overdue++;
+                    awesomenessData[idx] += getAwesomenessForQuest(q);
+                    coinsData[idx] += q.getCoins();
+                    xpData[idx] += q.getExperience();
+                    completedData[q.getCategoryType().ordinal()][idx]++;
+                    timeSpentData[q.getCategoryType().ordinal()][idx] += q.getActualDuration();
+                    completed++;
+                    if (q.getActualStart() != null) {
+                        minutesTracked += q.getActualDuration();
                     }
                 }
-
-                showSummary(completed, overdue, minutesTracked);
-                String[] xLabels = new String[periodLength];
-                for (int i = 0; i < periodLength; i++) {
-                    xLabels[i] = startDay.plusMonths(i).format(DateTimeFormatter.ofPattern(X_AXIS_MONTH));
+                if (isOverdue(q, today)) {
+                    overdue++;
                 }
-
-                showAwesomenessVsLastChart(awesomenessData, xLabels);
-                showCompletedQuestsVsLastChart(completedData, xLabels);
-                showTimeSpentVsLastChart(timeSpentData, xLabels);
-                showCoinsEarnedVsLastChart(coinsData, xLabels);
-                showXpEarnedVsLastChart(xpData, xLabels);
             }
+
+            showSummary(completed, overdue, minutesTracked);
+            String[] xLabels = new String[periodLength];
+            for (int i = 0; i < periodLength; i++) {
+                xLabels[i] = startDay.plusMonths(i).format(DateTimeFormatter.ofPattern(X_AXIS_MONTH));
+            }
+
+            showAwesomenessVsLastChart(awesomenessData, xLabels);
+            showCompletedQuestsVsLastChart(completedData, xLabels);
+            showTimeSpentVsLastChart(timeSpentData, xLabels);
+            showCoinsEarnedVsLastChart(coinsData, xLabels);
+            showXpEarnedVsLastChart(xpData, xLabels);
         });
     }
 
@@ -530,60 +519,57 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             LocalDate curStart = startDay.plusWeeks(i);
             weekRanges.add(new Pair<>(DateUtils.toMillis(curStart), DateUtils.toMillis(curStart.with(DayOfWeek.SUNDAY))));
         }
-        questPersistenceService.findAllBetween(startDay, today, new OnDataChangedListener<List<Quest>>() {
-            @Override
-            public void onDataChanged(List<Quest> quests) {
-                int[] awesomenessData = new int[periodLength];
-                int[][] completedData = new int[Category.values().length][periodLength];
-                int[][] timeSpentData = new int[Category.values().length][periodLength];
-                int[] xpData = new int[periodLength];
-                int[] coinsData = new int[periodLength];
-                int completed = 0;
-                int overdue = 0;
-                int minutesTracked = 0;
-                for (Quest q : quests) {
-                    if (q.isCompleted()) {
-                        Long completedAt = q.getCompletedAt();
+        questPersistenceService.findAllScheduledBetween(startDay, today, quests -> {
+            int[] awesomenessData = new int[periodLength];
+            int[][] completedData = new int[Category.values().length][periodLength];
+            int[][] timeSpentData = new int[Category.values().length][periodLength];
+            int[] xpData = new int[periodLength];
+            int[] coinsData = new int[periodLength];
+            int completed = 0;
+            int overdue = 0;
+            int minutesTracked = 0;
+            for (Quest q : quests) {
+                if (q.isCompleted()) {
+                    Long completedAt = q.getCompletedAt();
 
-                        int idx = -1;
-                        for (int i = 0; i < periodLength; i++) {
-                            Pair<Long, Long> range = weekRanges.get(i);
-                            if (completedAt >= range.first && completedAt <= range.second) {
-                                idx = i;
-                            }
-                        }
-                        awesomenessData[idx] += getAwesomenessForQuest(q);
-                        coinsData[idx] += q.getCoins();
-                        xpData[idx] += q.getExperience();
-                        completedData[q.getCategoryType().ordinal()][idx]++;
-                        timeSpentData[q.getCategoryType().ordinal()][idx] += q.getActualDuration();
-                        completed++;
-                        if (q.getActualStart() != null) {
-                            minutesTracked += q.getActualDuration();
+                    int idx = -1;
+                    for (int i = 0; i < periodLength; i++) {
+                        Pair<Long, Long> range = weekRanges.get(i);
+                        if (completedAt >= range.first && completedAt <= range.second) {
+                            idx = i;
                         }
                     }
-                    if (isOverdue(q, today)) {
-                        overdue++;
+                    awesomenessData[idx] += getAwesomenessForQuest(q);
+                    coinsData[idx] += q.getCoins();
+                    xpData[idx] += q.getExperience();
+                    completedData[q.getCategoryType().ordinal()][idx]++;
+                    timeSpentData[q.getCategoryType().ordinal()][idx] += q.getActualDuration();
+                    completed++;
+                    if (q.getActualStart() != null) {
+                        minutesTracked += q.getActualDuration();
                     }
                 }
-
-                showSummary(completed, overdue, minutesTracked);
-                String[] xLabels = new String[periodLength];
-                for (int i = 0; i < periodLength; i++) {
-                    LocalDate weekStart = startDay.plusWeeks(i);
-                    LocalDate weekEnd = weekStart.plusDays(6);
-                    String weekStartText = weekStart.format(DateTimeFormatter.ofPattern(X_AXIS_DAY_FORMAT));
-                    String weekEndText = weekEnd.format(DateTimeFormatter.ofPattern(X_AXIS_DAY_FORMAT));
-                    String label = weekStartText + " - " + weekEndText;
-                    xLabels[i] = label;
+                if (isOverdue(q, today)) {
+                    overdue++;
                 }
-
-                showAwesomenessVsLastChart(awesomenessData, xLabels);
-                showCompletedQuestsVsLastChart(completedData, xLabels);
-                showTimeSpentVsLastChart(timeSpentData, xLabels);
-                showCoinsEarnedVsLastChart(coinsData, xLabels);
-                showXpEarnedVsLastChart(xpData, xLabels);
             }
+
+            showSummary(completed, overdue, minutesTracked);
+            String[] xLabels = new String[periodLength];
+            for (int i = 0; i < periodLength; i++) {
+                LocalDate weekStart = startDay.plusWeeks(i);
+                LocalDate weekEnd = weekStart.plusDays(6);
+                String weekStartText = weekStart.format(DateTimeFormatter.ofPattern(X_AXIS_DAY_FORMAT));
+                String weekEndText = weekEnd.format(DateTimeFormatter.ofPattern(X_AXIS_DAY_FORMAT));
+                String label = weekStartText + " - " + weekEndText;
+                xLabels[i] = label;
+            }
+
+            showAwesomenessVsLastChart(awesomenessData, xLabels);
+            showCompletedQuestsVsLastChart(completedData, xLabels);
+            showTimeSpentVsLastChart(timeSpentData, xLabels);
+            showCoinsEarnedVsLastChart(coinsData, xLabels);
+            showXpEarnedVsLastChart(xpData, xLabels);
         });
     }
 
@@ -591,48 +577,45 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         LocalDate startDay = today.minusDays(6);
 
-        questPersistenceService.findAllBetween(startDay, today, new OnDataChangedListener<List<Quest>>() {
-            @Override
-            public void onDataChanged(List<Quest> quests) {
-                int[] awesomenessData = new int[7];
-                int[][] completedData = new int[Category.values().length][7];
-                int[][] timeSpentData = new int[Category.values().length][7];
-                int[] xpData = new int[7];
-                int[] coinsData = new int[7];
-                int completed = 0;
-                int overdue = 0;
-                int minutesTracked = 0;
-                for (Quest q : quests) {
-                    if (q.isCompleted()) {
-                        int idx = (int) DAYS.between(startDay, q.getCompletedAtDate());
-                        awesomenessData[idx] += getAwesomenessForQuest(q);
-                        coinsData[idx] += q.getCoins();
-                        xpData[idx] += q.getExperience();
-                        completedData[q.getCategoryType().ordinal()][idx]++;
-                        timeSpentData[q.getCategoryType().ordinal()][idx] += q.getActualDuration();
-                        completed++;
-                        if (q.getActualStart() != null) {
-                            minutesTracked += q.getActualDuration();
-                        }
-                    }
-                    if (isOverdue(q, today)) {
-                        overdue++;
+        questPersistenceService.findAllScheduledBetween(startDay, today, quests -> {
+            int[] awesomenessData = new int[7];
+            int[][] completedData = new int[Category.values().length][7];
+            int[][] timeSpentData = new int[Category.values().length][7];
+            int[] xpData = new int[7];
+            int[] coinsData = new int[7];
+            int completed = 0;
+            int overdue = 0;
+            int minutesTracked = 0;
+            for (Quest q : quests) {
+                if (q.isCompleted()) {
+                    int idx = (int) DAYS.between(startDay, q.getCompletedAtDate());
+                    awesomenessData[idx] += getAwesomenessForQuest(q);
+                    coinsData[idx] += q.getCoins();
+                    xpData[idx] += q.getExperience();
+                    completedData[q.getCategoryType().ordinal()][idx]++;
+                    timeSpentData[q.getCategoryType().ordinal()][idx] += q.getActualDuration();
+                    completed++;
+                    if (q.getActualStart() != null) {
+                        minutesTracked += q.getActualDuration();
                     }
                 }
-
-                showSummary(completed, overdue, minutesTracked);
-
-                String[] xLabels = new String[7];
-                for (int i = 0; i < 7; i++) {
-                    xLabels[i] = startDay.plusDays(i).format(DateTimeFormatter.ofPattern(X_AXIS_DAY_FORMAT));
+                if (isOverdue(q, today)) {
+                    overdue++;
                 }
-
-                showAwesomenessVsLastChart(awesomenessData, xLabels);
-                showCompletedQuestsVsLastChart(completedData, xLabels);
-                showTimeSpentVsLastChart(timeSpentData, xLabels);
-                showCoinsEarnedVsLastChart(coinsData, xLabels);
-                showXpEarnedVsLastChart(xpData, xLabels);
             }
+
+            showSummary(completed, overdue, minutesTracked);
+
+            String[] xLabels = new String[7];
+            for (int i = 0; i < 7; i++) {
+                xLabels[i] = startDay.plusDays(i).format(DateTimeFormatter.ofPattern(X_AXIS_DAY_FORMAT));
+            }
+
+            showAwesomenessVsLastChart(awesomenessData, xLabels);
+            showCompletedQuestsVsLastChart(completedData, xLabels);
+            showTimeSpentVsLastChart(timeSpentData, xLabels);
+            showCoinsEarnedVsLastChart(coinsData, xLabels);
+            showXpEarnedVsLastChart(xpData, xLabels);
         });
     }
 

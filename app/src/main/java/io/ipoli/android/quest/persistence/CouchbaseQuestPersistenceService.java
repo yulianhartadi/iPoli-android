@@ -49,6 +49,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     private final View scheduledForRepeatingQuest;
     private final View completedDayQuestsView;
     private final View questFromAndroidCalendar;
+    private final View scheduledByDayView;
 
     public CouchbaseQuestPersistenceService(Database database, ObjectMapper objectMapper, Bus eventBus) {
         super(database, objectMapper, eventBus);
@@ -77,6 +78,20 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                 }
                 LocalDate key = DateUtils.fromMillis((long) keys.get(0));
                 return new Pair<>(key, quests);
+            }, Constants.DEFAULT_VIEW_VERSION);
+        }
+
+        scheduledByDayView = database.getView("quests/scheduledByDay");
+        if (scheduledByDayView.getMap() == null) {
+            scheduledByDayView.setMap((document, emitter) -> {
+                String type = (String) document.get("type");
+                if (Quest.TYPE.equals(type)) {
+                    if (document.containsKey("scheduled")) {
+                        emitter.emit(Long.valueOf(document.get("scheduled").toString()), document);
+                    } else if (document.containsKey("originalScheduled")) {
+                        emitter.emit(Long.valueOf(document.get("originalScheduled").toString()), document);
+                    }
+                }
             }, Constants.DEFAULT_VIEW_VERSION);
         }
 
@@ -247,8 +262,8 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     }
 
     @Override
-    public void findAllBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
-        Query query = dayQuestsView.createQuery();
+    public void findAllScheduledBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
+        Query query = scheduledByDayView.createQuery();
         query.setMapOnly(true);
         query.setStartKey(toStartOfDayUTC(startDate).getTime());
         query.setEndKey(toStartOfDayUTC(endDate).getTime());
