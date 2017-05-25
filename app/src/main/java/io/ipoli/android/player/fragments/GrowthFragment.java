@@ -543,7 +543,10 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                         if (q.getActualStart() != null) {
                             minutesTracked += q.getActualDuration();
                         }
-                    } else {
+                    }
+                    boolean isCompletedAfterEndDate = q.isCompleted() && q.getEndDate().isBefore(q.getCompletedAtDate());
+                    boolean isOverdue = !q.isCompleted() && q.getEndDate().isBefore(today);
+                    if (isCompletedAfterEndDate || isOverdue) {
                         overdue++;
                     }
                 }
@@ -602,7 +605,10 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                         if (q.getActualStart() != null) {
                             minutesTracked += q.getActualDuration();
                         }
-                    } else {
+                    }
+                    boolean isCompletedAfterEndDate = q.isCompleted() && q.getEndDate().isBefore(q.getCompletedAtDate());
+                    boolean isOverdue = !q.isCompleted() && q.getEndDate().isBefore(today);
+                    if (isCompletedAfterEndDate || isOverdue) {
                         overdue++;
                     }
                 }
@@ -654,7 +660,10 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                         if (q.getActualStart() != null) {
                             minutesTracked += q.getActualDuration();
                         }
-                    } else {
+                    }
+                    boolean isCompletedAfterEndDate = q.isCompleted() && q.getEndDate().isBefore(q.getCompletedAtDate());
+                    boolean isOverdue = !q.isCompleted() && q.getEndDate().isBefore(today);
+                    if (isCompletedAfterEndDate || isOverdue) {
                         overdue++;
                     }
                 }
