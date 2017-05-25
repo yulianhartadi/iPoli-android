@@ -24,6 +24,7 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.store.StoreItemType;
+import io.ipoli.android.store.Upgrade;
 import io.ipoli.android.store.activities.StoreActivity;
 
 /**
@@ -87,7 +88,7 @@ public class UpgradeDialog extends DialogFragment {
         View v = inflater.inflate(R.layout.fragment_upgrade_dialog, null);
         View titleView = inflater.inflate(R.layout.upgrade_dialog_header, null);
         ImageView image = (ImageView) titleView.findViewById(R.id.upgrade_dialog_image);
-        image.setImageResource(upgrade.image);
+        image.setImageResource(upgrade.picture);
 
         unbinder = ButterKnife.bind(this, v);
 

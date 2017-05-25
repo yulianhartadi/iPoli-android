@@ -25,7 +25,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.player.Upgrade;
+import io.ipoli.android.store.Upgrade;
 import io.ipoli.android.player.UpgradesManager;
 import io.ipoli.android.store.adapters.UpgradeStoreAdapter;
 import io.ipoli.android.store.events.BuyUpgradeEvent;

@@ -131,7 +131,7 @@ public interface Constants {
     String QUICK_ADD_ADDITIONAL_TEXT = "quick_add_additional_text";
     String DEFAULT_PET_NAME = "Flopsy";
     String DEFAULT_PET_AVATAR = "pet_3";
-    String DEFAULT_PET_BACKGROUND_IMAGE = "pet_background_1";
+    String DEFAULT_PET_BACKGROUND_PICTURE = "pet_background_1";
 
     Integer DEFAULT_PET_HP = 80;
     double XP_BONUS_PERCENTAGE_OF_HP = 20.0;

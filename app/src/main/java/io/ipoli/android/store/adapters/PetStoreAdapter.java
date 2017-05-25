@@ -68,7 +68,7 @@ public class PetStoreAdapter extends RecyclerView.Adapter<PetStoreAdapter.ViewHo
 
         holder.container.setBackgroundColor(ContextCompat.getColor(context, colors[position % colors.length]));
 
-        holder.price.setOnClickListener(v -> eventBus.post(new BuyPetRequestEvent(vm)));
+        holder.price.setOnClickListener(v -> eventBus.post(new BuyPetRequestEvent(vm.getPet())));
     }
 
     @Override

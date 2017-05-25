@@ -14,20 +14,20 @@ public class StoreViewModel {
     private String title;
 
     @DrawableRes
-    private int image;
+    private int picture;
 
-    public StoreViewModel(StoreItemType type, String title, @DrawableRes int image) {
+    public StoreViewModel(StoreItemType type, String title, @DrawableRes int picture) {
         this.type = type;
         this.title = title;
-        this.image = image;
+        this.picture = picture;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public int getImage() {
-        return image;
+    public int getPicture() {
+        return picture;
     }
 
     public StoreItemType getType() {

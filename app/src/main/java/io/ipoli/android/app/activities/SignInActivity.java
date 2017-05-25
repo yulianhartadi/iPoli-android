@@ -348,7 +348,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     }
 
     private void createPlayer(String playerId, AuthProvider authProvider) {
-        Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR, Constants.DEFAULT_PET_BACKGROUND_IMAGE, Constants.DEFAULT_PET_HP);
+        Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR, Constants.DEFAULT_PET_BACKGROUND_PICTURE, Constants.DEFAULT_PET_HP);
         Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP),
                 Constants.DEFAULT_AVATAR_LEVEL,
                 Constants.DEFAULT_PLAYER_COINS,

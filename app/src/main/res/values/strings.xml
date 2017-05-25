@@ -681,6 +681,12 @@
     <string name="title_store_activity">Store</string>
     <string name="upgrade_dialog_not_enough_coins">This upgrade costs %d coins. Unfortunately, you have not collected enough. Do you want to buy some?</string>
 
+    <string name="pet_seal">Cute tail</string>
+    <string name="pet_donkey">Fancy ears</string>
+    <string name="pet_elephant">Flying ears</string>
+    <string name="pet_beaver">Crazy teeth</string>
+    <string name="pet_chicken">Chicken invader</string>
+
     <string-array name="player_titles">
         <item>Novice</item>
         <item>Apprentice</item>
@@ -692,14 +698,6 @@
         <item>Immortal</item>
         <item>Demigod</item>
         <item>Titan</item>
-    </string-array>
-
-    <string-array name="pet_names">
-        <item>Cute tail</item>
-        <item>Fancy ears</item>
-        <item>Flying ears</item>
-        <item>Crazy teeth</item>
-        <item>Chicken invader</item>
     </string-array>
 
     <string-array name="repeating_quest_frequencies">

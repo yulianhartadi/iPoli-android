@@ -41,7 +41,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         StoreViewModel vm = viewModels.get(holder.getAdapterPosition());
 
         holder.title.setText(vm.getTitle());
-        holder.image.setImageResource(vm.getImage());
+        holder.image.setImageResource(vm.getPicture());
         holder.container.setOnClickListener(v -> eventBus.post(new StoreItemSelectedEvent(vm.getType())));
     }
 

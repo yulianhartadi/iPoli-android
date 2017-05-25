@@ -1,4 +1,4 @@
-package io.ipoli.android.player;
+package io.ipoli.android.store;
 
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
@@ -41,16 +41,16 @@ public enum Upgrade {
     public final int longDesc;
 
     @DrawableRes
-    public final int image;
+    public final int picture;
 
     Upgrade(int code, int price, @StringRes int title, @StringRes int shortDesc,
-            @StringRes int longDesc, @DrawableRes int image) {
+            @StringRes int longDesc, @DrawableRes int picture) {
         this.code = code;
         this.price = price;
         this.title = title;
         this.shortDesc = shortDesc;
         this.longDesc = longDesc;
-        this.image = image;
+        this.picture = picture;
     }
 
     public static Upgrade get(int code) {
