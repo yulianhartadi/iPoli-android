@@ -17,6 +17,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
+import io.ipoli.android.store.events.BuyPetRequestEvent;
 import io.ipoli.android.store.viewmodels.PetViewModel;
 import mehdi.sakout.fancybuttons.FancyButton;
 
@@ -28,7 +29,7 @@ import mehdi.sakout.fancybuttons.FancyButton;
 public class PetStoreAdapter extends RecyclerView.Adapter<PetStoreAdapter.ViewHolder> {
     private final Context context;
     private final Bus eventBus;
-    private final List<PetViewModel> petViewModels;
+    private List<PetViewModel> petViewModels;
 
     public PetStoreAdapter(Context context, Bus eventBus, List<PetViewModel> petViewModels) {
         this.context = context;
@@ -53,12 +54,17 @@ public class PetStoreAdapter extends RecyclerView.Adapter<PetStoreAdapter.ViewHo
         holder.pictureState.setImageDrawable(context.getDrawable(vm.getPictureState()));
         holder.price.setText(vm.getPrice() + "");
 
-
+        holder.price.setOnClickListener(v -> eventBus.post(new BuyPetRequestEvent(vm)));
     }
 
     @Override
     public int getItemCount() {
         return petViewModels.size();
+    }
+
+    public void setViewModels(List<PetViewModel> petViewModels) {
+        this.petViewModels = petViewModels;
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
