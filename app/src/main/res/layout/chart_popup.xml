@@ -11,4 +11,4 @@
     android:minWidth="28dp"
     android:padding="4dp"
     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-    android:textColor="@color/md_white" />
+    android:textColor="@color/md_dark_text_87" />

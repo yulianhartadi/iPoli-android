@@ -3,7 +3,6 @@ package io.ipoli.android.player.fragments;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
@@ -172,9 +171,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         @Override
         public void refreshContent(Entry e, Highlight highlight) {
-            @ColorRes int backgroundColor = (int) e.getData();
-            GradientDrawable drawable = (GradientDrawable) popupContent.getBackground();
-            drawable.setColor(ContextCompat.getColor(getContext(), backgroundColor));
             popupContent.setText(String.valueOf((int) e.getY()));
             super.refreshContent(e, highlight);
         }
@@ -292,8 +288,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
     private void setupCompletedQuestsVsLastChart() {
         applyDefaultStyle(completedQuestsVsLastChart, true);
+        completedQuestsVsLastChart.setTouchEnabled(true);
         completedQuestsVsLastChart.setNoDataText(getString(R.string.growth_no_categories_selected));
         completedQuestsVsLastChart.setNoDataTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
+        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
+        completedQuestsVsLastChart.setMarker(growthMarkerView);
     }
 
     private void setupTimeSpentRangeChart() {
@@ -306,8 +305,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
     private void setupTimeSpentVsLastChart() {
         applyDefaultStyle(timeSpentVsLastChart, true);
+        timeSpentVsLastChart.setTouchEnabled(true);
         timeSpentVsLastChart.setNoDataText(getString(R.string.growth_no_categories_selected));
         timeSpentVsLastChart.setNoDataTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
+        GrowthMarkerView growthMarkerView = new GrowthMarkerView(getContext());
+        timeSpentVsLastChart.setMarker(growthMarkerView);
     }
 
     private void setupCoinsEarnedRangeChart() {
@@ -915,7 +917,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     private LineData createThisVsLastWeekLineData(int[] data, int prevRangeLength, String currentRangeLabel, String prevRangeLabel, boolean drawHandles) {
         List<Entry> entries = new ArrayList<>();
         for (int i = prevRangeLength; i < data.length; i++) {
-            entries.add(new Entry(i - prevRangeLength, data[i], R.color.md_red_A400));
+            entries.add(new Entry(i - prevRangeLength, data[i]));
         }
         LineDataSet thisWeekDataSet = new LineDataSet(entries, currentRangeLabel);
 
@@ -923,7 +925,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
         List<Entry> lastWeekEntries = new ArrayList<>();
         for (int i = 0; i < prevRangeLength; i++) {
-            lastWeekEntries.add(new Entry(i, data[i], R.color.md_blue_A400));
+            lastWeekEntries.add(new Entry(i, data[i]));
         }
         LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, prevRangeLabel);
         applyLineDataSetStyle(lastWeekDataSet, R.color.md_blue_A200, R.color.md_blue_A400, drawHandles);
@@ -1006,7 +1008,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         int[] categoryData = data[category.ordinal()];
         List<Entry> entries = new ArrayList<>();
         for (int i = 0; i < categoryData.length; i++) {
-            entries.add(new Entry(i, categoryData[i], highlightColor));
+            entries.add(new Entry(i, categoryData[i]));
         }
         LineDataSet dataSet = new LineDataSet(entries, getString(Category.getNameRes(category)));
 
