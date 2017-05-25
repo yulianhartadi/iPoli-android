@@ -544,9 +544,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                             minutesTracked += q.getActualDuration();
                         }
                     }
-                    boolean isCompletedAfterEndDate = q.isCompleted() && q.getEndDate().isBefore(q.getCompletedAtDate());
-                    boolean isOverdue = !q.isCompleted() && q.getEndDate().isBefore(today);
-                    if (isCompletedAfterEndDate || isOverdue) {
+                    if (isOverdue(q, today)) {
                         overdue++;
                     }
                 }
@@ -606,9 +604,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                             minutesTracked += q.getActualDuration();
                         }
                     }
-                    boolean isCompletedAfterEndDate = q.isCompleted() && q.getEndDate().isBefore(q.getCompletedAtDate());
-                    boolean isOverdue = !q.isCompleted() && q.getEndDate().isBefore(today);
-                    if (isCompletedAfterEndDate || isOverdue) {
+                    if (isOverdue(q, today)) {
                         overdue++;
                     }
                 }
@@ -661,9 +657,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                             minutesTracked += q.getActualDuration();
                         }
                     }
-                    boolean isCompletedAfterEndDate = q.isCompleted() && q.getEndDate().isBefore(q.getCompletedAtDate());
-                    boolean isOverdue = !q.isCompleted() && q.getEndDate().isBefore(today);
-                    if (isCompletedAfterEndDate || isOverdue) {
+                    if (isOverdue(q, today)) {
                         overdue++;
                     }
                 }
@@ -682,6 +676,14 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 showXpEarnedVsLastChart(xpData, xLabels);
             }
         });
+    }
+
+    private boolean isOverdue(Quest quest, LocalDate today) {
+        boolean isCompletedAfterEndDate = quest.isCompleted() && quest.getEndDate().isBefore(quest.getCompletedAtDate());
+        if (isCompletedAfterEndDate) {
+            return true;
+        }
+        return !quest.isCompleted() && quest.getEndDate().isBefore(today);
     }
 
     private void showSummary(int completed, int overdue, int minutesTracked) {
