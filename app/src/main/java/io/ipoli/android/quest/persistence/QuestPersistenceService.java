@@ -55,5 +55,5 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     Quest findFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping);
 
-    void findAllBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener);
+    void findAllScheduledBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener);
 }
