@@ -19,9 +19,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 
@@ -40,6 +42,7 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.ui.charts.XAxisValueFormatter;
 import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.ui.formatters.FrequencyTextFormatter;
@@ -261,7 +264,7 @@ public class RepeatingQuestActivity extends BaseActivity {
     }
 
     private void setupChart(List<PeriodHistory> periodHistories) {
-//        history.setDescription("");
+        history.setDescription(null);
         history.setTouchEnabled(false);
         history.setPinchZoom(false);
         history.setExtraBottomOffset(20);
@@ -273,23 +276,25 @@ public class RepeatingQuestActivity extends BaseActivity {
         history.setDrawGridBackground(false);
 
         YAxis leftAxis = history.getAxisLeft();
-        leftAxis.setAxisMinValue(0f);
-        leftAxis.setAxisMaxValue(repeatingQuest.getFrequency());
+        leftAxis.setAxisMinimum(0f);
+        leftAxis.setAxisMaximum(repeatingQuest.getFrequency());
         leftAxis.setEnabled(false);
         history.getAxisRight().setEnabled(false);
 
-        XAxis xLabels = history.getXAxis();
-        xLabels.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xLabels.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_54));
-//        xLabels.setLabelsToSkip(0);
-        xLabels.setTextSize(13f);
-        xLabels.setDrawAxisLine(false);
-        xLabels.setDrawGridLines(false);
-        xLabels.setYOffset(5);
-        history.getLegend().setEnabled(false);
+        XAxis xAxis = history.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_54));
+        xAxis.setTextSize(13f);
+        xAxis.setDrawAxisLine(false);
+        xAxis.setDrawGridLines(false);
+        xAxis.setYOffset(5);
 
-        List<String> xValues = getXValues(periodHistories);
-//        setHistoryData(periodHistories, xValues);
+
+        String[] xLabels = getXLabels(periodHistories);
+        xAxis.setLabelCount(xLabels.length);
+        xAxis.setValueFormatter(new XAxisValueFormatter(xLabels));
+        setHistoryData(periodHistories);
+        history.getLegend().setEnabled(false);
     }
 
     private void colorLayout(Category category) {
@@ -300,45 +305,44 @@ public class RepeatingQuestActivity extends BaseActivity {
         getWindow().setStatusBarColor(ContextCompat.getColor(this, category.color700));
     }
 
-    private List<String> getXValues(List<PeriodHistory> periodHistories) {
-        List<String> xValues = new ArrayList<>();
+    private String[] getXLabels(List<PeriodHistory> periodHistories) {
+        String[] xLabels = new String[periodHistories.size()];
         if (repeatingQuest.getRecurrence().getRecurrenceType() == Recurrence.RepeatType.MONTHLY) {
-            xValues.add(getMonthText(periodHistories.get(0).getStartDate()));
-            xValues.add(getMonthText(periodHistories.get(1).getStartDate()));
-            xValues.add(getMonthText(periodHistories.get(2).getStartDate()));
-            xValues.add(getString(R.string.this_month));
+            xLabels[0] = getMonthText(periodHistories.get(0).getStartDate());
+            xLabels[1] = getMonthText(periodHistories.get(1).getStartDate());
+            xLabels[2] = getMonthText(periodHistories.get(2).getStartDate());
+            xLabels[3] = getString(R.string.this_month);
         } else {
-            xValues.add(getWeekRangeText(periodHistories.get(0).getStartDate(), periodHistories.get(0).getEndDate()));
-            xValues.add(getWeekRangeText(periodHistories.get(1).getStartDate(), periodHistories.get(1).getEndDate()));
-            xValues.add(getString(R.string.last_week));
-            xValues.add(getString(R.string.this_week));
+            xLabels[0] = getWeekRangeText(periodHistories.get(0).getStartDate(), periodHistories.get(0).getEndDate());
+            xLabels[1] = getWeekRangeText(periodHistories.get(1).getStartDate(), periodHistories.get(1).getEndDate());
+            xLabels[2] = getString(R.string.last_week);
+            xLabels[3] = getString(R.string.this_week);
         }
-        return xValues;
+        return xLabels;
 
     }
 
-//    private void setHistoryData(List<PeriodHistory> periodHistories, List<String> xValues) {
-//        BarData data = new BarData(xValues, createBarDataSet(periodHistories));
-//        data.setValueTextSize(14f);
-//        data.setValueTextColor(Color.WHITE);
-//        data.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
-//            if (value == 0) {
-//                return "";
-//            }
-//            return String.valueOf((int) value);
-//        });
-//
-//        history.setData(data);
-//        history.invalidate();
-//        history.animateY(1400, Easing.EasingOption.EaseInOutQuart);
-//    }
+    private void setHistoryData(List<PeriodHistory> periodHistories) {
+        BarData data = new BarData(createBarDataSet(periodHistories));
+        data.setValueTextSize(14f);
+        data.setValueTextColor(Color.WHITE);
+        data.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
+            if (value == 0) {
+                return "";
+            }
+            return String.valueOf((int) value);
+        });
+        history.setData(data);
+        history.invalidate();
+        history.animateY(1400, Easing.EasingOption.EaseInOutQuart);
+    }
 
     @NonNull
     private BarDataSet createBarDataSet(List<PeriodHistory> periodHistories) {
         List<BarEntry> yValues = new ArrayList<>();
         for (int i = 0; i < periodHistories.size(); i++) {
             PeriodHistory p = periodHistories.get(i);
-            yValues.add(new BarEntry(p.getCompletedCount(), i));
+            yValues.add(new BarEntry(i, p.getCompletedCount()));
         }
 
         BarDataSet dataSet = new BarDataSet(yValues, "");
