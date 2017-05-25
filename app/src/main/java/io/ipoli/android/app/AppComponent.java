@@ -78,8 +78,6 @@ import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.fragments.RewardListFragment;
-import io.ipoli.android.store.activities.CoinStoreActivity;
-import io.ipoli.android.store.activities.ShopActivity;
 import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.fragments.CoinStoreFragment;
 import io.ipoli.android.store.fragments.PetStoreFragment;
@@ -185,8 +183,6 @@ public interface AppComponent {
 
     void inject(PetActivity petActivity);
 
-    void inject(ShopActivity shopActivity);
-
     void inject(DateChangedReceiver dateChangedReceiver);
 
     void inject(PickChallengeActivity pickChallengeActivity);
@@ -236,8 +232,6 @@ public interface AppComponent {
     void inject(SyncCalendarActivity syncCalendarActivity);
 
     void inject(SettingsActivity settingsActivity);
-
-    void inject(CoinStoreActivity coinStoreActivity);
 
     void inject(UpgradeDialog upgradeDialog);
 

@@ -79,6 +79,6 @@ public class StoreActivity extends BaseActivity {
 
     @Override
     protected boolean useParentOptionsMenu() {
-        return true;
+        return false;
     }
 }
