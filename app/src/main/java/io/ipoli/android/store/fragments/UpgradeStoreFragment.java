@@ -94,7 +94,7 @@ public class UpgradeStoreFragment extends BaseFragment {
         }
 
         for(Upgrade upgrade : boughtUpgrades) {
-            upgrades.add(new UpgradeViewModel(getContext(), upgrade, true, DateUtils.fromMillis(upgradesManager.getBoughtDate(upgrade))));
+            upgrades.add(new UpgradeViewModel(getContext(), upgrade, DateUtils.fromMillis(upgradesManager.getBoughtDate(upgrade))));
         }
         return upgrades;
     }

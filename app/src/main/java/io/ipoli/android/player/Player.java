@@ -365,6 +365,9 @@ public class Player extends PersistedObject {
     }
 
     public Inventory getInventory() {
+        if(inventory == null) {
+            inventory = new Inventory();
+        }
         return inventory;
     }
 
