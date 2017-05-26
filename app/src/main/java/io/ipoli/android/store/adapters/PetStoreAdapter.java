@@ -35,14 +35,14 @@ public class PetStoreAdapter extends RecyclerView.Adapter<PetStoreAdapter.ViewHo
     private List<PetViewModel> petViewModels;
 
     private int[] colors = new int[]{
-            R.color.md_red_300,
+            R.color.md_purple_300,
             R.color.md_green_300,
             R.color.md_orange_300,
             R.color.md_blue_300,
             R.color.md_indigo_300,
-            R.color.md_deep_orange_300,
-            R.color.md_purple_300,
             R.color.md_pink_300,
+            R.color.md_deep_orange_300,
+            R.color.md_red_300,
     };
 
     public PetStoreAdapter(Context context, Bus eventBus, List<PetViewModel> petViewModels) {
