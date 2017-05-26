@@ -21,8 +21,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void listenForPlannedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<SortedMap<LocalDate, List<Quest>>> listener);
 
-    void findAllCompletedNonAllDayBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener);
-
     void findAllPlannedAndStarted(OnDataChangedListener<List<Quest>> listener);
 
     void findAllIncompleteNotFromRepeatingBefore(LocalDate date, OnDataChangedListener<List<Quest>> listener);
@@ -56,4 +54,6 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
     List<Quest> findFromAndroidCalendar(Long calendarId);
 
     Quest findFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping);
+
+    void findAllScheduledBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener);
 }
