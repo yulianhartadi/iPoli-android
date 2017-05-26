@@ -70,7 +70,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         @BindView(R.id.root_container)
         ViewGroup rootContainer;
 
-        @BindView(R.id.sore_item_container)
+        @BindView(R.id.store_coins_container)
         ViewGroup container;
 
         @BindView(R.id.store_item_title)

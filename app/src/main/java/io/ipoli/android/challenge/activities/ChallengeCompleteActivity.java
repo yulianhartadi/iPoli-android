@@ -20,7 +20,7 @@ public class ChallengeCompleteActivity extends BaseActivity {
 
     public static final String TITLE = "title";
     public static final String EXPERIENCE = "experience";
-    public static final String COINS = "coins";
+    public static final String COINS = "store_coins";
 
     @BindView(R.id.dialog_title)
     TextView title;
