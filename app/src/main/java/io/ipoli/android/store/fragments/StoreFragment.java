@@ -82,11 +82,11 @@ public class StoreFragment extends BaseFragment {
 
         itemList.setLayoutManager(new GridLayoutManager(getContext(), 2));
         List<StoreViewModel> storeViewModels = new ArrayList<>();
-        storeViewModels.add(new StoreViewModel(StoreItemType.COINS, "Coins", R.drawable.pet_1));
-        storeViewModels.add(new StoreViewModel(StoreItemType.UPGRADES, "Upgrades", R.drawable.pet_2));
+        storeViewModels.add(new StoreViewModel(StoreItemType.COINS, "Coins", R.drawable.coins));
+        storeViewModels.add(new StoreViewModel(StoreItemType.UPGRADES, "Upgrades", R.drawable.upgrade));
         storeViewModels.add(new StoreViewModel(StoreItemType.AVATARS, "Avatars", R.drawable.avatar_01));
         storeViewModels.add(new StoreViewModel(StoreItemType.PETS, "Pets", R.drawable.pet_3));
-        adapter = new StoreAdapter(eventBus, storeViewModels);
+        adapter = new StoreAdapter(getContext(), eventBus, storeViewModels);
         itemList.setAdapter(adapter);
 
         if(startStoreItemType != null) {
