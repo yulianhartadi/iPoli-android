@@ -104,7 +104,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     Spinner spinner;
 
     @BindView(R.id.summary_done)
-    TextView summaryCompleted;
+    TextView summaryDone;
 
     @BindView(R.id.summary_overdue)
     TextView summaryOverdue;
@@ -444,11 +444,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
             boolean drawHandles = false;
             showSummary(completed, overdue, minutesTracked);
-            showAwesomenessLineChart(awesomenessData, daysInPrevMonth, StringUtils.capitalize(getString(R.string.this_month)), "Last month", xLabels, drawHandles);
+            showAwesomenessLineChart(awesomenessData, daysInPrevMonth, StringUtils.capitalize(getString(R.string.this_month)), getString(R.string.last_month), xLabels, drawHandles);
             showCompletedQuestsLineChart(completedData, xLabels, drawHandles);
             showTimeSpentLineChart(timeSpentData, xLabels, drawHandles);
-            showCoinsEarnedLineChart(coinsData, daysInPrevMonth, StringUtils.capitalize(getString(R.string.this_month)), "Last month", xLabels, drawHandles);
-            showXpEarnedLineChart(xpData, daysInPrevMonth, StringUtils.capitalize(getString(R.string.this_month)), "Last month", xLabels, drawHandles);
+            showCoinsEarnedLineChart(coinsData, daysInPrevMonth, StringUtils.capitalize(getString(R.string.this_month)), getString(R.string.last_month), xLabels, drawHandles);
+            showXpEarnedLineChart(xpData, daysInPrevMonth, StringUtils.capitalize(getString(R.string.this_month)), getString(R.string.last_month), xLabels, drawHandles);
         });
     }
 
@@ -625,12 +625,12 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private void showSummary(int completed, int overdue, int minutesTracked) {
-        summaryCompleted.setText(completed + "\nDone");
-        summaryOverdue.setText(overdue + "\nOverdue");
+        summaryDone.setText(completed + "\n" + getString(R.string.done));
+        summaryOverdue.setText(overdue + "\n" + getString(R.string.overdue));
         if (minutesTracked < 60) {
-            summaryTimeTracked.setText(minutesTracked + " min\nTracked");
+            summaryTimeTracked.setText(minutesTracked + " min\n" + getString(R.string.tracked));
         } else {
-            summaryTimeTracked.setText(minutesTracked / 60 + "h\nTracked");
+            summaryTimeTracked.setText(minutesTracked / 60 + "h\n" + getString(R.string.tracked));
         }
     }
 
@@ -658,12 +658,12 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         completedText += completedChange >= 0 ? "+" : "-";
         completedText += Math.abs(completedChange) + "%";
         int spanEnd = completedText.length();
-        completedText += "\nDone";
+        completedText += "\n" + getString(R.string.done);
         SpannableString finalText = new SpannableString(completedText);
         finalText.setSpan(new ForegroundColorSpan(completedChange >= 0 ? ContextCompat.getColor(getContext(), R.color.md_light_green_300) : ContextCompat.getColor(getContext(), R.color.md_red_A400)), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         finalText.setSpan(new StyleSpan(Typeface.BOLD), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         finalText.setSpan(new RelativeSizeSpan(0.8f), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-        summaryCompleted.setText(finalText);
+        summaryDone.setText(finalText);
     }
 
     private void showOverdueSummary(int overdueCount, int overdueChange) {
@@ -672,7 +672,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         overdueText += overdueChange >= 0 ? "+" : "-";
         overdueText += Math.abs(overdueChange) + "%";
         int spanEnd = overdueText.length();
-        overdueText += "\nOverdue";
+        overdueText += "\n" + getString(R.string.overdue);
         SpannableString finalText = new SpannableString(overdueText);
         finalText.setSpan(new ForegroundColorSpan(overdueChange > 0 ? ContextCompat.getColor(getContext(), R.color.md_red_A400) : ContextCompat.getColor(getContext(), R.color.md_light_green_300)), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         finalText.setSpan(new StyleSpan(Typeface.BOLD), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
@@ -691,7 +691,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         minutesTrackedText += minutesTrackedChange >= 0 ? "+" : "-";
         minutesTrackedText += Math.abs(minutesTrackedChange) + "%";
         int spanEnd = minutesTrackedText.length();
-        minutesTrackedText += "\nTracked";
+        minutesTrackedText += "\n" + getString(R.string.tracked);
         SpannableString finalText = new SpannableString(minutesTrackedText);
         finalText.setSpan(new ForegroundColorSpan(minutesTrackedChange >= 0 ? ContextCompat.getColor(getContext(), R.color.md_light_green_300) : ContextCompat.getColor(getContext(), R.color.md_red_A400)), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         finalText.setSpan(new StyleSpan(Typeface.BOLD), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
@@ -1137,7 +1137,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             timeSpentBarChart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
         }
     }
-
 
     private void showFilteredCompletedChart(int itemPosition) {
         if (itemPosition == THIS_WEEK || itemPosition == THIS_MONTH) {
