@@ -35,7 +35,7 @@
                     android:id="@+id/imageView7"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginBottom="16dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_marginTop="0dp"
@@ -44,12 +44,12 @@
                     app:layout_constraintLeft_toLeftOf="@+id/summary_done"
                     app:layout_constraintRight_toRightOf="@+id/summary_done"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintVertical_bias="1.0" />
 
                 <ImageView
                     android:id="@+id/imageView6"
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
                     android:layout_marginBottom="8dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
@@ -76,7 +76,7 @@
                     android:id="@+id/imageView3"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginBottom="16dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_marginTop="0dp"
@@ -85,12 +85,12 @@
                     app:layout_constraintLeft_toLeftOf="@+id/summary_overdue"
                     app:layout_constraintRight_toRightOf="@+id/summary_overdue"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintVertical_bias="1.0" />
 
                 <ImageView
                     android:id="@+id/imageView8"
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
                     android:layout_marginBottom="8dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
@@ -121,21 +121,21 @@
                     android:id="@+id/imageView5"
                     android:layout_width="16dp"
                     android:layout_height="16dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginBottom="16dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_marginTop="0dp"
                     android:src="@drawable/ic_growth_summary_background"
                     app:layout_constraintBottom_toTopOf="@+id/summary_time_tracked"
-                    app:layout_constraintHorizontal_bias="0.47"
+                    app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintLeft_toLeftOf="@+id/summary_time_tracked"
                     app:layout_constraintRight_toRightOf="@+id/summary_time_tracked"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintVertical_bias="1.0" />
 
                 <ImageView
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
                     android:layout_marginBottom="8dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
