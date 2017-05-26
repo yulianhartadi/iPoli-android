@@ -71,11 +71,15 @@ public class StoreActivity extends BaseActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
-//                setTitle(R.string.title_store_activity);
         }
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        setTitle(R.string.title_store_activity);
+    }
 
     @Override
     protected boolean useParentOptionsMenu() {
