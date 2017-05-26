@@ -72,6 +72,7 @@ import io.ipoli.android.app.scheduling.PriorityEstimator;
 import io.ipoli.android.app.ui.charts.ChartMarkerView;
 import io.ipoli.android.app.ui.charts.XAxisValueFormatter;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -381,11 +382,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             }
 
             boolean drawHandles = true;
-            showAwesomenessLineChart(awesomenessData, 7, "This week", "Last week", xLabels, drawHandles);
+            showAwesomenessLineChart(awesomenessData, 7, StringUtils.capitalize(getString(R.string.this_week)), StringUtils.capitalize(getString(R.string.last_week)), xLabels, drawHandles);
             showCompletedQuestsLineChart(completedData, xLabels, drawHandles);
             showTimeSpentLineChart(timeSpentData, xLabels, drawHandles);
-            showCoinsEarnedLineChart(coinsData, 7, "This week", "Last week", xLabels, drawHandles);
-            showXpEarnedLineChart(xpData, 7, "This week", "Last week", xLabels, drawHandles);
+            showCoinsEarnedLineChart(coinsData, 7, StringUtils.capitalize(getString(R.string.this_week)), StringUtils.capitalize(getString(R.string.last_week)), xLabels, drawHandles);
+            showXpEarnedLineChart(xpData, 7, StringUtils.capitalize(getString(R.string.this_week)), StringUtils.capitalize(getString(R.string.last_week)), xLabels, drawHandles);
         });
     }
 
@@ -443,11 +444,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
             boolean drawHandles = false;
             showSummary(completed, overdue, minutesTracked);
-            showAwesomenessLineChart(awesomenessData, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
+            showAwesomenessLineChart(awesomenessData, daysInPrevMonth, StringUtils.capitalize(getString(R.string.this_month)), "Last month", xLabels, drawHandles);
             showCompletedQuestsLineChart(completedData, xLabels, drawHandles);
             showTimeSpentLineChart(timeSpentData, xLabels, drawHandles);
-            showCoinsEarnedLineChart(coinsData, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
-            showXpEarnedLineChart(xpData, daysInPrevMonth, "This month", "Last month", xLabels, drawHandles);
+            showCoinsEarnedLineChart(coinsData, daysInPrevMonth, StringUtils.capitalize(getString(R.string.this_month)), "Last month", xLabels, drawHandles);
+            showXpEarnedLineChart(xpData, daysInPrevMonth, StringUtils.capitalize(getString(R.string.this_month)), "Last month", xLabels, drawHandles);
         });
     }
 
@@ -571,7 +572,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private void showLast7DaysCharts(LocalDate today) {
-
         LocalDate startDay = today.minusDays(6);
 
         questPersistenceService.findAllScheduledBetween(startDay, today, quests -> {
