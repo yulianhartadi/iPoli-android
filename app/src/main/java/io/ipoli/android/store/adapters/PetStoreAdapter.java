@@ -20,7 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.store.events.BuyPetRequestEvent;
-import io.ipoli.android.store.events.SelectPetEvent;
+import io.ipoli.android.store.events.UsePetEvent;
 import io.ipoli.android.store.viewmodels.PetViewModel;
 import mehdi.sakout.fancybuttons.FancyButton;
 
@@ -68,9 +68,9 @@ public class PetStoreAdapter extends RecyclerView.Adapter<PetStoreAdapter.ViewHo
         holder.pictureState.setImageDrawable(context.getDrawable(vm.getPictureState()));
 
         if (vm.isBought()) {
-            holder.price.setText(context.getString(R.string.pet_store_select).toUpperCase());
+            holder.price.setText(context.getString(R.string.pet_store_use_pet).toUpperCase());
             holder.price.setIconResource((Drawable) null);
-            holder.price.setOnClickListener(v -> eventBus.post(new SelectPetEvent(vm.getPet())));
+            holder.price.setOnClickListener(v -> eventBus.post(new UsePetEvent(vm.getPet())));
         } else {
             holder.price.setIconResource(context.getDrawable(R.drawable.ic_life_coin_white_24dp));
             holder.price.setText(vm.getPrice() + "");

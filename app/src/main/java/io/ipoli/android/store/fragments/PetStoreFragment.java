@@ -36,7 +36,7 @@ import io.ipoli.android.store.Pet;
 import io.ipoli.android.store.adapters.PetStoreAdapter;
 import io.ipoli.android.store.events.BuyPetRequestEvent;
 import io.ipoli.android.store.events.PetBoughtEvent;
-import io.ipoli.android.store.events.SelectPetEvent;
+import io.ipoli.android.store.events.UsePetEvent;
 import io.ipoli.android.store.viewmodels.PetViewModel;
 
 /**
@@ -122,24 +122,10 @@ public class PetStoreFragment extends BaseFragment {
         player.getInventory().addPet(pet, LocalDate.now());
         playerPersistenceService.save(player);
         adapter.setViewModels(createPetViewModels());
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-//        builder.setIcon(R.drawable.logo)
-//                .setTitle(R.string.buy_pet_confirm_title)
-//                .setMessage(R.string.buy_pet_confirm_message)
-//                .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
-//                    Pet pet = player.getPet();
-//                    pet.setPicture(getContext().getResources().getResourceEntryName(pet.picture));
-//                    pet.setHealthPointsPercentage(Constants.DEFAULT_PET_HP);
-//                    playerPersistenceService.save(player);
-//                })
-//                .setNegativeButton(R.string.cancel, (dialog, which) -> {
-//
-//                })
-//                .show();
     }
 
     @Subscribe
-    public void onSelectPet(SelectPetEvent e) {
+    public void onUsePet(UsePetEvent e) {
         Player player = getPlayer();
         io.ipoli.android.pet.data.Pet pet = player.getPet();
         pet.setPicture(getContext().getResources().getResourceEntryName(e.pet.picture));

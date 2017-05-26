@@ -7,6 +7,7 @@ import org.threeten.bp.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.ipoli.android.store.Avatar;
 import io.ipoli.android.store.Pet;
 import io.ipoli.android.store.Upgrade;
 
@@ -35,10 +36,10 @@ public class Inventory {
         getPets().put(pet.code, toMillis(localDate));
     }
 
-//    @JsonIgnore
-//    public void addAvatar(Avatar avatar, LocalDate localDate) {
-//        getAvatars().put()
-//    }
+    @JsonIgnore
+    public void addAvatar(Avatar avatar, LocalDate localDate) {
+        getAvatars().put(avatar.code, toMillis(localDate));
+    }
 
     public Map<Integer, Long> getUpgrades() {
         if(upgrades == null) {

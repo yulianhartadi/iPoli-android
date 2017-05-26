@@ -1,6 +1,7 @@
 package io.ipoli.android.store.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
@@ -18,6 +19,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.R;
+import io.ipoli.android.store.events.BuyAvatarRequestEvent;
+import io.ipoli.android.store.events.UseAvatarEvent;
 import io.ipoli.android.store.viewmodels.AvatarViewModel;
 import mehdi.sakout.fancybuttons.FancyButton;
 
@@ -64,9 +67,18 @@ public class AvatarStoreAdapter extends RecyclerView.Adapter<AvatarStoreAdapter.
         holder.picture.setImageDrawable(context.getDrawable(vm.getPicture()));
         holder.price.setText(vm.getPrice() + "");
 
+        if (vm.isBought()) {
+            holder.price.setText(context.getString(R.string.avatar_store_use_avatar).toUpperCase());
+            holder.price.setIconResource((Drawable) null);
+            holder.price.setOnClickListener(v -> eventBus.post(new UseAvatarEvent(vm.getAvatar())));
+        } else {
+            holder.price.setIconResource(context.getDrawable(R.drawable.ic_life_coin_white_24dp));
+            holder.price.setText(vm.getPrice() + "");
+            holder.price.setOnClickListener(v -> eventBus.post(new BuyAvatarRequestEvent(vm.getAvatar())));
+        }
+
         holder.container.setBackgroundColor(ContextCompat.getColor(context, colors[position % colors.length]));
 
-//        holder.price.setOnClickListener(v -> eventBus.post(new BuyPetRequestEvent(vm)));
     }
 
     @Override
