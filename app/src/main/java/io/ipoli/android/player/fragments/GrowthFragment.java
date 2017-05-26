@@ -86,7 +86,7 @@ import static org.threeten.bp.temporal.ChronoUnit.DAYS;
 public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSelectedListener {
 
     public static final int CHART_ANIMATION_DURATION = 500;
-    public static final Easing.EasingOption DEFAULT_EASING_OPTION = Easing.EasingOption.EaseInQuart;
+    public static final Easing.EasingOption DEFAULT_EASING_OPTION = Easing.EasingOption.EaseInQuad;
 
     public static final int THIS_WEEK = 0;
     public static final int THIS_MONTH = 1;
