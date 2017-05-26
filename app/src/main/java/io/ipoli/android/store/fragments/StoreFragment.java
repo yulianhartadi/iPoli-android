@@ -78,6 +78,8 @@ public class StoreFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
 
+        getActivity().setTitle(R.string.title_store_activity);
+
         itemList.setLayoutManager(new GridLayoutManager(getContext(), 2));
         List<StoreViewModel> storeViewModels = new ArrayList<>();
         storeViewModels.add(new StoreViewModel(StoreItemType.COINS, "Coins", R.drawable.pet_1));
@@ -93,7 +95,7 @@ public class StoreFragment extends BaseFragment {
 
         return view;
     }
-
+    
     @Override
     public void onResume() {
         super.onResume();

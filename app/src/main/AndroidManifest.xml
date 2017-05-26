@@ -124,15 +124,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <!--<activity-->
-            <!--android:name=".store.activities.CoinStoreActivity"-->
-            <!--android:label="@string/title_activity_store"-->
-            <!--android:parentActivityName=".MainActivity"-->
-            <!--android:screenOrientation="portrait">-->
-            <!--<meta-data-->
-                <!--android:name="android.support.PARENT_ACTIVITY"-->
-                <!--android:value=".MainActivity" />-->
-        <!--</activity>-->
         <activity
             android:name=".store.activities.StoreActivity"
             android:label="@string/title_store_activity"
