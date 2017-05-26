@@ -55,50 +55,37 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/md_white"
-                    android:paddingBottom="32dp"
-                    android:paddingTop="32dp">
+                    android:paddingBottom="16dp"
+                    android:paddingTop="16dp">
 
                     <TextView
                         android:id="@+id/textView3"
                         style="@style/TextAppearance.AppCompat.Subhead"
-                        android:layout_width="67dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginTop="0dp"
                         android:text="Summary"
                         android:textAlignment="center"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:layout_editor_absoluteX="138dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/summary_overdue"
-                        android:layout_marginBottom="8dp"
-                        app:layout_constraintVertical_bias="0.25" />
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <ImageView
                         android:id="@+id/imageView7"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginStart="8dp"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginBottom="16dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
+                        android:layout_marginTop="32dp"
                         android:src="@drawable/ic_growth_summary_background"
                         app:layout_constraintBottom_toTopOf="@+id/summary_done"
                         app:layout_constraintLeft_toLeftOf="@+id/summary_done"
                         app:layout_constraintRight_toRightOf="@+id/summary_done"
-                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView3"
                         app:layout_constraintVertical_bias="0.0" />
-
-                    <ImageView
-                        android:id="@+id/imageView6"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:src="@drawable/ic_growth_summary_done"
-                        app:layout_constraintBottom_toBottomOf="@+id/imageView7"
-                        app:layout_constraintLeft_toLeftOf="@+id/imageView7"
-                        app:layout_constraintRight_toRightOf="@+id/imageView7"
-                        app:layout_constraintTop_toTopOf="@+id/imageView7" />
 
                     <TextView
                         android:id="@+id/summary_done"
@@ -111,18 +98,25 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         tools:text="123\nDone"
-                        android:layout_marginLeft="66dp"
-                        android:layout_marginBottom="-18dp" />
+                        android:layout_marginLeft="30dp"
+                        android:layout_marginBottom="-19dp" />
 
                     <ImageView
                         android:id="@+id/imageView8"
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginBottom="16dp"
                         android:layout_marginEnd="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
                         android:layout_marginStart="8dp"
+                        android:layout_marginTop="32dp"
                         android:src="@drawable/ic_growth_summary_overdue"
-                        tools:layout_editor_absoluteY="32dp"
-                        tools:layout_editor_absoluteX="166dp" />
+                        app:layout_constraintBottom_toTopOf="@+id/summary_overdue"
+                        app:layout_constraintLeft_toLeftOf="@+id/summary_overdue"
+                        app:layout_constraintRight_toRightOf="@+id/summary_overdue"
+                        app:layout_constraintTop_toBottomOf="@+id/textView3"
+                        app:layout_constraintVertical_bias="0.0" />
 
                     <TextView
                         android:id="@+id/summary_overdue"
@@ -139,13 +133,20 @@
                         tools:text="42\nOverdue" />
 
                     <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginBottom="16dp"
                         android:layout_marginEnd="8dp"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginRight="8dp"
                         android:layout_marginStart="8dp"
+                        android:layout_marginTop="32dp"
                         android:src="@drawable/ic_growth_summary_time_tracked"
-                        tools:layout_editor_absoluteY="32dp"
-                        tools:layout_editor_absoluteX="267dp" />
+                        app:layout_constraintBottom_toTopOf="@+id/summary_time_tracked"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintLeft_toLeftOf="@+id/summary_time_tracked"
+                        app:layout_constraintRight_toRightOf="@+id/summary_time_tracked"
+                        app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
                     <TextView
                         android:id="@+id/summary_time_tracked"
@@ -158,7 +159,9 @@
                         android:textColor="@color/md_dark_text_87"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
-                        tools:text="28\nTracked" />
+                        tools:text="28\nTracked"
+                        android:layout_marginRight="71dp"
+                        android:layout_marginBottom="-65dp" />
 
                 </android.support.constraint.ConstraintLayout>
 
