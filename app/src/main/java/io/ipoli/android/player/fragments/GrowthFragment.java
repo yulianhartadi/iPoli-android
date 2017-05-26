@@ -86,9 +86,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     public static final String X_AXIS_DAY_FORMAT = "d MMM";
     public static final String X_AXIS_MONTH = "MMM";
 
-    @BindView(R.id.root_container)
-    ViewGroup rootContainer;
-
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -707,7 +704,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         dataSet.setValueTextSize(12f);
         dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
         BarData barData = new BarData(dataSet);
-        barData.setValueFormatter((v, entry, i, viewPortHandler) -> String.valueOf((int) v));
         xpEarnedVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         xpEarnedVsLastChart.getXAxis().setLabelCount(xLabels.length);
         xpEarnedVsLastChart.setData(barData);
@@ -724,7 +720,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         dataSet.setValueTextSize(12f);
         dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
         BarData barData = new BarData(dataSet);
-        barData.setValueFormatter((v, entry, i, viewPortHandler) -> String.valueOf((int) v));
         coinsEarnedVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         coinsEarnedVsLastChart.getXAxis().setLabelCount(xLabels.length);
         coinsEarnedVsLastChart.setData(barData);
@@ -769,7 +764,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             }
             dataSet.setDrawValues(false);
             BarData barData = new BarData(dataSet);
-            barData.setValueFormatter((v, entry, i, viewPortHandler) -> String.valueOf((int) v));
             timeSpentVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
             timeSpentVsLastChart.getXAxis().setLabelCount(xLabels.length);
             timeSpentVsLastChart.setData(barData);
@@ -815,7 +809,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             }
             dataSet.setDrawValues(false);
             BarData barData = new BarData(dataSet);
-            barData.setValueFormatter((v, entry, i, viewPortHandler) -> String.valueOf((int) v));
             completedQuestsVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
             completedQuestsVsLastChart.getXAxis().setLabelCount(xLabels.length);
             completedQuestsVsLastChart.setData(barData);
@@ -834,7 +827,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         dataSet.setValueTextSize(12f);
         dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
         BarData data = new BarData(dataSet);
-        data.setValueFormatter((v, entry, i, viewPortHandler) -> String.valueOf((int) v));
         awesomenessVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         awesomenessVsLastChart.getXAxis().setLabelCount(xLabels.length);
         awesomenessVsLastChart.setData(data);
@@ -1000,8 +992,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         yAxis.setXOffset(12f);
         yAxis.setDrawAxisLine(false);
         yAxis.setAxisMinimum(0);
-        yAxis.setGranularity(1f);
-        yAxis.setValueFormatter((v, axisBase) -> String.valueOf((int) v));
+        yAxis.setGranularity(0.5f);
 
         chart.getAxisRight().setEnabled(false);
 
@@ -1035,7 +1026,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         yAxis.setXOffset(12f);
         yAxis.setDrawAxisLine(false);
         yAxis.setAxisMinimum(0);
-        yAxis.setGranularity(1f);
+        yAxis.setGranularity(0.5f);
 
         chart.getAxisRight().setEnabled(false);
 
