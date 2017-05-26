@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -17,7 +18,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.R;
 import io.ipoli.android.store.events.BuyAvatarRequestEvent;
 import io.ipoli.android.store.events.UseAvatarEvent;
@@ -100,7 +100,7 @@ public class AvatarStoreAdapter extends RecyclerView.Adapter<AvatarStoreAdapter.
         TextView name;
 
         @BindView(R.id.avatar_picture)
-        CircleImageView picture;
+        ImageView picture;
 
         @BindView(R.id.avatar_price)
         FancyButton price;
