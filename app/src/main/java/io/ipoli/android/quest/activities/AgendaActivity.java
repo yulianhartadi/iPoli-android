@@ -71,11 +71,10 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        appComponent().inject(this);
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_agenda);
         ButterKnife.bind(this);
-        appComponent().inject(this);
 
         long selectedDateMillis = getIntent().getLongExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, 0);
         if (selectedDateMillis == 0) {
