@@ -1051,24 +1051,8 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 child.setChecked(true);
             }
             child.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                Category selectedCategory = Category.CHORES;
-                switch (buttonView.getId()) {
-                    case R.id.filter_wellness:
-                        selectedCategory = Category.WELLNESS;
-                        break;
-                    case R.id.filter_learning:
-                        selectedCategory = Category.LEARNING;
-                        break;
-                    case R.id.filter_work:
-                        selectedCategory = Category.WORK;
-                        break;
-                    case R.id.filter_personal:
-                        selectedCategory = Category.PERSONAL;
-                        break;
-                    case R.id.filter_fun:
-                        selectedCategory = Category.FUN;
-                        break;
-                }
+                int buttonId = buttonView.getId();
+                Category selectedCategory = getSelectedCategory(buttonId);
                 if (isChecked) {
                     selectedCompleted.add(selectedCategory);
                 } else {
@@ -1078,6 +1062,29 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             });
         }
         showPopupWindow(view, layout);
+    }
+
+    @NonNull
+    private Category getSelectedCategory(int buttonId) {
+        Category selectedCategory = Category.CHORES;
+        switch (buttonId) {
+            case R.id.filter_wellness:
+                selectedCategory = Category.WELLNESS;
+                break;
+            case R.id.filter_learning:
+                selectedCategory = Category.LEARNING;
+                break;
+            case R.id.filter_work:
+                selectedCategory = Category.WORK;
+                break;
+            case R.id.filter_personal:
+                selectedCategory = Category.PERSONAL;
+                break;
+            case R.id.filter_fun:
+                selectedCategory = Category.FUN;
+                break;
+        }
+        return selectedCategory;
     }
 
     @OnClick(R.id.filter_time_spent)
@@ -1093,24 +1100,8 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 child.setChecked(true);
             }
             child.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                Category selectedCategory = Category.CHORES;
-                switch (buttonView.getId()) {
-                    case R.id.filter_wellness:
-                        selectedCategory = Category.WELLNESS;
-                        break;
-                    case R.id.filter_learning:
-                        selectedCategory = Category.LEARNING;
-                        break;
-                    case R.id.filter_work:
-                        selectedCategory = Category.WORK;
-                        break;
-                    case R.id.filter_personal:
-                        selectedCategory = Category.PERSONAL;
-                        break;
-                    case R.id.filter_fun:
-                        selectedCategory = Category.FUN;
-                        break;
-                }
+                int buttonId = buttonView.getId();
+                Category selectedCategory = getSelectedCategory(buttonId);
                 if (isChecked) {
                     selectedTimeSpent.add(selectedCategory);
                 } else {
