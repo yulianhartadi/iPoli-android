@@ -12,7 +12,7 @@ import io.ipoli.android.R;
 
 public enum Avatar {
     IPOLI_CLASSIC(1, 0, R.string.pet_donkey, R.drawable.avatar_12),
-    IPOLI_YELLOW_GRASSES(2, 0, R.string.pet_donkey, R.drawable.avatar_11),
+    IPOLI_YELLOW_GLASSES(2, 0, R.string.pet_donkey, R.drawable.avatar_11),
     MACARENA(3, 20, R.string.pet_donkey, R.drawable.avatar_10),
     MACARENA_MEXICAN(4, 20, R.string.pet_donkey, R.drawable.avatar_09),
     BLONDY(5, 20, R.string.pet_donkey, R.drawable.avatar_08),
