@@ -2,6 +2,7 @@ package io.ipoli.android.player;
 
 import org.threeten.bp.LocalDate;
 
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.store.Upgrade;
 
@@ -10,16 +11,27 @@ import io.ipoli.android.store.Upgrade;
  * on 5/22/17.
  */
 
-public class UpgradesManager {
+public class UpgradesManager implements OnDataChangedListener<Player> {
+
+    private Player player;
 
     private final PlayerPersistenceService playerPersistenceService;
 
     public UpgradesManager(PlayerPersistenceService playerPersistenceService) {
         this.playerPersistenceService = playerPersistenceService;
+        playerPersistenceService.listen(this);
+    }
+
+    private Player getPlayer() {
+        if(player == null) {
+            player = playerPersistenceService.get();
+            playerPersistenceService.listen(this);
+        }
+        return player;
     }
 
     public boolean has(Upgrade upgrade) {
-        Player player = playerPersistenceService.get();
+        Player player = getPlayer();
         if(player.getInventory() == null) {
             return false;
         }
@@ -31,7 +43,7 @@ public class UpgradesManager {
     }
 
     public void buy(Upgrade upgrade) {
-        Player player = playerPersistenceService.get();
+        Player player = getPlayer();
         player.removeCoins(upgrade.price);
         if(player.getInventory() == null) {
             player.setInventory(new Inventory());
@@ -41,7 +53,7 @@ public class UpgradesManager {
     }
 
     public Long getBoughtDate(Upgrade upgrade) {
-        Player player = playerPersistenceService.get();
+        Player player = getPlayer();
         if(player.getInventory() == null) {
             return null;
         }
@@ -49,5 +61,10 @@ public class UpgradesManager {
             return null;
         }
         return player.getInventory().getUpgrades().get(upgrade.code);
+    }
+
+    @Override
+    public void onDataChanged(Player player) {
+        this.player = player;
     }
 }
