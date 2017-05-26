@@ -41,6 +41,7 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.squareup.otto.Bus;
 
 import org.threeten.bp.DayOfWeek;
@@ -150,6 +151,8 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     private Set<Category> selectedTimeSpent = new HashSet<>();
     private Map<Category, Integer> categoryToColor = new HashMap<>();
 
+    private IValueFormatter barDataValueFormatter = (v, entry, i, viewPortHandler) -> String.valueOf((int) v);
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -238,11 +241,8 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
     private void setupCompletedQuestsVsLastChart() {
         applyDefaultStyle(completedQuestsVsLastChart, true);
-        completedQuestsVsLastChart.setTouchEnabled(true);
         completedQuestsVsLastChart.setNoDataText(getString(R.string.growth_no_categories_selected));
         completedQuestsVsLastChart.setNoDataTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
-        ChartMarkerView chartMarkerView = new ChartMarkerView(getContext());
-        completedQuestsVsLastChart.setMarker(chartMarkerView);
     }
 
     private void setupTimeSpentRangeChart() {
@@ -255,11 +255,8 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
     private void setupTimeSpentVsLastChart() {
         applyDefaultStyle(timeSpentVsLastChart, true);
-        timeSpentVsLastChart.setTouchEnabled(true);
         timeSpentVsLastChart.setNoDataText(getString(R.string.growth_no_categories_selected));
         timeSpentVsLastChart.setNoDataTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
-        ChartMarkerView chartMarkerView = new ChartMarkerView(getContext());
-        timeSpentVsLastChart.setMarker(chartMarkerView);
     }
 
     private void setupCoinsEarnedRangeChart() {
@@ -711,6 +708,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         dataSet.setValueTextSize(12f);
         dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
         BarData barData = new BarData(dataSet);
+        barData.setValueFormatter(barDataValueFormatter);
         xpEarnedVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         xpEarnedVsLastChart.getXAxis().setLabelCount(xLabels.length);
         xpEarnedVsLastChart.setData(barData);
@@ -727,6 +725,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         dataSet.setValueTextSize(12f);
         dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
         BarData barData = new BarData(dataSet);
+        barData.setValueFormatter(barDataValueFormatter);
         coinsEarnedVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         coinsEarnedVsLastChart.getXAxis().setLabelCount(xLabels.length);
         coinsEarnedVsLastChart.setData(barData);
@@ -771,6 +770,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             }
             dataSet.setDrawValues(false);
             BarData barData = new BarData(dataSet);
+            barData.setValueFormatter(barDataValueFormatter);
             timeSpentVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
             timeSpentVsLastChart.getXAxis().setLabelCount(xLabels.length);
             timeSpentVsLastChart.setData(barData);
@@ -816,6 +816,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             }
             dataSet.setDrawValues(false);
             BarData barData = new BarData(dataSet);
+            barData.setValueFormatter(barDataValueFormatter);
             completedQuestsVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
             completedQuestsVsLastChart.getXAxis().setLabelCount(xLabels.length);
             completedQuestsVsLastChart.setData(barData);
@@ -833,10 +834,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         dataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_green_500));
         dataSet.setValueTextSize(12f);
         dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
-        BarData data = new BarData(dataSet);
+        BarData barData = new BarData(dataSet);
+        barData.setValueFormatter(barDataValueFormatter);
         awesomenessVsLastChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         awesomenessVsLastChart.getXAxis().setLabelCount(xLabels.length);
-        awesomenessVsLastChart.setData(data);
+        awesomenessVsLastChart.setData(barData);
         awesomenessVsLastChart.invalidate();
     }
 
@@ -999,7 +1001,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         yAxis.setXOffset(12f);
         yAxis.setDrawAxisLine(false);
         yAxis.setAxisMinimum(0);
-        yAxis.setGranularity(0.5f);
+        yAxis.setGranularity(1f);
 
         chart.getAxisRight().setEnabled(false);
 
@@ -1033,7 +1035,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         yAxis.setXOffset(12f);
         yAxis.setDrawAxisLine(false);
         yAxis.setAxisMinimum(0);
-        yAxis.setGranularity(0.5f);
+        yAxis.setGranularity(1f);
 
         chart.getAxisRight().setEnabled(false);
 
