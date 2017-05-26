@@ -47,9 +47,11 @@
     <string name="repeating_quest_saved">Repeating Quest saved</string>
 
     <string-array name="growth_intervals">
-        <item>Today</item>
+        <item>This week</item>
+        <item>This month</item>
         <item>Last 7 days</item>
-        <item>Last 30 days</item>
+        <item>Last 4 weeks</item>
+        <item>Last 3 months</item>
     </string-array>
 
     <string name="title_activity_main">iPoli</string>
@@ -678,6 +680,10 @@
     <string name="challenge8_rq3_name">Have family dinner</string>
     <string name="challenge8_rq4_raw_text">Go out with friends 2 times a week</string>
     <string name="challenge8_rq4_name">Go out with friends</string>
+    <string name="growth_no_categories_selected">Select a category to view more data</string>
+    <string name="last_month">Last month</string>
+    <string name="tracked">Tracked</string>
+    <string name="overdue">Overdue</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

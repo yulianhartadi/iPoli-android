@@ -403,12 +403,6 @@ iPoli está comendo um biscoito e melhorando a sua experiência com o app."</str
     <string name="sync_calendars_delete_loading_dialog_title">"Deletando missões"</string>
     <string name="empty_store_items">"Sem itens disponíveis"</string>
 
-    <string-array name="growth_intervals">
-        <item>Hoje</item>
-        <item>Últimos 7 dias</item>
-        <item>Últimos 30 dias</item>
-    </string-array>
-
     <string name="help_dialog_calendar_text3">"Em cinza, você pode ver onde o iPoli recomenda que você agende."</string>
     <string name="challenge_deadline_question">"Quando é o prazo?"</string>
     <string name="add_reminder_button">"+ Adicionar lembrete"</string>
@@ -427,7 +421,7 @@ iPoli está comendo um biscoito e melhorando a sua experiência com o app."</str
     <string name="duplicate">"Duplicar"</string>
     <string name="mark_as_done">"Marcar como feito"</string>
     <string name="reminder_message">"Mensagem (ex. Não seja preguiçoso)"</string>
-    <string name="rate_dialog_feedback_hint">"O que você pensa do iPoli..."</string>
+    <string name="rate_dialog_feedback_hint">"O que você pensa do iPoli…"</string>
     <string name="repeat_type_flexible">"Flexível"</string>
     <string name="repeat_frequency">"Frequência"</string>
     <string name="sunday_short">"Dom"</string>
