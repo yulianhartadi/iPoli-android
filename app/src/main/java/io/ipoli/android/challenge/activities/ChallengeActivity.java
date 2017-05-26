@@ -47,9 +47,9 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.app.ui.charts.XAxisValueFormatter;
 import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.adapters.ChallengeQuestListAdapter;
 import io.ipoli.android.challenge.data.Challenge;
@@ -295,7 +295,7 @@ public class ChallengeActivity extends BaseActivity {
     }
 
     private void setupChart() {
-        history.setDescription("");
+        history.setDescription(null);
         history.setTouchEnabled(false);
         history.setPinchZoom(false);
         history.setExtraBottomOffset(20);
@@ -312,14 +312,13 @@ public class ChallengeActivity extends BaseActivity {
         leftAxis.setEnabled(false);
         history.getAxisRight().setEnabled(false);
 
-        XAxis xLabels = history.getXAxis();
-        xLabels.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xLabels.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_54));
-        xLabels.setLabelsToSkip(0);
-        xLabels.setTextSize(13f);
-        xLabels.setDrawAxisLine(false);
-        xLabels.setDrawGridLines(false);
-        xLabels.setYOffset(5);
+        XAxis xAxis = history.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextColor(ContextCompat.getColor(this, R.color.md_dark_text_54));
+        xAxis.setTextSize(13f);
+        xAxis.setDrawAxisLine(false);
+        xAxis.setDrawGridLines(false);
+        xAxis.setYOffset(5);
         history.getLegend().setEnabled(false);
 
         List<PeriodHistory> periodHistories = challenge.getPeriodHistories(LocalDate.now());
@@ -327,24 +326,25 @@ public class ChallengeActivity extends BaseActivity {
         List<BarEntry> yValues = new ArrayList<>();
         for (int i = 0; i < periodHistories.size(); i++) {
             PeriodHistory p = periodHistories.get(i);
-            yValues.add(new BarEntry(p.getCompletedCount(), i));
+            yValues.add(new BarEntry(i, p.getCompletedCount()));
         }
 
         BarDataSet dataSet = new BarDataSet(yValues, "");
         dataSet.setColors(getColors());
         dataSet.setBarShadowColor(ContextCompat.getColor(this, Challenge.getCategory(challenge).color100));
 
-        List<String> xValues = new ArrayList<>();
-        xValues.add(getWeekRangeText(periodHistories.get(0).getStartDate(), periodHistories.get(0).getEndDate()));
-        xValues.add(getWeekRangeText(periodHistories.get(1).getStartDate(), periodHistories.get(1).getEndDate()));
-        xValues.add(getString(R.string.last_week));
-        xValues.add(getString(R.string.this_week));
-        setHistoryData(dataSet, xValues);
-
+        String[] xLabels = new String[4];
+        xLabels[0] = getWeekRangeText(periodHistories.get(0).getStartDate(), periodHistories.get(0).getEndDate());
+        xLabels[1] = getWeekRangeText(periodHistories.get(1).getStartDate(), periodHistories.get(1).getEndDate());
+        xLabels[2] = getString(R.string.last_week);
+        xLabels[3] = getString(R.string.this_week);
+        xAxis.setLabelCount(xLabels.length);
+        xAxis.setValueFormatter(new XAxisValueFormatter(xLabels));
+        setHistoryData(dataSet);
     }
 
-    private void setHistoryData(BarDataSet dataSet, List<String> xValues) {
-        BarData data = new BarData(xValues, dataSet);
+    private void setHistoryData(BarDataSet dataSet) {
+        BarData data = new BarData(dataSet);
         data.setValueTextSize(14f);
         data.setValueTextColor(Color.WHITE);
         data.setValueFormatter((value, entry, dataSetIndex, viewPortHandler) -> {
@@ -365,10 +365,6 @@ public class ChallengeActivity extends BaseActivity {
             colors[i] = ContextCompat.getColor(this, Challenge.getCategory(challenge).color300);
         }
         return colors;
-    }
-
-    private String getWeekRangeText(long weekStart, long weekEnd) {
-        return getWeekRangeText(DateUtils.fromMillis(weekStart), DateUtils.fromMillis(weekEnd));
     }
 
     private String getWeekRangeText(LocalDate weekStart, LocalDate weekEnd) {
