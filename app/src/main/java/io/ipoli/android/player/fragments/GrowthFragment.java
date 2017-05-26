@@ -1,9 +1,11 @@
 package io.ipoli.android.player.fragments;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
@@ -1083,9 +1085,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 showCharts(spinner.getSelectedItemPosition());
             });
         }
-        PopupWindow popupWindow = new PopupWindow(layout, LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT, true);
-        popupWindow.showAsDropDown(view);
+        showPopupWindow(view, layout);
     }
 
     @OnClick(R.id.filter_time_spent)
@@ -1127,8 +1127,14 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 showCharts(spinner.getSelectedItemPosition());
             });
         }
+        showPopupWindow(view, layout);
+    }
+
+    private void showPopupWindow(View view, View layout) {
         PopupWindow popupWindow = new PopupWindow(layout, LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT, true);
+        popupWindow.setBackgroundDrawable(new BitmapDrawable(getResources(), (Bitmap) null));
+        popupWindow.setOutsideTouchable(true);
         popupWindow.showAsDropDown(view);
     }
 
