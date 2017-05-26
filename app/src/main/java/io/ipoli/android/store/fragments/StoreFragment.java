@@ -7,10 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.squareup.otto.Bus;
-
-import javax.inject.Inject;
-
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
@@ -18,7 +14,6 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.store.StoreItemType;
-import io.ipoli.android.store.adapters.StoreAdapter;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -28,15 +23,9 @@ import io.ipoli.android.store.adapters.StoreAdapter;
 public class StoreFragment extends BaseFragment {
 
     public static final String START_ITEM_TYPE = "start-item-type";
+
     private StoreItemType startStoreItemType;
 
-    @Inject
-    Bus eventBus;
-
-//    @BindView(R.id.item_list)
-//    RecyclerView itemList;
-
-    private StoreAdapter adapter;
     private Unbinder unbinder;
 
     public static StoreFragment newInstance() {
@@ -71,15 +60,6 @@ public class StoreFragment extends BaseFragment {
         App.getAppComponent(getContext()).inject(this);
 
         getActivity().setTitle(R.string.title_store_activity);
-
-//        itemList.setLayoutManager(new GridLayoutManager(getContext(), 2));
-//        List<StoreViewModel> storeViewModels = new ArrayList<>();
-//        storeViewModels.add(new StoreViewModel(StoreItemType.COINS, "Coins", R.drawable.store_coins));
-//        storeViewModels.add(new StoreViewModel(StoreItemType.UPGRADES, "Upgrades", R.drawable.store_upgrade));
-//        storeViewModels.add(new StoreViewModel(StoreItemType.AVATARS, "Avatars", R.drawable.avatar_01));
-//        storeViewModels.add(new StoreViewModel(StoreItemType.PETS, "Pets", R.drawable.store_pets));
-//        adapter = new StoreAdapter(getContext(), eventBus, storeViewModels);
-//        itemList.setAdapter(adapter);
 
         if(startStoreItemType != null) {
             changeCurrentItem(startStoreItemType);
@@ -118,11 +98,6 @@ public class StoreFragment extends BaseFragment {
         changeCurrentItem(StoreItemType.PETS);
     }
 
-//    @Subscribe
-//    public void storeItemSelected(StoreItemSelectedEvent e) {
-//        changeCurrentItem(e.type);
-//    }
-//
     private void changeCurrentItem(StoreItemType type) {
         switch (type) {
             case COINS:
