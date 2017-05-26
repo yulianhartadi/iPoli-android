@@ -718,8 +718,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         awesomenessBarChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         awesomenessBarChart.getXAxis().setLabelCount(xLabels.length);
         awesomenessBarChart.setData(barData);
-        awesomenessBarChart.invalidate();
-        awesomenessBarChart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
+        invalidateAndAnimate(awesomenessBarChart);
     }
 
     private void showXpEarnedBarChart(int[] data, String[] xLabels) {
@@ -737,8 +736,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         xpEarnedBarChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         xpEarnedBarChart.getXAxis().setLabelCount(xLabels.length);
         xpEarnedBarChart.setData(barData);
-        xpEarnedBarChart.invalidate();
-        xpEarnedBarChart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
+        invalidateAndAnimate(xpEarnedBarChart);
     }
 
     private void showCoinsEarnedBarChart(int[] data, String[] xLabels) {
@@ -756,8 +754,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         coinsEarnedBarChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         coinsEarnedBarChart.getXAxis().setLabelCount(xLabels.length);
         coinsEarnedBarChart.setData(barData);
-        coinsEarnedBarChart.invalidate();
-        coinsEarnedBarChart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
+        invalidateAndAnimate(coinsEarnedBarChart);
     }
 
     private void showTimeSpentBarChart(int[][] data, String[] xLabels) {
@@ -770,8 +767,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             timeSpentBarChart.getXAxis().setLabelCount(xLabels.length);
             timeSpentBarChart.setData(barData);
         }
-        timeSpentBarChart.invalidate();
-        timeSpentBarChart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
+        invalidateAndAnimate(timeSpentBarChart);
     }
 
     @NonNull
@@ -823,48 +819,45 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             completedQuestsBarChart.getXAxis().setLabelCount(xLabels.length);
             completedQuestsBarChart.setData(barData);
         }
-        completedQuestsBarChart.invalidate();
-        completedQuestsBarChart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
+        invalidateAndAnimate(completedQuestsBarChart);
     }
 
     private void showXpEarnedLineChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels, boolean drawHandles) {
-        LineData lineData = createThisVsLastWeekLineData(data, range, currentRangeLabel, prevRangeLabel, drawHandles);
+        LineData lineData = createThisVsLastPeriodLineData(data, range, currentRangeLabel, prevRangeLabel, drawHandles);
 
         xpEarnedLineChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
 
         xpEarnedLineChart.setData(lineData);
-        xpEarnedLineChart.invalidate();
-        xpEarnedLineChart.animateX(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
+        invalidateAndAnimate(xpEarnedLineChart);
     }
 
     private void showCoinsEarnedLineChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels, boolean drawHandles) {
-        LineData lineData = createThisVsLastWeekLineData(data, range, currentRangeLabel, prevRangeLabel, drawHandles);
+        LineData lineData = createThisVsLastPeriodLineData(data, range, currentRangeLabel, prevRangeLabel, drawHandles);
 
         coinsEarnedLineChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
 
         coinsEarnedLineChart.setData(lineData);
-        coinsEarnedLineChart.invalidate();
-        coinsEarnedLineChart.animateX(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
+        invalidateAndAnimate(coinsEarnedLineChart);
     }
 
     @NonNull
-    private LineData createThisVsLastWeekLineData(int[] data, int prevRangeLength, String currentRangeLabel, String prevRangeLabel, boolean drawHandles) {
-        List<Entry> entries = new ArrayList<>();
+    private LineData createThisVsLastPeriodLineData(int[] data, int prevRangeLength, String currentRangeLabel, String prevRangeLabel, boolean drawHandles) {
+        List<Entry> thisPeriodEntries = new ArrayList<>();
         for (int i = prevRangeLength; i < data.length; i++) {
-            entries.add(new Entry(i - prevRangeLength, data[i]));
+            thisPeriodEntries.add(new Entry(i - prevRangeLength, data[i]));
         }
-        LineDataSet thisWeekDataSet = new LineDataSet(entries, currentRangeLabel);
+        LineDataSet thisPeriodDataSet = new LineDataSet(thisPeriodEntries, currentRangeLabel);
 
-        applyLineDataSetStyle(thisWeekDataSet, R.color.md_red_A200, R.color.md_red_A400, drawHandles);
+        applyLineDataSetStyle(thisPeriodDataSet, R.color.md_red_A200, R.color.md_red_A400, drawHandles);
 
-        List<Entry> lastWeekEntries = new ArrayList<>();
+        List<Entry> lastPeriodEntries = new ArrayList<>();
         for (int i = 0; i < prevRangeLength; i++) {
-            lastWeekEntries.add(new Entry(i, data[i]));
+            lastPeriodEntries.add(new Entry(i, data[i]));
         }
-        LineDataSet lastWeekDataSet = new LineDataSet(lastWeekEntries, prevRangeLabel);
-        applyLineDataSetStyle(lastWeekDataSet, R.color.md_blue_A200, R.color.md_blue_A400, drawHandles);
+        LineDataSet lastPeriodDataSet = new LineDataSet(lastPeriodEntries, prevRangeLabel);
+        applyLineDataSetStyle(lastPeriodDataSet, R.color.md_blue_A200, R.color.md_blue_A400, drawHandles);
 
-        return new LineData(lastWeekDataSet, thisWeekDataSet);
+        return new LineData(lastPeriodDataSet, thisPeriodDataSet);
     }
 
     private void showTimeSpentLineChart(int[][] data, String[] xLabels, boolean drawHandles) {
@@ -876,8 +869,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             timeSpentLineChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
             timeSpentLineChart.setData(lineData);
         }
-        timeSpentLineChart.invalidate();
-        timeSpentLineChart.animateX(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
+        invalidateAndAnimate(timeSpentLineChart);
     }
 
     private void showCompletedQuestsLineChart(int[][] data, String[] xLabels, boolean drawHandles) {
@@ -889,19 +881,17 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             completedQuestsLineChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
             completedQuestsLineChart.setData(lineData);
         }
-        completedQuestsLineChart.invalidate();
-        completedQuestsLineChart.animateX(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
+        invalidateAndAnimate(completedQuestsLineChart);
     }
 
 
     private void showAwesomenessLineChart(int[] data, int prevRangeLength, String currentRangeLabel, String prevRangeLabel, String[] xLabels, boolean drawHandles) {
-        LineData lineData = createThisVsLastWeekLineData(data, prevRangeLength, currentRangeLabel, prevRangeLabel, drawHandles);
+        LineData lineData = createThisVsLastPeriodLineData(data, prevRangeLength, currentRangeLabel, prevRangeLabel, drawHandles);
 
         awesomenessLineChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
 
         awesomenessLineChart.setData(lineData);
-        awesomenessLineChart.invalidate();
-        awesomenessLineChart.animateX(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
+        invalidateAndAnimate(awesomenessLineChart);
     }
 
     @NonNull
@@ -1123,8 +1113,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 LineData lineData = createCategoryLineData((int[][]) timeSpentLineChart.getTag(), itemPosition == THIS_WEEK, selectedTimeSpent);
                 timeSpentLineChart.setData(lineData);
             }
-            timeSpentLineChart.invalidate();
-            timeSpentLineChart.animateX(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
+            invalidateAndAnimate(timeSpentLineChart);
         } else {
             if (selectedTimeSpent.isEmpty()) {
                 timeSpentBarChart.setData(null);
@@ -1133,9 +1122,13 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 BarData barData = createCategoryBarData((int[][]) timeSpentBarChart.getTag(), selectedTimeSpent);
                 timeSpentBarChart.setData(barData);
             }
-            timeSpentBarChart.invalidate();
-            timeSpentBarChart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
+            invalidateAndAnimate(timeSpentBarChart);
         }
+    }
+
+    private void invalidateAndAnimate(Chart<?> chart) {
+        chart.invalidate();
+        chart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
     }
 
     private void showFilteredCompletedChart(int itemPosition) {
@@ -1146,8 +1139,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 LineData lineData = createCategoryLineData((int[][]) completedQuestsLineChart.getTag(), itemPosition == THIS_WEEK, selectedCompleted);
                 completedQuestsLineChart.setData(lineData);
             }
-            completedQuestsLineChart.invalidate();
-            completedQuestsLineChart.animateX(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
+            invalidateAndAnimate(completedQuestsLineChart);
         } else {
             if (selectedCompleted.isEmpty()) {
                 completedQuestsBarChart.setData(null);
@@ -1155,8 +1147,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 BarData barData = createCategoryBarData((int[][]) completedQuestsBarChart.getTag(), selectedCompleted);
                 completedQuestsBarChart.setData(barData);
             }
-            completedQuestsBarChart.invalidate();
-            completedQuestsBarChart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
+            invalidateAndAnimate(completedQuestsBarChart);
         }
     }
 
