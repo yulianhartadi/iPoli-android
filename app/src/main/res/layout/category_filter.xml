@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="@string/category_learning" />
 
     <Switch
@@ -20,6 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
+        android:layout_marginTop="16dp"
         android:text="@string/category_wellness" />
 
     <Switch
@@ -27,7 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="@string/category_personal" />
 
     <Switch
@@ -35,7 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="@string/category_work" />
 
     <Switch
@@ -43,7 +44,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="@string/category_fun" />
 
     <Switch
@@ -51,6 +52,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="16dp"
         android:text="@string/category_chores" />
 </LinearLayout>
