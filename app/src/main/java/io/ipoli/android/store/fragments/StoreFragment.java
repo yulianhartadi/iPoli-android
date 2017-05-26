@@ -95,7 +95,7 @@ public class StoreFragment extends BaseFragment {
 
         return view;
     }
-    
+
     @Override
     public void onResume() {
         super.onResume();
