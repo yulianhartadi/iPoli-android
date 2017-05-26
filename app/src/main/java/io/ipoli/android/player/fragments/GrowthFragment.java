@@ -148,8 +148,8 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     QuestPersistenceService questPersistenceService;
 
     private Unbinder unbinder;
-    private List<Chart<?>> rangeCharts;
-    private List<Chart<?>> vsCharts;
+    private List<Chart<?>> lineCharts;
+    private List<Chart<?>> barCharts;
     private PriorityEstimator priorityEstimator;
 
     private Set<Category> selectedCompleted = new HashSet<>();
@@ -184,19 +184,19 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             ((MainActivity) getActivity()).actionBarDrawerToggle.syncState();
         }
 
-        rangeCharts = new ArrayList<>();
-        rangeCharts.add(awesomenessLineChart);
-        rangeCharts.add(completedQuestsLineChart);
-        rangeCharts.add(timeSpentLineChart);
-        rangeCharts.add(coinsEarnedLineChart);
-        rangeCharts.add(xpEarnedLineChart);
+        lineCharts = new ArrayList<>();
+        lineCharts.add(awesomenessLineChart);
+        lineCharts.add(completedQuestsLineChart);
+        lineCharts.add(timeSpentLineChart);
+        lineCharts.add(coinsEarnedLineChart);
+        lineCharts.add(xpEarnedLineChart);
 
-        vsCharts = new ArrayList<>();
-        vsCharts.add(awesomenessBarChart);
-        vsCharts.add(completedQuestsBarChart);
-        vsCharts.add(timeSpentBarChart);
-        vsCharts.add(coinsEarnedBarChart);
-        vsCharts.add(xpEarnedBarChart);
+        barCharts = new ArrayList<>();
+        barCharts.add(awesomenessBarChart);
+        barCharts.add(completedQuestsBarChart);
+        barCharts.add(timeSpentBarChart);
+        barCharts.add(coinsEarnedBarChart);
+        barCharts.add(xpEarnedBarChart);
 
         selectedCompleted.add(Category.WELLNESS);
         selectedCompleted.add(Category.LEARNING);
@@ -211,32 +211,32 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         categoryToColor.put(Category.FUN, R.color.md_purple_300);
         categoryToColor.put(Category.CHORES, R.color.md_brown_300);
 
-        setupAwesomenessRangeChart();
-        setupAwesomenessVsLastChart();
-        setupCompletedQuestsPerCategoryRangeChart();
-        setupCompletedQuestsVsLastChart();
-        setupTimeSpentRangeChart();
-        setupTimeSpentVsLastChart();
-        setupCoinsEarnedRangeChart();
-        setupCoinsEarnedVsLastChart();
-        setupXpEarnedRangeChart();
-        setupXpEarnedVsLastChart();
+        setupAwesomenessLineChart();
+        setupAwesomenessBarChart();
+        setupCompletedQuestsLineChart();
+        setupCompletedQuestsBarChart();
+        setupTimeSpentLineChart();
+        setupTimeSpentBarChart();
+        setupCoinsEarnedLineChart();
+        setupCoinsEarnedBarChart();
+        setupXpEarnedLineChart();
+        setupXpEarnedBarChart();
 
         showCharts(THIS_WEEK);
         return view;
     }
 
-    private void setupAwesomenessRangeChart() {
+    private void setupAwesomenessLineChart() {
         applyDefaultStyle(awesomenessLineChart);
         ChartMarkerView chartMarkerView = new ChartMarkerView(getContext());
         awesomenessLineChart.setMarker(chartMarkerView);
     }
 
-    private void setupAwesomenessVsLastChart() {
+    private void setupAwesomenessBarChart() {
         applyDefaultStyle(awesomenessBarChart);
     }
 
-    private void setupCompletedQuestsPerCategoryRangeChart() {
+    private void setupCompletedQuestsLineChart() {
         applyDefaultStyle(completedQuestsLineChart);
         ChartMarkerView chartMarkerView = new ChartMarkerView(getContext());
         completedQuestsLineChart.setMarker(chartMarkerView);
@@ -244,13 +244,13 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         completedQuestsLineChart.setNoDataTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
     }
 
-    private void setupCompletedQuestsVsLastChart() {
+    private void setupCompletedQuestsBarChart() {
         applyDefaultStyle(completedQuestsBarChart, true);
         completedQuestsBarChart.setNoDataText(getString(R.string.growth_no_categories_selected));
         completedQuestsBarChart.setNoDataTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
     }
 
-    private void setupTimeSpentRangeChart() {
+    private void setupTimeSpentLineChart() {
         applyDefaultStyle(timeSpentLineChart);
         ChartMarkerView chartMarkerView = new ChartMarkerView(getContext());
         timeSpentLineChart.setMarker(chartMarkerView);
@@ -258,46 +258,46 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         timeSpentLineChart.setNoDataTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
     }
 
-    private void setupTimeSpentVsLastChart() {
+    private void setupTimeSpentBarChart() {
         applyDefaultStyle(timeSpentBarChart, true);
         timeSpentBarChart.setNoDataText(getString(R.string.growth_no_categories_selected));
         timeSpentBarChart.setNoDataTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
     }
 
-    private void setupCoinsEarnedRangeChart() {
+    private void setupCoinsEarnedLineChart() {
         applyDefaultStyle(coinsEarnedLineChart);
         ChartMarkerView chartMarkerView = new ChartMarkerView(getContext());
         coinsEarnedLineChart.setMarker(chartMarkerView);
     }
 
-    private void setupCoinsEarnedVsLastChart() {
+    private void setupCoinsEarnedBarChart() {
         applyDefaultStyle(coinsEarnedBarChart);
     }
 
-    private void setupXpEarnedRangeChart() {
+    private void setupXpEarnedLineChart() {
         applyDefaultStyle(xpEarnedLineChart);
         ChartMarkerView chartMarkerView = new ChartMarkerView(getContext());
         xpEarnedLineChart.setMarker(chartMarkerView);
     }
 
-    private void setupXpEarnedVsLastChart() {
+    private void setupXpEarnedBarChart() {
         applyDefaultStyle(xpEarnedBarChart);
     }
 
-    private void showRangeCharts() {
-        for (Chart<?> chart : rangeCharts) {
+    private void showLineCharts() {
+        for (Chart<?> chart : lineCharts) {
             chart.setVisibility(View.VISIBLE);
         }
-        for (Chart<?> chart : vsCharts) {
+        for (Chart<?> chart : barCharts) {
             chart.setVisibility(View.GONE);
         }
     }
 
-    private void showVsCharts() {
-        for (Chart<?> chart : vsCharts) {
+    private void showBarCharts() {
+        for (Chart<?> chart : barCharts) {
             chart.setVisibility(View.VISIBLE);
         }
-        for (Chart<?> chart : rangeCharts) {
+        for (Chart<?> chart : lineCharts) {
             chart.setVisibility(View.GONE);
         }
     }
@@ -306,23 +306,23 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         LocalDate today = LocalDate.now();
         switch (position) {
             case THIS_WEEK:
-                showRangeCharts();
+                showLineCharts();
                 showThisWeekCharts(today);
                 break;
             case THIS_MONTH:
-                showRangeCharts();
+                showLineCharts();
                 showThisMonthCharts(today);
                 break;
             case LAST_7_DAYS:
-                showVsCharts();
+                showBarCharts();
                 showLast7DaysCharts(today);
                 break;
             case LAST_4_WEEKS:
-                showVsCharts();
+                showBarCharts();
                 showLast4WeeksCharts(today);
                 break;
             case LAST_3_MONTHS:
-                showVsCharts();
+                showBarCharts();
                 showLast3MonthsCharts(today);
                 break;
         }
