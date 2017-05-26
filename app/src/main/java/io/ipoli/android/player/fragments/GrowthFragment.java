@@ -703,17 +703,37 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         return Math.max(0, priorityEstimator.estimate(quest));
     }
 
+    private void showAwesomenessBarChart(int[] awesomenessPerDay, String[] xLabels) {
+        List<BarEntry> entries = new ArrayList<>();
+        for (int i = 0; i < awesomenessPerDay.length; i++) {
+            entries.add(new BarEntry(i, awesomenessPerDay[i]));
+        }
+        BarDataSet dataSet = new BarDataSet(entries, "");
+        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_orange_500));
+        dataSet.setValueTextSize(12f);
+        dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
+        BarData barData = new BarData(dataSet);
+        barData.setValueFormatter(barDataValueFormatter);
+        barData.setValueTextSize(14f);
+        awesomenessBarChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
+        awesomenessBarChart.getXAxis().setLabelCount(xLabels.length);
+        awesomenessBarChart.setData(barData);
+        awesomenessBarChart.invalidate();
+        awesomenessBarChart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
+    }
+
     private void showXpEarnedBarChart(int[] data, String[] xLabels) {
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < data.length; i++) {
             entries.add(new BarEntry(i, data[i]));
         }
         BarDataSet dataSet = new BarDataSet(entries, "");
-        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_green_500));
+        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_orange_500));
         dataSet.setValueTextSize(12f);
         dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
         BarData barData = new BarData(dataSet);
         barData.setValueFormatter(barDataValueFormatter);
+        barData.setValueTextSize(14f);
         xpEarnedBarChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         xpEarnedBarChart.getXAxis().setLabelCount(xLabels.length);
         xpEarnedBarChart.setData(barData);
@@ -727,11 +747,12 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             entries.add(new BarEntry(i, data[i]));
         }
         BarDataSet dataSet = new BarDataSet(entries, "");
-        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_green_500));
+        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_orange_500));
         dataSet.setValueTextSize(12f);
         dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
         BarData barData = new BarData(dataSet);
         barData.setValueFormatter(barDataValueFormatter);
+        barData.setValueTextSize(14f);
         coinsEarnedBarChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         coinsEarnedBarChart.getXAxis().setLabelCount(xLabels.length);
         coinsEarnedBarChart.setData(barData);
@@ -785,9 +806,9 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         } else {
             dataSet.setLabel(stackLabels.get(0));
         }
-        dataSet.setDrawValues(false);
         BarData barData = new BarData(dataSet);
         barData.setValueFormatter(barDataValueFormatter);
+        barData.setValueTextSize(14f);
         return barData;
     }
 
@@ -804,25 +825,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         }
         completedQuestsBarChart.invalidate();
         completedQuestsBarChart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
-    }
-
-
-    private void showAwesomenessBarChart(int[] awesomenessPerDay, String[] xLabels) {
-        List<BarEntry> entries = new ArrayList<>();
-        for (int i = 0; i < awesomenessPerDay.length; i++) {
-            entries.add(new BarEntry(i, awesomenessPerDay[i]));
-        }
-        BarDataSet dataSet = new BarDataSet(entries, "");
-        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_green_500));
-        dataSet.setValueTextSize(12f);
-        dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
-        BarData barData = new BarData(dataSet);
-        barData.setValueFormatter(barDataValueFormatter);
-        awesomenessBarChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
-        awesomenessBarChart.getXAxis().setLabelCount(xLabels.length);
-        awesomenessBarChart.setData(barData);
-        awesomenessBarChart.invalidate();
-        awesomenessBarChart.animateY(CHART_ANIMATION_DURATION, DEFAULT_EASING_OPTION);
     }
 
     private void showXpEarnedLineChart(int[] data, int range, String currentRangeLabel, String prevRangeLabel, String[] xLabels, boolean drawHandles) {
