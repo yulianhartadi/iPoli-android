@@ -686,8 +686,11 @@
     <string name="pet_elephant">Flying ears</string>
     <string name="pet_beaver">Crazy teeth</string>
     <string name="pet_chicken">Chicken invader</string>
-    <string name="pet_store_select">Select</string>
+    <string name="pet_store_use_pet">Use this pet</string>
     <string name="pet_selected_message">Pet successfully changed</string>
+    <string name="avatar_store_use_avatar">Use this avatar</string>
+    <string name="not_enough_coins_to_buy_avatar">Not enough coins to buy avatar</string>
+    <string name="avatar_selected_message">Avatar successfully changed</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

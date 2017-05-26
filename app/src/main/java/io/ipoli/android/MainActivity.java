@@ -71,10 +71,8 @@ import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
-import io.ipoli.android.store.Upgrade;
 import io.ipoli.android.player.UpgradeDialog;
 import io.ipoli.android.player.UpgradesManager;
-import io.ipoli.android.player.activities.PickAvatarPictureActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
@@ -100,6 +98,7 @@ import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reminder.data.Reminder;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.store.StoreItemType;
+import io.ipoli.android.store.Upgrade;
 import io.ipoli.android.store.activities.StoreActivity;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -580,7 +579,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Subscribe
     public void onPickAvatarRequest(PickAvatarRequestEvent e) {
-        startActivityForResult(new Intent(MainActivity.this, PickAvatarPictureActivity.class), PICK_PLAYER_PICTURE_REQUEST_CODE);
+        Intent intent = new Intent(this, StoreActivity.class);
+        intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.AVATARS.name());
+        startActivity(intent);
+//        startActivityForResult(new Intent(MainActivity.this, PickAvatarPictureActivity.class), PICK_PLAYER_PICTURE_REQUEST_CODE);
     }
 
     @Override

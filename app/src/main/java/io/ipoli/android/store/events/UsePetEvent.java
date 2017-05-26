@@ -7,10 +7,10 @@ import io.ipoli.android.store.Pet;
  * on 5/25/17.
  */
 
-public class SelectPetEvent {
+public class UsePetEvent {
     public final Pet pet;
 
-    public SelectPetEvent(Pet pet) {
+    public UsePetEvent(Pet pet) {
         this.pet = pet;
     }
 }

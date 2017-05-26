@@ -1,6 +1,11 @@
 package io.ipoli.android.store.viewmodels;
 
+import android.content.Context;
 import android.support.annotation.DrawableRes;
+
+import org.threeten.bp.LocalDate;
+
+import io.ipoli.android.store.Avatar;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -8,21 +13,29 @@ import android.support.annotation.DrawableRes;
  */
 
 public class AvatarViewModel {
-    private String name;
+    private final Avatar avatar;
 
-    private int price;
+    private final LocalDate boughtDate;
+
+    private final String name;
+
+    private final int price;
 
     @DrawableRes
-    private int picture;
+    private final int picture;
 
-    private String pictureName;
-
-    public AvatarViewModel(String name, int price, @DrawableRes int picture, String pictureName) {
-        this.name = name;
-        this.price = price;
-        this.picture = picture;
-        this.pictureName = pictureName;
+    public AvatarViewModel(Context context, Avatar avatar) {
+        this(context, avatar, null);
     }
+
+    public AvatarViewModel(Context context, Avatar avatar, LocalDate boughtDate) {
+        this.avatar = avatar;
+        this.boughtDate = boughtDate;
+        name = context.getString(avatar.name);
+        price = avatar.price;
+        picture = avatar.picture;
+    }
+
 
     public String getName() {
         return name;
@@ -36,7 +49,15 @@ public class AvatarViewModel {
         return picture;
     }
 
-    public String getPictureName() {
-        return pictureName;
+    public Avatar getAvatar() {
+        return avatar;
+    }
+
+    public LocalDate getBoughtDate() {
+        return boughtDate;
+    }
+
+    public boolean isBought() {
+        return boughtDate != null;
     }
 }
