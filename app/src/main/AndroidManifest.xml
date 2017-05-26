@@ -176,7 +176,7 @@
         </activity>
         <activity
             android:name=".quest.activities.EisenhowerMatrixActivity"
-            android:label="@string/title_activity_agenda"
+            android:label="@string/title_activity_eisenhower_matrix"
             android:launchMode="singleTop"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">

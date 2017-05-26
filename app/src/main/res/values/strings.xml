@@ -684,6 +684,7 @@
     <string name="last_month">Last month</string>
     <string name="tracked">Tracked</string>
     <string name="overdue">Overdue</string>
+    <string name="title_activity_eisenhower_matrix">Eisenhower Matrix</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
