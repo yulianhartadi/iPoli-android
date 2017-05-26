@@ -15,7 +15,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -583,22 +582,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         Intent intent = new Intent(this, StoreActivity.class);
         intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.AVATARS.name());
         startActivity(intent);
-//        startActivityForResult(new Intent(MainActivity.this, PickAvatarPictureActivity.class), PICK_PLAYER_PICTURE_REQUEST_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_PLAYER_PICTURE_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
-            String picture = data.getStringExtra(Constants.PICTURE_NAME_EXTRA_KEY);
-            if (!TextUtils.isEmpty(picture)) {
-                Player player = getPlayer();
-                ImageView avatarImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.player_picture);
-                avatarImage.setImageResource(ResourceUtils.extractDrawableResource(this, picture));
-                player.setPicture(picture);
-                playerPersistenceService.save(player);
-            }
-        }
 
         if (requestCode == INVITE_FRIEND_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {

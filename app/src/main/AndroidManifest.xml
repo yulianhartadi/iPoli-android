@@ -137,16 +137,6 @@
             android:name=".app.tutorial.TutorialActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".player.activities.PickAvatarPictureActivity"
-            android:label="@string/title_activity_pick_avatar"
-            android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.iPoli.DialogActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-        <activity
             android:name=".challenge.activities.PickDailyChallengeQuestsActivity"
             android:label="@string/title_pick_daily_challenge_quests"
             android:parentActivityName=".MainActivity"
