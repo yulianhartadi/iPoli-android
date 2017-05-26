@@ -3,30 +3,22 @@ package io.ipoli.android.store.fragments;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.store.StoreItemType;
 import io.ipoli.android.store.adapters.StoreAdapter;
-import io.ipoli.android.store.events.StoreItemSelectedEvent;
-import io.ipoli.android.store.viewmodels.StoreViewModel;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -41,8 +33,8 @@ public class StoreFragment extends BaseFragment {
     @Inject
     Bus eventBus;
 
-    @BindView(R.id.item_list)
-    RecyclerView itemList;
+//    @BindView(R.id.item_list)
+//    RecyclerView itemList;
 
     private StoreAdapter adapter;
     private Unbinder unbinder;
@@ -80,32 +72,20 @@ public class StoreFragment extends BaseFragment {
 
         getActivity().setTitle(R.string.title_store_activity);
 
-        itemList.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        List<StoreViewModel> storeViewModels = new ArrayList<>();
-        storeViewModels.add(new StoreViewModel(StoreItemType.COINS, "Coins", R.drawable.coins));
-        storeViewModels.add(new StoreViewModel(StoreItemType.UPGRADES, "Upgrades", R.drawable.upgrade));
-        storeViewModels.add(new StoreViewModel(StoreItemType.AVATARS, "Avatars", R.drawable.avatar_01));
-        storeViewModels.add(new StoreViewModel(StoreItemType.PETS, "Pets", R.drawable.pet_3));
-        adapter = new StoreAdapter(getContext(), eventBus, storeViewModels);
-        itemList.setAdapter(adapter);
+//        itemList.setLayoutManager(new GridLayoutManager(getContext(), 2));
+//        List<StoreViewModel> storeViewModels = new ArrayList<>();
+//        storeViewModels.add(new StoreViewModel(StoreItemType.COINS, "Coins", R.drawable.store_coins));
+//        storeViewModels.add(new StoreViewModel(StoreItemType.UPGRADES, "Upgrades", R.drawable.store_upgrade));
+//        storeViewModels.add(new StoreViewModel(StoreItemType.AVATARS, "Avatars", R.drawable.avatar_01));
+//        storeViewModels.add(new StoreViewModel(StoreItemType.PETS, "Pets", R.drawable.store_pets));
+//        adapter = new StoreAdapter(getContext(), eventBus, storeViewModels);
+//        itemList.setAdapter(adapter);
 
         if(startStoreItemType != null) {
             changeCurrentItem(startStoreItemType);
         }
 
         return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        eventBus.register(this);
-    }
-
-    @Override
-    public void onPause() {
-        eventBus.unregister(this);
-        super.onPause();
     }
 
     public void onDestroyView() {
@@ -118,11 +98,31 @@ public class StoreFragment extends BaseFragment {
         return false;
     }
 
-    @Subscribe
-    public void storeItemSelected(StoreItemSelectedEvent e) {
-        changeCurrentItem(e.type);
+    @OnClick(R.id.store_coins_container)
+    public void onCoinsClicked(View v) {
+        changeCurrentItem(StoreItemType.COINS);
     }
 
+    @OnClick(R.id.store_upgrades_container)
+    public void onUpgradesClicked(View v) {
+        changeCurrentItem(StoreItemType.UPGRADES);
+    }
+
+    @OnClick(R.id.store_avatars_container)
+    public void onAvatarsClicked(View v) {
+        changeCurrentItem(StoreItemType.AVATARS);
+    }
+
+    @OnClick(R.id.store_pets_container)
+    public void onPetsClicked(View v) {
+        changeCurrentItem(StoreItemType.PETS);
+    }
+
+//    @Subscribe
+//    public void storeItemSelected(StoreItemSelectedEvent e) {
+//        changeCurrentItem(e.type);
+//    }
+//
     private void changeCurrentItem(StoreItemType type) {
         switch (type) {
             case COINS:

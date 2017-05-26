@@ -58,7 +58,7 @@ public class UpgradeStoreFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragement_upgrade_store, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        getActivity().setTitle("Buy upgrade");
+        getActivity().setTitle("Buy store_upgrade");
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -107,7 +107,7 @@ public class UpgradeStoreFragment extends BaseFragment {
             Toast.makeText(getContext(), "You can now enjoy ", Toast.LENGTH_SHORT).show();
             adapter.setViewModels(createUpgradeViewModels());
         } else {
-            Toast.makeText(getContext(), "Not enough coins to buy", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Not enough store_coins to buy", Toast.LENGTH_SHORT).show();
         }
     }
 

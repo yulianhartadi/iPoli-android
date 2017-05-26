@@ -33,7 +33,7 @@ import io.ipoli.android.store.activities.StoreActivity;
  */
 
 public class UpgradeDialog extends DialogFragment {
-    private static final String TAG = "upgrade-dialog";
+    private static final String TAG = "store_upgrade-dialog";
     private static final String UPGRADE_CODE = "upgrade_code";
 
     @Inject
@@ -75,7 +75,7 @@ public class UpgradeDialog extends DialogFragment {
         int code = getArguments().getInt(UPGRADE_CODE);
         upgrade = Upgrade.get(code);
         if (upgrade == null) {
-            throw new NoSuchElementException("There is no upgrade with code: " + code);
+            throw new NoSuchElementException("There is no store_upgrade with code: " + code);
         }
 
     }
@@ -97,7 +97,7 @@ public class UpgradeDialog extends DialogFragment {
         notEnoughCoins.setText(String.format(getString(R.string.upgrade_dialog_not_enough_coins), upgrade.price));
 
         boolean hasEnoughCoins = upgradesManager.hasEnoughCoinsForUpgrade(upgrade);
-        String positiveBtnText = hasEnoughCoins ? "Buy" : "Buy coins";
+        String positiveBtnText = hasEnoughCoins ? "Buy" : "Buy store_coins";
 
         price.setVisibility(hasEnoughCoins ? View.VISIBLE : View.GONE);
         notEnoughCoins.setVisibility(hasEnoughCoins ? View.GONE : View.VISIBLE);

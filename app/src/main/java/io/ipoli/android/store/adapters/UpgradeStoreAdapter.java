@@ -64,7 +64,7 @@ public class UpgradeStoreAdapter extends RecyclerView.Adapter<UpgradeStoreAdapte
         holder.title.setText(vm.getTitle());
         holder.shortDesc.setText(vm.getShortDescription());
         holder.longDesc.setText(vm.getLongDescription());
-        holder.price.setText(vm.getPrice() + " life coins");
+        holder.price.setText(vm.getPrice() + " life store_coins");
         holder.image.setImageResource(vm.getImage());
         holder.expand.setOnClickListener(v -> {
             if (holder.longDesc.getVisibility() == View.GONE) {
