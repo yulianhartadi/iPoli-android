@@ -46,8 +46,6 @@ import io.ipoli.android.store.viewmodels.PetViewModel;
 
 public class PetStoreFragment extends BaseFragment {
 
-    public static final int PET_PRICE = 500;
-
     @Inject
     Bus eventBus;
 

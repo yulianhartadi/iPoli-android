@@ -62,7 +62,6 @@ public class CoinStoreFragment extends BaseFragment {
         put(SKU_COINS_300, 300);
         put(SKU_COINS_500, 500);
         put(SKU_COINS_1000, 1000);
-
     }};
 
     @Inject
@@ -97,7 +96,6 @@ public class CoinStoreFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_coin_store, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-
         getActivity().setTitle(R.string.title_buy_coins);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -172,7 +170,7 @@ public class CoinStoreFragment extends BaseFragment {
 
     @Override
     protected boolean useOptionsMenu() {
-        return true;
+        return false;
     }
 
     @Override
