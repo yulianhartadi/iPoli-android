@@ -1,5 +1,7 @@
 package io.ipoli.android.store.adapters;
 
+import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,10 +25,23 @@ import io.ipoli.android.store.viewmodels.StoreViewModel;
  */
 
 public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> {
+    private final Context context;
     private List<StoreViewModel> viewModels;
     private final Bus eventBus;
 
-    public StoreAdapter(Bus eventBus, List<StoreViewModel> viewModels) {
+    private int[] colors = new int[]{
+            R.color.md_blue_300,
+            R.color.md_deep_orange_300,
+            R.color.md_green_300,
+            R.color.md_indigo_300,
+            R.color.md_purple_300,
+            R.color.md_red_300,
+            R.color.md_orange_300,
+            R.color.md_pink_300,
+    };
+
+    public StoreAdapter(Context context, Bus eventBus, List<StoreViewModel> viewModels) {
+        this.context = context;
         this.viewModels = viewModels;
         this.eventBus = eventBus;
     }
@@ -43,6 +58,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
         holder.title.setText(vm.getTitle());
         holder.image.setImageResource(vm.getPicture());
         holder.container.setOnClickListener(v -> eventBus.post(new StoreItemSelectedEvent(vm.getType())));
+        holder.rootContainer.setBackgroundColor(ContextCompat.getColor(context, colors[position % colors.length]));
     }
 
     @Override
@@ -51,6 +67,8 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.ViewHolder> 
     }
 
     public class ViewHolder  extends RecyclerView.ViewHolder{
+        @BindView(R.id.root_container)
+        ViewGroup rootContainer;
 
         @BindView(R.id.sore_item_container)
         ViewGroup container;
