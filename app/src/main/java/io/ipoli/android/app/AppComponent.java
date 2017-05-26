@@ -50,6 +50,7 @@ import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.AddRepeatingQuestActivity;
 import io.ipoli.android.quest.activities.AgendaActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
+import io.ipoli.android.quest.activities.EisenhowerMatrixActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.RepeatingQuestActivity;
 import io.ipoli.android.quest.fragments.AddNameFragment;
@@ -230,5 +231,7 @@ public interface AppComponent {
     void inject(SettingsActivity settingsActivity);
 
     void inject(CoinStoreActivity coinStoreActivity);
+
+    void inject(EisenhowerMatrixActivity eisenhowerMatrixActivity);
 }
 

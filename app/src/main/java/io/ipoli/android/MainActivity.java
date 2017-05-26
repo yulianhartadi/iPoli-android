@@ -77,6 +77,7 @@ import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.activities.EditQuestActivity;
+import io.ipoli.android.quest.activities.EisenhowerMatrixActivity;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
 import io.ipoli.android.quest.data.Quest;
@@ -151,6 +152,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        startActivity(new Intent(this, EisenhowerMatrixActivity.class));
 
         localStorage.increment(Constants.KEY_APP_RUN_COUNT);
 
