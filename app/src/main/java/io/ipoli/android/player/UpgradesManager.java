@@ -19,13 +19,17 @@ public class UpgradesManager implements OnDataChangedListener<Player> {
 
     public UpgradesManager(PlayerPersistenceService playerPersistenceService) {
         this.playerPersistenceService = playerPersistenceService;
-        playerPersistenceService.listen(this);
+        if(playerPersistenceService.get() != null) {
+            playerPersistenceService.listen(this);
+        }
     }
 
     private Player getPlayer() {
         if(player == null) {
             player = playerPersistenceService.get();
-            playerPersistenceService.listen(this);
+            if(player != null) {
+                playerPersistenceService.listen(this);
+            }
         }
         return player;
     }
