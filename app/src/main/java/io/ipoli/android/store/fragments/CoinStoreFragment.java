@@ -35,6 +35,7 @@ import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.adapters.CoinsStoreAdapter;
 import io.ipoli.android.store.events.BuyCoinsTappedEvent;
 import io.ipoli.android.store.events.CoinsPurchasedEvent;
@@ -91,11 +92,12 @@ public class CoinStoreFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_coin_store, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        getActivity().setTitle(R.string.title_buy_coins);
+        ((StoreActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_buy_coins);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);

@@ -14,6 +14,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.store.StoreItemType;
+import io.ipoli.android.store.activities.StoreActivity;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -58,8 +59,7 @@ public class StoreFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragement_store, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-
-        getActivity().setTitle(R.string.title_store_activity);
+        ((StoreActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_store_activity);
 
         if(startStoreItemType != null) {
             changeCurrentItem(startStoreItemType);

@@ -33,6 +33,7 @@ import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.store.Pet;
+import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.adapters.PetStoreAdapter;
 import io.ipoli.android.store.events.BuyPetRequestEvent;
 import io.ipoli.android.store.events.PetBoughtEvent;
@@ -65,7 +66,7 @@ public class PetStoreFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragement_pet_store, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        getActivity().setTitle("Buy pet");
+        ((StoreActivity)getActivity()).getSupportActionBar().setTitle("Buy pet");
 
         petList.setLayoutManager(new GridLayoutManager(getContext(), 2));
         List<PetViewModel> petViewModels = createPetViewModels();
