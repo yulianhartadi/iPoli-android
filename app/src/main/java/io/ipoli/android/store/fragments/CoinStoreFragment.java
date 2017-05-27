@@ -3,7 +3,6 @@ package io.ipoli.android.store.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +30,6 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
-import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
@@ -70,8 +68,8 @@ public class CoinStoreFragment extends BaseFragment {
     @BindView(R.id.root_layout)
     ViewGroup rootLayout;
 
-    @BindView(R.id.coins_list)
-    EmptyStateRecyclerView coinsList;
+//    @BindView(R.id.coins_list)
+//    EmptyStateRecyclerView coinsList;
 
     @BindView(R.id.loader)
     ProgressBar progressBar;
@@ -99,12 +97,12 @@ public class CoinStoreFragment extends BaseFragment {
         App.getAppComponent(getContext()).inject(this);
         ((StoreActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_buy_coins);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        coinsList.setLayoutManager(layoutManager);
-        coinsList.setEmptyView(rootLayout, R.string.empty_store_items, R.drawable.ic_inbox_grey_24dp);
-        adapter = new CoinsStoreAdapter(new ArrayList<>(), eventBus);
-        coinsList.setAdapter(adapter);
+//        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+//        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+//        coinsList.setLayoutManager(layoutManager);
+//        coinsList.setEmptyView(rootLayout, R.string.empty_store_items, R.drawable.ic_inbox_grey_24dp);
+//        adapter = new CoinsStoreAdapter(new ArrayList<>(), eventBus);
+//        coinsList.setAdapter(adapter);
 
         if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
             showFailureMessage(R.string.no_internet_to_buy_coins);
