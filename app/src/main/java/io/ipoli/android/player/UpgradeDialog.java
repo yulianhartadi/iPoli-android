@@ -120,6 +120,7 @@ public class UpgradeDialog extends DialogFragment {
 
         if (hasEnoughCoins) {
             builder.setNeutralButton("Go to Store", (dialog, which) -> {
+                startActivity(new Intent(getContext(), StoreActivity.class));
             });
         }
 
