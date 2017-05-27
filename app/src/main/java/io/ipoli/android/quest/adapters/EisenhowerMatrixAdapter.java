@@ -18,19 +18,19 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.quest.events.ShowQuestEvent;
-import io.ipoli.android.quest.viewmodels.AgendaViewModel;
+import io.ipoli.android.quest.viewmodels.EisenhowerMatrixViewModel;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 12/30/16.
  */
-public class AgendaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class EisenhowerMatrixAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final Context context;
     private final Bus eventBus;
-    private final List<AgendaViewModel> viewModels;
+    private final List<EisenhowerMatrixViewModel> viewModels;
 
-    public AgendaAdapter(Context context, Bus eventBus, List<AgendaViewModel> viewModels) {
+    public EisenhowerMatrixAdapter(Context context, Bus eventBus, List<EisenhowerMatrixViewModel> viewModels) {
         this.context = context;
         this.eventBus = eventBus;
         this.viewModels = viewModels;
@@ -39,19 +39,14 @@ public class AgendaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new AgendaViewHolder(inflater.inflate(R.layout.agenda_item, parent, false));
+        return new EisenhowerMatrixViewHolder(inflater.inflate(R.layout.eisenhower_matrix_item, parent, false));
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        AgendaViewHolder vh = (AgendaViewHolder) holder;
-        AgendaViewModel vm = viewModels.get(holder.getAdapterPosition());
+        EisenhowerMatrixViewHolder vh = (EisenhowerMatrixViewHolder) holder;
+        EisenhowerMatrixViewModel vm = viewModels.get(holder.getAdapterPosition());
         vh.name.setText(vm.getName());
-        if (vm.isCompleted()) {
-            vh.name.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_done_black_24dp, 0, 0, 0);
-        } else {
-            vh.name.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-        }
         vh.itemView.setOnClickListener(v -> {
             if (vm.isCompleted()) {
                 Toast.makeText(context, R.string.cannot_edit_completed_quests, Toast.LENGTH_SHORT).show();
@@ -61,8 +56,6 @@ public class AgendaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         });
         vh.categoryIndicator.setImageResource(vm.getCategoryImage());
         vh.startEnd.setText(vm.getScheduleText());
-        vh.repeatingIndicator.setVisibility(vm.isFromRepeatingQuest() ? View.VISIBLE : View.GONE);
-        vh.challengeIndicator.setVisibility(vm.isFromChallenge() ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -70,7 +63,7 @@ public class AgendaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return viewModels.size();
     }
 
-    static class AgendaViewHolder extends RecyclerView.ViewHolder {
+    static class EisenhowerMatrixViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.quest_start_end_time)
         TextView startEnd;
@@ -78,16 +71,10 @@ public class AgendaAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         @BindView(R.id.quest_text)
         TextView name;
 
-        @BindView(R.id.quest_repeating_indicator)
-        ImageView repeatingIndicator;
-
-        @BindView(R.id.quest_challenge_indicator)
-        ImageView challengeIndicator;
-
         @BindView(R.id.quest_category_indicator)
         ImageView categoryIndicator;
 
-        AgendaViewHolder(View v) {
+        EisenhowerMatrixViewHolder(View v) {
             super(v);
             ButterKnife.bind(this, v);
         }
