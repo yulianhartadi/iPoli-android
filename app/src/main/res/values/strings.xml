@@ -385,6 +385,7 @@
     <string name="settings_select_sync_calendars">Calendars to sync</string>
     <string name="settings_sync_google_calendars">Sync Google calendars</string>
     <string name="empty_calendars_text">No calendars</string>
+    <string name="empty_eisenhower_matrix_text">No quests for this date. Why not add some?</string>
     <string name="allow_read_calendars_perm_reason">iPoli needs to read your calendars to import your events as quests</string>
     <string name="sync_calendars_delete_loading_dialog_title">Deleting quests</string>
     <string name="empty_store_items">No available items</string>
@@ -404,7 +405,7 @@
     <string name="duplicate">Duplicate</string>
     <string name="mark_as_done">Mark as done</string>
     <string name="reminder_message">Message (e.g. Don\'t be lazy)</string>
-    <string name="rate_dialog_feedback_hint">What do you think of iPoli ...</string>
+    <string name="rate_dialog_feedback_hint">What do you think of iPoli …</string>
     <string name="repeat_type_flexible">Flexible</string>
     <string name="repeat_frequency">Frequency</string>
     <string name="sunday_short">Sun</string>

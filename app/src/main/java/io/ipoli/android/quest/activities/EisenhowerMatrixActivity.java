@@ -7,6 +7,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.threeten.bp.LocalDate;
 
@@ -39,6 +43,9 @@ public class EisenhowerMatrixActivity extends BaseActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
+    @BindView(R.id.matrix_container)
+    ViewGroup matrixContainer;
+
     @BindView(R.id.do_list)
     RecyclerView doList;
 
@@ -50,6 +57,15 @@ public class EisenhowerMatrixActivity extends BaseActivity {
 
     @BindView(R.id.delete_list)
     RecyclerView deleteList;
+
+    @BindView(R.id.empty_view)
+    ViewGroup emptyView;
+
+    @BindView(R.id.empty_image)
+    ImageView emptyImage;
+
+    @BindView(R.id.empty_text)
+    TextView emptyText;
 
     @Inject
     QuestPersistenceService questPersistenceService;
@@ -72,10 +88,10 @@ public class EisenhowerMatrixActivity extends BaseActivity {
             return;
         }
 
+        LocalDate selectedDate = DateUtils.fromMillis(selectedDateMillis);
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
-            LocalDate selectedDate = DateUtils.fromMillis(selectedDateMillis);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(getToolbarText(selectedDate)), Locale.getDefault());
             ab.setTitle(simpleDateFormat.format(DateUtils.toStartOfDay(selectedDate)));
         }
@@ -86,12 +102,12 @@ public class EisenhowerMatrixActivity extends BaseActivity {
         setLayoutManagerToList(accomplishList);
         setLayoutManagerToList(delegateList);
         setLayoutManagerToList(deleteList);
-        showMatrix();
+        showMatrix(selectedDate);
         eventBus.post(new ScreenShownEvent(EventSource.EISENHOWER_MATRIX));
     }
 
-    private void showMatrix() {
-        questPersistenceService.findAllNonAllDayForDate(LocalDate.now(), quests -> {
+    private void showMatrix(LocalDate selectedDate) {
+        questPersistenceService.findAllNonAllDayForDate(selectedDate, quests -> {
             List<EisenhowerMatrixViewModel> doQuests = new ArrayList<>();
             List<EisenhowerMatrixViewModel> accomplishQuests = new ArrayList<>();
             List<EisenhowerMatrixViewModel> delegateQuests = new ArrayList<>();
@@ -111,6 +127,13 @@ public class EisenhowerMatrixActivity extends BaseActivity {
                         doQuests.add(new EisenhowerMatrixViewModel(this, quest, use24HourFormat));
                 }
             }
+
+            if (doQuests.isEmpty() && accomplishQuests.isEmpty() && delegateQuests.isEmpty() && delegateQuests.isEmpty()) {
+                matrixContainer.setVisibility(View.GONE);
+                emptyView.setVisibility(View.VISIBLE);
+                return;
+            }
+
             doList.setAdapter(new EisenhowerMatrixAdapter(this, eventBus, doQuests));
             accomplishList.setAdapter(new EisenhowerMatrixAdapter(this, eventBus, accomplishQuests));
             delegateList.setAdapter(new EisenhowerMatrixAdapter(this, eventBus, delegateQuests));
