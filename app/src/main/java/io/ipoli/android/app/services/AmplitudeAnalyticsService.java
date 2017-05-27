@@ -1,5 +1,6 @@
 package io.ipoli.android.app.services;
 
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -73,11 +74,13 @@ import io.ipoli.android.note.events.OpenNoteEvent;
 import io.ipoli.android.pet.events.PetRenamedEvent;
 import io.ipoli.android.pet.events.RevivePetRequest;
 import io.ipoli.android.player.events.AvatarPickedEvent;
+import io.ipoli.android.player.events.GrowthCategoryFilteredEvent;
 import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.events.PickAvatarRequestEvent;
 import io.ipoli.android.player.events.PlayerSignedInEvent;
+import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
 import io.ipoli.android.quest.events.AgendaWidgetDisabledEvent;
@@ -591,7 +594,37 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onGrowthIntervalSelected(GrowthIntervalSelectedEvent e) {
-        log("growth_interval_selected", EventParams.of("days", String.valueOf(e.dayCount)));
+        String interval = getIntervalName(e.interval);
+        log("growth_interval_selected", EventParams.of("interval", interval));
+    }
+
+    @Subscribe
+    public void onGrowthCategoryFiltered(GrowthCategoryFilteredEvent e) {
+        String interval = getIntervalName(e.interval);
+        log("growth_category_filtered", EventParams.of("interval", interval)
+                                            .add("category", e.category.name())
+                                            .add("is_enabled", String.valueOf(e.isChecked))
+                                            .add("chart_type", e.chartType));
+    }
+
+    @NonNull
+    private String getIntervalName(int interval) {
+        String name = "Last 3 months";
+        switch (interval) {
+            case GrowthFragment.THIS_WEEK:
+                name = "This week";
+                break;
+            case GrowthFragment.THIS_MONTH:
+                name = "This month";
+                break;
+            case GrowthFragment.LAST_7_DAYS:
+                name = "Last 7 days";
+                break;
+            case GrowthFragment.LAST_4_WEEKS:
+                name = "Last 4 weeks";
+                break;
+        }
+        return name;
     }
 
     @Subscribe
