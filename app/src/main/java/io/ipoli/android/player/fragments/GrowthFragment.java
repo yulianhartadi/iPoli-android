@@ -73,6 +73,8 @@ import io.ipoli.android.app.ui.charts.ChartMarkerView;
 import io.ipoli.android.app.ui.charts.XAxisValueFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.player.events.GrowthCategoryFilteredEvent;
+import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -349,9 +351,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                     awesomenessData[startOfPrevWeekIdx] += getAwesomenessForQuest(q);
                     coinsData[startOfPrevWeekIdx] += q.getCoins();
                     xpData[startOfPrevWeekIdx] += q.getExperience();
-                    int thisWeekIdx = (int) DAYS.between(startOfWeek, completedAtDate);
-                    completedData[q.getCategoryType().ordinal()][thisWeekIdx]++;
-                    timeSpentData[q.getCategoryType().ordinal()][thisWeekIdx] += q.getActualDuration();
                     if (completedAtDate.isBefore(startOfWeek)) {
                         completed[0]++;
                         if (q.getActualStart() != null) {
@@ -362,6 +361,9 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                         if (q.getActualStart() != null) {
                             minutesTracked[1] += q.getActualDuration();
                         }
+                        int thisWeekIdx = (int) DAYS.between(startOfWeek, completedAtDate);
+                        completedData[q.getCategoryType().ordinal()][thisWeekIdx]++;
+                        timeSpentData[q.getCategoryType().ordinal()][thisWeekIdx] += q.getActualDuration();
                     }
                 }
 
@@ -408,13 +410,10 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
             for (Quest q : quests) {
                 if (q.isCompleted()) {
                     LocalDate completedAtDate = q.getCompletedAtDate();
-                    int idx = (int) DAYS.between(startOfPrevMonth, completedAtDate);
-                    awesomenessData[idx] += getAwesomenessForQuest(q);
-                    coinsData[idx] += q.getCoins();
-                    xpData[idx] += q.getExperience();
-                    int thisMonthIdx = (int) DAYS.between(startOfMonth, completedAtDate);
-                    completedData[q.getCategoryType().ordinal()][thisMonthIdx]++;
-                    timeSpentData[q.getCategoryType().ordinal()][thisMonthIdx] += q.getActualDuration();
+                    int prevMonthIdx = (int) DAYS.between(startOfPrevMonth, completedAtDate);
+                    awesomenessData[prevMonthIdx] += getAwesomenessForQuest(q);
+                    coinsData[prevMonthIdx] += q.getCoins();
+                    xpData[prevMonthIdx] += q.getExperience();
                     if (completedAtDate.isBefore(startOfMonth)) {
                         completed[0]++;
                         if (q.getActualStart() != null) {
@@ -425,6 +424,9 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                         if (q.getActualStart() != null) {
                             minutesTracked[1] += q.getActualDuration();
                         }
+                        int thisMonthIdx = (int) DAYS.between(startOfMonth, completedAtDate);
+                        completedData[q.getCategoryType().ordinal()][thisMonthIdx]++;
+                        timeSpentData[q.getCategoryType().ordinal()][thisMonthIdx] += q.getActualDuration();
                     }
                 }
                 boolean isCompletedAfterEndDate = q.isCompleted() && q.getEndDate().isBefore(q.getCompletedAtDate());
@@ -634,33 +636,40 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         }
     }
 
-    private void showSummary(int completed[], int[] overdue, int[] minutesTracked) {
+    private void showSummary(int done[], int[] overdue, int[] minutesTracked) {
         int lastPeriodIdx = 0;
         int thisPeriodIdx = 1;
-        int completedDiff = completed[thisPeriodIdx] - completed[lastPeriodIdx];
-        int overdueDiff = overdue[thisPeriodIdx] - overdue[lastPeriodIdx];
-        int minutesTrackedDiff = minutesTracked[thisPeriodIdx] - minutesTracked[lastPeriodIdx];
 
-        int completedChange = (int) ((completedDiff / (float) completed[thisPeriodIdx]) * 100);
-        int overdueChange = (int) ((overdueDiff / (float) overdue[thisPeriodIdx]) * 100);
-        int minutesTrackedChange = (int) ((minutesTrackedDiff / (float) minutesTracked[thisPeriodIdx]) * 100);
+        showDoneSummary(done[thisPeriodIdx], calculateChange(done[thisPeriodIdx], done[lastPeriodIdx]));
 
-        showCompletedSummary(completed[thisPeriodIdx], completedChange);
+        showOverdueSummary(overdue[thisPeriodIdx], calculateChange(overdue[thisPeriodIdx], overdue[lastPeriodIdx]));
 
-        showOverdueSummary(overdue[thisPeriodIdx], overdueChange);
-
-        showTimeTrackedSummary(minutesTracked[thisPeriodIdx], minutesTrackedChange);
+        showTimeTrackedSummary(minutesTracked[thisPeriodIdx], calculateChange(minutesTracked[thisPeriodIdx], minutesTracked[lastPeriodIdx]));
     }
 
-    private void showCompletedSummary(int completedCount, int completedChange) {
+    private int calculateChange(int thisPeriod, int lastPeriod) {
+        if (thisPeriod == 0 && lastPeriod == 0) {
+            return 0;
+        }
+        if (thisPeriod == 0) {
+            return -(lastPeriod * 100);
+        }
+        if (lastPeriod == 0) {
+            return thisPeriod * 100;
+        }
+        float diff = thisPeriod - lastPeriod;
+        return (int) (diff / (float) lastPeriod) * 100;
+    }
+
+    private void showDoneSummary(int completedCount, int doneChange) {
         String completedText = completedCount + " ";
         int spanStart = completedText.length();
-        completedText += completedChange >= 0 ? "+" : "-";
-        completedText += Math.abs(completedChange) + "%";
+        completedText += doneChange >= 0 ? "+" : "-";
+        completedText += Math.abs(doneChange) + "%";
         int spanEnd = completedText.length();
         completedText += "\n" + getString(R.string.done);
         SpannableString finalText = new SpannableString(completedText);
-        finalText.setSpan(new ForegroundColorSpan(completedChange >= 0 ? ContextCompat.getColor(getContext(), R.color.md_light_green_300) : ContextCompat.getColor(getContext(), R.color.md_red_A400)), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        finalText.setSpan(new ForegroundColorSpan(doneChange >= 0 ? ContextCompat.getColor(getContext(), R.color.md_light_green_300) : ContextCompat.getColor(getContext(), R.color.md_red_A400)), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         finalText.setSpan(new StyleSpan(Typeface.BOLD), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         finalText.setSpan(new RelativeSizeSpan(0.8f), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         summaryDone.setText(finalText);
@@ -1050,7 +1059,35 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 } else {
                     selectedCompleted.remove(selectedCategory);
                 }
+                eventBus.post(new GrowthCategoryFilteredEvent(selectedCategory, isChecked, spinner.getSelectedItemPosition(), "completedQuests"));
                 showFilteredCompletedChart(spinner.getSelectedItemPosition());
+            });
+        }
+        showPopupWindow(view, layout);
+    }
+
+    @OnClick(R.id.filter_time_spent)
+    public void onFilterTimeSpentClick(View view) {
+        LayoutInflater inflater = (LayoutInflater)
+                getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.category_filter, (ViewGroup) getActivity().findViewById(R.id.filters_container));
+        ViewGroup filterContainer = (ViewGroup) layout.findViewById(R.id.filters_container);
+        for (int i = 0; i < filterContainer.getChildCount(); i++) {
+            Switch child = (Switch) filterContainer.getChildAt(i);
+            Category category = Category.values()[i];
+            if (selectedTimeSpent.contains(category)) {
+                child.setChecked(true);
+            }
+            child.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                int buttonId = buttonView.getId();
+                Category selectedCategory = getSelectedCategory(buttonId);
+                if (isChecked) {
+                    selectedTimeSpent.add(selectedCategory);
+                } else {
+                    selectedTimeSpent.remove(selectedCategory);
+                }
+                eventBus.post(new GrowthCategoryFilteredEvent(selectedCategory, isChecked, spinner.getSelectedItemPosition(), "timeSpent"));
+                showFilteredTimeSpentChart(spinner.getSelectedItemPosition());
             });
         }
         showPopupWindow(view, layout);
@@ -1077,32 +1114,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 break;
         }
         return selectedCategory;
-    }
-
-    @OnClick(R.id.filter_time_spent)
-    public void onFilterTimeSpentClick(View view) {
-        LayoutInflater inflater = (LayoutInflater)
-                getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout.category_filter, (ViewGroup) getActivity().findViewById(R.id.filters_container));
-        ViewGroup filterContainer = (ViewGroup) layout.findViewById(R.id.filters_container);
-        for (int i = 0; i < filterContainer.getChildCount(); i++) {
-            Switch child = (Switch) filterContainer.getChildAt(i);
-            Category category = Category.values()[i];
-            if (selectedTimeSpent.contains(category)) {
-                child.setChecked(true);
-            }
-            child.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                int buttonId = buttonView.getId();
-                Category selectedCategory = getSelectedCategory(buttonId);
-                if (isChecked) {
-                    selectedTimeSpent.add(selectedCategory);
-                } else {
-                    selectedTimeSpent.remove(selectedCategory);
-                }
-                showFilteredTimeSpentChart(spinner.getSelectedItemPosition());
-            });
-        }
-        showPopupWindow(view, layout);
     }
 
     private void showFilteredTimeSpentChart(int itemPosition) {
@@ -1190,6 +1201,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        eventBus.post(new GrowthIntervalSelectedEvent(position));
         showCharts(position);
     }
 
