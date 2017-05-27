@@ -44,7 +44,7 @@
             android:layout_row="0"
             android:layout_rowWeight="1"
             android:paddingTop="8dp"
-            android:text="Urgent"
+            android:text="@string/urgent"
             android:textAlignment="center" />
 
         <TextView
@@ -56,7 +56,7 @@
             android:layout_row="0"
             android:layout_rowWeight="1"
             android:paddingTop="8dp"
-            android:text="Not Urgent"
+            android:text="@string/not_urgent"
             android:textAlignment="center" />
 
         <io.ipoli.android.app.ui.VerticalTextView
@@ -69,7 +69,7 @@
             android:layout_rowWeight="6"
             android:gravity="bottom"
             android:paddingTop="8dp"
-            android:text="Important"
+            android:text="@string/important"
             android:textAlignment="center" />
 
         <LinearLayout
@@ -91,7 +91,7 @@
                 android:background="@color/md_green_700"
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp"
-                android:text="Do it"
+                android:text="@string/do_it"
                 android:textAlignment="center"
                 android:textColor="@color/md_white" />
 
@@ -121,7 +121,7 @@
                 android:background="@color/md_blue_700"
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp"
-                android:text="Accomplish"
+                android:text="@string/accomplish"
                 android:textAlignment="center"
                 android:textColor="@color/md_white" />
 
@@ -143,7 +143,7 @@
             android:layout_rowWeight="6"
             android:gravity="bottom"
             android:paddingTop="8dp"
-            android:text="Not Important"
+            android:text="@string/not_important"
             android:textAlignment="center" />
 
         <LinearLayout
@@ -165,7 +165,7 @@
                 android:background="@color/md_deep_orange_700"
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp"
-                android:text="Delegate"
+                android:text="@string/delegate"
                 android:textAlignment="center"
                 android:textColor="@color/md_white" />
 
@@ -195,7 +195,7 @@
                 android:background="@color/md_red_700"
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp"
-                android:text="Delete"
+                android:text="@string/delete"
                 android:textAlignment="center"
                 android:textColor="@color/md_white" />
 

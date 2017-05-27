@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import org.threeten.bp.LocalDate;
 
@@ -134,5 +135,29 @@ public class EisenhowerMatrixActivity extends BaseActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         list.setLayoutManager(layoutManager);
         list.setHasFixedSize(true);
+    }
+
+    @Override
+    protected boolean useParentOptionsMenu() {
+        return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        if (menuItem.getItemId() == android.R.id.home) {
+            onClose();
+            return true;
+        }
+        return super.onOptionsItemSelected(menuItem);
+    }
+
+    @Override
+    public void onBackPressed() {
+        onClose();
+    }
+
+    private void onClose() {
+        finish();
+        overridePendingTransition(android.R.anim.fade_in, R.anim.slide_out_bottom);
     }
 }

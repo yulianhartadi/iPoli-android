@@ -51,7 +51,7 @@ public class EisenhowerMatrixAdapter extends RecyclerView.Adapter<RecyclerView.V
             if (vm.isCompleted()) {
                 Toast.makeText(context, R.string.cannot_edit_completed_quests, Toast.LENGTH_SHORT).show();
             } else {
-                eventBus.post(new ShowQuestEvent(vm.getQuest(), EventSource.AGENDA_CALENDAR));
+                eventBus.post(new ShowQuestEvent(vm.getQuest(), EventSource.EISENHOWER_MATRIX));
             }
         });
         vh.categoryIndicator.setImageResource(vm.getCategoryImage());
