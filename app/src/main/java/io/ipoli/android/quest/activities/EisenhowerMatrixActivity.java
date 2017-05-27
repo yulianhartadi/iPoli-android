@@ -85,7 +85,11 @@ public class EisenhowerMatrixActivity extends BaseActivity {
         setLayoutManagerToList(accomplishList);
         setLayoutManagerToList(delegateList);
         setLayoutManagerToList(deleteList);
+        showMatrix();
+        eventBus.post(new ScreenShownEvent(EventSource.EISENHOWER_MATRIX));
+    }
 
+    private void showMatrix() {
         questPersistenceService.findAllNonAllDayForDate(LocalDate.now(), quests -> {
             List<EisenhowerMatrixViewModel> doQuests = new ArrayList<>();
             List<EisenhowerMatrixViewModel> accomplishQuests = new ArrayList<>();
@@ -111,8 +115,6 @@ public class EisenhowerMatrixActivity extends BaseActivity {
             delegateList.setAdapter(new EisenhowerMatrixAdapter(this, eventBus, delegateQuests));
             deleteList.setAdapter(new EisenhowerMatrixAdapter(this, eventBus, deleteQuests));
         });
-
-        eventBus.post(new ScreenShownEvent(EventSource.EISENHOWER_MATRIX));
     }
 
     private int getToolbarText(LocalDate date) {
