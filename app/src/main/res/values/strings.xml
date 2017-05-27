@@ -685,6 +685,13 @@
     <string name="tracked">Tracked</string>
     <string name="overdue">Overdue</string>
     <string name="title_activity_eisenhower_matrix">Eisenhower Matrix</string>
+    <string name="delegate">Delegate</string>
+    <string name="not_important">Not Important</string>
+    <string name="accomplish">Accomplish</string>
+    <string name="do_it">Do it</string>
+    <string name="important">Important</string>
+    <string name="urgent">Urgent</string>
+    <string name="not_urgent">Not Urgent</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
