@@ -130,6 +130,6 @@ public class UpgradeStoreFragment extends BaseFragment {
 
     @Override
     protected boolean useOptionsMenu() {
-        return true;
+        return false;
     }
 }
