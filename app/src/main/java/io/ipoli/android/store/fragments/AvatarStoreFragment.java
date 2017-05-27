@@ -31,6 +31,7 @@ import io.ipoli.android.player.Player;
 import io.ipoli.android.player.events.AvatarPickedEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.store.Avatar;
+import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.adapters.AvatarStoreAdapter;
 import io.ipoli.android.store.events.BuyAvatarRequestEvent;
 import io.ipoli.android.store.events.UseAvatarEvent;
@@ -63,7 +64,7 @@ public class AvatarStoreFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragement_avatar_store, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        getActivity().setTitle("Buy avatar");
+        ((StoreActivity)getActivity()).getSupportActionBar().setTitle("Buy avatar");
 
         avatarList.setLayoutManager(new GridLayoutManager(getContext(), 2));
         adapter = new AvatarStoreAdapter(getContext(), eventBus, createAvatarViewModels());

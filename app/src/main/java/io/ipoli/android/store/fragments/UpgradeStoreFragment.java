@@ -25,8 +25,9 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.store.Upgrade;
 import io.ipoli.android.player.UpgradesManager;
+import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.adapters.UpgradeStoreAdapter;
 import io.ipoli.android.store.events.BuyUpgradeEvent;
 import io.ipoli.android.store.viewmodels.UpgradeViewModel;
@@ -58,7 +59,7 @@ public class UpgradeStoreFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragement_upgrade_store, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        getActivity().setTitle("Buy store_upgrade");
+        ((StoreActivity)getActivity()).getSupportActionBar().setTitle("Buy upgrade");
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);

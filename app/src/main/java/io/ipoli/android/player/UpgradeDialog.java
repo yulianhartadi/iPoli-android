@@ -97,7 +97,7 @@ public class UpgradeDialog extends DialogFragment {
         notEnoughCoins.setText(String.format(getString(R.string.upgrade_dialog_not_enough_coins), upgrade.price));
 
         boolean hasEnoughCoins = upgradesManager.hasEnoughCoinsForUpgrade(upgrade);
-        String positiveBtnText = hasEnoughCoins ? "Buy" : "Buy store_coins";
+        String positiveBtnText = hasEnoughCoins ? "Buy" : "Buy store coins";
 
         price.setVisibility(hasEnoughCoins ? View.VISIBLE : View.GONE);
         notEnoughCoins.setVisibility(hasEnoughCoins ? View.GONE : View.VISIBLE);
