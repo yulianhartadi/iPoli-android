@@ -31,7 +31,6 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
-import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.player.Player;
@@ -171,11 +170,6 @@ public class CoinStoreFragment extends BaseFragment {
     @Override
     protected boolean useOptionsMenu() {
         return false;
-    }
-
-    @Override
-    protected void showHelpDialog() {
-        HelpDialog.newInstance(R.layout.fragment_help_dialog_store, R.string.help_dialog_store_title, "store").show(getActivity().getSupportFragmentManager());
     }
 
     @Override
