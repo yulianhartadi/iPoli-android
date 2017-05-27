@@ -73,6 +73,8 @@ import io.ipoli.android.app.ui.charts.ChartMarkerView;
 import io.ipoli.android.app.ui.charts.XAxisValueFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.player.events.GrowthCategoryFilteredEvent;
+import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -1057,7 +1059,35 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 } else {
                     selectedCompleted.remove(selectedCategory);
                 }
+                eventBus.post(new GrowthCategoryFilteredEvent(selectedCategory, isChecked, spinner.getSelectedItemPosition(), "completedQuests"));
                 showFilteredCompletedChart(spinner.getSelectedItemPosition());
+            });
+        }
+        showPopupWindow(view, layout);
+    }
+
+    @OnClick(R.id.filter_time_spent)
+    public void onFilterTimeSpentClick(View view) {
+        LayoutInflater inflater = (LayoutInflater)
+                getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.category_filter, (ViewGroup) getActivity().findViewById(R.id.filters_container));
+        ViewGroup filterContainer = (ViewGroup) layout.findViewById(R.id.filters_container);
+        for (int i = 0; i < filterContainer.getChildCount(); i++) {
+            Switch child = (Switch) filterContainer.getChildAt(i);
+            Category category = Category.values()[i];
+            if (selectedTimeSpent.contains(category)) {
+                child.setChecked(true);
+            }
+            child.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                int buttonId = buttonView.getId();
+                Category selectedCategory = getSelectedCategory(buttonId);
+                if (isChecked) {
+                    selectedTimeSpent.add(selectedCategory);
+                } else {
+                    selectedTimeSpent.remove(selectedCategory);
+                }
+                eventBus.post(new GrowthCategoryFilteredEvent(selectedCategory, isChecked, spinner.getSelectedItemPosition(), "timeSpent"));
+                showFilteredTimeSpentChart(spinner.getSelectedItemPosition());
             });
         }
         showPopupWindow(view, layout);
@@ -1084,32 +1114,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
                 break;
         }
         return selectedCategory;
-    }
-
-    @OnClick(R.id.filter_time_spent)
-    public void onFilterTimeSpentClick(View view) {
-        LayoutInflater inflater = (LayoutInflater)
-                getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout.category_filter, (ViewGroup) getActivity().findViewById(R.id.filters_container));
-        ViewGroup filterContainer = (ViewGroup) layout.findViewById(R.id.filters_container);
-        for (int i = 0; i < filterContainer.getChildCount(); i++) {
-            Switch child = (Switch) filterContainer.getChildAt(i);
-            Category category = Category.values()[i];
-            if (selectedTimeSpent.contains(category)) {
-                child.setChecked(true);
-            }
-            child.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                int buttonId = buttonView.getId();
-                Category selectedCategory = getSelectedCategory(buttonId);
-                if (isChecked) {
-                    selectedTimeSpent.add(selectedCategory);
-                } else {
-                    selectedTimeSpent.remove(selectedCategory);
-                }
-                showFilteredTimeSpentChart(spinner.getSelectedItemPosition());
-            });
-        }
-        showPopupWindow(view, layout);
     }
 
     private void showFilteredTimeSpentChart(int itemPosition) {
@@ -1197,6 +1201,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        eventBus.post(new GrowthIntervalSelectedEvent(position));
         showCharts(position);
     }
 
