@@ -1,15 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:id="@+id/root_layout">
+    android:background="@color/md_grey_200"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/coins_starter_pack" />
+
+        <include layout="@layout/coins_premium_pack" />
+
+        <include layout="@layout/coins_jumbo_pack" />
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/loader_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/md_white">
+        android:background="@color/md_white"
+        android:visibility="gone">
 
         <ProgressBar
             android:id="@+id/loader"
@@ -27,11 +41,4 @@
             android:visibility="gone" />
     </RelativeLayout>
 
-
-    <io.ipoli.android.app.ui.EmptyStateRecyclerView
-        android:id="@+id/coins_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/md_white"
-        android:scrollbars="vertical" />
 </LinearLayout>

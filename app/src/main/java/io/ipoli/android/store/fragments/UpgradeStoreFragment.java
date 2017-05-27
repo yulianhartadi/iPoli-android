@@ -108,7 +108,7 @@ public class UpgradeStoreFragment extends BaseFragment {
             Toast.makeText(getContext(), "You can now enjoy ", Toast.LENGTH_SHORT).show();
             adapter.setViewModels(createUpgradeViewModels());
         } else {
-            Toast.makeText(getContext(), "Not enough store_coins to buy", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Not enough coins to buy", Toast.LENGTH_SHORT).show();
         }
     }
 
