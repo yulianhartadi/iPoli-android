@@ -524,6 +524,8 @@ iPoli está comendo um biscoito e melhorando a sua experiência com o app."</str
     <string name="repeating_quest_next">"Próximo: %s"</string>
     <string name="quest_for_time">"por %s"</string>
     <string name="quest_at_time">"às %s"</string>
+    <string name="quest_short_for_time">por\n%s</string>
+    <string name="quest_short_at_time">às\n%s</string>
     <string name="quest_remaining_count">"mais x%d"</string>
 
     <plurals name="duration_hours">
