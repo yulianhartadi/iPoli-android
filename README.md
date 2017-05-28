@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/iPoli/iPoli-android.svg?branch=dev)](https://travis-ci.org/iPoli/iPoli-android)
+[![Releases](https://img.shields.io/github/release/iPoli/iPoli-android.svg)](https://github.com/iPoli/iPoli-android/releases/latest)
 
 # ![iPoli](.github/logo.png)
 
