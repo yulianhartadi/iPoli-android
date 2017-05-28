@@ -3,6 +3,8 @@
 [![Gitter](https://img.shields.io/gitter/room/iPoli/Awesomeness.svg?style=flat-square)](https://gitter.im/iPoli/Awesomeness)
 <a href="http://bit.ly/ipoli-android"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="50" width="156"/></a>
 
+<div style="text-align:center;"><img src="./.github/icon.png" width="128px"/></div>
+
 # [iPoli](http://bit.ly/ipoli-android) AI-Powered Calendar & Habit Tracking for your Life!
 
 <img src="./.github/screens/calendar.png" width="250px"/> &nbsp;&nbsp;&nbsp;
