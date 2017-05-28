@@ -57,7 +57,7 @@
             android:scaleType="fitXY"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/store_coins" />
+            app:srcCompat="@drawable/coins_starter_pack" />
 
 
         <Button
