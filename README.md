@@ -2,9 +2,7 @@
 [![Releases](https://img.shields.io/github/release/iPoli/iPoli-android.svg?style=flat-square)](https://github.com/iPoli/iPoli-android/releases/latest)
 [![Gitter](https://img.shields.io/gitter/room/iPoli/Awesomeness.svg?style=flat-square)](https://gitter.im/iPoli/Awesomeness)
 
-# ![iPoli](.github/logo.png)
-
-# iPoli: AI-powered task scheduling for your life!
+$ [iPoli](http://bit.ly/ipoli-android) AI-Powered Calendar & Habit Tracking App for your Life!
 
 iPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one place! It's goal is to find time for the things that matter most in your life, make you stick to good habits and free you from the burden of scheduling tasks by yourself.
 
