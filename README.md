@@ -9,9 +9,9 @@ iPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one
 
 # How does it look like?
 
-<img src="./.github/screens/calendar.png" width="280px"/>
-<img src="./.github/screens/edit.png" width="280px"/>
-<img src="./.github/screens/growth.png" width="280px"/>
+<img src="./.github/screens/calendar.png" width="250px"/> &nbsp;&nbsp;&nbsp;
+<img src="./.github/screens/quest.png" width="250px"/> &nbsp;&nbsp;&nbsp;
+<img src="./.github/screens/growth.png" width="250px"/> &nbsp;&nbsp;&nbsp;
 
 # Want to watch it in action?
 
