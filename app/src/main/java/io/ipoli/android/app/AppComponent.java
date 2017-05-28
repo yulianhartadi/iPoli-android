@@ -51,6 +51,7 @@ import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.AddRepeatingQuestActivity;
 import io.ipoli.android.quest.activities.AgendaActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
+import io.ipoli.android.quest.activities.EisenhowerMatrixActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.activities.RepeatingQuestActivity;
 import io.ipoli.android.quest.fragments.AddNameFragment;
@@ -244,5 +245,7 @@ public interface AppComponent {
     void inject(PetStoreFragment petStoreFragment);
 
     void inject(AvatarStoreFragment avatarStoreFragment);
+
+    void inject(EisenhowerMatrixActivity eisenhowerMatrixActivity);
 }
 

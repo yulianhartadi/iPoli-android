@@ -42,6 +42,7 @@ import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.activities.AgendaActivity;
+import io.ipoli.android.quest.activities.EisenhowerMatrixActivity;
 import io.ipoli.android.quest.events.ScrollToTimeEvent;
 
 import static android.app.Activity.RESULT_OK;
@@ -126,6 +127,13 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
         switch (item.getItemId()) {
             case R.id.action_today:
                 eventBus.post(new CalendarDayChangedEvent(LocalDate.now(), CalendarDayChangedEvent.Source.MENU));
+                return true;
+            case R.id.action_eisenhower_matrix:
+                LocalDate currentDate = currentMidDate.plusDays(calendarPager.getCurrentItem() - MID_POSITION);
+                Intent i = new Intent(getContext(), EisenhowerMatrixActivity.class);
+                i.putExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, DateUtils.toMillis(currentDate));
+                startActivity(i);
+                getActivity().overridePendingTransition(R.anim.slide_in_top, android.R.anim.fade_out);
                 return true;
 
         }
