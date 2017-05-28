@@ -542,6 +542,15 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     @NonNull
     private QuerySort<Quest> createDefaultQuestSortQuery() {
         return (q1, q2) -> {
+
+            if(q1.isCompleted()) {
+                return 1;
+            }
+
+            if(q2.isCompleted()) {
+                return -1;
+            }
+
             if (q1.shouldBeDoneMultipleTimesPerDay() || q2.shouldBeDoneMultipleTimesPerDay()) {
                 return Integer.compare(q1.getTimesADay(), q2.getTimesADay());
             }
