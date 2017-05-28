@@ -1,6 +1,7 @@
-[![Build Status](https://travis-ci.org/iPoli/iPoli-android.svg?branch=dev)](https://travis-ci.org/iPoli/iPoli-android)
+[![Build Status](https://img.shields.io/travis/iPoli/iPoli-android/dev.svg?style=flat-square)](https://travis-ci.org/iPoli/iPoli-android)
 [![Releases](https://img.shields.io/github/release/iPoli/iPoli-android.svg?style=flat-square)](https://github.com/iPoli/iPoli-android/releases/latest)
 [![Gitter](https://img.shields.io/gitter/room/iPoli/Awesomeness.svg?style=flat-square)](https://gitter.im/iPoli/Awesomeness)
+[![License](https://img.shields.io/github/license/iPoli/iPoli-android.svg?style=flat-square)](https://github.com/iPoli/iPoli-android/blob/master/LICENSE.md)
 
 # [iPoli](http://bit.ly/ipoli-android) AI-Powered Calendar & Habit Tracking for your Life!
 
