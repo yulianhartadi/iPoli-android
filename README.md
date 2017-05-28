@@ -3,7 +3,7 @@
 [![Gitter](https://img.shields.io/gitter/room/iPoli/Awesomeness.svg?style=flat-square)](https://gitter.im/iPoli/Awesomeness)
 [![License](https://img.shields.io/github/license/iPoli/iPoli-android.svg?style=flat-square)](https://github.com/iPoli/iPoli-android/blob/master/LICENSE.md)
 
-# [iPoli](http://bit.ly/ipoli-android) AI-Powered Calendar & Habit Tracking for your Life!
+# [iPoli](http://bit.ly/ipoli-android): AI-Powered Calendar & Habit Tracking for your Life!
 
 <p align="center"><img src="./.github/icon.png" width="128px"/></p>
 
@@ -17,12 +17,13 @@ iPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one
 
 **iPoli** can be download on [Google Play](http://bit.ly/ipoli-android):
 
-<a href="http://bit.ly/ipoli-android"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="80" width="250"/></a>
+<a href="http://bit.ly/ipoli-android"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="80"/></a>
 
 # Features
 
 * Calendar + ToDo list for your daily schedule
 * Smart Add - adding tasks using natural language
+* Progress Charts - Which tasks take most of your time? Did you work on more important tasks last week?
 * Sync between device & server
 * Flexible habit scheduling - Workout 3 times per week every Mon, Tue, Fri and Sat
 * Sync with Google Calendar/Outlook (something else?)
