@@ -309,7 +309,12 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         if (getOriginalScheduledDate() == null) {
             setOriginalScheduledDate(getScheduledDate());
         }
-
+        if (getEndDate() == null) {
+            setEndDate(getScheduledDate());
+        }
+        if (getStartDate() == null) {
+            setStartDate(getScheduledDate());
+        }
     }
 
     public Long getEnd() {
@@ -495,7 +500,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         if (this.isCompleted() && getActualStartDate() != null) {
             int startMinute = getActualLocalStartMinute();
             int minutes = getCompletedAtMinute() - startMinute;
-            return minutes >=0 ? minutes : Time.MINUTES_IN_A_DAY - startMinute + getCompletedAtMinute();
+            return minutes >= 0 ? minutes : Time.MINUTES_IN_A_DAY - startMinute + getCompletedAtMinute();
         }
         return getDuration();
     }
@@ -509,7 +514,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @JsonIgnore
     public Integer getActualStartMinute() {
         if (this.isCompleted() && getActualStartDate() != null) {
-            if(DateUtils.fromMillis(actualStart).equals(DateUtils.fromMillis(completedAt))) {
+            if (DateUtils.fromMillis(actualStart).equals(DateUtils.fromMillis(completedAt))) {
                 return getActualLocalStartMinute();
             } else {
                 return 0;
@@ -565,7 +570,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     }
 
     public void setTimesADay(Integer timesADay) {
-        if(timesADay != null && getCompletedCount() != null) {
+        if (timesADay != null && getCompletedCount() != null) {
             setCompletedCount(Math.min(timesADay, getCompletedCount()));
         }
         this.timesADay = timesADay;
