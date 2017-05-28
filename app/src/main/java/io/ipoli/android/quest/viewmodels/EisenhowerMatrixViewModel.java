@@ -2,6 +2,9 @@ package io.ipoli.android.quest.viewmodels;
 
 import android.content.Context;
 import android.support.annotation.DrawableRes;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.StrikethroughSpan;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
@@ -12,25 +15,30 @@ import io.ipoli.android.quest.data.Quest;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 4/10/16.
  */
-public class AgendaViewModel {
+public class EisenhowerMatrixViewModel {
 
     private final Context context;
     private final Quest quest;
     private final boolean use24HourFormat;
 
-    public AgendaViewModel(Context context, Quest quest, boolean use24HourFormat) {
+    public EisenhowerMatrixViewModel(Context context, Quest quest, boolean use24HourFormat) {
         this.context = context;
         this.quest = quest;
         this.use24HourFormat = use24HourFormat;
     }
 
-    public String getName() {
-        return quest.getName();
+    public SpannableString getName() {
+        if (isCompleted()) {
+            SpannableString spannableString = new SpannableString(quest.getName());
+            spannableString.setSpan(new StrikethroughSpan(), 0, spannableString.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            return spannableString;
+        }
+        return new SpannableString(quest.getName());
     }
 
     @DrawableRes
     public int getCategoryImage() {
-        return quest.getCategoryType().colorfulImage;
+        return quest.getCategoryType().whiteImage;
     }
 
     public Quest getQuest() {
@@ -53,13 +61,5 @@ public class AgendaViewModel {
 
     public boolean isCompleted() {
         return quest.isCompleted();
-    }
-
-    public boolean isFromRepeatingQuest() {
-        return quest.isFromRepeatingQuest();
-    }
-
-    public boolean isFromChallenge() {
-        return quest.isFromChallenge();
     }
 }
