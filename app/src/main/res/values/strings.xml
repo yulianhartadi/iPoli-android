@@ -526,6 +526,8 @@
     <string name="repeating_quest_next">Next: %s</string>
     <string name="quest_for_time">for %s</string>
     <string name="quest_at_time">at %s</string>
+    <string name="quest_short_for_time">for\n%s</string>
+    <string name="quest_short_at_time">at\n%s</string>
     <string name="quest_remaining_count">x%d more</string>
 
     <string name="challenge2_name">Stress-Free Mind</string>

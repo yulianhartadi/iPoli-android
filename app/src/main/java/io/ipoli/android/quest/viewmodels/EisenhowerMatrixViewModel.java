@@ -6,6 +6,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.StrikethroughSpan;
 
+import io.ipoli.android.R;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Quest;
@@ -51,9 +52,9 @@ public class EisenhowerMatrixViewModel {
             Time endTime = Time.plusMinutes(startTime, duration);
             return startTime.toString(use24HourFormat) + "\n" + endTime.toString(use24HourFormat);
         } else if (duration > 0) {
-            return "for\n" + DurationFormatter.format(context, duration);
+            return context.getString(R.string.quest_short_for_time, DurationFormatter.format(context, duration));
         } else if (startTime != null) {
-            return "at\n" + startTime.toString(use24HourFormat);
+            return context.getString(R.string.quest_short_at_time, startTime.toString(use24HourFormat));
         }
         return "";
     }
