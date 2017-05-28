@@ -49,4 +49,4 @@ Please **contribute** to the  project either by [_creating a PR_](https://github
 
 # License
 
-This Android app is MIT licensed (do whatever you want with it)
+[GNU GPLv3](https://github.com/iPoli/iPoli-android/blob/master/LICENSE.md)
