@@ -1,7 +1,6 @@
 [![Build Status](https://travis-ci.org/iPoli/iPoli-android.svg?branch=dev)](https://travis-ci.org/iPoli/iPoli-android)
 [![Releases](https://img.shields.io/github/release/iPoli/iPoli-android.svg?style=flat-square)](https://github.com/iPoli/iPoli-android/releases/latest)
 [![Gitter](https://img.shields.io/gitter/room/iPoli/Awesomeness.svg?style=flat-square)](https://gitter.im/iPoli/Awesomeness)
-<a href="http://bit.ly/ipoli-android"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="50" width="156"/></a>
 
 # [iPoli](http://bit.ly/ipoli-android) AI-Powered Calendar & Habit Tracking for your Life!
 
