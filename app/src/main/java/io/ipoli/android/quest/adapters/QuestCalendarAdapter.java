@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -165,7 +164,6 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
         v.findViewById(R.id.quest_priority_indicator).setVisibility(calendarEvent.isMostImportant() ? View.VISIBLE : View.GONE);
         v.findViewById(R.id.quest_challenge_indicator).setVisibility(calendarEvent.isForChallenge() ? View.VISIBLE : View.GONE);
 
-
         return v;
     }
 
@@ -248,15 +246,5 @@ public class QuestCalendarAdapter extends BaseCalendarAdapter<QuestCalendarViewM
     public void removeEvent(QuestCalendarViewModel calendarEvent) {
         questCalendarViewModels.remove(calendarEvent);
         notifyDataSetChanged();
-    }
-
-    public List<QuestCalendarViewModel> getEventsWithProposedSlots() {
-        List<QuestCalendarViewModel> result = new ArrayList<>();
-        for (QuestCalendarViewModel vm : questCalendarViewModels) {
-            if (vm.shouldDisplayAsProposedSlot()) {
-                result.add(vm);
-            }
-        }
-        return result;
     }
 }
