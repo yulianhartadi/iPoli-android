@@ -3,20 +3,7 @@
     android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/md_grey_200"
     android:orientation="vertical">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <include layout="@layout/coins_starter_pack" />
-
-        <include layout="@layout/coins_premium_pack" />
-
-        <include layout="@layout/coins_jumbo_pack" />
-    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/loader_container"
@@ -40,5 +27,24 @@
             android:text="@string/no_internet_to_buy_coins"
             android:visibility="gone" />
     </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/md_grey_200"
+            android:orientation="vertical">
+
+            <include layout="@layout/coins_starter_pack" />
+
+            <include layout="@layout/coins_premium_pack" />
+
+            <include layout="@layout/coins_jumbo_pack" />
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>
