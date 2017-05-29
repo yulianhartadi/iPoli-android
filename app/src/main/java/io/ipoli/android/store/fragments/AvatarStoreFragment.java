@@ -27,9 +27,11 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.Player;
-import io.ipoli.android.player.events.AvatarPickedEvent;
+import io.ipoli.android.player.events.AvatarBoughtEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.store.Avatar;
 import io.ipoli.android.store.activities.StoreActivity;
@@ -70,6 +72,9 @@ public class AvatarStoreFragment extends BaseFragment {
         avatarList.setLayoutManager(new GridLayoutManager(getContext(), 2));
         adapter = new AvatarStoreAdapter(getContext(), eventBus, createAvatarViewModels());
         avatarList.setAdapter(adapter);
+
+        eventBus.post(new ScreenShownEvent(EventSource.STORE_AVATARS));
+
         return view;
     }
 
@@ -105,7 +110,7 @@ public class AvatarStoreFragment extends BaseFragment {
             Toast.makeText(getContext(), R.string.not_enough_coins_to_buy_avatar, Toast.LENGTH_SHORT).show();
             return;
         }
-        eventBus.post(new AvatarPickedEvent(avatar.name()));
+        eventBus.post(new AvatarBoughtEvent(avatar.name()));
         player.removeCoins(avatar.price);
         player.getInventory().addAvatar(avatar, LocalDate.now());
         playerPersistenceService.save(player);

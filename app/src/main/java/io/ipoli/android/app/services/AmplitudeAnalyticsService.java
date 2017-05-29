@@ -73,12 +73,12 @@ import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
 import io.ipoli.android.note.events.OpenNoteEvent;
 import io.ipoli.android.pet.events.PetRenamedEvent;
 import io.ipoli.android.pet.events.RevivePetRequest;
-import io.ipoli.android.player.events.AvatarPickedEvent;
+import io.ipoli.android.player.events.AvatarBoughtEvent;
 import io.ipoli.android.player.events.GrowthCategoryFilteredEvent;
 import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
-import io.ipoli.android.player.events.PickAvatarRequestEvent;
+import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
 import io.ipoli.android.player.events.PlayerSignedInEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.data.Quest;
@@ -140,6 +140,9 @@ import io.ipoli.android.reward.events.NewRewardSavedEvent;
 import io.ipoli.android.store.events.BuyCoinsTappedEvent;
 import io.ipoli.android.store.events.CoinsPurchasedEvent;
 import io.ipoli.android.store.events.PetBoughtEvent;
+import io.ipoli.android.store.events.UpgradeBoughtEvent;
+import io.ipoli.android.store.events.UseAvatarEvent;
+import io.ipoli.android.store.events.UsePetEvent;
 
 public class AmplitudeAnalyticsService implements AnalyticsService {
 
@@ -563,13 +566,18 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onPickAvatarRequest(PickAvatarRequestEvent e) {
-        log("pick_avatar_request", EventParams.of("source", e.source.name().toLowerCase()));
+    public void onOpenAvatarStoreRequest(OpenAvatarStoreRequestEvent e) {
+        log("open_avatar_store_request", EventParams.of("source", e.source.name().toLowerCase()));
     }
 
     @Subscribe
-    public void onAvatarPicked(AvatarPickedEvent e) {
-        log("avatar_picked", EventParams.of("name", e.avatarName));
+    public void onAvatarBought(AvatarBoughtEvent e) {
+        log("avatar_bought", EventParams.of("name", e.avatarName));
+    }
+
+    @Subscribe
+    public void onUseAvatar(UseAvatarEvent e) {
+        log("use_avatar", EventParams.of("name", e.avatar.name()));
     }
 
     @Subscribe
@@ -830,6 +838,11 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
+    public void onUsePetEvent(UsePetEvent e) {
+        log("use_pet", EventParams.of("pet", e.pet.name()));
+    }
+
+    @Subscribe
     public void onRevivePetRequest(RevivePetRequest e) {
         log("revive_pet_request", EventParams.of("pet", e.picture));
     }
@@ -874,6 +887,11 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onCoinsPurchased(CoinsPurchasedEvent e) {
         log("coins_purchased", EventParams.of("sku", e.sku));
+    }
+
+    @Subscribe
+    public void onUpgradeBought(UpgradeBoughtEvent e) {
+        log("upgrade_bought", EventParams.of("upgrade", e.upgrade.name()));
     }
 
     @Subscribe

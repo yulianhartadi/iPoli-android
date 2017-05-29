@@ -29,6 +29,8 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.player.Player;
@@ -73,6 +75,9 @@ public class PetStoreFragment extends BaseFragment {
         List<PetViewModel> petViewModels = createPetViewModels();
         adapter = new PetStoreAdapter(getContext(), eventBus, petViewModels);
         petList.setAdapter(adapter);
+
+        eventBus.post(new ScreenShownEvent(EventSource.STORE_PETS));
+
         return view;
     }
 

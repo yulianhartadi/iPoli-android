@@ -25,12 +25,15 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.UpgradesManager;
 import io.ipoli.android.store.Upgrade;
 import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.adapters.UpgradeStoreAdapter;
 import io.ipoli.android.store.events.BuyUpgradeEvent;
+import io.ipoli.android.store.events.UpgradeBoughtEvent;
 import io.ipoli.android.store.viewmodels.UpgradeViewModel;
 
 /**
@@ -71,6 +74,8 @@ public class UpgradeStoreFragment extends BaseFragment {
         adapter = new UpgradeStoreAdapter(getContext(), eventBus, upgrades);
         upgradeList.setAdapter(adapter);
 
+        eventBus.post(new ScreenShownEvent(EventSource.STORE_UPGRADES));
+
         return view;
     }
 
@@ -110,6 +115,7 @@ public class UpgradeStoreFragment extends BaseFragment {
             upgradesManager.buy(upgrade);
             message = getString(R.string.upgrade_successfully_bought, title);
             adapter.setViewModels(createUpgradeViewModels());
+            eventBus.post(new UpgradeBoughtEvent(upgrade));
         } else {
             message = getString(R.string.upgrade_too_expensive, title);
         }

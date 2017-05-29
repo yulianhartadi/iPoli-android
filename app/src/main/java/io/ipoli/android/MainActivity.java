@@ -74,7 +74,7 @@ import io.ipoli.android.player.Player;
 import io.ipoli.android.player.UpgradeDialog;
 import io.ipoli.android.player.UpgradesManager;
 import io.ipoli.android.player.events.LevelDownEvent;
-import io.ipoli.android.player.events.PickAvatarRequestEvent;
+import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.activities.EditQuestActivity;
@@ -320,7 +320,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         CircleImageView avatarPictureView = (CircleImageView) header.findViewById(R.id.player_picture);
         avatarPictureView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getPicture()));
-        avatarPictureView.setOnClickListener(v -> eventBus.post(new PickAvatarRequestEvent(EventSource.NAVIGATION_DRAWER)));
+        avatarPictureView.setOnClickListener(v -> eventBus.post(new OpenAvatarStoreRequestEvent(EventSource.NAVIGATION_DRAWER)));
 
         TextView currentXP = (TextView) header.findViewById(R.id.player_current_xp);
         currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), player.getExperience()));
@@ -594,7 +594,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Subscribe
-    public void onPickAvatarRequest(PickAvatarRequestEvent e) {
+    public void onOpenAvatarStoreRequest(OpenAvatarStoreRequestEvent e) {
         Intent intent = new Intent(this, StoreActivity.class);
         intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.AVATARS.name());
         startActivity(intent);

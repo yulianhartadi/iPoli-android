@@ -75,7 +75,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.player.Player;
-import io.ipoli.android.player.events.PickAvatarRequestEvent;
+import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
@@ -319,7 +319,7 @@ public class SettingsActivity extends BaseActivity implements
 
     @OnClick(R.id.pick_avatar_container)
     public void onPickAvatarClicked(View view) {
-        eventBus.post(new PickAvatarRequestEvent(EventSource.SETTINGS));
+        eventBus.post(new OpenAvatarStoreRequestEvent(EventSource.SETTINGS));
     }
 
     @OnClick(R.id.ongoing_notification_container)

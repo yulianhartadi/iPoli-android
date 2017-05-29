@@ -154,7 +154,7 @@ public class CoinStoreFragment extends BaseFragment {
             });
         }
 
-        eventBus.post(new ScreenShownEvent(EventSource.BUY_COINS));
+        eventBus.post(new ScreenShownEvent(EventSource.STORE_COINS));
 
         return view;
     }
