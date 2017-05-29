@@ -55,6 +55,7 @@ import io.ipoli.android.app.events.InviteFriendsCanceledEvent;
 import io.ipoli.android.app.events.InviteFriendsEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.rate.RateDialogConstants;
 import io.ipoli.android.app.settings.SettingsActivity;
@@ -100,9 +101,8 @@ import io.ipoli.android.store.StoreItemType;
 import io.ipoli.android.store.Upgrade;
 import io.ipoli.android.store.activities.StoreActivity;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, OnDataChangedListener<Player> {
 
-    public static final int PICK_PLAYER_PICTURE_REQUEST_CODE = 101;
     public static final int INVITE_FRIEND_REQUEST_CODE = 102;
     private static final int PROGRESS_BAR_MAX_VALUE = 100;
 
@@ -184,10 +184,26 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        playerPersistenceService.listen(this);
+    }
+
+    @Override
+    protected void onStop() {
+        playerPersistenceService.removeAllListeners();
+        super.onStop();
+    }
+
+    @Override
+    public void onDataChanged(Player player) {
+        updatePlayerInDrawer(player);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        updatePlayerInDrawer(getPlayer());
     }
 
     private void onItemSelectedFromDrawer() {
