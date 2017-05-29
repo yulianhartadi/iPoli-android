@@ -29,7 +29,7 @@ import mehdi.sakout.fancybuttons.FancyButton;
  * on 5/25/17.
  */
 
-public class PetStoreAdapter extends RecyclerView.Adapter<PetStoreAdapter.ViewHolder> {
+public class PetStoreAdapter extends EnterAnimationAdapter<PetStoreAdapter.ViewHolder> {
     private final Context context;
     private final Bus eventBus;
     private List<PetViewModel> petViewModels;
@@ -57,7 +57,7 @@ public class PetStoreAdapter extends RecyclerView.Adapter<PetStoreAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    protected void doOnBindViewHolder(ViewHolder holder, int position) {
         PetViewModel vm = petViewModels.get(holder.getAdapterPosition());
 
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) holder.price.getIconImageObject().getLayoutParams();
@@ -78,7 +78,6 @@ public class PetStoreAdapter extends RecyclerView.Adapter<PetStoreAdapter.ViewHo
         }
 
         holder.container.setBackgroundColor(ContextCompat.getColor(context, colors[position % colors.length]));
-
     }
 
     @Override

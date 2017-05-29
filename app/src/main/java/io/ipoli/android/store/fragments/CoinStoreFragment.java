@@ -6,6 +6,7 @@ import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -110,6 +111,12 @@ public class CoinStoreFragment extends BaseFragment {
     @BindView(R.id.premium_root_layout)
     ViewGroup premiumContainer;
 
+    @BindView(R.id.starter_root_layout)
+    ViewGroup starterContainer;
+
+    @BindView(R.id.jumbo_root_layout)
+    ViewGroup jumboContainer;
+
     @BindView(R.id.premium_ribbon)
     ImageView premiumRibbon;
 
@@ -132,7 +139,7 @@ public class CoinStoreFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         ((StoreActivity) getActivity()).getSupportActionBar().setTitle(R.string.title_buy_coins);
 
-//        loaderContainer.setVisibility(View.VISIBLE);
+        loaderContainer.setVisibility(View.VISIBLE);
 
         if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
             showFailureMessage(R.string.no_internet_to_buy_coins);
@@ -150,6 +157,35 @@ public class CoinStoreFragment extends BaseFragment {
         eventBus.post(new ScreenShownEvent(EventSource.BUY_COINS));
 
         return view;
+    }
+
+    private void animatePacks() {
+        Animation starterAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
+        starterContainer.startAnimation(starterAnimation);
+        Animation premiumAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
+        premiumAnimation.setStartOffset(starterAnimation.getDuration() / 5);
+        premiumContainer.startAnimation(premiumAnimation);
+        Animation jumboAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
+        jumboAnimation.setStartOffset(premiumAnimation.getStartOffset() + premiumAnimation.getDuration() / 5);
+        jumboAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                premiumRibbon.setVisibility(View.VISIBLE);
+                premiumMostPopular.setVisibility(View.VISIBLE);
+                animateMostPopular();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        jumboContainer.startAnimation(jumboAnimation);
     }
 
     private void showFailureMessage(int messageRes) {
@@ -175,11 +211,14 @@ public class CoinStoreFragment extends BaseFragment {
     }
 
     private void initItems(Inventory inventory) {
-        playMostPopularAnimation();
-
         SkuDetails starterPack = inventory.getSkuDetails(SKU_STARTER_PACK);
         SkuDetails premiumPack = inventory.getSkuDetails(SKU_PREMIUM_PACK);
         SkuDetails jumboPack = inventory.getSkuDetails(SKU_JUMBO_PACK);
+
+        if(starterPack == null || premiumPack == null || jumboPack == null) {
+            showFailureMessage(R.string.something_went_wrong);
+            return;
+        }
 
         starterTitle.setText(starterPack.getTitle());
         starterPrice.setText(getString(R.string.coins_pack_value, skuToValue.get(SKU_STARTER_PACK)));
@@ -194,9 +233,11 @@ public class CoinStoreFragment extends BaseFragment {
         jumboBuy.setText(jumboPack.getPrice());
 
         hideLoaderContainer();
+
+        animatePacks();
     }
 
-    private void playMostPopularAnimation() {
+    private void animateMostPopular() {
         premiumRibbon.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.scale_in_from_right_top));
         premiumMostPopular.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.scale_in_from_right_top));
     }

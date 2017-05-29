@@ -30,7 +30,7 @@ import io.ipoli.android.store.viewmodels.UpgradeViewModel;
  * on 5/23/17.
  */
 
-public class UpgradeStoreAdapter extends RecyclerView.Adapter<UpgradeStoreAdapter.ViewHolder> {
+public class UpgradeStoreAdapter extends EnterAnimationAdapter<UpgradeStoreAdapter.ViewHolder> {
     private final Context context;
     private final Bus eventBus;
     private List<UpgradeViewModel> viewModels;
@@ -58,7 +58,7 @@ public class UpgradeStoreAdapter extends RecyclerView.Adapter<UpgradeStoreAdapte
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    protected void doOnBindViewHolder(ViewHolder holder, int position) {
         UpgradeViewModel vm = viewModels.get(holder.getAdapterPosition());
 
         holder.title.setText(vm.getTitle());
