@@ -724,6 +724,10 @@
     <string name="not_now">Not now</string>
     <string name="go_to_store">Go to Store</string>
     <string name="fragment_coin_store_title">Buy coins</string>
+    <string name="coins">Coins</string>
+    <string name="upgrades">Upgrades</string>
+    <string name="avatars">Avatars</string>
+    <string name="pets">Pets</string>
 
 
     <string-array name="player_titles">
