@@ -14,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.otto.Bus;
+
 import java.util.NoSuchElementException;
 
 import javax.inject.Inject;
@@ -26,6 +28,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.store.StoreItemType;
 import io.ipoli.android.store.Upgrade;
 import io.ipoli.android.store.activities.StoreActivity;
+import io.ipoli.android.store.events.UpgradeBoughtEvent;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -35,6 +38,9 @@ import io.ipoli.android.store.activities.StoreActivity;
 public class UpgradeDialog extends DialogFragment {
     private static final String TAG = "store_upgrade-dialog";
     private static final String UPGRADE_CODE = "upgrade_code";
+
+    @Inject
+    Bus eventBus;
 
     @Inject
     UpgradesManager upgradesManager;
@@ -110,6 +116,7 @@ public class UpgradeDialog extends DialogFragment {
                         upgradesManager.buy(upgrade);
                         String message = getString(R.string.upgrade_successfully_bought, getString(upgrade.title));
                         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                        eventBus.post(new UpgradeBoughtEvent(upgrade));
                     } else {
                         Intent intent = new Intent(getContext(), StoreActivity.class);
                         intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.COINS.name());
