@@ -29,7 +29,7 @@ import mehdi.sakout.fancybuttons.FancyButton;
  * on 5/25/17.
  */
 
-public class AvatarStoreAdapter extends RecyclerView.Adapter<AvatarStoreAdapter.ViewHolder> {
+public class AvatarStoreAdapter extends EnterAnimationAdapter<AvatarStoreAdapter.ViewHolder>{
     private final Context context;
     private final Bus eventBus;
     private List<AvatarViewModel> viewModels;
@@ -57,7 +57,17 @@ public class AvatarStoreAdapter extends RecyclerView.Adapter<AvatarStoreAdapter.
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public int getItemCount() {
+        return viewModels.size();
+    }
+
+    public void setViewModels(List<AvatarViewModel> avatarViewModels) {
+        this.viewModels = avatarViewModels;
+        notifyDataSetChanged();
+    }
+
+    @Override
+    protected void doOnBindViewHolder(ViewHolder holder, int position) {
         AvatarViewModel vm = viewModels.get(holder.getAdapterPosition());
 
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) holder.price.getIconImageObject().getLayoutParams();
@@ -78,17 +88,6 @@ public class AvatarStoreAdapter extends RecyclerView.Adapter<AvatarStoreAdapter.
         }
 
         holder.container.setBackgroundColor(ContextCompat.getColor(context, colors[position % colors.length]));
-
-    }
-
-    @Override
-    public int getItemCount() {
-        return viewModels.size();
-    }
-
-    public void setViewModels(List<AvatarViewModel> avatarViewModels) {
-        this.viewModels = avatarViewModels;
-        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

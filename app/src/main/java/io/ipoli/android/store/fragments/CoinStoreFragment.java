@@ -6,7 +6,9 @@ import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -105,6 +107,15 @@ public class CoinStoreFragment extends BaseFragment {
     @BindView(R.id.jumbo_buy)
     Button jumboBuy;
 
+    @BindView(R.id.premium_root_layout)
+    ViewGroup premiumContainer;
+
+    @BindView(R.id.premium_ribbon)
+    ImageView premiumRibbon;
+
+    @BindView(R.id.premium_most_popular)
+    TextView premiumMostPopular;
+
     @Inject
     PlayerPersistenceService playerPersistenceService;
 
@@ -164,6 +175,8 @@ public class CoinStoreFragment extends BaseFragment {
     }
 
     private void initItems(Inventory inventory) {
+        playMostPopularAnimation();
+
         SkuDetails starterPack = inventory.getSkuDetails(SKU_STARTER_PACK);
         SkuDetails premiumPack = inventory.getSkuDetails(SKU_PREMIUM_PACK);
         SkuDetails jumboPack = inventory.getSkuDetails(SKU_JUMBO_PACK);
@@ -181,6 +194,11 @@ public class CoinStoreFragment extends BaseFragment {
         jumboBuy.setText(jumboPack.getPrice());
 
         hideLoaderContainer();
+    }
+
+    private void playMostPopularAnimation() {
+        premiumRibbon.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.scale_in_from_right_top));
+        premiumMostPopular.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.scale_in_from_right_top));
     }
 
     @OnClick(R.id.starter_buy)
