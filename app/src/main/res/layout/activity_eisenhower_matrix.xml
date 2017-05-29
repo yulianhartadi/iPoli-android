@@ -20,30 +20,30 @@
             app:popupTheme="@style/Theme.iPoli.PopupOverlay" />
     </android.support.design.widget.AppBarLayout>
 
-    <GridLayout
+    <android.support.v7.widget.GridLayout
         android:id="@+id/matrix_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize"
-        android:columnCount="3"
-        android:rowCount="3">
+        app:columnCount="3"
+        app:rowCount="3">
 
         <android.support.v4.widget.Space
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_column="0"
-            android:layout_columnWeight="1"
-            android:layout_row="0"
-            android:layout_rowWeight="1" />
+            app:layout_column="0"
+            app:layout_columnWeight="1"
+            app:layout_row="0"
+            app:layout_rowWeight="1" />
 
         <TextView
             style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_column="1"
-            android:layout_columnWeight="5"
-            android:layout_row="0"
-            android:layout_rowWeight="1"
+            app:layout_column="1"
+            app:layout_columnWeight="5"
+            app:layout_row="0"
+            app:layout_rowWeight="1"
             android:paddingTop="8dp"
             android:text="@string/urgent"
             android:textAlignment="center" />
@@ -52,10 +52,10 @@
             style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_column="2"
-            android:layout_columnWeight="5"
-            android:layout_row="0"
-            android:layout_rowWeight="1"
+            app:layout_column="2"
+            app:layout_columnWeight="5"
+            app:layout_row="0"
+            app:layout_rowWeight="1"
             android:paddingTop="8dp"
             android:text="@string/not_urgent"
             android:textAlignment="center" />
@@ -64,10 +64,10 @@
             style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_column="0"
-            android:layout_columnWeight="1"
-            android:layout_row="1"
-            android:layout_rowWeight="6"
+            app:layout_column="0"
+            app:layout_columnWeight="1"
+            app:layout_row="1"
+            app:layout_rowWeight="6"
             android:gravity="bottom"
             android:paddingTop="8dp"
             android:text="@string/important"
@@ -76,12 +76,12 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_column="1"
-            android:layout_columnWeight="5"
+            app:layout_column="1"
+            app:layout_columnWeight="5"
             android:layout_marginBottom="1dp"
             android:layout_marginEnd="1dp"
-            android:layout_row="1"
-            android:layout_rowWeight="6"
+            app:layout_row="1"
+            app:layout_rowWeight="6"
             android:background="@color/md_green_500"
             android:orientation="vertical">
 
@@ -105,12 +105,12 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_column="2"
-            android:layout_columnWeight="5"
+            app:layout_column="2"
+            app:layout_columnWeight="5"
             android:layout_marginBottom="1dp"
             android:layout_marginStart="1dp"
-            android:layout_row="1"
-            android:layout_rowWeight="6"
+            app:layout_row="1"
+            app:layout_rowWeight="6"
             android:background="@color/md_blue_500"
             android:orientation="vertical">
 
@@ -136,10 +136,10 @@
             style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_column="0"
-            android:layout_columnWeight="1"
-            android:layout_row="2"
-            android:layout_rowWeight="6"
+            app:layout_column="0"
+            app:layout_columnWeight="1"
+            app:layout_row="2"
+            app:layout_rowWeight="6"
             android:gravity="bottom"
             android:paddingTop="8dp"
             android:text="@string/not_important"
@@ -148,12 +148,12 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_column="1"
-            android:layout_columnWeight="5"
+            app:layout_column="1"
+            app:layout_columnWeight="5"
             android:layout_marginEnd="1dp"
             android:layout_marginTop="1dp"
-            android:layout_row="2"
-            android:layout_rowWeight="6"
+            app:layout_row="2"
+            app:layout_rowWeight="6"
             android:background="@color/md_purple_500"
             android:orientation="vertical">
 
@@ -177,12 +177,12 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_column="2"
-            android:layout_columnWeight="5"
+            app:layout_column="2"
+            app:layout_columnWeight="5"
             android:layout_marginStart="1dp"
             android:layout_marginTop="1dp"
-            android:layout_row="2"
-            android:layout_rowWeight="6"
+            app:layout_row="2"
+            app:layout_rowWeight="6"
             android:background="@color/md_red_500"
             android:orientation="vertical">
 
@@ -203,9 +203,9 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-    </GridLayout>
+    </android.support.v7.widget.GridLayout>
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         android:id="@+id/empty_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
