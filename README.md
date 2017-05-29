@@ -47,6 +47,7 @@ Join the community on [Slack](https://slofile.com/slack/productivityhackers) or 
 
 You love **iPoli**? You want new features or bug fixes?  
 Please **contribute** to the  project either by [_creating a PR_](https://github.com/iPoli/iPoli-android/compare) or [_submitting an issue_](https://github.com/iPoli/iPoli-android/issues/new) on GitHub.  
+You can help translate at [OneSky](https://ossiudx.oneskyapp.com/collaboration/project?id=110776).
 
 # License
 
