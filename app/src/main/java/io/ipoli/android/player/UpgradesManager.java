@@ -19,15 +19,15 @@ public class UpgradesManager implements OnDataChangedListener<Player> {
 
     public UpgradesManager(PlayerPersistenceService playerPersistenceService) {
         this.playerPersistenceService = playerPersistenceService;
-        if(playerPersistenceService.get() != null) {
+        if (playerPersistenceService.get() != null) {
             playerPersistenceService.listen(this);
         }
     }
 
     private Player getPlayer() {
-        if(player == null) {
+        if (player == null) {
             player = playerPersistenceService.get();
-            if(player != null) {
+            if (player != null) {
                 playerPersistenceService.listen(this);
             }
         }
@@ -36,7 +36,7 @@ public class UpgradesManager implements OnDataChangedListener<Player> {
 
     public boolean has(Upgrade upgrade) {
         Player player = getPlayer();
-        if(player.getInventory() == null) {
+        if (player.getInventory() == null) {
             return false;
         }
         return player.getInventory().getUpgrades().containsKey(upgrade.code);
@@ -49,7 +49,7 @@ public class UpgradesManager implements OnDataChangedListener<Player> {
     public void buy(Upgrade upgrade) {
         Player player = getPlayer();
         player.removeCoins(upgrade.price);
-        if(player.getInventory() == null) {
+        if (player.getInventory() == null) {
             player.setInventory(new Inventory());
         }
         player.getInventory().addUpgrade(upgrade, LocalDate.now());
@@ -58,10 +58,10 @@ public class UpgradesManager implements OnDataChangedListener<Player> {
 
     public Long getBoughtDate(Upgrade upgrade) {
         Player player = getPlayer();
-        if(player.getInventory() == null) {
+        if (player.getInventory() == null) {
             return null;
         }
-        if(!player.getInventory().getUpgrades().containsKey(upgrade.code)) {
+        if (!player.getInventory().getUpgrades().containsKey(upgrade.code)) {
             return null;
         }
         return player.getInventory().getUpgrades().get(upgrade.code);

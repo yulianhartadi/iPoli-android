@@ -75,7 +75,7 @@ public class UpgradeDialog extends DialogFragment {
         int code = getArguments().getInt(UPGRADE_CODE);
         upgrade = Upgrade.get(code);
         if (upgrade == null) {
-            throw new NoSuchElementException("There is no store_upgrade with code: " + code);
+            throw new NoSuchElementException("There is no upgrade with code: " + code);
         }
 
     }
@@ -92,12 +92,12 @@ public class UpgradeDialog extends DialogFragment {
 
         unbinder = ButterKnife.bind(this, v);
 
-        title.setText("You've discovered " + getString(upgrade.title));
+        title.setText(getString(R.string.upgrade_dialog_title, getString(upgrade.title)));
         description.setText(upgrade.shortDesc);
         notEnoughCoins.setText(String.format(getString(R.string.upgrade_dialog_not_enough_coins), upgrade.price));
 
         boolean hasEnoughCoins = upgradesManager.hasEnoughCoinsForUpgrade(upgrade);
-        String positiveBtnText = hasEnoughCoins ? "Buy" : "Buy store coins";
+        String positiveBtnText = hasEnoughCoins ? getString(R.string.buy) : getString(R.string.buy_life_coins);
 
         price.setVisibility(hasEnoughCoins ? View.VISIBLE : View.GONE);
         notEnoughCoins.setVisibility(hasEnoughCoins ? View.GONE : View.VISIBLE);
@@ -108,18 +108,19 @@ public class UpgradeDialog extends DialogFragment {
                 .setPositiveButton(positiveBtnText, (dialog, which) -> {
                     if (hasEnoughCoins) {
                         upgradesManager.buy(upgrade);
-                        Toast.makeText(getContext(), "You can now enjoy ", Toast.LENGTH_SHORT).show();
+                        String message = getString(R.string.upgrade_successfully_bought, getString(upgrade.title));
+                        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                     } else {
                         Intent intent = new Intent(getContext(), StoreActivity.class);
                         intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.COINS.name());
                         getContext().startActivity(intent);
                     }
                 })
-                .setNegativeButton("Not now", (dialog, which) -> {
+                .setNegativeButton(R.string.not_now, (dialog, which) -> {
                 });
 
         if (hasEnoughCoins) {
-            builder.setNeutralButton("Go to Store", (dialog, which) -> {
+            builder.setNeutralButton(R.string.go_to_store, (dialog, which) -> {
                 Intent intent = new Intent(getContext(), StoreActivity.class);
                 intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.UPGRADES.name());
                 startActivity(intent);

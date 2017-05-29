@@ -64,17 +64,18 @@ public class UpgradeStoreAdapter extends EnterAnimationAdapter<UpgradeStoreAdapt
         holder.title.setText(vm.getTitle());
         holder.shortDesc.setText(vm.getShortDescription());
         holder.longDesc.setText(vm.getLongDescription());
-        holder.price.setText(vm.getPrice() + " life coins");
+        holder.price.setText(context.getString(R.string.upgrade_price, vm.getPrice()));
         holder.image.setImageResource(vm.getImage());
         holder.expand.setOnClickListener(v -> {
+            int duration = context.getResources().getInteger(android.R.integer.config_mediumAnimTime);
             if (holder.longDesc.getVisibility() == View.GONE) {
                 TransitionManager.beginDelayedTransition(holder.container);
-                holder.expand.animate().rotationBy(180).setDuration(500);
+                holder.expand.animate().rotationBy(180).setDuration(duration);
                 holder.longDesc.setAlpha(1.0f);
                 holder.longDesc.setVisibility(View.VISIBLE);
             } else {
-                holder.expand.animate().rotationBy(-180).setDuration(500);
-                holder.longDesc.animate().alpha(0.0f).setDuration(500).withEndAction(() ->
+                holder.expand.animate().rotationBy(-180).setDuration(duration);
+                holder.longDesc.animate().alpha(0.0f).setDuration(duration).withEndAction(() ->
                         holder.longDesc.setVisibility(View.GONE));
             }
         });
@@ -83,7 +84,7 @@ public class UpgradeStoreAdapter extends EnterAnimationAdapter<UpgradeStoreAdapt
             holder.container.setBackgroundColor(ContextCompat.getColor(context, R.color.md_grey_50));
             holder.buy.setVisibility(View.INVISIBLE);
             holder.boughtDate.setVisibility(View.VISIBLE);
-            holder.boughtDate.setText("Bought on " + DateFormatter.format(context, vm.getBoughtDate()));
+            holder.boughtDate.setText(context.getString(R.string.upgrade_bought_on, DateFormatter.format(context, vm.getBoughtDate())));
         } else {
             holder.buy.setVisibility(View.VISIBLE);
             holder.boughtDate.setVisibility(View.GONE);

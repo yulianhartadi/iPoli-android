@@ -83,7 +83,7 @@ public class AvatarStoreAdapter extends EnterAnimationAdapter<AvatarStoreAdapter
             holder.price.setOnClickListener(v -> eventBus.post(new UseAvatarEvent(vm.getAvatar())));
         } else {
             holder.price.setIconResource(context.getDrawable(R.drawable.ic_life_coin_white_24dp));
-            holder.price.setText(vm.getPrice() + "");
+            holder.price.setText(String.valueOf(vm.getPrice()));
             holder.price.setOnClickListener(v -> eventBus.post(new BuyAvatarRequestEvent(vm.getAvatar())));
         }
 
