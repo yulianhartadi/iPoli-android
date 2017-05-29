@@ -6,11 +6,11 @@ import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
-import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +21,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.BillingConstants;
 import io.ipoli.android.R;
@@ -46,17 +47,20 @@ import io.ipoli.android.store.iab.SkuDetails;
  */
 
 public class CoinStoreFragment extends BaseFragment {
-    private static final String SKU_COINS_100 = "coins_100";
-    private static final String SKU_COINS_300 = "coins_300";
-    private static final String SKU_COINS_500 = "coins_500";
-    private static final String SKU_COINS_1000 = "coins_1000";
+    //    private static final String SKU_COINS_100 = "coins_100";
+//    private static final String SKU_COINS_300 = "coins_300";
+//    private static final String SKU_COINS_500 = "coins_500";
+//    private static final String SKU_COINS_1000 = "coins_1000";
+    private static final String SKU_STARTER_PACK = "starter_pack";
+    private static final String SKU_PREMIUM_PACK = "premium_pack";
+    private static final String SKU_JUMBO_PACK = "jumbo_pack";
+
     private static final int RC_REQUEST = 10001;
 
     private Map<String, Integer> skuToValue = new HashMap<String, Integer>() {{
-        put(SKU_COINS_100, 100);
-        put(SKU_COINS_300, 300);
-        put(SKU_COINS_500, 500);
-        put(SKU_COINS_1000, 1000);
+        put(SKU_STARTER_PACK, 100);
+        put(SKU_PREMIUM_PACK, 1000);
+        put(SKU_JUMBO_PACK, 10000);
     }};
 
     @Inject
@@ -74,12 +78,38 @@ public class CoinStoreFragment extends BaseFragment {
     @BindView(R.id.failure_message)
     TextView failureMessage;
 
+    @BindView(R.id.starter_title)
+    TextView starterTitle;
+
+    @BindView(R.id.starter_price)
+    TextView starterPrice;
+
+    @BindView(R.id.starter_buy)
+    Button starterBuy;
+
+    @BindView(R.id.premium_title)
+    TextView premiumTitle;
+
+    @BindView(R.id.premium_price)
+    TextView premiumPrice;
+
+    @BindView(R.id.premium_buy)
+    Button premiumBuy;
+
+    @BindView(R.id.jumbo_title)
+    TextView jumboTitle;
+
+    @BindView(R.id.jumbo_price)
+    TextView jumboPrice;
+
+    @BindView(R.id.jumbo_buy)
+    Button jumboBuy;
+
     @Inject
     PlayerPersistenceService playerPersistenceService;
 
     private Unbinder unbinder;
     private IabHelper iabHelper;
-//    private CoinsStoreAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -120,10 +150,7 @@ public class CoinStoreFragment extends BaseFragment {
     private void queryInventory() {
         try {
             ArrayList<String> skuList = new ArrayList<>();
-            skuList.add(SKU_COINS_100);
-            skuList.add(SKU_COINS_300);
-            skuList.add(SKU_COINS_500);
-            skuList.add(SKU_COINS_1000);
+            skuList.addAll(skuToValue.keySet());
             iabHelper.queryInventoryAsync(true, skuList, (result, inv) -> {
                 if (!result.isSuccess() || iabHelper == null) {
                     showFailureMessage(R.string.something_went_wrong);
@@ -137,19 +164,38 @@ public class CoinStoreFragment extends BaseFragment {
     }
 
     private void initItems(Inventory inventory) {
-        SkuDetails coins100 = inventory.getSkuDetails(SKU_COINS_100);
-        SkuDetails coins300 = inventory.getSkuDetails(SKU_COINS_300);
-        SkuDetails coins500 = inventory.getSkuDetails(SKU_COINS_500);
-        SkuDetails coins1000 = inventory.getSkuDetails(SKU_COINS_1000);
+        SkuDetails starterPack = inventory.getSkuDetails(SKU_STARTER_PACK);
+        SkuDetails premiumPack = inventory.getSkuDetails(SKU_PREMIUM_PACK);
+        SkuDetails jumboPack = inventory.getSkuDetails(SKU_JUMBO_PACK);
 
-//        List<CoinsViewModel> viewModels = new ArrayList<>();
-//        viewModels.add(new CoinsViewModel(SKU_COINS_100, coins100.getTitle(), coins100.getPrice(), 100));
-//        viewModels.add(new CoinsViewModel(SKU_COINS_300, coins300.getTitle(), coins300.getPrice(), 300));
-//        viewModels.add(new CoinsViewModel(SKU_COINS_500, coins500.getTitle(), coins500.getPrice(), 500));
-//        viewModels.add(new CoinsViewModel(SKU_COINS_1000, coins1000.getTitle(), coins1000.getPrice(), 1000));
-//        adapter.setViewModels(viewModels);
+        starterTitle.setText(starterPack.getTitle());
+        starterPrice.setText(getString(R.string.coins_pack_value, skuToValue.get(SKU_STARTER_PACK)));
+        starterBuy.setText(starterPack.getPrice());
+
+        premiumTitle.setText(premiumPack.getTitle());
+        premiumPrice.setText(getString(R.string.coins_pack_value, skuToValue.get(SKU_PREMIUM_PACK)));
+        premiumBuy.setText(premiumPack.getPrice());
+
+        jumboTitle.setText(jumboPack.getTitle());
+        jumboPrice.setText(getString(R.string.coins_pack_value, skuToValue.get(SKU_JUMBO_PACK)));
+        jumboBuy.setText(jumboPack.getPrice());
 
         hideLoaderContainer();
+    }
+
+    @OnClick(R.id.starter_buy)
+    public void onBuyStarterClick(View v) {
+        buyCoins(SKU_STARTER_PACK);
+    }
+
+    @OnClick(R.id.premium_buy)
+    public void onBuyPremiumClick(View v) {
+        buyCoins(SKU_PREMIUM_PACK);
+    }
+
+    @OnClick(R.id.jumbo_buy)
+    public void onBuyJumboClick(View v) {
+        buyCoins(SKU_JUMBO_PACK);
     }
 
     private void hideLoaderContainer() {
@@ -171,24 +217,13 @@ public class CoinStoreFragment extends BaseFragment {
         super.onDestroyView();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        eventBus.register(this);
-    }
+    public void buyCoins(String sku) {
+        eventBus.post(new BuyCoinsTappedEvent(sku));
 
-    @Override
-    public void onPause() {
-        eventBus.unregister(this);
-        super.onPause();
-    }
-
-    @Subscribe
-    public void onBuyCoinsTapped(BuyCoinsTappedEvent e) {
         String payload = UUID.randomUUID().toString();
 
         try {
-            iabHelper.launchPurchaseFlow(this, e.sku, RC_REQUEST,
+            iabHelper.launchPurchaseFlow(this, sku, RC_REQUEST,
                     (result, purchase) -> {
                         if (result.isFailure()) {
                             return;
@@ -197,9 +232,9 @@ public class CoinStoreFragment extends BaseFragment {
                             return;
                         }
 
-                        if (result.isSuccess() && purchase.getSku().equals(e.sku)) {
-                            eventBus.post(new CoinsPurchasedEvent(e.sku));
-                            consumePurchase(purchase, skuToValue.get(e.sku));
+                        if (result.isSuccess() && purchase.getSku().equals(sku)) {
+                            eventBus.post(new CoinsPurchasedEvent(sku));
+                            consumePurchase(purchase, skuToValue.get(sku));
                         }
                     }, payload);
         } catch (IabHelper.IabAsyncInProgressException ex) {
