@@ -309,12 +309,6 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
         if (getOriginalScheduledDate() == null) {
             setOriginalScheduledDate(getScheduledDate());
         }
-        if (getEndDate() == null) {
-            setEndDate(getScheduledDate());
-        }
-        if (getStartDate() == null) {
-            setStartDate(getScheduledDate());
-        }
     }
 
     public Long getEnd() {
