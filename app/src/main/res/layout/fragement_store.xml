@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:columnCount="2"
-    android:rowCount="2">
+    app:columnCount="2"
+    app:rowCount="2">
 
     <android.support.v7.widget.CardView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_column="0"
-        android:layout_columnWeight="1"
+        app:layout_column="0"
+        app:layout_columnWeight="1"
         android:layout_margin="4dp"
-        android:layout_row="0"
-        android:layout_gravity="top|left|fill"
-        android:layout_rowWeight="1"
+        app:layout_row="0"
+        app:layout_rowWeight="1"
         app:cardBackgroundColor="@color/md_blue_300"
         card_view:cardCornerRadius="2dp">
 
@@ -69,12 +68,11 @@
     <android.support.v7.widget.CardView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_column="1"
-        android:layout_columnWeight="1"
+        app:layout_column="1"
+        app:layout_columnWeight="1"
         android:layout_margin="4dp"
-        android:layout_row="0"
-        android:layout_gravity="top|right|fill"
-        android:layout_rowWeight="1"
+        app:layout_row="0"
+        app:layout_rowWeight="1"
         app:cardBackgroundColor="@color/md_deep_orange_300"
         card_view:cardCornerRadius="2dp">
 
@@ -128,12 +126,11 @@
     <android.support.v7.widget.CardView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_column="0"
-        android:layout_columnWeight="1"
+        app:layout_column="0"
+        app:layout_columnWeight="1"
         android:layout_margin="4dp"
-        android:layout_row="1"
-        android:layout_gravity="bottom|left|fill"
-        android:layout_rowWeight="1"
+        app:layout_row="1"
+        app:layout_rowWeight="1"
         app:cardBackgroundColor="@color/md_green_300"
         card_view:cardCornerRadius="2dp">
 
@@ -187,12 +184,11 @@
     <android.support.v7.widget.CardView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_column="1"
-        android:layout_columnWeight="1"
+        app:layout_column="1"
+        app:layout_columnWeight="1"
         android:layout_margin="4dp"
-        android:layout_row="1"
-        android:layout_gravity="bottom|right|fill"
-        android:layout_rowWeight="1"
+        app:layout_row="1"
+        app:layout_rowWeight="1"
         app:cardBackgroundColor="@color/md_indigo_300"
         card_view:cardCornerRadius="2dp">
 
@@ -242,4 +238,4 @@
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
 
-</GridLayout>
+</android.support.v7.widget.GridLayout>
