@@ -126,7 +126,7 @@
         </activity>
         <activity
             android:name=".store.activities.StoreActivity"
-            android:label="@string/title_store_activity"
+            android:label="@string/fragment_store_title"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data

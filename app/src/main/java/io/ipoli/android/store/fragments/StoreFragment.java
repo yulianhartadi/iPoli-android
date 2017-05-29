@@ -34,7 +34,7 @@ public class StoreFragment extends BaseFragment {
 
     public static StoreFragment newInstance(StoreItemType storeItemType) {
         StoreFragment fragment = new StoreFragment();
-        if(storeItemType != null) {
+        if (storeItemType != null) {
             Bundle args = new Bundle();
             args.putString(START_ITEM_TYPE, storeItemType.name());
             fragment.setArguments(args);
@@ -46,7 +46,7 @@ public class StoreFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(getArguments() != null && getArguments().containsKey(START_ITEM_TYPE)) {
+        if (getArguments() != null && getArguments().containsKey(START_ITEM_TYPE)) {
             startStoreItemType = StoreItemType.valueOf(getArguments().getString(START_ITEM_TYPE));
         }
     }
@@ -58,9 +58,9 @@ public class StoreFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragement_store, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        ((StoreActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_store_activity);
+        ((StoreActivity) getActivity()).getSupportActionBar().setTitle(R.string.fragment_store_title);
 
-        if(startStoreItemType != null) {
+        if (startStoreItemType != null) {
             changeCurrentItem(startStoreItemType);
         }
 
@@ -101,16 +101,16 @@ public class StoreFragment extends BaseFragment {
         switch (type) {
             case COINS:
                 changeCurrentFragment(new CoinStoreFragment());
-                break;
+                return;
             case UPGRADES:
                 changeCurrentFragment(new UpgradeStoreFragment());
-                break;
+                return;
             case AVATARS:
                 changeCurrentFragment(new AvatarStoreFragment());
-                break;
+                return;
             case PETS:
                 changeCurrentFragment(new PetStoreFragment());
-                break;
+                return;
         }
     }
 

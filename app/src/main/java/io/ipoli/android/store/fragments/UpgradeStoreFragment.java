@@ -60,7 +60,7 @@ public class UpgradeStoreFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragement_upgrade_store, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        ((StoreActivity)getActivity()).getSupportActionBar().setTitle("Buy upgrade");
+        ((StoreActivity) getActivity()).getSupportActionBar().setTitle(R.string.fragment_upgrade_store_title);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -80,8 +80,8 @@ public class UpgradeStoreFragment extends BaseFragment {
         List<Upgrade> lockedUpgrades = new ArrayList<>();
         List<Upgrade> boughtUpgrades = new ArrayList<>();
 
-        for(Upgrade upgrade : Upgrade.values()) {
-            if(upgradesManager.has(upgrade)) {
+        for (Upgrade upgrade : Upgrade.values()) {
+            if (upgradesManager.has(upgrade)) {
                 boughtUpgrades.add(upgrade);
             } else {
                 lockedUpgrades.add(upgrade);
@@ -89,13 +89,13 @@ public class UpgradeStoreFragment extends BaseFragment {
         }
 
         Collections.sort(boughtUpgrades, ((u1, u2) ->
-                - Long.compare(upgradesManager.getBoughtDate(u1), upgradesManager.getBoughtDate(u2))));
+                -Long.compare(upgradesManager.getBoughtDate(u1), upgradesManager.getBoughtDate(u2))));
 
-        for(Upgrade upgrade : lockedUpgrades) {
+        for (Upgrade upgrade : lockedUpgrades) {
             upgrades.add(new UpgradeViewModel(getContext(), upgrade));
         }
 
-        for(Upgrade upgrade : boughtUpgrades) {
+        for (Upgrade upgrade : boughtUpgrades) {
             upgrades.add(new UpgradeViewModel(getContext(), upgrade, DateUtils.fromMillis(upgradesManager.getBoughtDate(upgrade))));
         }
         return upgrades;
@@ -104,13 +104,16 @@ public class UpgradeStoreFragment extends BaseFragment {
     @Subscribe
     public void buyUpgradeEvent(BuyUpgradeEvent e) {
         Upgrade upgrade = e.upgrade;
-        if(upgradesManager.hasEnoughCoinsForUpgrade(upgrade)) {
+        String title = getString(upgrade.title);
+        String message;
+        if (upgradesManager.hasEnoughCoinsForUpgrade(upgrade)) {
             upgradesManager.buy(upgrade);
-            Toast.makeText(getContext(), "You can now enjoy ", Toast.LENGTH_SHORT).show();
+            message = getString(R.string.upgrade_successfully_bought, title);
             adapter.setViewModels(createUpgradeViewModels());
         } else {
-            Toast.makeText(getContext(), "Not enough coins to buy", Toast.LENGTH_SHORT).show();
+            message = getString(R.string.upgrade_too_expensive, title);
         }
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     @Override

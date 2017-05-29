@@ -78,7 +78,7 @@ public class StoreActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        getSupportActionBar().setTitle(R.string.title_store_activity);
+        getSupportActionBar().setTitle(R.string.fragment_store_title);
     }
 
     @Override

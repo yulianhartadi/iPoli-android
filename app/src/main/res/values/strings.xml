@@ -274,7 +274,6 @@
     <string name="reward_earned">%s earned! Enjoy!</string>
     <string name="coins_bought">+ %d coins added to your stash</string>
     <string name="store">Store</string>
-    <string name="title_buy_coins">Buy coins</string>
     <string name="no_internet_to_buy_coins">If you want some coins, you should enable your internet!</string>
     <string name="something_went_wrong">Something went wrong, please try again later!</string>
     <string name="help_dialog_store_title">What can you buy?</string>
@@ -684,7 +683,7 @@
     <string name="challenge8_rq4_raw_text">Go out with friends 2 times a week</string>
     <string name="challenge8_rq4_name">Go out with friends</string>
 
-    <string name="title_store_activity">Store</string>
+    <string name="fragment_store_title">Store</string>
     <string name="upgrade_dialog_not_enough_coins">This upgrade costs %d coins. Unfortunately, you have not collected enough. Do you want to buy some?</string>
 
     <string name="pet_seal">Cute tail</string>
@@ -712,7 +711,19 @@
     <string name="not_urgent">Not Urgent</string>
 
     <string name="coins_pack_value">+ %d life coins</string>
-
+    <string name="upgrade_price">%d life coins</string>
+    <string name="upgrade_bought_on">Bought on %s</string>
+    <string name="fragment_avatar_store_title">Buy avatar</string>
+    <string name="fragment_pet_store_title">Buy pet</string>
+    <string name="fragment_upgrade_store_title">Buy upgrade</string>
+    <string name="upgrade_successfully_bought">You can now enjoy %s</string>
+    <string name="upgrade_too_expensive">Not enough coins to buy %s</string>
+    <string name="upgrade_dialog_title">You\'ve discovered %s</string>
+    <string name="buy">Buy</string>
+    <string name="buy_life_coins">Buy life coins</string>
+    <string name="not_now">Not now</string>
+    <string name="go_to_store">Go to Store</string>
+    <string name="fragment_coin_store_title">Buy coins</string>
 
 
     <string-array name="player_titles">

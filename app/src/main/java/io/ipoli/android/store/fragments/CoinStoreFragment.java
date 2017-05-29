@@ -137,9 +137,9 @@ public class CoinStoreFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_coin_store, container, false);
         App.getAppComponent(getContext()).inject(this);
         unbinder = ButterKnife.bind(this, view);
-        ((StoreActivity) getActivity()).getSupportActionBar().setTitle(R.string.title_buy_coins);
+        ((StoreActivity) getActivity()).getSupportActionBar().setTitle(R.string.fragment_coin_store_title);
 
-        loaderContainer.setVisibility(View.VISIBLE);
+//        loaderContainer.setVisibility(View.VISIBLE);
 
         if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
             showFailureMessage(R.string.no_internet_to_buy_coins);
@@ -215,7 +215,7 @@ public class CoinStoreFragment extends BaseFragment {
         SkuDetails premiumPack = inventory.getSkuDetails(SKU_PREMIUM_PACK);
         SkuDetails jumboPack = inventory.getSkuDetails(SKU_JUMBO_PACK);
 
-        if(starterPack == null || premiumPack == null || jumboPack == null) {
+        if (starterPack == null || premiumPack == null || jumboPack == null) {
             showFailureMessage(R.string.something_went_wrong);
             return;
         }
