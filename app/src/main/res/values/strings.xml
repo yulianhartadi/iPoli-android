@@ -711,6 +711,10 @@
     <string name="urgent">Urgent</string>
     <string name="not_urgent">Not Urgent</string>
 
+    <string name="coins_pack_value">+ %d life coins</string>
+
+
+
     <string-array name="player_titles">
         <item>Novice</item>
         <item>Apprentice</item>
