@@ -120,7 +120,9 @@ public class UpgradeDialog extends DialogFragment {
 
         if (hasEnoughCoins) {
             builder.setNeutralButton("Go to Store", (dialog, which) -> {
-                startActivity(new Intent(getContext(), StoreActivity.class));
+                Intent intent = new Intent(getContext(), StoreActivity.class);
+                intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.UPGRADES.name());
+                startActivity(intent);
             });
         }
 

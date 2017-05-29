@@ -14,7 +14,6 @@ import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -34,14 +33,12 @@ import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.store.activities.StoreActivity;
-import io.ipoli.android.store.adapters.CoinsStoreAdapter;
 import io.ipoli.android.store.events.BuyCoinsTappedEvent;
 import io.ipoli.android.store.events.CoinsPurchasedEvent;
 import io.ipoli.android.store.iab.IabHelper;
 import io.ipoli.android.store.iab.Inventory;
 import io.ipoli.android.store.iab.Purchase;
 import io.ipoli.android.store.iab.SkuDetails;
-import io.ipoli.android.store.viewmodels.CoinsViewModel;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -68,9 +65,6 @@ public class CoinStoreFragment extends BaseFragment {
     @BindView(R.id.root_layout)
     ViewGroup rootLayout;
 
-//    @BindView(R.id.coins_list)
-//    EmptyStateRecyclerView coinsList;
-
     @BindView(R.id.loader)
     ProgressBar progressBar;
 
@@ -85,7 +79,7 @@ public class CoinStoreFragment extends BaseFragment {
 
     private Unbinder unbinder;
     private IabHelper iabHelper;
-    private CoinsStoreAdapter adapter;
+//    private CoinsStoreAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -93,16 +87,11 @@ public class CoinStoreFragment extends BaseFragment {
 
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_coin_store, container, false);
-        unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        ((StoreActivity)getActivity()).getSupportActionBar().setTitle(R.string.title_buy_coins);
+        unbinder = ButterKnife.bind(this, view);
+        ((StoreActivity) getActivity()).getSupportActionBar().setTitle(R.string.title_buy_coins);
 
-//        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-//        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-//        coinsList.setLayoutManager(layoutManager);
-//        coinsList.setEmptyView(rootLayout, R.string.empty_store_items, R.drawable.ic_inbox_grey_24dp);
-//        adapter = new CoinsStoreAdapter(new ArrayList<>(), eventBus);
-//        coinsList.setAdapter(adapter);
+//        loaderContainer.setVisibility(View.VISIBLE);
 
         if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
             showFailureMessage(R.string.no_internet_to_buy_coins);
@@ -153,12 +142,12 @@ public class CoinStoreFragment extends BaseFragment {
         SkuDetails coins500 = inventory.getSkuDetails(SKU_COINS_500);
         SkuDetails coins1000 = inventory.getSkuDetails(SKU_COINS_1000);
 
-        List<CoinsViewModel> viewModels = new ArrayList<>();
-        viewModels.add(new CoinsViewModel(SKU_COINS_100, coins100.getTitle(), coins100.getPrice(), 100));
-        viewModels.add(new CoinsViewModel(SKU_COINS_300, coins300.getTitle(), coins300.getPrice(), 300));
-        viewModels.add(new CoinsViewModel(SKU_COINS_500, coins500.getTitle(), coins500.getPrice(), 500));
-        viewModels.add(new CoinsViewModel(SKU_COINS_1000, coins1000.getTitle(), coins1000.getPrice(), 1000));
-        adapter.setViewModels(viewModels);
+//        List<CoinsViewModel> viewModels = new ArrayList<>();
+//        viewModels.add(new CoinsViewModel(SKU_COINS_100, coins100.getTitle(), coins100.getPrice(), 100));
+//        viewModels.add(new CoinsViewModel(SKU_COINS_300, coins300.getTitle(), coins300.getPrice(), 300));
+//        viewModels.add(new CoinsViewModel(SKU_COINS_500, coins500.getTitle(), coins500.getPrice(), 500));
+//        viewModels.add(new CoinsViewModel(SKU_COINS_1000, coins1000.getTitle(), coins1000.getPrice(), 1000));
+//        adapter.setViewModels(viewModels);
 
         hideLoaderContainer();
     }

@@ -16,6 +16,7 @@ import com.squareup.otto.Subscribe;
 import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -89,7 +90,7 @@ public class PetStoreFragment extends BaseFragment {
             }
         }
 
-        boughtPets.sort((p1, p2) -> -Long.compare(playerPets.get(p1.code), playerPets.get(p2.code)));
+        Collections.sort(boughtPets, ((p1, p2) -> -Long.compare(playerPets.get(p1.code), playerPets.get(p2.code))));
 
         for (Pet pet : boughtPets) {
             petViewModels.add(createViewModel(pet, DateUtils.fromMillis(playerPets.get(pet.code))));

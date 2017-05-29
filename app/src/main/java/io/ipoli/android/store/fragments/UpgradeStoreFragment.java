@@ -14,6 +14,7 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -87,8 +88,8 @@ public class UpgradeStoreFragment extends BaseFragment {
             }
         }
 
-        boughtUpgrades.sort((u1, u2) ->
-                - Long.compare(upgradesManager.getBoughtDate(u1), upgradesManager.getBoughtDate(u2)));
+        Collections.sort(boughtUpgrades, ((u1, u2) ->
+                - Long.compare(upgradesManager.getBoughtDate(u1), upgradesManager.getBoughtDate(u2))));
 
         for(Upgrade upgrade : lockedUpgrades) {
             upgrades.add(new UpgradeViewModel(getContext(), upgrade));

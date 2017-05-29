@@ -15,6 +15,7 @@ import com.squareup.otto.Subscribe;
 import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -86,7 +87,7 @@ public class AvatarStoreFragment extends BaseFragment {
             }
         }
 
-        boughtAvatars.sort((a1, a2) -> -Long.compare(playerAvatars.get(a1.code), playerAvatars.get(a2.code)));
+        Collections.sort(boughtAvatars, ((a1, a2) -> -Long.compare(playerAvatars.get(a1.code), playerAvatars.get(a2.code))));
         for (Avatar avatar : boughtAvatars) {
             avatarViewModels.add(new AvatarViewModel(getContext(), avatar, DateUtils.fromMillis(playerAvatars.get(avatar.code))));
         }
