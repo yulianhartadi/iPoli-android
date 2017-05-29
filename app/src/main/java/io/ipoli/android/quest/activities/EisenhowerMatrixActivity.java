@@ -128,7 +128,7 @@ public class EisenhowerMatrixActivity extends BaseActivity {
                 }
             }
 
-            if (doQuests.isEmpty() && accomplishQuests.isEmpty() && delegateQuests.isEmpty() && delegateQuests.isEmpty()) {
+            if (doQuests.isEmpty() && accomplishQuests.isEmpty() && delegateQuests.isEmpty() && deleteQuests.isEmpty()) {
                 matrixContainer.setVisibility(View.GONE);
                 emptyView.setVisibility(View.VISIBLE);
                 return;
