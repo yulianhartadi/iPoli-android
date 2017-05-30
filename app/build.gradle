@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'jacoco-android'
 
 android {
     compileSdkVersion 25
@@ -41,6 +42,7 @@ android {
         }
 
         debug {
+            testCoverageEnabled true
             ndk {
                 abiFilters 'x86_64', 'armeabi-v7a'
             }
