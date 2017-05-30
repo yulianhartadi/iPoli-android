@@ -19,6 +19,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
+import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
@@ -72,6 +73,11 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
             holder.description.setText(reward.getDescription());
             holder.description.setVisibility(View.VISIBLE);
         }
+
+        holder.lastPurchase.setText("Last used: " + DateFormatter.formatWithoutYear(context, reward.getLastPurchaseDate()));
+        holder.purchaseCount.setText(reward.getPurchaseCount() + " used");
+
+        holder.price.setText(reward.getPrice() + " points");
 
         holder.rootContainer.setOnClickListener(v -> eventBus.post(new EditRewardRequestEvent(reward)));
         holder.edit.setOnClickListener(v -> eventBus.post(new EditRewardRequestEvent(reward)));

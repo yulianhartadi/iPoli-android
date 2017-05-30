@@ -15,6 +15,8 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.threeten.bp.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +36,7 @@ import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.reward.activities.EditRewardActivity;
@@ -138,6 +141,9 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
         }
         player.removeRewardPoints(r.getPrice());
         playerPersistenceService.save(player);
+
+        r.addPurchase(LocalDate.now(), Time.now().toMinuteOfDay());
+        rewardPersistenceService.save(r);
         updateRewards(rewards);
         Snackbar.make(rootLayout, String.format(getString(R.string.reward_earned), e.reward.getName()), Snackbar.LENGTH_SHORT).show();
 
