@@ -21,6 +21,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.squareup.otto.Bus;
@@ -316,6 +317,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         TextView rewardPoints = (TextView) header.findViewById(R.id.player_reward_points);
         rewardPoints.setText(String.valueOf(player.getRewardPoints()));
+        rewardPoints.setOnClickListener(v ->
+                Toast.makeText(MainActivity.this, R.string.reward_points_description, Toast.LENGTH_LONG).show());
 
         ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
         experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
