@@ -89,7 +89,7 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rewardList.setLayoutManager(layoutManager);
         rewardList.setEmptyView(rootLayout, R.string.empty_text_rewards, R.drawable.ic_gift_grey_24dp);
-        RewardListAdapter rewardListAdapter = new RewardListAdapter(new ArrayList<>(), eventBus);
+        RewardListAdapter rewardListAdapter = new RewardListAdapter(getContext(), new ArrayList<>(), eventBus);
         rewardList.setAdapter(rewardListAdapter);
         rewards = new ArrayList<>();
 
@@ -171,7 +171,7 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
         for (Reward r : rewards) {
             rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= getPlayer().getRewardPoints())));
         }
-        RewardListAdapter rewardListAdapter = new RewardListAdapter(rewardViewModels, eventBus);
+        RewardListAdapter rewardListAdapter = new RewardListAdapter(getContext(), rewardViewModels, eventBus);
         rewardList.setAdapter(rewardListAdapter);
     }
 }

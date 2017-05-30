@@ -76,7 +76,7 @@ public interface Constants {
     String IPOLI_EMAIL = "hi@ipoli.io";
 
     String API_RESOURCE_SOURCE = "ipoli-android";
-    int DEFAULT_PLAYER_XP = 0;
+    int DEFAULT_PLAYER_XP = 1500;
     int DEFAULT_AVATAR_LEVEL = 1;
     long DEFAULT_PLAYER_COINS = 10;
     long DEFAULT_PLAYER_REWARD_POINTS = 10;

@@ -1,15 +1,15 @@
 package io.ipoli.android.reward.adapters;
 
 import android.content.Context;
-import android.support.v7.widget.PopupMenu;
+import android.graphics.drawable.GradientDrawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.RelativeLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
@@ -19,8 +19,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
-import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
@@ -33,10 +31,23 @@ import io.ipoli.android.reward.viewmodels.RewardViewModel;
  */
 public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.ViewHolder> {
 
+    private final Context context;
     private final List<RewardViewModel> viewModels;
     private final Bus eventBus;
 
-    public RewardListAdapter(List<RewardViewModel> viewModels, Bus eventBus) {
+    private int[] colors = new int[]{
+            R.color.md_green_300,
+            R.color.md_indigo_300,
+            R.color.md_blue_300,
+            R.color.md_red_300,
+            R.color.md_deep_orange_300,
+            R.color.md_purple_300,
+            R.color.md_orange_300,
+            R.color.md_pink_300,
+    };
+
+    public RewardListAdapter(Context context, List<RewardViewModel> viewModels, Bus eventBus) {
+        this.context = context;
         this.viewModels = viewModels;
         this.eventBus = eventBus;
     }
@@ -51,27 +62,8 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
         RewardViewModel vm = viewModels.get(holder.getAdapterPosition());
         Reward reward = vm.getReward();
 
-        holder.contentLayout.setOnClickListener(v ->
-                eventBus.post(new EditRewardRequestEvent(reward)));
+//            popupMenu.inflate(R.menu.reward_actions_menu);
 
-        holder.moreMenu.setOnClickListener(v -> {
-            eventBus.post(new ItemActionsShownEvent(EventSource.REWARDS));
-            Context context = holder.itemView.getContext();
-            PopupMenu popupMenu = new PopupMenu(context, v);
-            popupMenu.inflate(R.menu.reward_actions_menu);
-            popupMenu.setOnMenuItemClickListener(item -> {
-                switch (item.getItemId()) {
-                    case R.id.edit_reward:
-                        eventBus.post(new EditRewardRequestEvent(reward));
-                        return true;
-                    case R.id.delete_reward:
-                        eventBus.post(new DeleteRewardRequestEvent(reward));
-                        return true;
-                }
-                return false;
-            });
-            popupMenu.show();
-        });
 
         holder.name.setText(reward.getName());
         if (TextUtils.isEmpty(reward.getDescription())) {
@@ -80,15 +72,21 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
             holder.description.setText(reward.getDescription());
             holder.description.setVisibility(View.VISIBLE);
         }
-        holder.buy.setText(String.valueOf(reward.getPrice()));
+
+        holder.rootContainer.setOnClickListener(v -> eventBus.post(new EditRewardRequestEvent(reward)));
+        holder.edit.setOnClickListener(v -> eventBus.post(new EditRewardRequestEvent(reward)));
+        holder.delete.setOnClickListener(v -> eventBus.post(new DeleteRewardRequestEvent(reward)));
 
         holder.buy.setEnabled(true);
         holder.buy.setOnClickListener(v -> eventBus.post(new BuyRewardEvent(reward)));
         if (vm.canBeBought()) {
-            holder.buy.setBackgroundResource(R.color.colorAccent);
+            holder.buy.setTextColor(ContextCompat.getColor(context, R.color.colorAccent));
         } else {
-            holder.buy.setBackgroundResource(R.color.md_grey_500);
+            holder.buy.setTextColor(ContextCompat.getColor(context, R.color.md_grey_500));
         }
+
+        GradientDrawable drawable = (GradientDrawable) holder.pictureBackground.getBackground();
+        drawable.setColor(ContextCompat.getColor(context, colors[position % colors.length]));
     }
 
     @Override
@@ -97,20 +95,38 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.content_layout)
-        public RelativeLayout contentLayout;
+        @BindView(R.id.reward_root_layout)
+        ViewGroup rootContainer;
 
         @BindView(R.id.reward_name)
         TextView name;
 
-        @BindView(R.id.reward_description)
+        @BindView(R.id.reward_desc)
         TextView description;
 
-        @BindView(R.id.buy_reward)
+        @BindView(R.id.reward_price)
+        TextView price;
+
+        @BindView(R.id.reward_last_purchase)
+        TextView lastPurchase;
+
+        @BindView(R.id.reward_purchase_count)
+        TextView purchaseCount;
+
+        @BindView(R.id.reward_buy)
         Button buy;
 
-        @BindView(R.id.reward_more_menu)
-        public ImageButton moreMenu;
+        @BindView(R.id.reward_edit)
+        Button edit;
+
+        @BindView(R.id.reward_delete)
+        Button delete;
+
+        @BindView(R.id.reward_picture_background)
+        ImageView pictureBackground;
+
+        @BindView(R.id.reward_picture)
+        ImageView picture;
 
         public ViewHolder(View itemView) {
             super(itemView);
