@@ -85,4 +85,9 @@ public class Reward extends PersistedObject {
         }
         return DateUtils.fromMillis(getPurchases().get(getPurchaseCount() - 1).getDate());
     }
+
+    @JsonIgnore
+    public void addPurchase(LocalDate date, int minute) {
+        getPurchases().add(new RewardPurchase(DateUtils.toMillis(date), minute));
+    }
 }

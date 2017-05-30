@@ -9,6 +9,9 @@ public class RewardPurchase {
     private Long date;
     private Integer minute;
 
+    public RewardPurchase() {
+    }
+
     public RewardPurchase(Long date, Integer minute) {
         this.date = date;
         this.minute = minute;
