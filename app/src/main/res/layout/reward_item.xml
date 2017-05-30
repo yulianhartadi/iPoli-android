@@ -1,84 +1,191 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/content_layout"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:id="@+id/reward_root_layout"
     android:layout_width="match_parent"
-    android:layout_height="72dp"
-    android:background="?android:attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginTop="8dp"
+    android:background="@color/md_white"
+    card_view:cardCornerRadius="8dp">
 
-    <ImageView
-        android:id="@+id/coin_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="16dp"
-        android:src="@drawable/ic_gift_black_24dp" />
-
-    <LinearLayout
-        android:id="@+id/reward_details_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="16dp"
-        android:layout_toEndOf="@+id/coin_icon"
-        android:layout_toStartOf="@+id/buy_reward"
-        android:orientation="vertical">
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/reward_name"
-            android:layout_width="wrap_content"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="@color/md_dark_text_87"
-            android:textSize="16sp" />
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:text="Go to SPA"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/reward_picture_container"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/reward_description"
+            android:id="@+id/reward_desc"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="To relax"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/reward_picture_container"
+            app:layout_constraintTop_toBottomOf="@+id/reward_name" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/reward_picture_container"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/reward_picture_background"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@drawable/ic_context_indicator"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <ImageView
+                android:id="@+id/reward_picture"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:scaleType="fitXY"
+                app:layout_constraintBottom_toBottomOf="@+id/reward_picture_background"
+                app:layout_constraintLeft_toLeftOf="@+id/reward_picture_background"
+                app:layout_constraintRight_toRightOf="@+id/reward_picture_background"
+                app:layout_constraintTop_toTopOf="@+id/reward_picture_background"
+                app:srcCompat="@drawable/ic_gift_white_24dp" />
+        </android.support.constraint.ConstraintLayout>
+
+
+        <Button
+            android:id="@+id/reward_buy"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1" />
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/get_it"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/reward_last_purchase"
+            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintLeft_toRightOf="@+id/reward_delete"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintHorizontal_bias="0.0" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/reward_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:text="20 points"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            app:layout_constraintLeft_toRightOf="@+id/imageView9"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintTop_toTopOf="@+id/imageView9"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView9"
+            android:layout_marginBottom="0dp"
+            app:layout_constraintRight_toLeftOf="@+id/reward_picture_container"
+            android:layout_marginRight="8dp"
+            app:layout_constraintVertical_bias="0.571"
+            app:layout_constraintHorizontal_bias="0.0" />
 
-    <Button
-        android:id="@+id/buy_reward"
-        style="@style/Widget.AppCompat.Button"
-        android:layout_width="96dp"
-        android:layout_height="32dp"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="16dp"
-        android:layout_toStartOf="@+id/reward_more_menu_container"
-        android:background="?attr/colorAccent"
-        android:drawableStart="@drawable/ic_reward_candy_white_24dp"
-        android:gravity="center"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
-        android:textColor="@color/md_white" />
+        <ImageView
+            android:id="@+id/imageView9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_reward_candy_black_24dp"
+            android:layout_marginLeft="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/reward_desc" />
 
-    <com.lnikkila.extendedtouchview.ExtendedTouchView
-        android:id="@+id/reward_more_menu_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        app:touchHeight="@dimen/extended_touch_height"
-        app:touchWidth="@dimen/extended_touch_width">
+        <TextView
+            android:id="@+id/reward_last_purchase"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Last used: 03 May"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/reward_picture_container"
+            app:layout_constraintTop_toBottomOf="@+id/imageView9" />
 
-        <ImageButton
-            android:id="@+id/reward_more_menu"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:background="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_more_vert_black_24dp" />
-    </com.lnikkila.extendedtouchview.ExtendedTouchView>
+        <TextView
+            android:id="@+id/reward_purchase_count"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="8dp"
+            android:gravity="end"
+            android:text="22 used"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            app:layout_constraintBottom_toBottomOf="@+id/reward_last_purchase"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintLeft_toRightOf="@+id/reward_last_purchase"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/reward_last_purchase" />
 
-</RelativeLayout>
+        <Button
+            android:id="@+id/reward_edit"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/edit"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/reward_last_purchase"
+            app:layout_constraintVertical_bias="0.51"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintLeft_toLeftOf="parent" />
+
+        <Button
+            android:id="@+id/reward_delete"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/delete"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/reward_last_purchase"
+            app:layout_constraintLeft_toRightOf="@+id/reward_edit"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintVertical_bias="1.0"
+            android:layout_marginLeft="8dp" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.v7.widget.CardView>

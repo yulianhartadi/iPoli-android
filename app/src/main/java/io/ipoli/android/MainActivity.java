@@ -329,7 +329,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         avatarPictureView.setOnClickListener(v -> eventBus.post(new OpenAvatarStoreRequestEvent(EventSource.NAVIGATION_DRAWER)));
 
         TextView currentXP = (TextView) header.findViewById(R.id.player_current_xp);
-        currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), player.getExperience()));
+        String xpString = player.getExperience();
+        long xp = Long.valueOf(player.getExperience());
+        if(xp > 1000) {
+            xpString = xp / 1000 + "K";
+        }
+        currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), xpString));
         updatePetInDrawer(player.getPet());
 
 

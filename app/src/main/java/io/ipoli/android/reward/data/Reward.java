@@ -1,5 +1,12 @@
 package io.ipoli.android.reward.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import org.threeten.bp.LocalDate;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 
@@ -16,6 +23,8 @@ public class Reward extends PersistedObject {
     private String description;
 
     private Integer price;
+
+    private List<RewardPurchase> purchases;
 
     public Reward() {
         super(TYPE);
@@ -51,5 +60,29 @@ public class Reward extends PersistedObject {
 
     public void setPrice(Integer price) {
         this.price = price;
+    }
+
+    public List<RewardPurchase> getPurchases() {
+        if(purchases == null) {
+            purchases = new ArrayList<>();
+        }
+        return purchases;
+    }
+
+    public void setPurchases(List<RewardPurchase> purchases) {
+        this.purchases = purchases;
+    }
+
+    @JsonIgnore
+    public int getPurchaseCount() {
+        return getPurchases().size();
+    }
+
+    @JsonIgnore
+    public LocalDate getLastPurchaseDate() {
+        if(getPurchases().isEmpty()) {
+            return null;
+        }
+        return DateUtils.fromMillis(getPurchases().get(getPurchaseCount() - 1).getDate());
     }
 }

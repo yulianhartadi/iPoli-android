@@ -17,7 +17,7 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/upgrade_title"
+            android:id="@+id/reward_name"
             style="@style/TextAppearance.AppCompat.Headline"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -46,7 +46,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/upgrade_image_container"
-            app:layout_constraintTop_toBottomOf="@+id/upgrade_title" />
+            app:layout_constraintTop_toBottomOf="@+id/reward_name" />
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/upgrade_image_container"
