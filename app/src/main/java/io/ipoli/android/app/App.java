@@ -120,6 +120,7 @@ import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
+import io.ipoli.android.quest.generators.RewardPointsRewardGenerator;
 import io.ipoli.android.quest.generators.RewardProvider;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
@@ -185,6 +186,10 @@ public class App extends MultiDexApplication {
 
     @Inject
     CoinsRewardGenerator coinsRewardGenerator;
+
+    @Inject
+    RewardPointsRewardGenerator rewardPointsRewardGenerator;
+
 
     @Inject
     UrlProvider urlProvider;
@@ -596,6 +601,7 @@ public class App extends MultiDexApplication {
             q.setCompletedAtMinute(Time.now().toMinuteOfDay());
             q.setExperience(experienceRewardGenerator.generate(q));
             q.setCoins(coinsRewardGenerator.generate(q));
+            q.setRewardPoints(rewardPointsRewardGenerator.generate(q));
             questPersistenceService.save(q);
             onQuestComplete(q, e.source);
         } else {
@@ -632,8 +638,10 @@ public class App extends MultiDexApplication {
         quest.setCompletedCount(0);
         Long xp = quest.getExperience();
         Long coins = quest.getCoins();
+        Long rewardPoints = quest.getRewardPoints();
         quest.setExperience(null);
         quest.setCoins(null);
+        quest.setRewardPoints(null);
         questPersistenceService.save(quest);
 
         Player player = getPlayer();
@@ -646,6 +654,7 @@ public class App extends MultiDexApplication {
             eventBus.post(new LevelDownEvent(player.getLevel()));
         }
         player.removeCoins(coins);
+        player.removeRewardPoints(rewardPoints);
 
         updatePet(player.getPet(), (int) -Math.floor(xp / Constants.XP_TO_PET_HP_RATIO));
         playerPersistenceService.save(player);
@@ -686,6 +695,7 @@ public class App extends MultiDexApplication {
         if (quest.isCompleted()) {
             quest.setExperience(experienceRewardGenerator.generate(quest));
             quest.setCoins(coinsRewardGenerator.generate(quest));
+            quest.setRewardPoints(rewardPointsRewardGenerator.generate(quest));
         }
         questPersistenceService.save(quest);
         if (quest.isCompleted()) {
@@ -702,6 +712,7 @@ public class App extends MultiDexApplication {
         if (quest.isCompleted()) {
             quest.setExperience(experienceRewardGenerator.generate(quest));
             quest.setCoins(coinsRewardGenerator.generate(quest));
+            quest.setRewardPoints(rewardPointsRewardGenerator.generate(quest));
         }
         questPersistenceService.save(quest);
         if (quest.isCompleted()) {
@@ -803,9 +814,11 @@ public class App extends MultiDexApplication {
 
             long xp = experienceRewardGenerator.generateForDailyChallenge();
             long coins = coinsRewardGenerator.generateForDailyChallenge();
+            long rewardPoints = rewardPointsRewardGenerator.generateForDailyChallenge();
             Challenge dailyChallenge = new Challenge();
             dailyChallenge.setExperience(xp);
             dailyChallenge.setCoins(coins);
+            dailyChallenge.setRewardPoints(rewardPoints);
             updateAvatar(dailyChallenge);
             showChallengeCompleteDialog(getString(R.string.daily_challenge_complete_dialog_title), xp, coins);
             eventBus.post(new DailyChallengeCompleteEvent());
@@ -827,6 +840,7 @@ public class App extends MultiDexApplication {
         player.addExperience(experience);
         increasePlayerLevelIfNeeded(player);
         player.addCoins(rewardProvider.getCoins());
+        player.addRewardPoints(rewardProvider.getRewardPoints());
         playerPersistenceService.save(player);
     }
 
@@ -882,6 +896,7 @@ public class App extends MultiDexApplication {
         challenge.setCompletedAtDate(new Date());
         challenge.setExperience(experienceRewardGenerator.generate(challenge));
         challenge.setCoins(coinsRewardGenerator.generate(challenge));
+        challenge.setRewardPoints(rewardPointsRewardGenerator.generate(challenge));
         challengePersistenceService.save(challenge);
         onChallengeComplete(challenge, e.source);
     }

@@ -11,7 +11,7 @@ import io.ipoli.android.R;
  */
 
 public enum Upgrade {
-    CHALLENGES(1, 3, R.string.help_dialog_challenge_title,
+    CHALLENGES(1, 3, R.string.challenges,
             R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_sword_white_24dp),
     NOTES(2, 2, R.string.help_dialog_challenge_title,
             R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_note_white_24dp),

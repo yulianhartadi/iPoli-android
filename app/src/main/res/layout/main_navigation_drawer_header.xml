@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="225dp"
     android:background="@color/colorPrimary">
@@ -15,10 +14,10 @@
         android:layout_marginRight="0dp"
         android:layout_marginTop="32dp"
         app:layout_constraintBottom_toTopOf="@+id/player_experience"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_bias="0.0">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:id="@+id/avatar_container"
@@ -58,7 +57,7 @@
                     android:id="@+id/player_coins"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawablePadding="8dp"
+                    android:drawablePadding="4dp"
                     android:drawableStart="@drawable/ic_life_coin_white_24dp"
                     android:gravity="center_vertical"
                     android:textColor="@color/md_white"
@@ -74,6 +73,19 @@
 
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/player_reward_points"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:drawablePadding="4dp"
+                android:drawableStart="@drawable/ic_reward_candy_white_24dp"
+                android:gravity="center_vertical"
+                android:text="20"
+                android:textColor="@color/md_white"
+                android:textSize="14sp" />
         </LinearLayout>
 
 

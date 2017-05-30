@@ -314,6 +314,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             eventBus.post(new AvatarCoinsTappedEvent());
         });
 
+        TextView rewardPoints = (TextView) header.findViewById(R.id.player_reward_points);
+        rewardPoints.setText(String.valueOf(player.getRewardPoints()));
+
         ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
         experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
         experienceBar.setProgress(getCurrentProgress(player));
