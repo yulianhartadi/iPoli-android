@@ -54,7 +54,7 @@
         android:layout_marginStart="16dp"
         android:layout_toStartOf="@+id/reward_more_menu_container"
         android:background="?attr/colorAccent"
-        android:drawableStart="@drawable/ic_life_coin_white_24dp"
+        android:drawableStart="@drawable/ic_reward_candy_white_24dp"
         android:gravity="center"
         android:paddingEnd="8dp"
         android:paddingStart="8dp"
@@ -75,7 +75,6 @@
             android:id="@+id/reward_more_menu"
             android:layout_width="24dp"
             android:layout_height="24dp"
-
             android:background="?android:attr/selectableItemBackground"
             android:clickable="true"
             android:scaleType="fitXY"

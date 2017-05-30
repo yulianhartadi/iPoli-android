@@ -132,11 +132,11 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
     public void onBuyReward(BuyRewardEvent e) {
         Reward r = e.reward;
         Player player = getPlayer();
-        if (player.getCoins() - r.getPrice() < 0) {
+        if (player.getRewardPoints() - r.getPrice() < 0) {
             showTooExpensiveMessage();
             return;
         }
-        player.removeCoins(r.getPrice());
+        player.removeRewardPoints(r.getPrice());
         playerPersistenceService.save(player);
         updateRewards(rewards);
         Snackbar.make(rootLayout, String.format(getString(R.string.reward_earned), e.reward.getName()), Snackbar.LENGTH_SHORT).show();
@@ -169,7 +169,7 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
     private void updateRewards(List<Reward> rewards) {
         List<RewardViewModel> rewardViewModels = new ArrayList<>();
         for (Reward r : rewards) {
-            rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= getPlayer().getCoins())));
+            rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= getPlayer().getRewardPoints())));
         }
         RewardListAdapter rewardListAdapter = new RewardListAdapter(rewardViewModels, eventBus);
         rewardList.setAdapter(rewardListAdapter);

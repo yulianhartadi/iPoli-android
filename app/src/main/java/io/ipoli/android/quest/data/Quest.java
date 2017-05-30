@@ -78,6 +78,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     private Long coins;
     private Long experience;
+    private Long rewardPoints;
 
     private List<Note> notes;
 
@@ -465,6 +466,14 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
 
     public void setCoins(Long coins) {
         this.coins = coins;
+    }
+
+    public Long getRewardPoints() {
+        return rewardPoints;
+    }
+
+    public void setRewardPoints(Long rewardPoints) {
+        this.rewardPoints = rewardPoints;
     }
 
     public void setExperience(Long experience) {

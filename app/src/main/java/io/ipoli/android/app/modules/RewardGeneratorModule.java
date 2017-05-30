@@ -7,6 +7,7 @@ import dagger.Provides;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
+import io.ipoli.android.quest.generators.RewardPointsRewardGenerator;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -25,5 +26,11 @@ public class RewardGeneratorModule {
     @Singleton
     public CoinsRewardGenerator provideCoinsRewardGenerator(PlayerPersistenceService playerPersistenceService) {
         return new CoinsRewardGenerator(playerPersistenceService);
+    }
+
+    @Provides
+    @Singleton
+    public RewardPointsRewardGenerator provideRewardPointsRewardGenerator(PlayerPersistenceService playerPersistenceService) {
+        return new RewardPointsRewardGenerator(playerPersistenceService);
     }
 }

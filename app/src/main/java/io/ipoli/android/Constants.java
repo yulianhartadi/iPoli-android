@@ -79,6 +79,7 @@ public interface Constants {
     int DEFAULT_PLAYER_XP = 0;
     int DEFAULT_AVATAR_LEVEL = 1;
     long DEFAULT_PLAYER_COINS = 10;
+    long DEFAULT_PLAYER_REWARD_POINTS = 10;
     String DEFAULT_PLAYER_PICTURE = "avatar_12";
     Set<TimeOfDay> DEFAULT_PLAYER_PRODUCTIVE_TIMES = new HashSet<>(Collections.singletonList(TimeOfDay.MORNING));
     int DEFAULT_PLAYER_WORK_START_MINUTE = 10 * 60;
@@ -136,7 +137,9 @@ public interface Constants {
     Integer DEFAULT_PET_HP = 80;
     double XP_BONUS_PERCENTAGE_OF_HP = 20.0;
     double COINS_BONUS_PERCENTAGE_OF_HP = 10.0;
+    double REWARD_POINTS_BONUS_PERCENTAGE_OF_HP = 10.0;
     int MAX_PET_COIN_BONUS = 10;
+    int MAX_PET_REWARD_POINTS_BONUS = 10;
 
     int MAX_PET_XP_BONUS = 20;
 
@@ -155,4 +158,5 @@ public interface Constants {
     int API_READ_TIMEOUT_SECONDS = 30;
     String DEFAULT_VIEW_VERSION = "1.0";
     String SOURCE_ANDROID_CALENDAR = "android-calendar";
+
 }
