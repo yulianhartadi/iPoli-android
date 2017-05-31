@@ -35,10 +35,10 @@ public class UpgradeManager implements OnDataChangedListener<Player> {
     }
 
     public boolean isLocked(Upgrade upgrade) {
-        return !has(upgrade);
+        return !isUnlocked(upgrade);
     }
 
-    public boolean has(Upgrade upgrade) {
+    public boolean isUnlocked(Upgrade upgrade) {
         Player player = getPlayer();
         if (player.getInventory() == null) {
             return false;

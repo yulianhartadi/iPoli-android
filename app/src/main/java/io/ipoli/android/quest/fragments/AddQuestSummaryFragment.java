@@ -178,6 +178,10 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @OnClick(R.id.add_quest_summary_reminders)
     public void onRemindersClicked(View view) {
+        if(upgradeManager.isLocked(Upgrade.REMINDERS)) {
+            UpgradeDialog.newInstance(Upgrade.REMINDERS).show(getFragmentManager());
+            return;
+        }
         EditReminderFragment f = EditReminderFragment.newInstance((reminder, editMode) -> {
             if (reminder != null) {
                 addReminder(reminder);

@@ -86,7 +86,7 @@ public class UpgradeStoreFragment extends BaseFragment {
         List<Upgrade> boughtUpgrades = new ArrayList<>();
 
         for (Upgrade upgrade : Upgrade.values()) {
-            if (upgradeManager.has(upgrade)) {
+            if (upgradeManager.isUnlocked(upgrade)) {
                 boughtUpgrades.add(upgrade);
             } else {
                 lockedUpgrades.add(upgrade);
