@@ -7,7 +7,7 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 
 public class VerticalTextView extends AppCompatTextView {
-    final boolean topDown;
+    private final boolean topDown;
 
     public VerticalTextView(Context context, AttributeSet attrs) {
         super(context, attrs);

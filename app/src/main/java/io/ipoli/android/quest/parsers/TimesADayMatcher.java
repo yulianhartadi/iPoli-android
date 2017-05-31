@@ -12,7 +12,7 @@ import io.ipoli.android.quest.suggestions.TextEntityType;
  */
 public class TimesADayMatcher extends BaseMatcher<Integer> {
     private static final String PATTERN = "(?:^|\\s)([1-7])\\stime(s)?(?:\\sa\\sday)+(?:$|\\s)";
-    Pattern pattern = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
+    private Pattern pattern = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
 
     public TimesADayMatcher() {
         super(null);

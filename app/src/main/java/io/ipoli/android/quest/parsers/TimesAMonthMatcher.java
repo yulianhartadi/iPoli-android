@@ -13,7 +13,7 @@ import io.ipoli.android.quest.suggestions.providers.TimesAMonthTextSuggestionsPr
  */
 public class TimesAMonthMatcher extends BaseMatcher<Integer> {
     private static final String PATTERN = "(?:^|\\s)([1-9]|1[0-5])\\stime(s)?(?:\\sa\\smonth)+(?:$|\\s)";
-    Pattern pattern = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
+    private Pattern pattern = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
 
     public TimesAMonthMatcher() {
         super(new TimesAMonthTextSuggestionsProvider());

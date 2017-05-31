@@ -248,7 +248,7 @@ public class CoinStoreActivity extends BaseActivity {
         Snackbar.make(rootLayout, String.format(getString(R.string.coins_bought), coins), Snackbar.LENGTH_SHORT).show();
     }
 
-    boolean verifyDeveloperPayload(String payload, Purchase p) {
+    private boolean verifyDeveloperPayload(String payload, Purchase p) {
         return p.getDeveloperPayload().equals(payload);
     }
 
