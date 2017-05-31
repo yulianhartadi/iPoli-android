@@ -11,6 +11,8 @@ import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
 import com.squareup.otto.Bus;
 
+import org.threeten.bp.LocalDate;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -26,8 +28,13 @@ import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.PlayerMigratedEvent;
+import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.player.Player;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.store.Upgrade;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -45,6 +52,12 @@ public class MigrationActivity extends BaseActivity {
     @Inject
     Bus eventBus;
 
+    @Inject
+    LocalStorage localStorage;
+
+    @Inject
+    PlayerPersistenceService playerPersistenceService;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +73,37 @@ public class MigrationActivity extends BaseActivity {
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         getWindow().getDecorView().setSystemUiVisibility(flags);
 
+        int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
+
+        int versionBeforeUpgrades = 3;
+
+        if(schemaVersion < versionBeforeUpgrades) {
+            migrateFromFirebase(() -> unlockUpgrades(() -> MigrationActivity.this.onFinish()));
+        } else if(schemaVersion == versionBeforeUpgrades) {
+            unlockUpgrades(() -> MigrationActivity.this.onFinish());
+        } else {
+            onFinish();
+        }
+    }
+
+    private void unlockUpgrades(OnFinishListener onFinishListener) {
+        Player player = playerPersistenceService.get();
+        LocalDate unlockedDate = DateUtils.fromMillis(player.getCreatedAt());
+        for(Upgrade upgrade: Upgrade.values()) {
+            player.getInventory().addUpgrade(upgrade, unlockedDate);
+        }
+
+        player.addRewardPoints(player.getCoins());
+        player.setSchemaVersion(Constants.SCHEMA_VERSION);
+        playerPersistenceService.save(player);
+
+        localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
+
+        Toast.makeText(this, R.string.upgrades_migration_message, Toast.LENGTH_LONG).show();
+        onFinishListener.onFinish();
+    }
+
+    private void migrateFromFirebase(OnFinishListener onFinishListener) {
         if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             Toast.makeText(this, R.string.migration_no_internet, Toast.LENGTH_LONG).show();
             finish();
@@ -123,8 +167,7 @@ public class MigrationActivity extends BaseActivity {
                 String playerId = (String) player.get("id");
                 eventBus.post(new PlayerCreatedEvent(playerId));
                 eventBus.post(new PlayerMigratedEvent(firebasePlayerId, playerId));
-                startActivity(new Intent(MigrationActivity.this, MainActivity.class));
-                finish();
+                onFinishListener.onFinish();
             }
 
             @Override
@@ -155,5 +198,14 @@ public class MigrationActivity extends BaseActivity {
         } catch (CouchbaseLiteException e) {
             eventBus.post(new AppErrorEvent(e));
         }
+    }
+
+    private void onFinish() {
+        startActivity(new Intent(MigrationActivity.this, MainActivity.class));
+        finish();
+    }
+
+    private interface OnFinishListener{
+        void onFinish();
     }
 }
