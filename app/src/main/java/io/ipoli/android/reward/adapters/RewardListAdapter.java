@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -123,10 +124,10 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
         Button buy;
 
         @BindView(R.id.reward_edit)
-        Button edit;
+        ImageButton edit;
 
         @BindView(R.id.reward_delete)
-        Button delete;
+        ImageButton delete;
 
         @BindView(R.id.reward_picture_background)
         ImageView pictureBackground;
