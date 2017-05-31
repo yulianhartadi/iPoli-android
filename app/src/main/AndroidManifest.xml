@@ -51,10 +51,6 @@
             android:label="@string/title_sign_in_activity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".app.activities.SyncCalendarActivity"
-            android:label="Choose calendars to sync"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".quest.activities.AddQuestActivity"
             android:label=""
             android:screenOrientation="portrait" />
