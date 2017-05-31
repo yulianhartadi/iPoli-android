@@ -583,6 +583,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Subscribe
     public void onStartQuestRequest(StartQuestRequestEvent e) {
+        if(upgradeManager.isLocked(Upgrade.TIMER)) {
+            UpgradeDialog.newInstance(Upgrade.TIMER).show(getSupportFragmentManager());
+            return;
+        }
+
         new StartQuestCommand(this, e.quest, questPersistenceService).execute();
     }
 

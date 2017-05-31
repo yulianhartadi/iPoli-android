@@ -1,6 +1,7 @@
 package io.ipoli.android.player;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -57,15 +58,24 @@ public class UpgradeDialog extends DialogFragment {
     @BindView(R.id.upgrade_price_not_enough_coins)
     TextView notEnoughCoins;
 
+    private OnDismissListener dismissListener;
+
     private Upgrade upgrade;
 
     private Unbinder unbinder;
 
     public static UpgradeDialog newInstance(Upgrade upgrade) {
+        return newInstance(upgrade, null);
+    }
+
+    public static UpgradeDialog newInstance(Upgrade upgrade, OnDismissListener dismissListener) {
         UpgradeDialog fragment = new UpgradeDialog();
         Bundle args = new Bundle();
         args.putInt(UPGRADE_CODE, upgrade.code);
         fragment.setArguments(args);
+        if(dismissListener != null) {
+            fragment.dismissListener = dismissListener;
+        }
         return fragment;
     }
 
@@ -152,5 +162,17 @@ public class UpgradeDialog extends DialogFragment {
     public void onDestroyView() {
         unbinder.unbind();
         super.onDestroyView();
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        if(dismissListener != null) {
+            dismissListener.onDismiss();
+        }
+    }
+
+    public interface OnDismissListener {
+        void onDismiss();
     }
 }
