@@ -58,7 +58,7 @@ import io.ipoli.android.quest.data.Recurrence;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/13/16.
  */
-public class RecurrencePickerFragment extends DialogFragment{
+public class RecurrencePickerFragment extends DialogFragment {
 
     private static final String TAG = "recurrence-picker-dialog";
     public static final int FREQUENCY_DAILY = 0;
@@ -126,7 +126,7 @@ public class RecurrencePickerFragment extends DialogFragment{
     private OnRecurrencePickedListener recurrencePickerListener;
 
     private Recurrence recurrence;
-    
+
     public interface OnRecurrencePickedListener {
         void onRecurrencePicked(Recurrence recurrence);
     }
@@ -187,7 +187,7 @@ public class RecurrencePickerFragment extends DialogFragment{
                 .setIcon(R.drawable.logo)
                 .setTitle(R.string.recurrence_picker_title)
                 .setPositiveButton(getString(R.string.done), (dialog, which) -> {
-                    onDialogDone(view);
+                    onDialogDone();
                 })
                 .setNegativeButton(getString(R.string.cancel), null);
         return builder.create();
@@ -419,7 +419,7 @@ public class RecurrencePickerFragment extends DialogFragment{
         dayOfYear.setTag(date);
     };
 
-    private void onDialogDone(View view) {
+    private void onDialogDone() {
         Recurrence.RepeatType repeatType = (Recurrence.RepeatType) recurrenceFrequency.getTag();
         if (isFlexible) {
             setFlexibleValues(repeatType);
@@ -433,7 +433,7 @@ public class RecurrencePickerFragment extends DialogFragment{
         } else {
             recurrence.setDtend(null);
         }
-        if(repeatType == Recurrence.RepeatType.YEARLY) {
+        if (repeatType == Recurrence.RepeatType.YEARLY) {
             recurrence.setDtstartDate((LocalDate) dayOfYear.getTag());
         }
         recurrencePickerListener.onRecurrencePicked(recurrence);

@@ -22,7 +22,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
-import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.note.data.Note;
@@ -122,7 +121,7 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
 
     private void saveRepeatingQuest() {
         KeyboardUtils.hideKeyboard(this);
-        eventBus.post(new NewRepeatingQuestEvent(repeatingQuest, EventSource.ADD_REPEATING_QUEST));
+        eventBus.post(new NewRepeatingQuestEvent(repeatingQuest));
         Toast.makeText(this, R.string.repeating_quest_saved, Toast.LENGTH_SHORT).show();
         finish();
     }

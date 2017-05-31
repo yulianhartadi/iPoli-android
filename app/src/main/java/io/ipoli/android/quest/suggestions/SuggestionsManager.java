@@ -79,6 +79,7 @@ public class SuggestionsManager {
                 excludedTypes.add(TextEntityType.RECURRENT_DAY_OF_MONTH);
                 excludedTypes.add(TextEntityType.RECURRENT_DAY_OF_WEEK);
             } else {
+                // @TODO remove repeating suggestions
                 put(TextEntityType.FLEXIBLE, new FlexibleMatcher());
                 put(TextEntityType.TIMES_A_WEEK, new TimesAWeekMatcher());
                 put(TextEntityType.TIMES_A_MONTH, new TimesAMonthMatcher());

@@ -31,9 +31,6 @@ public class ChallengeCompleteActivity extends BaseActivity {
     @BindView(R.id.coins_text)
     TextView coinsText;
 
-    private long experience;
-    private long coins;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
