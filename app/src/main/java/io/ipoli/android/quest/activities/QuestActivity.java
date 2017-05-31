@@ -45,7 +45,7 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.note.events.OpenNoteEvent;
 import io.ipoli.android.player.UpgradeDialog;
-import io.ipoli.android.player.UpgradesManager;
+import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.quest.adapters.QuestDetailsAdapter;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
@@ -76,7 +76,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     public static final int EDIT_QUEST_REQUEST_CODE = 101;
 
     @Inject
-    UpgradesManager upgradesManager;
+    UpgradeManager upgradeManager;
 
     @BindView(R.id.root_container)
     ViewGroup rootLayout;
@@ -274,7 +274,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @Subscribe
     public void onEditNoteRequest(EditNoteRequestEvent e) {
-        if(upgradesManager.isLocked(Upgrade.NOTES)) {
+        if(upgradeManager.isLocked(Upgrade.NOTES)) {
             UpgradeDialog.newInstance(Upgrade.NOTES).show(getSupportFragmentManager());
             return;
         }

@@ -42,7 +42,7 @@ import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.player.UpgradeDialog;
-import io.ipoli.android.player.UpgradesManager;
+import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.quest.activities.AgendaActivity;
 import io.ipoli.android.quest.activities.EisenhowerMatrixActivity;
 import io.ipoli.android.quest.events.ScrollToTimeEvent;
@@ -64,7 +64,7 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
     Bus eventBus;
 
     @Inject
-    UpgradesManager upgradesManager;
+    UpgradeManager upgradeManager;
 
     @BindView(R.id.toolbar_title)
     TextView toolbarTitle;
@@ -136,7 +136,7 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
                 eventBus.post(new CalendarDayChangedEvent(LocalDate.now(), CalendarDayChangedEvent.Source.MENU));
                 return true;
             case R.id.action_eisenhower_matrix:
-                if(upgradesManager.isLocked(Upgrade.EISENHOWER_MATRIX)) {
+                if(upgradeManager.isLocked(Upgrade.EISENHOWER_MATRIX)) {
                     UpgradeDialog.newInstance(Upgrade.EISENHOWER_MATRIX).show(getFragmentManager());
                     return true;
                 }

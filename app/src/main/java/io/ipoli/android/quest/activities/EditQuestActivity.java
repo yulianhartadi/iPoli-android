@@ -60,6 +60,8 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.note.data.Note;
+import io.ipoli.android.player.UpgradeDialog;
+import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Recurrence;
@@ -91,6 +93,7 @@ import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
+import io.ipoli.android.store.Upgrade;
 
 import static io.ipoli.android.app.events.EventSource.EDIT_QUEST;
 
@@ -109,6 +112,9 @@ public class EditQuestActivity extends BaseActivity implements
 
     @Inject
     Bus eventBus;
+
+    @Inject
+    UpgradeManager upgradeManager;
 
     @Inject
     LocalStorage localStorage;
@@ -606,6 +612,10 @@ public class EditQuestActivity extends BaseActivity implements
 
     @OnClick(R.id.quest_note_container)
     public void onNoteClick(View view) {
+        if(upgradeManager.isLocked(Upgrade.NOTES)) {
+            UpgradeDialog.newInstance(Upgrade.NOTES).show(getSupportFragmentManager());
+            return;
+        }
         TextPickerFragment.newInstance((String) noteText.getTag(), R.string.pick_note_title, this).show(getSupportFragmentManager());
     }
 

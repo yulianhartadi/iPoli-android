@@ -76,7 +76,7 @@ import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.UpgradeDialog;
-import io.ipoli.android.player.UpgradesManager;
+import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Category;
@@ -105,7 +105,7 @@ public class SettingsActivity extends BaseActivity implements
     Bus eventBus;
 
     @Inject
-    UpgradesManager upgradesManager;
+    UpgradeManager upgradeManager;
 
     @Inject
     LocalStorage localStorage;
@@ -259,7 +259,7 @@ public class SettingsActivity extends BaseActivity implements
 
     private CompoundButton.OnCheckedChangeListener onCheckSyncCalendarChangeListener = (buttonView, isChecked) -> {
         if (isChecked) {
-            if(upgradesManager.isLocked(Upgrade.CALENDAR_SYNC)) {
+            if(upgradeManager.isLocked(Upgrade.CALENDAR_SYNC)) {
                 turnSyncCalendarsOff();
                 UpgradeDialog.newInstance(Upgrade.CALENDAR_SYNC).show(getSupportFragmentManager());
                 return;

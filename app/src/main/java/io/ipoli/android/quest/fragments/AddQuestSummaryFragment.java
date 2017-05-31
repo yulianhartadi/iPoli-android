@@ -46,7 +46,7 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.TimePreference;
 import io.ipoli.android.player.UpgradeDialog;
-import io.ipoli.android.player.UpgradesManager;
+import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -84,7 +84,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
     Bus eventBus;
 
     @Inject
-    UpgradesManager upgradesManager;
+    UpgradeManager upgradeManager;
 
     private Unbinder unbinder;
 
@@ -313,7 +313,7 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @OnClick(R.id.add_quest_summary_note_container)
     public void onNoteClicked(View v) {
-        if(upgradesManager.isLocked(Upgrade.NOTES)) {
+        if(upgradeManager.isLocked(Upgrade.NOTES)) {
             UpgradeDialog.newInstance(Upgrade.NOTES).show(getFragmentManager());
             return;
         }
