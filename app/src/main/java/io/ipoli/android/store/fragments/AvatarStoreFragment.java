@@ -120,7 +120,7 @@ public class AvatarStoreFragment extends BaseFragment {
     @Subscribe
     public void onUseAvatar(UseAvatarEvent e) {
         Player player = getPlayer();
-        player.setPicture(getContext().getResources().getResourceEntryName(e.avatar.picture));
+        player.setAvatar(e.avatar);
         playerPersistenceService.save(player);
         Toast.makeText(getContext(), R.string.avatar_selected_message, Toast.LENGTH_SHORT).show();
     }

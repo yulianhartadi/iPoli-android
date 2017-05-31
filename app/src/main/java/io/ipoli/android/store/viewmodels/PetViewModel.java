@@ -5,7 +5,7 @@ import android.support.annotation.DrawableRes;
 
 import org.threeten.bp.LocalDate;
 
-import io.ipoli.android.store.Pet;
+import io.ipoli.android.store.PetAvatar;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -22,19 +22,19 @@ public class PetViewModel {
     @DrawableRes
     private int pictureState;
 
-    private Pet pet;
+    private PetAvatar petAvatar;
     private final LocalDate boughtDate;
 
-    public PetViewModel(Context context, Pet pet, @DrawableRes int pictureState) {
-        this(context, pet, pictureState, null);
+    public PetViewModel(Context context, PetAvatar petAvatar, @DrawableRes int pictureState) {
+        this(context, petAvatar, pictureState, null);
     }
 
-    public PetViewModel(Context context, Pet pet, @DrawableRes int pictureState, LocalDate boughtDate) {
-        this.pet = pet;
+    public PetViewModel(Context context, PetAvatar petAvatar, @DrawableRes int pictureState, LocalDate boughtDate) {
+        this.petAvatar = petAvatar;
         this.boughtDate = boughtDate;
-        this.name = context.getString(pet.name);
-        this.price = pet.price;
-        this.picture = pet.picture;
+        this.name = context.getString(petAvatar.name);
+        this.price = petAvatar.price;
+        this.picture = petAvatar.picture;
         this.pictureState = pictureState;
     }
 
@@ -54,8 +54,8 @@ public class PetViewModel {
         return pictureState;
     }
 
-    public Pet getPet() {
-        return pet;
+    public PetAvatar getPetAvatar() {
+        return petAvatar;
     }
 
     public boolean isBought() {

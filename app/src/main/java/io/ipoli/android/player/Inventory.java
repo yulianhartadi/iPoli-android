@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.ipoli.android.store.Avatar;
-import io.ipoli.android.store.Pet;
+import io.ipoli.android.store.PetAvatar;
 import io.ipoli.android.store.Upgrade;
 
 import static io.ipoli.android.app.utils.DateUtils.toMillis;
@@ -32,8 +32,8 @@ public class Inventory {
     }
 
     @JsonIgnore
-    public void addPet(Pet pet, LocalDate localDate) {
-        getPets().put(pet.code, toMillis(localDate));
+    public void addPet(PetAvatar petAvatar, LocalDate localDate) {
+        getPets().put(petAvatar.code, toMillis(localDate));
     }
 
     @JsonIgnore

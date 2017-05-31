@@ -70,11 +70,11 @@ public class PetStoreAdapter extends EnterAnimationAdapter<PetStoreAdapter.ViewH
         if (vm.isBought()) {
             holder.price.setText(context.getString(R.string.pet_store_use_pet).toUpperCase());
             holder.price.setIconResource((Drawable) null);
-            holder.price.setOnClickListener(v -> eventBus.post(new UsePetEvent(vm.getPet())));
+            holder.price.setOnClickListener(v -> eventBus.post(new UsePetEvent(vm.getPetAvatar())));
         } else {
             holder.price.setIconResource(context.getDrawable(R.drawable.ic_life_coin_white_24dp));
             holder.price.setText(String.valueOf(vm.getPrice()));
-            holder.price.setOnClickListener(v -> eventBus.post(new BuyPetRequestEvent(vm.getPet())));
+            holder.price.setOnClickListener(v -> eventBus.post(new BuyPetRequestEvent(vm.getPetAvatar())));
         }
 
         holder.container.setBackgroundColor(ContextCompat.getColor(context, colors[position % colors.length]));

@@ -162,8 +162,9 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
         this.player = player;
         Pet pet = player.getPet();
         getSupportActionBar().setTitle(pet.getName());
-        picture.setImageDrawable(getDrawable(ResourceUtils.extractDrawableResource(this, pet.getPicture())));
-        pictureState.setImageDrawable(getDrawable(ResourceUtils.extractDrawableResource(this, pet.getPicture() + "_" + pet.getStateText())));
+        picture.setImageResource(pet.getCurrentAvatar().picture);
+        String statePicture = getResources().getResourceEntryName(pet.getCurrentAvatar().picture) + "_" + pet.getStateText();
+        pictureState.setImageDrawable(getDrawable(ResourceUtils.extractDrawableResource(this, statePicture)));
         xpBonus.setText(String.format(getString(R.string.pet_xp), pet.getExperienceBonusPercentage()));
         coinsBonus.setText(String.format(getString(R.string.pet_coins), pet.getCoinsBonusPercentage()));
 
@@ -187,7 +188,7 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
     @OnClick(R.id.revive)
     public void onReviveClick(View view) {
         Pet pet = player.getPet();
-        eventBus.post(new RevivePetRequest(pet.getPicture()));
+        eventBus.post(new RevivePetRequest(pet.getCurrentAvatar()));
         long playerCoins = player.getCoins();
         if (playerCoins < Constants.REVIVE_PET_COST) {
             String message = String.format(getString(R.string.pet_revive_not_enough_coins), pet.getName());

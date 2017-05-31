@@ -101,6 +101,9 @@ public class AvatarStoreAdapter extends EnterAnimationAdapter<AvatarStoreAdapter
         @BindView(R.id.avatar_picture)
         ImageView picture;
 
+        @BindView(R.id.avatar_current)
+        ImageView current;
+
         @BindView(R.id.avatar_price)
         FancyButton price;
 

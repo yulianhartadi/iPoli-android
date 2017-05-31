@@ -76,7 +76,6 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
-import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.activities.ChallengeCompleteActivity;
@@ -226,7 +225,7 @@ public class App extends MultiDexApplication {
         String text = pet.getState() == Pet.PetState.DEAD ? String.format(getString(R.string.pet_revive_notification_message), pet.getName()) :
                 getString(R.string.pet_notification_message);
 
-        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), ResourceUtils.extractDrawableResource(this, pet.getPicture() + "_head"));
+        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), pet.getCurrentAvatar().headPicture);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, PetActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                 .setContentTitle(title)

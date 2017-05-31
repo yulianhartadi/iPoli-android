@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.store.PetAvatar;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -18,26 +19,31 @@ public class Pet {
     private Integer experienceBonusPercentage;
     private Integer coinsBonusPercentage;
     private Integer rewardPointsBonusPercentage;
-    private String picture;
+    private Integer avatarCode;
     private String backgroundPicture;
 
     public Pet() {
 
     }
 
-    public Pet(String name, String picture, String backgroundPicture, Integer healthPointsPercentage) {
+    public Pet(String name, Integer avatarCode, String backgroundPicture, Integer healthPointsPercentage) {
         this.name = name;
-        this.picture = picture;
+        this.avatarCode = avatarCode;
         this.backgroundPicture = backgroundPicture;
         setHealthPointsPercentage(healthPointsPercentage);
     }
 
-    public String getPicture() {
-        return picture;
+    public Integer getAvatarCode() {
+        return avatarCode;
     }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
+    public void setAvatarCode(Integer avatarCode) {
+        this.avatarCode = avatarCode;
+    }
+
+    @JsonIgnore
+    public void setPetAvatar(PetAvatar petAvatar) {
+        avatarCode = petAvatar.code;
     }
 
     public String getBackgroundPicture() {
@@ -109,6 +115,11 @@ public class Pet {
     @JsonIgnore
     private void updateExperienceBonusPercentage() {
         setExperienceBonusPercentage((int) Math.floor(getHealthPointsPercentage() * Constants.XP_BONUS_PERCENTAGE_OF_HP / 100.0));
+    }
+
+    @JsonIgnore
+    public PetAvatar getCurrentAvatar() {
+        return PetAvatar.get(avatarCode);
     }
 
     @JsonIgnore

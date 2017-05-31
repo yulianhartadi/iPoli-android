@@ -35,4 +35,13 @@ public enum Avatar {
         this.name = name;
         this.picture = picture;
     }
+
+    public static Avatar get(int code) {
+        for (Avatar avatar : values()) {
+            if (avatar.code == code) {
+                return avatar;
+            }
+        }
+        return null;
+    }
 }

@@ -35,7 +35,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.store.Pet;
+import io.ipoli.android.store.PetAvatar;
 import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.adapters.PetStoreAdapter;
 import io.ipoli.android.store.events.BuyPetRequestEvent;
@@ -85,46 +85,46 @@ public class PetStoreFragment extends BaseFragment {
     private List<PetViewModel> createPetViewModels() {
         Map<Integer, Long> playerPets = getPlayer().getInventory().getPets();
         List<PetViewModel> petViewModels = new ArrayList<>();
-        List<Pet> boughtPets = new ArrayList<>();
-        List<Pet> lockedPets = new ArrayList<>();
-        for (Pet pet : Pet.values()) {
-            if (playerPets.containsKey(pet.code)) {
-                boughtPets.add(pet);
+        List<PetAvatar> boughtPetAvatars = new ArrayList<>();
+        List<PetAvatar> lockedPetAvatars = new ArrayList<>();
+        for (PetAvatar petAvatar : PetAvatar.values()) {
+            if (playerPets.containsKey(petAvatar.code)) {
+                boughtPetAvatars.add(petAvatar);
             } else {
-                lockedPets.add(pet);
+                lockedPetAvatars.add(petAvatar);
             }
         }
 
-        Collections.sort(boughtPets, ((p1, p2) -> -Long.compare(playerPets.get(p1.code), playerPets.get(p2.code))));
+        Collections.sort(boughtPetAvatars, ((p1, p2) -> -Long.compare(playerPets.get(p1.code), playerPets.get(p2.code))));
 
-        for (Pet pet : boughtPets) {
-            petViewModels.add(createViewModel(pet, DateUtils.fromMillis(playerPets.get(pet.code))));
+        for (PetAvatar petAvatar : boughtPetAvatars) {
+            petViewModels.add(createViewModel(petAvatar, DateUtils.fromMillis(playerPets.get(petAvatar.code))));
         }
 
-        for (Pet pet : lockedPets) {
-            petViewModels.add(createViewModel(pet, null));
+        for (PetAvatar petAvatar : lockedPetAvatars) {
+            petViewModels.add(createViewModel(petAvatar, null));
         }
 
         return petViewModels;
     }
 
-    private PetViewModel createViewModel(Pet pet, LocalDate boughtDate) {
-        String pictureName = getContext().getResources().getResourceEntryName(pet.picture);
+    private PetViewModel createViewModel(PetAvatar petAvatar, LocalDate boughtDate) {
+        String pictureName = getContext().getResources().getResourceEntryName(petAvatar.picture);
         int pictureState = ResourceUtils.extractDrawableResource(getContext(), pictureName + "_happy");
-        return new PetViewModel(getContext(), pet, pictureState, boughtDate);
+        return new PetViewModel(getContext(), petAvatar, pictureState, boughtDate);
     }
 
     @Subscribe
     public void onBuyPetRequest(BuyPetRequestEvent e) {
         Player player = getPlayer();
-        Pet pet = e.pet;
-        if (player.getCoins() < pet.price) {
+        PetAvatar petAvatar = e.petAvatar;
+        if (player.getCoins() < petAvatar.price) {
             Toast.makeText(getContext(), R.string.not_enough_coins_to_buy_pet, Toast.LENGTH_SHORT).show();
             return;
         }
-        eventBus.post(new PetBoughtEvent(e.pet));
-        player.removeCoins(pet.price);
-        player.getInventory().addPet(pet, LocalDate.now());
+        eventBus.post(new PetBoughtEvent(e.petAvatar));
+        player.removeCoins(petAvatar.price);
+        player.getInventory().addPet(petAvatar, LocalDate.now());
         playerPersistenceService.save(player);
         adapter.setViewModels(createPetViewModels());
     }
@@ -133,7 +133,7 @@ public class PetStoreFragment extends BaseFragment {
     public void onUsePet(UsePetEvent e) {
         Player player = getPlayer();
         io.ipoli.android.pet.data.Pet pet = player.getPet();
-        pet.setPicture(getContext().getResources().getResourceEntryName(e.pet.picture));
+        pet.setAvatarCode(e.petAvatar.code);
         pet.setHealthPointsPercentage(Constants.DEFAULT_PET_HP);
         playerPersistenceService.save(player);
         Toast.makeText(getContext(), R.string.pet_selected_message, Toast.LENGTH_SHORT).show();
