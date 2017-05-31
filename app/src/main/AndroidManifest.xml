@@ -146,6 +146,9 @@
             android:name=".app.tutorial.TutorialActivity"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".app.tutorial.OnboardingActivity"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".player.activities.PickAvatarPictureActivity"
             android:label="@string/title_activity_pick_avatar"
             android:parentActivityName=".MainActivity"
