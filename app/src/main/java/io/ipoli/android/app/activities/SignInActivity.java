@@ -349,21 +349,18 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     }
 
     private void createPlayer(String playerId, AuthProvider authProvider) {
-        String defaultPetPicture = getResources().getResourceEntryName(Constants.DEFAULT_PET.picture);
-
-        Pet pet = new Pet(Constants.DEFAULT_PET_NAME, defaultPetPicture,
+        Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR.code,
                 Constants.DEFAULT_PET_BACKGROUND_PICTURE, Constants.DEFAULT_PET_HP);
 
-        String defaultPlayerAvatar = getResources().getResourceEntryName(Constants.DEFAULT_PLAYER_AVATAR.picture);
         Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP),
                 Constants.DEFAULT_PLAYER_LEVEL,
                 Constants.DEFAULT_PLAYER_COINS,
                 Constants.DEFAULT_PLAYER_REWARD_POINTS,
-                defaultPlayerAvatar,
+                Constants.DEFAULT_PLAYER_AVATAR.code,
                 DateFormat.is24HourFormat(this), pet);
 
         player.getInventory().addAvatar(Constants.DEFAULT_PLAYER_AVATAR, LocalDate.now());
-        player.getInventory().addPet(Constants.DEFAULT_PET, LocalDate.now());
+        player.getInventory().addPet(Constants.DEFAULT_PET_AVATAR, LocalDate.now());
 
         if (authProvider != null) {
             player.setCurrentAuthProvider(authProvider);

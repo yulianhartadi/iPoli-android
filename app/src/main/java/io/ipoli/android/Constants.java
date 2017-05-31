@@ -9,7 +9,7 @@ import java.util.Set;
 
 import io.ipoli.android.app.TimeOfDay;
 import io.ipoli.android.store.Avatar;
-import io.ipoli.android.store.Pet;
+import io.ipoli.android.store.PetAvatar;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -97,7 +97,7 @@ public interface Constants {
             DayOfWeek.THURSDAY.getValue(),
             DayOfWeek.FRIDAY.getValue()
     ));
-    
+
     int[] DURATIONS = {10, 15, 20, 25, 30, 60, 90, 120, 180, 240};
 
     int DEFAULT_MIN_REWARD_PRICE = 10;
@@ -129,7 +129,7 @@ public interface Constants {
 
     String QUICK_ADD_ADDITIONAL_TEXT = "quick_add_additional_text";
     String DEFAULT_PET_NAME = "Flopsy";
-    Pet DEFAULT_PET = Pet.ELEPHANT;
+    PetAvatar DEFAULT_PET_AVATAR = PetAvatar.ELEPHANT;
     String DEFAULT_PET_BACKGROUND_PICTURE = "pet_background_1";
 
     Integer DEFAULT_PET_HP = 80;

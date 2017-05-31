@@ -66,7 +66,6 @@ import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.ui.events.StartFabMenuIntentEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
-import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.pet.PetActivity;
@@ -326,7 +325,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         experienceBar.setProgress(getCurrentProgress(player));
 
         CircleImageView avatarPictureView = (CircleImageView) header.findViewById(R.id.player_picture);
-        avatarPictureView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getPicture()));
+        avatarPictureView.setImageResource(player.getCurrentAvatar().picture);
         avatarPictureView.setOnClickListener(v -> {
             eventBus.post(new OpenAvatarStoreRequestEvent(EventSource.NAVIGATION_DRAWER));
             Intent intent = new Intent(this, StoreActivity.class);
@@ -338,7 +337,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         String xpString = player.getExperience();
         long xp = Long.valueOf(player.getExperience());
         if (xp > 1000) {
-            xpString = xp / 1000 + "K";
+            xpString = getString(R.string.xp_format, xp / 1000);
         }
         currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), xpString));
         updatePetInDrawer(player.getPet());
@@ -357,7 +356,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         View header = navigationView.getHeaderView(0);
 
         CircleImageView petPictureView = (CircleImageView) header.findViewById(R.id.pet_picture);
-        petPictureView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, pet.getPicture() + "_head"));
+        petPictureView.setImageResource(pet.getCurrentAvatar().headPicture);
         petPictureView.setOnClickListener(v -> startActivity(new Intent(this, PetActivity.class)));
 
         ImageView petStateView = (ImageView) header.findViewById(R.id.pet_state);

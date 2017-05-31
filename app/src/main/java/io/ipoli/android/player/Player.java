@@ -19,6 +19,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.quest.data.Category;
+import io.ipoli.android.store.Avatar;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -32,7 +33,7 @@ public class Player extends PersistedObject {
     private String experience;
     private Long coins;
     private Long rewardPoints;
-    private String picture;
+    private Integer avatarCode;
     private List<Pet> pets;
     private Set<String> mostProductiveTimesOfDay;
     private Set<Integer> workDays;
@@ -52,7 +53,7 @@ public class Player extends PersistedObject {
         super(TYPE);
     }
 
-    public Player(String experience, int level, long coins, long rewardPoints, String picture, boolean use24HourFormat, Pet pet) {
+    public Player(String experience, int level, long coins, long rewardPoints, Integer avatarCode, boolean use24HourFormat, Pet pet) {
         super(TYPE);
         pets = new ArrayList<>();
         pets.add(pet);
@@ -64,7 +65,7 @@ public class Player extends PersistedObject {
         this.level = level;
         this.coins = coins;
         this.rewardPoints = rewardPoints;
-        this.picture = picture;
+        this.avatarCode = avatarCode;
         setMostProductiveTimesOfDaySet(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES);
         setWorkDays(Constants.DEFAULT_PLAYER_WORK_DAYS);
         setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE);
@@ -151,12 +152,12 @@ public class Player extends PersistedObject {
         this.level = level;
     }
 
-    public String getPicture() {
-        return picture;
+    public Integer getAvatarCode() {
+        return avatarCode;
     }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
+    public void setAvatarCode(Integer avatarCode) {
+        this.avatarCode = avatarCode;
     }
 
     public Set<String> getMostProductiveTimesOfDay() {
@@ -393,5 +394,15 @@ public class Player extends PersistedObject {
 
     public void setRewardPoints(Long rewardPoints) {
         this.rewardPoints = rewardPoints;
+    }
+
+    @JsonIgnore
+    public Avatar getCurrentAvatar() {
+        return Avatar.get(avatarCode);
+    }
+
+    @JsonIgnore
+    public void setAvatar(Avatar avatar) {
+        avatarCode = avatar.code;
     }
 }

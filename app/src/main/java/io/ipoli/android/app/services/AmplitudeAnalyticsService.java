@@ -834,17 +834,17 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onPetBoughtEvent(PetBoughtEvent e) {
-        log("pet_bought", EventParams.of("pet", e.pet.name()));
+        log("pet_bought", EventParams.of("pet", e.petAvatar.name()));
     }
 
     @Subscribe
     public void onUsePetEvent(UsePetEvent e) {
-        log("use_pet", EventParams.of("pet", e.pet.name()));
+        log("use_pet", EventParams.of("pet", e.petAvatar.name()));
     }
 
     @Subscribe
     public void onRevivePetRequest(RevivePetRequest e) {
-        log("revive_pet_request", EventParams.of("pet", e.picture));
+        log("revive_pet_request", EventParams.of("pet", e.petAvatar.name()));
     }
 
     @Subscribe

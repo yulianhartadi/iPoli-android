@@ -1,6 +1,6 @@
 package io.ipoli.android.store.events;
 
-import io.ipoli.android.store.Pet;
+import io.ipoli.android.store.PetAvatar;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -8,9 +8,9 @@ import io.ipoli.android.store.Pet;
  */
 
 public class UsePetEvent {
-    public final Pet pet;
+    public final PetAvatar petAvatar;
 
-    public UsePetEvent(Pet pet) {
-        this.pet = pet;
+    public UsePetEvent(PetAvatar petAvatar) {
+        this.petAvatar = petAvatar;
     }
 }
