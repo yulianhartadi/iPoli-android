@@ -24,6 +24,7 @@ import io.ipoli.android.quest.data.Category;
  * on 6/27/16.
  */
 public class CategoryView extends LinearLayout {
+
     private static final int DEFAULT_GAP_DP = 12;
     private float gap;
 
@@ -31,14 +32,12 @@ public class CategoryView extends LinearLayout {
     private int categoryNameColor;
     private List<OnCategoryChangedListener> categoryChangedListeners = new ArrayList<>();
     private View view;
+    private TextView categoryName;
+    private Category category;
 
     public interface OnCategoryChangedListener {
         void onCategoryChanged(Category category);
     }
-
-    private TextView categoryName;
-
-    private Category category;
 
     public CategoryView(Context context) {
         super(context);

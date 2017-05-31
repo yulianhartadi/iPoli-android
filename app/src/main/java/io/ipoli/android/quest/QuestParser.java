@@ -2,8 +2,6 @@ package io.ipoli.android.quest;
 
 import android.support.v4.util.Pair;
 
-import net.fortuna.ical4j.model.Recur;
-
 import org.threeten.bp.LocalDate;
 
 import java.util.Date;
@@ -26,19 +24,6 @@ import io.ipoli.android.quest.parsers.TimesAWeekMatcher;
  * on 2/19/16.
  */
 public class QuestParser {
-
-    public class QuestParserResult {
-        public String rawText;
-        public String name;
-        public int duration;
-        public Integer startMinute;
-        public LocalDate endDate;
-        public int timesAWeek;
-        public int timesAMonth;
-        public Recur everyDayRecurrence;
-        public Recur dayOfWeekRecurrence;
-        public Recur dayOfMonthRecurrence;
-    }
 
     private final EndDateMatcher endDateMatcher;
     private final StartTimeMatcher startTimeMatcher;

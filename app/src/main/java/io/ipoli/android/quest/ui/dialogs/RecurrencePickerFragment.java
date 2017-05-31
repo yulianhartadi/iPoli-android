@@ -83,10 +83,6 @@ public class RecurrencePickerFragment extends DialogFragment{
     private boolean isFlexible = false;
     private View view;
 
-    public interface OnRecurrencePickedListener {
-        void onRecurrencePicked(Recurrence recurrence);
-    }
-
     @Inject
     Bus eventBus;
 
@@ -130,6 +126,10 @@ public class RecurrencePickerFragment extends DialogFragment{
     private OnRecurrencePickedListener recurrencePickerListener;
 
     private Recurrence recurrence;
+    
+    public interface OnRecurrencePickedListener {
+        void onRecurrencePicked(Recurrence recurrence);
+    }
 
     public static RecurrencePickerFragment newInstance(OnRecurrencePickedListener listener) {
         return newInstance(null, listener);
