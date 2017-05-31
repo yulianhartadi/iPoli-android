@@ -67,11 +67,18 @@ public class PetStoreAdapter extends EnterAnimationAdapter<PetStoreAdapter.ViewH
         holder.picture.setImageDrawable(context.getDrawable(vm.getPicture()));
         holder.pictureState.setImageDrawable(context.getDrawable(vm.getPictureState()));
 
-        if (vm.isBought()) {
+        if(vm.isCurrent()) {
+            holder.current.setVisibility(View.VISIBLE);
+            holder.price.setVisibility(View.INVISIBLE);
+        } else if (vm.isBought()) {
+            holder.price.setVisibility(View.VISIBLE);
+            holder.current.setVisibility(View.GONE);
             holder.price.setText(context.getString(R.string.pet_store_use_pet).toUpperCase());
             holder.price.setIconResource((Drawable) null);
             holder.price.setOnClickListener(v -> eventBus.post(new UsePetEvent(vm.getPetAvatar())));
         } else {
+            holder.price.setVisibility(View.VISIBLE);
+            holder.current.setVisibility(View.GONE);
             holder.price.setIconResource(context.getDrawable(R.drawable.ic_life_coin_white_24dp));
             holder.price.setText(String.valueOf(vm.getPrice()));
             holder.price.setOnClickListener(v -> eventBus.post(new BuyPetRequestEvent(vm.getPetAvatar())));
@@ -102,6 +109,9 @@ public class PetStoreAdapter extends EnterAnimationAdapter<PetStoreAdapter.ViewH
 
         @BindView(R.id.pet_picture_state)
         ImageView pictureState;
+
+        @BindView(R.id.pet_current)
+        ImageView current;
 
         @BindView(R.id.pet_price)
         FancyButton price;

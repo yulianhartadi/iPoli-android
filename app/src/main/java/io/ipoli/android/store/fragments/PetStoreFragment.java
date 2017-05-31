@@ -83,7 +83,9 @@ public class PetStoreFragment extends BaseFragment {
 
     @NonNull
     private List<PetViewModel> createPetViewModels() {
-        Map<Integer, Long> playerPets = getPlayer().getInventory().getPets();
+        Player player = getPlayer();
+        PetAvatar currentPet = player.getPet().getCurrentAvatar();
+        Map<Integer, Long> playerPets = player.getInventory().getPets();
         List<PetViewModel> petViewModels = new ArrayList<>();
         List<PetAvatar> boughtPetAvatars = new ArrayList<>();
         List<PetAvatar> lockedPetAvatars = new ArrayList<>();
@@ -98,20 +100,25 @@ public class PetStoreFragment extends BaseFragment {
         Collections.sort(boughtPetAvatars, ((p1, p2) -> -Long.compare(playerPets.get(p1.code), playerPets.get(p2.code))));
 
         for (PetAvatar petAvatar : boughtPetAvatars) {
-            petViewModels.add(createViewModel(petAvatar, DateUtils.fromMillis(playerPets.get(petAvatar.code))));
+            boolean isCurrent = currentPet == petAvatar;
+            petViewModels.add(createViewModel(petAvatar, DateUtils.fromMillis(playerPets.get(petAvatar.code)), isCurrent));
         }
 
         for (PetAvatar petAvatar : lockedPetAvatars) {
-            petViewModels.add(createViewModel(petAvatar, null));
+            petViewModels.add(createViewModel(petAvatar));
         }
 
         return petViewModels;
     }
 
-    private PetViewModel createViewModel(PetAvatar petAvatar, LocalDate boughtDate) {
+    private PetViewModel createViewModel(PetAvatar petAvatar) {
+        return createViewModel(petAvatar, null, false);
+    }
+
+    private PetViewModel createViewModel(PetAvatar petAvatar, LocalDate boughtDate, boolean isCurrent) {
         String pictureName = getContext().getResources().getResourceEntryName(petAvatar.picture);
         int pictureState = ResourceUtils.extractDrawableResource(getContext(), pictureName + "_happy");
-        return new PetViewModel(getContext(), petAvatar, pictureState, boughtDate);
+        return new PetViewModel(getContext(), petAvatar, pictureState, boughtDate, isCurrent);
     }
 
     @Subscribe
@@ -137,6 +144,7 @@ public class PetStoreFragment extends BaseFragment {
         pet.setHealthPointsPercentage(Constants.DEFAULT_PET_HP);
         playerPersistenceService.save(player);
         Toast.makeText(getContext(), R.string.pet_selected_message, Toast.LENGTH_SHORT).show();
+        adapter.setViewModels(createPetViewModels());
     }
 
     @Override
