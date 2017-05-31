@@ -12,12 +12,12 @@ public class DummyDragShadowBuilder extends View.DragShadowBuilder {
 
     @Override
     public void onDrawShadow(Canvas canvas) {
-
+        // intentional
     }
 
     @Override
     public void onProvideShadowMetrics(Point shadowSize, Point shadowTouchPoint) {
-
+        // intentional
     }
 
 }

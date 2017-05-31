@@ -209,7 +209,7 @@ public class FabMenuView extends RelativeLayout {
         rotateForwardAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-
+                // intentional
             }
 
             @Override
@@ -220,7 +220,7 @@ public class FabMenuView extends RelativeLayout {
 
             @Override
             public void onAnimationRepeat(Animation animation) {
-
+                // intentional
             }
         });
         quest.startAnimation(rotateForwardAnimation);
