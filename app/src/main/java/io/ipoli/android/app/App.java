@@ -967,7 +967,9 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onStartUpgradeDialogRequest(StartUpgradeDialogRequestEvent e) {
-        startNewActivity(UpgradeDialogActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString(UpgradeDialogActivity.UPGRADE, e.upgrade.name());
+        startNewActivity(UpgradeDialogActivity.class, bundle);
     }
 
     public static String getPlayerId() {

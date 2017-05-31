@@ -9,13 +9,16 @@ import io.ipoli.android.store.Upgrade;
 
 public class UpgradeDialogActivity extends BaseActivity implements UpgradeDialog.OnDismissListener {
 
+    public static final String UPGRADE = "upgrade";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_upgrade_dialog);
 
-        UpgradeDialog.newInstance(Upgrade.TIMER, this).show(getSupportFragmentManager());
+        Upgrade upgrade = Upgrade.valueOf(getIntent().getStringExtra(UPGRADE));
+        UpgradeDialog.newInstance(upgrade, this).show(getSupportFragmentManager());
     }
 
     @Override

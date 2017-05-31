@@ -33,6 +33,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.LockedStateListener;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.EventSource;
@@ -71,7 +72,7 @@ import io.ipoli.android.store.Upgrade;
  * on 9/26/16.
  */
 
-public class QuestActivity extends BaseActivity implements Chronometer.OnChronometerTickListener, TextPickerFragment.OnTextPickedListener {
+public class QuestActivity extends BaseActivity implements Chronometer.OnChronometerTickListener, TextPickerFragment.OnTextPickedListener, LockedStateListener {
 
     public static final int EDIT_QUEST_REQUEST_CODE = 101;
 
@@ -215,7 +216,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
         }
         if (adapter == null) {
-            adapter = new QuestDetailsAdapter(this, quest, eventBus);
+            adapter = new QuestDetailsAdapter(this, eventBus, quest, this);
             details.setAdapter(adapter);
         } else {
             adapter.updateData(quest);
@@ -439,5 +440,15 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         if (requestCode == EDIT_QUEST_REQUEST_CODE && resultCode == Constants.RESULT_REMOVED) {
             finish();
         }
+    }
+
+    @Override
+    public boolean isLocked() {
+        return upgradeManager.isLocked(Upgrade.SUB_QUESTS);
+    }
+
+    @Override
+    public void onLockedAction() {
+        UpgradeDialog.newInstance(Upgrade.SUB_QUESTS).show(getSupportFragmentManager());
     }
 }
