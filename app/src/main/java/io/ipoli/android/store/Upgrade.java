@@ -11,22 +11,18 @@ import io.ipoli.android.R;
  */
 
 public enum Upgrade {
-    CHALLENGES(1, 3, R.string.challenges,
-            R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_sword_white_24dp),
-    NOTES(2, 2, R.string.help_dialog_challenge_title,
-            R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_note_white_24dp),
-    REMINDERS(3, 1, R.string.help_dialog_challenge_title,
-            R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_reminders_white_24dp),
-    CALENDAR_SYNC(4, 5, R.string.help_dialog_challenge_title,
-            R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_calendar_blank_grey_24dp),
-    SUB_QUESTS(5, 3, R.string.help_dialog_challenge_title,
-            R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_format_list_bulleted_white_24dp),
-    REPEATING_QUESTS(6, 2, R.string.help_dialog_challenge_title,
-            R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_repeat_white_24dp),
-    TIMER(7, 2, R.string.help_dialog_challenge_title,
-            R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_timer_white_24dp),
-    CUSTOM_DURATION(8, 2, R.string.help_dialog_challenge_title,
-            R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_today_white_24dp);
+    REPEATING_QUESTS(6, 2, R.string.repeating_quests, R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_repeat_white_24dp),
+    CHALLENGES(1, 3, R.string.challenges, R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_sword_white_24dp),
+    GROWTH(9, 2, R.string.growth, R.string.help_dialog_growth_title, R.string.help_dialog_growth_daily_progress, R.drawable.ic_growth_white_24dp),
+    EISENHOWER_MATRIX(10, 2, R.string.title_activity_eisenhower_matrix, R.string.help_dialog_growth_title, R.string.help_dialog_growth_daily_progress, R.drawable.ic_matrix_white_24dp),
+    CALENDAR_SYNC(4, 5, R.string.settings_sync_google_calendars, R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_event_white_24dp),
+    PREDEFINED_CHALLENGES(8, 3, R.string.ready_to_use_challenges, R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_sword_white_24dp),
+    NOTES(2, 2, R.string.notes, R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_note_white_24dp),
+
+    REMINDERS(3, 1, R.string.reminders, R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_reminders_white_24dp),
+    SUB_QUESTS(5, 3, R.string.sub_quests, R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_format_list_bulleted_white_24dp),
+    TIMER(7, 2, R.string.timer, R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_timer_white_24dp)
+    ;
 
     public final int code;
     public final int price;

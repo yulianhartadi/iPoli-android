@@ -44,6 +44,8 @@ import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.note.events.OpenNoteEvent;
+import io.ipoli.android.player.UpgradeDialog;
+import io.ipoli.android.player.UpgradesManager;
 import io.ipoli.android.quest.adapters.QuestDetailsAdapter;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
@@ -62,6 +64,7 @@ import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvent;
 import io.ipoli.android.quest.exceptions.QuestNotFoundException;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
+import io.ipoli.android.store.Upgrade;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -71,6 +74,9 @@ import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
 public class QuestActivity extends BaseActivity implements Chronometer.OnChronometerTickListener, TextPickerFragment.OnTextPickedListener {
 
     public static final int EDIT_QUEST_REQUEST_CODE = 101;
+
+    @Inject
+    UpgradesManager upgradesManager;
 
     @BindView(R.id.root_container)
     ViewGroup rootLayout;
@@ -268,6 +274,10 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @Subscribe
     public void onEditNoteRequest(EditNoteRequestEvent e) {
+        if(upgradesManager.isLocked(Upgrade.NOTES)) {
+            UpgradeDialog.newInstance(Upgrade.NOTES).show(getSupportFragmentManager());
+            return;
+        }
         TextPickerFragment.newInstance(e.text, R.string.pick_note_title, this).show(getSupportFragmentManager());
     }
 

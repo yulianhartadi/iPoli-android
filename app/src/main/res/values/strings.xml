@@ -731,6 +731,9 @@
     <string name="help_dialog_rewards_buy">Press the button to buy your reward. If the button is grey, work a little bit harder to earn these points!</string>
     <string name="help_dialog_rewards_text1">Define your own rewards and buy them when you win enough points by completing your quests.</string>
     <string name="get_it">Get it</string>
+    <string name="reminders">Reminders</string>
+    <string name="timer">Timer</string>
+    <string name="ready_to_use_challenges">Ready to use challenges</string>
 
 
     <string-array name="player_titles">

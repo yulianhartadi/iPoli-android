@@ -63,6 +63,7 @@ import io.ipoli.android.app.settings.SettingsActivity;
 import io.ipoli.android.app.share.ShareQuestDialog;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
+import io.ipoli.android.app.ui.events.StartFabMenuIntentEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.ResourceUtils;
@@ -131,7 +132,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Inject
     UpgradesManager upgradesManager;
 
-    Fragment currentFragment;
+    private Fragment currentFragment;
 
     private boolean isRateDialogShown;
     public ActionBarDrawerToggle actionBarDrawerToggle;
@@ -228,9 +229,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
 
             case R.id.repeating_quests:
-                if(!upgradesManager.has(Upgrade.REPEATING_QUESTS)) {
-                    UpgradeDialog upgradeDialog = UpgradeDialog.newInstance(Upgrade.REPEATING_QUESTS);
-                    upgradeDialog.show(getSupportFragmentManager());
+                if (upgradesManager.isLocked(Upgrade.REPEATING_QUESTS)) {
+                    UpgradeDialog.newInstance(Upgrade.REPEATING_QUESTS).show(getSupportFragmentManager());
                     return;
                 }
                 source = EventSource.REPEATING_QUESTS;
@@ -238,9 +238,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
 
             case R.id.challenges:
-                if(!upgradesManager.has(Upgrade.CHALLENGES)) {
-                    UpgradeDialog upgradeDialog = UpgradeDialog.newInstance(Upgrade.CHALLENGES);
-                    upgradeDialog.show(getSupportFragmentManager());
+                if (upgradesManager.isLocked(Upgrade.CHALLENGES)) {
+                    UpgradeDialog.newInstance(Upgrade.CHALLENGES).show(getSupportFragmentManager());
                     return;
                 }
                 source = EventSource.CHALLENGES;
@@ -248,6 +247,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
 
             case R.id.growth:
+                if (upgradesManager.isLocked(Upgrade.GROWTH)) {
+                    UpgradeDialog.newInstance(Upgrade.GROWTH).show(getSupportFragmentManager());
+                    return;
+                }
                 source = EventSource.GROWTH;
                 changeCurrentFragment(new GrowthFragment());
                 break;
@@ -326,17 +329,21 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
         CircleImageView avatarPictureView = (CircleImageView) header.findViewById(R.id.player_picture);
         avatarPictureView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getPicture()));
-        avatarPictureView.setOnClickListener(v -> eventBus.post(new OpenAvatarStoreRequestEvent(EventSource.NAVIGATION_DRAWER)));
+        avatarPictureView.setOnClickListener(v -> {
+            eventBus.post(new OpenAvatarStoreRequestEvent(EventSource.NAVIGATION_DRAWER));
+            Intent intent = new Intent(this, StoreActivity.class);
+            intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.AVATARS.name());
+            startActivity(intent);
+        });
 
         TextView currentXP = (TextView) header.findViewById(R.id.player_current_xp);
         String xpString = player.getExperience();
         long xp = Long.valueOf(player.getExperience());
-        if(xp > 1000) {
+        if (xp > 1000) {
             xpString = xp / 1000 + "K";
         }
         currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), xpString));
         updatePetInDrawer(player.getPet());
-
 
         Button signIn = (Button) header.findViewById(R.id.sign_in);
         if (player.isAuthenticated()) {
@@ -587,6 +594,28 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         new StopQuestCommand(this, e.quest, questPersistenceService).execute();
     }
 
+    @Subscribe
+    public void onStartFabMenuIntent(StartFabMenuIntentEvent e) {
+        switch (e.fabName) {
+            case REPEATING_QUEST:
+                if (upgradesManager.isLocked(Upgrade.REPEATING_QUESTS)) {
+                    UpgradeDialog.newInstance(Upgrade.REPEATING_QUESTS).show(getSupportFragmentManager());
+                    return;
+                }
+                startActivity(e.intent);
+                return;
+            case CHALLENGE:
+                if (upgradesManager.isLocked(Upgrade.CHALLENGES)) {
+                    UpgradeDialog.newInstance(Upgrade.CHALLENGES).show(getSupportFragmentManager());
+                    return;
+                }
+                startActivity(e.intent);
+                return;
+            default:
+                startActivity(e.intent);
+        }
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         navigationItemSelected = item;
@@ -602,13 +631,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 .setCallToActionText(getString(R.string.invite_call_to_action))
                 .build();
         startActivityForResult(intent, INVITE_FRIEND_REQUEST_CODE);
-    }
-
-    @Subscribe
-    public void onOpenAvatarStoreRequest(OpenAvatarStoreRequestEvent e) {
-        Intent intent = new Intent(this, StoreActivity.class);
-        intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.AVATARS.name());
-        startActivity(intent);
     }
 
     @Override
