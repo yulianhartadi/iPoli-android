@@ -1,4 +1,4 @@
-package io.ipoli.android.store;
+package io.ipoli.android.player;
 
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;

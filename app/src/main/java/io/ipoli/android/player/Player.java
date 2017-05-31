@@ -19,7 +19,6 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.quest.data.Category;
-import io.ipoli.android.store.Avatar;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

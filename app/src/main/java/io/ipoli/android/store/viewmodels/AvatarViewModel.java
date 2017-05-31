@@ -5,7 +5,7 @@ import android.support.annotation.DrawableRes;
 
 import org.threeten.bp.LocalDate;
 
-import io.ipoli.android.store.Avatar;
+import io.ipoli.android.player.Avatar;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.store.PetAvatar;
+import io.ipoli.android.player.PetAvatar;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
