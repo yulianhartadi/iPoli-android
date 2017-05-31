@@ -27,16 +27,9 @@ import io.ipoli.android.app.utils.StringUtils;
  * on 6/27/16.
  */
 public class AddSubQuestView extends RelativeLayout implements View.OnClickListener {
+
     private List<OnSubQuestAddedListener> subQuestAddedListeners = new ArrayList<>();
     private List<OnAddSubQuestClosedListener> addSubQuestClosedListeners = new ArrayList<>();
-
-    public interface OnSubQuestAddedListener {
-        void onSubQuestAdded(String name);
-    }
-
-    public interface OnAddSubQuestClosedListener {
-        void onAddSubQuestClosed();
-    }
 
     private ViewGroup container;
     private TextInputEditText editText;
@@ -47,6 +40,13 @@ public class AddSubQuestView extends RelativeLayout implements View.OnClickListe
     private Drawable closeIcon;
     private int editTextLayout;
 
+    public interface OnSubQuestAddedListener {
+        void onSubQuestAdded(String name);
+    }
+
+    public interface OnAddSubQuestClosedListener {
+        void onAddSubQuestClosed();
+    }
 
     public AddSubQuestView(Context context) {
         super(context);
