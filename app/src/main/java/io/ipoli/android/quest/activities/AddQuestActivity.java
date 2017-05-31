@@ -18,6 +18,8 @@ import com.squareup.otto.Subscribe;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
@@ -27,6 +29,7 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.note.data.Note;
+import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.CategoryChangedEvent;
@@ -51,6 +54,7 @@ import io.ipoli.android.quest.fragments.AddQuestPriorityFragment;
 import io.ipoli.android.quest.fragments.AddQuestSummaryFragment;
 import io.ipoli.android.quest.fragments.AddQuestTimeFragment;
 import io.ipoli.android.reminder.data.Reminder;
+import io.ipoli.android.store.Upgrade;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -64,6 +68,9 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     public static final int QUEST_TIME_FRAGMENT_INDEX = 2;
     public static final int QUEST_PRIORITY_FRAGMENT_INDEX = 3;
     private static final int QUEST_SUMMARY_FRAGMENT_INDEX = 4;
+
+    @Inject
+    UpgradeManager upgradeManager;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -153,7 +160,9 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     public void onNameAndCategoryPicked(NameAndCategoryPickedEvent e) {
         quest = new Quest(e.name);
         quest.setDuration(Constants.QUEST_MIN_DURATION);
-        quest.addReminder(new Reminder(0));
+        if(upgradeManager.isUnlocked(Upgrade.REMINDERS)) {
+            quest.addReminder(new Reminder(0));
+        }
         quest.setCategoryType(e.category);
         KeyboardUtils.hideKeyboard(this);
         goToNextPage();

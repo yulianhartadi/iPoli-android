@@ -245,7 +245,7 @@ public class EditQuestActivity extends BaseActivity implements
 
         hideUnderline(addSubQuest);
 
-        if(upgradeManager.has(Upgrade.SUB_QUESTS)) {
+        if(upgradeManager.isUnlocked(Upgrade.SUB_QUESTS)) {
             addSubQuest.setOnFocusChangeListener(onAddSubQuestsFocusChangeListener);
         } else {
             addSubQuest.setFocusable(false);
@@ -608,6 +608,11 @@ public class EditQuestActivity extends BaseActivity implements
 
     @OnClick(R.id.quest_add_reminder_container)
     public void onRemindersClicked(View view) {
+        if(upgradeManager.isLocked(Upgrade.REMINDERS)) {
+            UpgradeDialog.newInstance(Upgrade.REMINDERS).show(getSupportFragmentManager());
+            return;
+        }
+
         EditReminderFragment f = EditReminderFragment.newInstance((reminder, editMode) -> {
             if (reminder != null) {
                 addReminder(reminder);
