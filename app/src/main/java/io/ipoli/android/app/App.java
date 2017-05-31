@@ -645,9 +645,9 @@ public class App extends MultiDexApplication {
         Player player = getPlayer();
         player.removeExperience(xp);
         if (shouldDecreaseLevel(player)) {
-            player.setLevel(Math.max(Constants.DEFAULT_AVATAR_LEVEL, player.getLevel() - 1));
+            player.setLevel(Math.max(Constants.DEFAULT_PLAYER_LEVEL, player.getLevel() - 1));
             while (shouldDecreaseLevel(player)) {
-                player.setLevel(Math.max(Constants.DEFAULT_AVATAR_LEVEL, player.getLevel() - 1));
+                player.setLevel(Math.max(Constants.DEFAULT_PLAYER_LEVEL, player.getLevel() - 1));
             }
             eventBus.post(new LevelDownEvent(player.getLevel()));
         }

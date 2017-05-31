@@ -28,6 +28,7 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.json.JSONException;
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,13 +51,13 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FinishSignInActivityEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.app.exceptions.SignInException;
 import io.ipoli.android.app.ui.dialogs.LoadingDialog;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.Player;
-import io.ipoli.android.app.exceptions.SignInException;
 import io.ipoli.android.player.events.PlayerSignedInEvent;
 import io.ipoli.android.player.events.PlayerUpdatedEvent;
 import io.ipoli.android.player.events.StartReplicationEvent;
@@ -348,14 +349,22 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     }
 
     private void createPlayer(String playerId, AuthProvider authProvider) {
-        Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR,
+        String defaultPetPicture = getResources().getResourceEntryName(Constants.DEFAULT_PET.picture);
+
+        Pet pet = new Pet(Constants.DEFAULT_PET_NAME, defaultPetPicture,
                 Constants.DEFAULT_PET_BACKGROUND_PICTURE, Constants.DEFAULT_PET_HP);
+
+        String defaultPlayerAvatar = getResources().getResourceEntryName(Constants.DEFAULT_PLAYER_AVATAR.picture);
         Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP),
-                Constants.DEFAULT_AVATAR_LEVEL,
+                Constants.DEFAULT_PLAYER_LEVEL,
                 Constants.DEFAULT_PLAYER_COINS,
                 Constants.DEFAULT_PLAYER_REWARD_POINTS,
-                Constants.DEFAULT_PLAYER_PICTURE,
+                defaultPlayerAvatar,
                 DateFormat.is24HourFormat(this), pet);
+
+        player.getInventory().addAvatar(Constants.DEFAULT_PLAYER_AVATAR, LocalDate.now());
+        player.getInventory().addPet(Constants.DEFAULT_PET, LocalDate.now());
+
         if (authProvider != null) {
             player.setCurrentAuthProvider(authProvider);
             player.getAuthProviders().add(authProvider);
