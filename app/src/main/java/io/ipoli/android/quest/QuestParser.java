@@ -12,12 +12,7 @@ import io.ipoli.android.quest.parsers.DurationMatcher;
 import io.ipoli.android.quest.parsers.EndDateMatcher;
 import io.ipoli.android.quest.parsers.Match;
 import io.ipoli.android.quest.parsers.QuestTextMatcher;
-import io.ipoli.android.quest.parsers.RecurrenceDayOfMonthMatcher;
-import io.ipoli.android.quest.parsers.RecurrenceDayOfWeekMatcher;
-import io.ipoli.android.quest.parsers.RecurrenceEveryDayMatcher;
 import io.ipoli.android.quest.parsers.StartTimeMatcher;
-import io.ipoli.android.quest.parsers.TimesAMonthMatcher;
-import io.ipoli.android.quest.parsers.TimesAWeekMatcher;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -28,11 +23,6 @@ public class QuestParser {
     private final EndDateMatcher endDateMatcher;
     private final StartTimeMatcher startTimeMatcher;
     private final DurationMatcher durationMatcher = new DurationMatcher();
-    private final RecurrenceEveryDayMatcher everyDayMatcher = new RecurrenceEveryDayMatcher();
-    private final RecurrenceDayOfWeekMatcher dayOfWeekMatcher = new RecurrenceDayOfWeekMatcher();
-    private final RecurrenceDayOfMonthMatcher dayOfMonthMatcher = new RecurrenceDayOfMonthMatcher();
-    private final TimesAWeekMatcher timesAWeekMatcher = new TimesAWeekMatcher();
-    private final TimesAMonthMatcher timesAMonthMatcher = new TimesAMonthMatcher();
 
     public QuestParser(DateTimeParser timeParser) {
         this(timeParser, new Date());
