@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import io.ipoli.android.app.TimeOfDay;
+import io.ipoli.android.store.Avatar;
+import io.ipoli.android.store.Pet;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -76,11 +78,11 @@ public interface Constants {
     String IPOLI_EMAIL = "hi@ipoli.io";
 
     String API_RESOURCE_SOURCE = "ipoli-android";
-    int DEFAULT_PLAYER_XP = 1500;
-    int DEFAULT_AVATAR_LEVEL = 1;
+    int DEFAULT_PLAYER_XP = 0;
+    int DEFAULT_PLAYER_LEVEL = 1;
     long DEFAULT_PLAYER_COINS = 10;
     long DEFAULT_PLAYER_REWARD_POINTS = 10;
-    String DEFAULT_PLAYER_PICTURE = "avatar_12";
+    Avatar DEFAULT_PLAYER_AVATAR = Avatar.IPOLI_CLASSIC;
     Set<TimeOfDay> DEFAULT_PLAYER_PRODUCTIVE_TIMES = new HashSet<>(Collections.singletonList(TimeOfDay.MORNING));
     int DEFAULT_PLAYER_WORK_START_MINUTE = 10 * 60;
     int DEFAULT_PLAYER_WORK_END_MINUTE = 18 * 60;
@@ -95,11 +97,7 @@ public interface Constants {
             DayOfWeek.THURSDAY.getValue(),
             DayOfWeek.FRIDAY.getValue()
     ));
-
-    int AVATAR_COUNT = 12;
-
-    String PICTURE_NAME_EXTRA_KEY = "avatar_name";
-
+    
     int[] DURATIONS = {10, 15, 20, 25, 30, 60, 90, 120, 180, 240};
 
     int DEFAULT_MIN_REWARD_PRICE = 10;
@@ -131,7 +129,7 @@ public interface Constants {
 
     String QUICK_ADD_ADDITIONAL_TEXT = "quick_add_additional_text";
     String DEFAULT_PET_NAME = "Flopsy";
-    String DEFAULT_PET_AVATAR = "pet_3";
+    Pet DEFAULT_PET = Pet.ELEPHANT;
     String DEFAULT_PET_BACKGROUND_PICTURE = "pet_background_1";
 
     Integer DEFAULT_PET_HP = 80;
