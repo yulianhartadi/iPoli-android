@@ -33,7 +33,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.events.AvatarBoughtEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.store.Avatar;
+import io.ipoli.android.player.Avatar;
 import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.adapters.AvatarStoreAdapter;
 import io.ipoli.android.store.events.BuyAvatarRequestEvent;

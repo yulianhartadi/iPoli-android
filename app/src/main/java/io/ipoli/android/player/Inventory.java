@@ -7,8 +7,6 @@ import org.threeten.bp.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.ipoli.android.store.Avatar;
-import io.ipoli.android.store.PetAvatar;
 import io.ipoli.android.store.Upgrade;
 
 import static io.ipoli.android.app.utils.DateUtils.toMillis;

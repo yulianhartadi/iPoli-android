@@ -35,7 +35,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.store.PetAvatar;
+import io.ipoli.android.player.PetAvatar;
 import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.adapters.PetStoreAdapter;
 import io.ipoli.android.store.events.BuyPetRequestEvent;

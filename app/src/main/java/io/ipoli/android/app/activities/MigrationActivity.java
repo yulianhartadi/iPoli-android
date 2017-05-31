@@ -35,8 +35,8 @@ import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.store.Avatar;
-import io.ipoli.android.store.PetAvatar;
+import io.ipoli.android.player.Avatar;
+import io.ipoli.android.player.PetAvatar;
 import io.ipoli.android.store.Upgrade;
 
 /**
