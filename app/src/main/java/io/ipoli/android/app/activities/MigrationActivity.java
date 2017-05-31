@@ -92,14 +92,14 @@ public class MigrationActivity extends BaseActivity {
     private void unlockUpgrades(OnFinishListener onFinishListener) {
         Player player = playerPersistenceService.get();
 
-        Document playerDoc = database.getExistingDocument(player.getId());
-        Map<String, Object> properties = playerDoc.getProperties();
-        String playerPicture = (String) properties.remove("picture");
+        UnsavedRevision revision = database.getExistingDocument(player.getId()).createRevision();
+        Map<String, Object> properties = revision.getProperties();
+        String playerPicture = (String) properties.get("picture");
+        properties.remove("picture");
         List<Map<String, Object>> pets = (List<Map<String, Object>>) properties.get("pets");
         Map<String, Object> pet = pets.get(0);
         String petPicture = (String) pet.remove("picture");
 
-        UnsavedRevision revision = database.getExistingDocument(player.getId()).createRevision();
         revision.setProperties(properties);
         try {
             revision.save();
@@ -114,7 +114,7 @@ public class MigrationActivity extends BaseActivity {
             player.getInventory().addUpgrade(upgrade, unlockedDate);
         }
 
-        player.addRewardPoints(player.getCoins());
+        player.setRewardPoints(player.getCoins());
         player.setSchemaVersion(Constants.SCHEMA_VERSION);
 
         for(Avatar avatar : Avatar.values()) {
@@ -135,7 +135,6 @@ public class MigrationActivity extends BaseActivity {
         }
 
         playerPersistenceService.save(player);
-
 
         localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
 
