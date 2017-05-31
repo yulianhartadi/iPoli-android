@@ -79,7 +79,9 @@ public class AvatarStoreFragment extends BaseFragment {
     }
 
     private List<AvatarViewModel> createAvatarViewModels() {
-        Map<Integer, Long> playerAvatars = getPlayer().getInventory().getAvatars();
+        Player player = getPlayer();
+        Avatar currentAvatar = player.getCurrentAvatar();
+        Map<Integer, Long> playerAvatars = player.getInventory().getAvatars();
         List<AvatarViewModel> avatarViewModels = new ArrayList<>();
         List<Avatar> boughtAvatars = new ArrayList<>();
         List<Avatar> lockedAvatars = new ArrayList<>();
@@ -94,7 +96,8 @@ public class AvatarStoreFragment extends BaseFragment {
 
         Collections.sort(boughtAvatars, ((a1, a2) -> -Long.compare(playerAvatars.get(a1.code), playerAvatars.get(a2.code))));
         for (Avatar avatar : boughtAvatars) {
-            avatarViewModels.add(new AvatarViewModel(getContext(), avatar, DateUtils.fromMillis(playerAvatars.get(avatar.code))));
+            boolean isCurrent = avatar == currentAvatar;
+            avatarViewModels.add(new AvatarViewModel(getContext(), avatar, DateUtils.fromMillis(playerAvatars.get(avatar.code)), isCurrent));
         }
         for (Avatar avatar : lockedAvatars) {
             avatarViewModels.add(new AvatarViewModel(getContext(), avatar));
@@ -123,6 +126,7 @@ public class AvatarStoreFragment extends BaseFragment {
         player.setAvatar(e.avatar);
         playerPersistenceService.save(player);
         Toast.makeText(getContext(), R.string.avatar_selected_message, Toast.LENGTH_SHORT).show();
+        adapter.setViewModels(createAvatarViewModels());
     }
 
     @Override

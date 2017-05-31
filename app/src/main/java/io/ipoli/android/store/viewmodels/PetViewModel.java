@@ -22,16 +22,19 @@ public class PetViewModel {
     @DrawableRes
     private int pictureState;
 
+    private final boolean isCurrent;
+
     private PetAvatar petAvatar;
     private final LocalDate boughtDate;
 
     public PetViewModel(Context context, PetAvatar petAvatar, @DrawableRes int pictureState) {
-        this(context, petAvatar, pictureState, null);
+        this(context, petAvatar, pictureState, null, false);
     }
 
-    public PetViewModel(Context context, PetAvatar petAvatar, @DrawableRes int pictureState, LocalDate boughtDate) {
+    public PetViewModel(Context context, PetAvatar petAvatar, @DrawableRes int pictureState, LocalDate boughtDate, boolean isCurrent) {
         this.petAvatar = petAvatar;
         this.boughtDate = boughtDate;
+        this.isCurrent = isCurrent;
         this.name = context.getString(petAvatar.name);
         this.price = petAvatar.price;
         this.picture = petAvatar.picture;
@@ -64,5 +67,9 @@ public class PetViewModel {
 
     public LocalDate getBoughtDate() {
         return boughtDate;
+    }
+
+    public boolean isCurrent() {
+        return isCurrent;
     }
 }

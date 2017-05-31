@@ -24,13 +24,16 @@ public class AvatarViewModel {
     @DrawableRes
     private final int picture;
 
+    private final boolean isCurrent;
+
     public AvatarViewModel(Context context, Avatar avatar) {
-        this(context, avatar, null);
+        this(context, avatar, null, false);
     }
 
-    public AvatarViewModel(Context context, Avatar avatar, LocalDate boughtDate) {
+    public AvatarViewModel(Context context, Avatar avatar, LocalDate boughtDate, boolean isCurrent) {
         this.avatar = avatar;
         this.boughtDate = boughtDate;
+        this.isCurrent = isCurrent;
         name = context.getString(avatar.name);
         price = avatar.price;
         picture = avatar.picture;
@@ -59,5 +62,9 @@ public class AvatarViewModel {
 
     public boolean isBought() {
         return boughtDate != null;
+    }
+
+    public boolean isCurrent() {
+        return isCurrent;
     }
 }
