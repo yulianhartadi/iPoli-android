@@ -715,18 +715,8 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         return Math.max(0, priorityEstimator.estimate(quest));
     }
 
-    private void showAwesomenessBarChart(int[] awesomenessPerDay, String[] xLabels) {
-        List<BarEntry> entries = new ArrayList<>();
-        for (int i = 0; i < awesomenessPerDay.length; i++) {
-            entries.add(new BarEntry(i, awesomenessPerDay[i]));
-        }
-        BarDataSet dataSet = new BarDataSet(entries, "");
-        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_orange_500));
-        dataSet.setValueTextSize(12f);
-        dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
-        BarData barData = new BarData(dataSet);
-        barData.setValueFormatter(barDataValueFormatter);
-        barData.setValueTextSize(14f);
+    private void showAwesomenessBarChart(int[] data, String[] xLabels) {
+        BarData barData = createPeriodBarData(data);
         awesomenessBarChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         awesomenessBarChart.getXAxis().setLabelCount(xLabels.length);
         awesomenessBarChart.setData(barData);
@@ -734,24 +724,15 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
     }
 
     private void showXpEarnedBarChart(int[] data, String[] xLabels) {
-        List<BarEntry> entries = new ArrayList<>();
-        for (int i = 0; i < data.length; i++) {
-            entries.add(new BarEntry(i, data[i]));
-        }
-        BarDataSet dataSet = new BarDataSet(entries, "");
-        dataSet.setColor(ContextCompat.getColor(getContext(), R.color.md_orange_500));
-        dataSet.setValueTextSize(12f);
-        dataSet.setValueTextColor(ContextCompat.getColor(getContext(), R.color.md_dark_text_87));
-        BarData barData = new BarData(dataSet);
-        barData.setValueFormatter(barDataValueFormatter);
-        barData.setValueTextSize(14f);
+        BarData barData = createPeriodBarData(data);
         xpEarnedBarChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         xpEarnedBarChart.getXAxis().setLabelCount(xLabels.length);
         xpEarnedBarChart.setData(barData);
         invalidateAndAnimate(xpEarnedBarChart);
     }
 
-    private void showCoinsEarnedBarChart(int[] data, String[] xLabels) {
+    @NonNull
+    private BarData createPeriodBarData(int[] data) {
         List<BarEntry> entries = new ArrayList<>();
         for (int i = 0; i < data.length; i++) {
             entries.add(new BarEntry(i, data[i]));
@@ -763,6 +744,11 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         BarData barData = new BarData(dataSet);
         barData.setValueFormatter(barDataValueFormatter);
         barData.setValueTextSize(14f);
+        return barData;
+    }
+
+    private void showCoinsEarnedBarChart(int[] data, String[] xLabels) {
+        BarData barData = createPeriodBarData(data);
         coinsEarnedBarChart.getXAxis().setValueFormatter(new XAxisValueFormatter(xLabels));
         coinsEarnedBarChart.getXAxis().setLabelCount(xLabels.length);
         coinsEarnedBarChart.setData(barData);
