@@ -8,7 +8,6 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.activities.SignInActivity;
-import io.ipoli.android.app.activities.SyncCalendarActivity;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.modules.AnalyticsModule;
 import io.ipoli.android.app.modules.AndroidCalendarModule;
@@ -228,8 +227,6 @@ public interface AppComponent {
     void inject(AndroidCalendarsPickerFragment androidCalendarsPickerFragment);
 
     void inject(BootCompleteReceiver bootCompleteReceiver);
-
-    void inject(SyncCalendarActivity syncCalendarActivity);
 
     void inject(SettingsActivity settingsActivity);
 
