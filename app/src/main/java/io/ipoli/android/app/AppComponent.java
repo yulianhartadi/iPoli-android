@@ -30,6 +30,7 @@ import io.ipoli.android.app.receivers.BootCompleteReceiver;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.settings.SettingsActivity;
 import io.ipoli.android.app.tutorial.TutorialActivity;
+import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
 import io.ipoli.android.challenge.activities.AddChallengeActivity;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
@@ -247,5 +248,7 @@ public interface AppComponent {
     void inject(AvatarStoreFragment avatarStoreFragment);
 
     void inject(EisenhowerMatrixActivity eisenhowerMatrixActivity);
+
+    void inject(FabMenuView fabMenuView);
 }
 

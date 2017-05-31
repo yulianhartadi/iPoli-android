@@ -45,6 +45,8 @@ import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.TimePreference;
+import io.ipoli.android.player.UpgradeDialog;
+import io.ipoli.android.player.UpgradesManager;
 import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -68,6 +70,7 @@ import io.ipoli.android.quest.ui.dialogs.TimesADayPickerFragment;
 import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
+import io.ipoli.android.store.Upgrade;
 
 import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth;
 
@@ -79,6 +82,9 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @Inject
     Bus eventBus;
+
+    @Inject
+    UpgradesManager upgradesManager;
 
     private Unbinder unbinder;
 
@@ -307,6 +313,11 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @OnClick(R.id.add_quest_summary_note_container)
     public void onNoteClicked(View v) {
+        if(upgradesManager.isLocked(Upgrade.NOTES)) {
+            UpgradeDialog.newInstance(Upgrade.NOTES).show(getFragmentManager());
+            return;
+        }
+
         TextPickerFragment fragment = TextPickerFragment.newInstance((String) noteText.getTag(), R.string.pick_note_title, text -> {
             postEvent(new NewQuestNotePickedEvent(text));
             noteText.setTag(text);

@@ -14,8 +14,12 @@ import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.squareup.otto.Bus;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,7 +27,9 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.QuickAddActivity;
+import io.ipoli.android.app.ui.events.StartFabMenuIntentEvent;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.challenge.activities.AddChallengeActivity;
 import io.ipoli.android.quest.activities.AddQuestActivity;
@@ -35,11 +41,14 @@ import io.ipoli.android.reward.activities.EditRewardActivity;
  * on 6/27/16.
  */
 public class FabMenuView extends RelativeLayout {
-    private enum FabName {
+    public enum FabName {
         OPEN, QUEST, REPEATING_QUEST, CHALLENGE, REWARD, QUICK_ADD
     }
 
     private Unbinder unbinder;
+
+    @Inject
+    Bus eventBus;
 
     @BindView(R.id.fab_menu_container)
     ViewGroup container;
@@ -86,6 +95,7 @@ public class FabMenuView extends RelativeLayout {
 
     public FabMenuView(Context context) {
         super(context);
+        App.getAppComponent(context).inject(this);
         if (!isInEditMode()) {
             initUI(context);
         }
@@ -93,6 +103,7 @@ public class FabMenuView extends RelativeLayout {
 
     public FabMenuView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        App.getAppComponent(context).inject(this);
         if (!isInEditMode()) {
             TypedArray typedArray = context.getTheme().obtainStyledAttributes(
                     attrs,
@@ -164,8 +175,8 @@ public class FabMenuView extends RelativeLayout {
 
     private void onFabClicked(Intent intent, FabName fabName) {
         if (isOpen) {
+            eventBus.post(new StartFabMenuIntentEvent(intent, fabName));
             callListeners(fabName);
-            getContext().startActivity(intent);
             close();
         } else {
             open();

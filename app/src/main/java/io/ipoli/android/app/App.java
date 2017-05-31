@@ -47,7 +47,6 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.activities.SignInActivity;
-import io.ipoli.android.app.activities.SyncCalendarActivity;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.api.UrlProvider;
 import io.ipoli.android.app.auth.FacebookAuthService;
@@ -57,7 +56,6 @@ import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.DateChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FinishSignInActivityEvent;
-import io.ipoli.android.app.events.FinishSyncCalendarActivityEvent;
 import io.ipoli.android.app.events.FinishTutorialActivityEvent;
 import io.ipoli.android.app.events.InitAppEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
@@ -79,7 +77,6 @@ import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.activities.ChallengeCompleteActivity;
-import io.ipoli.android.challenge.activities.PickChallengeActivity;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.data.Difficulty;
 import io.ipoli.android.challenge.data.PredefinedChallenge;
@@ -356,19 +353,10 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onFinishSignInActivity(FinishSignInActivityEvent e) {
         if (hasPlayer() && e.isNewPlayer) {
-            startNewActivity(SyncCalendarActivity.class);
+            startNewActivity(MainActivity.class);
         } else if (!hasPlayer()) {
             System.exit(0);
         }
-    }
-
-    @Subscribe
-    public void onFinishSynCalendarActivity(FinishSyncCalendarActivityEvent e) {
-        startNewActivity(MainActivity.class);
-        Intent intent = new Intent(this, PickChallengeActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra(PickChallengeActivity.TITLE, getString(R.string.pick_challenge_to_start));
-        startActivity(intent);
     }
 
     private void startNewActivity(Class clazz) {
