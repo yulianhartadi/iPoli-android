@@ -132,8 +132,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @Inject
     UpgradeManager upgradeManager;
 
-    private Fragment currentFragment;
-
     private boolean isRateDialogShown;
     public ActionBarDrawerToggle actionBarDrawerToggle;
     private MenuItem navigationItemSelected;
@@ -388,7 +386,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private void changeCurrentFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.content_container, fragment).commit();
-        currentFragment = fragment;
         getSupportFragmentManager().executePendingTransactions();
     }
 

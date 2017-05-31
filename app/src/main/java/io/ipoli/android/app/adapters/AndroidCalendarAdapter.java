@@ -55,7 +55,7 @@ public class AndroidCalendarAdapter extends RecyclerView.Adapter<AndroidCalendar
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                // intentional
             }
         });
 

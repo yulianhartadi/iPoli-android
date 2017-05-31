@@ -74,11 +74,6 @@ public class AddChallengeQuestsFragment extends BaseFragment {
     private List<PickQuestViewModel> allViewModels = new ArrayList<>();
     private SearchView searchView;
 
-    @Override
-    protected boolean useOptionsMenu() {
-        return true;
-    }
-
     private Unbinder unbinder;
 
     @Nullable
@@ -111,6 +106,11 @@ public class AddChallengeQuestsFragment extends BaseFragment {
         });
 
         return view;
+    }
+
+    @Override
+    protected boolean useOptionsMenu() {
+        return true;
     }
 
     private void updateAdapter(String query) {

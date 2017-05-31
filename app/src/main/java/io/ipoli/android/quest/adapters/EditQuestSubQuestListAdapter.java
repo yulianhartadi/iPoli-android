@@ -30,16 +30,17 @@ import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvent;
  * on 4/28/16.
  */
 public class EditQuestSubQuestListAdapter extends RecyclerView.Adapter<EditQuestSubQuestListAdapter.ViewHolder> {
-    public interface ItemChangedListener {
-        void onItemChanged();
-    }
-
     private ItemChangedListener itemChangedListener;
 
     private Context context;
+
     private final Bus evenBus;
     private List<SubQuest> subQuests;
     private final Integer itemLayout;
+
+    public interface ItemChangedListener {
+        void onItemChanged();
+    }
 
     public EditQuestSubQuestListAdapter(Context context, Bus evenBus, List<SubQuest> subQuests) {
         this(context, evenBus, subQuests, null);

@@ -372,7 +372,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-
+        // intentional
     }
 
     @Override

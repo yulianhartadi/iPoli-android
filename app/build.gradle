@@ -1,6 +1,11 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'jacoco-android'
+
+jacoco {
+    toolVersion = "0.7.9"
+}
 
 android {
     compileSdkVersion 25
@@ -13,13 +18,15 @@ android {
         threadCount 8
     }
 
+
     defaultConfig {
         applicationId "io.ipoli.android"
         multiDexEnabled true
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 174
-        versionName "1.12.10"
+        versionCode 175
+        versionName "1.12.11"
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
     compileOptions {
@@ -41,6 +48,7 @@ android {
         }
 
         debug {
+            testCoverageEnabled true
             ndk {
                 abiFilters 'x86_64', 'armeabi-v7a'
             }
