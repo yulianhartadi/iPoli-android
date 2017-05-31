@@ -534,7 +534,7 @@ public class SettingsActivity extends BaseActivity implements
 
     @Override
     public void onPermissionsGranted(int requestCode, List<String> perms) {
-
+        // intentional
     }
 
     @Override
@@ -559,7 +559,7 @@ public class SettingsActivity extends BaseActivity implements
 
     @Override
     public void onLoaderReset(Loader<Void> loader) {
-
+        // intentional
     }
 
     private static class CalendarLoader extends AsyncTaskLoader<Void> {

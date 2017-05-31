@@ -256,7 +256,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+        // intentional
     }
 
     @Override
@@ -291,7 +291,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
 
     @Override
     public void onPageScrollStateChanged(int state) {
-
+        // intentional
     }
 
     private class WizardFragmentPagerAdapter extends FragmentPagerAdapter {

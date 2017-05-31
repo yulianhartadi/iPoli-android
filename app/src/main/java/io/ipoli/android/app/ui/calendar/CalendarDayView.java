@@ -358,6 +358,7 @@ public class CalendarDayView extends FrameLayout {
 
             @Override
             public void onDragExited(DragEvent event) {
+                // intentional
             }
 
             @Override
