@@ -180,6 +180,19 @@ public class SettingsActivity extends BaseActivity implements
     private LoadingDialog loadingDialog;
     private Map<Long, Category> selectedCalendars;
 
+    private CompoundButton.OnCheckedChangeListener onCheckSyncCalendarChangeListener = (buttonView, isChecked) -> {
+        if (isChecked) {
+            eventBus.post(new EnableSynCalendarsEvent(true));
+            if (EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
+                onSyncCalendarsSelected();
+            } else {
+                EasyPermissions.requestPermissions(this, getString(R.string.allow_read_calendars_perm_reason), RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
+            }
+        } else {
+            showAlertSyncCalendarsDialog();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -248,19 +261,6 @@ public class SettingsActivity extends BaseActivity implements
         Set<Integer> selectedDays = localStorage.readIntSet(Constants.KEY_DAILY_CHALLENGE_DAYS, Constants.DEFAULT_DAILY_CHALLENGE_DAYS);
         populateDaysOfWeekText(dailyChallengeDays, DateUtils.toDaysOfWeek(selectedDays));
     }
-
-    private CompoundButton.OnCheckedChangeListener onCheckSyncCalendarChangeListener = (buttonView, isChecked) -> {
-        if (isChecked) {
-            eventBus.post(new EnableSynCalendarsEvent(true));
-            if (EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
-                onSyncCalendarsSelected();
-            } else {
-                EasyPermissions.requestPermissions(this, getString(R.string.allow_read_calendars_perm_reason), RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
-            }
-        } else {
-            showAlertSyncCalendarsDialog();
-        }
-    };
 
     private void showAlertSyncCalendarsDialog() {
         AlertDialog d = new AlertDialog.Builder(this)
