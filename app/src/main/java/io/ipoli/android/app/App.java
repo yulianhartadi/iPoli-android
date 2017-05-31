@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
@@ -47,6 +48,7 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.activities.SignInActivity;
+import io.ipoli.android.app.activities.UpgradeDialogActivity;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.api.UrlProvider;
 import io.ipoli.android.app.auth.FacebookAuthService;
@@ -60,6 +62,7 @@ import io.ipoli.android.app.events.FinishTutorialActivityEvent;
 import io.ipoli.android.app.events.InitAppEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.StartQuickAddEvent;
+import io.ipoli.android.app.events.StartUpgradeDialogRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
@@ -361,6 +364,13 @@ public class App extends MultiDexApplication {
 
     private void startNewActivity(Class clazz) {
         Intent intent = new Intent(this, clazz);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
+    private void startNewActivity(Class clazz, Bundle params) {
+        Intent intent = new Intent(this, clazz);
+        intent.putExtras(params);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
@@ -953,6 +963,11 @@ public class App extends MultiDexApplication {
             }
             questPersistenceService.save(quests);
         });
+    }
+
+    @Subscribe
+    public void onStartUpgradeDialogRequest(StartUpgradeDialogRequestEvent e) {
+        startNewActivity(UpgradeDialogActivity.class);
     }
 
     public static String getPlayerId() {

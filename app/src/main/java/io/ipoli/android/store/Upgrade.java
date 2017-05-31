@@ -18,10 +18,10 @@ public enum Upgrade {
     CALENDAR_SYNC(4, 5, R.string.settings_sync_google_calendars, R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_event_white_24dp),
     PREDEFINED_CHALLENGES(8, 3, R.string.ready_to_use_challenges, R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_sword_white_24dp),
     NOTES(2, 2, R.string.notes, R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_note_white_24dp),
-    SUB_QUESTS(5, 3, R.string.sub_quests, R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_format_list_bulleted_white_24dp),
+    TIMER(7, 2, R.string.timer, R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_timer_white_24dp),
 
-    REMINDERS(3, 1, R.string.reminders, R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_reminders_white_24dp),
-    TIMER(7, 2, R.string.timer, R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_timer_white_24dp)
+    SUB_QUESTS(5, 3, R.string.sub_quests, R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_format_list_bulleted_white_24dp),
+    REMINDERS(3, 1, R.string.reminders, R.string.challenge1_desc, R.string.challenge2_desc, R.drawable.ic_reminders_white_24dp)
     ;
 
     public final int code;

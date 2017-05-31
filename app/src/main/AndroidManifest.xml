@@ -195,6 +195,10 @@
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.iPoli.DialogActivity" />
+        <activity android:name=".app.activities.UpgradeDialogActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.iPoli.DialogActivity" />
         <activity
             android:name=".quest.activities.QuestActivity"
             android:label=""

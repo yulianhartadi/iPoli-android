@@ -134,10 +134,10 @@ public class AddSubQuestView extends RelativeLayout implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+
         KeyboardUtils.showKeyboard(getContext());
         setInEditMode();
     }
-
 
     private void setInViewMode() {
         editText.setText(getContext().getString(R.string.add_sub_quest));

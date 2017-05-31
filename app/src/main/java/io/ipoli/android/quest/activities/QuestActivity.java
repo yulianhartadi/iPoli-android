@@ -224,6 +224,11 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @OnClick(R.id.quest_details_timer)
     public void onTimerTap(View v) {
+        if(upgradeManager.isLocked(Upgrade.TIMER)) {
+            UpgradeDialog.newInstance(Upgrade.TIMER).show(getSupportFragmentManager());
+            return;
+        }
+
         if (isTimerRunning) {
             eventBus.post(new StopQuestTapEvent(quest));
             stopTimer();
@@ -283,7 +288,6 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @Override
     public void onTextPicked(String text) {
-
         if (StringUtils.isEmpty(text)) {
             quest.removeTextNote();
         } else {
