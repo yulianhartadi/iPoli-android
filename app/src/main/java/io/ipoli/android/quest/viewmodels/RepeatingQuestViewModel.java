@@ -75,9 +75,9 @@ public class RepeatingQuestViewModel {
             nextText += context.getString(R.string.unscheduled);
         } else {
             if (DateUtils.isTodayUTC(nextDate)) {
-                nextText = context.getString(R.string.today);;
+                nextText = context.getString(R.string.today);
             } else if (DateUtils.isTomorrowUTC(nextDate)) {
-                nextText = context.getString(R.string.tomorrow);;
+                nextText = context.getString(R.string.tomorrow);
             } else {
                 nextText = new SimpleDateFormat("dd MMM", Locale.getDefault()).format(DateUtils.toStartOfDay(nextDate));
             }

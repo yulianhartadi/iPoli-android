@@ -21,6 +21,7 @@ import io.ipoli.android.quest.data.Quest;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -286,7 +287,7 @@ public class QuestParserTest {
         Pattern p = Pattern.compile(PATTERN, Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher("today ");
         m.matches();
-        assertTrue(!m.hitEnd());
+        assertFalse(m.hitEnd());
     }
 
     @Test

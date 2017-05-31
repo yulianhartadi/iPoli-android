@@ -517,7 +517,7 @@ public class Quest extends PersistedObject implements RewardProvider, BaseQuest 
     @JsonIgnore
     public Integer getActualStartMinute() {
         if (this.isCompleted() && getActualStartDate() != null) {
-            if (DateUtils.fromMillis(actualStart).equals(DateUtils.fromMillis(completedAt))) {
+            if (fromMillis(actualStart).equals(fromMillis(completedAt))) {
                 return getActualLocalStartMinute();
             } else {
                 return 0;

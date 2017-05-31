@@ -33,5 +33,8 @@ before_install:
     - chmod +x gradlew
     - "./gradlew dependencies || true"
 script:
-    - "./gradlew clean"
-    - "./gradlew check"
+    #- "./gradlew clean"
+    - ./gradlew build jacocoTestReport assembleAndroidTest
+    #- "./gradlew check"
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

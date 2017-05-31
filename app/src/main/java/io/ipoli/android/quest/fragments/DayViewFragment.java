@@ -112,8 +112,8 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     private LocalDate currentDate;
     private Unbinder unbinder;
 
-    List<Quest> futureQuests = new ArrayList<>();
-    List<Quest> futurePlaceholderQuests = new ArrayList<>();
+    private List<Quest> futureQuests = new ArrayList<>();
+    private List<Quest> futurePlaceholderQuests = new ArrayList<>();
 
     private DailyScheduler dailyScheduler;
 
@@ -336,7 +336,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         getContext().registerReceiver(tickReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
     }
 
-    void updateSchedule(Schedule schedule) {
+    private void updateSchedule(Schedule schedule) {
         if (calendarContainer == null || calendarContainer.isInEditMode()) {
             return;
         }

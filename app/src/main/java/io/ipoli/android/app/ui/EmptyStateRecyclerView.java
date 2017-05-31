@@ -20,8 +20,18 @@ import io.ipoli.android.R;
  * on 6/1/16.
  */
 public class EmptyStateRecyclerView extends RecyclerView {
+
     @Nullable
     private View emptyView;
+
+    @NonNull
+    private final AdapterDataObserver observer = new AdapterDataObserver() {
+        @Override
+        public void onChanged() {
+            super.onChanged();
+            checkIfEmpty();
+        }
+    };
 
     public EmptyStateRecyclerView(Context context) {
         super(context);
@@ -35,7 +45,7 @@ public class EmptyStateRecyclerView extends RecyclerView {
         super(context, attrs, defStyle);
     }
 
-    void checkIfEmpty() {
+    private void checkIfEmpty() {
         if (getAdapter() == null) {
             return;
         }
@@ -43,15 +53,6 @@ public class EmptyStateRecyclerView extends RecyclerView {
             emptyView.setVisibility(getAdapter().getItemCount() > 0 ? GONE : VISIBLE);
         }
     }
-
-    @NonNull
-    final AdapterDataObserver observer = new AdapterDataObserver() {
-        @Override
-        public void onChanged() {
-            super.onChanged();
-            checkIfEmpty();
-        }
-    };
 
     @Override
     public void setAdapter(@Nullable Adapter adapter) {

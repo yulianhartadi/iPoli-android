@@ -41,9 +41,6 @@ import io.ipoli.android.reward.activities.EditRewardActivity;
  * on 6/27/16.
  */
 public class FabMenuView extends RelativeLayout {
-    public enum FabName {
-        OPEN, QUEST, REPEATING_QUEST, CHALLENGE, REWARD, QUICK_ADD
-    }
 
     private Unbinder unbinder;
 
@@ -92,6 +89,10 @@ public class FabMenuView extends RelativeLayout {
     private boolean onlyQuests = false;
 
     private List<FabClickListener> fabClickListeners;
+
+    public enum FabName {
+        OPEN, QUEST, REPEATING_QUEST, CHALLENGE, REWARD, QUICK_ADD
+    }
 
     public FabMenuView(Context context) {
         super(context);
@@ -219,7 +220,7 @@ public class FabMenuView extends RelativeLayout {
         rotateForwardAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-
+                // intentional
             }
 
             @Override
@@ -230,7 +231,7 @@ public class FabMenuView extends RelativeLayout {
 
             @Override
             public void onAnimationRepeat(Animation animation) {
-
+                // intentional
             }
         });
         quest.startAnimation(rotateForwardAnimation);
@@ -257,12 +258,12 @@ public class FabMenuView extends RelativeLayout {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-
+                // intentional
             }
 
             @Override
             public void onAnimationRepeat(Animation animation) {
-
+                // intentional
             }
         });
         fabCloseAnimation.setAnimationListener(new Animation.AnimationListener() {
@@ -278,7 +279,7 @@ public class FabMenuView extends RelativeLayout {
 
             @Override
             public void onAnimationRepeat(Animation animation) {
-
+                // intentional
             }
         });
 

@@ -432,7 +432,7 @@ public class RepeatingQuest extends PersistedObject implements BaseQuest {
                 if (scheduledDate == null) {
                     continue;
                 }
-                if (DateUtils.isBetween(scheduledDate, p.getStartDate(), (p.getEndDate()))) {
+                if (isBetween(scheduledDate, p.getStartDate(), (p.getEndDate()))) {
                     if (qd.isComplete()) {
                         p.increaseCompletedCount();
                     }

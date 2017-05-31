@@ -197,7 +197,7 @@ public class CalendarDayView extends FrameLayout {
         adapter.notifyDataSetChanged();
     }
 
-    <E extends CalendarEvent> void addEvent(E calendarEvent, int position) {
+    protected <E extends CalendarEvent> void addEvent(E calendarEvent, int position) {
         final View eventView = adapter.getView(eventsContainer, position);
         RelativeLayout.LayoutParams qlp = (RelativeLayout.LayoutParams) eventView.getLayoutParams();
         qlp.topMargin = getYPositionFor(calendarEvent.getStartMinute());
@@ -212,12 +212,12 @@ public class CalendarDayView extends FrameLayout {
         timeLine.setLayoutParams(p);
     }
 
-    int getHoursFor(float y) {
+    protected int getHoursFor(float y) {
         float h = getRelativeY((int) y) / hourHeight;
         return Math.min(Math.round(h), 23);
     }
 
-    int getMinutesFor(float y, int rangeLength) {
+    protected int getMinutesFor(float y, int rangeLength) {
         int minutes = (int) ((getRelativeY((int) y) % hourHeight) / minuteHeight);
         minutes = Math.max(0, minutes);
         List<Integer> bounds = new ArrayList<>();
@@ -243,7 +243,7 @@ public class CalendarDayView extends FrameLayout {
         return getYPositionFor(time.getHours(), time.getMinutes());
     }
 
-    int getHeightFor(int duration) {
+    protected int getHeightFor(int duration) {
         return (int) getMinutesHeight(duration);
     }
 
@@ -298,7 +298,7 @@ public class CalendarDayView extends FrameLayout {
         eventViewToCalendarEvent.clear();
     }
 
-    DragStrategy getEditViewDragStrategy(final View dragView) {
+    protected DragStrategy getEditViewDragStrategy(final View dragView) {
         return new DragStrategy() {
             private boolean hasDropped;
             private int initialTouchHeight;
@@ -358,6 +358,7 @@ public class CalendarDayView extends FrameLayout {
 
             @Override
             public void onDragExited(DragEvent event) {
+                // intentional
             }
 
             @Override
