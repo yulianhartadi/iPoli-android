@@ -332,6 +332,10 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @OnClick(R.id.sub_quests_container)
     public void onAddSubQuestClicked(View v) {
+        if(upgradeManager.isLocked(Upgrade.SUB_QUESTS)) {
+            UpgradeDialog.newInstance(Upgrade.SUB_QUESTS).show(getFragmentManager());
+            return;
+        }
         addSubQuestView.setVisibility(View.VISIBLE);
         KeyboardUtils.showKeyboard(getContext());
         addSubQuestView.setInEditMode();
