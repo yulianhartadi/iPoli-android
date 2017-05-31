@@ -59,7 +59,7 @@ public class GoogleAuthService implements GoogleApiClient.OnConnectionFailedList
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-
+        // intentional
     }
 
     @Override

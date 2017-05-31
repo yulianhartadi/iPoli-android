@@ -178,7 +178,7 @@ public class SyncCalendarActivity extends BaseActivity implements EasyPermission
 
     @Override
     public void onPermissionsGranted(int requestCode, List<String> perms) {
-
+        // intentional
     }
 
     @Override
@@ -198,7 +198,7 @@ public class SyncCalendarActivity extends BaseActivity implements EasyPermission
 
     @Override
     public void onLoaderReset(Loader<Void> loader) {
-
+        // intentional
     }
 
     public static class CalendarLoader extends AsyncTaskLoader<Void> {

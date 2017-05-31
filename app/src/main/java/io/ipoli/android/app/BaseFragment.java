@@ -47,6 +47,7 @@ public abstract class BaseFragment extends Fragment {
     }
 
     protected void showHelpDialog() {
+        // intentional
     }
 
     protected void postEvent(Object event) {
