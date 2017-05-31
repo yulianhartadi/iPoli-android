@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.ipoli.android.R;
+import io.ipoli.android.app.LockedStateListener;
 import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.app.utils.StringUtils;
 
@@ -39,6 +40,8 @@ public class AddSubQuestView extends RelativeLayout implements View.OnClickListe
     private boolean showIcon = true;
     private Drawable closeIcon;
     private int editTextLayout;
+
+    private LockedStateListener lockedStateListener;
 
     public interface OnSubQuestAddedListener {
         void onSubQuestAdded(String name);
@@ -88,10 +91,10 @@ public class AddSubQuestView extends RelativeLayout implements View.OnClickListe
         addButton = (TextView) view.findViewById(R.id.add_sub_quest_button);
         clearAddSubQuest = (ImageButton) view.findViewById(R.id.add_sub_quest_clear);
 
-        if(!showIcon) {
+        if (!showIcon) {
             view.findViewById(R.id.add_icon).setVisibility(INVISIBLE);
         }
-        if(closeIcon != null) {
+        if (closeIcon != null) {
             clearAddSubQuest.setImageDrawable(closeIcon);
         }
 
@@ -99,7 +102,7 @@ public class AddSubQuestView extends RelativeLayout implements View.OnClickListe
         editText.setOnEditorActionListener((v, actionId, event) -> onEditorAction(actionId));
         clearAddSubQuest.setOnClickListener(v -> {
             setInViewMode();
-            for(OnAddSubQuestClosedListener l : addSubQuestClosedListeners) {
+            for (OnAddSubQuestClosedListener l : addSubQuestClosedListeners) {
                 l.onAddSubQuestClosed();
             }
         });
@@ -134,7 +137,10 @@ public class AddSubQuestView extends RelativeLayout implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-
+        if (lockedStateListener != null && lockedStateListener.isLocked()) {
+            lockedStateListener.onLockedAction();
+            return;
+        }
         KeyboardUtils.showKeyboard(getContext());
         setInEditMode();
     }
@@ -151,7 +157,7 @@ public class AddSubQuestView extends RelativeLayout implements View.OnClickListe
 
     public void setInEditMode() {
         editText.postDelayed(() -> {
-            if(!editText.isFocused()) {
+            if (!editText.isFocused()) {
                 editText.requestFocus();
             }
         }, 100);
@@ -190,4 +196,7 @@ public class AddSubQuestView extends RelativeLayout implements View.OnClickListe
         }
     }
 
+    public void setLockedStateListener(LockedStateListener lockedStateListener) {
+        this.lockedStateListener = lockedStateListener;
+    }
 }

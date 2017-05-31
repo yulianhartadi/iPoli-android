@@ -26,6 +26,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
+import io.ipoli.android.app.LockedStateListener;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.app.utils.KeyboardUtils;
@@ -59,12 +60,14 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private final Context context;
     private final Bus eventBus;
+    private final LockedStateListener subQuestsLockedStateListener;
 
     private List<Object> items;
 
-    public QuestDetailsAdapter(Context context, Quest quest, Bus eventBus) {
+    public QuestDetailsAdapter(Context context, Bus eventBus, Quest quest, LockedStateListener subQuestsLockedStateListener) {
         this.context = context;
         this.eventBus = eventBus;
+        this.subQuestsLockedStateListener = subQuestsLockedStateListener;
         createItems(quest);
     }
 
@@ -139,6 +142,7 @@ public class QuestDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         } else if (holder.getItemViewType() == ADD_SUB_QUEST_ITEM_VIEW_TYPE) {
             AddSubQuestViewHolder h = (AddSubQuestViewHolder) holder;
             h.addSubQuestView.setSubQuestAddedListener(this);
+            h.addSubQuestView.setLockedStateListener(subQuestsLockedStateListener);
         } else if (holder.getItemViewType() == EMPTY_NOTE_HINT_VIEW_TYPE) {
             EmptyNoteViewHolder h = (EmptyNoteViewHolder) holder;
             EmptyNoteHint hint = (EmptyNoteHint) items.get(holder.getAdapterPosition());
