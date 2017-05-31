@@ -69,7 +69,7 @@ import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
-import io.ipoli.android.app.tutorial.TutorialActivity;
+import io.ipoli.android.app.tutorial.OnboardingActivity;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.IntentUtils;
@@ -328,12 +328,12 @@ public class App extends MultiDexApplication {
             return;
         }
         if (!hasPlayer()) {
-            if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
-                localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
-                startNewActivity(TutorialActivity.class);
-            } else {
-                startNewActivity(SignInActivity.class);
-            }
+//            if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
+//                localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
+                startNewActivity(OnboardingActivity.class);
+//            } else {
+//                startNewActivity(SignInActivity.class);
+//            }
             return;
         }
 
