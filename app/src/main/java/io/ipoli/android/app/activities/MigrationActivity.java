@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
+import com.couchbase.lite.UnsavedRevision;
 import com.squareup.otto.Bus;
 
 import org.threeten.bp.LocalDate;
@@ -34,6 +35,8 @@ import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.store.Avatar;
+import io.ipoli.android.store.PetAvatar;
 import io.ipoli.android.store.Upgrade;
 
 /**
@@ -88,6 +91,24 @@ public class MigrationActivity extends BaseActivity {
 
     private void unlockUpgrades(OnFinishListener onFinishListener) {
         Player player = playerPersistenceService.get();
+
+        Document playerDoc = database.getExistingDocument(player.getId());
+        Map<String, Object> properties = playerDoc.getProperties();
+        String playerPicture = (String) properties.remove("picture");
+        List<Map<String, Object>> pets = (List<Map<String, Object>>) properties.get("pets");
+        Map<String, Object> pet = pets.get(0);
+        String petPicture = (String) pet.remove("picture");
+
+        UnsavedRevision revision = database.getExistingDocument(player.getId()).createRevision();
+        revision.setProperties(properties);
+        try {
+            revision.save();
+        } catch (CouchbaseLiteException e) {
+            eventBus.post(new AppErrorEvent(e));
+        }
+
+
+        player = playerPersistenceService.get();
         LocalDate unlockedDate = DateUtils.fromMillis(player.getCreatedAt());
         for(Upgrade upgrade: Upgrade.values()) {
             player.getInventory().addUpgrade(upgrade, unlockedDate);
@@ -95,7 +116,26 @@ public class MigrationActivity extends BaseActivity {
 
         player.addRewardPoints(player.getCoins());
         player.setSchemaVersion(Constants.SCHEMA_VERSION);
+
+        for(Avatar avatar : Avatar.values()) {
+            String avatarPicture = getResources().getResourceEntryName(avatar.picture);
+            if(avatarPicture.equals(playerPicture)) {
+                player.getInventory().addAvatar(avatar, unlockedDate);
+                player.setAvatar(avatar);
+                break;
+            }
+        }
+
+        for(PetAvatar petAvatar : PetAvatar.values()) {
+            String petAvatarPicture = getResources().getResourceEntryName(petAvatar.picture);
+            if(petAvatarPicture.equals(petPicture)) {
+                player.getInventory().addPet(petAvatar, unlockedDate);
+                player.getPet().setPetAvatar(petAvatar);
+            }
+        }
+
         playerPersistenceService.save(player);
+
 
         localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
 
