@@ -1,14 +1,11 @@
 package io.ipoli.android.challenge.adapters;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
-
-import com.squareup.otto.Bus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,13 +21,10 @@ import io.ipoli.android.quest.data.BaseQuest;
  * on 9/20/16.
  */
 public class PredefinedChallengeQuestAdapter extends RecyclerView.Adapter<PredefinedChallengeQuestAdapter.ViewHolder> {
-    private final Context context;
-    private final Bus eventBus;
+
     private final List<PredefinedChallengeQuestViewModel> viewModels;
 
-    public PredefinedChallengeQuestAdapter(Context context, Bus eventBus, List<PredefinedChallengeQuestViewModel> viewModels) {
-        this.context = context;
-        this.eventBus = eventBus;
+    public PredefinedChallengeQuestAdapter(List<PredefinedChallengeQuestViewModel> viewModels) {
         this.viewModels = viewModels;
     }
 

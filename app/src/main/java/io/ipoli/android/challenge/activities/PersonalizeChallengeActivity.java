@@ -129,7 +129,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
 
         initViewModels(index);
 
-        predefinedChallengeQuestAdapter = new PredefinedChallengeQuestAdapter(this, eventBus, viewModels);
+        predefinedChallengeQuestAdapter = new PredefinedChallengeQuestAdapter(viewModels);
         questList.setAdapter(predefinedChallengeQuestAdapter);
 
         setBackgroundColors();
