@@ -81,21 +81,21 @@ public class ChallengePickerFragment extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setIcon(R.drawable.logo)
-                .setTitle(R.string.quest_pick_challenge)
-                .setSingleChoiceItems(names, selectedChallengeIndex, (dialog, which) -> {
-                    selectedChallengeIndex = which;
-                })
-                .setPositiveButton(R.string.help_dialog_ok, (dialog, which) -> {
-                    if (selectedChallengeIndex >= 0) {
-                        challengePickedListener.onChallengePicked(challenges.get(selectedChallengeIndex));
-                    }
-                })
-                .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                .setTitle(R.string.quest_pick_challenge);
 
+        if (challenges.isEmpty()) {
+            builder.setMessage(R.string.no_challenges);
+        } else {
+            builder.setSingleChoiceItems(names, selectedChallengeIndex, (dialog, which) -> selectedChallengeIndex = which);
+        }
+        builder.setPositiveButton(R.string.help_dialog_ok, (dialog, which) -> {
+            if (selectedChallengeIndex >= 0) {
+                challengePickedListener.onChallengePicked(challenges.get(selectedChallengeIndex));
+            }
+        })
+                .setNegativeButton(R.string.cancel, (dialog, which) -> {
                 })
-                .setNeutralButton(R.string.none, (dialogInterface, i) -> {
-                    challengePickedListener.onChallengePicked(null);
-                });
+                .setNeutralButton(R.string.none, (dialogInterface, i) -> challengePickedListener.onChallengePicked(null));
         return builder.create();
     }
 

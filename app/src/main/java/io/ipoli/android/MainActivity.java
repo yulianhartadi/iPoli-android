@@ -74,7 +74,7 @@ import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.UpgradeDialog;
-import io.ipoli.android.player.UpgradesManager;
+import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
@@ -130,7 +130,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     PlayerPersistenceService playerPersistenceService;
 
     @Inject
-    UpgradesManager upgradesManager;
+    UpgradeManager upgradeManager;
 
     private Fragment currentFragment;
 
@@ -229,7 +229,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
 
             case R.id.repeating_quests:
-                if (upgradesManager.isLocked(Upgrade.REPEATING_QUESTS)) {
+                if (upgradeManager.isLocked(Upgrade.REPEATING_QUESTS)) {
                     UpgradeDialog.newInstance(Upgrade.REPEATING_QUESTS).show(getSupportFragmentManager());
                     return;
                 }
@@ -238,7 +238,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
 
             case R.id.challenges:
-                if (upgradesManager.isLocked(Upgrade.CHALLENGES)) {
+                if (upgradeManager.isLocked(Upgrade.CHALLENGES)) {
                     UpgradeDialog.newInstance(Upgrade.CHALLENGES).show(getSupportFragmentManager());
                     return;
                 }
@@ -247,7 +247,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
 
             case R.id.growth:
-                if (upgradesManager.isLocked(Upgrade.GROWTH)) {
+                if (upgradeManager.isLocked(Upgrade.GROWTH)) {
                     UpgradeDialog.newInstance(Upgrade.GROWTH).show(getSupportFragmentManager());
                     return;
                 }
@@ -598,14 +598,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void onStartFabMenuIntent(StartFabMenuIntentEvent e) {
         switch (e.fabName) {
             case REPEATING_QUEST:
-                if (upgradesManager.isLocked(Upgrade.REPEATING_QUESTS)) {
+                if (upgradeManager.isLocked(Upgrade.REPEATING_QUESTS)) {
                     UpgradeDialog.newInstance(Upgrade.REPEATING_QUESTS).show(getSupportFragmentManager());
                     return;
                 }
                 startActivity(e.intent);
                 return;
             case CHALLENGE:
-                if (upgradesManager.isLocked(Upgrade.CHALLENGES)) {
+                if (upgradeManager.isLocked(Upgrade.CHALLENGES)) {
                     UpgradeDialog.newInstance(Upgrade.CHALLENGES).show(getSupportFragmentManager());
                     return;
                 }

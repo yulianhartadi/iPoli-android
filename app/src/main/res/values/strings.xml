@@ -734,6 +734,7 @@
     <string name="reminders">Reminders</string>
     <string name="timer">Timer</string>
     <string name="ready_to_use_challenges">Ready to use challenges</string>
+    <string name="no_challenges">You have not challenged yourself</string>
 
 
     <string-array name="player_titles">

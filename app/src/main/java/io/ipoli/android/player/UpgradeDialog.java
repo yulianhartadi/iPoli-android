@@ -43,7 +43,7 @@ public class UpgradeDialog extends DialogFragment {
     Bus eventBus;
 
     @Inject
-    UpgradesManager upgradesManager;
+    UpgradeManager upgradeManager;
 
     @BindView(R.id.upgrade_title)
     TextView title;
@@ -102,7 +102,7 @@ public class UpgradeDialog extends DialogFragment {
         description.setText(upgrade.shortDesc);
         notEnoughCoins.setText(String.format(getString(R.string.upgrade_dialog_not_enough_coins), upgrade.price));
 
-        boolean hasEnoughCoins = upgradesManager.hasEnoughCoinsForUpgrade(upgrade);
+        boolean hasEnoughCoins = upgradeManager.hasEnoughCoinsForUpgrade(upgrade);
         String positiveBtnText = hasEnoughCoins ? getString(R.string.buy) : getString(R.string.buy_life_coins);
 
         price.setVisibility(hasEnoughCoins ? View.VISIBLE : View.GONE);
@@ -113,7 +113,7 @@ public class UpgradeDialog extends DialogFragment {
                 .setCustomTitle(titleView)
                 .setPositiveButton(positiveBtnText, (dialog, which) -> {
                     if (hasEnoughCoins) {
-                        upgradesManager.buy(upgrade);
+                        upgradeManager.buy(upgrade);
                         String message = getString(R.string.upgrade_successfully_bought, getString(upgrade.title));
                         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                         eventBus.post(new UpgradeBoughtEvent(upgrade));

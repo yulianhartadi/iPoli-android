@@ -46,7 +46,7 @@ import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.player.UpgradeDialog;
-import io.ipoli.android.player.UpgradesManager;
+import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.store.Upgrade;
 
 /**
@@ -61,7 +61,7 @@ public class ChallengeListFragment extends BaseFragment implements OnDataChanged
     Bus eventBus;
 
     @Inject
-    UpgradesManager upgradesManager;
+    UpgradeManager upgradeManager;
 
     @BindView(R.id.challenge_list)
     EmptyStateRecyclerView challengeList;
@@ -121,7 +121,7 @@ public class ChallengeListFragment extends BaseFragment implements OnDataChanged
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_pick_challenge:
-                if(upgradesManager.isLocked(Upgrade.PREDEFINED_CHALLENGES)) {
+                if(upgradeManager.isLocked(Upgrade.PREDEFINED_CHALLENGES)) {
                     UpgradeDialog.newInstance(Upgrade.PREDEFINED_CHALLENGES).show(getFragmentManager());
                     return true;
                 }

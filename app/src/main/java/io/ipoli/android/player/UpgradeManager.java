@@ -11,13 +11,13 @@ import io.ipoli.android.store.Upgrade;
  * on 5/22/17.
  */
 
-public class UpgradesManager implements OnDataChangedListener<Player> {
+public class UpgradeManager implements OnDataChangedListener<Player> {
 
     private Player player;
 
     private final PlayerPersistenceService playerPersistenceService;
 
-    public UpgradesManager(PlayerPersistenceService playerPersistenceService) {
+    public UpgradeManager(PlayerPersistenceService playerPersistenceService) {
         this.playerPersistenceService = playerPersistenceService;
         if (playerPersistenceService.get() != null) {
             playerPersistenceService.listen(this);
