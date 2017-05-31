@@ -9,12 +9,16 @@ import android.view.View;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.tutorial.fragments.IntroFragment;
+import io.ipoli.android.app.tutorial.fragments.NamePromptFragment;
+import io.ipoli.android.app.tutorial.fragments.TipsFragment;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/31/17.
  */
 public class OnboardingActivity extends AppCompatActivity {
+
+    private String playerName;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,5 +43,20 @@ public class OnboardingActivity extends AppCompatActivity {
                             | View.SYSTEM_UI_FLAG_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         }
+    }
+
+    public void onIntroDone() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        transaction.replace(R.id.root_container, new NamePromptFragment(), "fragment");
+        transaction.commit();
+    }
+
+    public void onNamePromptDone(String playerName) {
+        this.playerName = playerName;
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        transaction.replace(R.id.root_container, new TipsFragment(), "fragment");
+        transaction.commit();
     }
 }
