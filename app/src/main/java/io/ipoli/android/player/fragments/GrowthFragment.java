@@ -81,7 +81,6 @@ import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
-import static io.ipoli.android.R.string.overdue;
 import static org.threeten.bp.temporal.ChronoUnit.DAYS;
 
 /**
@@ -631,7 +630,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
 
     private void showSummary(int completed, int overdue, int minutesTracked) {
         summaryDone.setText(completed + "\n" + getString(R.string.done));
-        summaryOverdue.setText(overdue + "\n" + getString(overdue));
+        summaryOverdue.setText(overdue + "\n" + getString(R.string.overdue));
         if (minutesTracked < 60) {
             summaryTimeTracked.setText(minutesTracked + " min\n" + getString(R.string.tracked));
         } else {
@@ -684,7 +683,7 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         overdueText += overdueChange >= 0 ? "+" : "-";
         overdueText += Math.abs(overdueChange) + "%";
         int spanEnd = overdueText.length();
-        overdueText += "\n" + getString(overdue);
+        overdueText += "\n" + getString(R.string.overdue);
         SpannableString finalText = new SpannableString(overdueText);
         finalText.setSpan(new ForegroundColorSpan(overdueChange > 0 ? ContextCompat.getColor(getContext(), R.color.md_red_A400) : ContextCompat.getColor(getContext(), R.color.md_light_green_300)), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
         finalText.setSpan(new StyleSpan(Typeface.BOLD), spanStart, spanEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
