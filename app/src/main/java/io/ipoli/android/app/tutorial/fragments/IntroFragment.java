@@ -13,6 +13,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
+import io.ipoli.android.app.tutorial.OnboardingActivity;
 import io.ipoli.android.app.ui.TypewriterView;
 
 /**
@@ -30,12 +31,7 @@ public class IntroFragment extends Fragment {
     @BindView(R.id.tutorial_answer_negative)
     Button negativeAnswer;
 
-    private View.OnClickListener showTipsListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-
-        }
-    };
+    private View.OnClickListener showTipsListener = v -> ((OnboardingActivity) getActivity()).onIntroDone();
 
     private View.OnClickListener showBackStoryListener = v -> {
         prepareForNextState();
@@ -50,7 +46,7 @@ public class IntroFragment extends Fragment {
                 .type(" That deamon I was telling you about is pretty evil! He is so evil that his name is EVIL Snail! Yes, that name was given to him by his mother").run(new Runnable() {
             @Override
             public void run() {
-                positiveAnswer.setText("Show tips");
+                positiveAnswer.setText("Ready to go");
                 fadeIn(positiveAnswer);
                 positiveAnswer.setOnClickListener(showTipsListener);
             }
@@ -72,7 +68,7 @@ public class IntroFragment extends Fragment {
         tutorialText.type("So, we've established the fact that you might be the ONE. Would you like some tips?").run(new Runnable() {
             @Override
             public void run() {
-                positiveAnswer.setText("Show tips");
+                positiveAnswer.setText("Ready to go");
                 negativeAnswer.setText("The ONE?");
                 fadeIn(positiveAnswer);
                 fadeIn(negativeAnswer);
@@ -87,11 +83,20 @@ public class IntroFragment extends Fragment {
         prepareForNextState();
         tutorialText.type("Gosh, we have another one of those...").pause()
                 .delete("Gosh, we have another one of those...").pause()
-                .type("Ok, Ok. Let's start over!").pause().run(() -> {
+                .type("Ok, ok. Let's start over!").pause().run(() -> {
             tutorialText.setText("");
-        }).type("Welcome, Hero!").pause().delete("Welcome, Hero!")
-                .type("Your greatest journey is starting").pause().type(" today!").pause().delete("Your greatest journey is starting today!")
-                .type("Are you ready to embrace your destiny of many hours of studying, working late, doing sports and eating yucky food?").run(() -> {
+        }).type("Welcome, Hero!").pause().run(new Runnable() {
+            @Override
+            public void run() {
+                tutorialText.setText("");
+            }
+        }).pause().type("Your greatest journey is starting").pause().type(" today!").pause().run(new Runnable() {
+            @Override
+            public void run() {
+                tutorialText.setText("");
+            }
+        })
+                .type("Are you ready to embrace your destiny of studying many hours, working late, doing sports and eating yucky food?").run(() -> {
             positiveAnswer.setText("I Accept");
             negativeAnswer.setText("Nah, not me");
             fadeIn(positiveAnswer);
