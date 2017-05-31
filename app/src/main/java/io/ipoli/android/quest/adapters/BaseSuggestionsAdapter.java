@@ -57,8 +57,8 @@ public abstract class BaseSuggestionsAdapter extends ArrayAdapter<SuggestionDrop
     protected abstract View.OnClickListener getClickListener(int position);
 
     class ViewHolder {
-        TextView text;
-        ImageView icon;
+        public TextView text;
+        public ImageView icon;
     }
 
     @Override

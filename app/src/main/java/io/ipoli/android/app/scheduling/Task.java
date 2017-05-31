@@ -76,15 +76,15 @@ public class Task implements Comparable<Task> {
         this.recommendedSlots = recommendedSlots;
     }
 
-    List<TimeSlot> getRecommendedSlots() {
+    protected List<TimeSlot> getRecommendedSlots() {
         return recommendedSlots;
     }
 
-    int getCurrentTimeSlotIndex() {
+    protected int getCurrentTimeSlotIndex() {
         return currentTimeSlotIndex;
     }
 
-    void setCurrentTimeSlotIndex(int currentTimeSlotIndex) {
+    protected void setCurrentTimeSlotIndex(int currentTimeSlotIndex) {
         this.currentTimeSlotIndex = currentTimeSlotIndex;
     }
 
