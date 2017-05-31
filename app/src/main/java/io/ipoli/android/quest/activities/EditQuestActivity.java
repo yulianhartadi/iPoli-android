@@ -241,6 +241,10 @@ public class EditQuestActivity extends BaseActivity implements
         hideUnderline(addSubQuest);
 
         addSubQuest.setOnFocusChangeListener((view, isFocused) -> {
+//            if(upgradeManager.isLocked(Upgrade.SUB_QUESTS)) {
+//                UpgradeDialog.newInstance(Upgrade.SUB_QUESTS).show(getSupportFragmentManager());
+//                return;
+//            }
             String text = addSubQuest.getText().toString();
             if (isFocused) {
                 showUnderline(addSubQuest);
