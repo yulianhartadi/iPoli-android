@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import org.threeten.bp.LocalDate;
 
@@ -31,15 +32,19 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.tutorial.PickQuestViewModel;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.app.ui.events.StartFabMenuIntentEvent;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.adapters.ChallengePickQuestListAdapter;
 import io.ipoli.android.challenge.events.NewChallengeQuestsPickedEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
+import io.ipoli.android.player.UpgradeDialog;
+import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
+import io.ipoli.android.store.Upgrade;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -48,6 +53,9 @@ import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 public class AddChallengeQuestsFragment extends BaseFragment {
 
     public static final int MIN_FILTER_QUERY_LEN = 2;
+
+    @Inject
+    UpgradeManager upgradeManager;
 
     @Inject
     Bus eventBus;
@@ -134,6 +142,26 @@ public class AddChallengeQuestsFragment extends BaseFragment {
     public void onPause() {
         eventBus.unregister(this);
         super.onPause();
+    }
+
+    @Subscribe
+    public void onStartFabMenuIntent(StartFabMenuIntentEvent e) {
+        switch (e.fabName) {
+            case REPEATING_QUEST:
+                if (upgradeManager.isLocked(Upgrade.REPEATING_QUESTS)) {
+                    UpgradeDialog.newInstance(Upgrade.REPEATING_QUESTS, new UpgradeDialog.OnUnlockListener() {
+                        @Override
+                        public void onUnlock() {
+                            startActivity(e.intent);
+                        }
+                    }).show(getFragmentManager());
+                    break;
+                }
+                startActivity(e.intent);
+                break;
+            default:
+                startActivity(e.intent);
+        }
     }
 
     private void filter(String query, FilterListener filterListener) {

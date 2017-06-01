@@ -19,14 +19,13 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.reward.formatters.PriceFormatter;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 6/17/16.
  */
 public class PricePickerFragment extends DialogFragment {
-    private static final String TAG = "price-picker-dialog";
+    private static final String TAG = "points-picker-dialog";
     private static final String PRICE = "price";
     private static final int MIN_PRICE = Constants.DEFAULT_MIN_REWARD_PRICE;
     private static final int MAX_PRICE = 1000;
@@ -75,7 +74,7 @@ public class PricePickerFragment extends DialogFragment {
         List<String> prices = new ArrayList<>();
         int selectedPriceIndex = 1;
         for (int i = 0; i < availablePrices.size(); i++) {
-            prices.add(PriceFormatter.formatReadable(availablePrices.get(i)));
+            prices.add(getString(R.string.reward_price_points, availablePrices.get(i)));
             if (availablePrices.get(i) == this.price) {
                 selectedPriceIndex = i;
             }

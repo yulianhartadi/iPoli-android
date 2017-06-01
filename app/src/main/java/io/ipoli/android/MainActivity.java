@@ -15,13 +15,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.appinvite.AppInviteInvitation;
 import com.squareup.otto.Bus;
@@ -56,24 +56,27 @@ import io.ipoli.android.app.events.InviteFriendsCanceledEvent;
 import io.ipoli.android.app.events.InviteFriendsEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.rate.RateDialogConstants;
 import io.ipoli.android.app.settings.SettingsActivity;
 import io.ipoli.android.app.share.ShareQuestDialog;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
+import io.ipoli.android.app.ui.events.StartFabMenuIntentEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
-import io.ipoli.android.app.utils.ResourceUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
-import io.ipoli.android.player.activities.PickAvatarPictureActivity;
+import io.ipoli.android.player.UpgradeDialog;
+import io.ipoli.android.player.UpgradeDialog.OnUnlockListener;
+import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.player.events.LevelDownEvent;
-import io.ipoli.android.player.events.PickAvatarRequestEvent;
+import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.activities.EditQuestActivity;
@@ -96,11 +99,12 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reminder.data.Reminder;
 import io.ipoli.android.reward.fragments.RewardListFragment;
-import io.ipoli.android.shop.activities.CoinStoreActivity;
+import io.ipoli.android.store.StoreItemType;
+import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.activities.StoreActivity;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, OnDataChangedListener<Player> {
 
-    public static final int PICK_PLAYER_PICTURE_REQUEST_CODE = 101;
     public static final int INVITE_FRIEND_REQUEST_CODE = 102;
     private static final int PROGRESS_BAR_MAX_VALUE = 100;
 
@@ -124,6 +128,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Inject
     PlayerPersistenceService playerPersistenceService;
+
+    @Inject
+    UpgradeManager upgradeManager;
 
     private boolean isRateDialogShown;
     public ActionBarDrawerToggle actionBarDrawerToggle;
@@ -177,14 +184,29 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        playerPersistenceService.listen(this);
+    }
+
+    @Override
+    protected void onStop() {
+        playerPersistenceService.removeAllListeners();
+        super.onStop();
+    }
+
+    @Override
+    public void onDataChanged(Player player) {
+        updatePlayerInDrawer(player);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         eventBus.register(this);
-        updatePlayerInDrawer(getPlayer());
     }
 
     private void onItemSelectedFromDrawer() {
-        navigationView.setCheckedItem(navigationItemSelected.getItemId());
 
         EventSource source = null;
         switch (navigationItemSelected.getItemId()) {
@@ -205,16 +227,28 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
 
             case R.id.repeating_quests:
+                if (upgradeManager.isLocked(Upgrade.REPEATING_QUESTS)) {
+                    showUpgradeDialog(Upgrade.REPEATING_QUESTS, new RepeatingQuestListFragment());
+                    return;
+                }
                 source = EventSource.REPEATING_QUESTS;
                 changeCurrentFragment(new RepeatingQuestListFragment());
                 break;
 
             case R.id.challenges:
+                if (upgradeManager.isLocked(Upgrade.CHALLENGES)) {
+                    showUpgradeDialog(Upgrade.CHALLENGES, new ChallengeListFragment());
+                    return;
+                }
                 source = EventSource.CHALLENGES;
                 changeCurrentFragment(new ChallengeListFragment());
                 break;
 
             case R.id.growth:
+                if (upgradeManager.isLocked(Upgrade.GROWTH)) {
+                    showUpgradeDialog(Upgrade.GROWTH, new GrowthFragment());
+                    return;
+                }
                 source = EventSource.GROWTH;
                 changeCurrentFragment(new GrowthFragment());
                 break;
@@ -226,7 +260,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             case R.id.store:
                 source = EventSource.STORE;
-                startActivity(new Intent(this, CoinStoreActivity.class));
+                startActivity(new Intent(this, StoreActivity.class));
                 break;
 
             case R.id.invite_friends:
@@ -249,9 +283,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
         }
 
+        navigationView.setCheckedItem(navigationItemSelected.getItemId());
         if (source != null) {
             eventBus.post(new ScreenShownEvent(source));
         }
+    }
+
+    private void showUpgradeDialog(Upgrade upgrade, Fragment fragment) {
+        UpgradeDialog.newInstance(upgrade, new OnUnlockListener() {
+            @Override
+            public void onUnlock() {
+                changeCurrentFragment(fragment);
+                navigationView.setCheckedItem(navigationItemSelected.getItemId());
+            }
+        }).show(getSupportFragmentManager());
     }
 
     @Override
@@ -272,25 +317,24 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         String title = playerTitles[Math.min(playerLevel / 10, playerTitles.length - 1)];
         level.setText(String.format(getString(R.string.player_level), playerLevel, title));
 
-        TextView coins = (TextView) header.findViewById(R.id.player_coins);
-        coins.setText(String.valueOf(player.getCoins()));
-        coins.setOnClickListener(view -> {
-            startActivity(new Intent(this, CoinStoreActivity.class));
-            eventBus.post(new AvatarCoinsTappedEvent());
-        });
+        populateHeaderCoins(player, header);
+        populateHeaderPoints(player, header);
+        populateHeaderXP(player, header);
 
         ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
         experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
         experienceBar.setProgress(getCurrentProgress(player));
 
         CircleImageView avatarPictureView = (CircleImageView) header.findViewById(R.id.player_picture);
-        avatarPictureView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, player.getPicture()));
-        avatarPictureView.setOnClickListener(v -> eventBus.post(new PickAvatarRequestEvent(EventSource.NAVIGATION_DRAWER)));
+        avatarPictureView.setImageResource(player.getCurrentAvatar().picture);
+        avatarPictureView.setOnClickListener(v -> {
+            eventBus.post(new OpenAvatarStoreRequestEvent(EventSource.NAVIGATION_DRAWER));
+            Intent intent = new Intent(this, StoreActivity.class);
+            intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.AVATARS.name());
+            startActivity(intent);
+        });
 
-        TextView currentXP = (TextView) header.findViewById(R.id.player_current_xp);
-        currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), player.getExperience()));
         updatePetInDrawer(player.getPet());
-
 
         Button signIn = (Button) header.findViewById(R.id.sign_in);
         if (player.isAuthenticated()) {
@@ -302,11 +346,48 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         }
     }
 
+    private void populateHeaderCoins(Player player, View header) {
+        TextView coins = (TextView) header.findViewById(R.id.player_coins);
+        coins.setText(formatValue(player.getCoins()));
+        coins.setOnClickListener(view -> {
+            Intent intent = new Intent(this, StoreActivity.class);
+            intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.COINS.name());
+            startActivity(intent);
+            eventBus.post(new AvatarCoinsTappedEvent());
+        });
+    }
+
+    private void populateHeaderPoints(Player player, View header) {
+        TextView rewardPoints = (TextView) header.findViewById(R.id.player_reward_points);
+        rewardPoints.setText(formatValue(player.getRewardPoints()));
+        rewardPoints.setOnClickListener(v ->
+                Toast.makeText(MainActivity.this, R.string.reward_points_description, Toast.LENGTH_LONG).show());
+    }
+
+    private void populateHeaderXP(Player player, View header) {
+        TextView currentXP = (TextView) header.findViewById(R.id.player_current_xp);
+        currentXP.setText(getString(R.string.nav_drawer_player_xp, formatValue(Long.valueOf(player.getExperience()))));
+    }
+
+    private String formatValue(Long value) {
+        String valString = String.valueOf(value);
+        if(value < 1000) {
+            return valString;
+        }
+        String main = valString.substring(0, valString.length() - 3);
+        String result = main;
+        char tail = valString.charAt(valString.length() - 3);
+        if(tail != '0') {
+            result += "." + tail;
+        }
+        return getString(R.string.big_value_format, result);
+    }
+
     private void updatePetInDrawer(Pet pet) {
         View header = navigationView.getHeaderView(0);
 
         CircleImageView petPictureView = (CircleImageView) header.findViewById(R.id.pet_picture);
-        petPictureView.setImageResource(ResourceUtils.extractDrawableResource(MainActivity.this, pet.getPicture() + "_head"));
+        petPictureView.setImageResource(pet.getCurrentAvatar().headPicture);
         petPictureView.setOnClickListener(v -> startActivity(new Intent(this, PetActivity.class)));
 
         ImageView petStateView = (ImageView) header.findViewById(R.id.pet_state);
@@ -532,6 +613,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Subscribe
     public void onStartQuestRequest(StartQuestRequestEvent e) {
+        if (upgradeManager.isLocked(Upgrade.TIMER)) {
+            UpgradeDialog.newInstance(Upgrade.TIMER).show(getSupportFragmentManager());
+            return;
+        }
+
         new StartQuestCommand(this, e.quest, questPersistenceService).execute();
     }
 
@@ -540,11 +626,42 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         new StopQuestCommand(this, e.quest, questPersistenceService).execute();
     }
 
+    @Subscribe
+    public void onStartFabMenuIntent(StartFabMenuIntentEvent e) {
+        switch (e.fabName) {
+            case REPEATING_QUEST:
+                if (upgradeManager.isLocked(Upgrade.REPEATING_QUESTS)) {
+                    showUpgradeDialogForFabItem(Upgrade.REPEATING_QUESTS, e.intent);
+                    return;
+                }
+                startActivity(e.intent);
+                return;
+            case CHALLENGE:
+                if (upgradeManager.isLocked(Upgrade.CHALLENGES)) {
+                    showUpgradeDialogForFabItem(Upgrade.CHALLENGES, e.intent);
+                    return;
+                }
+                startActivity(e.intent);
+                return;
+            default:
+                startActivity(e.intent);
+        }
+    }
+
+    private void showUpgradeDialogForFabItem(Upgrade upgrade, Intent intent) {
+        UpgradeDialog.newInstance(upgrade, new OnUnlockListener() {
+            @Override
+            public void onUnlock() {
+                startActivity(intent);
+            }
+        }).show(getSupportFragmentManager());
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         navigationItemSelected = item;
         drawerLayout.closeDrawer(GravityCompat.START);
-        return true;
+        return false;
     }
 
     private void inviteFriends() {
@@ -557,24 +674,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         startActivityForResult(intent, INVITE_FRIEND_REQUEST_CODE);
     }
 
-    @Subscribe
-    public void onPickAvatarRequest(PickAvatarRequestEvent e) {
-        startActivityForResult(new Intent(MainActivity.this, PickAvatarPictureActivity.class), PICK_PLAYER_PICTURE_REQUEST_CODE);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_PLAYER_PICTURE_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
-            String picture = data.getStringExtra(Constants.PICTURE_NAME_EXTRA_KEY);
-            if (!TextUtils.isEmpty(picture)) {
-                Player player = getPlayer();
-                ImageView avatarImage = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.player_picture);
-                avatarImage.setImageResource(ResourceUtils.extractDrawableResource(this, picture));
-                player.setPicture(picture);
-                playerPersistenceService.save(player);
-            }
-        }
 
         if (requestCode == INVITE_FRIEND_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
