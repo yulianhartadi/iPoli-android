@@ -50,10 +50,6 @@ import io.ipoli.android.store.iab.SkuDetails;
  */
 
 public class CoinStoreFragment extends BaseFragment {
-    //    private static final String SKU_COINS_100 = "coins_100";
-//    private static final String SKU_COINS_300 = "coins_300";
-//    private static final String SKU_COINS_500 = "coins_500";
-//    private static final String SKU_COINS_1000 = "coins_1000";
     private static final String SKU_STARTER_PACK = "starter_pack";
     private static final String SKU_PREMIUM_PACK = "premium_pack";
     private static final String SKU_JUMBO_PACK = "jumbo_pack";
@@ -81,26 +77,17 @@ public class CoinStoreFragment extends BaseFragment {
     @BindView(R.id.failure_message)
     TextView failureMessage;
 
-    @BindView(R.id.starter_title)
-    TextView starterTitle;
-
     @BindView(R.id.starter_price)
     TextView starterPrice;
 
     @BindView(R.id.starter_buy)
     Button starterBuy;
 
-    @BindView(R.id.premium_title)
-    TextView premiumTitle;
-
     @BindView(R.id.premium_price)
     TextView premiumPrice;
 
     @BindView(R.id.premium_buy)
     Button premiumBuy;
-
-    @BindView(R.id.jumbo_title)
-    TextView jumboTitle;
 
     @BindView(R.id.jumbo_price)
     TextView jumboPrice;
@@ -139,7 +126,7 @@ public class CoinStoreFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         ((StoreActivity) getActivity()).getSupportActionBar().setTitle(R.string.fragment_coin_store_title);
 
-//        loaderContainer.setVisibility(View.VISIBLE);
+        loaderContainer.setVisibility(View.VISIBLE);
 
         if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
             showFailureMessage(R.string.no_internet_to_buy_coins);
@@ -220,15 +207,12 @@ public class CoinStoreFragment extends BaseFragment {
             return;
         }
 
-        starterTitle.setText(starterPack.getTitle());
         starterPrice.setText(getString(R.string.coins_pack_value, skuToValue.get(SKU_STARTER_PACK)));
         starterBuy.setText(starterPack.getPrice());
 
-        premiumTitle.setText(premiumPack.getTitle());
         premiumPrice.setText(getString(R.string.coins_pack_value, skuToValue.get(SKU_PREMIUM_PACK)));
         premiumBuy.setText(premiumPack.getPrice());
 
-        jumboTitle.setText(jumboPack.getTitle());
         jumboPrice.setText(getString(R.string.coins_pack_value, skuToValue.get(SKU_JUMBO_PACK)));
         jumboBuy.setText(jumboPack.getPrice());
 
