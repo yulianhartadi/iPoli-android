@@ -736,7 +736,7 @@
     <string name="programmed_challenges">Programmed challenges</string>
     <string name="no_challenges">You have not challenged yourself</string>
     <string name="upgrades_migration_message">You are an awesome iPoli user and all current upgrades are free for you!</string>
-    <string name="xp_format">%dK</string>
+    <string name="big_value_format">%sK</string>
     <string name="starters_pack">Starters pack</string>
     <string name="starter_pack_desc">Your journey starts here</string>
     <string name="premium_pack">Premium pack</string>
