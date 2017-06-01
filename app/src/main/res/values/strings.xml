@@ -829,6 +829,7 @@
     <string name="unlock">Unlock</string>
     <string name="unlock_upgrade">Unlock upgrade</string>
     <string name="requires_upgrade_message">Requires %s</string>
+    <string name="reward_points_won">Reward points won</string>
 
 
     <string-array name="player_titles">

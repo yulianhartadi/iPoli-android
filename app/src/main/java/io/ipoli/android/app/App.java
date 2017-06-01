@@ -189,7 +189,6 @@ public class App extends MultiDexApplication {
     @Inject
     RewardPointsRewardGenerator rewardPointsRewardGenerator;
 
-
     @Inject
     UrlProvider urlProvider;
 
@@ -817,16 +816,17 @@ public class App extends MultiDexApplication {
             dailyChallenge.setCoins(coins);
             dailyChallenge.setRewardPoints(rewardPoints);
             updateAvatar(dailyChallenge);
-            showChallengeCompleteDialog(getString(R.string.daily_challenge_complete_dialog_title), xp, coins);
+            showChallengeCompleteDialog(getString(R.string.daily_challenge_complete_dialog_title), xp, coins, rewardPoints);
             eventBus.post(new DailyChallengeCompleteEvent());
         });
     }
 
-    private void showChallengeCompleteDialog(String title, long xp, long coins) {
+    private void showChallengeCompleteDialog(String title, long xp, long coins, long rewardPoints) {
         Intent intent = new Intent(this, ChallengeCompleteActivity.class);
         intent.putExtra(ChallengeCompleteActivity.TITLE, title);
         intent.putExtra(ChallengeCompleteActivity.EXPERIENCE, xp);
         intent.putExtra(ChallengeCompleteActivity.COINS, coins);
+        intent.putExtra(ChallengeCompleteActivity.REWARD_POINTS, rewardPoints);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
@@ -901,7 +901,7 @@ public class App extends MultiDexApplication {
     private void onChallengeComplete(Challenge challenge, EventSource source) {
         updateAvatar(challenge);
         savePet((int) (Math.floor(challenge.getExperience() / Constants.XP_TO_PET_HP_RATIO)));
-        showChallengeCompleteDialog(getString(R.string.challenge_complete, challenge.getName()), challenge.getExperience(), challenge.getCoins());
+        showChallengeCompleteDialog(getString(R.string.challenge_complete, challenge.getName()), challenge.getExperience(), challenge.getCoins(), challenge.getRewardPoints());
         eventBus.post(new ChallengeCompletedEvent(challenge, source));
     }
 
