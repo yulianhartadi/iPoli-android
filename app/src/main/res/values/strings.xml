@@ -757,26 +757,46 @@
     <string name="avatar_name_michael">Bad boy</string>
     <string name="avatar_name_tobby">Brainiac</string>
 
+    <string name="upgrade_rq_sub_title">Create repeating tasks</string>
     <string name="upgrade_rq_short_desc">Repeating quests are called all your repeating tasks - fixed or flexible.</string>
     <string name="upgrade_rq_long_desc">iPoli automatically makes a quest in your calendar for the repeating one if you have to do it on a particular date.</string>
+
+    <string name="upgrade_challenges_sub_title">Set and achieve your goals</string>
     <string name="upgrade_challenges_short_desc"></string>
     <string name="upgrade_challenges_long_desc"></string>
+
+    <string name="upgrade_growth_sub_title">Track your progress and score</string>
     <string name="upgrade_growth_short_desc">Track and compare your progress and productivity during different time spans.</string>
     <string name="upgrade_growth_long_desc">Monitor home much time do you spend for quests in each category, how many do you complete, what is your Awesomeness score and more facts to help your productivity.</string>
+
+    <string name="upgrade_matrix_sub_title">Separate important from urgent</string>
     <string name="upgrade_matrix_short_desc"></string>
     <string name="upgrade_matrix_long_desc"></string>
+
+    <string name="upgrade_sync_calendars_sub_title">Import all your events</string>
     <string name="upgrade_sync_calendars_short_desc"></string>
     <string name="upgrade_sync_calendars_long_desc"></string>
-    <string name="upgrade_predefined_challenges_short_desc"></string>
+
+    <string name="upgrade_predefined_challenges_sub_title">Easy to follow helpful formulas</string>
+    <string name="upgrade_predefined_challenges_short_desc">instill healthy habits and mindfulness into your life</string>
     <string name="upgrade_predefined_challenges_long_desc"></string>
+
+    <string name="upgrade_notes_sub_title">Stay organized and clear your mind</string>
     <string name="upgrade_notes_short_desc"></string>
-    <string name="upgrade_notes_long_desc"></string>
+    <string name="upgrade_notes_long_desc">Add notes to your quests to help you remember</string>
+
+    <string name="upgrade_timer_sub_title">Keep track of your time</string>
     <string name="upgrade_timer_short_desc"></string>
-    <string name="upgrade_timer_long_desc"></string>
+    <string name="upgrade_timer_long_desc">Don\'t know where your time goes? </string>
+
+    <string name="upgrade_sub_quest_sub_title">Create checklists for your quests</string>
     <string name="upgrade_sub_quests_short_desc"></string>
-    <string name="upgrade_sub_quests_long_desc"></string>
+    <string name="upgrade_sub_quests_long_desc">Divide quests on smaller pieces</string>
+
+    <string name="upgrade_reminders_sub_title">Never forget anything</string>
     <string name="upgrade_reminders_short_desc"></string>
     <string name="upgrade_reminders_long_desc"></string>
+
     <string name="upgrade_dialog_name">You\'ve discovered %s!</string>
     <string name="upgrade_dialog_price_message">Do you want to unlock it now for %d of your life coins?</string>
 
