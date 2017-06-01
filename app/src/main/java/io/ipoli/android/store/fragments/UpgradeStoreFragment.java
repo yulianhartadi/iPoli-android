@@ -71,7 +71,7 @@ public class UpgradeStoreFragment extends BaseFragment {
 
         List<UpgradeViewModel> upgrades = createUpgradeViewModels();
 
-        adapter = new UpgradeStoreAdapter(getContext(), eventBus, upgrades);
+        adapter = new UpgradeStoreAdapter(getContext(), eventBus, upgrades, upgradeManager.getUnlockedCodes());
         upgradeList.setAdapter(adapter);
 
         eventBus.post(new ScreenShownEvent(EventSource.STORE_UPGRADES));

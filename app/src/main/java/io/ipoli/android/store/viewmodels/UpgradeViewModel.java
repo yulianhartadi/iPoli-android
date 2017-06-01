@@ -65,4 +65,12 @@ public class UpgradeViewModel {
     public LocalDate getUnlockDate() {
         return unlockDate;
     }
+
+    public boolean requiresUpgrade() {
+        return upgrade.requiredUpgrade != null;
+    }
+
+    public Upgrade getRequiredUpgrade() {
+        return upgrade.requiredUpgrade;
+    }
 }
