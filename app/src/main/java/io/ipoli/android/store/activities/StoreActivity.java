@@ -71,6 +71,7 @@ public class StoreActivity extends BaseActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
+                break;
         }
         return true;
     }

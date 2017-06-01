@@ -33,7 +33,6 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
-import io.ipoli.android.app.LockedStateListener;
 import io.ipoli.android.app.ui.dialogs.TextPickerFragment;
 import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
@@ -256,17 +255,6 @@ public class AddQuestSummaryFragment extends BaseFragment {
         subQuestListAdapter.setItemChangeListener(() ->
                 postEvent(new NewQuestSubQuestsPickedEvent(subQuestListAdapter.getSubQuests())));
 
-        addSubQuestView.setLockedStateListener(new LockedStateListener() {
-            @Override
-            public boolean isLocked() {
-                return false;
-            }
-
-            @Override
-            public void onLockedAction() {
-
-            }
-        });
         addSubQuestView.setSubQuestAddedListener(this::addSubQuest);
         addSubQuestView.setOnClosedListener(() -> addSubQuestView.setVisibility(View.GONE));
     }
