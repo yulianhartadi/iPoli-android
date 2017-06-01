@@ -84,7 +84,7 @@ public class UpgradeStoreAdapter extends EnterAnimationAdapter<UpgradeStoreAdapt
             holder.container.setBackgroundColor(ContextCompat.getColor(context, R.color.md_grey_50));
             holder.unlock.setVisibility(View.INVISIBLE);
             holder.unlockDate.setVisibility(View.VISIBLE);
-            holder.unlockDate.setText(context.getString(R.string.upgrade_bought_on, DateFormatter.format(context, vm.getUnlockDate())));
+            holder.unlockDate.setText(context.getString(R.string.upgrade_unloked_on, DateFormatter.format(context, vm.getUnlockDate())));
         } else {
             holder.unlock.setVisibility(View.VISIBLE);
             holder.unlockDate.setVisibility(View.GONE);
