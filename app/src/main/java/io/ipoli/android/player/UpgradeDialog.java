@@ -29,7 +29,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.store.StoreItemType;
 import io.ipoli.android.store.Upgrade;
 import io.ipoli.android.store.activities.StoreActivity;
-import io.ipoli.android.store.events.UpgradeBoughtEvent;
+import io.ipoli.android.store.events.UpgradeUnlockedEvent;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -60,20 +60,33 @@ public class UpgradeDialog extends DialogFragment {
 
     private OnDismissListener dismissListener;
 
+    private OnUnlockListener unlockListener;
+
     private Upgrade upgrade;
 
     private Unbinder unbinder;
 
     public static UpgradeDialog newInstance(Upgrade upgrade) {
-        return newInstance(upgrade, null);
+        return newInstance(upgrade, null, null);
+    }
+
+    public static UpgradeDialog newInstance(Upgrade upgrade, OnUnlockListener unlockListener) {
+        return newInstance(upgrade, unlockListener, null);
     }
 
     public static UpgradeDialog newInstance(Upgrade upgrade, OnDismissListener dismissListener) {
+        return newInstance(upgrade, null, dismissListener);
+    }
+
+    public static UpgradeDialog newInstance(Upgrade upgrade, OnUnlockListener unlockListener, OnDismissListener dismissListener) {
         UpgradeDialog fragment = new UpgradeDialog();
         Bundle args = new Bundle();
         args.putInt(UPGRADE_CODE, upgrade.code);
         fragment.setArguments(args);
-        if(dismissListener != null) {
+        if (unlockListener != null) {
+            fragment.unlockListener = unlockListener;
+        }
+        if (dismissListener != null) {
             fragment.dismissListener = dismissListener;
         }
         return fragment;
@@ -114,7 +127,7 @@ public class UpgradeDialog extends DialogFragment {
         price.setText(getString(R.string.upgrade_dialog_price_message, upgrade.price));
 
         boolean hasEnoughCoins = upgradeManager.hasEnoughCoinsForUpgrade(upgrade);
-        String positiveBtnText = hasEnoughCoins ? getString(R.string.buy) : getString(R.string.buy_life_coins);
+        String positiveBtnText = hasEnoughCoins ? getString(R.string.unlock) : getString(R.string.buy_life_coins);
 
         price.setVisibility(hasEnoughCoins ? View.VISIBLE : View.GONE);
         notEnoughCoins.setVisibility(hasEnoughCoins ? View.GONE : View.VISIBLE);
@@ -124,10 +137,13 @@ public class UpgradeDialog extends DialogFragment {
                 .setCustomTitle(titleView)
                 .setPositiveButton(positiveBtnText, (dialog, which) -> {
                     if (hasEnoughCoins) {
-                        upgradeManager.buy(upgrade);
+                        upgradeManager.unlock(upgrade);
                         String message = getString(R.string.upgrade_successfully_bought, getString(upgrade.title));
                         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-                        eventBus.post(new UpgradeBoughtEvent(upgrade));
+                        eventBus.post(new UpgradeUnlockedEvent(upgrade));
+                        if(unlockListener != null) {
+                            unlockListener.onUnlock();
+                        }
                     } else {
                         Intent intent = new Intent(getContext(), StoreActivity.class);
                         intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.COINS.name());
@@ -168,9 +184,13 @@ public class UpgradeDialog extends DialogFragment {
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        if(dismissListener != null) {
+        if (dismissListener != null) {
             dismissListener.onDismiss();
         }
+    }
+
+    public interface OnUnlockListener {
+        void onUnlock();
     }
 
     public interface OnDismissListener {

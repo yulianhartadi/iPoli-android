@@ -33,7 +33,7 @@ import io.ipoli.android.store.Upgrade;
 import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.adapters.UpgradeStoreAdapter;
 import io.ipoli.android.store.events.BuyUpgradeEvent;
-import io.ipoli.android.store.events.UpgradeBoughtEvent;
+import io.ipoli.android.store.events.UpgradeUnlockedEvent;
 import io.ipoli.android.store.viewmodels.UpgradeViewModel;
 
 /**
@@ -83,25 +83,25 @@ public class UpgradeStoreFragment extends BaseFragment {
     private List<UpgradeViewModel> createUpgradeViewModels() {
         List<UpgradeViewModel> upgrades = new ArrayList<>();
         List<Upgrade> lockedUpgrades = new ArrayList<>();
-        List<Upgrade> boughtUpgrades = new ArrayList<>();
+        List<Upgrade> unlockedUpgrades = new ArrayList<>();
 
         for (Upgrade upgrade : Upgrade.values()) {
             if (upgradeManager.isUnlocked(upgrade)) {
-                boughtUpgrades.add(upgrade);
+                unlockedUpgrades.add(upgrade);
             } else {
                 lockedUpgrades.add(upgrade);
             }
         }
 
-        Collections.sort(boughtUpgrades, ((u1, u2) ->
-                -Long.compare(upgradeManager.getBoughtDate(u1), upgradeManager.getBoughtDate(u2))));
+        Collections.sort(unlockedUpgrades, ((u1, u2) ->
+                -Long.compare(upgradeManager.getUnlockDate(u1), upgradeManager.getUnlockDate(u2))));
 
         for (Upgrade upgrade : lockedUpgrades) {
             upgrades.add(new UpgradeViewModel(getContext(), upgrade));
         }
 
-        for (Upgrade upgrade : boughtUpgrades) {
-            upgrades.add(new UpgradeViewModel(getContext(), upgrade, DateUtils.fromMillis(upgradeManager.getBoughtDate(upgrade))));
+        for (Upgrade upgrade : unlockedUpgrades) {
+            upgrades.add(new UpgradeViewModel(getContext(), upgrade, DateUtils.fromMillis(upgradeManager.getUnlockDate(upgrade))));
         }
         return upgrades;
     }
@@ -112,10 +112,10 @@ public class UpgradeStoreFragment extends BaseFragment {
         String title = getString(upgrade.title);
         String message;
         if (upgradeManager.hasEnoughCoinsForUpgrade(upgrade)) {
-            upgradeManager.buy(upgrade);
+            upgradeManager.unlock(upgrade);
             message = getString(R.string.upgrade_successfully_bought, title);
             adapter.setViewModels(createUpgradeViewModels());
-            eventBus.post(new UpgradeBoughtEvent(upgrade));
+            eventBus.post(new UpgradeUnlockedEvent(upgrade));
         } else {
             message = getString(R.string.upgrade_too_expensive, title);
         }

@@ -73,6 +73,7 @@ import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.UpgradeDialog;
+import io.ipoli.android.player.UpgradeDialog.OnUnlockListener;
 import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
@@ -227,7 +228,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             case R.id.repeating_quests:
                 if (upgradeManager.isLocked(Upgrade.REPEATING_QUESTS)) {
-                    UpgradeDialog.newInstance(Upgrade.REPEATING_QUESTS).show(getSupportFragmentManager());
+                    showUpgradeDialog(Upgrade.REPEATING_QUESTS, new RepeatingQuestListFragment());
                     return;
                 }
                 source = EventSource.REPEATING_QUESTS;
@@ -236,7 +237,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             case R.id.challenges:
                 if (upgradeManager.isLocked(Upgrade.CHALLENGES)) {
-                    UpgradeDialog.newInstance(Upgrade.CHALLENGES).show(getSupportFragmentManager());
+                    showUpgradeDialog(Upgrade.CHALLENGES, new ChallengeListFragment());
                     return;
                 }
                 source = EventSource.CHALLENGES;
@@ -245,7 +246,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             case R.id.growth:
                 if (upgradeManager.isLocked(Upgrade.GROWTH)) {
-                    UpgradeDialog.newInstance(Upgrade.GROWTH).show(getSupportFragmentManager());
+                    showUpgradeDialog(Upgrade.GROWTH, new GrowthFragment());
                     return;
                 }
                 source = EventSource.GROWTH;
@@ -286,6 +287,16 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (source != null) {
             eventBus.post(new ScreenShownEvent(source));
         }
+    }
+
+    private void showUpgradeDialog(Upgrade upgrade, Fragment fragment) {
+        UpgradeDialog.newInstance(upgrade, new OnUnlockListener() {
+            @Override
+            public void onUnlock() {
+                changeCurrentFragment(fragment);
+                navigationView.setCheckedItem(navigationItemSelected.getItemId());
+            }
+        }).show(getSupportFragmentManager());
     }
 
     @Override
@@ -582,7 +593,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Subscribe
     public void onStartQuestRequest(StartQuestRequestEvent e) {
-        if(upgradeManager.isLocked(Upgrade.TIMER)) {
+        if (upgradeManager.isLocked(Upgrade.TIMER)) {
             UpgradeDialog.newInstance(Upgrade.TIMER).show(getSupportFragmentManager());
             return;
         }

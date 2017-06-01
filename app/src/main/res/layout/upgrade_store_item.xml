@@ -92,7 +92,7 @@
 
 
         <Button
-            android:id="@+id/upgrade_buy"
+            android:id="@+id/upgrade_unlock"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -125,7 +125,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/upgrade_buy"
+            app:layout_constraintTop_toBottomOf="@+id/upgrade_unlock"
             app:layout_constraintVertical_bias="0.5" />
 
         <ImageButton
@@ -135,9 +135,9 @@
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:background="@null"
-            app:layout_constraintBottom_toBottomOf="@+id/upgrade_buy"
+            app:layout_constraintBottom_toBottomOf="@+id/upgrade_unlock"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/upgrade_buy"
+            app:layout_constraintTop_toTopOf="@+id/upgrade_unlock"
             app:srcCompat="@drawable/ic_expand_more_black_24dp" />
 
         <TextView
@@ -156,7 +156,7 @@
             app:layout_constraintHorizontal_bias="0.0" />
 
         <TextView
-            android:id="@+id/upgrade_bought_date"
+            android:id="@+id/upgrade_unlock_date"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"

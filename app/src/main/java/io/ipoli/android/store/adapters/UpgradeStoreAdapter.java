@@ -80,17 +80,17 @@ public class UpgradeStoreAdapter extends EnterAnimationAdapter<UpgradeStoreAdapt
             }
         });
 
-        if (vm.isBought()) {
+        if (vm.isUnlocked()) {
             holder.container.setBackgroundColor(ContextCompat.getColor(context, R.color.md_grey_50));
-            holder.buy.setVisibility(View.INVISIBLE);
-            holder.boughtDate.setVisibility(View.VISIBLE);
-            holder.boughtDate.setText(context.getString(R.string.upgrade_bought_on, DateFormatter.format(context, vm.getBoughtDate())));
+            holder.unlock.setVisibility(View.INVISIBLE);
+            holder.unlockDate.setVisibility(View.VISIBLE);
+            holder.unlockDate.setText(context.getString(R.string.upgrade_bought_on, DateFormatter.format(context, vm.getUnlockDate())));
         } else {
-            holder.buy.setVisibility(View.VISIBLE);
-            holder.boughtDate.setVisibility(View.GONE);
+            holder.unlock.setVisibility(View.VISIBLE);
+            holder.unlockDate.setVisibility(View.GONE);
         }
 
-        holder.buy.setOnClickListener(v -> eventBus.post(new BuyUpgradeEvent(vm.getUpgrade())));
+        holder.unlock.setOnClickListener(v -> eventBus.post(new BuyUpgradeEvent(vm.getUpgrade())));
 
         GradientDrawable drawable = (GradientDrawable) holder.imageContainer.getBackground();
         drawable.setColor(ContextCompat.getColor(context, colors[position % colors.length]));
@@ -122,8 +122,8 @@ public class UpgradeStoreAdapter extends EnterAnimationAdapter<UpgradeStoreAdapt
         @BindView(R.id.upgrade_price)
         TextView price;
 
-        @BindView(R.id.upgrade_bought_date)
-        TextView boughtDate;
+        @BindView(R.id.upgrade_unlock_date)
+        TextView unlockDate;
 
         @BindView(R.id.upgrade_image)
         ImageView image;
@@ -131,8 +131,8 @@ public class UpgradeStoreAdapter extends EnterAnimationAdapter<UpgradeStoreAdapt
         @BindView(R.id.upgrade_image_background)
         ImageView imageContainer;
 
-        @BindView(R.id.upgrade_buy)
-        Button buy;
+        @BindView(R.id.upgrade_unlock)
+        Button unlock;
 
         @BindView(R.id.upgrade_expand)
         ImageButton expand;

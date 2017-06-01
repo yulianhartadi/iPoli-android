@@ -50,7 +50,7 @@ public class UpgradeManager implements OnDataChangedListener<Player> {
         return playerPersistenceService.get().getCoins() >= upgrade.price;
     }
 
-    public void buy(Upgrade upgrade) {
+    public void unlock(Upgrade upgrade) {
         Player player = getPlayer();
         player.removeCoins(upgrade.price);
         if (player.getInventory() == null) {
@@ -60,7 +60,7 @@ public class UpgradeManager implements OnDataChangedListener<Player> {
         playerPersistenceService.save(player);
     }
 
-    public Long getBoughtDate(Upgrade upgrade) {
+    public Long getUnlockDate(Upgrade upgrade) {
         Player player = getPlayer();
         if (player.getInventory() == null) {
             return null;
