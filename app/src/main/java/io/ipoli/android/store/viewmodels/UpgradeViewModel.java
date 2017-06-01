@@ -26,7 +26,7 @@ public class UpgradeViewModel {
 
     public UpgradeViewModel(Context context, Upgrade upgrade, LocalDate boughtDate) {
         this.title = context.getString(upgrade.title);
-        this.shortDescription = context.getString(upgrade.shortDesc);
+        this.shortDescription = context.getString(upgrade.subTitle);
         this.longDescription = context.getString(upgrade.longDesc);
         this.price = upgrade.price;
         this.image = upgrade.picture;
