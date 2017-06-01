@@ -41,9 +41,12 @@ import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
+import io.ipoli.android.player.UpgradeDialog;
+import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.quest.activities.AgendaActivity;
 import io.ipoli.android.quest.activities.EisenhowerMatrixActivity;
 import io.ipoli.android.quest.events.ScrollToTimeEvent;
+import io.ipoli.android.store.Upgrade;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -56,6 +59,12 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
 
     public static final int MID_POSITION = 49;
     public static final int MAX_VISIBLE_DAYS = 100;
+
+    @Inject
+    Bus eventBus;
+
+    @Inject
+    UpgradeManager upgradeManager;
 
     @BindView(R.id.toolbar_title)
     TextView toolbarTitle;
@@ -72,8 +81,6 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
     @BindView(R.id.fab_menu)
     FabMenuView fabMenu;
 
-    @Inject
-    Bus eventBus;
 
     private FragmentStatePagerAdapter adapter;
 
@@ -129,15 +136,29 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
                 eventBus.post(new CalendarDayChangedEvent(LocalDate.now(), CalendarDayChangedEvent.Source.MENU));
                 return true;
             case R.id.action_eisenhower_matrix:
-                LocalDate currentDate = currentMidDate.plusDays(calendarPager.getCurrentItem() - MID_POSITION);
-                Intent i = new Intent(getContext(), EisenhowerMatrixActivity.class);
-                i.putExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, DateUtils.toMillis(currentDate));
-                startActivity(i);
-                getActivity().overridePendingTransition(R.anim.slide_in_top, android.R.anim.fade_out);
+                if (upgradeManager.isLocked(Upgrade.EISENHOWER_MATRIX)) {
+                    UpgradeDialog.newInstance(Upgrade.EISENHOWER_MATRIX, new UpgradeDialog.OnUnlockListener() {
+                        @Override
+                        public void onUnlock() {
+                            showEisenhowerMatrix();
+                        }
+                    }).show(getFragmentManager());
+                    return true;
+                }
+
+                showEisenhowerMatrix();
                 return true;
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showEisenhowerMatrix() {
+        LocalDate currentDate = currentMidDate.plusDays(calendarPager.getCurrentItem() - MID_POSITION);
+        Intent i = new Intent(getContext(), EisenhowerMatrixActivity.class);
+        i.putExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, DateUtils.toMillis(currentDate));
+        startActivity(i);
+        getActivity().overridePendingTransition(R.anim.slide_in_top, android.R.anim.fade_out);
     }
 
     @Override

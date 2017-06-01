@@ -31,7 +31,8 @@ public class Player extends PersistedObject {
     private Integer level;
     private String experience;
     private Long coins;
-    private String picture;
+    private Long rewardPoints;
+    private Integer avatarCode;
     private List<Pet> pets;
     private Set<String> mostProductiveTimesOfDay;
     private Set<Integer> workDays;
@@ -45,12 +46,13 @@ public class Player extends PersistedObject {
     private AuthProvider currentAuthProvider;
     private List<AuthProvider> authProviders;
     private Map<Long, Category> androidCalendars;
+    private Inventory inventory;
 
     public Player() {
         super(TYPE);
     }
 
-    public Player(String experience, int level, long coins, String picture, boolean use24HourFormat, Pet pet) {
+    public Player(String experience, int level, long coins, long rewardPoints, Integer avatarCode, boolean use24HourFormat, Pet pet) {
         super(TYPE);
         pets = new ArrayList<>();
         pets.add(pet);
@@ -61,7 +63,8 @@ public class Player extends PersistedObject {
         this.experience = experience;
         this.level = level;
         this.coins = coins;
-        this.picture = picture;
+        this.rewardPoints = rewardPoints;
+        this.avatarCode = avatarCode;
         setMostProductiveTimesOfDaySet(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES);
         setWorkDays(Constants.DEFAULT_PLAYER_WORK_DAYS);
         setWorkStartMinute(Constants.DEFAULT_PLAYER_WORK_START_MINUTE);
@@ -71,7 +74,6 @@ public class Player extends PersistedObject {
         setCompleteDailyQuestsEndMinute(Constants.DEFAULT_PLAYER_COMPLETE_DAILY_QUESTS_MINUTE);
         setUse24HourFormat(use24HourFormat);
         setAndroidCalendars(new HashMap<>());
-
     }
 
     public List<Pet> getPets() {
@@ -123,6 +125,16 @@ public class Player extends PersistedObject {
         this.coins = Math.max(0, this.coins - coins);
     }
 
+    @JsonIgnore
+    public void addRewardPoints(long points) {
+        this.rewardPoints += points;
+    }
+
+    @JsonIgnore
+    public void removeRewardPoints(long points) {
+        this.rewardPoints = Math.max(0, this.rewardPoints - points);
+    }
+
     public String getExperience() {
         return experience;
     }
@@ -139,12 +151,12 @@ public class Player extends PersistedObject {
         this.level = level;
     }
 
-    public String getPicture() {
-        return picture;
+    public Integer getAvatarCode() {
+        return avatarCode;
     }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
+    public void setAvatarCode(Integer avatarCode) {
+        this.avatarCode = avatarCode;
     }
 
     public Set<String> getMostProductiveTimesOfDay() {
@@ -362,5 +374,34 @@ public class Player extends PersistedObject {
 
     public void setAndroidCalendars(Map<Long, Category> androidCalendars) {
         this.androidCalendars = androidCalendars;
+    }
+
+    public Inventory getInventory() {
+        if(inventory == null) {
+            inventory = new Inventory();
+        }
+        return inventory;
+    }
+
+    public void setInventory(Inventory inventory) {
+        this.inventory = inventory;
+    }
+
+    public Long getRewardPoints() {
+        return rewardPoints;
+    }
+
+    public void setRewardPoints(Long rewardPoints) {
+        this.rewardPoints = rewardPoints;
+    }
+
+    @JsonIgnore
+    public Avatar getCurrentAvatar() {
+        return Avatar.get(avatarCode);
+    }
+
+    @JsonIgnore
+    public void setAvatar(Avatar avatar) {
+        avatarCode = avatar.code;
     }
 }

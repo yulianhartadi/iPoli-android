@@ -15,6 +15,8 @@ import android.widget.Toast;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
+import org.threeten.bp.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,12 +32,13 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
+import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.adapters.RewardListAdapter;
 import io.ipoli.android.reward.data.Reward;
@@ -89,7 +92,7 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         rewardList.setLayoutManager(layoutManager);
         rewardList.setEmptyView(rootLayout, R.string.empty_text_rewards, R.drawable.ic_gift_grey_24dp);
-        RewardListAdapter rewardListAdapter = new RewardListAdapter(new ArrayList<>(), eventBus);
+        RewardListAdapter rewardListAdapter = new RewardListAdapter(getContext(), new ArrayList<>(), eventBus);
         rewardList.setAdapter(rewardListAdapter);
         rewards = new ArrayList<>();
 
@@ -132,12 +135,15 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
     public void onBuyReward(BuyRewardEvent e) {
         Reward r = e.reward;
         Player player = getPlayer();
-        if (player.getCoins() - r.getPrice() < 0) {
+        if (player.getRewardPoints() - r.getPrice() < 0) {
             showTooExpensiveMessage();
             return;
         }
-        player.removeCoins(r.getPrice());
+        player.removeRewardPoints(r.getPrice());
         playerPersistenceService.save(player);
+
+        r.addPurchase(LocalDate.now(), Time.now().toMinuteOfDay());
+        rewardPersistenceService.save(r);
         updateRewards(rewards);
         Snackbar.make(rootLayout, String.format(getString(R.string.reward_earned), e.reward.getName()), Snackbar.LENGTH_SHORT).show();
 
@@ -169,9 +175,9 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
     private void updateRewards(List<Reward> rewards) {
         List<RewardViewModel> rewardViewModels = new ArrayList<>();
         for (Reward r : rewards) {
-            rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= getPlayer().getCoins())));
+            rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= getPlayer().getRewardPoints())));
         }
-        RewardListAdapter rewardListAdapter = new RewardListAdapter(rewardViewModels, eventBus);
+        RewardListAdapter rewardListAdapter = new RewardListAdapter(getContext(), rewardViewModels, eventBus);
         rewardList.setAdapter(rewardListAdapter);
     }
 }
