@@ -7,10 +7,10 @@ import io.ipoli.android.store.Upgrade;
  * on 5/30/17.
  */
 
-public class UpgradeBoughtEvent {
+public class UpgradeUnlockedEvent {
     public final Upgrade upgrade;
 
-    public UpgradeBoughtEvent(Upgrade upgrade) {
+    public UpgradeUnlockedEvent(Upgrade upgrade) {
         this.upgrade = upgrade;
     }
 }

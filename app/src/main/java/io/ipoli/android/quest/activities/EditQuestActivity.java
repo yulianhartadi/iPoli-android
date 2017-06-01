@@ -95,7 +95,7 @@ import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
 import io.ipoli.android.store.Upgrade;
-import io.ipoli.android.store.events.UpgradeBoughtEvent;
+import io.ipoli.android.store.events.UpgradeUnlockedEvent;
 
 import static io.ipoli.android.app.events.EventSource.EDIT_QUEST;
 
@@ -255,7 +255,7 @@ public class EditQuestActivity extends BaseActivity implements
     }
 
     @Subscribe
-    public void onUpgradeBought(UpgradeBoughtEvent e) {
+    public void onUpgradeBought(UpgradeUnlockedEvent e) {
         if(e.upgrade == Upgrade.SUB_QUESTS) {
             addSubQuest.setOnClickListener(null);
             addSubQuest.setFocusable(true);

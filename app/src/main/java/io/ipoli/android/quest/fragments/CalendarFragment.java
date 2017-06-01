@@ -136,20 +136,29 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
                 eventBus.post(new CalendarDayChangedEvent(LocalDate.now(), CalendarDayChangedEvent.Source.MENU));
                 return true;
             case R.id.action_eisenhower_matrix:
-                if(upgradeManager.isLocked(Upgrade.EISENHOWER_MATRIX)) {
-                    UpgradeDialog.newInstance(Upgrade.EISENHOWER_MATRIX).show(getFragmentManager());
+                if (upgradeManager.isLocked(Upgrade.EISENHOWER_MATRIX)) {
+                    UpgradeDialog.newInstance(Upgrade.EISENHOWER_MATRIX, new UpgradeDialog.OnUnlockListener() {
+                        @Override
+                        public void onUnlock() {
+                            showEisenhowerMatrix();
+                        }
+                    }).show(getFragmentManager());
                     return true;
                 }
 
-                LocalDate currentDate = currentMidDate.plusDays(calendarPager.getCurrentItem() - MID_POSITION);
-                Intent i = new Intent(getContext(), EisenhowerMatrixActivity.class);
-                i.putExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, DateUtils.toMillis(currentDate));
-                startActivity(i);
-                getActivity().overridePendingTransition(R.anim.slide_in_top, android.R.anim.fade_out);
+                showEisenhowerMatrix();
                 return true;
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showEisenhowerMatrix() {
+        LocalDate currentDate = currentMidDate.plusDays(calendarPager.getCurrentItem() - MID_POSITION);
+        Intent i = new Intent(getContext(), EisenhowerMatrixActivity.class);
+        i.putExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, DateUtils.toMillis(currentDate));
+        startActivity(i);
+        getActivity().overridePendingTransition(R.anim.slide_in_top, android.R.anim.fade_out);
     }
 
     @Override

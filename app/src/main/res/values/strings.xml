@@ -713,7 +713,7 @@
     <string name="upgrade_bought_on">Bought on %s</string>
     <string name="fragment_avatar_store_title">Buy avatar</string>
     <string name="fragment_pet_store_title">Buy pet</string>
-    <string name="fragment_upgrade_store_title">Buy upgrade</string>
+    <string name="fragment_upgrade_store_title">Unlock upgrade</string>
     <string name="upgrade_successfully_bought">You can now enjoy %s</string>
     <string name="upgrade_too_expensive">Not enough coins to buy %s</string>
     <string name="upgrade_dialog_title">You\'ve discovered %s</string>
@@ -799,6 +799,7 @@
 
     <string name="upgrade_dialog_name">You\'ve discovered %s!</string>
     <string name="upgrade_dialog_price_message">Do you want to unlock it now for %d of your life coins?</string>
+    <string name="unlock">Unlock</string>
 
 
     <string-array name="player_titles">
