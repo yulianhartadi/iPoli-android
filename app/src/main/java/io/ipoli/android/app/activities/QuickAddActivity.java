@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import com.squareup.otto.Subscribe;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -37,6 +36,7 @@ import io.ipoli.android.app.ui.CategoryView;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.ViewUtils;
+import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
@@ -49,6 +49,7 @@ import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.quest.suggestions.SuggestionsManager;
 import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
 import io.ipoli.android.reminder.data.Reminder;
+import io.ipoli.android.store.Upgrade;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -58,6 +59,9 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
 
     private static final int SUGGESTION_ITEM_HEIGHT_DP = 40;
     private static final int MAX_VISIBLE_SUGGESTION_ITEMS = 4;
+
+    @Inject
+    UpgradeManager upgradeManager;
 
     @Inject
     LocalStorage localStorage;
@@ -162,9 +166,6 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
             return;
         }
 
-        Reminder reminder = new Reminder(0);
-        List<Reminder> reminders = new ArrayList<>();
-        reminders.add(reminder);
 
         Quest quest = questParser.parseQuest(text);
         if (quest == null) {
@@ -172,7 +173,9 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
             return;
         }
         quest.setCategory(categoryView.getSelectedCategory().name());
-        quest.setReminders(reminders);
+        if(upgradeManager.isUnlocked(Upgrade.REMINDERS)) {
+            quest.addReminder(new Reminder(0));
+        }
         eventBus.post(new NewQuestEvent(quest, EventSource.QUICK_ADD));
         if (quest.getScheduled() != null) {
             Toast.makeText(this, R.string.quest_saved, Toast.LENGTH_SHORT).show();

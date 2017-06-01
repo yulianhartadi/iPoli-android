@@ -51,6 +51,7 @@ public class Challenge extends PersistedObject implements RewardProvider {
 
     private Long coins;
     private Long experience;
+    private Long rewardPoints;
 
     @JsonIgnore
     private Map<String, Quest> challengeQuests;
@@ -213,6 +214,14 @@ public class Challenge extends PersistedObject implements RewardProvider {
 
     public void setExperience(Long experience) {
         this.experience = experience;
+    }
+
+    public Long getRewardPoints() {
+        return rewardPoints;
+    }
+
+    public void setRewardPoints(Long rewardPoints) {
+        this.rewardPoints = rewardPoints;
     }
 
     public String getCategory() {

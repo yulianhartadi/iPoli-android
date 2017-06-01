@@ -26,11 +26,10 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
-import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.ui.dialogs.TextPickerFragment;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.NewRewardSavedEvent;
-import io.ipoli.android.reward.formatters.PriceFormatter;
 import io.ipoli.android.reward.persistence.RewardPersistenceService;
 import io.ipoli.android.reward.ui.dialogs.PricePickerFragment;
 
@@ -189,7 +188,7 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
     }
 
     private void setPriceText(int price) {
-        priceText.setText(PriceFormatter.formatReadable(price));
+        priceText.setText(getString(R.string.reward_price_points, price));
         priceText.setTag(price);
     }
 

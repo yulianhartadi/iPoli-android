@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import io.ipoli.android.app.TimeOfDay;
+import io.ipoli.android.player.Avatar;
+import io.ipoli.android.player.PetAvatar;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -77,9 +79,10 @@ public interface Constants {
 
     String API_RESOURCE_SOURCE = "ipoli-android";
     int DEFAULT_PLAYER_XP = 0;
-    int DEFAULT_AVATAR_LEVEL = 1;
+    int DEFAULT_PLAYER_LEVEL = 1;
     long DEFAULT_PLAYER_COINS = 10;
-    String DEFAULT_PLAYER_PICTURE = "avatar_12";
+    long DEFAULT_PLAYER_REWARD_POINTS = 10;
+    Avatar DEFAULT_PLAYER_AVATAR = Avatar.IPOLI_CLASSIC;
     Set<TimeOfDay> DEFAULT_PLAYER_PRODUCTIVE_TIMES = new HashSet<>(Collections.singletonList(TimeOfDay.MORNING));
     int DEFAULT_PLAYER_WORK_START_MINUTE = 10 * 60;
     int DEFAULT_PLAYER_WORK_END_MINUTE = 18 * 60;
@@ -94,10 +97,6 @@ public interface Constants {
             DayOfWeek.THURSDAY.getValue(),
             DayOfWeek.FRIDAY.getValue()
     ));
-
-    int AVATAR_COUNT = 12;
-
-    String PICTURE_NAME_EXTRA_KEY = "avatar_name";
 
     int[] DURATIONS = {10, 15, 20, 25, 30, 60, 90, 120, 180, 240};
 
@@ -130,13 +129,15 @@ public interface Constants {
 
     String QUICK_ADD_ADDITIONAL_TEXT = "quick_add_additional_text";
     String DEFAULT_PET_NAME = "Flopsy";
-    String DEFAULT_PET_AVATAR = "pet_3";
-    String DEFAULT_PET_BACKGROUND_IMAGE = "pet_background_1";
+    PetAvatar DEFAULT_PET_AVATAR = PetAvatar.ELEPHANT;
+    String DEFAULT_PET_BACKGROUND_PICTURE = "pet_background_1";
 
     Integer DEFAULT_PET_HP = 80;
     double XP_BONUS_PERCENTAGE_OF_HP = 20.0;
     double COINS_BONUS_PERCENTAGE_OF_HP = 10.0;
+    double REWARD_POINTS_BONUS_PERCENTAGE_OF_HP = 10.0;
     int MAX_PET_COIN_BONUS = 10;
+    int MAX_PET_REWARD_POINTS_BONUS = 10;
 
     int MAX_PET_XP_BONUS = 20;
 
@@ -145,7 +146,7 @@ public interface Constants {
     String PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index";
     int RANDOM_SEED = 42; // duh!
     int MAX_TIMES_A_DAY_COUNT = 8;
-    int SCHEMA_VERSION = 3;
+    int SCHEMA_VERSION = 4;
 
     double MAX_PENALTY_COEFFICIENT = 0.5;
     double NO_QUESTS_PENALTY_COEFFICIENT = 0.3;
@@ -155,4 +156,5 @@ public interface Constants {
     int API_READ_TIMEOUT_SECONDS = 30;
     String DEFAULT_VIEW_VERSION = "1.0";
     String SOURCE_ANDROID_CALENDAR = "android-calendar";
+
 }
