@@ -18,8 +18,8 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
-import io.ipoli.android.store.fragments.StoreFragment;
 import io.ipoli.android.store.StoreItemType;
+import io.ipoli.android.store.fragments.StoreFragment;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -49,7 +49,7 @@ public class StoreActivity extends BaseActivity {
         }
 
         StoreFragment fragment;
-        if(getIntent().hasExtra(START_ITEM_TYPE)) {
+        if (getIntent().hasExtra(START_ITEM_TYPE)) {
             StoreItemType storeItemType = StoreItemType.valueOf(getIntent().getStringExtra(START_ITEM_TYPE));
             fragment = StoreFragment.newInstance(storeItemType);
         } else {
@@ -68,10 +68,8 @@ public class StoreActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                break;
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
         }
         return true;
     }
