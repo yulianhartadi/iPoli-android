@@ -57,9 +57,9 @@ public class CoinStoreFragment extends BaseFragment {
     private static final int RC_REQUEST = 10001;
 
     private Map<String, Integer> skuToValue = new HashMap<String, Integer>() {{
-        put(SKU_STARTER_PACK, 100);
-        put(SKU_PREMIUM_PACK, 1000);
-        put(SKU_JUMBO_PACK, 10000);
+        put(SKU_STARTER_PACK, 300);
+        put(SKU_PREMIUM_PACK, 2000);
+        put(SKU_JUMBO_PACK, 4000);
     }};
 
     @Inject

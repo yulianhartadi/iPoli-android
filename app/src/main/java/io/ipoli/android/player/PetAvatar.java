@@ -11,11 +11,11 @@ import io.ipoli.android.R;
  */
 
 public enum PetAvatar {
-    SEAL(1, 2, R.string.pet_seal, R.drawable.pet_1, R.drawable.pet_1_head),
-    DONKEY(2, 1, R.string.pet_donkey, R.drawable.pet_2, R.drawable.pet_2_head),
-    ELEPHANT(3, 1, R.string.pet_elephant, R.drawable.pet_3, R.drawable.pet_3_head),
-    BEAVER(4, 1, R.string.pet_beaver, R.drawable.pet_4, R.drawable.pet_4_head),
-    CHICKEN(5, 1, R.string.pet_chicken, R.drawable.pet_5, R.drawable.pet_5_head);
+    SEAL(1, 600, R.string.pet_seal, R.drawable.pet_1, R.drawable.pet_1_head),
+    DONKEY(2, 500, R.string.pet_donkey, R.drawable.pet_2, R.drawable.pet_2_head),
+    ELEPHANT(3, 500, R.string.pet_elephant, R.drawable.pet_3, R.drawable.pet_3_head),
+    BEAVER(4, 500, R.string.pet_beaver, R.drawable.pet_4, R.drawable.pet_4_head),
+    CHICKEN(5, 700, R.string.pet_chicken, R.drawable.pet_5, R.drawable.pet_5_head);
 
     public final int code;
 
