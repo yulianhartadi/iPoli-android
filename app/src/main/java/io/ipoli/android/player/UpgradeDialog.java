@@ -46,13 +46,13 @@ public class UpgradeDialog extends DialogFragment {
     @Inject
     UpgradeManager upgradeManager;
 
-    @BindView(R.id.upgrade_title)
+    @BindView(R.id.upgrade_dialog_title)
     TextView title;
 
-    @BindView(R.id.upgrade_desc)
+    @BindView(R.id.upgrade_dialog_desc)
     TextView description;
 
-    @BindView(R.id.upgrade_price)
+    @BindView(R.id.upgrade_dialog_price)
     TextView price;
 
     @BindView(R.id.upgrade_price_not_enough_coins)
@@ -110,7 +110,8 @@ public class UpgradeDialog extends DialogFragment {
 
         title.setText(getString(R.string.upgrade_dialog_title, getString(upgrade.title)));
         description.setText(upgrade.shortDesc);
-        notEnoughCoins.setText(String.format(getString(R.string.upgrade_dialog_not_enough_coins), upgrade.price));
+        notEnoughCoins.setText(getString(R.string.upgrade_dialog_not_enough_coins, upgrade.price));
+        price.setText(getString(R.string.upgrade_dialog_price_message, upgrade.price));
 
         boolean hasEnoughCoins = upgradeManager.hasEnoughCoinsForUpgrade(upgrade);
         String positiveBtnText = hasEnoughCoins ? getString(R.string.buy) : getString(R.string.buy_life_coins);

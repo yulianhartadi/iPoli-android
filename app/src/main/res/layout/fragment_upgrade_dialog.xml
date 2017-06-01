@@ -6,30 +6,29 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/upgrade_title"
+        android:id="@+id/upgrade_dialog_title"
         style="@style/TextAppearance.AppCompat.Subhead"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-medium"
-        android:text="You've discovered Repeating Quests!" />
+        android:text="@string/upgrade_dialog_name" />
 
 
     <TextView
-        android:id="@+id/upgrade_desc"
+        android:id="@+id/upgrade_dialog_desc"
         style="@style/TextAppearance.AppCompat.Body1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Repeating Quests are called all your repeating tasks. iPoli automatically makes a quest in your calendar for the repeating one if you have to do it on a particular date."
         android:textColor="@color/md_dark_text_54" />
 
     <TextView
-        android:id="@+id/upgrade_price"
+        android:id="@+id/upgrade_dialog_price"
         style="@style/TextAppearance.AppCompat.Body1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Do you want to buy it now for 400 of your coins?"
+        android:text="@string/upgrade_dialog_price_message"
         android:textColor="@color/md_dark_text_54" />
 
     <TextView
