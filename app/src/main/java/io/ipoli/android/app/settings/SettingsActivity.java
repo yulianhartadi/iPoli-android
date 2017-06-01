@@ -75,7 +75,9 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.player.Player;
-import io.ipoli.android.player.events.PickAvatarRequestEvent;
+import io.ipoli.android.player.UpgradeDialog;
+import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
@@ -83,6 +85,9 @@ import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
+import io.ipoli.android.store.StoreItemType;
+import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.activities.StoreActivity;
 import me.everything.providers.android.calendar.Event;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -98,6 +103,9 @@ public class SettingsActivity extends BaseActivity implements
 
     @Inject
     Bus eventBus;
+
+    @Inject
+    UpgradeManager upgradeManager;
 
     @Inject
     LocalStorage localStorage;
@@ -182,6 +190,11 @@ public class SettingsActivity extends BaseActivity implements
 
     private CompoundButton.OnCheckedChangeListener onCheckSyncCalendarChangeListener = (buttonView, isChecked) -> {
         if (isChecked) {
+            if(upgradeManager.isLocked(Upgrade.CALENDAR_SYNC)) {
+                turnSyncCalendarsOff();
+                UpgradeDialog.newInstance(Upgrade.CALENDAR_SYNC).show(getSupportFragmentManager());
+                return;
+            }
             eventBus.post(new EnableSynCalendarsEvent(true));
             if (EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
                 onSyncCalendarsSelected();
@@ -319,7 +332,10 @@ public class SettingsActivity extends BaseActivity implements
 
     @OnClick(R.id.pick_avatar_container)
     public void onPickAvatarClicked(View view) {
-        eventBus.post(new PickAvatarRequestEvent(EventSource.SETTINGS));
+        eventBus.post(new OpenAvatarStoreRequestEvent(EventSource.SETTINGS));
+        Intent intent = new Intent(this, StoreActivity.class);
+        intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.AVATARS.name());
+        startActivity(intent);
     }
 
     @OnClick(R.id.ongoing_notification_container)
@@ -450,6 +466,7 @@ public class SettingsActivity extends BaseActivity implements
         if (!enableSyncCalendars.isChecked()) {
             return;
         }
+
         Player player = getPlayer();
         AndroidCalendarsPickerFragment fragment = AndroidCalendarsPickerFragment.newInstance(R.string.choose_calendars_title, player.getAndroidCalendars(), this::onSelectCalendarsToSync);
         fragment.show(getSupportFragmentManager());
@@ -539,6 +556,10 @@ public class SettingsActivity extends BaseActivity implements
 
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms) {
+        turnSyncCalendarsOff();
+    }
+
+    private void turnSyncCalendarsOff() {
         enableSyncCalendars.setOnCheckedChangeListener(null);
         enableSyncCalendars.setChecked(false);
         enableSyncCalendars.setOnCheckedChangeListener(onCheckSyncCalendarChangeListener);

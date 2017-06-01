@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import org.threeten.bp.LocalDate;
 
@@ -60,6 +61,8 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.note.data.Note;
+import io.ipoli.android.player.UpgradeDialog;
+import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Recurrence;
@@ -91,6 +94,8 @@ import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
+import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.events.UpgradeUnlockedEvent;
 
 import static io.ipoli.android.app.events.EventSource.EDIT_QUEST;
 
@@ -109,6 +114,9 @@ public class EditQuestActivity extends BaseActivity implements
 
     @Inject
     Bus eventBus;
+
+    @Inject
+    UpgradeManager upgradeManager;
 
     @Inject
     LocalStorage localStorage;
@@ -200,6 +208,9 @@ public class EditQuestActivity extends BaseActivity implements
 
     private EditMode editMode;
 
+    private View.OnFocusChangeListener onAddSubQuestsFocusChangeListener = (view, isFocused) ->
+            onAddSubQuestFocusChanged(isFocused);
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -234,22 +245,40 @@ public class EditQuestActivity extends BaseActivity implements
 
         hideUnderline(addSubQuest);
 
-        addSubQuest.setOnFocusChangeListener((view, isFocused) -> {
-            String text = addSubQuest.getText().toString();
-            if (isFocused) {
-                showUnderline(addSubQuest);
-                if (text.equals(getString(R.string.edit_quest_add_sub_quest))) {
-                    setAddSubQuestInEditMode();
-                }
-                addSubQuest.requestFocus();
-                eventBus.post(new AddSubQuestTappedEvent(EDIT_QUEST));
-            } else {
-                hideUnderline(addSubQuest);
-                if (StringUtils.isEmpty(text)) {
-                    setAddSubQuestInViewMode();
-                }
+        if(upgradeManager.isUnlocked(Upgrade.SUB_QUESTS)) {
+            addSubQuest.setOnFocusChangeListener(onAddSubQuestsFocusChangeListener);
+        } else {
+            addSubQuest.setFocusable(false);
+            addSubQuest.setFocusableInTouchMode(false);
+            addSubQuest.setOnClickListener(v -> UpgradeDialog.newInstance(Upgrade.SUB_QUESTS).show(getSupportFragmentManager()));
+        }
+    }
+
+    @Subscribe
+    public void onUpgradeBought(UpgradeUnlockedEvent e) {
+        if(e.upgrade == Upgrade.SUB_QUESTS) {
+            addSubQuest.setOnClickListener(null);
+            addSubQuest.setFocusable(true);
+            addSubQuest.setFocusableInTouchMode(true);
+            addSubQuest.setOnFocusChangeListener(onAddSubQuestsFocusChangeListener);
+        }
+    }
+
+    private void onAddSubQuestFocusChanged(boolean isFocused) {
+        String text = addSubQuest.getText().toString();
+        if (isFocused) {
+            showUnderline(addSubQuest);
+            if (text.equals(getString(R.string.edit_quest_add_sub_quest))) {
+                setAddSubQuestInEditMode();
             }
-        });
+            addSubQuest.requestFocus();
+            eventBus.post(new AddSubQuestTappedEvent(EDIT_QUEST));
+        } else {
+            hideUnderline(addSubQuest);
+            if (StringUtils.isEmpty(text)) {
+                setAddSubQuestInViewMode();
+            }
+        }
     }
 
     private void onEditQuest() {
@@ -579,6 +608,11 @@ public class EditQuestActivity extends BaseActivity implements
 
     @OnClick(R.id.quest_add_reminder_container)
     public void onRemindersClicked(View view) {
+        if(upgradeManager.isLocked(Upgrade.REMINDERS)) {
+            UpgradeDialog.newInstance(Upgrade.REMINDERS).show(getSupportFragmentManager());
+            return;
+        }
+
         EditReminderFragment f = EditReminderFragment.newInstance((reminder, editMode) -> {
             if (reminder != null) {
                 addReminder(reminder);
@@ -606,6 +640,10 @@ public class EditQuestActivity extends BaseActivity implements
 
     @OnClick(R.id.quest_note_container)
     public void onNoteClick(View view) {
+        if (upgradeManager.isLocked(Upgrade.NOTES)) {
+            UpgradeDialog.newInstance(Upgrade.NOTES).show(getSupportFragmentManager());
+            return;
+        }
         TextPickerFragment.newInstance((String) noteText.getTag(), R.string.pick_note_title, this).show(getSupportFragmentManager());
     }
 

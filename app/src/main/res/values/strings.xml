@@ -108,10 +108,8 @@
     <string name="help_dialog_challenges_text2">Use them to clearly define what you want, why you want it and by what date you will achieve it.</string>
     <string name="help_dialog_challenges_text3">Divide your epic challenges into smaller tasks by assigning (repeating) quests to a challenge. Gain additional XP and coins when you complete a quest from a challenge!</string>
     <string name="help_dialog_rewards_title">Earn your rewards</string>
-    <string name="help_dialog_rewards_text1">Define your own rewards and buy them when you win enough coins by completing your quests.</string>
     <string name="help_dialog_rewards_text2">Reward can be anything. For example: \'Eat a chocolate\' or \'Go on a vacation\'.</string>
     <string name="help_dialog_rewards_text3">You choose how much it costs depending on your efforts.</string>
-    <string name="help_dialog_rewards_buy">Press the button to buy your reward. If the button is grey, work a little bit harder to earn these coins!</string>
 
     <string name="drawer_close">Navigation Closed</string>
     <string name="drawer_open">Navigation Opened</string>
@@ -274,7 +272,6 @@
     <string name="reward_earned">%s earned! Enjoy!</string>
     <string name="coins_bought">+ %d coins added to your stash</string>
     <string name="store">Store</string>
-    <string name="title_activity_store">Store</string>
     <string name="no_internet_to_buy_coins">If you want some coins, you should enable your internet!</string>
     <string name="something_went_wrong">Something went wrong, please try again later!</string>
     <string name="help_dialog_store_title">What can you buy?</string>
@@ -683,6 +680,21 @@
     <string name="challenge8_rq3_name">Have family dinner</string>
     <string name="challenge8_rq4_raw_text">Go out with friends 2 times a week</string>
     <string name="challenge8_rq4_name">Go out with friends</string>
+
+    <string name="fragment_store_title">Store</string>
+    <string name="upgrade_dialog_not_enough_coins">This upgrade costs %d coins. Unfortunately, you have not collected enough. Do you want to buy some?</string>
+
+    <string name="pet_seal">Cute tail</string>
+    <string name="pet_donkey">Fancy ears</string>
+    <string name="pet_elephant">Flying ears</string>
+    <string name="pet_beaver">Crazy teeth</string>
+    <string name="pet_chicken">Chicken invader</string>
+    <string name="pet_store_use_pet">Use it</string>
+    <string name="pet_selected_message">Pet successfully changed</string>
+    <string name="avatar_store_use_avatar">Use it</string>
+    <string name="not_enough_coins_to_buy_avatar">Not enough coins to buy avatar</string>
+    <string name="avatar_selected_message">Avatar successfully changed</string>
+
     <string name="growth_no_categories_selected">Select a category to view more data</string>
     <string name="last_month">Last month</string>
     <string name="tracked">Tracked</string>
@@ -696,6 +708,133 @@
     <string name="urgent">Urgent</string>
     <string name="not_urgent">Not Urgent</string>
 
+    <string name="coins_pack_value">+ %d life coins</string>
+    <string name="upgrade_price">%d life coins</string>
+    <string name="upgrade_unloked_on">Unlocked on %s</string>
+    <string name="fragment_avatar_store_title">Buy avatar</string>
+    <string name="fragment_pet_store_title">Buy pet</string>
+    <string name="fragment_upgrade_store_title">Unlock upgrade</string>
+    <string name="upgrade_successfully_bought">You can now enjoy %s</string>
+    <string name="upgrade_too_expensive">Not enough coins to buy %s</string>
+    <string name="upgrade_dialog_title">You\'ve discovered %s</string>
+    <string name="buy">Buy</string>
+    <string name="buy_life_coins">Buy life coins</string>
+    <string name="not_now">Not now</string>
+    <string name="go_to_store">Go to Store</string>
+    <string name="fragment_coin_store_title">Buy coins</string>
+    <string name="life_coins">Life coins</string>
+    <string name="upgrades">Upgrades</string>
+    <string name="avatars">Avatars</string>
+    <string name="pets">Pets</string>
+    <string name="reward_price_points">%d points</string>
+    <string name="reward_points_description">Buy rewards with this points</string>
+    <string name="help_dialog_rewards_buy">Press the button to buy your reward. If the button is grey, work a little bit harder to earn these points!</string>
+    <string name="help_dialog_rewards_text1">Define your own rewards and buy them when you win enough points by completing your quests.</string>
+    <string name="get_it">Get it</string>
+    <string name="reminders">Reminders</string>
+    <string name="timer">Timer</string>
+    <string name="programmed_challenges">Programmed challenges</string>
+    <string name="no_challenges">You have not challenged yourself</string>
+    <string name="upgrades_migration_message">You are an awesome iPoli user and all current upgrades are free for you!</string>
+    <string name="big_value_format">%sK</string>
+    <string name="starters_pack">Starters pack</string>
+    <string name="starter_pack_desc">Your journey starts here</string>
+    <string name="premium_pack">Premium pack</string>
+    <string name="premium_pack_desc">For the smart ones</string>
+    <string name="most_popular">Most popular</string>
+    <string name="jumbo_pack">Jumbo pack</string>
+    <string name="jumbo_pack_desc">For the wealthy and famous</string>
+    <string name="avatar_name_ipoli_classic">Classic iPoli</string>
+    <string name="avatar_name_ipoli_yellow_glasses">Fancy iPoli</string>
+    <string name="avatar_name_macarena">Lady Luck</string>
+    <string name="avatar_name_macarena_mexican">Mamacita</string>
+    <string name="avatar_name_blondy">Miss Charming</string>
+    <string name="avatar_name_green_eyes">Angel Eyes</string>
+    <string name="avatar_name_pipilota">Butter Cup</string>
+    <string name="avatar_name_old_pirate">Treasure guy</string>
+    <string name="avatar_name_beard_guy">Mr. Right</string>
+    <string name="avatar_name_dwight">Muscle man</string>
+    <string name="avatar_name_michael">Bad boy</string>
+    <string name="avatar_name_tobby">Brainiac</string>
+
+    <string name="upgrade_rq_sub_title">Create repeating tasks</string>
+    <string name="upgrade_rq_short_desc">Repeating quests are called all your repeating tasks - fixed or flexible.</string>
+    <string name="upgrade_rq_long_desc">
+        Add your tasks which repeat daily, weekly, monthly, or even annually. They can be on fixed or flexible days.
+        iPoli will automatically schedule them for you.
+    </string>
+
+    <string name="upgrade_challenges_sub_title">Set and achieve your goals</string>
+    <string name="upgrade_challenges_short_desc">Plan and achieve your short and long-term goals</string>
+    <string name="upgrade_challenges_long_desc">
+        Challenges help you plan and achieve your life goals. Create challenges for all your short and long-term goals.
+        Then you can track your progress and stay motivated.
+      </string>
+
+    <string name="upgrade_growth_sub_title">Track your progress and score</string>
+    <string name="upgrade_growth_short_desc">Track and compare your progress and productivity during different time spans.</string>
+    <string name="upgrade_growth_long_desc">
+        Monitor home much time do you spend for quests in each category,
+        how many do you complete, what is your Awesomeness score and more facts to help your productivity.
+    </string>
+
+    <string name="upgrade_matrix_sub_title">Separate important from urgent</string>
+    <string name="upgrade_matrix_short_desc">Prioritize your tasks and focus on important ones</string>
+    <string name="upgrade_matrix_long_desc">
+        The Eisenhower matrix divides your quests into 4 groups depending on their priority.
+        It helps you focus on the most important tasks.
+    </string>
+
+    <string name="upgrade_sync_calendars_sub_title">Import all your events</string>
+    <string name="upgrade_sync_calendars_short_desc">Import and sync events and tasks from your other calendars</string>
+    <string name="upgrade_sync_calendars_long_desc">
+        Keep iPoli up to date by syncing events and tasks from your calendars.
+        Assign different category for each calendar (work, personal, …)
+    </string>
+
+    <string name="upgrade_predefined_challenges_sub_title">Easy to follow helpful formulas</string>
+    <string name="upgrade_predefined_challenges_short_desc">Challenge yourself with special programs to be more healthy, skillful and happy</string>
+    <string name="upgrade_predefined_challenges_long_desc">
+        We\'ve prepared special challenges for you to be healthy, fit, to learn new skills and spend more time with your family.
+        The programs are easy to follow but you can always adjust them according to your needs.
+    </string>
+
+    <string name="upgrade_notes_sub_title">Stay organized and clear your mind</string>
+    <string name="upgrade_notes_short_desc">Stay organized by adding notes to your quests</string>
+    <string name="upgrade_notes_long_desc">Add simple notes to your quests to help you remember important information. </string>
+
+    <string name="upgrade_timer_sub_title">Keep track of your time</string>
+    <string name="upgrade_timer_short_desc">Manage and track your time even more effectively</string>
+    <string name="upgrade_timer_long_desc">
+        Don\'t know where your time flies? Monitor it by tracking your quests duration
+        or use it as a timer for your Pomodoros, fitness activities or cooking recipes.
+    </string>
+
+    <string name="upgrade_sub_quests_sub_title">Create checklists for your quests</string>
+    <string name="upgrade_sub_quests_short_desc">Create checklists for your quests</string>
+    <string name="upgrade_sub_quests_long_desc">
+        Be more productive by dividing your tasks into smaller pieces.
+        Define steps, subtasks or even create shopping lists.
+    </string>
+
+    <string name="upgrade_reminders_sub_title">Never forget anything</string>
+    <string name="upgrade_reminders_short_desc">Let iPoli remind you when it\'s time for the next quest</string>
+    <string name="upgrade_reminders_long_desc">
+        Add reminders to your quests. No need to look at your phone or watch all the time,
+        focus on the current task and iPoli will notify you when the next one comes.
+    </string>
+
+    <string name="upgrade_dialog_name">You\'ve discovered %s!</string>
+    <string name="upgrade_dialog_price_message">Do you want to unlock it now for %d of your life coins?</string>
+    <string name="unlock">Unlock</string>
+    <string name="unlock_upgrade">Unlock upgrade</string>
+    <string name="requires_upgrade_message">Requires %s</string>
+    <string name="reward_points_won">Reward points won</string>
+    <string name="reward_last_used_date">Last used: %s</string>
+    <string name="used_rewards_count">%d used</string>
+    <string name="reward_price">%d points</string>
+
+
     <string-array name="player_titles">
         <item>Novice</item>
         <item>Apprentice</item>
@@ -707,14 +846,6 @@
         <item>Immortal</item>
         <item>Demigod</item>
         <item>Titan</item>
-    </string-array>
-
-    <string-array name="pet_names">
-        <item>Cute tail</item>
-        <item>Fancy ears</item>
-        <item>Flying ears</item>
-        <item>Crazy teeth</item>
-        <item>Chicken invader</item>
     </string-array>
 
     <string-array name="repeating_quest_frequencies">

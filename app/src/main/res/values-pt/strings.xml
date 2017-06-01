@@ -275,7 +275,7 @@ Moedas: %2$d"</string>
     <string name="reward_earned">"Ganhou %s! Aproveite!"</string>
     <string name="coins_bought">"+ %d moedas em seu estoque"</string>
     <string name="store">"Loja"</string>
-    <string name="title_activity_store">"Loja"</string>
+    <string name="fragment_coin_store_title">"Loja"</string>
     <string name="no_internet_to_buy_coins">"Se você quiser algumas moedas, tem que ativar a sua internet!"</string>
     <string name="something_went_wrong">"Algo deu errado, por favor, tente depois!"</string>
     <string name="help_dialog_store_title">"O que você pode comprar?"</string>
@@ -524,6 +524,8 @@ iPoli está comendo um biscoito e melhorando a sua experiência com o app."</str
     <string name="repeating_quest_next">"Próximo: %s"</string>
     <string name="quest_for_time">"por %s"</string>
     <string name="quest_at_time">"às %s"</string>
+    <string name="quest_short_for_time">por\n%s</string>
+    <string name="quest_short_at_time">às\n%s</string>
     <string name="quest_remaining_count">"mais x%d"</string>
 
     <plurals name="duration_hours">
@@ -696,14 +698,11 @@ iPoli está comendo um biscoito e melhorando a sua experiência com o app."</str
     <string name="challenge8_rq4_raw_text">"Sair com os amigos duas vezes por semana"</string>
     <string name="challenge8_rq4_name">"Sair com os amigos"</string>
 
-
-    <string-array name="pet_names">
-        <item>Cauda fofa</item>
-        <item>Orelhas chiques</item>
-        <item>Orelhas voadoras</item>
-        <item>Dente malucoh</item>
-        <item>Pintinho invasor</item>
-    </string-array>
+    <string name="pet_seal">Cauda fofa</string>
+    <string name="pet_donkey">Orelhas chiques</string>
+    <string name="pet_elephant">Orelhas voadoras</string>
+    <string name="pet_beaver">Dente malucoh</string>
+    <string name="pet_chicken">Pintinho invasor</string>
 
     <string-array name="repeating_quest_frequencies">
         <item>Diário</item>

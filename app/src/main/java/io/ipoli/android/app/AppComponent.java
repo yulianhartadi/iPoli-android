@@ -8,7 +8,6 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.activities.SignInActivity;
-import io.ipoli.android.app.activities.SyncCalendarActivity;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.modules.AnalyticsModule;
 import io.ipoli.android.app.modules.AndroidCalendarModule;
@@ -22,6 +21,7 @@ import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.RewardGeneratorModule;
 import io.ipoli.android.app.modules.SchedulerModule;
 import io.ipoli.android.app.modules.TimeParserModule;
+import io.ipoli.android.app.modules.UpgradesModule;
 import io.ipoli.android.app.modules.UrlProviderModule;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
@@ -29,6 +29,7 @@ import io.ipoli.android.app.receivers.BootCompleteReceiver;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.settings.SettingsActivity;
 import io.ipoli.android.app.tutorial.TutorialActivity;
+import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
 import io.ipoli.android.challenge.activities.AddChallengeActivity;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
@@ -44,7 +45,7 @@ import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.challenge.receivers.DailyChallengeReminderReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.pet.PetActivity;
-import io.ipoli.android.player.activities.PickAvatarPictureActivity;
+import io.ipoli.android.player.UpgradeDialog;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.AddRepeatingQuestActivity;
@@ -77,8 +78,12 @@ import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.quest.widgets.QuestRemoteViewsFactory;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.fragments.RewardListFragment;
-import io.ipoli.android.shop.activities.CoinStoreActivity;
-import io.ipoli.android.shop.activities.ShopActivity;
+import io.ipoli.android.store.activities.StoreActivity;
+import io.ipoli.android.store.fragments.AvatarStoreFragment;
+import io.ipoli.android.store.fragments.CoinStoreFragment;
+import io.ipoli.android.store.fragments.PetStoreFragment;
+import io.ipoli.android.store.fragments.StoreFragment;
+import io.ipoli.android.store.fragments.UpgradeStoreFragment;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -99,7 +104,8 @@ import io.ipoli.android.shop.activities.ShopActivity;
                 TimeParserModule.class,
                 ApiModule.class,
                 UrlProviderModule.class,
-                AndroidCalendarModule.class
+                AndroidCalendarModule.class,
+                UpgradesModule.class
         }
 )
 public interface AppComponent {
@@ -148,8 +154,6 @@ public interface AppComponent {
 
     void inject(EditRewardActivity editRewardActivity);
 
-    void inject(PickAvatarPictureActivity pickAvatarPictureActivity);
-
     void inject(GrowthFragment growthFragment);
 
     void inject(EditChallengeActivity editChallengeActivity);
@@ -177,8 +181,6 @@ public interface AppComponent {
     void inject(SignInActivity signInActivity);
 
     void inject(PetActivity petActivity);
-
-    void inject(ShopActivity shopActivity);
 
     void inject(DateChangedReceiver dateChangedReceiver);
 
@@ -226,12 +228,24 @@ public interface AppComponent {
 
     void inject(BootCompleteReceiver bootCompleteReceiver);
 
-    void inject(SyncCalendarActivity syncCalendarActivity);
-
     void inject(SettingsActivity settingsActivity);
 
-    void inject(CoinStoreActivity coinStoreActivity);
+    void inject(UpgradeDialog upgradeDialog);
+
+    void inject(StoreActivity storeActivity);
+
+    void inject(CoinStoreFragment coinStoreFragment);
+
+    void inject(StoreFragment storeFragment);
+
+    void inject(UpgradeStoreFragment upgradeStoreFragment);
+
+    void inject(PetStoreFragment petStoreFragment);
+
+    void inject(AvatarStoreFragment avatarStoreFragment);
 
     void inject(EisenhowerMatrixActivity eisenhowerMatrixActivity);
+
+    void inject(FabMenuView fabMenuView);
 }
 

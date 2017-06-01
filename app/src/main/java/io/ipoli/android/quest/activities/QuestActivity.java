@@ -33,6 +33,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.LockedStateListener;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.EventSource;
@@ -44,6 +45,8 @@ import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.note.events.OpenNoteEvent;
+import io.ipoli.android.player.UpgradeDialog;
+import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.quest.adapters.QuestDetailsAdapter;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
@@ -62,15 +65,19 @@ import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvent;
 import io.ipoli.android.quest.exceptions.QuestNotFoundException;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
+import io.ipoli.android.store.Upgrade;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 9/26/16.
  */
 
-public class QuestActivity extends BaseActivity implements Chronometer.OnChronometerTickListener, TextPickerFragment.OnTextPickedListener {
+public class QuestActivity extends BaseActivity implements Chronometer.OnChronometerTickListener, TextPickerFragment.OnTextPickedListener, LockedStateListener {
 
     public static final int EDIT_QUEST_REQUEST_CODE = 101;
+
+    @Inject
+    UpgradeManager upgradeManager;
 
     @BindView(R.id.root_container)
     ViewGroup rootLayout;
@@ -209,7 +216,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
             timerButton.setImageResource(R.drawable.ic_stop_white_32dp);
         }
         if (adapter == null) {
-            adapter = new QuestDetailsAdapter(this, quest, eventBus);
+            adapter = new QuestDetailsAdapter(this, eventBus, quest, this);
             details.setAdapter(adapter);
         } else {
             adapter.updateData(quest);
@@ -218,6 +225,11 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @OnClick(R.id.quest_details_timer)
     public void onTimerTap(View v) {
+        if(upgradeManager.isLocked(Upgrade.TIMER)) {
+            UpgradeDialog.newInstance(Upgrade.TIMER).show(getSupportFragmentManager());
+            return;
+        }
+
         if (isTimerRunning) {
             eventBus.post(new StopQuestTapEvent(quest));
             stopTimer();
@@ -268,12 +280,15 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @Subscribe
     public void onEditNoteRequest(EditNoteRequestEvent e) {
+        if(upgradeManager.isLocked(Upgrade.NOTES)) {
+            UpgradeDialog.newInstance(Upgrade.NOTES).show(getSupportFragmentManager());
+            return;
+        }
         TextPickerFragment.newInstance(e.text, R.string.pick_note_title, this).show(getSupportFragmentManager());
     }
 
     @Override
     public void onTextPicked(String text) {
-
         if (StringUtils.isEmpty(text)) {
             quest.removeTextNote();
         } else {
@@ -425,5 +440,15 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         if (requestCode == EDIT_QUEST_REQUEST_CODE && resultCode == Constants.RESULT_REMOVED) {
             finish();
         }
+    }
+
+    @Override
+    public boolean isLocked() {
+        return upgradeManager.isLocked(Upgrade.SUB_QUESTS);
+    }
+
+    @Override
+    public void onLockedAction() {
+        UpgradeDialog.newInstance(Upgrade.SUB_QUESTS).show(getSupportFragmentManager());
     }
 }

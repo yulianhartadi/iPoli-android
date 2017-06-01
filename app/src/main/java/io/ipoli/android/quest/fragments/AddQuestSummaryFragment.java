@@ -45,6 +45,8 @@ import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.TimePreference;
+import io.ipoli.android.player.UpgradeDialog;
+import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -68,6 +70,7 @@ import io.ipoli.android.quest.ui.dialogs.TimesADayPickerFragment;
 import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
+import io.ipoli.android.store.Upgrade;
 
 import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth;
 
@@ -79,6 +82,9 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @Inject
     Bus eventBus;
+
+    @Inject
+    UpgradeManager upgradeManager;
 
     private Unbinder unbinder;
 
@@ -171,6 +177,10 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @OnClick(R.id.add_quest_summary_reminders)
     public void onRemindersClicked(View view) {
+        if(upgradeManager.isLocked(Upgrade.REMINDERS)) {
+            UpgradeDialog.newInstance(Upgrade.REMINDERS).show(getFragmentManager());
+            return;
+        }
         EditReminderFragment f = EditReminderFragment.newInstance((reminder, editMode) -> {
             if (reminder != null) {
                 addReminder(reminder);
@@ -307,6 +317,11 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @OnClick(R.id.add_quest_summary_note_container)
     public void onNoteClicked(View v) {
+        if(upgradeManager.isLocked(Upgrade.NOTES)) {
+            UpgradeDialog.newInstance(Upgrade.NOTES).show(getFragmentManager());
+            return;
+        }
+
         TextPickerFragment fragment = TextPickerFragment.newInstance((String) noteText.getTag(), R.string.pick_note_title, text -> {
             postEvent(new NewQuestNotePickedEvent(text));
             noteText.setTag(text);
@@ -321,6 +336,10 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @OnClick(R.id.sub_quests_container)
     public void onAddSubQuestClicked(View v) {
+        if(upgradeManager.isLocked(Upgrade.SUB_QUESTS)) {
+            UpgradeDialog.newInstance(Upgrade.SUB_QUESTS).show(getFragmentManager());
+            return;
+        }
         addSubQuestView.setVisibility(View.VISIBLE);
         KeyboardUtils.showKeyboard(getContext());
         addSubQuestView.setInEditMode();

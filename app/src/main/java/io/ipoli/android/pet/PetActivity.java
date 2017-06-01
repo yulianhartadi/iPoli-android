@@ -38,7 +38,8 @@ import io.ipoli.android.pet.events.PetRenamedEvent;
 import io.ipoli.android.pet.events.RevivePetRequest;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.shop.activities.ShopActivity;
+import io.ipoli.android.store.StoreItemType;
+import io.ipoli.android.store.activities.StoreActivity;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 /**
@@ -126,8 +127,10 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
             case R.id.action_rename_pet:
                 showRenamePetDialog();
                 return true;
-            case R.id.action_shop:
-                startActivity(new Intent(this, ShopActivity.class));
+            case R.id.action_store:
+                Intent intent = new Intent(this, StoreActivity.class);
+                intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.PETS.name());
+                startActivity(intent);
                 return true;
             case R.id.action_help:
                 HelpDialog.newInstance(R.layout.fragment_help_dialog_pet, R.string.help_dialog_pet_title, "pet").show(getSupportFragmentManager());
@@ -159,8 +162,9 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
         this.player = player;
         Pet pet = player.getPet();
         getSupportActionBar().setTitle(pet.getName());
-        picture.setImageDrawable(getDrawable(ResourceUtils.extractDrawableResource(this, pet.getPicture())));
-        pictureState.setImageDrawable(getDrawable(ResourceUtils.extractDrawableResource(this, pet.getPicture() + "_" + pet.getStateText())));
+        picture.setImageResource(pet.getCurrentAvatar().picture);
+        String statePicture = getResources().getResourceEntryName(pet.getCurrentAvatar().picture) + "_" + pet.getStateText();
+        pictureState.setImageDrawable(getDrawable(ResourceUtils.extractDrawableResource(this, statePicture)));
         xpBonus.setText(String.format(getString(R.string.pet_xp), pet.getExperienceBonusPercentage()));
         coinsBonus.setText(String.format(getString(R.string.pet_coins), pet.getCoinsBonusPercentage()));
 
@@ -184,7 +188,7 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
     @OnClick(R.id.revive)
     public void onReviveClick(View view) {
         Pet pet = player.getPet();
-        eventBus.post(new RevivePetRequest(pet.getPicture()));
+        eventBus.post(new RevivePetRequest(pet.getCurrentAvatar()));
         long playerCoins = player.getCoins();
         if (playerCoins < Constants.REVIVE_PET_COST) {
             String message = String.format(getString(R.string.pet_revive_not_enough_coins), pet.getName());

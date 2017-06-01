@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.player.PetAvatar;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -17,26 +18,32 @@ public class Pet {
     private Integer healthPointsPercentage;
     private Integer experienceBonusPercentage;
     private Integer coinsBonusPercentage;
-    private String picture;
+    private Integer rewardPointsBonusPercentage;
+    private Integer avatarCode;
     private String backgroundPicture;
 
     public Pet() {
 
     }
 
-    public Pet(String name, String picture, String backgroundPicture, Integer healthPointsPercentage) {
+    public Pet(String name, Integer avatarCode, String backgroundPicture, Integer healthPointsPercentage) {
         this.name = name;
-        this.picture = picture;
+        this.avatarCode = avatarCode;
         this.backgroundPicture = backgroundPicture;
         setHealthPointsPercentage(healthPointsPercentage);
     }
 
-    public String getPicture() {
-        return picture;
+    public Integer getAvatarCode() {
+        return avatarCode;
     }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
+    public void setAvatarCode(Integer avatarCode) {
+        this.avatarCode = avatarCode;
+    }
+
+    @JsonIgnore
+    public void setPetAvatar(PetAvatar petAvatar) {
+        avatarCode = petAvatar.code;
     }
 
     public String getBackgroundPicture() {
@@ -63,6 +70,7 @@ public class Pet {
         this.healthPointsPercentage = Math.max(0, Math.min(100, healthPointsPercentage));
         updateExperienceBonusPercentage();
         updateCoinsBonusPercentage();
+        updateRewardPointsBonusPercentage();
     }
 
     public Integer getExperienceBonusPercentage() {
@@ -81,6 +89,14 @@ public class Pet {
         this.coinsBonusPercentage = Math.max(0, Math.min(Constants.MAX_PET_COIN_BONUS, coinsBonusPercentage));
     }
 
+    public Integer getRewardPointsBonusPercentage() {
+        return rewardPointsBonusPercentage;
+    }
+
+    public void setRewardPointsBonusPercentage(Integer rewardPointsBonusPercentage) {
+        this.rewardPointsBonusPercentage = Math.max(0, Math.min(Constants.MAX_PET_REWARD_POINTS_BONUS, rewardPointsBonusPercentage));
+    }
+
     @JsonIgnore
     public void addHealthPoints(int healthPoints) {
         setHealthPointsPercentage(getHealthPointsPercentage() + healthPoints);
@@ -92,8 +108,18 @@ public class Pet {
     }
 
     @JsonIgnore
+    private void updateRewardPointsBonusPercentage() {
+        setRewardPointsBonusPercentage((int) Math.floor(getHealthPointsPercentage() * Constants.REWARD_POINTS_BONUS_PERCENTAGE_OF_HP / 100.0));
+    }
+
+    @JsonIgnore
     private void updateExperienceBonusPercentage() {
         setExperienceBonusPercentage((int) Math.floor(getHealthPointsPercentage() * Constants.XP_BONUS_PERCENTAGE_OF_HP / 100.0));
+    }
+
+    @JsonIgnore
+    public PetAvatar getCurrentAvatar() {
+        return PetAvatar.get(avatarCode);
     }
 
     @JsonIgnore

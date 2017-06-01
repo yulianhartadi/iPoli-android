@@ -51,10 +51,6 @@
             android:label="@string/title_sign_in_activity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".app.activities.SyncCalendarActivity"
-            android:label="Choose calendars to sync"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".quest.activities.AddQuestActivity"
             android:label=""
             android:screenOrientation="portrait" />
@@ -116,15 +112,6 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".shop.activities.ShopActivity"
-            android:label="@string/title_activity_shop"
-            android:parentActivityName=".pet.PetActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".pet.PetActivity" />
-        </activity>
-        <activity
             android:name=".app.settings.SettingsActivity"
             android:label="@string/settings"
             android:parentActivityName=".MainActivity"
@@ -134,8 +121,8 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".shop.activities.CoinStoreActivity"
-            android:label="@string/title_activity_store"
+            android:name=".store.activities.StoreActivity"
+            android:label="@string/fragment_store_title"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data
@@ -148,16 +135,6 @@
         <activity
             android:name=".app.tutorial.OnboardingActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".player.activities.PickAvatarPictureActivity"
-            android:label="@string/title_activity_pick_avatar"
-            android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.iPoli.DialogActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
         <activity
             android:name=".challenge.activities.PickDailyChallengeQuestsActivity"
             android:label="@string/title_pick_daily_challenge_quests"
@@ -214,6 +191,10 @@
             android:theme="@style/Theme.iPoli.DialogActivity" />
         <activity
             android:name=".challenge.activities.ChallengeCompleteActivity"
+            android:noHistory="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.iPoli.DialogActivity" />
+        <activity android:name=".app.activities.UpgradeDialogActivity"
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.iPoli.DialogActivity" />

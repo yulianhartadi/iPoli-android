@@ -41,6 +41,7 @@ import io.ipoli.android.challenge.events.ShowPersonalizeChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.viewmodels.PredefinedChallengeQuestViewModel;
 import io.ipoli.android.note.data.Note;
+import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
@@ -50,12 +51,15 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.reminder.data.Reminder;
+import io.ipoli.android.store.Upgrade;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 9/13/16.
  */
 public class PersonalizeChallengeActivity extends BaseActivity {
+    @Inject
+    UpgradeManager upgradeManager;
 
     @BindView(R.id.root_container)
     ViewGroup rootContainer;
@@ -515,10 +519,11 @@ public class PersonalizeChallengeActivity extends BaseActivity {
     @NonNull
     private Quest makeQuest(String name, Category category, LocalDate endDate) {
         Quest q = new Quest(name, endDate);
+        q.setPriority(Quest.PRIORITY_IMPORTANT_NOT_URGENT);
         q.setCategory(category.name());
-        List<Reminder> reminders = new ArrayList<>();
-        reminders.add(new Reminder(0));
-        q.setReminders(reminders);
+        if (upgradeManager.isUnlocked(Upgrade.REMINDERS)) {
+            q.addReminder(new Reminder(0));
+        }
         return q;
     }
 
@@ -527,9 +532,10 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         rq.setName(name);
         rq.setDuration(duration);
         rq.setCategory(category.name());
-        List<Reminder> reminders = new ArrayList<>();
-        reminders.add(new Reminder(0));
-        rq.setReminders(reminders);
+        rq.setPriority(Quest.PRIORITY_IMPORTANT_NOT_URGENT);
+        if (upgradeManager.isUnlocked(Upgrade.REMINDERS)) {
+            rq.addReminder(new Reminder(0));
+        }
         return rq;
     }
 
