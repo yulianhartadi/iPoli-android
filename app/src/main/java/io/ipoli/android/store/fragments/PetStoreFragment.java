@@ -69,7 +69,7 @@ public class PetStoreFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragement_pet_store, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        ((StoreActivity) getActivity()).getSupportActionBar().setTitle(R.string.fragment_pet_store_title);
+        ((StoreActivity) getActivity()).populateTitle(R.string.fragment_pet_store_title);
 
         petList.setLayoutManager(new GridLayoutManager(getContext(), 2));
         List<PetViewModel> petViewModels = createPetViewModels();

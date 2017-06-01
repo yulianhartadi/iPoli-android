@@ -63,7 +63,7 @@ public class UpgradeStoreFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragement_upgrade_store, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        ((StoreActivity) getActivity()).getSupportActionBar().setTitle(R.string.fragment_upgrade_store_title);
+        ((StoreActivity) getActivity()).populateTitle(R.string.fragment_upgrade_store_title);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);

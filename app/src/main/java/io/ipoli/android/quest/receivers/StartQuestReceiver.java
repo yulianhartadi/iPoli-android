@@ -43,7 +43,6 @@ public class StartQuestReceiver extends BroadcastReceiver {
 
         if(upgradeManager.isLocked(Upgrade.TIMER)) {
             eventBus.post(new StartUpgradeDialogRequestEvent(Upgrade.TIMER));
-//            Toast.makeText(context, "Times is locked, go to Store to buy it", Toast.LENGTH_LONG).show();
             return;
         }
 
