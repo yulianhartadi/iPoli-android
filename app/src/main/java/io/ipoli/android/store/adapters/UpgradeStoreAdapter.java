@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.squareup.otto.Bus;
 
 import java.util.List;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,6 +35,7 @@ public class UpgradeStoreAdapter extends EnterAnimationAdapter<UpgradeStoreAdapt
     private final Context context;
     private final Bus eventBus;
     private List<UpgradeViewModel> viewModels;
+    private final Set<Integer> unlockedUpgrades;
 
     private int[] colors = new int[]{
             R.color.md_green_300,
@@ -46,10 +48,11 @@ public class UpgradeStoreAdapter extends EnterAnimationAdapter<UpgradeStoreAdapt
             R.color.md_pink_300,
     };
 
-    public UpgradeStoreAdapter(Context context, Bus eventBus, List<UpgradeViewModel> viewModels) {
+    public UpgradeStoreAdapter(Context context, Bus eventBus, List<UpgradeViewModel> viewModels, Set<Integer> unlockedUpgrades) {
         this.context = context;
         this.eventBus = eventBus;
         this.viewModels = viewModels;
+        this.unlockedUpgrades = unlockedUpgrades;
     }
 
     @Override
@@ -81,10 +84,14 @@ public class UpgradeStoreAdapter extends EnterAnimationAdapter<UpgradeStoreAdapt
         });
 
         if (vm.isUnlocked()) {
-            holder.container.setBackgroundColor(ContextCompat.getColor(context, R.color.md_grey_50));
             holder.unlock.setVisibility(View.INVISIBLE);
             holder.unlockDate.setVisibility(View.VISIBLE);
             holder.unlockDate.setText(context.getString(R.string.upgrade_unloked_on, DateFormatter.format(context, vm.getUnlockDate())));
+        } else if(vm.requiresUpgrade() && !unlockedUpgrades.contains(vm.getRequiredUpgrade().code)) {
+            holder.unlock.setVisibility(View.INVISIBLE);
+            holder.unlockDate.setVisibility(View.VISIBLE);
+            String requiredTitle = context.getString(vm.getRequiredUpgrade().title);
+            holder.unlockDate.setText(context.getString(R.string.requires_upgrade_message, requiredTitle));
         } else {
             holder.unlock.setVisibility(View.VISIBLE);
             holder.unlockDate.setVisibility(View.GONE);

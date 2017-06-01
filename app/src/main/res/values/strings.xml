@@ -828,6 +828,7 @@
     <string name="upgrade_dialog_price_message">Do you want to unlock it now for %d of your life coins?</string>
     <string name="unlock">Unlock</string>
     <string name="unlock_upgrade">Unlock upgrade</string>
+    <string name="requires_upgrade_message">Requires %s</string>
 
 
     <string-array name="player_titles">

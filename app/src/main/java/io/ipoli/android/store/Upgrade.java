@@ -33,7 +33,8 @@ public enum Upgrade {
             R.string.upgrade_matrix_short_desc, R.string.upgrade_matrix_long_desc, R.drawable.ic_matrix_white_24dp),
 
     PREDEFINED_CHALLENGES(8, 1000, R.string.programmed_challenges, R.string.upgrade_predefined_challenges_sub_title,
-            R.string.upgrade_predefined_challenges_short_desc, R.string.upgrade_predefined_challenges_long_desc, R.drawable.ic_sword_white_24dp),
+            R.string.upgrade_predefined_challenges_short_desc, R.string.upgrade_predefined_challenges_long_desc,
+            R.drawable.ic_sword_white_24dp, CHALLENGES),
 
     SUB_QUESTS(9, 400, R.string.sub_quests, R.string.upgrade_sub_quests_sub_title,
             R.string.upgrade_sub_quests_short_desc, R.string.upgrade_sub_quests_long_desc, R.drawable.ic_format_list_bulleted_white_24dp),
@@ -59,8 +60,15 @@ public enum Upgrade {
     @DrawableRes
     public final int picture;
 
+    public final Upgrade requiredUpgrade;
+
     Upgrade(int code, int price, @StringRes int title, @StringRes int subTitle, @StringRes int shortDesc,
             @StringRes int longDesc, @DrawableRes int picture) {
+        this(code, price, title, subTitle, shortDesc, longDesc, picture, null);
+    }
+
+    Upgrade(int code, int price, @StringRes int title, @StringRes int subTitle, @StringRes int shortDesc,
+            @StringRes int longDesc, @DrawableRes int picture, Upgrade requiredUpgrade) {
         this.code = code;
         this.price = price;
         this.title = title;
@@ -68,6 +76,7 @@ public enum Upgrade {
         this.shortDesc = shortDesc;
         this.longDesc = longDesc;
         this.picture = picture;
+        this.requiredUpgrade = requiredUpgrade;
     }
 
     public static Upgrade get(int code) {

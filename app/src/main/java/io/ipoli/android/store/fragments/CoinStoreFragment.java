@@ -301,7 +301,7 @@ public class CoinStoreFragment extends BaseFragment {
         Player player = playerPersistenceService.get();
         player.addCoins(coins);
         playerPersistenceService.save(player);
-        Snackbar.make(rootLayout, String.format(getString(R.string.coins_bought), coins), Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(rootLayout, getString(R.string.coins_bought, coins), Snackbar.LENGTH_SHORT).show();
     }
 
     boolean verifyDeveloperPayload(String payload, Purchase p) {

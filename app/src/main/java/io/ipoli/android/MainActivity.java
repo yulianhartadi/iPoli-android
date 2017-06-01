@@ -350,7 +350,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (xp > 1000) {
             xpString = getString(R.string.xp_format, xp / 1000);
         }
-        currentXP.setText(String.format(getString(R.string.nav_drawer_player_xp), xpString));
+        currentXP.setText(getString(R.string.nav_drawer_player_xp, xpString));
         updatePetInDrawer(player.getPet());
 
         Button signIn = (Button) header.findViewById(R.id.sign_in);
