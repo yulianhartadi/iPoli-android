@@ -710,7 +710,7 @@
 
     <string name="coins_pack_value">+ %d life coins</string>
     <string name="upgrade_price">%d life coins</string>
-    <string name="upgrade_bought_on">Bought on %s</string>
+    <string name="upgrade_unloked_on">Unlocked on %s</string>
     <string name="fragment_avatar_store_title">Buy avatar</string>
     <string name="fragment_pet_store_title">Buy pet</string>
     <string name="fragment_upgrade_store_title">Unlock upgrade</string>
@@ -722,7 +722,7 @@
     <string name="not_now">Not now</string>
     <string name="go_to_store">Go to Store</string>
     <string name="fragment_coin_store_title">Buy coins</string>
-    <string name="coins">Coins</string>
+    <string name="life_coins">Life coins</string>
     <string name="upgrades">Upgrades</string>
     <string name="avatars">Avatars</string>
     <string name="pets">Pets</string>
@@ -759,27 +759,40 @@
 
     <string name="upgrade_rq_sub_title">Create repeating tasks</string>
     <string name="upgrade_rq_short_desc">Repeating quests are called all your repeating tasks - fixed or flexible.</string>
-    <string name="upgrade_rq_long_desc">iPoli automatically makes a quest in your calendar for the repeating one if you have to do it on a particular date.</string>
+    <string name="upgrade_rq_long_desc">
+        Add your tasks which repeat daily, weekly, monthly, or even annually. They can be on fixed or flexible days.
+        iPoli will automatically schedule them for you.
+    </string>
 
     <string name="upgrade_challenges_sub_title">Set and achieve your goals</string>
-    <string name="upgrade_challenges_short_desc"></string>
-    <string name="upgrade_challenges_long_desc"></string>
+    <string name="upgrade_challenges_short_desc">Plan and achieve your short and long-term goals</string>
+    <string name="upgrade_challenges_long_desc">
+        Challenges help you plan and achieve your life goals. Create challenges for all your short and long-term goals.
+        Then you can track your progress and stay motivated.
+      </string>
 
     <string name="upgrade_growth_sub_title">Track your progress and score</string>
     <string name="upgrade_growth_short_desc">Track and compare your progress and productivity during different time spans.</string>
-    <string name="upgrade_growth_long_desc">Monitor home much time do you spend for quests in each category, how many do you complete, what is your Awesomeness score and more facts to help your productivity.</string>
+    <string name="upgrade_growth_long_desc">Monitor home much time do you spend for quests in each category,
+        how many do you complete, what is your Awesomeness score and more facts to help your productivity.</string>
 
     <string name="upgrade_matrix_sub_title">Separate important from urgent</string>
-    <string name="upgrade_matrix_short_desc"></string>
-    <string name="upgrade_matrix_long_desc"></string>
+    <string name="upgrade_matrix_short_desc">Prioritize your tasks and focus on important ones</string>
+    <string name="upgrade_matrix_long_desc">
+        The Eisenhower matrix divides your quests into 4 groups depending on their priority.
+        It helps you focus on the most important tasks.</string>
 
     <string name="upgrade_sync_calendars_sub_title">Import all your events</string>
-    <string name="upgrade_sync_calendars_short_desc"></string>
-    <string name="upgrade_sync_calendars_long_desc"></string>
+    <string name="upgrade_sync_calendars_short_desc">Import and sync events and tasks from your other calendars</string>
+    <string name="upgrade_sync_calendars_long_desc">Keep iPoli up to date by syncing events and tasks from your calendars.
+        Assign different category for each calendar (work, personal, …)</string>
 
     <string name="upgrade_predefined_challenges_sub_title">Easy to follow helpful formulas</string>
-    <string name="upgrade_predefined_challenges_short_desc">instill healthy habits and mindfulness into your life</string>
-    <string name="upgrade_predefined_challenges_long_desc"></string>
+    <string name="upgrade_predefined_challenges_short_desc">Challenge yourself with special programs to be more healthy, skillful and happy</string>
+    <string name="upgrade_predefined_challenges_long_desc">
+        We\'ve prepared special challenges for you to be healthy, fit, to learn new skills and spend more time with your family.
+        The programs are easy to follow but you can always adjust them according to your needs.
+    </string>
 
     <string name="upgrade_notes_sub_title">Stay organized and clear your mind</string>
     <string name="upgrade_notes_short_desc"></string>
@@ -800,6 +813,7 @@
     <string name="upgrade_dialog_name">You\'ve discovered %s!</string>
     <string name="upgrade_dialog_price_message">Do you want to unlock it now for %d of your life coins?</string>
     <string name="unlock">Unlock</string>
+    <string name="unlock_upgrade">Unlock upgrade</string>
 
 
     <string-array name="player_titles">
