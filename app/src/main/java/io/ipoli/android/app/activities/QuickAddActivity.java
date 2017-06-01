@@ -55,6 +55,7 @@ import io.ipoli.android.reminder.data.Reminder;
  * on 8/4/16.
  */
 public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSuggestionsUpdatedListener {
+
     private static final int SUGGESTION_ITEM_HEIGHT_DP = 40;
     private static final int MAX_VISIBLE_SUGGESTION_ITEMS = 4;
 

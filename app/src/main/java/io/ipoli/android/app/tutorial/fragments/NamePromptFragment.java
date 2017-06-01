@@ -2,7 +2,6 @@ package io.ipoli.android.app.tutorial.fragments;
 
 import android.animation.ObjectAnimator;
 import android.os.Bundle;
-import android.support.annotation.IntegerRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -21,6 +20,9 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.tutorial.OnboardingActivity;
 import io.ipoli.android.app.ui.TypewriterView;
 import io.ipoli.android.app.utils.KeyboardUtils;
+
+import static io.ipoli.android.app.utils.AnimationUtils.fadeIn;
+import static io.ipoli.android.app.utils.AnimationUtils.fadeOut;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -82,18 +84,6 @@ public class NamePromptFragment extends Fragment {
         tutorialText.setText("");
         tutorialText.type("Welcome, " + nameText + "!").pause().run(() ->
                 ((OnboardingActivity) getActivity()).onNamePromptDone(nameText));
-    }
-
-    private void fadeOut(View view) {
-        view.animate().alpha(0f).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime)).start();
-    }
-
-    private void fadeIn(View view, @IntegerRes int duration, long startDelay) {
-        view.animate().alpha(1f).setStartDelay(startDelay).setDuration(getResources().getInteger(duration)).start();
-    }
-
-    private void fadeIn(View view) {
-        fadeIn(view, android.R.integer.config_mediumAnimTime, 0);
     }
 
     @Override
