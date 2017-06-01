@@ -733,7 +733,7 @@
     <string name="get_it">Get it</string>
     <string name="reminders">Reminders</string>
     <string name="timer">Timer</string>
-    <string name="ready_to_use_challenges">Ready to use challenges</string>
+    <string name="programmed_challenges">Programmed challenges</string>
     <string name="no_challenges">You have not challenged yourself</string>
     <string name="upgrades_migration_message">You are an awesome iPoli user and all current upgrades are free for you!</string>
     <string name="xp_format">%dK</string>
@@ -756,6 +756,29 @@
     <string name="avatar_name_dwight">Muscle man</string>
     <string name="avatar_name_michael">Bad boy</string>
     <string name="avatar_name_tobby">Brainiac</string>
+
+    <string name="upgrade_rq_short_desc">Repeating quests are called all your repeating tasks - fixed or flexible.</string>
+    <string name="upgrade_rq_long_desc">iPoli automatically makes a quest in your calendar for the repeating one if you have to do it on a particular date.</string>
+    <string name="upgrade_challenges_short_desc"></string>
+    <string name="upgrade_challenges_long_desc"></string>
+    <string name="upgrade_growth_short_desc">Track and compare your progress and productivity during different time spans.</string>
+    <string name="upgrade_growth_long_desc">Monitor home much time do you spend for quests in each category, how many do you complete, what is your Awesomeness score and more facts to help your productivity.</string>
+    <string name="upgrade_matrix_short_desc"></string>
+    <string name="upgrade_matrix_long_desc"></string>
+    <string name="upgrade_sync_calendars_short_desc"></string>
+    <string name="upgrade_sync_calendars_long_desc"></string>
+    <string name="upgrade_predefined_challenges_short_desc"></string>
+    <string name="upgrade_predefined_challenges_long_desc"></string>
+    <string name="upgrade_notes_short_desc"></string>
+    <string name="upgrade_notes_long_desc"></string>
+    <string name="upgrade_timer_short_desc"></string>
+    <string name="upgrade_timer_long_desc"></string>
+    <string name="upgrade_sub_quests_short_desc"></string>
+    <string name="upgrade_sub_quests_long_desc"></string>
+    <string name="upgrade_reminders_short_desc"></string>
+    <string name="upgrade_reminders_long_desc"></string>
+    <string name="upgrade_dialog_name">You\'ve discovered %s!</string>
+    <string name="upgrade_dialog_price_message">Do you want to unlock it now for %d of your life coins?</string>
 
 
     <string-array name="player_titles">

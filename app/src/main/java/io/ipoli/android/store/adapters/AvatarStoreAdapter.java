@@ -37,8 +37,8 @@ public class AvatarStoreAdapter extends EnterAnimationAdapter<AvatarStoreAdapter
     private int[] colors = new int[]{
             R.color.md_green_300,
             R.color.md_deep_orange_300,
-            R.color.md_indigo_300,
             R.color.md_orange_300,
+            R.color.md_indigo_300,
             R.color.md_blue_300,
             R.color.md_red_300,
             R.color.md_purple_300,
