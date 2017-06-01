@@ -35,7 +35,7 @@ public enum Upgrade {
     TIMER(7, 2, R.string.timer, R.string.upgrade_timer_sub_title,
             R.string.upgrade_timer_short_desc, R.string.upgrade_timer_long_desc, R.drawable.ic_timer_white_24dp),
 
-    SUB_QUESTS(5, 3, R.string.sub_quests, R.string.upgrade_sub_quest_sub_title,
+    SUB_QUESTS(5, 3, R.string.sub_quests, R.string.upgrade_sub_quests_sub_title,
             R.string.upgrade_sub_quests_short_desc, R.string.upgrade_sub_quests_long_desc, R.drawable.ic_format_list_bulleted_white_24dp),
 
     REMINDERS(3, 1, R.string.reminders, R.string.upgrade_reminders_sub_title,

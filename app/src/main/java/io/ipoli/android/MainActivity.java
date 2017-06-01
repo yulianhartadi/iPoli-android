@@ -181,8 +181,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             }
         };
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
-
-        UpgradeDialog.newInstance(Upgrade.PREDEFINED_CHALLENGES).show(getSupportFragmentManager());
     }
 
     @Override
