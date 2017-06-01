@@ -611,14 +611,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         switch (e.fabName) {
             case REPEATING_QUEST:
                 if (upgradeManager.isLocked(Upgrade.REPEATING_QUESTS)) {
-                    UpgradeDialog.newInstance(Upgrade.REPEATING_QUESTS).show(getSupportFragmentManager());
+                    showUpgradeDialogForFabItem(Upgrade.REPEATING_QUESTS, e.intent);
                     return;
                 }
                 startActivity(e.intent);
                 return;
             case CHALLENGE:
                 if (upgradeManager.isLocked(Upgrade.CHALLENGES)) {
-                    UpgradeDialog.newInstance(Upgrade.CHALLENGES).show(getSupportFragmentManager());
+                    showUpgradeDialogForFabItem(Upgrade.CHALLENGES, e.intent);
                     return;
                 }
                 startActivity(e.intent);
@@ -626,6 +626,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             default:
                 startActivity(e.intent);
         }
+    }
+
+    private void showUpgradeDialogForFabItem(Upgrade upgrade, Intent intent) {
+        UpgradeDialog.newInstance(upgrade, new OnUnlockListener() {
+            @Override
+            public void onUnlock() {
+                startActivity(intent);
+            }
+        }).show(getSupportFragmentManager());
     }
 
     @Override

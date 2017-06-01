@@ -107,7 +107,6 @@ public class MigrationActivity extends BaseActivity {
             eventBus.post(new AppErrorEvent(e));
         }
 
-
         player = playerPersistenceService.get();
         LocalDate unlockedDate = DateUtils.fromMillis(player.getCreatedAt());
         for(Upgrade upgrade: Upgrade.values()) {
@@ -221,7 +220,7 @@ public class MigrationActivity extends BaseActivity {
             finish();
         });
     }
-    
+
     @Override
     public void onBackPressed() {
 
