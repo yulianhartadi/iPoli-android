@@ -317,19 +317,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         String title = playerTitles[Math.min(playerLevel / 10, playerTitles.length - 1)];
         level.setText(String.format(getString(R.string.player_level), playerLevel, title));
 
-        TextView coins = (TextView) header.findViewById(R.id.player_coins);
-        coins.setText(String.valueOf(player.getCoins()));
-        coins.setOnClickListener(view -> {
-            Intent intent = new Intent(this, StoreActivity.class);
-            intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.COINS.name());
-            startActivity(intent);
-            eventBus.post(new AvatarCoinsTappedEvent());
-        });
-
-        TextView rewardPoints = (TextView) header.findViewById(R.id.player_reward_points);
-        rewardPoints.setText(String.valueOf(player.getRewardPoints()));
-        rewardPoints.setOnClickListener(v ->
-                Toast.makeText(MainActivity.this, R.string.reward_points_description, Toast.LENGTH_LONG).show());
+        populateHeaderCoins(player, header);
+        populateHeaderPoints(player, header);
+        populateHeaderXP(player, header);
 
         ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
         experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
@@ -344,13 +334,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             startActivity(intent);
         });
 
-        TextView currentXP = (TextView) header.findViewById(R.id.player_current_xp);
-        String xpString = player.getExperience();
-        long xp = Long.valueOf(player.getExperience());
-        if (xp > 1000) {
-            xpString = getString(R.string.xp_format, xp / 1000);
-        }
-        currentXP.setText(getString(R.string.nav_drawer_player_xp, xpString));
         updatePetInDrawer(player.getPet());
 
         Button signIn = (Button) header.findViewById(R.id.sign_in);
@@ -361,6 +344,43 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             signIn.setVisibility(View.VISIBLE);
             signIn.setOnClickListener(v -> startActivity(new Intent(this, SignInActivity.class)));
         }
+    }
+
+    private void populateHeaderCoins(Player player, View header) {
+        TextView coins = (TextView) header.findViewById(R.id.player_coins);
+        coins.setText(formatValue(player.getCoins()));
+        coins.setOnClickListener(view -> {
+            Intent intent = new Intent(this, StoreActivity.class);
+            intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.COINS.name());
+            startActivity(intent);
+            eventBus.post(new AvatarCoinsTappedEvent());
+        });
+    }
+
+    private void populateHeaderPoints(Player player, View header) {
+        TextView rewardPoints = (TextView) header.findViewById(R.id.player_reward_points);
+        rewardPoints.setText(formatValue(player.getRewardPoints()));
+        rewardPoints.setOnClickListener(v ->
+                Toast.makeText(MainActivity.this, R.string.reward_points_description, Toast.LENGTH_LONG).show());
+    }
+
+    private void populateHeaderXP(Player player, View header) {
+        TextView currentXP = (TextView) header.findViewById(R.id.player_current_xp);
+        currentXP.setText(getString(R.string.nav_drawer_player_xp, formatValue(Long.valueOf(player.getExperience()))));
+    }
+
+    private String formatValue(Long value) {
+        String valString = String.valueOf(value);
+        if(value < 1000) {
+            return valString;
+        }
+        String main = valString.substring(0, valString.length() - 3);
+        String result = main;
+        char tail = valString.charAt(valString.length() - 3);
+        if(tail != '0') {
+            result += "." + tail;
+        }
+        return getString(R.string.big_value_format, result);
     }
 
     private void updatePetInDrawer(Pet pet) {
