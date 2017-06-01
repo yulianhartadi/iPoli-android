@@ -6,6 +6,7 @@ import android.support.annotation.StringRes;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.squareup.otto.Bus;
 
@@ -18,6 +19,9 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.app.persistence.OnDataChangedListener;
+import io.ipoli.android.player.Player;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.store.StoreItemType;
 import io.ipoli.android.store.fragments.StoreFragment;
 
@@ -26,14 +30,23 @@ import io.ipoli.android.store.fragments.StoreFragment;
  * on 5/22/17.
  */
 
-public class StoreActivity extends BaseActivity {
+public class StoreActivity extends BaseActivity implements OnDataChangedListener<Player> {
 
     public static final String START_ITEM_TYPE = "start_item_type";
     @Inject
     Bus eventBus;
 
+    @Inject
+    PlayerPersistenceService playerPersistenceService;
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
+    @BindView(R.id.toolbar_title)
+    TextView toolbarTitle;
+
+    @BindView(R.id.player_coins)
+    TextView coins;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,7 +59,9 @@ public class StoreActivity extends BaseActivity {
         ActionBar ab = getSupportActionBar();
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
+            ab.setDisplayShowTitleEnabled(false);
         }
+        populateTitle(R.string.fragment_store_title);
 
         StoreFragment fragment;
         if (getIntent().hasExtra(START_ITEM_TYPE)) {
@@ -62,8 +77,20 @@ public class StoreActivity extends BaseActivity {
         eventBus.post(new ScreenShownEvent(EventSource.STORE));
     }
 
-    public void setTitle(@StringRes int title) {
-        toolbar.setTitle(title);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        playerPersistenceService.listen(this);
+    }
+
+    @Override
+    protected void onStop() {
+        playerPersistenceService.removeAllListeners();
+        super.onStop();
+    }
+
+    public void populateTitle(@StringRes int title) {
+        toolbarTitle.setText(title);
     }
 
     @Override
@@ -77,11 +104,16 @@ public class StoreActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        getSupportActionBar().setTitle(R.string.fragment_store_title);
+        populateTitle(R.string.fragment_store_title);
     }
 
     @Override
     protected boolean useParentOptionsMenu() {
         return false;
+    }
+
+    @Override
+    public void onDataChanged(Player player) {
+        coins.setText(String.valueOf(player.getCoins()));
     }
 }

@@ -67,7 +67,7 @@ public class AvatarStoreFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragement_avatar_store, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        ((StoreActivity) getActivity()).getSupportActionBar().setTitle(R.string.fragment_avatar_store_title);
+        ((StoreActivity) getActivity()).populateTitle(R.string.fragment_avatar_store_title);
 
         avatarList.setLayoutManager(new GridLayoutManager(getContext(), 2));
         adapter = new AvatarStoreAdapter(getContext(), eventBus, createAvatarViewModels());
