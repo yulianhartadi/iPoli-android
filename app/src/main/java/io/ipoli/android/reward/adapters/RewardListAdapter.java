@@ -64,9 +64,6 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
         RewardViewModel vm = viewModels.get(holder.getAdapterPosition());
         Reward reward = vm.getReward();
 
-//            popupMenu.inflate(R.menu.reward_actions_menu);
-
-
         holder.name.setText(reward.getName());
         if (TextUtils.isEmpty(reward.getDescription())) {
             holder.description.setVisibility(View.GONE);
@@ -75,10 +72,10 @@ public class RewardListAdapter extends RecyclerView.Adapter<RewardListAdapter.Vi
             holder.description.setVisibility(View.VISIBLE);
         }
 
-        holder.lastPurchase.setText("Last used: " + DateFormatter.formatWithoutYear(context, reward.getLastPurchaseDate()));
-        holder.purchaseCount.setText(reward.getPurchaseCount() + " used");
+        holder.lastPurchase.setText(context.getString(R.string.reward_last_used_date, DateFormatter.formatWithoutYear(context, reward.getLastPurchaseDate())));
+        holder.purchaseCount.setText(context.getString(R.string.used_rewards_count, reward.getPurchaseCount()));
 
-        holder.price.setText(reward.getPrice() + " points");
+        holder.price.setText(context.getString(R.string.reward_price, reward.getPrice()));
 
         holder.rootContainer.setOnClickListener(v -> eventBus.post(new EditRewardRequestEvent(reward)));
         holder.edit.setOnClickListener(v -> eventBus.post(new EditRewardRequestEvent(reward)));
