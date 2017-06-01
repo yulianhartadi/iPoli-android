@@ -56,12 +56,6 @@ public class CoinStoreFragment extends BaseFragment {
 
     private static final int RC_REQUEST = 10001;
 
-    private Map<String, Integer> skuToValue = new HashMap<String, Integer>() {{
-        put(SKU_STARTER_PACK, 300);
-        put(SKU_PREMIUM_PACK, 2000);
-        put(SKU_JUMBO_PACK, 4000);
-    }};
-
     @Inject
     Bus eventBus;
 
@@ -116,6 +110,8 @@ public class CoinStoreFragment extends BaseFragment {
     private Unbinder unbinder;
     private IabHelper iabHelper;
 
+    private Map<String, Integer> skuToValue;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -127,6 +123,12 @@ public class CoinStoreFragment extends BaseFragment {
         ((StoreActivity) getActivity()).getSupportActionBar().setTitle(R.string.fragment_coin_store_title);
 
         loaderContainer.setVisibility(View.VISIBLE);
+
+        skuToValue = new HashMap<>();
+        skuToValue.put(SKU_STARTER_PACK, 300);
+        skuToValue.put(SKU_PREMIUM_PACK, 2000);
+        skuToValue.put(SKU_JUMBO_PACK, 4000);
+
 
         if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
             showFailureMessage(R.string.no_internet_to_buy_coins);
@@ -157,7 +159,7 @@ public class CoinStoreFragment extends BaseFragment {
         jumboAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
-
+                // intentional
             }
 
             @Override
@@ -169,7 +171,7 @@ public class CoinStoreFragment extends BaseFragment {
 
             @Override
             public void onAnimationRepeat(Animation animation) {
-
+                // intentional
             }
         });
         jumboContainer.startAnimation(jumboAnimation);

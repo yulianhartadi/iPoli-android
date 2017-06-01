@@ -127,41 +127,47 @@ public class UpgradeDialog extends DialogFragment {
         price.setText(getString(R.string.upgrade_dialog_price_message, upgrade.price));
 
         boolean hasEnoughCoins = upgradeManager.hasEnoughCoinsForUpgrade(upgrade);
-        String positiveBtnText = hasEnoughCoins ? getString(R.string.unlock) : getString(R.string.buy_life_coins);
 
         price.setVisibility(hasEnoughCoins ? View.VISIBLE : View.GONE);
         notEnoughCoins.setVisibility(hasEnoughCoins ? View.GONE : View.VISIBLE);
 
+        AlertDialog.Builder builder = hasEnoughCoins ? buildDefault(v, titleView) : buildTooExpensive(v, titleView);
+        return builder.create();
+    }
+
+    private AlertDialog.Builder buildDefault(View view, View titleView) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setView(v)
+        return builder.setView(view)
                 .setCustomTitle(titleView)
-                .setPositiveButton(positiveBtnText, (dialog, which) -> {
-                    if (hasEnoughCoins) {
-                        upgradeManager.unlock(upgrade);
-                        String message = getString(R.string.upgrade_successfully_bought, getString(upgrade.title));
-                        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-                        eventBus.post(new UpgradeUnlockedEvent(upgrade));
-                        if(unlockListener != null) {
-                            unlockListener.onUnlock();
-                        }
-                    } else {
-                        Intent intent = new Intent(getContext(), StoreActivity.class);
-                        intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.COINS.name());
-                        getContext().startActivity(intent);
+                .setPositiveButton(R.string.unlock, (dialog, which) -> {
+                    upgradeManager.unlock(upgrade);
+                    String message = getString(R.string.upgrade_successfully_bought, getString(upgrade.title));
+                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                    eventBus.post(new UpgradeUnlockedEvent(upgrade));
+                    if (unlockListener != null) {
+                        unlockListener.onUnlock();
                     }
                 })
                 .setNegativeButton(R.string.not_now, (dialog, which) -> {
+                })
+                .setNeutralButton(R.string.go_to_store, (dialog, which) -> {
+                    Intent intent = new Intent(getContext(), StoreActivity.class);
+                    intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.UPGRADES.name());
+                    startActivity(intent);
                 });
+    }
 
-        if (hasEnoughCoins) {
-            builder.setNeutralButton(R.string.go_to_store, (dialog, which) -> {
-                Intent intent = new Intent(getContext(), StoreActivity.class);
-                intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.UPGRADES.name());
-                startActivity(intent);
-            });
-        }
-
-        return builder.create();
+    private AlertDialog.Builder buildTooExpensive(View view, View titleView) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        return builder.setView(view)
+                .setCustomTitle(titleView)
+                .setPositiveButton(getString(R.string.buy_life_coins), (dialog, which) -> {
+                    Intent intent = new Intent(getContext(), StoreActivity.class);
+                    intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.COINS.name());
+                    getContext().startActivity(intent);
+                })
+                .setNegativeButton(R.string.not_now, (dialog, which) -> {
+                });
     }
 
     public void show(FragmentManager fragmentManager) {

@@ -96,7 +96,7 @@ public class AvatarStoreFragment extends BaseFragment {
 
         Collections.sort(boughtAvatars, ((a1, a2) -> -Long.compare(playerAvatars.get(a1.code), playerAvatars.get(a2.code))));
         for (Avatar avatar : boughtAvatars) {
-            boolean isCurrent = avatar == currentAvatar;
+            boolean isCurrent = avatar.equals(currentAvatar);
             avatarViewModels.add(new AvatarViewModel(getContext(), avatar, DateUtils.fromMillis(playerAvatars.get(avatar.code)), isCurrent));
         }
         for (Avatar avatar : lockedAvatars) {

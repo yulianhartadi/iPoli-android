@@ -22,6 +22,7 @@ public class Inventory {
     private Map<Integer, Long> avatars;
 
     public Inventory() {
+        // intentional
     }
 
     @JsonIgnore

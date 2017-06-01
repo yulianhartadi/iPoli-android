@@ -13,6 +13,7 @@ import io.ipoli.android.R;
  */
 
 public abstract class EnterAnimationAdapter<V extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<V> {
+    protected int lastAnimatedPosition = -1;
 
     @Override
     public void onBindViewHolder(V holder, int position) {
@@ -21,8 +22,6 @@ public abstract class EnterAnimationAdapter<V extends RecyclerView.ViewHolder> e
     }
 
     protected abstract void doOnBindViewHolder(V holder, int position);
-
-    protected int lastAnimatedPosition = -1;
 
     protected void playEnterAnimation(View viewToAnimate, int position) {
         if (position > lastAnimatedPosition) {

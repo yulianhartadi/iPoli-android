@@ -108,9 +108,8 @@ public class StoreFragment extends BaseFragment {
             case AVATARS:
                 changeCurrentFragment(new AvatarStoreFragment());
                 return;
-            case PETS:
+            default:
                 changeCurrentFragment(new PetStoreFragment());
-                return;
         }
     }
 

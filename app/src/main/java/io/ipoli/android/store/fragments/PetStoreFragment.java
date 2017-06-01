@@ -100,7 +100,7 @@ public class PetStoreFragment extends BaseFragment {
         Collections.sort(boughtPetAvatars, ((p1, p2) -> -Long.compare(playerPets.get(p1.code), playerPets.get(p2.code))));
 
         for (PetAvatar petAvatar : boughtPetAvatars) {
-            boolean isCurrent = currentPet == petAvatar;
+            boolean isCurrent = currentPet.equals(petAvatar);
             petViewModels.add(createViewModel(petAvatar, DateUtils.fromMillis(playerPets.get(petAvatar.code)), isCurrent));
         }
 
