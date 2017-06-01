@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import io.ipoli.android.R;
-import io.ipoli.android.app.tutorial.fragments.IntroFragment;
 import io.ipoli.android.app.tutorial.fragments.NamePromptFragment;
 import io.ipoli.android.app.tutorial.fragments.TipsFragment;
 
@@ -27,7 +26,8 @@ public class OnboardingActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction =
                 fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.root_container, new IntroFragment());
+//        fragmentTransaction.replace(R.id.root_container, new IntroFragment());
+        fragmentTransaction.replace(R.id.root_container, new TipsFragment());
         fragmentTransaction.commit();
     }
 
