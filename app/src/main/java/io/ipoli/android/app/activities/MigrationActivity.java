@@ -158,51 +158,7 @@ public class MigrationActivity extends BaseActivity {
                     return;
                 }
                 Map<String, Object> player = documents.get("player").get(0);
-                database.runInTransaction(() -> {
-                    player.put("schemaVersion", Constants.SCHEMA_VERSION);
-                    save(player);
-
-                    if (documents.containsKey("rewards")) {
-                        List<Map<String, Object>> rewards = documents.get("rewards");
-                        for (Map<String, Object> reward : rewards) {
-                            save(reward);
-                        }
-                    }
-
-                    if (documents.containsKey("challenges")) {
-                        List<Map<String, Object>> challenges = documents.get("challenges");
-                        for (Map<String, Object> challenge : challenges) {
-                            save(challenge);
-                        }
-                    }
-
-                    if (documents.containsKey("repeating_quests")) {
-                        List<Map<String, Object>> repeatingQuests = documents.get("repeating_quests");
-                        for (Map<String, Object> rq : repeatingQuests) {
-                            save(rq);
-                        }
-                    }
-
-                    if (documents.containsKey("quests")) {
-                        List<Map<String, Object>> quests = documents.get("quests");
-                        for (Map<String, Object> q : quests) {
-                            if (q.containsKey("scheduled") && q.containsKey("startMinute") && q.containsKey("reminders")) {
-                                List<Map<String, Object>> reminders = (List<Map<String, Object>>) q.get("reminders");
-                                for (Map<String, Object> reminder : reminders) {
-                                    if (reminder.containsKey("start")) {
-                                        continue;
-                                    }
-                                    Time startTime = Time.of((Integer) q.get("startMinute"));
-                                    long questStart = Long.valueOf((String) q.get("scheduled")) + startTime.toMillisOfDay();
-                                    Long reminderStart = questStart + TimeUnit.MINUTES.toMillis(Long.valueOf((String) reminder.get("minutesFromStart")));
-                                    reminder.put("start", String.valueOf(reminderStart));
-                                }
-                            }
-                            save(q);
-                        }
-                    }
-                    return true;
-                });
+                saveDocuments(documents, player);
                 String playerId = (String) player.get("id");
                 eventBus.post(new PlayerCreatedEvent(playerId));
                 eventBus.post(new PlayerMigratedEvent(firebasePlayerId, playerId));
@@ -216,6 +172,48 @@ public class MigrationActivity extends BaseActivity {
         });
     }
 
+    private void saveDocuments(Map<String, List<Map<String, Object>>> documents, Map<String, Object> player) {
+        database.runInTransaction(() -> {
+            player.put("schemaVersion", Constants.SCHEMA_VERSION);
+            save(player);
+
+            saveProps(documents, "rewards");
+
+            saveProps(documents, "challenges");
+
+            saveProps(documents, "repeating_quests");
+
+            if (documents.containsKey("quests")) {
+                List<Map<String, Object>> quests = documents.get("quests");
+                for (Map<String, Object> q : quests) {
+                    if (q.containsKey("scheduled") && q.containsKey("startMinute") && q.containsKey("reminders")) {
+                        List<Map<String, Object>> reminders = (List<Map<String, Object>>) q.get("reminders");
+                        for (Map<String, Object> reminder : reminders) {
+                            if (reminder.containsKey("start")) {
+                                continue;
+                            }
+                            Time startTime = Time.of((Integer) q.get("startMinute"));
+                            long questStart = Long.valueOf((String) q.get("scheduled")) + startTime.toMillisOfDay();
+                            Long reminderStart = questStart + TimeUnit.MINUTES.toMillis(Long.valueOf((String) reminder.get("minutesFromStart")));
+                            reminder.put("start", String.valueOf(reminderStart));
+                        }
+                    }
+                    save(q);
+                }
+            }
+            return true;
+        });
+    }
+
+    private void saveProps(Map<String, List<Map<String, Object>>> documents, String rewards2) {
+        if (documents.containsKey(rewards2)) {
+            List<Map<String, Object>> rewards = documents.get(rewards2);
+            for (Map<String, Object> reward : rewards) {
+                save(reward);
+            }
+        }
+    }
+
     private void showErrorMessage(Exception e) {
         eventBus.post(new AppErrorEvent(e));
         runOnUiThread(() -> {
@@ -223,8 +221,7 @@ public class MigrationActivity extends BaseActivity {
             finish();
         });
     }
-
-
+    
     @Override
     public void onBackPressed() {
 

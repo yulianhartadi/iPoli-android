@@ -101,13 +101,13 @@ public class StoreFragment extends BaseFragment {
         switch (type) {
             case COINS:
                 changeCurrentFragment(new CoinStoreFragment());
-                return;
+                break;
             case UPGRADES:
                 changeCurrentFragment(new UpgradeStoreFragment());
-                return;
+                break;
             case AVATARS:
                 changeCurrentFragment(new AvatarStoreFragment());
-                return;
+                break;
             default:
                 changeCurrentFragment(new PetStoreFragment());
         }
