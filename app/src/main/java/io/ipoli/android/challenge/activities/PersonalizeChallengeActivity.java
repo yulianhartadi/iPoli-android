@@ -519,6 +519,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
     @NonNull
     private Quest makeQuest(String name, Category category, LocalDate endDate) {
         Quest q = new Quest(name, endDate);
+        q.setPriority(Quest.PRIORITY_IMPORTANT_NOT_URGENT);
         q.setCategory(category.name());
         if (upgradeManager.isUnlocked(Upgrade.REMINDERS)) {
             q.addReminder(new Reminder(0));
@@ -531,6 +532,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         rq.setName(name);
         rq.setDuration(duration);
         rq.setCategory(category.name());
+        rq.setPriority(Quest.PRIORITY_IMPORTANT_NOT_URGENT);
         if (upgradeManager.isUnlocked(Upgrade.REMINDERS)) {
             rq.addReminder(new Reminder(0));
         }
