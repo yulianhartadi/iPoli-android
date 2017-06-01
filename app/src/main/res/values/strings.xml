@@ -830,6 +830,9 @@
     <string name="unlock_upgrade">Unlock upgrade</string>
     <string name="requires_upgrade_message">Requires %s</string>
     <string name="reward_points_won">Reward points won</string>
+    <string name="reward_last_used_date">Last used: %s</string>
+    <string name="used_rewards_count">%d used</string>
+    <string name="reward_price">%d points</string>
 
 
     <string-array name="player_titles">
