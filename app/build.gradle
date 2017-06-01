@@ -26,7 +26,6 @@ android {
         targetSdkVersion 25
         versionCode 177
         versionName "1.12.13"
-        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 
     compileOptions {
