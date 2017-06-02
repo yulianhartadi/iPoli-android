@@ -20,6 +20,6 @@ public abstract class SoftConstraint extends BaseConstraint {
 
     @Override
     public DiscreteDistribution apply() {
-        return FlatPeakDiscreteDistribution.create(getSlotForMinute(startMinute), getSlotForMinute(endMinute - startMinute), 100, getSlotCountBetween(0, 30), getTotalSlotCount());
+        return FlatPeakDiscreteDistribution.create(getSlotForMinute(startMinute), getSlotForMinute(endMinute - startMinute), 1000, getSlotCountBetween(0, 30), getTotalSlotCount());
     }
 }
