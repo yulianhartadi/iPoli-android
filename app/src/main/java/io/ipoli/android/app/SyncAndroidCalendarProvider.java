@@ -18,7 +18,6 @@ import io.ipoli.android.app.utils.DateUtils;
 import me.everything.providers.android.calendar.Calendar;
 import me.everything.providers.android.calendar.CalendarProvider;
 import me.everything.providers.android.calendar.Event;
-import me.everything.providers.android.calendar.Instance;
 import me.everything.providers.android.calendar.Reminder;
 import me.everything.providers.core.Data;
 
@@ -59,34 +58,25 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
     private static final String[] INSTANCE_PROJECTION = new String[]{
             CalendarContract.Instances.EVENT_ID,
             CalendarContract.Instances.START_MINUTE,
-            CalendarContract.Instances.START_DAY
+            CalendarContract.Instances.BEGIN,
+            CalendarContract.Instances.END
     };
 
     private static final int PROJECTION_EVENT_ID_INDEX = 0;
     private static final int PROJECTION_START_MINUTE_INDEX = 1;
-    private static final int PROJECTION_START_DAY_INDEX = 2;
+    private static final int PROJECTION_BEGIN_INDEX = 2;
+    private static final int PROJECTION_END_INDEX = 3;
 
-    public static class InstanceData {
-
-        private final long eventId;
-        private final int startMinute;
-        private final int startDay;
-
-        public InstanceData(long eventId, int startMinute, int startDay) {
-            this.eventId = eventId;
-            this.startMinute = startMinute;
-            this.startDay = startDay;
-        }
-    }
-
-    public Map<Event, List<Instance>> getCalendarEvents(LocalDate startDate, LocalDate endDate, String calendarId) {
+    public Map<Event, List<InstanceData>> getCalendarEvents(long calendarId, LocalDate startDate, LocalDate endDate) {
 
         // @TODO query all calendars
-        String selection = CalendarContract.Instances.CALENDAR_ID + "=?";
-        String[] selectionArgs = new String[]{calendarId};
+        String selection = CalendarContract.Instances.CALENDAR_ID + " = ? ";
+        String[] selectionArgs = new String[]{String.valueOf(calendarId)};
         Uri.Builder builder = CalendarContract.Instances.CONTENT_URI.buildUpon();
         ContentUris.appendId(builder, DateUtils.toMillis(startDate));
         ContentUris.appendId(builder, DateUtils.toMillis(endDate));
+
+        List<InstanceData> instances = new ArrayList<>();
 
         Cursor cur = contentResolver.query(builder.build(), INSTANCE_PROJECTION, selection, selectionArgs, null);
         if (cur == null) {
@@ -96,8 +86,9 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
             while (cur.moveToNext()) {
                 long eventId = cur.getLong(PROJECTION_EVENT_ID_INDEX);
                 int startMinute = cur.getInt(PROJECTION_START_MINUTE_INDEX);
-                int startDay = cur.getInt(PROJECTION_START_DAY_INDEX);
-                InstanceData instanceData = new InstanceData(eventId, startMinute, startDay);
+                long begin = cur.getInt(PROJECTION_BEGIN_INDEX);
+                long end = cur.getInt(PROJECTION_END_INDEX);
+                instances.add(new InstanceData(eventId, startMinute, begin, end));
             }
         } catch (Exception e) {
             // @TODO handle it
@@ -105,23 +96,23 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
             cur.close();
         }
 
-        Data<Instance> instancesData = getInstances(DateUtils.toMillis(startDate), DateUtils.toMillis(endDate));
-        if (instancesData == null) {
+//        Data<Instance> instancesData = getInstances(DateUtils.toMillis(startDate), DateUtils.toMillis(endDate));
+        if (instances.isEmpty()) {
             return new HashMap<>();
         }
 
-        Map<Event, List<Instance>> result = new HashMap<>();
+        Map<Event, List<InstanceData>> result = new HashMap<>();
         Map<Long, Event> idToEvent = new HashMap<>();
 
-        for (Instance i : instancesData.getList()) {
+        for (InstanceData i : instances) {
             if (idToEvent.containsKey(i.eventId)) {
                 result.get(idToEvent.get(i.eventId)).add(i);
             } else {
                 Event e = getEvent(i.eventId);
                 idToEvent.put(e.id, e);
-                List<Instance> instances = new ArrayList<>();
-                instances.add(i);
-                result.put(e, instances);
+                List<InstanceData> instanceList = new ArrayList<>();
+                instanceList.add(i);
+                result.put(e, instanceList);
             }
         }
         return result;

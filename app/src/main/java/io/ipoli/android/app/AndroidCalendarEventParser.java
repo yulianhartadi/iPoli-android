@@ -55,11 +55,14 @@ public class AndroidCalendarEventParser {
         return !TextUtils.isEmpty(e.rRule) || !TextUtils.isEmpty(e.rDate);
     }
 
-    public Result parse(List<Event> events, Category category) {
+    public Result parse(Map<Event, List<InstanceData>> eventToInstances, Category category) {
         List<Quest> quests = new ArrayList<>();
         Map<Quest, Long> questToOriginalId = new HashMap<>();
-        List<RepeatingQuest> repeatingQuests = new ArrayList<>();
-        for (Event e : events) {
+        Map<RepeatingQuest, List<Quest>> repeatingQuests = new HashMap<>();
+
+        for(Map.Entry<Event, List<InstanceData>> entry : eventToInstances.entrySet()) {
+            Event e = entry.getKey();
+            List<InstanceData> instances = entry.getValue();
             if (e.deleted || !e.visible) {
                 continue;
             }
@@ -68,14 +71,18 @@ public class AndroidCalendarEventParser {
                 if (rq == null) {
                     continue;
                 }
-                repeatingQuests.add(rq);
+                List<Quest> questList = new ArrayList<>();
+                for(InstanceData instance : instances) {
+                    questList.add(parseQuest(e, instance, category));
+                }
+                repeatingQuests.put(rq, questList);
             } else {
-                Quest q = parseQuest(e, category);
+                Quest q = parseQuest(e, instances.get(0), category);
                 if (q == null) {
                     continue;
                 }
                 if (StringUtils.isEmpty(e.originalId)) {
-                    quests.add(parseQuest(e, category));
+                    quests.add(parseQuest(e, instances.get(0), category));
                 } else {
                     try {
                         questToOriginalId.put(q, Long.valueOf(e.originalId));
@@ -89,15 +96,8 @@ public class AndroidCalendarEventParser {
         return new Result(quests, questToOriginalId, repeatingQuests);
     }
 
-    private Quest parseQuest(Event event, Category category) {
+    private Quest parseQuest(Event event, InstanceData instance, Category category) {
         if (StringUtils.isEmpty(event.title) || String.valueOf(CalendarContract.Events.STATUS_CANCELED).equals(event.status)) {
-            return null;
-        }
-
-        ZoneId zoneId = getZoneId(event);
-        LocalDateTime startLocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(event.dTStart), getZoneId(event));
-        LocalDate startDate = DateUtils.fromMillis(event.dTStart, zoneId);
-        if (isForThePast(startDate)) {
             return null;
         }
 
@@ -105,10 +105,11 @@ public class AndroidCalendarEventParser {
         q.setSource(Constants.SOURCE_ANDROID_CALENDAR);
         q.setSourceMapping(SourceMapping.fromGoogleCalendar(event.calendarId, event.id));
         q.setCategoryType(category);
+        q.setStartMinute(instance.startMinute);
 
-        LocalDate endDate = event.dTend > 0 ? DateUtils.fromMillis(event.dTend, zoneId) : startDate;
-
-        q.setStartMinute(startLocalDateTime.getHour() * 60 + startLocalDateTime.getMinute());
+        ZoneId zoneId = getZoneId(event);
+        LocalDate startDate = DateUtils.fromMillis(instance.begin, zoneId);
+        LocalDate endDate = event.dTend > 0 ? DateUtils.fromMillis(instance.end, zoneId) : startDate;
         q.setStartDate(startDate);
         q.setEndDate(endDate);
         q.setScheduledDate(startDate);
@@ -292,12 +293,13 @@ public class AndroidCalendarEventParser {
     public class Result {
         public List<Quest> quests;
         public Map<Quest, Long> questToOriginalId;
-        public List<RepeatingQuest> repeatingQuests;
+        public Map<RepeatingQuest, List<Quest>> repeatingQuests;
 
-        public Result(List<Quest> quests, Map<Quest, Long> questToOriginalId, List<RepeatingQuest> repeatingQuests) {
+        public Result(List<Quest> quests, Map<Quest, Long> questToOriginalId,  Map<RepeatingQuest, List<Quest>> repeatingQuests) {
             this.quests = quests;
             this.questToOriginalId = questToOriginalId;
             this.repeatingQuests = repeatingQuests;
+
         }
     }
 
