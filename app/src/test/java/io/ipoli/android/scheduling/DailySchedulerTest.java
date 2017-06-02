@@ -246,7 +246,9 @@ public class DailySchedulerTest {
                 .create();
         List<Task> tasksToSchedule = Collections.singletonList(new Task(90, Quest.PRIORITY_NOT_IMPORTANT_URGENT, TimePreference.ANY, Category.WORK));
         List<Task> tasks = scheduler.scheduleTasks(tasksToSchedule, Time.of(h2Min(22)));
-        assertThat(tasks.get(0).getCurrentTimeSlot().getStartMinute(), is(greaterThanOrEqualTo(h2Min(23))));
+        int startMinute = tasks.get(0).getCurrentTimeSlot().getStartMinute();
+        boolean isBeforeWorkOrAfterWOrk = startMinute < h2Min(23) && startMinute > h2Min(2);
+        assertFalse(isBeforeWorkOrAfterWOrk);
     }
 
     @Test

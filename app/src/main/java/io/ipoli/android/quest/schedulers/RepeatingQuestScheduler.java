@@ -391,6 +391,7 @@ public class RepeatingQuestScheduler {
         quest.setScheduledDate(endDate);
         quest.setCreatedAt(DateUtils.nowUTC().getTime());
         quest.setUpdatedAt(DateUtils.nowUTC().getTime());
+        quest.setStartTimePreference(repeatingQuest.getStartTimePreference());
         quest.setSource(Constants.API_RESOURCE_SOURCE);
         quest.setChallengeId(repeatingQuest.getChallengeId());
         quest.setSubQuests(repeatingQuest.getSubQuests());
