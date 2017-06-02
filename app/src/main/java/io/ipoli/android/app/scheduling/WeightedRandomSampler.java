@@ -8,7 +8,6 @@ import java.util.TreeMap;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 12/15/16.
  */
-
 public class WeightedRandomSampler<E> {
 
     private final NavigableMap<Double, E> weightToValue = new TreeMap<>();

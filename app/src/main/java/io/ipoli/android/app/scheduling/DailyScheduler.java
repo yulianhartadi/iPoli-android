@@ -266,13 +266,13 @@ public class DailyScheduler {
         return currentTime.toMinuteOfDay() % timeSlotDuration != 0;
     }
 
-    private boolean isNotAvailableSlot(DiscreteDistribution dist, int endSlot) {
-        int slotIdx = (endSlot + getSlotCountBetween(0, startMinute)) % dist.size();
+    private boolean isNotAvailableSlot(DiscreteDistribution dist, int slot) {
+        int slotIdx = (slot + getSlotCountBetween(0, startMinute)) % dist.size();
         return dist.at(slotIdx) <= 0;
     }
 
-    private boolean isAvailableSlot(DiscreteDistribution dist, int startSlot) {
-        int slotIdx = (startSlot + getSlotCountBetween(0, startMinute)) % dist.size();
+    private boolean isAvailableSlot(DiscreteDistribution dist, int slot) {
+        int slotIdx = (slot + getSlotCountBetween(0, startMinute)) % dist.size();
         return dist.at(slotIdx) > 0;
     }
 
@@ -341,7 +341,7 @@ public class DailyScheduler {
         for (int i = 0; i < slotsToConsider.size(); i++) {
             WeightedRandomSampler<TimeSlot> sampler = new WeightedRandomSampler<>(seed);
             for (TimeSlot slot : availableSlots) {
-                sampler.add(slot, distribution.at(getSlotForMinute(slot.getStartMinute())));
+                sampler.add(slot, distribution.at(slot.getStartMinute() / timeSlotDuration));
             }
             TimeSlot timeSlot = sampler.sample();
             result.add(timeSlot);
