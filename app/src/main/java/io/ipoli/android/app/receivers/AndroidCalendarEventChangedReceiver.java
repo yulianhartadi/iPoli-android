@@ -76,7 +76,7 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
         App.getAppComponent(context).inject(this);
         Player player = playerPersistenceService.get();
 
-        if(player == null) {
+        if (player == null) {
             return;
         }
 
@@ -90,21 +90,21 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
 
         for (Map.Entry<Long, Category> calendar : player.getAndroidCalendars().entrySet()) {
             List<Event> dirtyEvents = syncAndroidCalendarProvider.getDirtyEvents(calendar.getKey());
-            AndroidCalendarEventParser.Result result = androidCalendarEventParser.parse(dirtyEvents, calendar.getValue());
-            quests.addAll(result.quests);
-            questToOriginalId.putAll(result.questToOriginalId);
-            repeatingQuests.addAll(result.repeatingQuests);
+//            AndroidCalendarEventParser.Result result = androidCalendarEventParser.parse(dirtyEvents, calendar.getValue());
+//            quests.addAll(result.quests);
+//            questToOriginalId.putAll(result.questToOriginalId);
+//            repeatingQuests.addAll(result.repeatingQuests);
         }
 
         Map<RepeatingQuest, Pair<List<Quest>, List<Quest>>> repeatingQuestToQuestsToRemoveAndCreate = prepareRepeatingQuests(context, repeatingQuests);
 
         List<Quest> questsToUpdate = new ArrayList<>();
-        for(Quest q : quests) {
+        for (Quest q : quests) {
             Quest existingQuest = questPersistenceService.findFromAndroidCalendar(q.getSourceMapping().getAndroidCalendarMapping());
-            if(existingQuest != null && existingQuest.isCompleted()) {
+            if (existingQuest != null && existingQuest.isCompleted()) {
                 continue;
             }
-            if(existingQuest != null) {
+            if (existingQuest != null) {
                 copyQuestProperties(q, existingQuest);
             }
             questsToUpdate.add(q);
@@ -149,7 +149,7 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
                 List<Quest> questsToCreate = repeatingQuestScheduler.schedule(rq, today, scheduledQuests);
                 repeatingQuestToQuestsToRemoveAndCreate.put(rq, new Pair<>(questsToRemove, questsToCreate));
 
-            } else {
+            } else if (existingRepeatingQuest == null) {
                 List<Quest> questsToCreate = repeatingQuestScheduler.schedule(rq, LocalDate.now());
                 repeatingQuestToQuestsToRemoveAndCreate.put(rq, new Pair<>(new ArrayList<>(), questsToCreate));
 

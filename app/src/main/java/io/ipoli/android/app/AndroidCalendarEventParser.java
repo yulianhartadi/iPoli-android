@@ -109,7 +109,7 @@ public class AndroidCalendarEventParser {
 
         ZoneId zoneId = getZoneId(event);
         LocalDate startDate = DateUtils.fromMillis(instance.begin, zoneId);
-        LocalDate endDate = event.dTend > 0 ? DateUtils.fromMillis(instance.end, zoneId) : startDate;
+        LocalDate endDate = instance.end > 0 ? DateUtils.fromMillis(instance.end, zoneId) : startDate;
         q.setStartDate(startDate);
         q.setEndDate(endDate);
         q.setScheduledDate(startDate);
