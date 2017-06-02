@@ -46,6 +46,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.AndroidCalendarEventParser;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.InstanceData;
 import io.ipoli.android.app.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.TimeOfDay;
 import io.ipoli.android.app.activities.BaseActivity;
@@ -567,7 +568,7 @@ public class SettingsActivity extends BaseActivity implements
 
     @Override
     public Loader<Void> onCreateLoader(int id, Bundle args) {
-        return new CalendarLoader(this, selectedCalendars, getPlayer(), syncAndroidCalendarProvider, androidCalendarEventParser, repeatingQuestScheduler, calendarPersistenceService);
+        return new CalendarLoader(this, selectedCalendars, getPlayer(), syncAndroidCalendarProvider, androidCalendarEventParser, calendarPersistenceService);
     }
 
     @Override
@@ -589,16 +590,14 @@ public class SettingsActivity extends BaseActivity implements
         private Player player;
         private SyncAndroidCalendarProvider syncAndroidCalendarProvider;
         private AndroidCalendarEventParser androidCalendarEventParser;
-        private RepeatingQuestScheduler repeatingQuestScheduler;
         private CalendarPersistenceService calendarPersistenceService;
 
-        CalendarLoader(Context context, Map<Long, Category> selectedCalendars, Player player, SyncAndroidCalendarProvider syncAndroidCalendarProvider, AndroidCalendarEventParser androidCalendarEventParser, RepeatingQuestScheduler repeatingQuestScheduler, CalendarPersistenceService calendarPersistenceService) {
+        CalendarLoader(Context context, Map<Long, Category> selectedCalendars, Player player, SyncAndroidCalendarProvider syncAndroidCalendarProvider, AndroidCalendarEventParser androidCalendarEventParser, CalendarPersistenceService calendarPersistenceService) {
             super(context);
             this.selectedCalendars = selectedCalendars;
             this.player = player;
             this.syncAndroidCalendarProvider = syncAndroidCalendarProvider;
             this.androidCalendarEventParser = androidCalendarEventParser;
-            this.repeatingQuestScheduler = repeatingQuestScheduler;
             this.calendarPersistenceService = calendarPersistenceService;
         }
 
@@ -612,18 +611,13 @@ public class SettingsActivity extends BaseActivity implements
             Set<Long> calendarsToAdd = getCalendarsToAdd(selectedCalendars, player.getAndroidCalendars().keySet());
             List<Quest> quests = new ArrayList<>();
             Map<Quest, Long> questToOriginalId = new HashMap<>();
-            List<RepeatingQuest> repeatingQuests = new ArrayList<>();
+            Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests = new HashMap<>();
             for (Long calendarId : calendarsToAdd) {
-                List<Event> events = syncAndroidCalendarProvider.getCalendarEvents(calendarId);
+                Map<Event, List<InstanceData>> events = syncAndroidCalendarProvider.getCalendarEvents(calendarId, LocalDate.now(), LocalDate.now().plusMonths(3));
                 AndroidCalendarEventParser.Result result = androidCalendarEventParser.parse(events, selectedCalendars.get(calendarId));
                 quests.addAll(result.quests);
                 questToOriginalId.putAll(result.questToOriginalId);
-                repeatingQuests.addAll(result.repeatingQuests);
-            }
-
-            Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests = new HashMap<>();
-            for (RepeatingQuest rq : repeatingQuests) {
-                repeatingQuestToQuests.put(rq, repeatingQuestScheduler.schedule(rq, LocalDate.now()));
+                repeatingQuestToQuests.putAll(result.repeatingQuests);
             }
 
             Set<Long> calendarsToRemove = getCalendarsToRemove(selectedCalendars, player.getAndroidCalendars().keySet());
