@@ -82,7 +82,6 @@ import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
@@ -610,21 +609,17 @@ public class SettingsActivity extends BaseActivity implements
         public Void loadInBackground() {
             Set<Long> calendarsToAdd = getCalendarsToAdd(selectedCalendars, player.getAndroidCalendars().keySet());
             List<Quest> quests = new ArrayList<>();
-            Map<Quest, Long> questToOriginalId = new HashMap<>();
-            Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests = new HashMap<>();
             for (Long calendarId : calendarsToAdd) {
                 Map<Event, List<InstanceData>> events = syncAndroidCalendarProvider.getCalendarEvents(calendarId, LocalDate.now(), LocalDate.now().plusMonths(3));
-                AndroidCalendarEventParser.Result result = androidCalendarEventParser.parse(events, selectedCalendars.get(calendarId));
-                quests.addAll(result.quests);
-                questToOriginalId.putAll(result.questToOriginalId);
-                repeatingQuestToQuests.putAll(result.repeatingQuests);
+                List<Quest> result = androidCalendarEventParser.parse(events, selectedCalendars.get(calendarId));
+                quests.addAll(result);
             }
 
             Set<Long> calendarsToRemove = getCalendarsToRemove(selectedCalendars, player.getAndroidCalendars().keySet());
             Map<Long, Category> calendarsToUpdate = getCalendarsToUpdate(selectedCalendars, player.getAndroidCalendars());
 
             player.setAndroidCalendars(selectedCalendars);
-            calendarPersistenceService.updateSync(player, quests, questToOriginalId, repeatingQuestToQuests, calendarsToRemove, calendarsToUpdate);
+            calendarPersistenceService.updateSync(player, quests, calendarsToRemove, calendarsToUpdate);
             return null;
         }
 

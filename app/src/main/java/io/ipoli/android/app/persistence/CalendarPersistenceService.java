@@ -1,7 +1,5 @@
 package io.ipoli.android.app.persistence;
 
-import android.util.Pair;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -9,7 +7,6 @@ import java.util.Set;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.RepeatingQuest;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -18,11 +15,11 @@ import io.ipoli.android.quest.data.RepeatingQuest;
 
 public interface CalendarPersistenceService {
 
-    void saveSync(Player player, List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests);
+    void saveSync(Player player, List<Quest> quests);
 
-    void updateSync(Player player, List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, List<Quest>> repeatingQuestToQuests, Set<Long> calendarsToRemove, Map<Long, Category> calendarsToUpdate);
+    void updateSync(Player player, List<Quest> quests, Set<Long> calendarsToRemove, Map<Long, Category> calendarsToUpdate);
 
-    void updateAsync(List<Quest> quests, Map<RepeatingQuest, Pair<List<Quest>, List<Quest>>> repeatingQuests);
+    void updateAsync(List<Quest> quests);
 
     void deleteAllCalendarsSync(Player player);
 }
