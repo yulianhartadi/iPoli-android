@@ -43,6 +43,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.SignInActivity;
@@ -131,6 +132,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Inject
     UpgradeManager upgradeManager;
+
+    @Inject
+    SyncAndroidCalendarProvider calendarSyncProvider;
 
     private boolean isRateDialogShown;
     public ActionBarDrawerToggle actionBarDrawerToggle;
@@ -371,13 +375,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private String formatValue(Long value) {
         String valString = String.valueOf(value);
-        if(value < 1000) {
+        if (value < 1000) {
             return valString;
         }
         String main = valString.substring(0, valString.length() - 3);
         String result = main;
         char tail = valString.charAt(valString.length() - 3);
-        if(tail != '0') {
+        if (tail != '0') {
             result += "." + tail;
         }
         return getString(R.string.big_value_format, result);
