@@ -128,7 +128,7 @@ public class AndroidCalendarEventParser {
             }
         }
 
-        if (isForThePast(q.getScheduledDate())) {
+        if (isForThePast(q.getScheduledDate()) && !event.allDay) {
             int completedAtMinute = Math.min(q.getStartMinute() + q.getDuration(), Time.MINUTES_IN_A_DAY);
             q.setCompletedAt(q.getScheduled());
             q.setCompletedAtMinute(completedAtMinute);
