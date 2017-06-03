@@ -1,6 +1,7 @@
 package io.ipoli.android.player;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.firebase.crash.FirebaseCrash;
 
 import org.threeten.bp.DayOfWeek;
 
@@ -127,12 +128,12 @@ public class Player extends PersistedObject {
 
     @JsonIgnore
     public void addRewardPoints(long points) {
-        this.rewardPoints += points;
+        this.rewardPoints = getRewardPoints() + points;
     }
 
     @JsonIgnore
     public void removeRewardPoints(long points) {
-        this.rewardPoints = Math.max(0, this.rewardPoints - points);
+        this.rewardPoints = Math.max(0, getRewardPoints() - points);
     }
 
     public String getExperience() {
@@ -267,7 +268,6 @@ public class Player extends PersistedObject {
         return sleepStartMinute;
     }
 
-
     @JsonIgnore
     public Time getSleepStartTime() {
         if (getSleepStartMinute() == null) {
@@ -377,7 +377,7 @@ public class Player extends PersistedObject {
     }
 
     public Inventory getInventory() {
-        if(inventory == null) {
+        if (inventory == null) {
             inventory = new Inventory();
         }
         return inventory;
@@ -388,6 +388,10 @@ public class Player extends PersistedObject {
     }
 
     public Long getRewardPoints() {
+        if (rewardPoints == null) {
+            FirebaseCrash.report(new RuntimeException("Player with id " + getId() + " has no rewardPoints set"));
+            return coins;
+        }
         return rewardPoints;
     }
 
@@ -397,6 +401,10 @@ public class Player extends PersistedObject {
 
     @JsonIgnore
     public Avatar getCurrentAvatar() {
+        if (avatarCode == null) {
+            FirebaseCrash.report(new RuntimeException("Player with id " + getId() + " has no avatarCode set"));
+            return Constants.DEFAULT_PLAYER_AVATAR;
+        }
         return Avatar.get(avatarCode);
     }
 
