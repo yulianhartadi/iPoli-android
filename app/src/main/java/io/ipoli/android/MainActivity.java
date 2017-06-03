@@ -146,9 +146,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             return;
         }
 
-        int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
-        if (App.hasPlayer() && schemaVersion != Constants.SCHEMA_VERSION) {
-            // should migrate
+        if (shouldMigratePlayer()) {
             startActivity(new Intent(this, MigrationActivity.class));
             finish();
             return;
@@ -183,9 +181,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
     }
 
+    private boolean shouldMigratePlayer() {
+        int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
+        return App.hasPlayer() && schemaVersion != Constants.SCHEMA_VERSION;
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
+        if (shouldMigratePlayer()) {
+            return;
+        }
         playerPersistenceService.listen(this);
     }
 
@@ -371,13 +377,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private String formatValue(Long value) {
         String valString = String.valueOf(value);
-        if(value < 1000) {
+        if (value < 1000) {
             return valString;
         }
         String main = valString.substring(0, valString.length() - 3);
         String result = main;
         char tail = valString.charAt(valString.length() - 3);
-        if(tail != '0') {
+        if (tail != '0') {
             result += "." + tail;
         }
         return getString(R.string.big_value_format, result);
