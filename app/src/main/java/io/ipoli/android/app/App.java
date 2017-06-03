@@ -650,7 +650,12 @@ public class App extends MultiDexApplication {
             eventBus.post(new LevelDownEvent(player.getLevel()));
         }
         player.removeCoins(coins);
-        player.removeRewardPoints(rewardPoints);
+        // @TODO remove this when all players have rewardPoints
+        if(rewardPoints != null) {
+            player.removeRewardPoints(rewardPoints);
+        } else {
+            player.removeRewardPoints(coins);
+        }
 
         updatePet(player.getPet(), (int) -Math.floor(xp / Constants.XP_TO_PET_HP_RATIO));
         playerPersistenceService.save(player);
