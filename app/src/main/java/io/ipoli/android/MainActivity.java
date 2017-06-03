@@ -150,9 +150,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             return;
         }
 
-        int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
-        if (App.hasPlayer() && schemaVersion != Constants.SCHEMA_VERSION) {
-            // should migrate
+        if (shouldMigratePlayer()) {
             startActivity(new Intent(this, MigrationActivity.class));
             finish();
             return;
@@ -187,9 +185,17 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
     }
 
+    private boolean shouldMigratePlayer() {
+        int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
+        return App.hasPlayer() && schemaVersion != Constants.SCHEMA_VERSION;
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
+        if (shouldMigratePlayer()) {
+            return;
+        }
         playerPersistenceService.listen(this);
     }
 
