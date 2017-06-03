@@ -27,6 +27,7 @@ public class AndroidCalendarEventChangedReceiver extends BroadcastReceiver {
         JobScheduler jobScheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
         JobInfo jobInfo = new JobInfo.Builder(SYNC_CALENDAR_JOB_ID,
                 new ComponentName(context, AndroidCalendarSyncJobService.class))
+                .setOverrideDeadline(0)
                 .build();
         jobScheduler.schedule(jobInfo);
     }
