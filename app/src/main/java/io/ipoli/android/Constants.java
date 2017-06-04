@@ -80,7 +80,7 @@ public interface Constants {
     String API_RESOURCE_SOURCE = "ipoli-android";
     int DEFAULT_PLAYER_XP = 0;
     int DEFAULT_PLAYER_LEVEL = 1;
-    long DEFAULT_PLAYER_COINS = 10000;
+    long DEFAULT_PLAYER_COINS = 10;
     long DEFAULT_PLAYER_REWARD_POINTS = 10;
     Avatar DEFAULT_PLAYER_AVATAR = Avatar.IPOLI_CLASSIC;
     Set<TimeOfDay> DEFAULT_PLAYER_PRODUCTIVE_TIMES = new HashSet<>(Collections.singletonList(TimeOfDay.MORNING));
@@ -146,7 +146,7 @@ public interface Constants {
     String PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index";
     int RANDOM_SEED = 42; // duh!
     int MAX_TIMES_A_DAY_COUNT = 8;
-    int SCHEMA_VERSION = 4;
+    int SCHEMA_VERSION = 6;
 
     double MAX_PENALTY_COEFFICIENT = 0.5;
     double NO_QUESTS_PENALTY_COEFFICIENT = 0.3;
