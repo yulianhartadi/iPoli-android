@@ -54,7 +54,7 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
                 return false;
             }
 
-            saveQuests(quests);
+            questPersistenceService.save(quests);
             if (player != null) {
                 savePlayer(player);
             }
