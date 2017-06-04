@@ -17,10 +17,14 @@ import io.ipoli.android.app.AndroidCalendarEventParser;
 import io.ipoli.android.app.InstanceData;
 import io.ipoli.android.app.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.persistence.CalendarPersistenceService;
+import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import me.everything.providers.android.calendar.Event;
+
+import static io.ipoli.android.Constants.KEY_LAST_ANDROID_CALENDAR_SYNC_DATE;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -28,14 +32,21 @@ import me.everything.providers.android.calendar.Event;
  */
 public class AndroidCalendarLoader extends AsyncTaskLoader<Void> {
 
-    private Map<Long, Category> selectedCalendars;
-    private Player player;
-    private SyncAndroidCalendarProvider syncAndroidCalendarProvider;
-    private AndroidCalendarEventParser androidCalendarEventParser;
-    private CalendarPersistenceService calendarPersistenceService;
+    public static final int SYNC_ANDROID_CALENDAR_MONTHS_AHEAD = 3;
+    private final Player player;
+    private final LocalStorage localStorage;
+    private final Map<Long, Category> selectedCalendars;
+    private final SyncAndroidCalendarProvider syncAndroidCalendarProvider;
+    private final AndroidCalendarEventParser androidCalendarEventParser;
+    private final CalendarPersistenceService calendarPersistenceService;
 
-    public AndroidCalendarLoader(Context context, Map<Long, Category> selectedCalendars, Player player, SyncAndroidCalendarProvider syncAndroidCalendarProvider, AndroidCalendarEventParser androidCalendarEventParser, CalendarPersistenceService calendarPersistenceService) {
+    public AndroidCalendarLoader(Context context, LocalStorage localStorage, Map<Long, Category> selectedCalendars,
+                                 Player player,
+                                 SyncAndroidCalendarProvider syncAndroidCalendarProvider,
+                                 AndroidCalendarEventParser androidCalendarEventParser,
+                                 CalendarPersistenceService calendarPersistenceService) {
         super(context);
+        this.localStorage = localStorage;
         this.selectedCalendars = selectedCalendars;
         this.player = player;
         this.syncAndroidCalendarProvider = syncAndroidCalendarProvider;
@@ -50,10 +61,13 @@ public class AndroidCalendarLoader extends AsyncTaskLoader<Void> {
 
     @Override
     public Void loadInBackground() {
+        LocalDate startDate = DateUtils.fromMillis(localStorage.readLong(KEY_LAST_ANDROID_CALENDAR_SYNC_DATE, DateUtils.toMillis(LocalDate.now())));
+        LocalDate endDate = LocalDate.now().plusMonths(SYNC_ANDROID_CALENDAR_MONTHS_AHEAD);
+
         Set<Long> calendarsToAdd = getCalendarsToAdd(selectedCalendars, player.getAndroidCalendars().keySet());
         List<Quest> quests = new ArrayList<>();
         for (Long calendarId : calendarsToAdd) {
-            Map<Event, List<InstanceData>> events = syncAndroidCalendarProvider.getCalendarEvents(calendarId, LocalDate.now(), LocalDate.now().plusMonths(3));
+            Map<Event, List<InstanceData>> events = syncAndroidCalendarProvider.getCalendarEvents(calendarId, startDate, endDate);
             List<Quest> result = androidCalendarEventParser.parse(events, selectedCalendars.get(calendarId));
             quests.addAll(result);
         }
@@ -63,6 +77,7 @@ public class AndroidCalendarLoader extends AsyncTaskLoader<Void> {
 
         player.setAndroidCalendars(selectedCalendars);
         calendarPersistenceService.updateSync(player, quests, calendarsToRemove, calendarsToUpdate);
+        localStorage.saveLong(KEY_LAST_ANDROID_CALENDAR_SYNC_DATE, DateUtils.toMillis(LocalDate.now()));
         return null;
     }
 

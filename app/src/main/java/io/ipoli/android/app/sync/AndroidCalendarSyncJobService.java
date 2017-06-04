@@ -19,6 +19,8 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.InstanceData;
 import io.ipoli.android.app.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.persistence.CalendarPersistenceService;
+import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Category;
@@ -26,12 +28,18 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import me.everything.providers.android.calendar.Event;
 
+import static io.ipoli.android.Constants.KEY_LAST_ANDROID_CALENDAR_SYNC_DATE;
+import static io.ipoli.android.app.sync.AndroidCalendarLoader.SYNC_ANDROID_CALENDAR_MONTHS_AHEAD;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/3/17.
  */
 
 public class AndroidCalendarSyncJobService extends JobService {
+
+    @Inject
+    LocalStorage localStorage;
 
     @Inject
     PlayerPersistenceService playerPersistenceService;
@@ -72,10 +80,12 @@ public class AndroidCalendarSyncJobService extends JobService {
             }
 
             private void updateEvents(Player player) {
-                List<Quest> quests = new ArrayList<>();
+                LocalDate startDate = DateUtils.fromMillis(localStorage.readLong(KEY_LAST_ANDROID_CALENDAR_SYNC_DATE, DateUtils.toMillis(LocalDate.now())));
+                LocalDate endDate = LocalDate.now().plusMonths(SYNC_ANDROID_CALENDAR_MONTHS_AHEAD);
 
+                List<Quest> quests = new ArrayList<>();
                 for (Map.Entry<Long, Category> calendar : player.getAndroidCalendars().entrySet()) {
-                    Map<Event, List<InstanceData>> events = syncAndroidCalendarProvider.getCalendarEvents(calendar.getKey(), LocalDate.now(), LocalDate.now().plusMonths(3));
+                    Map<Event, List<InstanceData>> events = syncAndroidCalendarProvider.getCalendarEvents(calendar.getKey(), startDate, endDate);
                     quests.addAll(androidCalendarEventParser.parse(events, calendar.getValue()));
                 }
 
@@ -91,6 +101,7 @@ public class AndroidCalendarSyncJobService extends JobService {
                     questsToUpdate.add(q);
                 }
                 calendarPersistenceService.updateSync(null, questsToUpdate, new HashSet<>(), new HashMap<>());
+                localStorage.saveLong(KEY_LAST_ANDROID_CALENDAR_SYNC_DATE, DateUtils.toMillis(LocalDate.now()));
             }
 
             private void copyQuestProperties(Quest newQuest, Quest existingQuest) {

@@ -34,25 +34,12 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
         contentResolver = context.getContentResolver();
     }
 
-    public List<Event> getDirtyEvents(long calendarId) {
-        String selection = CalendarContract.Events.CALENDAR_ID + " = ? AND "
-                + CalendarContract.Events.DIRTY + "= ? AND "
-                + CalendarContract.Events.DELETED + "= ?";
-        String[] selectionArgs = new String[]{String.valueOf(calendarId), String.valueOf(1), String.valueOf(0)};
-        Data<Event> data = getContentTableData(Event.uri, selection, selectionArgs, null, Event.class);
-        return data == null ? new ArrayList<>() : data.getList();
-    }
-
     public List<Event> getDeletedEvents(long calendarId) {
         String selection = CalendarContract.Events.CALENDAR_ID + " = ? AND "
                 + CalendarContract.Events.DELETED + "= ?";
         String[] selectionArgs = new String[]{String.valueOf(calendarId), String.valueOf(1)};
         Data<Event> data = getContentTableData(Event.uri, selection, selectionArgs, null, Event.class);
         return data == null ? new ArrayList<>() : data.getList();
-    }
-
-    public List<Event> getCalendarEvents(long calendarId) {
-        return getEvents(calendarId).getList();
     }
 
     private static final String[] INSTANCE_PROJECTION = new String[]{
