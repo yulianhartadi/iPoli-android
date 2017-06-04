@@ -10,6 +10,8 @@ import android.view.View;
 import io.ipoli.android.R;
 import io.ipoli.android.app.tutorial.fragments.NamePromptFragment;
 import io.ipoli.android.app.tutorial.fragments.TipsFragment;
+import io.ipoli.android.app.tutorial.fragments.TutorialCalendarFragment;
+import io.ipoli.android.quest.data.Category;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -57,6 +59,13 @@ public class OnboardingActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         transaction.replace(R.id.root_container, new TipsFragment(), "fragment");
+        transaction.commit();
+    }
+
+    public void onAddQuestDone(String name, Category category) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        transaction.replace(R.id.root_container, new TutorialCalendarFragment(), "fragment");
         transaction.commit();
     }
 }

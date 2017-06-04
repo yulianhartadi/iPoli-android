@@ -29,6 +29,56 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="32dp"
         android:alpha="0"
-        android:src="@drawable/ic_add_white_24dp" />
+        android:src="@drawable/ic_add_white_24dp"
+        android:visibility="gone" />
+
+    <EditText
+        android:id="@+id/tutorial_quest_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:alpha="0"
+        android:hint="Quest name"
+        android:imeOptions="actionDone"
+        android:inputType="text"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/tutorial_choose_category"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:alpha="0"
+        android:text="Choose Category"
+        android:visibility="gone" />
+
+    <io.ipoli.android.app.ui.CategoryView
+        android:id="@+id/tutorial_category_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginEnd="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:alpha="0"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/tutorial_choose_time"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        android:alpha="0"
+        android:text="Next"
+        android:visibility="gone" />
 
 </LinearLayout>
