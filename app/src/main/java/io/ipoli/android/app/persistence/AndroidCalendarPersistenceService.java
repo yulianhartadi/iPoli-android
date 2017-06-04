@@ -4,7 +4,9 @@ import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
 import com.squareup.otto.Bus;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +14,7 @@ import java.util.Set;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.quest.data.AndroidCalendarMapping;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -35,17 +38,16 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
     }
 
     @Override
-    public void saveSync(Player player, List<Quest> quests) {
-        database.runInTransaction(() -> {
-            saveQuests(quests);
-            savePlayer(player);
-            return true;
-        });
+    public void updateSync(Player player, List<Quest> quests, Set<Long> calendarsToRemove, Map<Long, Category> calendarsToUpdate) {
+        doUpdateSync(player, quests, new ArrayList<>(), calendarsToRemove, calendarsToUpdate);
     }
 
-
     @Override
-    public void updateSync(Player player, List<Quest> quests, Set<Long> calendarsToRemove, Map<Long, Category> calendarsToUpdate) {
+    public void updateSync(List<Quest> questsToSave, List<AndroidCalendarMapping> questsToDelete) {
+        doUpdateSync(null, questsToSave, questsToDelete, new HashSet<>(), new HashMap<>());
+    }
+
+    private void doUpdateSync(Player player, List<Quest> quests, List<AndroidCalendarMapping> mappingsToDelete, Set<Long> calendarsToRemove, Map<Long, Category> calendarsToUpdate) {
         database.runInTransaction(() -> {
             try {
                 deleteCalendars(calendarsToRemove);
@@ -65,6 +67,18 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
                 for (Quest q : questsToUpdate) {
                     q.setCategoryType(category);
                     questPersistenceService.save(q);
+                }
+            }
+
+            for (AndroidCalendarMapping mapping : mappingsToDelete) {
+                Quest q = questPersistenceService.findFromAndroidCalendar(mapping);
+                if (!q.isCompleted()) {
+                    try {
+                        delete(q);
+                    } catch (CouchbaseLiteException e) {
+                        postError(e);
+                        return false;
+                    }
                 }
             }
 
@@ -93,14 +107,6 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
 
     private void delete(PersistedObject object) throws CouchbaseLiteException {
         database.getExistingDocument(object.getId()).delete();
-    }
-
-    @Override
-    public void updateAsync(List<Quest> quests) {
-        runAsyncTransaction(() -> {
-            saveQuests(quests);
-            return true;
-        });
     }
 
     @Override
