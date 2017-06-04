@@ -157,4 +157,5 @@ public interface Constants {
     String DEFAULT_VIEW_VERSION = "1.0";
     String SOURCE_ANDROID_CALENDAR = "android-calendar";
 
+    int RC_CALENDAR_PERM = 102;
 }
