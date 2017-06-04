@@ -1,0 +1,79 @@
+<io.ipoli.android.app.ui.calendar.CalendarLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <io.ipoli.android.app.ui.calendar.CalendarDayView
+        android:id="@+id/tutorial_calendar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/md_white" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/tutorial_quest_container"
+            android:layout_width="match_parent"
+            android:layout_height="128dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="72dp"
+            android:background="?android:attr/selectableItemBackground">
+
+            <View
+                android:id="@+id/quest_background"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/md_green_500"
+                android:alpha="0.12" />
+
+            <View
+                android:id="@+id/quest_category_indicator"
+                android:layout_width="4dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:background="@color/md_green_500"
+                android:alpha="0.54" />
+
+            <LinearLayout
+                android:id="@+id/quest_details_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <TextView
+                        android:id="@+id/quest_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:maxLines="3"
+                        android:textColor="@color/md_dark_text_87"
+                        android:textSize="16sp" />
+
+                    <android.support.v4.widget.Space
+                        android:layout_width="16dp"
+                        android:layout_height="wrap_content" />
+
+                    <android.support.v4.widget.Space
+                        android:layout_width="16dp"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+</io.ipoli.android.app.ui.calendar.CalendarLayout>
