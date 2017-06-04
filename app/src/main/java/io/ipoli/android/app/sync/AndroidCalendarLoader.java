@@ -61,8 +61,10 @@ public class AndroidCalendarLoader extends AsyncTaskLoader<Void> {
 
     @Override
     public Void loadInBackground() {
-        LocalDate startDate = DateUtils.fromMillis(localStorage.readLong(KEY_LAST_ANDROID_CALENDAR_SYNC_DATE, DateUtils.toMillis(LocalDate.now())));
-        LocalDate endDate = LocalDate.now().plusMonths(SYNC_ANDROID_CALENDAR_MONTHS_AHEAD);
+        LocalDate today = LocalDate.now();
+        long todayMillis = DateUtils.toMillis(today);
+        LocalDate startDate = DateUtils.fromMillis(localStorage.readLong(KEY_LAST_ANDROID_CALENDAR_SYNC_DATE, todayMillis));
+        LocalDate endDate = today.plusMonths(SYNC_ANDROID_CALENDAR_MONTHS_AHEAD);
 
         Set<Long> calendarsToAdd = getCalendarsToAdd(selectedCalendars, player.getAndroidCalendars().keySet());
         List<Quest> quests = new ArrayList<>();
@@ -77,7 +79,7 @@ public class AndroidCalendarLoader extends AsyncTaskLoader<Void> {
 
         player.setAndroidCalendars(selectedCalendars);
         calendarPersistenceService.updateSync(player, quests, calendarsToRemove, calendarsToUpdate);
-        localStorage.saveLong(KEY_LAST_ANDROID_CALENDAR_SYNC_DATE, DateUtils.toMillis(LocalDate.now()));
+        localStorage.saveLong(KEY_LAST_ANDROID_CALENDAR_SYNC_DATE, todayMillis);
         return null;
     }
 
