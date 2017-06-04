@@ -7,6 +7,8 @@ import android.os.AsyncTask;
 import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -69,7 +71,6 @@ public class AndroidCalendarSyncJobService extends JobService {
                 return true;
             }
 
-
             private void updateEvents(Player player) {
                 List<Quest> quests = new ArrayList<>();
 
@@ -89,8 +90,7 @@ public class AndroidCalendarSyncJobService extends JobService {
                     }
                     questsToUpdate.add(q);
                 }
-                // @TODO do it sync
-                calendarPersistenceService.updateAsync(questsToUpdate);
+                calendarPersistenceService.updateSync(null, questsToUpdate, new HashSet<>(), new HashMap<>());
             }
 
             private void copyQuestProperties(Quest newQuest, Quest existingQuest) {
@@ -102,7 +102,7 @@ public class AndroidCalendarSyncJobService extends JobService {
                 newQuest.setSubQuests(existingQuest.getSubQuests());
                 newQuest.setNotes(existingQuest.getNotes());
                 newQuest.setPreferredStartTime(existingQuest.getPreferredStartTime());
-                //what is difficulty for
+                // @TODO difficulty?
                 newQuest.setDifficulty(existingQuest.getDifficulty());
                 newQuest.setTimesADay(existingQuest.getTimesADay());
             }

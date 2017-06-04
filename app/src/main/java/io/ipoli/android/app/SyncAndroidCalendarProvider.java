@@ -70,7 +70,8 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
     public Map<Event, List<InstanceData>> getCalendarEvents(long calendarId, LocalDate startDate, LocalDate endDate) {
 
         // @TODO query all calendars
-        String selection = CalendarContract.Instances.CALENDAR_ID + " = ? ";
+        String selection = CalendarContract.Instances.CALENDAR_ID + "=?";
+//        String selection = CalendarContract.Instances.BEGIN + ">=" + DateUtils.toMillis(startDate) + " and " + CalendarContract.Instances.END + "<=" + DateUtils.toMillis(endDate);
         String[] selectionArgs = new String[]{String.valueOf(calendarId)};
         Uri.Builder builder = CalendarContract.Instances.CONTENT_URI.buildUpon();
         ContentUris.appendId(builder, DateUtils.toMillis(startDate));
@@ -79,6 +80,7 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
         List<InstanceData> instances = new ArrayList<>();
 
         Cursor cur = contentResolver.query(builder.build(), INSTANCE_PROJECTION, selection, selectionArgs, null);
+//        Cursor cur = contentResolver.query(builder.build(), INSTANCE_PROJECTION, selection, null, null);
         if (cur == null) {
             return new HashMap<>();
         }
@@ -86,8 +88,8 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
             while (cur.moveToNext()) {
                 long eventId = cur.getLong(PROJECTION_EVENT_ID_INDEX);
                 int startMinute = cur.getInt(PROJECTION_START_MINUTE_INDEX);
-                long begin = cur.getInt(PROJECTION_BEGIN_INDEX);
-                long end = cur.getInt(PROJECTION_END_INDEX);
+                long begin = cur.getLong(PROJECTION_BEGIN_INDEX);
+                long end = cur.getLong(PROJECTION_END_INDEX);
                 instances.add(new InstanceData(eventId, startMinute, begin, end));
             }
         } catch (Exception e) {
@@ -96,7 +98,6 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
             cur.close();
         }
 
-//        Data<Instance> instancesData = getInstances(DateUtils.toMillis(startDate), DateUtils.toMillis(endDate));
         if (instances.isEmpty()) {
             return new HashMap<>();
         }
