@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import io.ipoli.android.player.Player;
+import io.ipoli.android.quest.data.AndroidCalendarMapping;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 
@@ -15,11 +16,9 @@ import io.ipoli.android.quest.data.Quest;
 
 public interface CalendarPersistenceService {
 
-    void saveSync(Player player, List<Quest> quests);
-
     void updateSync(Player player, List<Quest> quests, Set<Long> calendarsToRemove, Map<Long, Category> calendarsToUpdate);
 
-    void updateAsync(List<Quest> quests);
+    void updateSync(List<Quest> questsToSave, List<AndroidCalendarMapping> questsToDelete);
 
     void deleteAllCalendarsSync(Player player);
 }

@@ -7,8 +7,6 @@ import android.os.AsyncTask;
 import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +21,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.quest.data.AndroidCalendarMapping;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -84,9 +83,11 @@ public class AndroidCalendarSyncJobService extends JobService {
                 LocalDate endDate = LocalDate.now().plusMonths(SYNC_ANDROID_CALENDAR_MONTHS_AHEAD);
 
                 List<Quest> quests = new ArrayList<>();
+                List<Event> eventsToDelete = new ArrayList<>();
                 for (Map.Entry<Long, Category> calendar : player.getAndroidCalendars().entrySet()) {
                     Map<Event, List<InstanceData>> events = syncAndroidCalendarProvider.getCalendarEvents(calendar.getKey(), startDate, endDate);
                     quests.addAll(androidCalendarEventParser.parse(events, calendar.getValue()));
+                    eventsToDelete.addAll(syncAndroidCalendarProvider.getDeletedEvents(calendar.getKey()));
                 }
 
                 List<Quest> questsToUpdate = new ArrayList<>();
@@ -100,7 +101,13 @@ public class AndroidCalendarSyncJobService extends JobService {
                     }
                     questsToUpdate.add(q);
                 }
-                calendarPersistenceService.updateSync(null, questsToUpdate, new HashSet<>(), new HashMap<>());
+
+                List<AndroidCalendarMapping> mappingsToDelete = new ArrayList<>();
+                for(Event e : eventsToDelete) {
+                    mappingsToDelete.add(new AndroidCalendarMapping(e.calendarId, e.id));
+                }
+                calendarPersistenceService.updateSync(questsToUpdate, mappingsToDelete);
+
                 localStorage.saveLong(KEY_LAST_ANDROID_CALENDAR_SYNC_DATE, DateUtils.toMillis(LocalDate.now()));
             }
 
