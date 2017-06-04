@@ -170,7 +170,12 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
             }, Constants.DEFAULT_VIEW_VERSION);
         }
 
-        questFromAndroidCalendar = database.getView("quests/fromAndroidCalendar");
+        View oldAndroidCalendarView = database.getExistingView("quests/fromAndroidCalendar");
+        if (oldAndroidCalendarView != null) {
+            oldAndroidCalendarView.delete();
+        }
+
+        questFromAndroidCalendar = database.getView("quests/fromAndroidCalendarByScheduled");
         if (questFromAndroidCalendar.getMap() == null) {
             questFromAndroidCalendar.setMapReduce((document, emitter) -> {
                 String type = (String) document.get("type");
@@ -182,6 +187,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
                         List<Object> key = new ArrayList<>();
                         key.add(String.valueOf(androidCalendarMapping.get("calendarId")));
                         key.add(String.valueOf(androidCalendarMapping.get("eventId")));
+                        key.add(document.get("scheduled"));
                         emitter.emit(key, document);
                     }
                 }
@@ -487,31 +493,70 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     }
 
     @Override
-    public List<Quest> findFromAndroidCalendar(Long calendarId) {
-        return doFindFromAndroid(calendarId, true);
-    }
-
-    @Override
-    public Quest findFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping) {
+    public List<Quest> findNotCompletedFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping, LocalDate startDate, LocalDate endDate) {
         Query query = questFromAndroidCalendar.createQuery();
-        query.setGroupLevel(2);
-        List<Object> key = Arrays.asList(
-                String.valueOf(androidCalendarMapping.getCalendarId()), String.valueOf(androidCalendarMapping.getEventId()));
-        query.setStartKey(key);
-        query.setEndKey(key);
+        query.setGroupLevel(3);
+        List<Object> startKey = Arrays.asList(
+                String.valueOf(androidCalendarMapping.getCalendarId()),
+                String.valueOf(androidCalendarMapping.getEventId()),
+                String.valueOf(DateUtils.toMillis(startDate)));
 
+        List<Object> endKey = Arrays.asList(
+                String.valueOf(androidCalendarMapping.getCalendarId()),
+                String.valueOf(androidCalendarMapping.getEventId()),
+                String.valueOf(DateUtils.toMillis(endDate)));
+        query.setStartKey(startKey);
+        query.setEndKey(endKey);
+
+        List<Quest> result = new ArrayList<>();
         try {
             QueryEnumerator enumerator = query.run();
             while (enumerator.hasNext()) {
                 QueryRow row = enumerator.next();
                 List<Quest> quests = (List<Quest>) row.getValue();
-                Quest quest = quests.isEmpty() ? null : quests.get(0);
-                return quest;
+                for (Quest q : quests) {
+                    if (q.isCompleted()) {
+                        continue;
+                    }
+                    result.add(q);
+                }
             }
         } catch (CouchbaseLiteException e) {
             postError(e);
         }
-        return null;
+        return result;
+    }
+
+    @Override
+    public List<Quest> findFromAndroidCalendar(Long calendarId) {
+        return doFindFromAndroid(calendarId, true);
+    }
+
+    @Override
+    public List<Quest> findFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping) {
+        Query query = questFromAndroidCalendar.createQuery();
+        query.setGroupLevel(2);
+        List<Object> startKey = Arrays.asList(
+                String.valueOf(androidCalendarMapping.getCalendarId()),
+                String.valueOf(androidCalendarMapping.getEventId()));
+        List<Object> endKey = Arrays.asList(
+                String.valueOf(androidCalendarMapping.getCalendarId()),
+                String.valueOf(androidCalendarMapping.getEventId()),
+                new HashMap<String, Object>());
+        query.setStartKey(startKey);
+        query.setEndKey(endKey);
+
+        List<Quest> result = new ArrayList<>();
+        try {
+            QueryEnumerator enumerator = query.run();
+            while (enumerator.hasNext()) {
+                QueryRow row = enumerator.next();
+                result.addAll((List<Quest>) row.getValue());
+            }
+        } catch (CouchbaseLiteException e) {
+            postError(e);
+        }
+        return result;
     }
 
     private List<Quest> doFindFromAndroid(Long calendarId, boolean includeCompleted) {

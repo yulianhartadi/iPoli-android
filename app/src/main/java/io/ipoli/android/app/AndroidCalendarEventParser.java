@@ -56,19 +56,25 @@ public class AndroidCalendarEventParser {
         for (Map.Entry<Event, List<InstanceData>> entry : eventToInstances.entrySet()) {
             Event e = entry.getKey();
             List<InstanceData> instances = entry.getValue();
-            if (e.deleted || !e.visible) {
-                continue;
-            }
-
-            for (InstanceData i : instances) {
-                Quest q = parseQuest(e, i, category);
-                if (q == null) {
-                    continue;
-                }
-                quests.add(q);
-            }
+            quests.addAll(parse(e, instances, category));
         }
 
+        return quests;
+    }
+
+    public List<Quest> parse(Event event, List<InstanceData> instances, Category category) {
+        List<Quest> quests = new ArrayList<>();
+        if (event.deleted || !event.visible) {
+            return quests;
+        }
+
+        for (InstanceData i : instances) {
+            Quest q = parseQuest(event, i, category);
+            if (q == null) {
+                continue;
+            }
+            quests.add(q);
+        }
         return quests;
     }
 
@@ -102,8 +108,8 @@ public class AndroidCalendarEventParser {
             }
         } else {
             int duration;
-            if (StringUtils.isEmpty(event.duration) && event.dTend > 0 && event.dTStart > 0) {
-                duration = (int) TimeUnit.MILLISECONDS.toMinutes(event.dTend - event.dTStart);
+            if (StringUtils.isEmpty(event.duration) && instance.end > 0 && instance.begin > 0) {
+                duration = (int) TimeUnit.MILLISECONDS.toMinutes(instance.end - instance.begin);
             } else if (!StringUtils.isEmpty(event.duration)) {
                 Dur dur = new Dur(event.duration);
                 duration = dur.getMinutes();
