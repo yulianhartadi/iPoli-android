@@ -559,7 +559,8 @@ public class SettingsActivity extends BaseActivity implements
 
     @Override
     public Loader<Void> onCreateLoader(int id, Bundle args) {
-        return new AndroidCalendarLoader(this, selectedCalendars, getPlayer(), syncAndroidCalendarProvider, androidCalendarEventParser, calendarPersistenceService);
+        return new AndroidCalendarLoader(this, localStorage, selectedCalendars, getPlayer(),
+                syncAndroidCalendarProvider, androidCalendarEventParser, calendarPersistenceService);
     }
 
     @Override

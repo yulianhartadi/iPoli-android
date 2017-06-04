@@ -80,7 +80,7 @@ public interface Constants {
     String API_RESOURCE_SOURCE = "ipoli-android";
     int DEFAULT_PLAYER_XP = 0;
     int DEFAULT_PLAYER_LEVEL = 1;
-    long DEFAULT_PLAYER_COINS = 10;
+    long DEFAULT_PLAYER_COINS = 10000;
     long DEFAULT_PLAYER_REWARD_POINTS = 10;
     Avatar DEFAULT_PLAYER_AVATAR = Avatar.IPOLI_CLASSIC;
     Set<TimeOfDay> DEFAULT_PLAYER_PRODUCTIVE_TIMES = new HashSet<>(Collections.singletonList(TimeOfDay.MORNING));
@@ -158,4 +158,5 @@ public interface Constants {
     String SOURCE_ANDROID_CALENDAR = "android-calendar";
 
     int RC_CALENDAR_PERM = 102;
+    String KEY_LAST_ANDROID_CALENDAR_SYNC_DATE = "LAST_ANDROID_CALENDAR_SYNC_DATE";
 }

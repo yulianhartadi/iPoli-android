@@ -40,6 +40,7 @@ import io.ipoli.android.app.sync.AndroidCalendarLoader;
 import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
 import io.ipoli.android.app.ui.dialogs.LoadingDialog;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.store.Upgrade;
@@ -65,6 +66,9 @@ public class UpgradeStoreFragment extends BaseFragment implements LoaderManager.
 
     @Inject
     UpgradeManager upgradeManager;
+
+    @Inject
+    LocalStorage localStorage;
 
     @Inject
     CalendarPersistenceService calendarPersistenceService;
@@ -201,7 +205,8 @@ public class UpgradeStoreFragment extends BaseFragment implements LoaderManager.
 
     @Override
     public Loader<Void> onCreateLoader(int id, Bundle args) {
-        return new AndroidCalendarLoader(getContext(), selectedCalendars, getPlayer(), syncAndroidCalendarProvider, androidCalendarEventParser, calendarPersistenceService);
+        return new AndroidCalendarLoader(getContext(), localStorage, selectedCalendars, getPlayer(),
+                syncAndroidCalendarProvider, androidCalendarEventParser, calendarPersistenceService);
     }
 
     @Override
