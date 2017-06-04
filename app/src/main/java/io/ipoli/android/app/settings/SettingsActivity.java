@@ -1,14 +1,12 @@
 package io.ipoli.android.app.settings;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
@@ -24,12 +22,10 @@ import android.widget.TextView;
 import com.squareup.otto.Bus;
 
 import org.threeten.bp.DayOfWeek;
-import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.TextStyle;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -46,7 +42,6 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.AndroidCalendarEventParser;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.InstanceData;
 import io.ipoli.android.app.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.TimeOfDay;
 import io.ipoli.android.app.activities.BaseActivity;
@@ -64,6 +59,7 @@ import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
 import io.ipoli.android.app.settings.events.SleepHoursChangedEvent;
 import io.ipoli.android.app.settings.events.WorkDaysChangedEvent;
 import io.ipoli.android.app.settings.events.WorkHoursChangedEvent;
+import io.ipoli.android.app.sync.AndroidCalendarLoader;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
 import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
@@ -81,14 +77,12 @@ import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Category;
-import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.store.StoreItemType;
 import io.ipoli.android.store.Upgrade;
 import io.ipoli.android.store.activities.StoreActivity;
-import me.everything.providers.android.calendar.Event;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -98,8 +92,6 @@ public class SettingsActivity extends BaseActivity implements
         DaysOfWeekPickerFragment.OnDaysOfWeekPickedListener,
         EasyPermissions.PermissionCallbacks,
         LoaderManager.LoaderCallbacks<Void> {
-
-    private static final int RC_CALENDAR_PERM = 102;
 
     @Inject
     Bus eventBus;
@@ -190,7 +182,7 @@ public class SettingsActivity extends BaseActivity implements
 
     private CompoundButton.OnCheckedChangeListener onCheckSyncCalendarChangeListener = (buttonView, isChecked) -> {
         if (isChecked) {
-            if(upgradeManager.isLocked(Upgrade.CALENDAR_SYNC)) {
+            if (upgradeManager.isLocked(Upgrade.CALENDAR_SYNC)) {
                 turnSyncCalendarsOff();
                 UpgradeDialog.newInstance(Upgrade.CALENDAR_SYNC).show(getSupportFragmentManager());
                 return;
@@ -199,7 +191,7 @@ public class SettingsActivity extends BaseActivity implements
             if (EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
                 onSyncCalendarsSelected();
             } else {
-                EasyPermissions.requestPermissions(this, getString(R.string.allow_read_calendars_perm_reason), RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
+                EasyPermissions.requestPermissions(this, getString(R.string.allow_read_calendars_perm_reason), Constants.RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
             }
         } else {
             showAlertSyncCalendarsDialog();
@@ -318,7 +310,7 @@ public class SettingsActivity extends BaseActivity implements
         onSyncCalendarsChanged(calendarsCount);
     }
 
-    @AfterPermissionGranted(RC_CALENDAR_PERM)
+    @AfterPermissionGranted(Constants.RC_CALENDAR_PERM)
     private void onSyncCalendarsSelected() {
         onSyncCalendarsChanged(0);
     }
@@ -567,7 +559,7 @@ public class SettingsActivity extends BaseActivity implements
 
     @Override
     public Loader<Void> onCreateLoader(int id, Bundle args) {
-        return new CalendarLoader(this, selectedCalendars, getPlayer(), syncAndroidCalendarProvider, androidCalendarEventParser, calendarPersistenceService);
+        return new AndroidCalendarLoader(this, selectedCalendars, getPlayer(), syncAndroidCalendarProvider, androidCalendarEventParser, calendarPersistenceService);
     }
 
     @Override
@@ -583,84 +575,4 @@ public class SettingsActivity extends BaseActivity implements
         // intentional
     }
 
-    private static class CalendarLoader extends AsyncTaskLoader<Void> {
-
-        private Map<Long, Category> selectedCalendars;
-        private Player player;
-        private SyncAndroidCalendarProvider syncAndroidCalendarProvider;
-        private AndroidCalendarEventParser androidCalendarEventParser;
-        private CalendarPersistenceService calendarPersistenceService;
-
-        CalendarLoader(Context context, Map<Long, Category> selectedCalendars, Player player, SyncAndroidCalendarProvider syncAndroidCalendarProvider, AndroidCalendarEventParser androidCalendarEventParser, CalendarPersistenceService calendarPersistenceService) {
-            super(context);
-            this.selectedCalendars = selectedCalendars;
-            this.player = player;
-            this.syncAndroidCalendarProvider = syncAndroidCalendarProvider;
-            this.androidCalendarEventParser = androidCalendarEventParser;
-            this.calendarPersistenceService = calendarPersistenceService;
-        }
-
-        @Override
-        protected void onStartLoading() {
-            forceLoad();
-        }
-
-        @Override
-        public Void loadInBackground() {
-            Set<Long> calendarsToAdd = getCalendarsToAdd(selectedCalendars, player.getAndroidCalendars().keySet());
-            List<Quest> quests = new ArrayList<>();
-            for (Long calendarId : calendarsToAdd) {
-                Map<Event, List<InstanceData>> events = syncAndroidCalendarProvider.getCalendarEvents(calendarId, LocalDate.now(), LocalDate.now().plusMonths(3));
-                List<Quest> result = androidCalendarEventParser.parse(events, selectedCalendars.get(calendarId));
-                quests.addAll(result);
-            }
-
-            Set<Long> calendarsToRemove = getCalendarsToRemove(selectedCalendars, player.getAndroidCalendars().keySet());
-            Map<Long, Category> calendarsToUpdate = getCalendarsToUpdate(selectedCalendars, player.getAndroidCalendars());
-
-            player.setAndroidCalendars(selectedCalendars);
-            calendarPersistenceService.updateSync(player, quests, calendarsToRemove, calendarsToUpdate);
-            return null;
-        }
-
-        @NonNull
-        private Set<Long> getCalendarsToRemove(Map<Long, Category> selectedCalendars, Set<Long> playerCalendars) {
-            Set<Long> calendarsToRemove = new HashSet<>();
-            for (Long calendarId : playerCalendars) {
-                if (!selectedCalendars.containsKey(calendarId)) {
-                    calendarsToRemove.add(calendarId);
-                }
-            }
-            return calendarsToRemove;
-        }
-
-        @NonNull
-        private Set<Long> getCalendarsToAdd(Map<Long, Category> selectedCalendars, Set<Long> playerCalendars) {
-            Set<Long> calendarsToAdd = new HashSet<>();
-            for (Long calendarId : selectedCalendars.keySet()) {
-                if (!playerCalendars.contains(calendarId)) {
-                    calendarsToAdd.add(calendarId);
-                }
-            }
-            return calendarsToAdd;
-        }
-
-        @NonNull
-        private Map<Long, Category> getCalendarsToUpdate(Map<Long, Category> selectedCalendars, Map<Long, Category> playerCalendars) {
-            Map<Long, Category> calendarsToUpdate = new HashMap<>();
-            for (Long calendarId : selectedCalendars.keySet()) {
-                if (playerCalendars.keySet().contains(calendarId)) {
-                    if (selectedCalendars.get(calendarId) != playerCalendars.get(calendarId)) {
-                        calendarsToUpdate.put(calendarId, selectedCalendars.get(calendarId));
-                    }
-                }
-            }
-            return calendarsToUpdate;
-        }
-
-        @Override
-        protected void onStopLoading() {
-            cancelLoad();
-        }
-    }
 }
