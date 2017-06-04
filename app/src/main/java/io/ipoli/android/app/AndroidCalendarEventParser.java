@@ -1,14 +1,10 @@
 package io.ipoli.android.app;
 
 import android.provider.CalendarContract;
-import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
 import com.squareup.otto.Bus;
 
 import net.fortuna.ical4j.model.Dur;
-import net.fortuna.ical4j.model.Recur;
-import net.fortuna.ical4j.model.WeekDay;
 
 import org.threeten.bp.DateTimeException;
 import org.threeten.bp.LocalDate;
@@ -26,7 +22,6 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.data.SourceMapping;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
@@ -53,10 +48,6 @@ public class AndroidCalendarEventParser {
         this.coinsRewardGenerator = coinsRewardGenerator;
         this.experienceRewardGenerator = experienceRewardGenerator;
         this.rewardPointsRewardGenerator = rewardPointsRewardGenerator;
-    }
-
-    private boolean isRepeatingAndroidCalendarEvent(Event e) {
-        return !TextUtils.isEmpty(e.rRule) || !TextUtils.isEmpty(e.rDate);
     }
 
     public List<Quest> parse(Map<Event, List<InstanceData>> eventToInstances, Category category) {
@@ -99,6 +90,10 @@ public class AndroidCalendarEventParser {
         q.setEndDate(endDate);
         q.setScheduledDate(startDate);
 
+        if (isForThePast(q.getScheduledDate()) && event.allDay) {
+            return null;
+        }
+
         if (event.allDay) {
             q.setDuration(Constants.QUEST_MIN_DURATION);
             q.setStartMinute(null);
@@ -128,7 +123,7 @@ public class AndroidCalendarEventParser {
             }
         }
 
-        if (isForThePast(q.getScheduledDate()) && !event.allDay) {
+        if (isForThePast(q.getScheduledDate())) {
             int completedAtMinute = Math.min(q.getStartMinute() + q.getDuration(), Time.MINUTES_IN_A_DAY);
             q.setCompletedAt(q.getScheduled());
             q.setCompletedAtMinute(completedAtMinute);
@@ -168,33 +163,6 @@ public class AndroidCalendarEventParser {
                 postError(e);
                 return ZoneId.systemDefault();
             }
-        }
-    }
-
-    @NonNull
-    private String createDailyRrule(Recur recur) {
-        recur.setFrequency(Recur.WEEKLY);
-        recur.getDayList().clear();
-        recur.getDayList().add(WeekDay.MO);
-        recur.getDayList().add(WeekDay.TU);
-        recur.getDayList().add(WeekDay.WE);
-        recur.getDayList().add(WeekDay.TH);
-        recur.getDayList().add(WeekDay.FR);
-        recur.getDayList().add(WeekDay.SA);
-        recur.getDayList().add(WeekDay.SU);
-        return recur.toString();
-    }
-
-    public class Result {
-        public List<Quest> quests;
-        public Map<Quest, Long> questToOriginalId;
-        public Map<RepeatingQuest, List<Quest>> repeatingQuests;
-
-        public Result(List<Quest> quests, Map<Quest, Long> questToOriginalId, Map<RepeatingQuest, List<Quest>> repeatingQuests) {
-            this.quests = quests;
-            this.questToOriginalId = questToOriginalId;
-            this.repeatingQuests = repeatingQuests;
-
         }
     }
 

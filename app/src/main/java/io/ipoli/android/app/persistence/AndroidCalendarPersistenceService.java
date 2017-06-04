@@ -55,7 +55,9 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
             }
 
             saveQuests(quests);
-            savePlayer(player);
+            if (player != null) {
+                savePlayer(player);
+            }
 
             for (Long calendarId : calendarsToUpdate.keySet()) {
                 Category category = calendarsToUpdate.get(calendarId);
