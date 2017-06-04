@@ -39,15 +39,18 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
 
     @Override
     public void updateSync(Player player, List<Quest> quests, Set<Long> calendarsToRemove, Map<Long, Category> calendarsToUpdate) {
-        doUpdateSync(player, quests, new ArrayList<>(), calendarsToRemove, calendarsToUpdate);
+        doUpdateSync(player, new HashSet<>(quests), new HashSet<>(), new ArrayList<>(), calendarsToRemove, calendarsToUpdate);
     }
 
     @Override
-    public void updateSync(List<Quest> questsToSave, List<AndroidCalendarMapping> questsToDelete) {
-        doUpdateSync(null, questsToSave, questsToDelete, new HashSet<>(), new HashMap<>());
+    public void updateSync(Set<Quest> questsToSave, Set<Quest> questsToDelete, List<AndroidCalendarMapping> mappingsToDelete) {
+        doUpdateSync(null, questsToSave, questsToDelete, mappingsToDelete, new HashSet<>(), new HashMap<>());
     }
 
-    private void doUpdateSync(Player player, List<Quest> quests, List<AndroidCalendarMapping> mappingsToDelete, Set<Long> calendarsToRemove, Map<Long, Category> calendarsToUpdate) {
+    private void doUpdateSync(Player player, Set<Quest> quests, Set<Quest> questsToDelete,
+                              List<AndroidCalendarMapping> mappingsToDelete,
+                              Set<Long> calendarsToRemove,
+                              Map<Long, Category> calendarsToUpdate) {
         database.runInTransaction(() -> {
             try {
                 deleteCalendars(calendarsToRemove);
@@ -56,7 +59,7 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
                 return false;
             }
 
-            questPersistenceService.save(quests);
+            questPersistenceService.save(new ArrayList<>(quests));
             if (player != null) {
                 savePlayer(player);
             }
@@ -71,7 +74,9 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
             }
 
             for (AndroidCalendarMapping mapping : mappingsToDelete) {
-                Quest q = questPersistenceService.findFromAndroidCalendar(mapping);
+                questsToDelete.addAll(questPersistenceService.findFromAndroidCalendar(mapping));
+            }
+            for (Quest q : questsToDelete) {
                 if (!q.isCompleted()) {
                     try {
                         delete(q);

@@ -18,7 +18,7 @@ public interface CalendarPersistenceService {
 
     void updateSync(Player player, List<Quest> quests, Set<Long> calendarsToRemove, Map<Long, Category> calendarsToUpdate);
 
-    void updateSync(List<Quest> questsToSave, List<AndroidCalendarMapping> questsToDelete);
+    void updateSync(Set<Quest> questsToSave, Set<Quest> questsToDelete, List<AndroidCalendarMapping> mappingsToDelete);
 
     void deleteAllCalendarsSync(Player player);
 }
