@@ -93,14 +93,13 @@ public class TutorialCalendarFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_tutorial_calendar, container, false);
         unbinder = ButterKnife.bind(this, v);
         calendarDayView.hideTimeLine();
-        calendarDayView.smoothScrollToTime(Time.atHours(13));
+        calendarDayView.scrollTo(Time.atHours(13));
         boolean use24HourFormat = DateFormat.is24HourFormat(getContext());
         calendarDayView.setTimeFormat(use24HourFormat);
         CheckBox checkBox = createCheckBox(category, getContext());
         detailsContainer.addView(checkBox, 0);
 
         preferencesManager = new PreferencesManager(getContext());
-
 
         questName.setText(name);
         questCategoryIndicator.setBackgroundResource(category.color500);
