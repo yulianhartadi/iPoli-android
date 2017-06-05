@@ -24,10 +24,10 @@ import io.ipoli.android.app.modules.TimeParserModule;
 import io.ipoli.android.app.modules.UpgradesModule;
 import io.ipoli.android.app.modules.UrlProviderModule;
 import io.ipoli.android.app.rate.RateDialog;
-import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
 import io.ipoli.android.app.receivers.BootCompleteReceiver;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.settings.SettingsActivity;
+import io.ipoli.android.app.sync.AndroidCalendarSyncJobService;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
@@ -220,8 +220,6 @@ public interface AppComponent {
 
     void inject(AddChallengeQuestsFragment addChallengeQuestsFragment);
 
-    void inject(AndroidCalendarEventChangedReceiver androidCalendarEventChangedReceiver);
-
     void inject(AndroidCalendarsPickerFragment androidCalendarsPickerFragment);
 
     void inject(BootCompleteReceiver bootCompleteReceiver);
@@ -247,5 +245,7 @@ public interface AppComponent {
     void inject(FabMenuView fabMenuView);
 
     void inject(TutorialActivity tutorialActivity);
+
+    void inject(AndroidCalendarSyncJobService androidCalendarSyncJobService);
 }
 
