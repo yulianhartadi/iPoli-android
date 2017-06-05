@@ -37,10 +37,6 @@ public class TutorialIntroFragment extends Fragment {
 
     private View.OnClickListener showTipsListener = v -> onIntroDone();
 
-    private void onIntroDone() {
-        ((TutorialActivity) getActivity()).onIntroDone();
-    }
-
     private View.OnClickListener showBackStoryListener = v -> {
         prepareForNextState();
         tutorialText.type("Many millennia ago, a daemon from another dimension came to conquer us. Yes, he used backdoor that was left intentionally open!")
@@ -130,6 +126,10 @@ public class TutorialIntroFragment extends Fragment {
     @OnClick(R.id.tutorial_skip_section)
     public void onSkipSectionClick(View view) {
         onIntroDone();
+    }
+
+    private void onIntroDone() {
+        ((TutorialActivity) getActivity()).onIntroDone();
     }
 
     private void prepareForNextState() {
