@@ -37,7 +37,7 @@ public class TutorialOutroFragment extends Fragment {
 
         fadeIn(v.findViewById(R.id.tutorial_logo), android.R.integer.config_longAnimTime, 1000);
         fadeIn(v.findViewById(R.id.tutorial_accept), 6000);
-        tutorialText.pause(1000).type(playerName + ", let's achieve your life goals by fighting procrastination, lazyness and disorganization together!");
+        tutorialText.pause(1000).type(getString(R.string.outro_text, playerName));
         return v;
     }
 

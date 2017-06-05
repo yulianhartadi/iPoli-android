@@ -857,6 +857,8 @@
     <string name="your_name_prompt">First, let\'s get to know you a bit better. How should I call you?</string>
     <string name="name_prompt_validation">Please, tell me your name</string>
     <string name="name_prompt_welcome">Welcome, %s!</string>
+    <string name="accept_challenge">Accept Challenge</string>
+    <string name="outro_text">%s, let\'s achieve your life goals by fighting procrastination, lazyness and disorganization together!</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
