@@ -38,6 +38,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:alpha="0"
-        android:text="Accept Challenge" />
+        android:text="@string/accept_challenge" />
 
 </LinearLayout>
