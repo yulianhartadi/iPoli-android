@@ -8,8 +8,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.ipoli.android.app.AndroidCalendarEventParser;
-import io.ipoli.android.app.SyncAndroidCalendarProvider;
+import io.ipoli.android.app.sync.AndroidCalendarEventParser;
+import io.ipoli.android.app.sync.SyncAndroidCalendarProvider;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
 import io.ipoli.android.quest.generators.RewardPointsRewardGenerator;

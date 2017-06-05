@@ -1,4 +1,4 @@
-package io.ipoli.android.app;
+package io.ipoli.android.app.sync;
 
 import android.provider.CalendarContract;
 
