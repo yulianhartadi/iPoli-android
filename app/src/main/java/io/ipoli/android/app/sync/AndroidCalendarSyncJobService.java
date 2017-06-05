@@ -153,9 +153,7 @@ public class AndroidCalendarSyncJobService extends JobService {
                         copyQuestProperties(newQuest, existingQuest);
                         existingQuestToIsUsed.put(existingQuest, true);
                         if (scheduledForDate.size() > 1) {
-                            for (int i = 1; i < scheduledForDate.size(); i++) {
-                                questsToDelete.add(scheduledForDate.get(i));
-                            }
+                            addQuestsForDeletion(questsToDelete, scheduledForDate);
                         }
 
                     }
@@ -163,6 +161,12 @@ public class AndroidCalendarSyncJobService extends JobService {
                 }
 
                 return new Pair<>(questsToSave, questsToDelete);
+            }
+
+            private void addQuestsForDeletion(Set<Quest> questsToDelete, List<Quest> scheduledForDate) {
+                for (int i = 1; i < scheduledForDate.size(); i++) {
+                    questsToDelete.add(scheduledForDate.get(i));
+                }
             }
 
             private Set<Quest> findExistingQuestsToDelete(Map<Quest, Boolean> existingQuestToIsUsed) {
