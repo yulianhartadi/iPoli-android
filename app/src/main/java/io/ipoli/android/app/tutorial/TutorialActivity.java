@@ -6,12 +6,20 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.squareup.otto.Bus;
+
+import javax.inject.Inject;
+
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.FinishTutorialActivityEvent;
 import io.ipoli.android.app.tutorial.fragments.TutorialAddQuestFragment;
 import io.ipoli.android.app.tutorial.fragments.TutorialCalendarFragment;
 import io.ipoli.android.app.tutorial.fragments.TutorialIntroFragment;
 import io.ipoli.android.app.tutorial.fragments.TutorialNamePromptFragment;
 import io.ipoli.android.app.tutorial.fragments.TutorialOutroFragment;
+import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.quest.data.Category;
 
 /**
@@ -20,10 +28,17 @@ import io.ipoli.android.quest.data.Category;
  */
 public class TutorialActivity extends AppCompatActivity {
 
+    @Inject
+    LocalStorage localStorage;
+
+    @Inject
+    Bus eventBus;
+
     private String playerName;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        App.getAppComponent(this).inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
 
@@ -92,6 +107,8 @@ public class TutorialActivity extends AppCompatActivity {
     }
 
     public void onTutorialDone() {
+        localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
+        eventBus.post(new FinishTutorialActivityEvent(playerName));
         finish();
     }
 }
