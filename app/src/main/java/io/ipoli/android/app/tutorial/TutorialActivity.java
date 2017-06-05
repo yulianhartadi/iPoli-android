@@ -18,7 +18,7 @@ import io.ipoli.android.quest.data.Category;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/31/17.
  */
-public class OnboardingActivity extends AppCompatActivity {
+public class TutorialActivity extends AppCompatActivity {
 
     private String playerName;
 
@@ -26,9 +26,6 @@ public class OnboardingActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
-
-//        TutorialCalendarFragment calendarFragment = new TutorialCalendarFragment();
-//        calendarFragment.setQuestInfo("Hello nigga", Category.CHORES);
 
         getSupportFragmentManager()
                 .beginTransaction()

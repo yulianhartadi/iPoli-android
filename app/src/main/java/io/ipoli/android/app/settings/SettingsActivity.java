@@ -63,7 +63,7 @@ import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
 import io.ipoli.android.app.settings.events.SleepHoursChangedEvent;
 import io.ipoli.android.app.settings.events.WorkDaysChangedEvent;
 import io.ipoli.android.app.settings.events.WorkHoursChangedEvent;
-import io.ipoli.android.app.tutorial.OnboardingActivity;
+import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
 import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
 import io.ipoli.android.app.ui.dialogs.DaysOfWeekPickerFragment;
@@ -351,7 +351,7 @@ public class SettingsActivity extends BaseActivity implements
     @OnClick(R.id.show_tutorial_container)
     public void onShowTutorialClicked(View view) {
         eventBus.post(new ShowTutorialEvent());
-        Intent intent = new Intent(this, OnboardingActivity.class);
+        Intent intent = new Intent(this, TutorialActivity.class);
         startActivity(intent);
     }
 

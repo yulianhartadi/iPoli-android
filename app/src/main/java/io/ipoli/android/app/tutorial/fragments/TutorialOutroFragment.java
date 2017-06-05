@@ -12,7 +12,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
-import io.ipoli.android.app.tutorial.OnboardingActivity;
+import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.ui.TypewriterView;
 
 import static io.ipoli.android.app.utils.AnimationUtils.fadeIn;
@@ -43,7 +43,7 @@ public class TutorialOutroFragment extends Fragment {
 
     @OnClick(R.id.tutorial_accept)
     public void onAcceptChallengeClick(View v) {
-        ((OnboardingActivity) getActivity()).onTutorialDone();
+        ((TutorialActivity) getActivity()).onTutorialDone();
     }
 
     @Override
