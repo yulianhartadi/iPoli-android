@@ -6,7 +6,7 @@ package io.ipoli.android.app.ui.typewriter;
  */
 class TypePauser extends Repeater {
 
-    boolean hasPaused = false;
+    private boolean isPaused = false;
 
     public TypePauser(long delay, Runnable doneRunnable) {
         super(doneRunnable, delay);
@@ -14,12 +14,12 @@ class TypePauser extends Repeater {
 
     @Override
     public void run() {
-        if (hasPaused) {
+        if (isPaused) {
             done();
             return;
         }
 
-        hasPaused = true;
+        isPaused = true;
         delayAndRepeat();
     }
 }

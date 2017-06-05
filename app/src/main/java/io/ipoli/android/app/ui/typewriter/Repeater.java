@@ -7,20 +7,20 @@ import android.os.Handler;
  * on 6/5/17.
  */
 abstract class Repeater implements Runnable {
-    protected Handler mHandler = new Handler();
-    private Runnable mDoneRunnable;
-    private long mDelay;
+    protected Handler handler = new Handler();
+    private Runnable doneRunnable;
+    private long delay;
 
     public Repeater(Runnable doneRunnable, long delay) {
-        mDoneRunnable = doneRunnable;
-        mDelay = delay;
+        this.doneRunnable = doneRunnable;
+        this.delay = delay;
     }
 
     protected void done() {
-        mDoneRunnable.run();
+        doneRunnable.run();
     }
 
     protected void delayAndRepeat() {
-        mHandler.postDelayed(this, mDelay);
+        handler.postDelayed(this, delay);
     }
 }
