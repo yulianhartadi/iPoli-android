@@ -146,7 +146,7 @@ public interface Constants {
     String PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index";
     int RANDOM_SEED = 42; // duh!
     int MAX_TIMES_A_DAY_COUNT = 8;
-    int SCHEMA_VERSION = 5;
+    int SCHEMA_VERSION = 6;
 
     double MAX_PENALTY_COEFFICIENT = 0.5;
     double NO_QUESTS_PENALTY_COEFFICIENT = 0.3;
@@ -157,4 +157,6 @@ public interface Constants {
     String DEFAULT_VIEW_VERSION = "1.0";
     String SOURCE_ANDROID_CALENDAR = "android-calendar";
 
+    int RC_CALENDAR_PERM = 102;
+    String KEY_LAST_ANDROID_CALENDAR_SYNC_DATE = "LAST_ANDROID_CALENDAR_SYNC_DATE";
 }

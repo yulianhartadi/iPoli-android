@@ -1,9 +1,15 @@
 package io.ipoli.android.app.activities;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.util.Pair;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.Toast;
 
@@ -15,6 +21,7 @@ import com.squareup.otto.Bus;
 
 import org.threeten.bp.LocalDate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +37,7 @@ import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.PlayerMigratedEvent;
+import io.ipoli.android.app.sync.AndroidCalendarSyncJobService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
@@ -38,6 +46,10 @@ import io.ipoli.android.player.Avatar;
 import io.ipoli.android.player.PetAvatar;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.data.RepeatingQuest;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
+import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.store.Upgrade;
 
 /**
@@ -45,7 +57,9 @@ import io.ipoli.android.store.Upgrade;
  * on 12/30/16.
  */
 
-public class MigrationActivity extends BaseActivity {
+public class MigrationActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Boolean> {
+    public static final int VERSION_BEFORE_UPGRADES = 3;
+    private static final int NEW_CALENDAR_IMPORT_VERSION = 6;
 
     @Inject
     Api api;
@@ -62,6 +76,14 @@ public class MigrationActivity extends BaseActivity {
     @Inject
     PlayerPersistenceService playerPersistenceService;
 
+    @Inject
+    QuestPersistenceService questPersistenceService;
+
+    @Inject
+    RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+
+    private int schemaVersion;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,109 +99,20 @@ public class MigrationActivity extends BaseActivity {
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         getWindow().getDecorView().setSystemUiVisibility(flags);
 
-        int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
+        schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
 
-        int versionBeforeUpgrades = 3;
-
-        if (schemaVersion < versionBeforeUpgrades) {
-            migrateFromFirebase(() -> unlockUpgrades(MigrationActivity.this::onFinish));
-        } else if (schemaVersion >= versionBeforeUpgrades) {//leave only == when null pointers for rewardPoints and avatars are fixed
-            unlockUpgrades(MigrationActivity.this::onFinish);
+        if (schemaVersion < VERSION_BEFORE_UPGRADES) {
+            migrateFromFirebase(() -> {
+                getSupportLoaderManager().initLoader(1, null, this);
+            });
+        } else if (schemaVersion >= VERSION_BEFORE_UPGRADES) {//leave only == when null pointers for rewardPoints and avatars are fixed
+            getSupportLoaderManager().initLoader(1, null, this);
         } else {
             onFinish();
         }
     }
 
-    private void unlockUpgrades(OnFinishListener onFinishListener) {
-        Player player = playerPersistenceService.get();
-
-        Pair<String, String> pics = updatePictures(player.getId());
-
-        String playerPicture = pics.first;
-        String petPicture = pics.second;
-
-        player = playerPersistenceService.get();
-        LocalDate unlockedDate = DateUtils.fromMillis(player.getCreatedAt());
-        for (Upgrade upgrade : Upgrade.values()) {
-            player.getInventory().addUpgrade(upgrade, unlockedDate);
-        }
-
-        if(player.getRewardPoints() == player.getCoins()) {
-            player.setRewardPoints(player.getCoins());
-        }
-        player.setSchemaVersion(Constants.SCHEMA_VERSION);
-
-        if (playerPicture != null) {
-            Avatar playerAvatar = Constants.DEFAULT_PLAYER_AVATAR;
-            for (Avatar avatar : Avatar.values()) {
-                String avatarPicture = getResources().getResourceEntryName(avatar.picture);
-                if (avatarPicture.equals(playerPicture)) {
-                    playerAvatar = avatar;
-                    break;
-                }
-            }
-            player.getInventory().addAvatar(playerAvatar, unlockedDate);
-            player.setAvatar(playerAvatar);
-        } else if (player.getAvatarCode() == null) {
-            player.setAvatar(Constants.DEFAULT_PLAYER_AVATAR);
-            player.getInventory().addAvatar(Constants.DEFAULT_PLAYER_AVATAR, unlockedDate);
-        }
-
-        if (petPicture != null) {
-            PetAvatar playerPetAvatar = Constants.DEFAULT_PET_AVATAR;
-            for (PetAvatar petAvatar : PetAvatar.values()) {
-                String petAvatarPicture = getResources().getResourceEntryName(petAvatar.picture);
-                if (petAvatarPicture.equals(petPicture)) {
-                    playerPetAvatar = petAvatar;
-                    break;
-                }
-            }
-            player.getInventory().addPet(playerPetAvatar, unlockedDate);
-            player.getPet().setPetAvatar(playerPetAvatar);
-        } else if (player.getPet().getAvatarCode() == null) {
-            player.getInventory().addPet(Constants.DEFAULT_PET_AVATAR, unlockedDate);
-            player.getPet().setPetAvatar(Constants.DEFAULT_PET_AVATAR);
-        }
-
-        playerPersistenceService.save(player);
-
-        localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
-
-        Toast.makeText(this, R.string.upgrades_migration_message, Toast.LENGTH_LONG).show();
-        onFinishListener.onFinish();
-    }
-
-    private Pair<String, String> updatePictures(String playerId) {
-        String playerPicture = null;
-        String petPicture = null;
-
-        UnsavedRevision revision = database.getExistingDocument(playerId).createRevision();
-        Map<String, Object> properties = revision.getProperties();
-        if (properties.containsKey("picture")) {
-            playerPicture = (String) properties.get("picture");
-            properties.remove("picture");
-        }
-        List<Map<String, Object>> pets = (List<Map<String, Object>>) properties.get("pets");
-        Map<String, Object> pet = pets.get(0);
-        if (pet.containsKey("picture")) {
-            petPicture = (String) pet.remove("picture");
-        }
-
-        if (playerPicture == null && petPicture == null) {
-            return new Pair<>(null, null);
-        }
-
-        revision.setProperties(properties);
-        try {
-            revision.save();
-        } catch (CouchbaseLiteException e) {
-            eventBus.post(new AppErrorEvent(e));
-        }
-
-        return new Pair<>(playerPicture, petPicture);
-    }
-
-    private void migrateFromFirebase(OnFinishListener onFinishListener) {
+    private void migrateFromFirebase(OnMigrationFinishListener migrationFinishListener) {
         if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             Toast.makeText(this, R.string.migration_no_internet, Toast.LENGTH_LONG).show();
             finish();
@@ -191,7 +124,7 @@ public class MigrationActivity extends BaseActivity {
             @Override
             public void onSuccess(Map<String, List<Map<String, Object>>> documents) {
                 if (!documents.containsKey("player")) {
-                    showErrorMessage(new Exception("Player with firebase id:" + firebasePlayerId + " not found"));
+                    showErrorMessageAndFinish(new MigrationException("Player with firebase id:" + firebasePlayerId + " not found", schemaVersion));
                     return;
                 }
                 Map<String, Object> player = documents.get("player").get(0);
@@ -199,12 +132,12 @@ public class MigrationActivity extends BaseActivity {
                 String playerId = (String) player.get("id");
                 eventBus.post(new PlayerCreatedEvent(playerId));
                 eventBus.post(new PlayerMigratedEvent(firebasePlayerId, playerId));
-                onFinishListener.onFinish();
+                migrationFinishListener.onMigrationFinish();
             }
 
             @Override
             public void onError(Exception e) {
-                showErrorMessage(e);
+                showErrorMessageAndFinish(e);
             }
         });
     }
@@ -251,8 +184,12 @@ public class MigrationActivity extends BaseActivity {
         }
     }
 
-    private void showErrorMessage(Exception e) {
+    private void showErrorMessageAndFinish(Exception e) {
         eventBus.post(new AppErrorEvent(e));
+        showErrorMessageAndFinish();
+    }
+
+    private void showErrorMessageAndFinish() {
         runOnUiThread(() -> {
             Toast.makeText(this, R.string.something_went_wrong, Toast.LENGTH_LONG).show();
             finish();
@@ -274,11 +211,202 @@ public class MigrationActivity extends BaseActivity {
     }
 
     private void onFinish() {
+        Player player = playerPersistenceService.get();
+        player.setSchemaVersion(Constants.SCHEMA_VERSION);
+        playerPersistenceService.save(player);
+        localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
         startActivity(new Intent(MigrationActivity.this, MainActivity.class));
         finish();
     }
 
-    private interface OnFinishListener {
-        void onFinish();
+    @Override
+    public Loader<Boolean> onCreateLoader(int id, Bundle args) {
+        return new MigrationLoader(this, schemaVersion, playerPersistenceService,
+                database, eventBus, questPersistenceService, repeatingQuestPersistenceService);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Boolean> loader, Boolean data) {
+        if (data) {
+            onFinish();
+        } else {
+            showErrorMessageAndFinish();
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Boolean> loader) {
+        //intentional
+    }
+
+    private interface OnMigrationFinishListener {
+        void onMigrationFinish();
+    }
+
+    private static class MigrationException extends Exception {
+        public MigrationException(String message, int schemaVersion) {
+            super("Migration of player with id " + App.getPlayerId() + " and schema " + schemaVersion + " failed: " + message);
+        }
+    }
+
+    private static class MigrationLoader extends AsyncTaskLoader<Boolean> {
+
+        private int schemaVersion;
+        private PlayerPersistenceService playerPersistenceService;
+        private Database database;
+        private Bus eventBus;
+        private QuestPersistenceService questPersistenceService;
+        private RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+
+        public MigrationLoader(Context context, int schemaVersion, PlayerPersistenceService playerPersistenceService,
+                               Database database, Bus eventBus, QuestPersistenceService questPersistenceService,
+                               RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
+            super(context);
+            this.schemaVersion = schemaVersion;
+            this.playerPersistenceService = playerPersistenceService;
+            this.database = database;
+            this.eventBus = eventBus;
+            this.questPersistenceService = questPersistenceService;
+            this.repeatingQuestPersistenceService = repeatingQuestPersistenceService;
+        }
+
+        @Override
+        protected void onStartLoading() {
+            forceLoad();
+        }
+
+        @Override
+        public Boolean loadInBackground() {
+            unlockUpgrades();
+            if (schemaVersion < NEW_CALENDAR_IMPORT_VERSION) {
+                return migrateAndroidCalendars();
+            }
+            return true;
+        }
+
+        @Override
+        protected void onStopLoading() {
+            cancelLoad();
+        }
+
+        private void unlockUpgrades() {
+            Player player = playerPersistenceService.get();
+
+            UnsavedRevision revision = database.getExistingDocument(player.getId()).createRevision();
+            Map<String, Object> properties = revision.getProperties();
+            String playerPicture = (String) properties.get("picture");
+            properties.remove("picture");
+            List<Map<String, Object>> pets = (List<Map<String, Object>>) properties.get("pets");
+            Map<String, Object> pet = pets.get(0);
+            String petPicture = (String) pet.remove("picture");
+
+            revision.setProperties(properties);
+            try {
+                revision.save();
+            } catch (CouchbaseLiteException e) {
+                eventBus.post(new AppErrorEvent(e));
+            }
+
+            player = playerPersistenceService.get();
+            LocalDate unlockedDate = DateUtils.fromMillis(player.getCreatedAt());
+            if (schemaVersion == 3 || schemaVersion == 4) {
+                for (Upgrade upgrade : Upgrade.values()) {
+                    player.getInventory().addUpgrade(upgrade, unlockedDate);
+                }
+            }
+
+            player.setRewardPoints(player.getCoins());
+
+            for (Avatar avatar : Avatar.values()) {
+                String avatarPicture = getContext().getResources().getResourceEntryName(avatar.picture);
+                if (avatarPicture.equals(playerPicture)) {
+                    player.getInventory().addAvatar(avatar, unlockedDate);
+                    player.setAvatar(avatar);
+                    break;
+                }
+            }
+
+            for (PetAvatar petAvatar : PetAvatar.values()) {
+                String petAvatarPicture = getContext().getResources().getResourceEntryName(petAvatar.picture);
+                if (petAvatarPicture.equals(petPicture)) {
+                    player.getInventory().addPet(petAvatar, unlockedDate);
+                    player.getPet().setPetAvatar(petAvatar);
+                }
+            }
+
+            playerPersistenceService.save(player);
+        }
+
+        private boolean migrateAndroidCalendars() {
+            //delete old not completed from android calendar
+            Player player = playerPersistenceService.get();
+
+            if (player.getAndroidCalendars().isEmpty()) {
+                return true;
+            }
+
+            List<Quest> questsToDelete = new ArrayList<>();
+            List<RepeatingQuest> repeatingQuestsToDelete = new ArrayList<>();
+
+            for (Long calendarId : player.getAndroidCalendars().keySet()) {
+                questsToDelete.addAll(questPersistenceService.findNotCompletedFromAndroidCalendar(calendarId));
+                repeatingQuestsToDelete.addAll(repeatingQuestPersistenceService.findNotCompletedFromAndroidCalendar(calendarId));
+            }
+
+            boolean deleteSuccessfully = deleteOldCalendarQuests(questsToDelete, repeatingQuestsToDelete);
+
+            if (!deleteSuccessfully) {
+                eventBus.post(new AppErrorEvent(new MigrationException("could not delete existing google calendar quests", schemaVersion)));
+                return false;
+            }
+
+
+            JobScheduler jobScheduler = (JobScheduler) getContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
+            JobInfo jobInfo = new JobInfo.Builder(1,
+                    new ComponentName(getContext(), AndroidCalendarSyncJobService.class))
+                    .setOverrideDeadline(0)
+                    .build();
+            jobScheduler.schedule(jobInfo);
+
+            return true;
+        }
+
+        private boolean deleteOldCalendarQuests(List<Quest> questsToDelete, List<RepeatingQuest> repeatingQuestsToDelete) {
+            return database.runInTransaction(() -> {
+                        for (Quest q : questsToDelete) {
+                            if (!delete(q.getId())) {
+                                return false;
+                            }
+                        }
+
+                        for (RepeatingQuest rq : repeatingQuestsToDelete) {
+                            List<Quest> quests = questPersistenceService.findAllForRepeatingQuest(rq.getId());
+                            for (Quest q : quests) {
+                                if (q.isCompleted()) {
+                                    q.setRepeatingQuestId(null);
+                                    questPersistenceService.save(q);
+                                } else {
+                                    if (!delete(q.getId())) {
+                                        return false;
+                                    }
+                                }
+                            }
+                            if (!delete(rq.getId())) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    });
+        }
+
+        private boolean delete(String id) {
+            try {
+                database.getExistingDocument(id).delete();
+            } catch (CouchbaseLiteException e) {
+                eventBus.post(new AppErrorEvent(e));
+                return false;
+            }
+            return true;
+        }
     }
 }
