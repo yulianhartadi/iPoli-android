@@ -3,6 +3,7 @@ package io.ipoli.android.app.ui;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatEditText;
 import android.text.InputType;
 import android.util.AttributeSet;
@@ -12,7 +13,6 @@ import java.util.Queue;
 
 public class TypewriterView extends AppCompatEditText {
 
-    //    public static final int TYPE_SPEED = 80;
     public static final int TYPE_SPEED = 50;
     public static final int DELETE_SPEED = 40;
     public static final int PAUSE_DELAY = 1000;
@@ -35,8 +35,7 @@ public class TypewriterView extends AppCompatEditText {
 
     public TypewriterView type(CharSequence text, long speed) {
         mRunnableQueue.add(new TextAdder(text, speed, mRunNextRunnable));
-        if (!isRunning) runNext();
-        return this;
+        return runNextIfNotRunning();
     }
 
     public TypewriterView type(CharSequence text) {
@@ -45,10 +44,7 @@ public class TypewriterView extends AppCompatEditText {
 
     public TypewriterView delete(CharSequence text, long speed) {
         mRunnableQueue.add(new TextRemover(text, speed, mRunNextRunnable));
-
-        if (!isRunning) runNext();
-
-        return this;
+        return runNextIfNotRunning();
     }
 
     public TypewriterView delete(CharSequence text) {
@@ -57,15 +53,16 @@ public class TypewriterView extends AppCompatEditText {
 
     public TypewriterView pause(long millis) {
         mRunnableQueue.add(new TypePauser(millis, mRunNextRunnable));
-
-        if (!isRunning) runNext();
-
-        return this;
+        return runNextIfNotRunning();
     }
 
     public TypewriterView run(Runnable runnable) {
         mRunnableQueue.add(new TypeRunnable(runnable, mRunNextRunnable));
+        return runNextIfNotRunning();
+    }
 
+    @NonNull
+    private TypewriterView runNextIfNotRunning() {
         if (!isRunning) runNext();
         return this;
     }
