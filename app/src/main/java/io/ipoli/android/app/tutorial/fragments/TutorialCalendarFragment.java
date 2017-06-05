@@ -71,9 +71,21 @@ public class TutorialCalendarFragment extends Fragment {
     @BindView(R.id.navigation_view)
     NavigationView navigationView;
 
+    @BindView(R.id.quest_name)
+    TextView questName;
+
+    @BindView(R.id.quest_category_indicator)
+    View questCategoryIndicator;
+
+    @BindView(R.id.quest_background)
+    View questBackground;
+
     private Unbinder unbinder;
 
     private PreferencesManager preferencesManager;
+
+    private String name;
+    private Category category;
 
     @Nullable
     @Override
@@ -84,10 +96,15 @@ public class TutorialCalendarFragment extends Fragment {
         calendarDayView.smoothScrollToTime(Time.atHours(13));
         boolean use24HourFormat = DateFormat.is24HourFormat(getContext());
         calendarDayView.setTimeFormat(use24HourFormat);
-        CheckBox checkBox = createCheckBox(Category.WELLNESS, getContext());
+        CheckBox checkBox = createCheckBox(category, getContext());
         detailsContainer.addView(checkBox, 0);
 
         preferencesManager = new PreferencesManager(getContext());
+
+
+        questName.setText(name);
+        questCategoryIndicator.setBackgroundResource(category.color500);
+        questBackground.setBackgroundResource(category.color500);
 
         new MaterialIntroView.Builder(getActivity())
                 .enableIcon(false)
@@ -198,7 +215,7 @@ public class TutorialCalendarFragment extends Fragment {
                 .setTarget(((NavigationMenuView) navigationView.getChildAt(0)).findViewHolderForAdapterPosition(9).itemView)
                 .setListener(s -> {
                     preferencesManager.resetAll();
-                    ((OnboardingActivity)getActivity()).onCalendarDone();
+                    ((OnboardingActivity) getActivity()).onCalendarDone();
                 })
                 .show();
     }
@@ -227,5 +244,10 @@ public class TutorialCalendarFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    public void setQuestInfo(String name, Category category) {
+        this.name = name;
+        this.category = category;
     }
 }
