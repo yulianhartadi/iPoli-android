@@ -39,12 +39,8 @@ public class IntroFragment extends Fragment {
         prepareForNextState();
         tutorialText.type("Many millennia ago, a daemon from another dimension came to conquer us. Yes, he used backdoor that was left intentionally open!")
                 .pause(2000)
-                .type(" His objective? Eat all the ice-cream on Earth! And kill the ONE!").pause().run(new Runnable() {
-            @Override
-            public void run() {
-                tutorialText.setText("");
-            }
-        }).type("Counterintuitively enough, only the ONE can stop him! Let's hope that's you!")
+                .type(" His objective? Eat all the ice-cream on Earth! And kill the ONE!").pause().clear()
+                .type("Counterintuitively enough, only the ONE can stop him! Let's hope that's you!")
                 .type(" That daemon I was telling you about is pretty evil! He is so evil that his name is EVIL Snail! Yes, that name was given to him by his mother").run(new Runnable() {
             @Override
             public void run() {
@@ -85,19 +81,8 @@ public class IntroFragment extends Fragment {
         prepareForNextState();
         tutorialText.type("Gosh, we have another one of those...").pause()
                 .delete("Gosh, we have another one of those...").pause()
-                .type("Ok, ok. Let's start over!").pause().run(() -> {
-            tutorialText.setText("");
-        }).type("Welcome, Hero!").pause().run(new Runnable() {
-            @Override
-            public void run() {
-                tutorialText.setText("");
-            }
-        }).pause().type("Your greatest journey is starting").pause().type(" today!").pause().run(new Runnable() {
-            @Override
-            public void run() {
-                tutorialText.setText("");
-            }
-        })
+                .type("Ok, ok. Let's start over!").pause().clear().type("Welcome, Hero!").pause().clear()
+                .pause().type("Your greatest journey is starting").pause().type(" today!").pause().clear()
                 .type("Are you ready to embrace your destiny of studying many hours, working late, doing sports and eating yucky food?").run(() -> {
             positiveAnswer.setText("I Accept");
             negativeAnswer.setText("Nah, not me");

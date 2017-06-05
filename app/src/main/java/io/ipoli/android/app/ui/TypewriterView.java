@@ -43,7 +43,7 @@ public class TypewriterView extends AppCompatEditText {
     }
 
     public TypewriterView delete(CharSequence text, long speed) {
-        mRunnableQueue.add(new TextRemover(text, speed, mRunNextRunnable));
+        mRunnableQueue.add(new TextEraser(text, speed, mRunNextRunnable));
         return runNextIfNotRunning();
     }
 
@@ -58,6 +58,11 @@ public class TypewriterView extends AppCompatEditText {
 
     public TypewriterView run(Runnable runnable) {
         mRunnableQueue.add(new TypeRunnable(runnable, mRunNextRunnable));
+        return runNextIfNotRunning();
+    }
+
+    public TypewriterView clear() {
+        mRunnableQueue.add(new TypeRunnable(new TextClearer(), mRunNextRunnable));
         return runNextIfNotRunning();
     }
 
@@ -133,11 +138,11 @@ public class TypewriterView extends AppCompatEditText {
         }
     }
 
-    private class TextRemover extends Repeater {
+    private class TextEraser extends Repeater {
 
         private CharSequence mTextToRemove;
 
-        public TextRemover(CharSequence textToRemove, long speed, Runnable doneRunnable) {
+        public TextEraser(CharSequence textToRemove, long speed, Runnable doneRunnable) {
             super(doneRunnable, speed);
 
             mTextToRemove = textToRemove;
@@ -161,6 +166,14 @@ public class TypewriterView extends AppCompatEditText {
 
             setCursorAtEnd();
             delayAndRepeat();
+        }
+    }
+
+    private class TextClearer implements Runnable {
+
+        @Override
+        public void run() {
+            setText("");
         }
     }
 
