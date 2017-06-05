@@ -78,7 +78,7 @@ public class TutorialAddQuestFragment extends Fragment {
     @OnClick(R.id.tutorial_add_quest)
     public void onAddQuestClick(View view) {
         tutorialText.setText("");
-        tutorialText.type("Name your first task");
+        tutorialText.type("Your tasks are now called quests. Enter the name of your first quest");
         addQuest.setVisibility(View.GONE);
         questNameContainer.setVisibility(View.VISIBLE);
         chooseCategory.setVisibility(View.VISIBLE);
