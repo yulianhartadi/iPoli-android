@@ -39,23 +39,23 @@ public class TutorialIntroFragment extends Fragment {
 
     private View.OnClickListener showBackStoryListener = v -> {
         prepareForNextState();
-        tutorialText.type("Many millennia ago, a daemon from another dimension came to conquer us. Yes, he used backdoor that was left intentionally open!")
+        tutorialText.type(getString(R.string.daemon_intro))
                 .pause(2000)
-                .type(" His objective? Eat all the ice-cream on Earth! And kill the ONE!").pause().clear()
-                .type("Counterintuitively enough, only the ONE can stop him! Let's hope that's you!")
-                .type(" That daemon I was telling you about is pretty evil! He is so evil that his name is EVIL Snail! Yes, that name was given to him by his mother").run(new Runnable() {
-            @Override
-            public void run() {
-                positiveAnswer.setText("Ready to go");
-                fadeIn(positiveAnswer);
-                positiveAnswer.setOnClickListener(showTipsListener);
-            }
-        });
+                .type(getString(R.string.daemon_objective)).pause().clear()
+                .type(getString(R.string.daemon_backstory))
+                .run(new Runnable() {
+                    @Override
+                    public void run() {
+                        positiveAnswer.setText(R.string.ready_to_go);
+                        fadeIn(positiveAnswer);
+                        positiveAnswer.setOnClickListener(showTipsListener);
+                    }
+                });
     };
 
     private View.OnClickListener skipChallengeListener = v -> {
         prepareForNextState();
-        tutorialText.type("Come on! I believe in you!").pause().run(new Runnable() {
+        tutorialText.type(getString(R.string.i_believe_in_you)).pause().run(new Runnable() {
             @Override
             public void run() {
                 acceptChallengeListener.onClick(v);
@@ -65,11 +65,11 @@ public class TutorialIntroFragment extends Fragment {
 
     private View.OnClickListener acceptChallengeListener = v -> {
         prepareForNextState();
-        tutorialText.type("So, we've established the fact that you might be the ONE. Would you like some tips?").run(new Runnable() {
+        tutorialText.type(getString(R.string.you_the_one)).run(new Runnable() {
             @Override
             public void run() {
-                positiveAnswer.setText("Ready to go");
-                negativeAnswer.setText("The ONE?");
+                positiveAnswer.setText(R.string.ready_to_go);
+                negativeAnswer.setText(R.string.the_one);
                 fadeIn(positiveAnswer);
                 fadeIn(negativeAnswer);
 
@@ -81,13 +81,13 @@ public class TutorialIntroFragment extends Fragment {
 
     private View.OnClickListener improveListener = v -> {
         prepareForNextState();
-        tutorialText.type("Gosh, we have another one of those...").pause()
-                .delete("Gosh, we have another one of those...").pause()
-                .type("Ok, ok. Let's start over!").pause().clear().type("Welcome, Hero!").pause().clear()
-                .pause().type("Your greatest journey is starting").pause().type(" today!").pause().clear()
-                .type("Are you ready to embrace your destiny of studying many hours, working late, doing sports and eating yucky food?").run(() -> {
-            positiveAnswer.setText("I Accept");
-            negativeAnswer.setText("Nah, not me");
+        tutorialText.type(getString(R.string.another_of_those)).pause()
+                .delete(getString(R.string.another_of_those)).pause()
+                .type(getString(R.string.lets_start_over)).pause().clear().type(getString(R.string.welcome_hero)).pause().clear()
+                .pause().type(getString(R.string.journey_start)).pause().type(getString(R.string.journey_today)).pause().clear()
+                .type(getString(R.string.embrace_journey)).run(() -> {
+            positiveAnswer.setText(R.string.i_accept);
+            negativeAnswer.setText(R.string.nah_not_me);
             fadeIn(positiveAnswer);
             fadeIn(negativeAnswer);
             positiveAnswer.setOnClickListener(acceptChallengeListener);
@@ -105,12 +105,12 @@ public class TutorialIntroFragment extends Fragment {
 
         fadeIn(v.findViewById(R.id.tutorial_logo), android.R.integer.config_longAnimTime, 1000);
 
-        tutorialText.pause(1000).type("Psst, why are you here?").run(() -> {
-            positiveAnswer.setText("To improve myself");
-            negativeAnswer.setText("No idea");
+        tutorialText.pause(1000).type(getString(R.string.why_are_you_here)).run(() -> {
+            positiveAnswer.setText(R.string.improve_myself);
+            negativeAnswer.setText(R.string.no_idea);
             positiveAnswer.setOnClickListener(improveListener);
             negativeAnswer.setOnClickListener(v1 ->
-                    Toast.makeText(getContext(), "Then what are you doing here!?", Toast.LENGTH_LONG).show());
+                    Toast.makeText(getContext(), R.string.then_what_are_you_doing_here, Toast.LENGTH_LONG).show());
             fadeIn(positiveAnswer);
             fadeIn(negativeAnswer);
         });
