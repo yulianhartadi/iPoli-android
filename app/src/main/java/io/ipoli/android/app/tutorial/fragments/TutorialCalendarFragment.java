@@ -113,7 +113,7 @@ public class TutorialCalendarFragment extends Fragment {
                 .setDelayMillis(500)
                 .enableFadeAnimation(true)
                 .performClick(true)
-                .setInfoText("Your quest has been added to your calendar. Complete it by tapping the checkbox.")
+                .setInfoText("Your quest has been added to your calendar. Complete it by tapping on the checkbox.")
                 .setShape(ShapeType.RECTANGLE)
                 .setTargetPadding(20)
                 .setTarget(v.findViewById(R.id.tutorial_quest_container))
