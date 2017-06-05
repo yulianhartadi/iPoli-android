@@ -28,7 +28,7 @@ import static io.ipoli.android.app.utils.AnimationUtils.fadeIn;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/31/17.
  */
-public class TipsFragment extends Fragment {
+public class TutorialAddQuestFragment extends Fragment {
 
     @BindView(R.id.tutorial_text)
     TypewriterView tutorialText;
@@ -48,12 +48,15 @@ public class TipsFragment extends Fragment {
     @BindView(R.id.tutorial_choose_time)
     Button chooseTime;
 
+    @BindView(R.id.tutorial_quest_name_container)
+    ViewGroup questNameContainer;
+
     private Unbinder unbinder;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_tutorial_tips, container, false);
+        View v = inflater.inflate(R.layout.fragment_tutorial_add_quest, container, false);
         unbinder = ButterKnife.bind(this, v);
         tutorialText.type("Let's start by adding your first quest! Do you see the button below? Will you do me the honor?");
         addQuest.setVisibility(View.VISIBLE);
@@ -71,16 +74,15 @@ public class TipsFragment extends Fragment {
         return false;
     }
 
-    private void onChooseCategory() {
-        KeyboardUtils.hideKeyboard(getActivity());
+    @OnClick(R.id.tutorial_add_quest)
+    public void onAddQuestClick(View view) {
         tutorialText.setText("");
-        tutorialText.type("Choose a category");
-        questName.setVisibility(View.GONE);
-        chooseCategory.setVisibility(View.GONE);
-        categoryPicker.setVisibility(View.VISIBLE);
-        chooseTime.setVisibility(View.VISIBLE);
-        fadeIn(categoryPicker, 1000);
-        fadeIn(chooseTime, 1000);
+        tutorialText.type("Name your first task");
+        addQuest.setVisibility(View.GONE);
+        questNameContainer.setVisibility(View.VISIBLE);
+        chooseCategory.setVisibility(View.VISIBLE);
+        fadeIn(questNameContainer, 1000);
+        fadeIn(chooseCategory, 1000);
     }
 
     @OnClick(R.id.tutorial_choose_category)
@@ -88,20 +90,21 @@ public class TipsFragment extends Fragment {
         onChooseCategory();
     }
 
-    @OnClick(R.id.tutorial_add_quest)
-    public void onAddQuestClick(View view) {
+    private void onChooseCategory() {
+        KeyboardUtils.hideKeyboard(getActivity());
         tutorialText.setText("");
-        tutorialText.type("Name your first task");
-        addQuest.setVisibility(View.GONE);
-        questName.setVisibility(View.VISIBLE);
-        chooseCategory.setVisibility(View.VISIBLE);
-        fadeIn(questName, 1000);
-        fadeIn(chooseCategory, 1000);
+        tutorialText.type("Choose a category");
+        questNameContainer.setVisibility(View.GONE);
+        chooseCategory.setVisibility(View.GONE);
+        categoryPicker.setVisibility(View.VISIBLE);
+        chooseTime.setVisibility(View.VISIBLE);
+        fadeIn(categoryPicker, 1000);
+        fadeIn(chooseTime, 1000);
     }
 
     @OnClick(R.id.tutorial_choose_time)
     public void onChooseTimeClick(View view) {
-        ((OnboardingActivity)getActivity()).onAddQuestDone(questName.getText().toString(), categoryPicker.getSelectedCategory());
+        ((OnboardingActivity) getActivity()).onAddQuestDone(questName.getText().toString(), categoryPicker.getSelectedCategory());
     }
 
     @Override

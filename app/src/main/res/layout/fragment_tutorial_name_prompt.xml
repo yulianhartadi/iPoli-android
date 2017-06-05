@@ -30,8 +30,8 @@
         android:textAlignment="center"
         android:windowSoftInputMode="stateHidden" />
 
-    <EditText
-        android:id="@+id/tutorial_name"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/tutorial_name_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -39,9 +39,17 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:alpha="0"
-        android:hint="Your name"
-        android:imeOptions="actionDone"
-        android:inputType="text" />
+        android:hint="Your name">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/tutorial_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
+            android:inputType="text" />
+
+    </android.support.design.widget.TextInputLayout>
+
 
     <Button
         android:id="@+id/tutorial_ready"
