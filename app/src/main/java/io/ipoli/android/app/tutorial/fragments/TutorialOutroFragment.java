@@ -36,8 +36,8 @@ public class TutorialOutroFragment extends Fragment {
         unbinder = ButterKnife.bind(this, v);
 
         fadeIn(v.findViewById(R.id.tutorial_logo), android.R.integer.config_longAnimTime, 1000);
-        fadeIn(v.findViewById(R.id.tutorial_accept), 5000);
-        tutorialText.pause(2000).type(playerName + ", let's achieve your life goals by fighting procrastination, lazyness and disorganization together!");
+        fadeIn(v.findViewById(R.id.tutorial_accept), 6000);
+        tutorialText.pause(1000).type(playerName + ", let's achieve your life goals by fighting procrastination, lazyness and disorganization together!");
         return v;
     }
 
