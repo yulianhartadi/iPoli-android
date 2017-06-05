@@ -33,6 +33,9 @@ public class TutorialNamePromptFragment extends Fragment {
     @BindView(R.id.tutorial_text)
     TypewriterView tutorialText;
 
+    @BindView(R.id.tutorial_name_container)
+    ViewGroup nameContainer;
+
     @BindView(R.id.tutorial_name)
     EditText name;
 
@@ -47,7 +50,7 @@ public class TutorialNamePromptFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_tutorial_name_prompt, container, false);
         unbinder = ButterKnife.bind(this, v);
         tutorialText.pause().type("First, let's get to know you a bit better. How should I call you?").run(() -> {
-            fadeIn(v.findViewById(R.id.tutorial_name_container));
+            fadeIn(nameContainer);
             fadeIn(ready);
         });
         return v;
@@ -79,7 +82,7 @@ public class TutorialNamePromptFragment extends Fragment {
             name.setError("Please, tell me your name");
             return;
         }
-        fadeOut(name);
+        fadeOut(nameContainer);
         fadeOut(ready);
         tutorialText.setText("");
         tutorialText.type("Welcome, " + nameText + "!").pause().run(() ->
