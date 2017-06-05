@@ -1,5 +1,6 @@
 package io.ipoli.android.app.tutorial.fragments;
 
+import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -92,6 +93,14 @@ public class TutorialAddQuestFragment extends Fragment {
 
     private void onChooseCategory() {
         KeyboardUtils.hideKeyboard(getActivity());
+        if (questName.length() < 2) {
+            ObjectAnimator
+                    .ofFloat(questName, "translationX", 0, 25, -25, 25, -25, 15, -15, 6, -6, 0)
+                    .setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime))
+                    .start();
+            questName.setError("Still waiting for that name");
+            return;
+        }
         tutorialText.setText("");
         tutorialText.type("Choose a category");
         questNameContainer.setVisibility(View.GONE);
