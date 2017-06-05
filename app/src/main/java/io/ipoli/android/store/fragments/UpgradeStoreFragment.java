@@ -28,17 +28,16 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.app.sync.AndroidCalendarEventParser;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
-import io.ipoli.android.app.sync.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.persistence.CalendarPersistenceService;
+import io.ipoli.android.app.sync.AndroidCalendarEventParser;
 import io.ipoli.android.app.sync.AndroidCalendarLoader;
+import io.ipoli.android.app.sync.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
 import io.ipoli.android.app.ui.dialogs.LoadingDialog;
 import io.ipoli.android.app.utils.DateUtils;
@@ -169,7 +168,7 @@ public class UpgradeStoreFragment extends BaseFragment implements LoaderManager.
         }
     }
 
-    @AfterPermissionGranted(Constants.RC_CALENDAR_PERM)
+    @AfterPermissionGranted(RC_CALENDAR_PERM)
     private void showCalendarsPicker() {
         Player player = getPlayer();
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();

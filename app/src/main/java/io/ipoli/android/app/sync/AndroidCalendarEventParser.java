@@ -108,39 +108,51 @@ public class AndroidCalendarEventParser {
                 q.addReminder(new io.ipoli.android.reminder.data.Reminder(0));
             }
         } else {
-            int duration;
-            if (StringUtils.isEmpty(event.duration) && instance.end > 0 && instance.begin > 0) {
-                duration = (int) TimeUnit.MILLISECONDS.toMinutes(instance.end - instance.begin);
-            } else if (!StringUtils.isEmpty(event.duration)) {
-                Dur dur = new Dur(event.duration);
-                duration = (int) TimeUnit.MILLISECONDS.toMinutes(dur.getTime(new Date(0)).getTime());
-            } else {
-                duration = Constants.QUEST_MIN_DURATION;
-            }
-            duration = Math.min(duration, Constants.MAX_QUEST_DURATION_HOURS * 60);
-            duration = Math.max(duration, Constants.QUEST_MIN_DURATION);
-            q.setDuration(duration);
+            q.setDuration(getDuration(event, instance));
         }
 
         if (event.hasAlarm) {
-            List<Reminder> reminders = syncAndroidCalendarProvider.getEventReminders(event.id);
-            for (Reminder r : reminders) {
-                int minutes = r.minutes == -1 ? DEFAULT_REMINDER_MINUTES : -r.minutes;
-                q.addReminder(new io.ipoli.android.reminder.data.Reminder(minutes));
-            }
+            addReminders(event, q);
         }
 
         if (isForThePast(q.getScheduledDate())) {
-            int completedAtMinute = Math.min(q.getStartMinute() + q.getDuration(), Time.MINUTES_IN_A_DAY);
-            q.setCompletedAt(q.getScheduled());
-            q.setCompletedAtMinute(completedAtMinute);
-            q.increaseCompletedCount();
-            q.setExperience(experienceRewardGenerator.generate(q));
-            q.setCoins(coinsRewardGenerator.generate(q));
-            q.setRewardPoints(rewardPointsRewardGenerator.generate(q));
+            completeQuest(q);
         }
 
         return q;
+    }
+
+    private void completeQuest(Quest q) {
+        int completedAtMinute = Math.min(q.getStartMinute() + q.getDuration(), Time.MINUTES_IN_A_DAY);
+        q.setCompletedAt(q.getScheduled());
+        q.setCompletedAtMinute(completedAtMinute);
+        q.increaseCompletedCount();
+        q.setExperience(experienceRewardGenerator.generate(q));
+        q.setCoins(coinsRewardGenerator.generate(q));
+        q.setRewardPoints(rewardPointsRewardGenerator.generate(q));
+    }
+
+    private void addReminders(Event event, Quest quest) {
+        List<Reminder> reminders = syncAndroidCalendarProvider.getEventReminders(event.id);
+        for (Reminder r : reminders) {
+            int minutes = r.minutes == -1 ? DEFAULT_REMINDER_MINUTES : -r.minutes;
+            quest.addReminder(new io.ipoli.android.reminder.data.Reminder(minutes));
+        }
+    }
+
+    private int getDuration(Event event, InstanceData instance) {
+        int duration;
+        if (StringUtils.isEmpty(event.duration) && instance.end > 0 && instance.begin > 0) {
+            duration = (int) TimeUnit.MILLISECONDS.toMinutes(instance.end - instance.begin);
+        } else if (!StringUtils.isEmpty(event.duration)) {
+            Dur dur = new Dur(event.duration);
+            duration = (int) TimeUnit.MILLISECONDS.toMinutes(dur.getTime(new Date(0)).getTime());
+        } else {
+            duration = Constants.QUEST_MIN_DURATION;
+        }
+        duration = Math.min(duration, Constants.MAX_QUEST_DURATION_HOURS * 60);
+        duration = Math.max(duration, Constants.QUEST_MIN_DURATION);
+        return duration;
     }
 
     private boolean isForThePast(LocalDate date) {

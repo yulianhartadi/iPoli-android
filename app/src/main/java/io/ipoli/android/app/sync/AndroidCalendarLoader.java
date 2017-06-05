@@ -106,10 +106,9 @@ public class AndroidCalendarLoader extends AsyncTaskLoader<Void> {
     private Map<Long, Category> getCalendarsToUpdate(Map<Long, Category> selectedCalendars, Map<Long, Category> playerCalendars) {
         Map<Long, Category> calendarsToUpdate = new HashMap<>();
         for (Long calendarId : selectedCalendars.keySet()) {
-            if (playerCalendars.keySet().contains(calendarId)) {
-                if (selectedCalendars.get(calendarId) != playerCalendars.get(calendarId)) {
-                    calendarsToUpdate.put(calendarId, selectedCalendars.get(calendarId));
-                }
+            if (playerCalendars.keySet().contains(calendarId) &&
+                    selectedCalendars.get(calendarId) != playerCalendars.get(calendarId)) {
+                calendarsToUpdate.put(calendarId, selectedCalendars.get(calendarId));
             }
         }
         return calendarsToUpdate;

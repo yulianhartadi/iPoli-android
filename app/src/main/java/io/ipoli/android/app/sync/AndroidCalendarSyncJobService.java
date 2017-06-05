@@ -79,117 +79,6 @@ public class AndroidCalendarSyncJobService extends JobService {
                 return true;
             }
 
-            private void updateEvents(Player player) {
-                LocalDate startDate = DateUtils.fromMillis(localStorage.readLong(KEY_LAST_ANDROID_CALENDAR_SYNC_DATE, DateUtils.toMillis(LocalDate.now())));
-                LocalDate endDate = LocalDate.now().plusMonths(SYNC_ANDROID_CALENDAR_MONTHS_AHEAD);
-
-                Set<Quest> questsToSave = new HashSet<>();
-                Set<Event> eventsToDelete = new HashSet<>();
-                Set<Quest> questsToDelete = new HashSet<>();
-                for (Map.Entry<Long, Category> calendar : player.getAndroidCalendars().entrySet()) {
-                    Long calendarId = calendar.getKey();
-                    Category category = calendar.getValue();
-                    eventsToDelete.addAll(syncAndroidCalendarProvider.getDeletedEvents(calendarId));
-                    populateQuestsToSaveAndDelete(startDate, endDate, questsToSave, questsToDelete, calendarId, category);
-                }
-
-                List<AndroidCalendarMapping> mappingsToDelete = new ArrayList<>();
-                for(Event e : eventsToDelete) {
-                    mappingsToDelete.add(new AndroidCalendarMapping(e.calendarId, e.id));
-                }
-                calendarPersistenceService.updateSync(questsToSave, questsToDelete, mappingsToDelete);
-
-                localStorage.saveLong(KEY_LAST_ANDROID_CALENDAR_SYNC_DATE, DateUtils.toMillis(LocalDate.now()));
-            }
-
-            private void populateQuestsToSaveAndDelete(LocalDate startDate, LocalDate endDate, Set<Quest> questsToSave, Set<Quest> questsToDelete, Long calendarId, Category category) {
-                Map<Event, List<InstanceData>> events = syncAndroidCalendarProvider.getCalendarEvents(calendarId, startDate, endDate.plusDays(1));
-
-                for (Map.Entry<Event, List<InstanceData>> eventEntry : events.entrySet()) {
-                    Event event = eventEntry.getKey();
-                    List<InstanceData> instances = eventEntry.getValue();
-                    List<Quest> newQuests = androidCalendarEventParser.parse(event, instances, category);
-                    List<Quest> existingQuests = questPersistenceService.findFromAndroidCalendar(new AndroidCalendarMapping(calendarId, event.id), startDate, endDate);
-
-                    Map<Quest, Boolean> existingQuestToIsUsed = new HashMap<>();
-                    Map<LocalDate, List<Quest>> scheduledToQuests = new HashMap<>();
-                    for (Quest q : existingQuests) {
-                        existingQuestToIsUsed.put(q, false);
-                        LocalDate scheduled = q.getScheduledDate();
-                        if (scheduled == null) {
-                            questsToDelete.add(q);
-                            continue;
-                        }
-                        if (!scheduledToQuests.containsKey(scheduled)) {
-                            scheduledToQuests.put(scheduled, new ArrayList<>());
-                        }
-                        scheduledToQuests.get(scheduled).add(q);
-                    }
-
-                    Pair<Set<Quest>, Set<Quest>> newQuestsResult = processNewQuests(newQuests, existingQuestToIsUsed, scheduledToQuests);
-                    questsToSave.addAll(newQuestsResult.first);
-                    questsToDelete.addAll(newQuestsResult.second);
-
-                    questsToDelete.addAll(findExistingQuestsToDelete(existingQuestToIsUsed));
-
-                }
-            }
-
-            private Pair<Set<Quest>, Set<Quest>> processNewQuests(List<Quest> newQuests, Map<Quest, Boolean> existingQuestToIsUsed, Map<LocalDate, List<Quest>> scheduledToQuests) {
-                Set<Quest> questsToSave = new HashSet<>();
-                Set<Quest> questsToDelete = new HashSet<>();
-                for (Quest newQuest : newQuests) {
-                    LocalDate scheduledDate = newQuest.getScheduledDate();
-                    if (scheduledToQuests.containsKey(scheduledDate)) {
-                        List<Quest> scheduledForDate = scheduledToQuests.get(scheduledDate);
-                        Quest existingQuest = scheduledForDate.get(0);
-                        if(!existingQuest.isCompleted()) {
-                            copyQuestProperties(newQuest, existingQuest);
-                            questsToSave.add(newQuest);
-                        }
-                        existingQuestToIsUsed.put(existingQuest, true);
-                        if (scheduledForDate.size() > 1) {
-                            addQuestsForDeletion(questsToDelete, scheduledForDate);
-                        }
-                    } else {
-                        questsToSave.add(newQuest);
-                    }
-                }
-
-                return new Pair<>(questsToSave, questsToDelete);
-            }
-
-            private void addQuestsForDeletion(Set<Quest> questsToDelete, List<Quest> scheduledForDate) {
-                for (int i = 1; i < scheduledForDate.size(); i++) {
-                    questsToDelete.add(scheduledForDate.get(i));
-                }
-            }
-
-            private Set<Quest> findExistingQuestsToDelete(Map<Quest, Boolean> existingQuestToIsUsed) {
-                Set<Quest> questsToDelete = new HashSet<>();
-                for (Quest q : existingQuestToIsUsed.keySet()) {
-                    if (!existingQuestToIsUsed.get(q)) {
-                        questsToDelete.add(q);
-                    }
-                }
-                return questsToDelete;
-            }
-
-
-            private void copyQuestProperties(Quest newQuest, Quest existingQuest) {
-                newQuest.setId(existingQuest.getId());
-                newQuest.setCreatedAt(existingQuest.getCreatedAt());
-                newQuest.setChallengeId(existingQuest.getChallengeId());
-                newQuest.setPriority(existingQuest.getPriority());
-                newQuest.setCategory(existingQuest.getCategory());
-                newQuest.setSubQuests(existingQuest.getSubQuests());
-                newQuest.setNotes(existingQuest.getNotes());
-                newQuest.setPreferredStartTime(existingQuest.getPreferredStartTime());
-                // @TODO difficulty?
-                newQuest.setDifficulty(existingQuest.getDifficulty());
-                newQuest.setTimesADay(existingQuest.getTimesADay());
-            }
-
             @Override
             protected void onPostExecute(Boolean success) {
                 jobFinished(params, !success);
@@ -204,5 +93,116 @@ public class AndroidCalendarSyncJobService extends JobService {
             syncCalendarsTask.cancel(true);
         }
         return true;
+    }
+
+    private void updateEvents(Player player) {
+        LocalDate startDate = DateUtils.fromMillis(localStorage.readLong(KEY_LAST_ANDROID_CALENDAR_SYNC_DATE, DateUtils.toMillis(LocalDate.now())));
+        LocalDate endDate = LocalDate.now().plusMonths(SYNC_ANDROID_CALENDAR_MONTHS_AHEAD);
+
+        Set<Quest> questsToSave = new HashSet<>();
+        Set<Event> eventsToDelete = new HashSet<>();
+        Set<Quest> questsToDelete = new HashSet<>();
+        for (Map.Entry<Long, Category> calendar : player.getAndroidCalendars().entrySet()) {
+            Long calendarId = calendar.getKey();
+            Category category = calendar.getValue();
+            eventsToDelete.addAll(syncAndroidCalendarProvider.getDeletedEvents(calendarId));
+            populateQuestsToSaveAndDelete(startDate, endDate, questsToSave, questsToDelete, calendarId, category);
+        }
+
+        List<AndroidCalendarMapping> mappingsToDelete = new ArrayList<>();
+        for (Event e : eventsToDelete) {
+            mappingsToDelete.add(new AndroidCalendarMapping(e.calendarId, e.id));
+        }
+        calendarPersistenceService.updateSync(questsToSave, questsToDelete, mappingsToDelete);
+
+        localStorage.saveLong(KEY_LAST_ANDROID_CALENDAR_SYNC_DATE, DateUtils.toMillis(LocalDate.now()));
+    }
+
+    private void populateQuestsToSaveAndDelete(LocalDate startDate, LocalDate endDate, Set<Quest> questsToSave, Set<Quest> questsToDelete, Long calendarId, Category category) {
+        Map<Event, List<InstanceData>> events = syncAndroidCalendarProvider.getCalendarEvents(calendarId, startDate, endDate.plusDays(1));
+
+        for (Map.Entry<Event, List<InstanceData>> eventEntry : events.entrySet()) {
+            Event event = eventEntry.getKey();
+            List<InstanceData> instances = eventEntry.getValue();
+            List<Quest> newQuests = androidCalendarEventParser.parse(event, instances, category);
+            List<Quest> existingQuests = questPersistenceService.findFromAndroidCalendar(new AndroidCalendarMapping(calendarId, event.id), startDate, endDate);
+
+            Map<Quest, Boolean> existingQuestToIsUsed = new HashMap<>();
+            Map<LocalDate, List<Quest>> scheduledToQuests = new HashMap<>();
+            for (Quest q : existingQuests) {
+                existingQuestToIsUsed.put(q, false);
+                LocalDate scheduled = q.getScheduledDate();
+                if (scheduled == null) {
+                    questsToDelete.add(q);
+                    continue;
+                }
+                if (!scheduledToQuests.containsKey(scheduled)) {
+                    scheduledToQuests.put(scheduled, new ArrayList<>());
+                }
+                scheduledToQuests.get(scheduled).add(q);
+            }
+
+            Pair<Set<Quest>, Set<Quest>> newQuestsResult = processNewQuests(newQuests, existingQuestToIsUsed, scheduledToQuests);
+            questsToSave.addAll(newQuestsResult.first);
+            questsToDelete.addAll(newQuestsResult.second);
+
+            questsToDelete.addAll(findExistingQuestsToDelete(existingQuestToIsUsed));
+
+        }
+    }
+
+    private Pair<Set<Quest>, Set<Quest>> processNewQuests(List<Quest> newQuests, Map<Quest, Boolean> existingQuestToIsUsed, Map<LocalDate, List<Quest>> scheduledToQuests) {
+        Set<Quest> questsToSave = new HashSet<>();
+        Set<Quest> questsToDelete = new HashSet<>();
+        for (Quest newQuest : newQuests) {
+            LocalDate scheduledDate = newQuest.getScheduledDate();
+            if (scheduledToQuests.containsKey(scheduledDate)) {
+                List<Quest> scheduledForDate = scheduledToQuests.get(scheduledDate);
+                Quest existingQuest = scheduledForDate.get(0);
+                if (!existingQuest.isCompleted()) {
+                    copyQuestProperties(newQuest, existingQuest);
+                    questsToSave.add(newQuest);
+                }
+                existingQuestToIsUsed.put(existingQuest, true);
+                if (scheduledForDate.size() > 1) {
+                    addQuestsForDeletion(questsToDelete, scheduledForDate);
+                }
+            } else {
+                questsToSave.add(newQuest);
+            }
+        }
+
+        return new Pair<>(questsToSave, questsToDelete);
+    }
+
+    private void addQuestsForDeletion(Set<Quest> questsToDelete, List<Quest> scheduledForDate) {
+        for (int i = 1; i < scheduledForDate.size(); i++) {
+            questsToDelete.add(scheduledForDate.get(i));
+        }
+    }
+
+    private Set<Quest> findExistingQuestsToDelete(Map<Quest, Boolean> existingQuestToIsUsed) {
+        Set<Quest> questsToDelete = new HashSet<>();
+        for (Quest q : existingQuestToIsUsed.keySet()) {
+            if (!existingQuestToIsUsed.get(q)) {
+                questsToDelete.add(q);
+            }
+        }
+        return questsToDelete;
+    }
+
+
+    private void copyQuestProperties(Quest newQuest, Quest existingQuest) {
+        newQuest.setId(existingQuest.getId());
+        newQuest.setCreatedAt(existingQuest.getCreatedAt());
+        newQuest.setChallengeId(existingQuest.getChallengeId());
+        newQuest.setPriority(existingQuest.getPriority());
+        newQuest.setCategory(existingQuest.getCategory());
+        newQuest.setSubQuests(existingQuest.getSubQuests());
+        newQuest.setNotes(existingQuest.getNotes());
+        newQuest.setPreferredStartTime(existingQuest.getPreferredStartTime());
+        // @TODO difficulty?
+        newQuest.setDifficulty(existingQuest.getDifficulty());
+        newQuest.setTimesADay(existingQuest.getTimesADay());
     }
 }
