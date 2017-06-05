@@ -86,6 +86,11 @@ public class TutorialActivity extends AppCompatActivity {
                 .commit();
     }
 
+    @Override
+    public void onBackPressed() {
+        // intentional
+    }
+
     public void onTutorialDone() {
         finish();
     }
