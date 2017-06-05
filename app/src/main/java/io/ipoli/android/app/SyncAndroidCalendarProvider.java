@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.CalendarContract;
 
+import com.squareup.otto.Bus;
+
 import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import me.everything.providers.android.calendar.Calendar;
 import me.everything.providers.android.calendar.CalendarProvider;
@@ -28,10 +31,12 @@ import me.everything.providers.core.Data;
 public class SyncAndroidCalendarProvider extends CalendarProvider {
 
     private final ContentResolver contentResolver;
+    private final Bus eventBus;
 
-    public SyncAndroidCalendarProvider(Context context) {
+    public SyncAndroidCalendarProvider(Context context, Bus eventBus) {
         super(context);
         contentResolver = context.getContentResolver();
+        this.eventBus = eventBus;
     }
 
     public List<Event> getDeletedEvents(long calendarId) {
@@ -58,7 +63,6 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
 
         // @TODO query all calendars
         String selection = CalendarContract.Instances.CALENDAR_ID + "=?";
-//        String selection = CalendarContract.Instances.BEGIN + ">=" + DateUtils.toMillis(startDate) + " and " + CalendarContract.Instances.END + "<=" + DateUtils.toMillis(endDate);
         String[] selectionArgs = new String[]{String.valueOf(calendarId)};
         Uri.Builder builder = CalendarContract.Instances.CONTENT_URI.buildUpon();
         ContentUris.appendId(builder, DateUtils.toMillis(startDate));
@@ -67,7 +71,6 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
         List<InstanceData> instances = new ArrayList<>();
 
         Cursor cur = contentResolver.query(builder.build(), INSTANCE_PROJECTION, selection, selectionArgs, null);
-//        Cursor cur = contentResolver.query(builder.build(), INSTANCE_PROJECTION, selection, null, null);
         if (cur == null) {
             return new HashMap<>();
         }
@@ -80,7 +83,7 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
                 instances.add(new InstanceData(eventId, startMinute, begin, end));
             }
         } catch (Exception e) {
-            // @TODO handle it
+            eventBus.post(new AppErrorEvent(e));
         } finally {
             cur.close();
         }

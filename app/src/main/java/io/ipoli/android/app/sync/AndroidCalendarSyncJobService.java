@@ -86,9 +86,6 @@ public class AndroidCalendarSyncJobService extends JobService {
                 LocalDate startDate = DateUtils.fromMillis(localStorage.readLong(KEY_LAST_ANDROID_CALENDAR_SYNC_DATE, DateUtils.toMillis(LocalDate.now())));
                 LocalDate endDate = LocalDate.now().plusMonths(SYNC_ANDROID_CALENDAR_MONTHS_AHEAD);
 
-//                LocalDate startDate = LocalDate.now();
-//                LocalDate endDate = LocalDate.now(); //inclusive
-
                 Set<Quest> questsToSave = new HashSet<>();
                 Set<Event> eventsToDelete = new HashSet<>();
                 Set<Quest> questsToDelete = new HashSet<>();
@@ -115,7 +112,7 @@ public class AndroidCalendarSyncJobService extends JobService {
                     Event event = eventEntry.getKey();
                     List<InstanceData> instances = eventEntry.getValue();
                     List<Quest> newQuests = androidCalendarEventParser.parse(event, instances, category);
-                    List<Quest> existingQuests = questPersistenceService.findNotCompletedFromAndroidCalendar(new AndroidCalendarMapping(calendarId, event.id), startDate, endDate);
+                    List<Quest> existingQuests = questPersistenceService.findFromAndroidCalendar(new AndroidCalendarMapping(calendarId, event.id), startDate, endDate);
 
                     Map<Quest, Boolean> existingQuestToIsUsed = new HashMap<>();
                     Map<LocalDate, List<Quest>> scheduledToQuests = new HashMap<>();
@@ -131,7 +128,6 @@ public class AndroidCalendarSyncJobService extends JobService {
                         }
                         scheduledToQuests.get(scheduled).add(q);
                     }
-
 
                     Pair<Set<Quest>, Set<Quest>> newQuestsResult = processNewQuests(newQuests, existingQuestToIsUsed, scheduledToQuests);
                     questsToSave.addAll(newQuestsResult.first);
@@ -150,14 +146,17 @@ public class AndroidCalendarSyncJobService extends JobService {
                     if (scheduledToQuests.containsKey(scheduledDate)) {
                         List<Quest> scheduledForDate = scheduledToQuests.get(scheduledDate);
                         Quest existingQuest = scheduledForDate.get(0);
-                        copyQuestProperties(newQuest, existingQuest);
+                        if(!existingQuest.isCompleted()) {
+                            copyQuestProperties(newQuest, existingQuest);
+                            questsToSave.add(newQuest);
+                        }
                         existingQuestToIsUsed.put(existingQuest, true);
                         if (scheduledForDate.size() > 1) {
                             addQuestsForDeletion(questsToDelete, scheduledForDate);
                         }
-
+                    } else {
+                        questsToSave.add(newQuest);
                     }
-                    questsToSave.add(newQuest);
                 }
 
                 return new Pair<>(questsToSave, questsToDelete);
