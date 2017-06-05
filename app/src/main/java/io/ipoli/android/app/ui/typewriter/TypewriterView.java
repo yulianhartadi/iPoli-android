@@ -10,12 +10,6 @@ import android.util.AttributeSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import io.ipoli.android.app.ui.typewriter.repeaters.Repeater;
-import io.ipoli.android.app.ui.typewriter.repeaters.TextAdder;
-import io.ipoli.android.app.ui.typewriter.repeaters.TextEraser;
-import io.ipoli.android.app.ui.typewriter.repeaters.TypePauser;
-import io.ipoli.android.app.ui.typewriter.repeaters.TypeRunnable;
-
 public class TypewriterView extends AppCompatEditText {
 
     public static final int TYPE_SPEED = 50;
@@ -24,9 +18,9 @@ public class TypewriterView extends AppCompatEditText {
 
     private boolean isRunning = false;
 
-    private Queue<Repeater> mRunnableQueue = new LinkedList<>();
+    private Queue<Repeater> repeaters = new LinkedList<>();
 
-    private Runnable mRunNextRunnable = this::runNext;
+    private Runnable nextRunnable = this::runNext;
 
     public TypewriterView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -40,7 +34,7 @@ public class TypewriterView extends AppCompatEditText {
     }
 
     public TypewriterView type(CharSequence text, long speed) {
-        mRunnableQueue.add(new TextAdder(this, text, speed, mRunNextRunnable));
+        repeaters.add(new TextAdder(this, text, speed, nextRunnable));
         return runNextIfNotRunning();
     }
 
@@ -49,7 +43,7 @@ public class TypewriterView extends AppCompatEditText {
     }
 
     public TypewriterView delete(CharSequence text, long speed) {
-        mRunnableQueue.add(new TextEraser(this, text, speed, mRunNextRunnable));
+        repeaters.add(new TextEraser(this, text, speed, nextRunnable));
         return runNextIfNotRunning();
     }
 
@@ -58,17 +52,17 @@ public class TypewriterView extends AppCompatEditText {
     }
 
     public TypewriterView pause(long millis) {
-        mRunnableQueue.add(new TypePauser(millis, mRunNextRunnable));
+        repeaters.add(new TypePauser(millis, nextRunnable));
         return runNextIfNotRunning();
     }
 
     public TypewriterView run(Runnable runnable) {
-        mRunnableQueue.add(new TypeRunnable(runnable, mRunNextRunnable));
+        repeaters.add(new TypeRunnable(runnable, nextRunnable));
         return runNextIfNotRunning();
     }
 
     public TypewriterView clear() {
-        mRunnableQueue.add(new TypeRunnable(new TextClearer(this), mRunNextRunnable));
+        repeaters.add(new TypeRunnable(new TextClearer(this), nextRunnable));
         return runNextIfNotRunning();
     }
 
@@ -88,7 +82,7 @@ public class TypewriterView extends AppCompatEditText {
 
     private void runNext() {
         isRunning = true;
-        Repeater next = mRunnableQueue.poll();
+        Repeater next = repeaters.poll();
 
         if (next == null) {
             isRunning = false;

@@ -6,17 +6,17 @@ package io.ipoli.android.app.ui.typewriter;
  */
 class TypeRunnable extends Repeater {
 
-    Runnable mRunnable;
+    Runnable runnable;
 
     public TypeRunnable(Runnable runnable, Runnable doneRunnable) {
         super(doneRunnable, 0);
 
-        mRunnable = runnable;
+        this.runnable = runnable;
     }
 
     @Override
     public void run() {
-        mRunnable.run();
+        runnable.run();
         done();
     }
 }

@@ -7,24 +7,24 @@ package io.ipoli.android.app.ui.typewriter;
 class TextEraser extends Repeater {
 
     private TypewriterView typewriterView;
-    private CharSequence mTextToRemove;
+    private CharSequence textToRemove;
 
     public TextEraser(TypewriterView typewriterView, CharSequence textToRemove, long speed, Runnable doneRunnable) {
         super(doneRunnable, speed);
         this.typewriterView = typewriterView;
 
-        mTextToRemove = textToRemove;
+        this.textToRemove = textToRemove;
     }
 
     @Override
     public void run() {
-        if (mTextToRemove.length() == 0) {
+        if (textToRemove.length() == 0) {
             done();
             return;
         }
 
-        char last = mTextToRemove.charAt(mTextToRemove.length() - 1);
-        mTextToRemove = mTextToRemove.subSequence(0, mTextToRemove.length() - 1);
+        char last = textToRemove.charAt(textToRemove.length() - 1);
+        textToRemove = textToRemove.subSequence(0, textToRemove.length() - 1);
 
         CharSequence text = typewriterView.getText();
 
