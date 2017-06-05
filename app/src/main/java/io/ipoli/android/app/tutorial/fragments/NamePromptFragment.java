@@ -47,7 +47,7 @@ public class NamePromptFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_tutorial_name_prompt, container, false);
         unbinder = ButterKnife.bind(this, v);
         tutorialText.pause().type("First, let's get to know you a bit better. How should I call you?").run(() -> {
-            fadeIn(name);
+            fadeIn(v.findViewById(R.id.tutorial_name_container));
             fadeIn(ready);
         });
         return v;
