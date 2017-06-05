@@ -24,8 +24,8 @@ android {
         multiDexEnabled true
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 182
-        versionName "1.13.4"
+        versionCode 183
+        versionName "1.13.5"
     }
 
     compileOptions {
@@ -108,7 +108,7 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.8.0'
     compile 'com.github.medyo:fancybuttons:1.8.3'
     compile 'me.everything:providers-android:1.0.1'
-    compile 'pub.devrel:easypermissions:0.3.0'
+    compile 'pub.devrel:easypermissions:0.4.0'
     compile 'org.slf4j:slf4j-nop:1.7.25'
     compile 'org.apache.commons:commons-lang3:3.3.2'
     compile 'com.github.iammert:MaterialIntroView:1.6.0'

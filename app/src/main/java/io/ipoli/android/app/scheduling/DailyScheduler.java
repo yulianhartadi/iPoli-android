@@ -2,6 +2,8 @@ package io.ipoli.android.app.scheduling;
 
 import android.support.annotation.NonNull;
 
+import com.google.firebase.crash.FirebaseCrash;
+
 import org.threeten.bp.DayOfWeek;
 
 import java.util.ArrayList;
@@ -131,6 +133,20 @@ public class DailyScheduler {
         int slotMinute = startMinute;
         while (slotMinute < endMinute) {
             int slotIndex = getSlotForMinute(slotMinute);
+            if(slotIndex >= slots.length) {
+                StringBuilder builder = new StringBuilder();
+                builder.append("Slot index:").append(slotIndex)
+                        .append(" slot minute:").append(slotMinute)
+                        .append(" slot count:").append(slots.length)
+                        .append(" startMinute:").append(startMinute)
+                        .append(" endMinute:").append(endMinute)
+                        .append(" schedule startMinute:").append(this.startMinute)
+                        .append(" schedule endMinute:").append(this.endMinute)
+                        .append(" workStartMinute:").append(workStartMinute)
+                        .append(" workEndMinute:").append(workEndMinute);
+                FirebaseCrash.report(new ArrayIndexOutOfBoundsException(builder.toString()));
+                break;
+            }
             slots[slotIndex] = value;
             slotMinute += timeSlotDuration;
         }
