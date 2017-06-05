@@ -50,7 +50,6 @@ import io.ipoli.android.app.tutorial.events.PredefinedQuestSelectedEvent;
 import io.ipoli.android.app.tutorial.events.PredefinedRepeatingQuestDeselectedEvent;
 import io.ipoli.android.app.tutorial.events.PredefinedRepeatingQuestSelectedEvent;
 import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
-import io.ipoli.android.app.tutorial.events.SyncCalendarCheckTappedEvent;
 import io.ipoli.android.app.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.app.tutorial.events.TutorialSkippedEvent;
 import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
@@ -446,11 +445,6 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     public void onCurrentDayChanged(CalendarDayChangedEvent e) {
         log("current_day_changed", EventParams.of("new_day", e.date.toString())
                 .add("source", e.source.toString()));
-    }
-
-    @Subscribe
-    public void onSynCalendarCheckTapped(SyncCalendarCheckTappedEvent e) {
-        log("sync_calendar_check_tapped", EventParams.of("is_checked", String.valueOf(e.isChecked)));
     }
 
     @Subscribe

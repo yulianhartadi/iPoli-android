@@ -68,7 +68,6 @@ public class TutorialNamePromptFragment extends Fragment {
             onReady();
             return true;
         }
-
         return false;
     }
 

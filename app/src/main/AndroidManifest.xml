@@ -130,9 +130,6 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".app.tutorial.TutorialActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".app.tutorial.OnboardingActivity"
             android:screenOrientation="portrait" />
         <activity
