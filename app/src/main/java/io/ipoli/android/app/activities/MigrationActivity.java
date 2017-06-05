@@ -3,6 +3,7 @@ package io.ipoli.android.app.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.view.View;
 import android.widget.Toast;
 
@@ -33,10 +34,10 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.player.Player;
-import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.player.Avatar;
 import io.ipoli.android.player.PetAvatar;
+import io.ipoli.android.player.Player;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.store.Upgrade;
 
 /**
@@ -80,10 +81,10 @@ public class MigrationActivity extends BaseActivity {
 
         int versionBeforeUpgrades = 3;
 
-        if(schemaVersion < versionBeforeUpgrades) {
-            migrateFromFirebase(() -> unlockUpgrades(() -> MigrationActivity.this.onFinish()));
-        } else if(schemaVersion == versionBeforeUpgrades) {
-            unlockUpgrades(() -> MigrationActivity.this.onFinish());
+        if (schemaVersion < versionBeforeUpgrades) {
+            migrateFromFirebase(() -> unlockUpgrades(MigrationActivity.this::onFinish));
+        } else if (schemaVersion >= versionBeforeUpgrades) {//leave only == when null pointers for rewardPoints and avatars are fixed
+            unlockUpgrades(MigrationActivity.this::onFinish);
         } else {
             onFinish();
         }
@@ -92,45 +93,52 @@ public class MigrationActivity extends BaseActivity {
     private void unlockUpgrades(OnFinishListener onFinishListener) {
         Player player = playerPersistenceService.get();
 
-        UnsavedRevision revision = database.getExistingDocument(player.getId()).createRevision();
-        Map<String, Object> properties = revision.getProperties();
-        String playerPicture = (String) properties.get("picture");
-        properties.remove("picture");
-        List<Map<String, Object>> pets = (List<Map<String, Object>>) properties.get("pets");
-        Map<String, Object> pet = pets.get(0);
-        String petPicture = (String) pet.remove("picture");
+        Pair<String, String> pics = updatePictures(player.getId());
 
-        revision.setProperties(properties);
-        try {
-            revision.save();
-        } catch (CouchbaseLiteException e) {
-            eventBus.post(new AppErrorEvent(e));
-        }
+        String playerPicture = pics.first;
+        String petPicture = pics.second;
 
         player = playerPersistenceService.get();
         LocalDate unlockedDate = DateUtils.fromMillis(player.getCreatedAt());
-        for(Upgrade upgrade: Upgrade.values()) {
+        for (Upgrade upgrade : Upgrade.values()) {
             player.getInventory().addUpgrade(upgrade, unlockedDate);
         }
 
-        player.setRewardPoints(player.getCoins());
+        if(player.getRewardPoints() == player.getCoins()) {
+            player.setRewardPoints(player.getCoins());
+        }
         player.setSchemaVersion(Constants.SCHEMA_VERSION);
 
-        for(Avatar avatar : Avatar.values()) {
-            String avatarPicture = getResources().getResourceEntryName(avatar.picture);
-            if(avatarPicture.equals(playerPicture)) {
-                player.getInventory().addAvatar(avatar, unlockedDate);
-                player.setAvatar(avatar);
-                break;
+        if (playerPicture != null) {
+            Avatar playerAvatar = Constants.DEFAULT_PLAYER_AVATAR;
+            for (Avatar avatar : Avatar.values()) {
+                String avatarPicture = getResources().getResourceEntryName(avatar.picture);
+                if (avatarPicture.equals(playerPicture)) {
+                    playerAvatar = avatar;
+                    break;
+                }
             }
+            player.getInventory().addAvatar(playerAvatar, unlockedDate);
+            player.setAvatar(playerAvatar);
+        } else if (player.getAvatarCode() == null) {
+            player.setAvatar(Constants.DEFAULT_PLAYER_AVATAR);
+            player.getInventory().addAvatar(Constants.DEFAULT_PLAYER_AVATAR, unlockedDate);
         }
 
-        for(PetAvatar petAvatar : PetAvatar.values()) {
-            String petAvatarPicture = getResources().getResourceEntryName(petAvatar.picture);
-            if(petAvatarPicture.equals(petPicture)) {
-                player.getInventory().addPet(petAvatar, unlockedDate);
-                player.getPet().setPetAvatar(petAvatar);
+        if (petPicture != null) {
+            PetAvatar playerPetAvatar = Constants.DEFAULT_PET_AVATAR;
+            for (PetAvatar petAvatar : PetAvatar.values()) {
+                String petAvatarPicture = getResources().getResourceEntryName(petAvatar.picture);
+                if (petAvatarPicture.equals(petPicture)) {
+                    playerPetAvatar = petAvatar;
+                    break;
+                }
             }
+            player.getInventory().addPet(playerPetAvatar, unlockedDate);
+            player.getPet().setPetAvatar(playerPetAvatar);
+        } else if (player.getPet().getAvatarCode() == null) {
+            player.getInventory().addPet(Constants.DEFAULT_PET_AVATAR, unlockedDate);
+            player.getPet().setPetAvatar(Constants.DEFAULT_PET_AVATAR);
         }
 
         playerPersistenceService.save(player);
@@ -139,6 +147,36 @@ public class MigrationActivity extends BaseActivity {
 
         Toast.makeText(this, R.string.upgrades_migration_message, Toast.LENGTH_LONG).show();
         onFinishListener.onFinish();
+    }
+
+    private Pair<String, String> updatePictures(String playerId) {
+        String playerPicture = null;
+        String petPicture = null;
+
+        UnsavedRevision revision = database.getExistingDocument(playerId).createRevision();
+        Map<String, Object> properties = revision.getProperties();
+        if (properties.containsKey("picture")) {
+            playerPicture = (String) properties.get("picture");
+            properties.remove("picture");
+        }
+        List<Map<String, Object>> pets = (List<Map<String, Object>>) properties.get("pets");
+        Map<String, Object> pet = pets.get(0);
+        if (pet.containsKey("picture")) {
+            petPicture = (String) pet.remove("picture");
+        }
+
+        if (playerPicture == null && petPicture == null) {
+            return new Pair<>(null, null);
+        }
+
+        revision.setProperties(properties);
+        try {
+            revision.save();
+        } catch (CouchbaseLiteException e) {
+            eventBus.post(new AppErrorEvent(e));
+        }
+
+        return new Pair<>(playerPicture, petPicture);
     }
 
     private void migrateFromFirebase(OnFinishListener onFinishListener) {
@@ -240,7 +278,7 @@ public class MigrationActivity extends BaseActivity {
         finish();
     }
 
-    private interface OnFinishListener{
+    private interface OnFinishListener {
         void onFinish();
     }
 }
