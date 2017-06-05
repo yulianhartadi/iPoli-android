@@ -59,9 +59,9 @@ public class TutorialAddQuestFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_tutorial_add_quest, container, false);
         unbinder = ButterKnife.bind(this, v);
-        tutorialText.type("Let's start by adding your first quest! Do you see the button below? Will you do me the honor?");
+        tutorialText.pause().type("Let's start by adding your first quest! Do you see the button below? Will you do me the honor?");
         addQuest.setVisibility(View.VISIBLE);
-        fadeIn(addQuest, 5000);
+        fadeIn(addQuest, 6000);
         return v;
     }
 
