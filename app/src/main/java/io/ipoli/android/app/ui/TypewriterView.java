@@ -30,6 +30,7 @@ public class TypewriterView extends AppCompatEditText {
         setCursorAtEnd();
         setCursorVisible(true);
         setRawInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        setFocusable(false);
         setOnTouchListener((v, event) -> true);
     }
 
@@ -131,8 +132,7 @@ public class TypewriterView extends AppCompatEditText {
             char first = mTextToAdd.charAt(0);
             mTextToAdd = mTextToAdd.subSequence(1, mTextToAdd.length());
 
-            CharSequence text = getText();
-            setText(text.toString() + first);
+            setText(getText().toString() + first);
             setCursorAtEnd();
             delayAndRepeat();
         }
