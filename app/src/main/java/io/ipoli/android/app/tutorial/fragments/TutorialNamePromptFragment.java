@@ -17,7 +17,7 @@ import butterknife.OnClick;
 import butterknife.OnEditorAction;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
-import io.ipoli.android.app.tutorial.OnboardingActivity;
+import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.ui.TypewriterView;
 import io.ipoli.android.app.utils.KeyboardUtils;
 
@@ -73,7 +73,7 @@ public class TutorialNamePromptFragment extends Fragment {
 
     private void onReady() {
         KeyboardUtils.hideKeyboard(getActivity());
-        ((OnboardingActivity) getActivity()).enterImmersiveMode();
+        ((TutorialActivity) getActivity()).enterImmersiveMode();
         String nameText = name.getText().toString();
         if (nameText.length() < 2) {
             ObjectAnimator
@@ -87,7 +87,7 @@ public class TutorialNamePromptFragment extends Fragment {
         fadeOut(ready);
         tutorialText.setText("");
         tutorialText.type("Welcome, " + nameText + "!").pause().run(() ->
-                ((OnboardingActivity) getActivity()).onNamePromptDone(nameText));
+                ((TutorialActivity) getActivity()).onNamePromptDone(nameText));
     }
 
     @Override

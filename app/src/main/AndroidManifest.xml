@@ -130,7 +130,7 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".app.tutorial.OnboardingActivity"
+            android:name=".app.tutorial.TutorialActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".challenge.activities.PickDailyChallengeQuestsActivity"

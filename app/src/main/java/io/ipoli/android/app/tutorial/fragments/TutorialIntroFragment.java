@@ -12,7 +12,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
-import io.ipoli.android.app.tutorial.OnboardingActivity;
+import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.ui.TypewriterView;
 
 import static io.ipoli.android.app.utils.AnimationUtils.fadeIn;
@@ -33,7 +33,7 @@ public class TutorialIntroFragment extends Fragment {
     @BindView(R.id.tutorial_answer_negative)
     Button negativeAnswer;
 
-    private View.OnClickListener showTipsListener = v -> ((OnboardingActivity) getActivity()).onIntroDone();
+    private View.OnClickListener showTipsListener = v -> ((TutorialActivity) getActivity()).onIntroDone();
 
     private View.OnClickListener showBackStoryListener = v -> {
         prepareForNextState();

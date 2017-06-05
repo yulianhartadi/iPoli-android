@@ -37,7 +37,7 @@ import co.mobiwise.materialintro.view.MaterialIntroView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.app.tutorial.OnboardingActivity;
+import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.pet.data.Pet;
@@ -215,7 +215,7 @@ public class TutorialCalendarFragment extends Fragment {
                 .setTarget(((NavigationMenuView) navigationView.getChildAt(0)).findViewHolderForAdapterPosition(9).itemView)
                 .setListener(s -> {
                     preferencesManager.resetAll();
-                    ((OnboardingActivity) getActivity()).onCalendarDone();
+                    ((TutorialActivity) getActivity()).onCalendarDone();
                 })
                 .show();
     }
