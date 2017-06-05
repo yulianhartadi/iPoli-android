@@ -62,7 +62,6 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
 
     public Map<Event, List<InstanceData>> getCalendarEvents(long calendarId, LocalDate startDate, LocalDate endDate) {
 
-        // @TODO query all calendars
         String selection = CalendarContract.Instances.CALENDAR_ID + "=?";
         String[] selectionArgs = new String[]{String.valueOf(calendarId)};
         Uri.Builder builder = CalendarContract.Instances.CONTENT_URI.buildUpon();
