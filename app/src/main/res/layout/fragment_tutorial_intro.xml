@@ -30,7 +30,7 @@
         android:alpha="0"
         android:src="@drawable/logo" />
 
-    <io.ipoli.android.app.ui.TypewriterView
+    <io.ipoli.android.app.ui.typewriter.TypewriterView
         android:id="@+id/tutorial_text"
         style="@style/TextAppearance.AppCompat.Title"
         android:layout_width="match_parent"
