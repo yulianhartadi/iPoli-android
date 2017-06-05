@@ -43,7 +43,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.SignInActivity;
@@ -132,9 +131,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Inject
     UpgradeManager upgradeManager;
-
-    @Inject
-    SyncAndroidCalendarProvider calendarSyncProvider;
 
     private boolean isRateDialogShown;
     public ActionBarDrawerToggle actionBarDrawerToggle;

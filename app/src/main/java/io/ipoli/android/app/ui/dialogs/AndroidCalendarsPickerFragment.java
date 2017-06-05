@@ -30,7 +30,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.SyncAndroidCalendarProvider;
+import io.ipoli.android.app.sync.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.adapters.AndroidCalendarAdapter;
 import io.ipoli.android.app.ui.viewmodels.AndroidCalendarViewModel;
 import io.ipoli.android.quest.data.Category;

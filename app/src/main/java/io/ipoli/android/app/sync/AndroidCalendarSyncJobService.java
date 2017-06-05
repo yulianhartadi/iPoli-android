@@ -16,10 +16,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import io.ipoli.android.app.AndroidCalendarEventParser;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.InstanceData;
-import io.ipoli.android.app.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.persistence.CalendarPersistenceService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;

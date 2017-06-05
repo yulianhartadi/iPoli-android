@@ -338,10 +338,6 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
             }
 
             playerPersistenceService.save(player);
-
-//            runOnUiThread(() -> {
-//                Toast.makeText(getContext(), R.string.upgrades_migration_message, Toast.LENGTH_LONG).show();
-//            });
         }
 
         private boolean migrateAndroidCalendars() {
