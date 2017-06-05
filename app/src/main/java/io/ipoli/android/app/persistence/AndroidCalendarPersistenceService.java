@@ -104,12 +104,6 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
         playerPersistenceService.save(player);
     }
 
-    private void saveQuests(List<Quest> quests) {
-        for (Quest quest : quests) {
-            questPersistenceService.save(quest);
-        }
-    }
-
     private void delete(PersistedObject object) throws CouchbaseLiteException {
         database.getExistingDocument(object.getId()).delete();
     }
@@ -127,10 +121,6 @@ public class AndroidCalendarPersistenceService implements CalendarPersistenceSer
             savePlayer(player);
             return true;
         });
-    }
-
-    private void runAsyncTransaction(Transaction transaction) {
-        database.runAsync(db -> db.runInTransaction(transaction::run));
     }
 
     private void postError(Exception e) {
