@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.util.Pair;
 import android.view.View;
 import android.widget.Toast;
 
@@ -292,20 +293,10 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
         private void unlockUpgrades() {
             Player player = playerPersistenceService.get();
 
-            UnsavedRevision revision = database.getExistingDocument(player.getId()).createRevision();
-            Map<String, Object> properties = revision.getProperties();
-            String playerPicture = (String) properties.get("picture");
-            properties.remove("picture");
-            List<Map<String, Object>> pets = (List<Map<String, Object>>) properties.get("pets");
-            Map<String, Object> pet = pets.get(0);
-            String petPicture = (String) pet.remove("picture");
+            Pair<String, String> pics = updatePictures(player.getId());
 
-            revision.setProperties(properties);
-            try {
-                revision.save();
-            } catch (CouchbaseLiteException e) {
-                eventBus.post(new AppErrorEvent(e));
-            }
+            String playerPicture = pics.first;
+            String petPicture = pics.second;
 
             player = playerPersistenceService.get();
             LocalDate unlockedDate = DateUtils.fromMillis(player.getCreatedAt());
@@ -315,26 +306,73 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
                 }
             }
 
-            player.setRewardPoints(player.getCoins());
-
-            for (Avatar avatar : Avatar.values()) {
-                String avatarPicture = getContext().getResources().getResourceEntryName(avatar.picture);
-                if (avatarPicture.equals(playerPicture)) {
-                    player.getInventory().addAvatar(avatar, unlockedDate);
-                    player.setAvatar(avatar);
-                    break;
-                }
+            if(player.getRewardPoints() == player.getCoins()) {
+                player.setRewardPoints(player.getCoins());
             }
 
-            for (PetAvatar petAvatar : PetAvatar.values()) {
-                String petAvatarPicture = getContext().getResources().getResourceEntryName(petAvatar.picture);
-                if (petAvatarPicture.equals(petPicture)) {
-                    player.getInventory().addPet(petAvatar, unlockedDate);
-                    player.getPet().setPetAvatar(petAvatar);
+            if (playerPicture != null) {
+                Avatar playerAvatar = Constants.DEFAULT_PLAYER_AVATAR;
+                for (Avatar avatar : Avatar.values()) {
+                    String avatarPicture = getContext().getResources().getResourceEntryName(avatar.picture);
+                    if (avatarPicture.equals(playerPicture)) {
+                        playerAvatar = avatar;
+                        break;
+                    }
                 }
+                player.getInventory().addAvatar(playerAvatar, unlockedDate);
+                player.setAvatar(playerAvatar);
+            } else if (player.getAvatarCode() == null) {
+                player.setAvatar(Constants.DEFAULT_PLAYER_AVATAR);
+                player.getInventory().addAvatar(Constants.DEFAULT_PLAYER_AVATAR, unlockedDate);
+            }
+
+            if (petPicture != null) {
+                PetAvatar playerPetAvatar = Constants.DEFAULT_PET_AVATAR;
+                for (PetAvatar petAvatar : PetAvatar.values()) {
+                    String petAvatarPicture = getContext().getResources().getResourceEntryName(petAvatar.picture);
+                    if (petAvatarPicture.equals(petPicture)) {
+                        playerPetAvatar = petAvatar;
+                        break;
+                    }
+                }
+                player.getInventory().addPet(playerPetAvatar, unlockedDate);
+                player.getPet().setPetAvatar(playerPetAvatar);
+            } else if (player.getPet().getAvatarCode() == null) {
+                player.getInventory().addPet(Constants.DEFAULT_PET_AVATAR, unlockedDate);
+                player.getPet().setPetAvatar(Constants.DEFAULT_PET_AVATAR);
             }
 
             playerPersistenceService.save(player);
+        }
+
+        private Pair<String, String> updatePictures(String playerId) {
+            String playerPicture = null;
+            String petPicture = null;
+
+            UnsavedRevision revision = database.getExistingDocument(playerId).createRevision();
+            Map<String, Object> properties = revision.getProperties();
+            if (properties.containsKey("picture")) {
+                playerPicture = (String) properties.get("picture");
+                properties.remove("picture");
+            }
+            List<Map<String, Object>> pets = (List<Map<String, Object>>) properties.get("pets");
+            Map<String, Object> pet = pets.get(0);
+            if (pet.containsKey("picture")) {
+                petPicture = (String) pet.remove("picture");
+            }
+
+            if (playerPicture == null && petPicture == null) {
+                return new Pair<>(null, null);
+            }
+
+            revision.setProperties(properties);
+            try {
+                revision.save();
+            } catch (CouchbaseLiteException e) {
+                eventBus.post(new AppErrorEvent(e));
+            }
+
+            return new Pair<>(playerPicture, petPicture);
         }
 
         private boolean migrateAndroidCalendars() {
