@@ -93,6 +93,7 @@ public class TutorialAddQuestFragment extends Fragment {
 
     private void onChooseCategory() {
         KeyboardUtils.hideKeyboard(getActivity());
+        ((OnboardingActivity) getActivity()).enterImmersiveMode();
         if (questName.length() < 2) {
             ObjectAnimator
                     .ofFloat(questName, "translationX", 0, 25, -25, 25, -25, 15, -15, 6, -6, 0)
