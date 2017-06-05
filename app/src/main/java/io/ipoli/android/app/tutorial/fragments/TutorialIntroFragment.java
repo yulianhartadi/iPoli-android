@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -112,6 +113,8 @@ public class TutorialIntroFragment extends Fragment {
             positiveAnswer.setText("To improve myself");
             negativeAnswer.setText("No idea");
             positiveAnswer.setOnClickListener(improveListener);
+            negativeAnswer.setOnClickListener(v1 ->
+                    Toast.makeText(getContext(), "Then what are you doing here!?", Toast.LENGTH_LONG).show());
             fadeIn(positiveAnswer);
             fadeIn(negativeAnswer);
         });
