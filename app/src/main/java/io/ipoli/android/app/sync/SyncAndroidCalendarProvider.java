@@ -29,9 +29,20 @@ import me.everything.providers.core.Data;
  * on 5/8/16.
  */
 public class SyncAndroidCalendarProvider extends CalendarProvider {
+    private static final int PROJECTION_EVENT_ID_INDEX = 0;
+    private static final int PROJECTION_START_MINUTE_INDEX = 1;
+    private static final int PROJECTION_BEGIN_INDEX = 2;
+    private static final int PROJECTION_END_INDEX = 3;
 
     private final ContentResolver contentResolver;
     private final Bus eventBus;
+
+    private static final String[] INSTANCE_PROJECTION = new String[]{
+            CalendarContract.Instances.EVENT_ID,
+            CalendarContract.Instances.START_MINUTE,
+            CalendarContract.Instances.BEGIN,
+            CalendarContract.Instances.END
+    };
 
     public SyncAndroidCalendarProvider(Context context, Bus eventBus) {
         super(context);
@@ -47,17 +58,7 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
         return data == null ? new ArrayList<>() : data.getList();
     }
 
-    private static final String[] INSTANCE_PROJECTION = new String[]{
-            CalendarContract.Instances.EVENT_ID,
-            CalendarContract.Instances.START_MINUTE,
-            CalendarContract.Instances.BEGIN,
-            CalendarContract.Instances.END
-    };
 
-    private static final int PROJECTION_EVENT_ID_INDEX = 0;
-    private static final int PROJECTION_START_MINUTE_INDEX = 1;
-    private static final int PROJECTION_BEGIN_INDEX = 2;
-    private static final int PROJECTION_END_INDEX = 3;
 
     public Map<Event, List<InstanceData>> getCalendarEvents(long calendarId, LocalDate startDate, LocalDate endDate) {
 

@@ -239,7 +239,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
 
     @Override
     public void onLoaderReset(Loader<Boolean> loader) {
-
+        //intentional
     }
 
     private interface OnMigrationFinishListener {
@@ -356,31 +356,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
                 repeatingQuestsToDelete.addAll(repeatingQuestPersistenceService.findNotCompletedFromAndroidCalendar(calendarId));
             }
 
-            boolean deleteSuccessfully = database.runInTransaction(() -> {
-                for (Quest q : questsToDelete) {
-                    if (!delete(q.getId())) {
-                        return false;
-                    }
-                }
-
-                for (RepeatingQuest rq : repeatingQuestsToDelete) {
-                    List<Quest> quests = questPersistenceService.findAllForRepeatingQuest(rq.getId());
-                    for (Quest q : quests) {
-                        if (q.isCompleted()) {
-                            q.setRepeatingQuestId(null);
-                            questPersistenceService.save(q);
-                        } else {
-                            if (!delete(q.getId())) {
-                                return false;
-                            }
-                        }
-                    }
-                    if (!delete(rq.getId())) {
-                        return false;
-                    }
-                }
-                return true;
-            });
+            boolean deleteSuccessfully = deleteOldCalendarQuests(questsToDelete, repeatingQuestsToDelete);
 
             if (!deleteSuccessfully) {
                 eventBus.post(new AppErrorEvent(new MigrationException("could not delete existing google calendar quests", schemaVersion)));
@@ -396,6 +372,34 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
             jobScheduler.schedule(jobInfo);
 
             return true;
+        }
+
+        private boolean deleteOldCalendarQuests(List<Quest> questsToDelete, List<RepeatingQuest> repeatingQuestsToDelete) {
+            return database.runInTransaction(() -> {
+                        for (Quest q : questsToDelete) {
+                            if (!delete(q.getId())) {
+                                return false;
+                            }
+                        }
+
+                        for (RepeatingQuest rq : repeatingQuestsToDelete) {
+                            List<Quest> quests = questPersistenceService.findAllForRepeatingQuest(rq.getId());
+                            for (Quest q : quests) {
+                                if (q.isCompleted()) {
+                                    q.setRepeatingQuestId(null);
+                                    questPersistenceService.save(q);
+                                } else {
+                                    if (!delete(q.getId())) {
+                                        return false;
+                                    }
+                                }
+                            }
+                            if (!delete(rq.getId())) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    });
         }
 
         private boolean delete(String id) {
