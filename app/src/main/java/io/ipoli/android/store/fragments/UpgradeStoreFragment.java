@@ -4,6 +4,8 @@ import android.Manifest;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,6 +43,7 @@ import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
 import io.ipoli.android.app.ui.dialogs.LoadingDialog;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.player.Player;
 import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.store.Upgrade;
@@ -59,7 +62,8 @@ import static io.ipoli.android.Constants.RC_CALENDAR_PERM;
  * on 5/23/17.
  */
 
-public class UpgradeStoreFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Void> {
+public class UpgradeStoreFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Void>,
+        EasyPermissions.PermissionCallbacks {
 
     @Inject
     Bus eventBus;
@@ -142,20 +146,20 @@ public class UpgradeStoreFragment extends BaseFragment implements LoaderManager.
     public void buyUpgradeEvent(BuyUpgradeEvent e) {
         Upgrade upgrade = e.upgrade;
         String title = getString(upgrade.title);
-        String message;
         if (upgradeManager.hasEnoughCoinsForUpgrade(upgrade)) {
             upgradeManager.unlock(upgrade);
-            message = getString(R.string.upgrade_successfully_bought, title);
-            adapter.setViewModels(createUpgradeViewModels());
+
             eventBus.post(new UpgradeUnlockedEvent(upgrade));
             if (upgrade == Upgrade.CALENDAR_SYNC) {
                 pickCalendarsToSync();
+            } else {
+                String message = getString(R.string.upgrade_successfully_bought, title);
+                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
             }
-
+            adapter.setViewModels(createUpgradeViewModels());
         } else {
-            message = getString(R.string.upgrade_too_expensive, title);
+            Toast.makeText(getContext(), getString(R.string.upgrade_too_expensive, title), Toast.LENGTH_SHORT).show();
         }
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     private void pickCalendarsToSync() {
@@ -168,8 +172,12 @@ public class UpgradeStoreFragment extends BaseFragment implements LoaderManager.
 
     @AfterPermissionGranted(Constants.RC_CALENDAR_PERM)
     private void showCalendarsPicker() {
-        AndroidCalendarsPickerFragment.newInstance(R.string.choose_calendars_title, getPlayer().getAndroidCalendars(), this::onSelectCalendarsToSync)
-                .show(getFragmentManager());
+        Player player = getPlayer();
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        Fragment fragment = AndroidCalendarsPickerFragment.newInstance(R.string.choose_calendars_title, player.getAndroidCalendars(),
+                this::onSelectCalendarsToSync);
+        transaction.add(fragment, "calendar_picker");
+        transaction.commitAllowingStateLoss();
     }
 
     private void onSelectCalendarsToSync(Map<Long, Category> selectedCalendars) {
@@ -227,5 +235,15 @@ public class UpgradeStoreFragment extends BaseFragment implements LoaderManager.
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int i, List<String> list) {
+//        showCalendarsPicker();
+    }
+
+    @Override
+    public void onPermissionsDenied(int i, List<String> list) {
+
     }
 }
