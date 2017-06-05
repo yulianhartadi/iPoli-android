@@ -42,6 +42,10 @@ public class LocalStorage {
         return sharedPreferences.getLong(key, 0);
     }
 
+    public long readLong(String key, Long defaultValue) {
+        return sharedPreferences.getLong(key, defaultValue);
+    }
+
     public void saveIntSet(String key, Set<Integer> values) {
         try {
             editor().putString(key, objectMapper.writeValueAsString(values)).apply();
