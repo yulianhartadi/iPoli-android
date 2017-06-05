@@ -493,7 +493,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     }
 
     @Override
-    public List<Quest> findNotCompletedFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping, LocalDate startDate, LocalDate endDate) {
+    public List<Quest> findFromAndroidCalendar(AndroidCalendarMapping androidCalendarMapping, LocalDate startDate, LocalDate endDate) {
         Query query = questFromAndroidCalendar.createQuery();
         query.setGroupLevel(3);
         List<Object> startKey = Arrays.asList(
@@ -514,12 +514,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
             while (enumerator.hasNext()) {
                 QueryRow row = enumerator.next();
                 List<Quest> quests = (List<Quest>) row.getValue();
-                for (Quest q : quests) {
-                    if (q.isCompleted()) {
-                        continue;
-                    }
-                    result.add(q);
-                }
+                result.addAll(quests);
             }
         } catch (CouchbaseLiteException e) {
             postError(e);

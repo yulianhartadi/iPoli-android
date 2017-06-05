@@ -33,7 +33,7 @@ public class AndroidCalendarModule {
 
     @Provides
     @Singleton
-    public SyncAndroidCalendarProvider provideSyncAndroidCalendarProvider(Context context) {
-        return new SyncAndroidCalendarProvider(context);
+    public SyncAndroidCalendarProvider provideSyncAndroidCalendarProvider(Context context, Bus eventBus) {
+        return new SyncAndroidCalendarProvider(context, eventBus);
     }
 }

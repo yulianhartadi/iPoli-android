@@ -62,8 +62,7 @@ import static io.ipoli.android.Constants.RC_CALENDAR_PERM;
  * on 5/23/17.
  */
 
-public class UpgradeStoreFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Void>,
-        EasyPermissions.PermissionCallbacks {
+public class UpgradeStoreFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Void> {
 
     @Inject
     Bus eventBus;
@@ -235,15 +234,5 @@ public class UpgradeStoreFragment extends BaseFragment implements LoaderManager.
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    @Override
-    public void onPermissionsGranted(int i, List<String> list) {
-//        showCalendarsPicker();
-    }
-
-    @Override
-    public void onPermissionsDenied(int i, List<String> list) {
-
     }
 }
