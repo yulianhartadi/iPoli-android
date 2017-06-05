@@ -1,0 +1,52 @@
+package io.ipoli.android.app.tutorial;
+
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
+import io.ipoli.android.R;
+import io.ipoli.android.app.ui.TypewriterView;
+
+import static io.ipoli.android.app.utils.AnimationUtils.fadeIn;
+
+/**
+ * Created by Venelin Valkov <venelin@curiousily.com>
+ * on 6/5/17.
+ */
+public class TutorialOutroFragment extends Fragment {
+
+    @BindView(R.id.tutorial_text)
+    TypewriterView tutorialText;
+
+    private Unbinder unbinder;
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.fragment_tutorial_outro, container, false);
+        unbinder = ButterKnife.bind(this, v);
+
+        fadeIn(v.findViewById(R.id.tutorial_logo), android.R.integer.config_longAnimTime, 1000);
+        fadeIn(v.findViewById(R.id.tutorial_accept), 5000);
+        tutorialText.pause(2000).type("Pencho, let's achieve your life goals by fighting procrastination, lazyness and disorganization together!");
+        return v;
+    }
+
+    @OnClick(R.id.tutorial_accept)
+    public void onAcceptChallengeClick(View v) {
+        ((OnboardingActivity) getActivity()).onTutorialDone();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
+}

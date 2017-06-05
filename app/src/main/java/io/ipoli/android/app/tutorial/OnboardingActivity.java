@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.tutorial.fragments.NamePromptFragment;
@@ -29,23 +28,24 @@ public class OnboardingActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction =
                 fragmentManager.beginTransaction();
 //        fragmentTransaction.replace(R.id.root_container, new IntroFragment());
-        fragmentTransaction.replace(R.id.root_container, new TipsFragment());
+//        fragmentTransaction.replace(R.id.root_container, new TutorialCalendarFragment());
+        fragmentTransaction.replace(R.id.root_container, new TutorialOutroFragment());
         fragmentTransaction.commit();
     }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        }
-    }
+//    @Override
+//    public void onWindowFocusChanged(boolean hasFocus) {
+//        super.onWindowFocusChanged(hasFocus);
+//        if (hasFocus) {
+//            getWindow().getDecorView().setSystemUiVisibility(
+//                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+//                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+//                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+//        }
+//    }
 
     public void onIntroDone() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -67,5 +67,16 @@ public class OnboardingActivity extends AppCompatActivity {
         transaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         transaction.replace(R.id.root_container, new TutorialCalendarFragment(), "fragment");
         transaction.commit();
+    }
+
+    public void onCalendarDone() {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        transaction.replace(R.id.root_container, new TutorialOutroFragment(), "fragment");
+        transaction.commit();
+    }
+
+    public void onTutorialDone() {
+        finish();
     }
 }
