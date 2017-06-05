@@ -13,7 +13,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.tutorial.TutorialActivity;
-import io.ipoli.android.app.ui.TypewriterView;
+import io.ipoli.android.app.ui.typewriter.TypewriterView;
 
 import static io.ipoli.android.app.utils.AnimationUtils.fadeIn;
 

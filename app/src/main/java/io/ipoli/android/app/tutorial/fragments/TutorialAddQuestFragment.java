@@ -20,7 +20,7 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.ui.CategoryView;
-import io.ipoli.android.app.ui.TypewriterView;
+import io.ipoli.android.app.ui.typewriter.TypewriterView;
 import io.ipoli.android.app.utils.KeyboardUtils;
 
 import static io.ipoli.android.app.utils.AnimationUtils.fadeIn;
