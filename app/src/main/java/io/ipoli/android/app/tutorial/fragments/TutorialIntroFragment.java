@@ -103,7 +103,7 @@ public class TutorialIntroFragment extends Fragment {
 
         fadeIn(v.findViewById(R.id.tutorial_logo), android.R.integer.config_longAnimTime, 1000);
 
-        tutorialText.pause(2000).type("Psst, why are you here?").run(() -> {
+        tutorialText.pause(1000).type("Psst, why are you here?").run(() -> {
             positiveAnswer.setText("To improve myself");
             negativeAnswer.setText("No idea");
             positiveAnswer.setOnClickListener(improveListener);
