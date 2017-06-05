@@ -28,7 +28,7 @@ import static io.ipoli.android.app.utils.AnimationUtils.fadeOut;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/31/17.
  */
-public class NamePromptFragment extends Fragment {
+public class TutorialNamePromptFragment extends Fragment {
 
     @BindView(R.id.tutorial_text)
     TypewriterView tutorialText;
