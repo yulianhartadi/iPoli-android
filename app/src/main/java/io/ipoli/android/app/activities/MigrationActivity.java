@@ -186,10 +186,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
 
     private void showErrorMessageAndFinish(Exception e) {
         eventBus.post(new AppErrorEvent(e));
-        runOnUiThread(() -> {
-            Toast.makeText(this, R.string.something_went_wrong, Toast.LENGTH_LONG).show();
-            finish();
-        });
+        showErrorMessageAndFinish();
     }
 
     private void showErrorMessageAndFinish() {
