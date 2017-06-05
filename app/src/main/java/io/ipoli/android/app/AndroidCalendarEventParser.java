@@ -11,6 +11,7 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.ZoneId;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -112,7 +113,7 @@ public class AndroidCalendarEventParser {
                 duration = (int) TimeUnit.MILLISECONDS.toMinutes(instance.end - instance.begin);
             } else if (!StringUtils.isEmpty(event.duration)) {
                 Dur dur = new Dur(event.duration);
-                duration = dur.getMinutes();
+                duration = (int) TimeUnit.MILLISECONDS.toMinutes(dur.getTime(new Date(0)).getTime());
             } else {
                 duration = Constants.QUEST_MIN_DURATION;
             }
