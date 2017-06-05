@@ -5,10 +5,20 @@
     android:orientation="vertical"
     android:weightSum="6">
 
-    <android.support.v4.widget.Space
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1">
+
+        <Button
+            android:id="@+id/tutorial_skip_section"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginStart="16dp"
+            android:text="Skip section" />
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/tutorial_logo"
