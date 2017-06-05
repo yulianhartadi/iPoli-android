@@ -12,7 +12,7 @@ import java.util.Queue;
 
 public class TypewriterView extends AppCompatEditText {
 
-//    public static final int TYPE_SPEED = 80;
+    //    public static final int TYPE_SPEED = 80;
     public static final int TYPE_SPEED = 50;
     public static final int DELETE_SPEED = 40;
     public static final int PAUSE_DELAY = 1000;
@@ -30,6 +30,7 @@ public class TypewriterView extends AppCompatEditText {
         setCursorAtEnd();
         setCursorVisible(true);
         setRawInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        setOnTouchListener((v, event) -> true);
     }
 
     public TypewriterView type(CharSequence text, long speed) {
