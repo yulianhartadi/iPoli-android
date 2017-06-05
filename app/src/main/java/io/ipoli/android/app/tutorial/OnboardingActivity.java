@@ -28,8 +28,8 @@ public class OnboardingActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction =
                 fragmentManager.beginTransaction();
 //        fragmentTransaction.replace(R.id.root_container, new IntroFragment());
-//        fragmentTransaction.replace(R.id.root_container, new TutorialCalendarFragment());
-        fragmentTransaction.replace(R.id.root_container, new TutorialOutroFragment());
+        fragmentTransaction.replace(R.id.root_container, new TipsFragment());
+//        fragmentTransaction.replace(R.id.root_container, new TutorialOutroFragment());
         fragmentTransaction.commit();
     }
 
@@ -65,7 +65,9 @@ public class OnboardingActivity extends AppCompatActivity {
     public void onAddQuestDone(String name, Category category) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-        transaction.replace(R.id.root_container, new TutorialCalendarFragment(), "fragment");
+        TutorialCalendarFragment calendarFragment = new TutorialCalendarFragment();
+        calendarFragment.setQuestInfo(name, category);
+        transaction.replace(R.id.root_container, calendarFragment, "fragment");
         transaction.commit();
     }
 
