@@ -82,7 +82,7 @@ public class TutorialActivity extends AppCompatActivity {
         getSupportFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
-                .replace(R.id.root_container, newFragment, "fragment")
+                .replace(R.id.root_container, newFragment)
                 .commit();
     }
 
