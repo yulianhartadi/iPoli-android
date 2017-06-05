@@ -24,12 +24,11 @@ public class TypewriterView extends AppCompatEditText {
 
     public TypewriterView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
+        setKeyListener(null);
         setBackgroundColor(Color.TRANSPARENT);
-        setCursorAtEnd();
         setCursorVisible(true);
+        setCursorAtEnd();
         setRawInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-        setFocusable(false);
         setOnTouchListener((v, event) -> true);
     }
 
