@@ -331,12 +331,11 @@ public class App extends MultiDexApplication {
             return;
         }
         if (!hasPlayer()) {
-//            if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
-//                localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
+            if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
                 startNewActivity(TutorialActivity.class);
-//            } else {
-//                startNewActivity(SignInActivity.class);
-//            }
+            } else {
+                startNewActivity(SignInActivity.class);
+            }
             return;
         }
 
@@ -347,7 +346,13 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onFinishTutorialActivity(FinishTutorialActivityEvent e) {
         if (!hasPlayer()) {
-            startNewActivity(SignInActivity.class);
+            Intent intent = new Intent(this, SignInActivity.class);
+            intent.putExtra(Constants.USERNAME_EXTRA_KEY, e.playerName);
+            startActivity(intent);
+        } else {
+            Player player = getPlayer();
+            player.setUsername(e.playerName);
+            playerPersistenceService.save(player);
         }
     }
 
@@ -651,7 +656,7 @@ public class App extends MultiDexApplication {
         }
         player.removeCoins(coins);
         // @TODO remove this when all players have rewardPoints
-        if(rewardPoints != null) {
+        if (rewardPoints != null) {
             player.removeRewardPoints(rewardPoints);
         } else {
             player.removeRewardPoints(coins);

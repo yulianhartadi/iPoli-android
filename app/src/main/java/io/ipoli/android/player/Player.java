@@ -54,8 +54,9 @@ public class Player extends PersistedObject {
         super(TYPE);
     }
 
-    public Player(String experience, int level, long coins, long rewardPoints, Integer avatarCode, boolean use24HourFormat, Pet pet) {
+    public Player(String username, String experience, int level, long coins, long rewardPoints, Integer avatarCode, boolean use24HourFormat, Pet pet) {
         super(TYPE);
+        this.username = username;
         pets = new ArrayList<>();
         pets.add(pet);
         this.schemaVersion = Constants.SCHEMA_VERSION;
