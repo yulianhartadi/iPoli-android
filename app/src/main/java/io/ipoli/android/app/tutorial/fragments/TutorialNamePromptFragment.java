@@ -49,7 +49,7 @@ public class TutorialNamePromptFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_tutorial_name_prompt, container, false);
         unbinder = ButterKnife.bind(this, v);
-        fadeIn(v.findViewById(R.id.tutorial_logo));
+        fadeIn(v.findViewById(R.id.tutorial_logo), 1000);
         tutorialText.pause().type("First, let's get to know you a bit better. How should I call you?").run(() -> {
             fadeIn(nameContainer);
             fadeIn(ready);
