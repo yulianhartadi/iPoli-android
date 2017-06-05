@@ -26,6 +26,10 @@ public class OnboardingActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_onboarding);
+
+//        TutorialCalendarFragment calendarFragment = new TutorialCalendarFragment();
+//        calendarFragment.setQuestInfo("Hello nigga", Category.CHORES);
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.root_container, new TutorialIntroFragment())
@@ -36,13 +40,7 @@ public class OnboardingActivity extends AppCompatActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            enterImmersiveMode();
         }
     }
 
@@ -56,15 +54,31 @@ public class OnboardingActivity extends AppCompatActivity {
     }
 
     public void onAddQuestDone(String name, Category category) {
+        exitImmersiveMode();
         TutorialCalendarFragment calendarFragment = new TutorialCalendarFragment();
         calendarFragment.setQuestInfo(name, category);
         replaceFragment(calendarFragment);
     }
 
+    public void exitImmersiveMode() {
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+    }
+
     public void onCalendarDone() {
+        enterImmersiveMode();
         TutorialOutroFragment outroFragment = new TutorialOutroFragment();
         outroFragment.setPlayerName(playerName);
         replaceFragment(outroFragment);
+    }
+
+    public void enterImmersiveMode() {
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
 
     private void replaceFragment(Fragment newFragment) {

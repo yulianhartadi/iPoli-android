@@ -74,6 +74,7 @@ public class TutorialNamePromptFragment extends Fragment {
 
     private void onReady() {
         KeyboardUtils.hideKeyboard(getActivity());
+        ((OnboardingActivity) getActivity()).enterImmersiveMode();
         String nameText = name.getText().toString();
         if (nameText.length() < 2) {
             ObjectAnimator
