@@ -7,9 +7,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import io.ipoli.android.R;
+import io.ipoli.android.app.tutorial.fragments.IntroFragment;
 import io.ipoli.android.app.tutorial.fragments.NamePromptFragment;
 import io.ipoli.android.app.tutorial.fragments.TipsFragment;
 import io.ipoli.android.app.tutorial.fragments.TutorialCalendarFragment;
+import io.ipoli.android.app.tutorial.fragments.TutorialOutroFragment;
 import io.ipoli.android.quest.data.Category;
 
 /**
@@ -27,8 +29,8 @@ public class OnboardingActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction =
                 fragmentManager.beginTransaction();
-//        fragmentTransaction.replace(R.id.root_container, new IntroFragment());
-        fragmentTransaction.replace(R.id.root_container, new TipsFragment());
+        fragmentTransaction.replace(R.id.root_container, new IntroFragment());
+//        fragmentTransaction.replace(R.id.root_container, new TipsFragment());
 //        fragmentTransaction.replace(R.id.root_container, new TutorialOutroFragment());
         fragmentTransaction.commit();
     }
@@ -74,7 +76,9 @@ public class OnboardingActivity extends AppCompatActivity {
     public void onCalendarDone() {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-        transaction.replace(R.id.root_container, new TutorialOutroFragment(), "fragment");
+        TutorialOutroFragment outroFragment = new TutorialOutroFragment();
+        outroFragment.setPlayerName(playerName);
+        transaction.replace(R.id.root_container, outroFragment, "fragment");
         transaction.commit();
     }
 

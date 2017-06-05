@@ -37,7 +37,7 @@ public class IntroFragment extends Fragment {
 
     private View.OnClickListener showBackStoryListener = v -> {
         prepareForNextState();
-        tutorialText.type("Many millennia ago, a daemon from another dimension came to conquer us. Yes, it used backdoor that was left intentionally open!")
+        tutorialText.type("Many millennia ago, a daemon from another dimension came to conquer us. Yes, he used backdoor that was left intentionally open!")
                 .pause(2000)
                 .type(" His objective? Eat all the ice-cream on Earth! And kill the ONE!").pause().run(new Runnable() {
             @Override
@@ -45,7 +45,7 @@ public class IntroFragment extends Fragment {
                 tutorialText.setText("");
             }
         }).type("Counterintuitively enough, only the ONE can stop him! Let's hope that's you!")
-                .type(" That deamon I was telling you about is pretty evil! He is so evil that his name is EVIL Snail! Yes, that name was given to him by his mother").run(new Runnable() {
+                .type(" That daemon I was telling you about is pretty evil! He is so evil that his name is EVIL Snail! Yes, that name was given to him by his mother").run(new Runnable() {
             @Override
             public void run() {
                 positiveAnswer.setText("Ready to go");
@@ -57,7 +57,7 @@ public class IntroFragment extends Fragment {
 
     private View.OnClickListener skipChallengeListener = v -> {
         prepareForNextState();
-        tutorialText.type("Don't worry! I believe in you!").pause().run(new Runnable() {
+        tutorialText.type("Come on! I believe in you!").pause().run(new Runnable() {
             @Override
             public void run() {
                 acceptChallengeListener.onClick(v);
