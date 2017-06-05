@@ -64,10 +64,6 @@ public abstract class BaseTutorialPickQuestsFragment<T> extends Fragment impleme
     @StringRes
     protected abstract int getTitleRes();
 
-    public List<T> getSelectedQuests() {
-        return (List<T>) pickQuestsAdapter.getSelectedBaseQuests();
-    }
-
     @Override
     public void onDestroy() {
         unbinder.unbind();
