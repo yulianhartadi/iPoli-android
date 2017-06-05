@@ -50,7 +50,7 @@ public class TutorialNamePromptFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_tutorial_name_prompt, container, false);
         unbinder = ButterKnife.bind(this, v);
         fadeIn(v.findViewById(R.id.tutorial_logo), 1000);
-        tutorialText.pause().type("First, let's get to know you a bit better. How should I call you?").run(() -> {
+        tutorialText.pause().type(getString(R.string.your_name_prompt)).run(() -> {
             fadeIn(nameContainer);
             fadeIn(ready);
         });
@@ -80,13 +80,13 @@ public class TutorialNamePromptFragment extends Fragment {
                     .ofFloat(name, "translationX", 0, 25, -25, 25, -25, 15, -15, 6, -6, 0)
                     .setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime))
                     .start();
-            name.setError("Please, tell me your name");
+            name.setError(getString(R.string.name_prompt_validation));
             return;
         }
         fadeOut(nameContainer);
         fadeOut(ready);
         tutorialText.setText("");
-        tutorialText.type("Welcome, " + nameText + "!").pause().run(() ->
+        tutorialText.type(getString(R.string.name_prompt_welcome, nameText)).pause().run(() ->
                 ((TutorialActivity) getActivity()).onNamePromptDone(nameText));
     }
 
