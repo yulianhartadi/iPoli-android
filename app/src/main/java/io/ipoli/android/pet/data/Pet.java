@@ -3,9 +3,11 @@ package io.ipoli.android.pet.data;
 import android.support.annotation.ColorRes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.firebase.crash.FirebaseCrash;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.App;
 import io.ipoli.android.player.PetAvatar;
 
 /**
@@ -119,6 +121,10 @@ public class Pet {
 
     @JsonIgnore
     public PetAvatar getCurrentAvatar() {
+        if (avatarCode == null) {
+            FirebaseCrash.report(new RuntimeException("Player with id " + App.getPlayerId() + " has pet with no avatarCode set"));
+            return Constants.DEFAULT_PET_AVATAR;
+        }
         return PetAvatar.get(avatarCode);
     }
 
