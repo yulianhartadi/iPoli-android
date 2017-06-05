@@ -90,23 +90,14 @@ public class AndroidCalendarEventParser {
         q.setCategoryType(category);
         q.setStartMinute(instance.startMinute);
 
-        ZoneId zoneId = getZoneId(event);
-        LocalDate startDate = DateUtils.fromMillis(instance.begin, zoneId);
-        LocalDate endDate = instance.end > 0 ? DateUtils.fromMillis(instance.end, zoneId) : startDate;
-        q.setStartDate(startDate);
-        q.setEndDate(endDate);
-        q.setScheduledDate(startDate);
+        setDates(event, instance, q);
 
         if (isForThePast(q.getScheduledDate()) && event.allDay) {
             return null;
         }
 
         if (event.allDay) {
-            q.setDuration(Constants.QUEST_MIN_DURATION);
-            q.setStartMinute(null);
-            if (!event.hasAlarm) {
-                q.addReminder(new io.ipoli.android.reminder.data.Reminder(0));
-            }
+            handleAllDay(event, q);
         } else {
             q.setDuration(getDuration(event, instance));
         }
@@ -120,6 +111,23 @@ public class AndroidCalendarEventParser {
         }
 
         return q;
+    }
+
+    private void handleAllDay(Event event, Quest quest) {
+        quest.setDuration(Constants.QUEST_MIN_DURATION);
+        quest.setStartMinute(null);
+        if (!event.hasAlarm) {
+            quest.addReminder(new io.ipoli.android.reminder.data.Reminder(0));
+        }
+    }
+
+    private void setDates(Event event, InstanceData instance, Quest quest) {
+        ZoneId zoneId = getZoneId(event);
+        LocalDate startDate = DateUtils.fromMillis(instance.begin, zoneId);
+        LocalDate endDate = instance.end > 0 ? DateUtils.fromMillis(instance.end, zoneId) : startDate;
+        quest.setStartDate(startDate);
+        quest.setEndDate(endDate);
+        quest.setScheduledDate(startDate);
     }
 
     private void completeQuest(Quest q) {
