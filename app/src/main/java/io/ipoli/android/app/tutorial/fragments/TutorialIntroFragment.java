@@ -119,8 +119,8 @@ public class TutorialIntroFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         unbinder.unbind();
+        super.onDestroyView();
     }
 
     @OnClick(R.id.tutorial_skip_section)
