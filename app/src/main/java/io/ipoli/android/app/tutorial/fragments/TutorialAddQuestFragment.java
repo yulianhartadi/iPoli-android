@@ -59,9 +59,9 @@ public class TutorialAddQuestFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_tutorial_add_quest, container, false);
         unbinder = ButterKnife.bind(this, v);
-        tutorialText.pause().type(getString(R.string.tutorial_quest_button));
+        tutorialText.pause().type(getString(R.string.tutorial_quest_tasks)).pause().clear().type(getString(R.string.tutorial_quest_button));
         addQuest.setVisibility(View.VISIBLE);
-        fadeIn(addQuest, 6000);
+        fadeIn(addQuest, 7000);
         return v;
     }
 
@@ -82,8 +82,8 @@ public class TutorialAddQuestFragment extends Fragment {
         addQuest.setVisibility(View.GONE);
         questNameContainer.setVisibility(View.VISIBLE);
         chooseCategory.setVisibility(View.VISIBLE);
-        fadeIn(questNameContainer, 3000);
-        fadeIn(chooseCategory, 3000);
+        fadeIn(questNameContainer, 2000);
+        fadeIn(chooseCategory, 2000);
     }
 
     @OnClick(R.id.tutorial_choose_category)
