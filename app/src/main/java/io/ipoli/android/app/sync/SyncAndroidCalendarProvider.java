@@ -100,6 +100,11 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
                 result.get(idToEvent.get(i.eventId)).add(i);
             } else {
                 Event e = getEvent(i.eventId);
+                if(e == null) {
+                    eventBus.post(new AppErrorEvent(
+                            new RuntimeException("Google calendar event with id: " + i.eventId + " not found")));
+                    continue;
+                }
                 idToEvent.put(e.id, e);
                 List<InstanceData> instanceList = new ArrayList<>();
                 instanceList.add(i);
@@ -116,7 +121,16 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
 
     public List<Reminder> getEventReminders(long eventId) {
         Data<Reminder> data = getReminders(eventId);
-        return data == null ? new ArrayList<>() : data.getList();
+        if(data == null) {
+            return new ArrayList<>();
+        }
+        List<Reminder> reminders = new ArrayList<>();
+        try {
+            reminders = data.getList();
+        } catch (Exception e) {
+            eventBus.post(new AppErrorEvent(e));
+        }
+        return reminders;
     }
 
 }
