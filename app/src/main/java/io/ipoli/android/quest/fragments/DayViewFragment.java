@@ -353,6 +353,19 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             }
         }
 
+        scheduleUnscheduledEvents(scheduledEvents, tasksToSchedule);
+
+        unscheduledQuestsAdapter.updateQuests(unscheduledViewModels);
+        calendarAdapter.updateEvents(scheduledEvents);
+
+        setUnscheduledQuestsHeight();
+        calendarDayView.onMinuteChanged();
+    }
+
+    private void scheduleUnscheduledEvents(List<QuestCalendarViewModel> scheduledEvents, List<Task> tasksToSchedule) {
+        if (currentDateIsInThePast()) {
+            return;
+        }
         List<Task> calendarTasks = new ArrayList<>();
         for (QuestCalendarViewModel vm : scheduledEvents) {
             calendarTasks.add(new Task(vm.getId(), vm.getStartMinute(), vm.getDuration(), vm.getPriority(), vm.getStartTimePreference(), vm.getCategory()));
@@ -367,12 +380,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
             QuestCalendarViewModel vm = QuestCalendarViewModel.createWithProposedTime(qt.quest, qt.getCurrentTimeSlot().getStartMinute());
             scheduledEvents.add(vm);
         }
-
-        unscheduledQuestsAdapter.updateQuests(unscheduledViewModels);
-        calendarAdapter.updateEvents(scheduledEvents);
-
-        setUnscheduledQuestsHeight();
-        calendarDayView.onMinuteChanged();
     }
 
     @Override
@@ -420,7 +427,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     public void onRescheduleQuest(RescheduleQuestEvent e) {
         Task task = dailyScheduler.chooseNewTimeSlot(e.calendarEvent.getId(), Time.now());
         TimeSlot currentTimeSlot = task.getCurrentTimeSlot();
-        if(currentTimeSlot == null) {
+        if (currentTimeSlot == null) {
             Toast.makeText(getContext(), "No more suggestions", Toast.LENGTH_SHORT).show();
             return;
         }
