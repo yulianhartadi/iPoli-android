@@ -326,9 +326,15 @@ public class App extends MultiDexApplication {
         registerServices();
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
 
-        int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
-        if (hasPlayer() && schemaVersion != Constants.SCHEMA_VERSION) {
+        int firebaseSchemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
+        if(firebaseSchemaVersion > 0 && firebaseSchemaVersion <= Constants.FIREBASE_LAST_SCHEMA_VERSION) {
             return;
+        }
+        if(hasPlayer()) {
+            Player player = playerPersistenceService.get();
+            if(player.getSchemaVersion() != Constants.SCHEMA_VERSION) {
+                return;
+            }
         }
         if (!hasPlayer()) {
             if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
@@ -560,7 +566,6 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onPlayerCreated(PlayerCreatedEvent e) {
-        localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
         localStorage.saveString(Constants.KEY_PLAYER_ID, e.playerId);
         playerId = e.playerId;
         initAppStart();
@@ -568,7 +573,6 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onPlayerUpdated(PlayerUpdatedEvent e) {
-        localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
         localStorage.saveString(Constants.KEY_PLAYER_ID, e.playerId);
         playerId = e.playerId;
     }
