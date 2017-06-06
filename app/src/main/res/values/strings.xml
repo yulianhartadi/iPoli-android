@@ -833,7 +833,38 @@
     <string name="reward_last_used_date">Last used: %s</string>
     <string name="used_rewards_count">%d used</string>
     <string name="reward_price">%d points</string>
-
+    <string name="why_are_you_here">Psst, why are you here?</string>
+    <string name="improve_myself">To improve myself</string>
+    <string name="no_idea">No idea</string>
+    <string name="then_what_are_you_doing_here">Then what are you doing here!?</string>
+    <string name="ready_to_go">Ready to go</string>
+    <string name="the_one">The ONE?</string>
+    <string name="i_accept">I Accept</string>
+    <string name="nah_not_me">Nah, not me</string>
+    <string name="i_believe_in_you">Come on! I believe in you!</string>
+    <string name="skip_section">Skip section</string>
+    <string name="another_of_those">Gosh, we have another one of those…</string>
+    <string name="lets_start_over">OK, OK. Let\'s start over!</string>
+    <string name="welcome_hero">Welcome, Hero!</string>
+    <string name="embrace_journey">Are you ready to embrace your destiny of studying many hours, working late, doing sports and eating yucky food?</string>
+    <string name="you_the_one">So, we\'ve established the fact that you might be the ONE. Would you like some tips?</string>
+    <string name="daemon_intro">Many millennia ago, a daemon from another dimension came to conquer us. Yes, he used backdoor that was left intentionally open!</string>
+    <string name="daemon_objective">His objective? Eat all the ice-cream on Earth! And kill the ONE!</string>
+    <string name="daemon_backstory">Counterintuitively enough, only the ONE can stop him! Let\'s hope that\'s you! That daemon I was telling you about is pretty evil! He is so evil that his name is EVIL Snail! Yes, that name was given to him by his mother</string>
+    <string name="journey_start">Your greatest journey is starting</string>
+    <string name="journey_today"> today!</string>
+    <string name="your_name">Your name</string>
+    <string name="your_name_prompt">First, let\'s get to know you a bit better. How should I call you?</string>
+    <string name="name_prompt_validation">Please, tell me your name</string>
+    <string name="name_prompt_welcome">Welcome, %s!</string>
+    <string name="accept_challenge">Accept Challenge</string>
+    <string name="outro_text">%s, let\'s achieve your life goals by fighting procrastination, laziness and clutter together!</string>
+    <string name="tutorial_calendar_quest_hint">Your quest has been added to your calendar. Complete it by tapping on the checkbox.</string>
+    <string name="tutorial_quest_complete">Every time you complete a quest you get a reward! Experience allows you to level up and with life coins you can unlock upgrades, buy new avatars ot pets.</string>
+    <string name="tutorial_follow_progress">You can follow your progress here. These are your avatar and pet. Keep your pet happy by completing your quests regularly to achieve maximum coins and XP bonus!</string>
+    <string name="tutorial_store">Use your hard earned coins to unlock powerful upgrades (Repeating quests, Calendar sync, Notes etc) or buy new avatars and cute pets!</string>
+    <string name="choose_category">Choose Category</string>
+    <string name="tutorial_quest_name">Quest name</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

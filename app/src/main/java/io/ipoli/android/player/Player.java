@@ -29,6 +29,7 @@ public class Player extends PersistedObject {
 
     public static final String TYPE = "player";
 
+    private String username;
     private Integer level;
     private String experience;
     private Long coins;
@@ -53,8 +54,9 @@ public class Player extends PersistedObject {
         super(TYPE);
     }
 
-    public Player(String experience, int level, long coins, long rewardPoints, Integer avatarCode, boolean use24HourFormat, Pet pet) {
+    public Player(String username, String experience, int level, long coins, long rewardPoints, Integer avatarCode, boolean use24HourFormat, Pet pet) {
         super(TYPE);
+        this.username = username;
         pets = new ArrayList<>();
         pets.add(pet);
         this.schemaVersion = Constants.SCHEMA_VERSION;
@@ -75,6 +77,14 @@ public class Player extends PersistedObject {
         setCompleteDailyQuestsEndMinute(Constants.DEFAULT_PLAYER_COMPLETE_DAILY_QUESTS_MINUTE);
         setUse24HourFormat(use24HourFormat);
         setAndroidCalendars(new HashMap<>());
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public List<Pet> getPets() {

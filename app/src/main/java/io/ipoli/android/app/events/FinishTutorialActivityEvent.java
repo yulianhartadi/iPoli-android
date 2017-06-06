@@ -6,4 +6,11 @@ package io.ipoli.android.app.events;
  */
 
 public class FinishTutorialActivityEvent {
+
+    public final String playerName;
+
+    public FinishTutorialActivityEvent(String playerName) {
+
+        this.playerName = playerName;
+    }
 }

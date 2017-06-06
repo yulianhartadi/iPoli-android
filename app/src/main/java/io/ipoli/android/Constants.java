@@ -44,6 +44,8 @@ public interface Constants {
 
     String CURRENT_SELECTED_DAY_EXTRA_KEY = "CURRENT_SELECTED_DAY";
 
+    String USERNAME_EXTRA_KEY = "username";
+
     int CALENDAR_EVENT_MIN_DURATION = 15;
 
     int CALENDAR_EVENT_MIN_SINGLE_LINE_DURATION = 20;
@@ -78,7 +80,7 @@ public interface Constants {
     String IPOLI_EMAIL = "hi@ipoli.io";
 
     String API_RESOURCE_SOURCE = "ipoli-android";
-    int DEFAULT_PLAYER_XP = 0;
+    int DEFAULT_PLAYER_XP = 20;
     int DEFAULT_PLAYER_LEVEL = 1;
     long DEFAULT_PLAYER_COINS = 10;
     long DEFAULT_PLAYER_REWARD_POINTS = 10;
@@ -157,6 +159,7 @@ public interface Constants {
     String DEFAULT_VIEW_VERSION = "1.0";
     String SOURCE_ANDROID_CALENDAR = "android-calendar";
 
+    int XP_BAR_MAX_VALUE = 100;
     int RC_CALENDAR_PERM = 102;
     String KEY_LAST_ANDROID_CALENDAR_SYNC_DATE = "LAST_ANDROID_CALENDAR_SYNC_DATE";
 }

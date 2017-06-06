@@ -1,74 +1,114 @@
 package io.ipoli.android.app.tutorial;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.WindowManager;
 
-import com.github.paolorotolo.appintro.AppIntro2;
 import com.squareup.otto.Bus;
 
 import javax.inject.Inject;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.FinishTutorialActivityEvent;
-import io.ipoli.android.app.tutorial.events.TutorialSkippedEvent;
-import io.ipoli.android.app.tutorial.fragments.TutorialFragment;
+import io.ipoli.android.app.tutorial.fragments.TutorialAddQuestFragment;
+import io.ipoli.android.app.tutorial.fragments.TutorialCalendarFragment;
+import io.ipoli.android.app.tutorial.fragments.TutorialIntroFragment;
+import io.ipoli.android.app.tutorial.fragments.TutorialNamePromptFragment;
+import io.ipoli.android.app.tutorial.fragments.TutorialOutroFragment;
+import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.quest.data.Category;
 
-public class TutorialActivity extends AppIntro2 {
+/**
+ * Created by Venelin Valkov <venelin@curiousily.com>
+ * on 5/31/17.
+ */
+public class TutorialActivity extends AppCompatActivity {
+
+    @Inject
+    LocalStorage localStorage;
 
     @Inject
     Bus eventBus;
 
+    private String playerName;
+
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         App.getAppComponent(this).inject(this);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_onboarding);
 
-        getWindow().setNavigationBarColor(Color.BLACK);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-
-        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_welcome_title),
-                getString(R.string.tutorial_hero_desc),
-                R.drawable.tutorial_welcome,
-                R.color.md_blue_700));
-        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_challenges_title),
-                getString(R.string.tutorial_challenges_desc),
-                R.drawable.tutorial_challenge,
-                R.color.md_light_blue_500));
-        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_pet_title),
-                getString(R.string.tutorial_pet_desc),
-                R.drawable.tutorial_pet,
-                R.color.md_orange_700));
-        addSlide(TutorialFragment.newInstance(getString(R.string.tutorial_schedule_title),
-                getString(R.string.tutorial_schedule_desc),
-                R.drawable.tutorial_schedule,
-                R.color.md_green_500));
-
-        setImmersiveMode(true, true);
-        setColorTransitionsEnabled(true);
-        showSkipButton(false);
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.root_container, new TutorialIntroFragment())
+                .commit();
     }
 
     @Override
-    public void onDonePressed(Fragment fragment) {
-        doneButton.setVisibility(View.GONE);
-        onFinish();
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            enterImmersiveMode();
+        }
+    }
+
+    public void onIntroDone() {
+        replaceFragment(new TutorialNamePromptFragment());
+    }
+
+    public void onNamePromptDone(String playerName) {
+        this.playerName = playerName;
+        replaceFragment(new TutorialAddQuestFragment());
+    }
+
+    public void onAddQuestDone(String name, Category category) {
+        exitImmersiveMode();
+        TutorialCalendarFragment calendarFragment = new TutorialCalendarFragment();
+        calendarFragment.setQuestInfo(name, category);
+        replaceFragment(calendarFragment);
+    }
+
+    public void exitImmersiveMode() {
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+    }
+
+    public void onCalendarDone() {
+        enterImmersiveMode();
+        TutorialOutroFragment outroFragment = new TutorialOutroFragment();
+        outroFragment.setPlayerName(playerName);
+        replaceFragment(outroFragment);
+    }
+
+    public void enterImmersiveMode() {
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    }
+
+    private void replaceFragment(Fragment newFragment) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left)
+                .replace(R.id.root_container, newFragment)
+                .commit();
     }
 
     @Override
     public void onBackPressed() {
-        eventBus.post(new TutorialSkippedEvent());
-        onFinish();
+        // intentional
     }
 
-    private void onFinish() {
-        eventBus.post(new FinishTutorialActivityEvent());
+    public void onTutorialDone() {
+        localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
+        eventBus.post(new FinishTutorialActivityEvent(playerName));
         finish();
     }
 }
