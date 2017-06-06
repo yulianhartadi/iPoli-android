@@ -102,10 +102,13 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
 
         schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
 
+        if(schemaVersion == 0 || schemaVersion > Constants.FIREBASE_LAST_SCHEMA_VERSION) {
+            schemaVersion = getPlayer().getSchemaVersion();
+        }
+
         if (schemaVersion < VERSION_BEFORE_UPGRADES) {
-            migrateFromFirebase(() -> {
-                getSupportLoaderManager().initLoader(1, null, this);
-            });
+            migrateFromFirebase(() ->
+                    getSupportLoaderManager().initLoader(1, null, this));
         } else if (schemaVersion >= VERSION_BEFORE_UPGRADES) {//leave only == when null pointers for rewardPoints and avatars are fixed
             getSupportLoaderManager().initLoader(1, null, this);
         } else {
@@ -215,7 +218,6 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
         Player player = playerPersistenceService.get();
         player.setSchemaVersion(Constants.SCHEMA_VERSION);
         playerPersistenceService.save(player);
-        localStorage.saveInt(Constants.KEY_SCHEMA_VERSION, Constants.SCHEMA_VERSION);
         startActivity(new Intent(MigrationActivity.this, MainActivity.class));
         finish();
     }

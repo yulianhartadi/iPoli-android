@@ -42,7 +42,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
-import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.SignInActivity;
@@ -103,6 +102,8 @@ import io.ipoli.android.store.StoreItemType;
 import io.ipoli.android.store.Upgrade;
 import io.ipoli.android.store.activities.StoreActivity;
 
+import static io.ipoli.android.app.App.hasPlayer;
+
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, OnDataChangedListener<Player> {
 
     public static final int INVITE_FRIEND_REQUEST_CODE = 102;
@@ -141,7 +142,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         super.onCreate(savedInstanceState);
         appComponent().inject(this);
 
-        if (!App.hasPlayer()) {
+        if (!hasPlayer()) {
             finish();
             return;
         }
@@ -178,13 +179,19 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 onItemSelectedFromDrawer();
             }
         };
-        
+
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
     }
 
     private boolean shouldMigratePlayer() {
-        int schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
-        return App.hasPlayer() && schemaVersion != Constants.SCHEMA_VERSION;
+        int firebaseSchemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
+        if(firebaseSchemaVersion > 0 && firebaseSchemaVersion <= Constants.FIREBASE_LAST_SCHEMA_VERSION) {
+            return true;
+        }
+        if (getPlayer().getSchemaVersion() != Constants.SCHEMA_VERSION) {
+            return true;
+        }
+        return false;
     }
 
     @Override
