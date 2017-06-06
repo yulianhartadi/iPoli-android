@@ -87,7 +87,6 @@ public class TypewriterView extends AppCompatEditText {
             isRunning = false;
             return;
         }
-
         next.run();
     }
 

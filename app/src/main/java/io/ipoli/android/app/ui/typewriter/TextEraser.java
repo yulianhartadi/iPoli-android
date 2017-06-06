@@ -12,7 +12,6 @@ class TextEraser extends Repeater {
     public TextEraser(TypewriterView typewriterView, CharSequence textToRemove, long speed, Runnable doneRunnable) {
         super(doneRunnable, speed);
         this.typewriterView = typewriterView;
-
         this.textToRemove = textToRemove;
     }
 
