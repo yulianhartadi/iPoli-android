@@ -1,5 +1,6 @@
 package io.ipoli.android.app.sync;
 
+import android.Manifest;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.os.AsyncTask;
@@ -27,6 +28,7 @@ import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import me.everything.providers.android.calendar.Event;
+import pub.devrel.easypermissions.EasyPermissions;
 
 import static io.ipoli.android.Constants.KEY_LAST_ANDROID_CALENDAR_SYNC_DATE;
 import static io.ipoli.android.app.sync.AndroidCalendarLoader.SYNC_ANDROID_CALENDAR_MONTHS_AHEAD;
@@ -65,6 +67,9 @@ public class AndroidCalendarSyncJobService extends JobService {
 
     @Override
     public boolean onStartJob(JobParameters params) {
+        if (!EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
+            return false;
+        }
         syncCalendarsTask = new AsyncTask<Void, Void, Boolean>() {
 
             @Override
