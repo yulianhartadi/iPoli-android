@@ -59,7 +59,7 @@ public class TutorialAddQuestFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_tutorial_add_quest, container, false);
         unbinder = ButterKnife.bind(this, v);
-        tutorialText.pause().type("Let's start by adding your first quest! Do you see the button below? Will you do me the honor?");
+        tutorialText.pause().type(getString(R.string.tutorial_quest_button));
         addQuest.setVisibility(View.VISIBLE);
         fadeIn(addQuest, 6000);
         return v;
@@ -78,12 +78,12 @@ public class TutorialAddQuestFragment extends Fragment {
     @OnClick(R.id.tutorial_add_quest)
     public void onAddQuestClick(View view) {
         tutorialText.setText("");
-        tutorialText.type("Your tasks are now called quests. Enter the name of your first quest");
+        tutorialText.type(getString(R.string.tutorial_quest_first_quest));
         addQuest.setVisibility(View.GONE);
         questNameContainer.setVisibility(View.VISIBLE);
         chooseCategory.setVisibility(View.VISIBLE);
-        fadeIn(questNameContainer, 1000);
-        fadeIn(chooseCategory, 1000);
+        fadeIn(questNameContainer, 2000);
+        fadeIn(chooseCategory, 2000);
     }
 
     @OnClick(R.id.tutorial_choose_category)
@@ -99,11 +99,11 @@ public class TutorialAddQuestFragment extends Fragment {
                     .ofFloat(questName, "translationX", 0, 25, -25, 25, -25, 15, -15, 6, -6, 0)
                     .setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime))
                     .start();
-            questName.setError("Still waiting for that name");
+            questName.setError(getString(R.string.tutorial_quest_validation));
             return;
         }
         tutorialText.setText("");
-        tutorialText.type("Choose a category");
+        tutorialText.type(getString(R.string.choose_a_category));
         questNameContainer.setVisibility(View.GONE);
         chooseCategory.setVisibility(View.GONE);
         categoryPicker.setVisibility(View.VISIBLE);
