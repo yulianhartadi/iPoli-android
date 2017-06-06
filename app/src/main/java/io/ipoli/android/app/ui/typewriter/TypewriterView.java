@@ -17,6 +17,7 @@ public class TypewriterView extends AppCompatEditText {
     public static final int PAUSE_DELAY = 1000;
 
     private boolean isRunning = false;
+    private boolean isStopped = false;
 
     private Queue<Repeater> repeaters = new LinkedList<>();
 
@@ -89,12 +90,15 @@ public class TypewriterView extends AppCompatEditText {
             isRunning = false;
             return;
         }
+        if (isStopped) {
+            return;
+        }
         currentRepeater.run();
     }
 
     public void stop() {
-        isRunning = false;
-        if(currentRepeater != null) {
+        isStopped = true;
+        if (currentRepeater != null) {
             currentRepeater.stop();
         }
     }
