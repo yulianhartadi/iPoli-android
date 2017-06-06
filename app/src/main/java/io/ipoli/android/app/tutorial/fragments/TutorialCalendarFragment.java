@@ -11,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.text.format.DateFormat;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
@@ -23,8 +24,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import java.util.HashMap;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,16 +47,6 @@ import io.ipoli.android.quest.data.Category;
  * on 6/4/17.
  */
 public class TutorialCalendarFragment extends Fragment {
-
-    private static final HashMap<Category, Integer> QUEST_CATEGORY_TO_CHECKBOX_STYLE = new HashMap<Category, Integer>() {{
-        put(Category.LEARNING, R.style.LearningCheckbox);
-        put(Category.WELLNESS, R.style.WellnessCheckbox);
-        put(Category.PERSONAL, R.style.PersonalCheckbox);
-        put(Category.WORK, R.style.WorkCheckbox);
-        put(Category.FUN, R.style.FunCheckbox);
-        put(Category.CHORES, R.style.ChoresCheckbox);
-    }};
-
 
     @BindView(R.id.tutorial_calendar)
     CalendarDayView calendarDayView;
@@ -120,7 +109,6 @@ public class TutorialCalendarFragment extends Fragment {
                     preferencesManager.resetAll();
                     onQuestComplete(v, checkBox);
                 }).show();
-
         return v;
     }
 
@@ -202,6 +190,9 @@ public class TutorialCalendarFragment extends Fragment {
     }
 
     private void onProgressReviewed() {
+        NavigationMenuView navigationMenuView = (NavigationMenuView) navigationView.getChildAt(0);
+        LinearLayoutManager linearLayoutManager = (LinearLayoutManager) navigationMenuView.getLayoutManager();
+        linearLayoutManager.scrollToPositionWithOffset(6, 0);
         new MaterialIntroView.Builder(getActivity())
                 .enableIcon(false)
                 .setFocusGravity(FocusGravity.CENTER)
@@ -211,7 +202,7 @@ public class TutorialCalendarFragment extends Fragment {
                 .dismissOnTouch(true)
                 .setInfoText(getString(R.string.tutorial_store))
                 .setShape(ShapeType.RECTANGLE)
-                .setTarget(((NavigationMenuView) navigationView.getChildAt(0)).findViewHolderForAdapterPosition(9).itemView)
+                .setTarget(navigationMenuView.findViewHolderForAdapterPosition(9).itemView)
                 .setListener(s -> {
                     preferencesManager.resetAll();
                     ((TutorialActivity) getActivity()).onCalendarDone();
@@ -221,7 +212,7 @@ public class TutorialCalendarFragment extends Fragment {
 
     @NonNull
     private CheckBox createCheckBox(Category category, Context context) {
-        CheckBox check = new CheckBox(new ContextThemeWrapper(context, QUEST_CATEGORY_TO_CHECKBOX_STYLE.get(category)));
+        CheckBox check = new CheckBox(new ContextThemeWrapper(context, getCheckBoxStyle(category)));
         LinearLayout.LayoutParams checkLP = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         int marginEndDP = 16;
@@ -248,5 +239,22 @@ public class TutorialCalendarFragment extends Fragment {
     public void setQuestInfo(String name, Category category) {
         this.name = name;
         this.category = category;
+    }
+
+    private int getCheckBoxStyle(Category category) {
+        switch (category) {
+            case LEARNING:
+                return R.style.LearningCheckbox;
+            case WELLNESS:
+                return R.style.WellnessCheckbox;
+            case PERSONAL:
+                return R.style.PersonalCheckbox;
+            case WORK:
+                return R.style.WorkCheckbox;
+            case FUN:
+                return R.style.FunCheckbox;
+            default:
+                return R.style.ChoresCheckbox;
+        }
     }
 }
