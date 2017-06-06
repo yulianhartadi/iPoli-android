@@ -107,7 +107,6 @@ import static io.ipoli.android.app.App.hasPlayer;
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, OnDataChangedListener<Player> {
 
     public static final int INVITE_FRIEND_REQUEST_CODE = 102;
-    private static final int PROGRESS_BAR_MAX_VALUE = 100;
 
     @BindView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
@@ -336,7 +335,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         populateHeaderXP(player, header);
 
         ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
-        experienceBar.setMax(PROGRESS_BAR_MAX_VALUE);
+        experienceBar.setMax(Constants.XP_BAR_MAX_VALUE);
         experienceBar.setProgress(getCurrentProgress(player));
 
         CircleImageView avatarPictureView = (CircleImageView) header.findViewById(R.id.player_picture);
@@ -414,7 +413,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         BigInteger requiredXPForCurrentLevel = ExperienceForLevelGenerator.forLevel(currentLevel);
         BigDecimal xpForNextLevel = new BigDecimal(ExperienceForLevelGenerator.forLevel(currentLevel + 1).subtract(requiredXPForCurrentLevel));
         BigDecimal currentXP = new BigDecimal(new BigInteger(player.getExperience()).subtract(requiredXPForCurrentLevel));
-        return (int) (currentXP.divide(xpForNextLevel, 2, RoundingMode.HALF_UP).doubleValue() * PROGRESS_BAR_MAX_VALUE);
+        return (int) (currentXP.divide(xpForNextLevel, 2, RoundingMode.HALF_UP).doubleValue() * Constants.XP_BAR_MAX_VALUE);
     }
 
     public void startCalendar() {

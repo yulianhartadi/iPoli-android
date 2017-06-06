@@ -338,7 +338,6 @@ public class App extends MultiDexApplication {
         }
         if (!hasPlayer()) {
             if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
-                localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
                 startNewActivity(TutorialActivity.class);
             } else {
                 startNewActivity(SignInActivity.class);
@@ -353,7 +352,13 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onFinishTutorialActivity(FinishTutorialActivityEvent e) {
         if (!hasPlayer()) {
-            startNewActivity(SignInActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString(Constants.USERNAME_EXTRA_KEY, e.playerName);
+            startNewActivity(SignInActivity.class, bundle);
+        } else {
+            Player player = getPlayer();
+            player.setUsername(e.playerName);
+            playerPersistenceService.save(player);
         }
     }
 
@@ -655,7 +660,7 @@ public class App extends MultiDexApplication {
         }
         player.removeCoins(coins);
         // @TODO remove this when all players have rewardPoints
-        if(rewardPoints != null) {
+        if (rewardPoints != null) {
             player.removeRewardPoints(rewardPoints);
         } else {
             player.removeRewardPoints(coins);
