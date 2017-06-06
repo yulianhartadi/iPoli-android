@@ -859,6 +859,10 @@
     <string name="name_prompt_welcome">Welcome, %s!</string>
     <string name="accept_challenge">Accept Challenge</string>
     <string name="outro_text">%s, let\'s achieve your life goals by fighting procrastination, laziness and clutter together!</string>
+    <string name="tutorial_calendar_quest_hint">Your quest has been added to your calendar. Complete it by tapping on the checkbox.</string>
+    <string name="tutorial_quest_complete">Every time you complete a quest you get a reward! Experience allows you to level up and with life coins you can unlock upgrades, buy new avatars ot pets.</string>
+    <string name="tutorial_follow_progress">You can follow your progress here. These are your avatar and pet. Keep your pet happy by completing your quests regularly to achieve maximum coins and XP bonus!</string>
+    <string name="tutorial_store">Use your hard earned coins to unlock powerful upgrades (Repeating quests, Calendar sync, Notes etc) or buy new avatars and cute pets!</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
