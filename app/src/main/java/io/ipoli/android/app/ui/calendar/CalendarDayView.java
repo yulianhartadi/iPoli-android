@@ -286,6 +286,12 @@ public class CalendarDayView extends FrameLayout {
         });
     }
 
+    public void scrollTo(final Time time) {
+        int hour = Math.max(0, time.getHours() - TOP_PADDING_HOURS);
+        int scrollY = hour == 0 ? 0 : getYPositionFor(hour, time.getMinutes());
+        scrollView.setScrollY(scrollY);
+    }
+
     public void smoothScrollToTime(final Time time) {
         int hour = Math.max(0, time.getHours() - TOP_PADDING_HOURS);
         int scrollTo = hour == 0 ? 0 : getYPositionFor(hour, time.getMinutes());

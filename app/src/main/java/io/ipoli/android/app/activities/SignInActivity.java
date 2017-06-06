@@ -94,15 +94,18 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     @BindView(R.id.guest_login)
     FancyButton guestButton;
 
-    private CallbackManager callbackManager;
-    private GoogleApiClient googleApiClient;
-
     @BindView(R.id.toolbar)
     Toolbar toolbar;
+
+    private CallbackManager callbackManager;
+
+    private GoogleApiClient googleApiClient;
 
     private boolean isNewPlayer;
 
     private LoadingDialog dialog;
+
+    private String username;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -110,6 +113,8 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         setContentView(R.layout.activity_sign_in);
         App.getAppComponent(this).inject(this);
         ButterKnife.bind(this);
+
+        this.username = getIntent().getStringExtra(Constants.USERNAME_EXTRA_KEY);
 
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
@@ -217,8 +222,8 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             try {
                 String id = object.getString("id");
                 String email = "";
-                if(object.has("email")) {
-                   email = object.getString("email");
+                if (object.has("email")) {
+                    email = object.getString("email");
                 }
                 String firstName = object.getString("first_name");
                 String lastName = object.getString("last_name");
@@ -285,7 +290,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                 authProvider.setEmail(email);
                 eventBus.post(new PlayerSignedInEvent(authProvider.getProvider(), isNew));
                 if (shouldCreatePlayer) {
-                    createPlayer(playerId, authProvider);
+                    createPlayer(playerId, SignInActivity.this.username, authProvider);
                 } else if (isNew) {
                     updatePlayerWithAuthProvider(authProvider);
                 }
@@ -345,14 +350,15 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     }
 
     private void createPlayer() {
-        createPlayer(null, null);
+        createPlayer(null, "", null);
     }
 
-    private void createPlayer(String playerId, AuthProvider authProvider) {
+    private void createPlayer(String playerId, String username, AuthProvider authProvider) {
         Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR.code,
                 Constants.DEFAULT_PET_BACKGROUND_PICTURE, Constants.DEFAULT_PET_HP);
 
-        Player player = new Player(String.valueOf(Constants.DEFAULT_PLAYER_XP),
+        Player player = new Player(username,
+                String.valueOf(Constants.DEFAULT_PLAYER_XP),
                 Constants.DEFAULT_PLAYER_LEVEL,
                 Constants.DEFAULT_PLAYER_COINS,
                 Constants.DEFAULT_PLAYER_REWARD_POINTS,
@@ -403,7 +409,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @Override
     public void onBackPressed() {
-        if(!App.hasPlayer()) {
+        if (!App.hasPlayer()) {
             signUpAsGuest();
         } else {
             super.onBackPressed();
