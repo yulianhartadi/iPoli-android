@@ -134,8 +134,6 @@ public interface AppComponent {
 
     void inject(RepeatingQuestListFragment repeatingQuestListFragment);
 
-    void inject(TutorialActivity tutorialActivity);
-
     void inject(CalendarFragment calendarFragment);
 
     void inject(QuestRemoteViewsFactory questRemoteViewsFactory);
@@ -245,6 +243,8 @@ public interface AppComponent {
     void inject(EisenhowerMatrixActivity eisenhowerMatrixActivity);
 
     void inject(FabMenuView fabMenuView);
+
+    void inject(TutorialActivity tutorialActivity);
 
     void inject(AndroidCalendarSyncJobService androidCalendarSyncJobService);
 }
