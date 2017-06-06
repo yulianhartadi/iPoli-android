@@ -865,10 +865,11 @@
     <string name="tutorial_store">Use your hard earned coins to unlock powerful upgrades (Repeating quests, Calendar sync, Notes etc) or buy new avatars and cute pets!</string>
     <string name="choose_category">Choose Category</string>
     <string name="tutorial_quest_name">Quest name</string>
-    <string name="tutorial_quest_button">Let\'s start by adding your first quest! Do you see the button below? Will you do me the honor?</string>
-    <string name="tutorial_quest_first_quest">Your tasks are now called quests. Enter the name of your first quest</string>
-    <string name="choose_a_category">Choose a category</string>
+    <string name="tutorial_quest_button">Do you see the button below? Will you do me the honor?</string>
+    <string name="tutorial_quest_first_quest">Enter the name of your first quest</string>
+    <string name="choose_a_category">Now, choose a category</string>
     <string name="tutorial_quest_validation">Still waiting for that name</string>
+    <string name="tutorial_quest_tasks">Your tasks are now called quests. Let\'s start by adding your first one!</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
