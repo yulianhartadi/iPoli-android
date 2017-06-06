@@ -112,7 +112,7 @@ public class TutorialCalendarFragment extends Fragment {
                 .setDelayMillis(500)
                 .enableFadeAnimation(true)
                 .performClick(true)
-                .setInfoText("Your quest has been added to your calendar. Complete it by tapping on the checkbox.")
+                .setInfoText(getString(R.string.tutorial_calendar_quest_hint))
                 .setShape(ShapeType.RECTANGLE)
                 .setTargetPadding(20)
                 .setTarget(v.findViewById(R.id.tutorial_quest_container))
@@ -137,7 +137,7 @@ public class TutorialCalendarFragment extends Fragment {
                                 .enableFadeAnimation(true)
                                 .setTargetPadding(5)
                                 .dismissOnTouch(true)
-                                .setInfoText("Every time you complete a quest you get a reward! Experience allows you to level up and with life coins you can unlock upgrades, buy new avatars ot pets.")
+                                .setInfoText(getString(R.string.tutorial_quest_complete))
                                 .setShape(ShapeType.RECTANGLE)
                                 .setTarget(snackBar.getView())
                                 .setListener(s -> {
@@ -190,7 +190,7 @@ public class TutorialCalendarFragment extends Fragment {
                     .enableFadeAnimation(true)
                     .setTargetPadding(5)
                     .dismissOnTouch(true)
-                    .setInfoText("You can follow your progress here. These are your avatar and pet. Keep your pet happy by completing your quests regularly to achieve maximum coins and XP bonus!")
+                    .setInfoText(getString(R.string.tutorial_follow_progress))
                     .setShape(ShapeType.RECTANGLE)
                     .setTarget(headerView)
                     .setListener(s -> {
@@ -209,7 +209,7 @@ public class TutorialCalendarFragment extends Fragment {
                 .enableFadeAnimation(true)
                 .setTargetPadding(5)
                 .dismissOnTouch(true)
-                .setInfoText("Use your hard earned coins to unlock powerful upgrades (Repeating quests, Calendar sync, Notes etc) or buy new avatars and cute pets!")
+                .setInfoText(getString(R.string.tutorial_store))
                 .setShape(ShapeType.RECTANGLE)
                 .setTarget(((NavigationMenuView) navigationView.getChildAt(0)).findViewHolderForAdapterPosition(9).itemView)
                 .setListener(s -> {
