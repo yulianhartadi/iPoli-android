@@ -346,9 +346,9 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onFinishTutorialActivity(FinishTutorialActivityEvent e) {
         if (!hasPlayer()) {
-            Intent intent = new Intent(this, SignInActivity.class);
-            intent.putExtra(Constants.USERNAME_EXTRA_KEY, e.playerName);
-            startActivity(intent);
+            Bundle bundle = new Bundle();
+            bundle.putString(Constants.USERNAME_EXTRA_KEY, e.playerName);
+            startNewActivity(SignInActivity.class, bundle);
         } else {
             Player player = getPlayer();
             player.setUsername(e.playerName);
