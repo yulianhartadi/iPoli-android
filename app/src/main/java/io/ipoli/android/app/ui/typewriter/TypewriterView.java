@@ -22,6 +22,8 @@ public class TypewriterView extends AppCompatEditText {
 
     private Runnable nextRunnable = this::runNext;
 
+    private Repeater currentRepeater;
+
     public TypewriterView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setKeyListener(null);
@@ -34,7 +36,7 @@ public class TypewriterView extends AppCompatEditText {
 
     public TypewriterView type(CharSequence text, long speed) {
         repeaters.add(new TextAdder(this, text, speed, nextRunnable));
-        return runNextIfNotRunning();
+        return runNextIfRunning();
     }
 
     public TypewriterView type(CharSequence text) {
@@ -43,7 +45,7 @@ public class TypewriterView extends AppCompatEditText {
 
     public TypewriterView delete(CharSequence text, long speed) {
         repeaters.add(new TextEraser(this, text, speed, nextRunnable));
-        return runNextIfNotRunning();
+        return runNextIfRunning();
     }
 
     public TypewriterView delete(CharSequence text) {
@@ -52,21 +54,21 @@ public class TypewriterView extends AppCompatEditText {
 
     public TypewriterView pause(long millis) {
         repeaters.add(new TypePauser(millis, nextRunnable));
-        return runNextIfNotRunning();
+        return runNextIfRunning();
     }
 
     public TypewriterView run(Runnable runnable) {
         repeaters.add(new TypeRunnable(runnable, nextRunnable));
-        return runNextIfNotRunning();
+        return runNextIfRunning();
     }
 
     public TypewriterView clear() {
         repeaters.add(new TypeRunnable(new TextClearer(this), nextRunnable));
-        return runNextIfNotRunning();
+        return runNextIfRunning();
     }
 
     @NonNull
-    private TypewriterView runNextIfNotRunning() {
+    private TypewriterView runNextIfRunning() {
         if (!isRunning) runNext();
         return this;
     }
@@ -81,13 +83,19 @@ public class TypewriterView extends AppCompatEditText {
 
     private void runNext() {
         isRunning = true;
-        Repeater next = repeaters.poll();
+        currentRepeater = repeaters.poll();
 
-        if (next == null) {
+        if (currentRepeater == null) {
             isRunning = false;
             return;
         }
-        next.run();
+        currentRepeater.run();
     }
 
+    public void stop() {
+        isRunning = false;
+        if(currentRepeater != null) {
+            currentRepeater.stop();
+        }
+    }
 }

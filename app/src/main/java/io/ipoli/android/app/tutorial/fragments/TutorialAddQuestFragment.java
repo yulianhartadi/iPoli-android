@@ -82,8 +82,8 @@ public class TutorialAddQuestFragment extends Fragment {
         addQuest.setVisibility(View.GONE);
         questNameContainer.setVisibility(View.VISIBLE);
         chooseCategory.setVisibility(View.VISIBLE);
-        fadeIn(questNameContainer, 2000);
-        fadeIn(chooseCategory, 2000);
+        fadeIn(questNameContainer, 3000);
+        fadeIn(chooseCategory, 3000);
     }
 
     @OnClick(R.id.tutorial_choose_category)

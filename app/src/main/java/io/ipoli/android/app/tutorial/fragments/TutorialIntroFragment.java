@@ -125,6 +125,7 @@ public class TutorialIntroFragment extends Fragment {
 
     @OnClick(R.id.tutorial_skip_section)
     public void onSkipSectionClick(View view) {
+        tutorialText.stop();
         onIntroDone();
     }
 

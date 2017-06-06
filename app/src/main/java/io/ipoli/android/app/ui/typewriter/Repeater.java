@@ -7,13 +7,16 @@ import android.os.Handler;
  * on 6/5/17.
  */
 abstract class Repeater implements Runnable {
-    protected Handler handler = new Handler();
+
+    private boolean isRunning;
+    private Handler handler = new Handler();
     private Runnable doneRunnable;
     private long delay;
 
     public Repeater(Runnable doneRunnable, long delay) {
         this.doneRunnable = doneRunnable;
         this.delay = delay;
+        this.isRunning = true;
     }
 
     protected void done() {
@@ -21,6 +24,13 @@ abstract class Repeater implements Runnable {
     }
 
     protected void delayAndRepeat() {
+        if (!isRunning) {
+            return;
+        }
         handler.postDelayed(this, delay);
+    }
+
+    public void stop() {
+        isRunning = false;
     }
 }
