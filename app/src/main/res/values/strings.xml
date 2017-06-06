@@ -843,8 +843,8 @@
     <string name="nah_not_me">Nah, not me</string>
     <string name="i_believe_in_you">Come on! I believe in you!</string>
     <string name="skip_section">Skip section</string>
-    <string name="another_of_those">Gosh, we have another one of those...</string>
-    <string name="lets_start_over">Ok, ok. Let\'s start over!</string>
+    <string name="another_of_those">Gosh, we have another one of those…</string>
+    <string name="lets_start_over">OK, OK. Let\'s start over!</string>
     <string name="welcome_hero">Welcome, Hero!</string>
     <string name="embrace_journey">Are you ready to embrace your destiny of studying many hours, working late, doing sports and eating yucky food?</string>
     <string name="you_the_one">So, we\'ve established the fact that you might be the ONE. Would you like some tips?</string>
@@ -858,7 +858,7 @@
     <string name="name_prompt_validation">Please, tell me your name</string>
     <string name="name_prompt_welcome">Welcome, %s!</string>
     <string name="accept_challenge">Accept Challenge</string>
-    <string name="outro_text">%s, let\'s achieve your life goals by fighting procrastination, lazyness and disorganization together!</string>
+    <string name="outro_text">%s, let\'s achieve your life goals by fighting procrastination, laziness and clutter together!</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
