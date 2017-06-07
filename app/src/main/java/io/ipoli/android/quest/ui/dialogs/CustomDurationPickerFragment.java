@@ -9,12 +9,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.utils.Time;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -24,13 +29,25 @@ import io.ipoli.android.R;
 public class CustomDurationPickerFragment extends DialogFragment {
     private static final String TAG = "custom-duration-picker-dialog";
     private static final String DURATION = "duration";
+    public static final int MAX_DIGIT_COUNT = 3;
+
+    @BindView(R.id.custom_duration_hours)
+    TextView hoursView;
+
+    @BindView(R.id.custom_duration_minutes)
+    TextView minutesView;
+
+    @BindView(R.id.custom_duration_delete_digit)
+    ImageButton delete;
+
+    private String durationText = "";
 
     private OnCustomDurationPickedListener durationPickedListener;
 
     private int duration;
     private Unbinder unbinder;
 
-    public interface OnCustomDurationPickedListener{
+    public interface OnCustomDurationPickedListener {
         void onCustomDurationPicked(int duration);
     }
 
@@ -60,30 +77,90 @@ public class CustomDurationPickerFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View titleView = inflater.inflate(R.layout.custom_duration_dialog_header, null);
+        unbinder = ButterKnife.bind(this, titleView);
 
-        TextView hours = (TextView) titleView.findViewById(R.id.custom_duration_hours);
-        TextView minutes = (TextView) titleView.findViewById(R.id.custom_duration_minutes);
-
-        hours.setText("00");
-        minutes.setText("45");
-
+        setHoursAndMinutes();
+        delete.setOnClickListener(v -> {
+            if (durationText.length() == 1) {
+                durationText = "";
+            } else if (durationText.length() > 1) {
+                durationText = durationText.substring(0, durationText.length() - 1);
+            }
+            setHoursAndMinutes();
+        });
 
 
         View view = inflater.inflate(R.layout.fragment_custom_duration_picker, null);
-        unbinder = ButterKnife.bind(this, view);
+        ViewGroup digitsContainer = (ViewGroup) view.findViewById(R.id.custom_duration_digits_container);
+
+        for (int i = 0; i < digitsContainer.getChildCount(); i++) {
+            View digitView = digitsContainer.getChildAt(i);
+            View.OnClickListener digitClickListener = v -> {
+                if (durationText.length() >= MAX_DIGIT_COUNT) {
+                    return;
+                }
+
+                if (getDuration(durationText + v.getTag()) > Time.h2Min(4)) {
+                    durationText = "400";
+                    Toast.makeText(getContext(), "More than 4", Toast.LENGTH_SHORT).show();
+                } else {
+                    durationText += v.getTag();
+
+                }
+                setHoursAndMinutes();
+            };
+            digitView.setOnClickListener(digitClickListener);
+        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setIcon(R.drawable.logo)
                 .setCustomTitle(titleView)
                 .setView(view)
                 .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
-
+                    int duration = getDuration(durationText);
+                    if (duration > Time.h2Min(4)) {
+                        return;
+                    }
+                    durationPickedListener.onCustomDurationPicked(duration);
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
 
                 });
         return builder.create();
 
+    }
+
+    private int getDuration(String durationString) {
+        for (int i = durationString.length(); i < MAX_DIGIT_COUNT; i++) {
+            durationString = "0" + durationString;
+        }
+        int hours = Integer.parseInt(durationString.substring(0, 1));
+        int minutes = Integer.parseInt(durationString.substring(1));
+
+        return hours * 60 + minutes;
+    }
+
+    private void setHoursAndMinutes() {
+        if (durationText.length() > MAX_DIGIT_COUNT) {
+            return;
+        }
+
+        String hours = "0";
+        String minutes = "0";
+
+        if (durationText.isEmpty()) {
+            minutes += "0";
+        } else if (durationText.length() == 1) {
+            minutes += durationText;
+        } else if (durationText.length() == 2) {
+            minutes = durationText;
+        } else if (durationText.length() == 3) {
+            hours = durationText.substring(0, 1);
+            minutes = durationText.substring(1);
+        }
+
+        hoursView.setText(hours);
+        minutesView.setText(minutes);
     }
 
     @Override
