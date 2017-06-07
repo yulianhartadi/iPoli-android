@@ -83,6 +83,9 @@ public class DurationPickerFragment extends DialogFragment {
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
 
+                })
+                .setNeutralButton(R.string.custom, (dialog, which) -> {
+                    builder.setView(R.layout.note_link_list_item);
                 });
         return builder.create();
 
