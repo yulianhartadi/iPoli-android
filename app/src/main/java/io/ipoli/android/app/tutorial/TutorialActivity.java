@@ -111,4 +111,9 @@ public class TutorialActivity extends AppCompatActivity {
         eventBus.post(new FinishTutorialActivityEvent(playerName));
         finish();
     }
+
+    public void onTutorialSkipped() {
+        playerName = "";
+        onTutorialDone();
+    }
 }

@@ -851,8 +851,7 @@
     <string name="daemon_intro">Many millennia ago, a daemon from another dimension came to conquer us. Yes, he used backdoor that was left intentionally open!</string>
     <string name="daemon_objective">His objective? Eat all the ice-cream on Earth! And kill the ONE!</string>
     <string name="daemon_backstory">Counterintuitively enough, only the ONE can stop him! Let\'s hope that\'s you! That daemon I was telling you about is pretty evil! He is so evil that his name is EVIL Snail! Yes, that name was given to him by his mother</string>
-    <string name="journey_start">Your greatest journey is starting</string>
-    <string name="journey_today"> today!</string>
+    <string name="journey_start">Your greatest journey is starting today!</string>
     <string name="your_name">Your name</string>
     <string name="your_name_prompt">First, let\'s get to know you a bit better. How should I call you?</string>
     <string name="name_prompt_validation">Please, tell me your name</string>
@@ -870,6 +869,9 @@
     <string name="choose_a_category">Now, choose a category</string>
     <string name="tutorial_quest_validation">Still waiting for that name</string>
     <string name="tutorial_quest_tasks">Your tasks are now called quests. Let\'s start by adding your first one!</string>
+    <string name="want_to_skip_tutorial">Do you want me to show you how we will fight your life enemies together?</string>
+    <string name="show_me">Show me</string>
+    <string name="no_skip_tutorial">No, skip tutorial</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

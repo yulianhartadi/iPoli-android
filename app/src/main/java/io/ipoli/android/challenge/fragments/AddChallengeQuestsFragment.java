@@ -30,7 +30,7 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
-import io.ipoli.android.app.tutorial.PickQuestViewModel;
+import io.ipoli.android.challenge.viewmodels.PickQuestViewModel;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.events.StartFabMenuIntentEvent;
 import io.ipoli.android.app.utils.StringUtils;
