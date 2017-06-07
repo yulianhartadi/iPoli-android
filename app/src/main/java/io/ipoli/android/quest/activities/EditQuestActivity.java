@@ -84,6 +84,7 @@ import io.ipoli.android.quest.events.subquests.NewSubQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
+import io.ipoli.android.quest.ui.dialogs.CustomDurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
 import io.ipoli.android.quest.ui.dialogs.PriorityPickerFragment;
@@ -587,11 +588,17 @@ public class EditQuestActivity extends BaseActivity implements
     public void onDurationClick(View view) {
         DurationPickerFragment durationPickerFragment;
         if (durationText.getTag() != null && (int) durationText.getTag() > 0) {
+            CustomDurationPickerFragment.newInstance(new CustomDurationPickerFragment.OnCustomDurationPickedListener() {
+                @Override
+                public void onCustomDurationPicked(int duration) {
+
+                }
+            }).show(getSupportFragmentManager());
             durationPickerFragment = DurationPickerFragment.newInstance((int) durationText.getTag(), this);
         } else {
             durationPickerFragment = DurationPickerFragment.newInstance(this);
         }
-        durationPickerFragment.show(getSupportFragmentManager());
+//        durationPickerFragment.show(getSupportFragmentManager());
     }
 
     @OnClick(R.id.quest_frequency_container)

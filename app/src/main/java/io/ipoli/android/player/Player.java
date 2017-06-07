@@ -105,6 +105,7 @@ public class Player extends PersistedObject {
     }
 
     public Long getCoins() {
+        coins = 10000L;
         return coins;
     }
 
