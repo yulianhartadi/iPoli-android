@@ -43,7 +43,9 @@ public class TutorialOutroFragment extends Fragment {
 
     @OnClick(R.id.tutorial_accept)
     public void onAcceptChallengeClick(View v) {
-        ((TutorialActivity) getActivity()).onTutorialDone();
+        if (getActivity() != null) {
+            ((TutorialActivity) getActivity()).onTutorialDone();
+        }
     }
 
     @Override

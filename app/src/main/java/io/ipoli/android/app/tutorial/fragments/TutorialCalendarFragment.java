@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
@@ -193,6 +194,8 @@ public class TutorialCalendarFragment extends Fragment {
         NavigationMenuView navigationMenuView = (NavigationMenuView) navigationView.getChildAt(0);
         LinearLayoutManager linearLayoutManager = (LinearLayoutManager) navigationMenuView.getLayoutManager();
         linearLayoutManager.scrollToPositionWithOffset(6, 0);
+        RecyclerView.ViewHolder viewHolder = navigationMenuView.findViewHolderForAdapterPosition(9);
+        View targetView = viewHolder != null && viewHolder.itemView != null ? viewHolder.itemView : navigationMenuView;
         new MaterialIntroView.Builder(getActivity())
                 .enableIcon(false)
                 .setFocusGravity(FocusGravity.CENTER)
@@ -202,12 +205,18 @@ public class TutorialCalendarFragment extends Fragment {
                 .dismissOnTouch(true)
                 .setInfoText(getString(R.string.tutorial_store))
                 .setShape(ShapeType.RECTANGLE)
-                .setTarget(navigationMenuView.findViewHolderForAdapterPosition(9).itemView)
+                .setTarget(targetView)
                 .setListener(s -> {
                     preferencesManager.resetAll();
-                    ((TutorialActivity) getActivity()).onCalendarDone();
+                    onDone();
                 })
                 .show();
+    }
+
+    private void onDone() {
+        if (getActivity() != null) {
+            ((TutorialActivity) getActivity()).onCalendarDone();
+        }
     }
 
     @NonNull

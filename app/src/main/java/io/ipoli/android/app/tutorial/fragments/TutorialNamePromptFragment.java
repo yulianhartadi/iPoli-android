@@ -87,7 +87,13 @@ public class TutorialNamePromptFragment extends Fragment {
         fadeOut(ready);
         tutorialText.setText("");
         tutorialText.type(getString(R.string.name_prompt_welcome, nameText)).pause().run(() ->
-                ((TutorialActivity) getActivity()).onNamePromptDone(nameText));
+                onDone(nameText));
+    }
+
+    private void onDone(String nameText) {
+        if (getActivity() != null) {
+            ((TutorialActivity) getActivity()).onNamePromptDone(nameText);
+        }
     }
 
     @Override
