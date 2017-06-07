@@ -1,4 +1,4 @@
-package io.ipoli.android.app.tutorial;
+package io.ipoli.android.challenge.viewmodels;
 
 import org.threeten.bp.LocalDate;
 

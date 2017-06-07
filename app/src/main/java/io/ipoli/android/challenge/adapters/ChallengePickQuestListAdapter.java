@@ -7,7 +7,7 @@ import com.squareup.otto.Bus;
 import java.util.List;
 
 import io.ipoli.android.quest.adapters.BasePickQuestAdapter;
-import io.ipoli.android.app.tutorial.PickQuestViewModel;
+import io.ipoli.android.challenge.viewmodels.PickQuestViewModel;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

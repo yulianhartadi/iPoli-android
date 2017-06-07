@@ -28,7 +28,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
-import io.ipoli.android.app.tutorial.PickQuestViewModel;
+import io.ipoli.android.challenge.viewmodels.PickQuestViewModel;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.challenge.adapters.PickDailyChallengeQuestsAdapter;
 import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;

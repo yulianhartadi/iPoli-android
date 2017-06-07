@@ -83,7 +83,7 @@ public class TutorialIntroFragment extends Fragment {
         prepareForNextState();
         tutorialText.type(getString(R.string.another_of_those)).pause().clear()
                 .type(getString(R.string.lets_start_over)).pause().clear().type(getString(R.string.welcome_hero)).pause().clear()
-                .pause().type(getString(R.string.journey_start)).pause().type(getString(R.string.journey_today)).pause().clear()
+                .pause().type(getString(R.string.journey_start)).pause().clear()
                 .type(getString(R.string.embrace_journey)).run(() -> {
             positiveAnswer.setText(R.string.i_accept);
             negativeAnswer.setText(R.string.nah_not_me);
@@ -91,6 +91,18 @@ public class TutorialIntroFragment extends Fragment {
             fadeIn(negativeAnswer);
             positiveAnswer.setOnClickListener(acceptChallengeListener);
             negativeAnswer.setOnClickListener(skipChallengeListener);
+        });
+    };
+
+    private View.OnClickListener continueWithTutorialListener = v -> {
+        prepareForNextState();
+        tutorialText.type(getString(R.string.want_to_skip_tutorial)).run(() -> {
+            positiveAnswer.setText(R.string.show_me);
+            negativeAnswer.setText(R.string.no_skip_tutorial);
+            fadeIn(positiveAnswer);
+            fadeIn(negativeAnswer);
+            positiveAnswer.setOnClickListener(improveListener);
+            negativeAnswer.setOnClickListener(v1 -> onTutorialSkipped());
         });
     };
 
@@ -107,7 +119,7 @@ public class TutorialIntroFragment extends Fragment {
         tutorialText.pause(1000).type(getString(R.string.why_are_you_here)).run(() -> {
             positiveAnswer.setText(R.string.improve_myself);
             negativeAnswer.setText(R.string.no_idea);
-            positiveAnswer.setOnClickListener(improveListener);
+            positiveAnswer.setOnClickListener(continueWithTutorialListener);
             negativeAnswer.setOnClickListener(v1 ->
                     Toast.makeText(getContext(), R.string.then_what_are_you_doing_here, Toast.LENGTH_LONG).show());
             fadeIn(positiveAnswer);
@@ -131,6 +143,12 @@ public class TutorialIntroFragment extends Fragment {
     private void onIntroDone() {
         if (getActivity() != null) {
             ((TutorialActivity) getActivity()).onIntroDone();
+        }
+    }
+
+    private void onTutorialSkipped() {
+        if (getActivity() != null) {
+            ((TutorialActivity) getActivity()).onTutorialSkipped();
         }
     }
 
