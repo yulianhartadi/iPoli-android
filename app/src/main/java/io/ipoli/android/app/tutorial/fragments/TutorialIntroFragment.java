@@ -81,8 +81,7 @@ public class TutorialIntroFragment extends Fragment {
 
     private View.OnClickListener improveListener = v -> {
         prepareForNextState();
-        tutorialText.type(getString(R.string.another_of_those)).pause()
-                .delete(getString(R.string.another_of_those)).pause()
+        tutorialText.type(getString(R.string.another_of_those)).pause().clear()
                 .type(getString(R.string.lets_start_over)).pause().clear().type(getString(R.string.welcome_hero)).pause().clear()
                 .pause().type(getString(R.string.journey_start)).pause().type(getString(R.string.journey_today)).pause().clear()
                 .type(getString(R.string.embrace_journey)).run(() -> {
@@ -130,7 +129,9 @@ public class TutorialIntroFragment extends Fragment {
     }
 
     private void onIntroDone() {
-        ((TutorialActivity) getActivity()).onIntroDone();
+        if (getActivity() != null) {
+            ((TutorialActivity) getActivity()).onIntroDone();
+        }
     }
 
     private void prepareForNextState() {
