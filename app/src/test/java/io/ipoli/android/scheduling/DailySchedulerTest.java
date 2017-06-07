@@ -537,6 +537,41 @@ public class DailySchedulerTest {
         assertFalse(scheduler.isFree(nextSlot.getStartMinute(), nextSlot.getEndMinute()));
     }
 
+    @Test
+    public void shouldOccupyLastSlot() {
+        DailyScheduler scheduler = new DailySchedulerBuilder()
+                .setStartMinute(h2Min(18) + 10)
+                .setEndMinute(h2Min(22))
+                .setWorkStartMinute(h2Min(7))
+                .setWorkEndMinute(h2Min(3))
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .setSeed(random)
+                .create();
+        List<Task> scheduledTasks = Collections.singletonList(new Task("", h2Min(22) - 5, 10, Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT, TimePreference.ANY, Category.WELLNESS));
+        scheduler.scheduleTasks(new ArrayList<>(), scheduledTasks, defaultTime);
+        assertFalse(scheduler.isFree(h2Min(22) - 5, h2Min(22)));
+    }
+
+    @Test
+    public void shouldScheduleInLastSlot() {
+        DailyScheduler scheduler = new DailySchedulerBuilder()
+                .setStartMinute(h2Min(8) + 5)
+                .setEndMinute(h2Min(9))
+                .setWorkStartMinute(h2Min(8))
+                .setWorkEndMinute(h2Min(9))
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .setSeed(random)
+                .create();
+        Time currentTime = Time.of(h2Min(8));
+        List<Task> scheduledTask = scheduler.scheduleTasks(
+                Collections.singletonList(new Task("2", 10, Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT, TimePreference.ANY, Category.WELLNESS)),
+                Collections.singletonList(new Task("", h2Min(8) + 5, 45, Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT, TimePreference.ANY, Category.WELLNESS)),
+                currentTime);
+        TimeSlot currentTimeSlot = scheduledTask.get(0).getCurrentTimeSlot();
+        assertTrue(currentTimeSlot.getStartMinute() == h2Min(9) - 10 &&
+                currentTimeSlot.getEndMinute() == h2Min(9));
+    }
+
     private Task toTask(Quest quest) {
         PriorityEstimator priorityEstimator = new PriorityEstimator();
         return new Task(quest.getStartMinute() == null ? -1 : quest.getStartMinute(),

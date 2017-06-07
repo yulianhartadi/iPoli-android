@@ -2,8 +2,6 @@ package io.ipoli.android.app.scheduling;
 
 import android.support.annotation.NonNull;
 
-import com.google.firebase.crash.FirebaseCrash;
-
 import org.threeten.bp.DayOfWeek;
 
 import java.util.ArrayList;
@@ -109,7 +107,7 @@ public class DailyScheduler {
     }
 
     private int getSlotCount() {
-        int slotCount = (endMinute - startMinute) / timeSlotDuration;
+        int slotCount = (int) Math.ceil((endMinute - startMinute) / (float) timeSlotDuration);
         if (startMinute > endMinute) {
             int slotsInADay = Time.MINUTES_IN_A_DAY / timeSlotDuration;
             slotCount = slotsInADay + slotCount;
@@ -133,20 +131,6 @@ public class DailyScheduler {
         int slotMinute = startMinute;
         while (slotMinute < endMinute) {
             int slotIndex = getSlotForMinute(slotMinute);
-            if(slotIndex >= slots.length) {
-                StringBuilder builder = new StringBuilder();
-                builder.append("Slot index:").append(slotIndex)
-                        .append(" slot minute:").append(slotMinute)
-                        .append(" slot count:").append(slots.length)
-                        .append(" startMinute:").append(startMinute)
-                        .append(" endMinute:").append(endMinute)
-                        .append(" schedule startMinute:").append(this.startMinute)
-                        .append(" schedule endMinute:").append(this.endMinute)
-                        .append(" workStartMinute:").append(workStartMinute)
-                        .append(" workEndMinute:").append(workEndMinute);
-                FirebaseCrash.report(new ArrayIndexOutOfBoundsException(builder.toString()));
-                break;
-            }
             slots[slotIndex] = value;
             slotMinute += timeSlotDuration;
         }
@@ -258,8 +242,9 @@ public class DailyScheduler {
     private List<TimeSlot> createTimeSlotsForTask(Task task, DiscreteDistribution dist, Time currentTime) {
         List<TimeSlot> timeSlots = new ArrayList<>();
         int taskSlotCount = getSlotCountBetween(0, task.getDuration());
-        int startSlot = getSlotForMinute(currentTime.toMinuteOfDay());
-        if (isNotAtSlotMinute(currentTime)) {
+        int startMinute = Math.max(currentTime.toMinuteOfDay(), this.startMinute);
+        int startSlot = getSlotForMinute(startMinute);
+        if (isNotAtSlotMinute(Time.of(startMinute))) {
             startSlot = Math.min(startSlot + 1, freeSlots.length - 1);
         }
         for (int curSlot = startSlot; curSlot < freeSlots.length; curSlot++) {
@@ -267,7 +252,7 @@ public class DailyScheduler {
                 for (int endSlot = curSlot; endSlot < freeSlots.length; endSlot++) {
                     if (isNotAvailableSlot(dist, endSlot) || endSlot == freeSlots.length - 1) {
                         if (taskSlotCount <= endSlot - curSlot + 1) {
-                            timeSlots.addAll(cutSlotToTimeBlocks(curSlot, endSlot, taskSlotCount));
+                            timeSlots.addAll(cutSlotToTimeBlocks(curSlot, endSlot, taskSlotCount, task.getDuration()));
                         }
                         curSlot = endSlot + 1;
                         break;
@@ -366,13 +351,16 @@ public class DailyScheduler {
         return result;
     }
 
-    private List<TimeSlot> cutSlotToTimeBlocks(int startSlot, int endSlot, int taskSlotCount) {
+    private List<TimeSlot> cutSlotToTimeBlocks(int startSlot, int endSlot, int taskSlotCount, int taskDuration) {
         int slotCount = (endSlot - startSlot + 1) - taskSlotCount + 1;
         List<TimeSlot> blocks = new ArrayList<>();
         int endTimeBlockSlot = startSlot + slotCount;
         for (int i = startSlot; i < endTimeBlockSlot; i++) {
             int startMinute = (this.startMinute + i * timeSlotDuration) % Time.MINUTES_IN_A_DAY;
             int endMinute = (startMinute + taskSlotCount * timeSlotDuration) % Time.MINUTES_IN_A_DAY;
+            if(i == endTimeBlockSlot - 1) {
+                endMinute = Math.min(endMinute, startMinute + taskDuration);
+            }
             blocks.add(new TimeSlot(startMinute, endMinute));
         }
         return blocks;
