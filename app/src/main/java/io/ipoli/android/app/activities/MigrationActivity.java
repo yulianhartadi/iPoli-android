@@ -21,6 +21,7 @@ import com.couchbase.lite.UnsavedRevision;
 import com.squareup.otto.Bus;
 
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.Month;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -302,7 +303,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
 
             player = playerPersistenceService.get();
             LocalDate unlockedDate = DateUtils.fromMillis(player.getCreatedAt());
-            if (schemaVersion == 3 || schemaVersion == 4) {
+            if (schemaVersion == 3 || schemaVersion == 4 || unlockedDate.isBefore(LocalDate.of(2017, Month.JUNE, 4))) {
                 for (Upgrade upgrade : Upgrade.values()) {
                     player.getInventory().addUpgrade(upgrade, unlockedDate);
                 }
