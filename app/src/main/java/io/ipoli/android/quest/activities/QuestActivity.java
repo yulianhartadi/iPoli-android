@@ -155,8 +155,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
         details.setLayoutManager(new LinearLayoutManager(this));
         details.setHasFixedSize(true);
 
-        eventBus.post(new ScreenShownEvent(EventSource.QUEST));
-
+        eventBus.post(new ScreenShownEvent(this, EventSource.QUEST));
     }
 
     @Override

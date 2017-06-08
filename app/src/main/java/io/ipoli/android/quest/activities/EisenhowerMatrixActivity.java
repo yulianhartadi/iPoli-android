@@ -103,7 +103,7 @@ public class EisenhowerMatrixActivity extends BaseActivity {
         setLayoutManagerToList(delegateList);
         setLayoutManagerToList(deleteList);
         showMatrix(selectedDate);
-        eventBus.post(new ScreenShownEvent(EventSource.EISENHOWER_MATRIX));
+        eventBus.post(new ScreenShownEvent(this, EventSource.EISENHOWER_MATRIX));
     }
 
     private void showMatrix(LocalDate selectedDate) {

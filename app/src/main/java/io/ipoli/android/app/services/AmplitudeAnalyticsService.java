@@ -49,6 +49,7 @@ import io.ipoli.android.app.tutorial.events.PredefinedQuestDeselectedEvent;
 import io.ipoli.android.app.tutorial.events.PredefinedQuestSelectedEvent;
 import io.ipoli.android.app.tutorial.events.PredefinedRepeatingQuestDeselectedEvent;
 import io.ipoli.android.app.tutorial.events.PredefinedRepeatingQuestSelectedEvent;
+import io.ipoli.android.app.tutorial.events.TutorialIntroSectionSkippedEvent;
 import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
 import io.ipoli.android.app.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.app.tutorial.events.TutorialSkippedEvent;
@@ -345,6 +346,11 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onTutorialSkipped(TutorialSkippedEvent e) {
         log("tutorial_skipped");
+    }
+
+    @Subscribe
+    public void onTutorialIntroSectionSkipped(TutorialIntroSectionSkippedEvent e) {
+        log("tutorial_intro_section_skipped");
     }
 
     @Subscribe

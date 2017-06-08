@@ -83,7 +83,7 @@ public class PickChallengeActivity extends BaseActivity {
             }
         });
 
-        eventBus.post(new ScreenShownEvent(EventSource.PICK_CHALLENGE));
+        eventBus.post(new ScreenShownEvent(this, EventSource.PICK_CHALLENGE));
     }
 
     @Override
