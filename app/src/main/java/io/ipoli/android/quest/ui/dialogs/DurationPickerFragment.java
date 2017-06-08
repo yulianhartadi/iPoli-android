@@ -1,12 +1,14 @@
 package io.ipoli.android.quest.ui.dialogs;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,26 +86,34 @@ public class DurationPickerFragment extends DialogFragment {
                 .setSingleChoiceItems(questDurations.toArray(new String[questDurations.size()]), selectedDurationIndex, (dialog, which) -> {
                     selectedDurationIndex = which;
                 })
-                .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
-                    durationPickedListener.onDurationPicked(availableDurations[selectedDurationIndex]);
-                })
+                .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> durationPickedListener.onDurationPicked(availableDurations[selectedDurationIndex]))
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
 
                 })
                 .setNeutralButton(R.string.custom, (dialog, which) -> {
-                    if (upgradeManager.isLocked(Upgrade.CUSTOM_DURATION)) {
-                        UpgradeDialog.newInstance(Upgrade.CUSTOM_DURATION, new UpgradeDialog.OnUnlockListener() {
-                            @Override
-                            public void onUnlock() {
-                                CustomDurationPickerFragment.newInstance(durationPickedListener).show(getFragmentManager());
-                            }
-                        }).show(getFragmentManager());
-                        return;
-                    }
-
-                    CustomDurationPickerFragment.newInstance(durationPickedListener).show(getFragmentManager());
                 });
-        return builder.create();
+
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(d -> {
+            Button custom = dialog.getButton(DialogInterface.BUTTON_NEUTRAL);
+            custom.setOnClickListener(v -> {
+                if (upgradeManager.isLocked(Upgrade.CUSTOM_DURATION)) {
+                    UpgradeDialog.newInstance(Upgrade.CUSTOM_DURATION, new UpgradeDialog.OnUnlockListener() {
+                        @Override
+                        public void onUnlock() {
+                            CustomDurationPickerFragment.newInstance(durationPickedListener).show(getFragmentManager());
+                            dismiss();
+                        }
+                    }).show(getFragmentManager());
+                    return;
+                }
+
+                CustomDurationPickerFragment.newInstance(durationPickedListener).show(getFragmentManager());
+                dismiss();
+            });
+        });
+
+        return dialog;
 
     }
 

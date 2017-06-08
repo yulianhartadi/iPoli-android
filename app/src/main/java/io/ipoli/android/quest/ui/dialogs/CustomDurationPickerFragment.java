@@ -117,10 +117,10 @@ public class CustomDurationPickerFragment extends DialogFragment {
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
                 });
 
-        Dialog dialog = builder.create();
+        AlertDialog dialog = builder.create();
 
-        dialog.setOnShowListener(dialog1 -> {
-            Button positive = ((AlertDialog) dialog1).getButton(DialogInterface.BUTTON_POSITIVE);
+        dialog.setOnShowListener(d -> {
+            Button positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
             positive.setOnClickListener(v -> {
                 int duration1 = getDuration(durationText);
                 if (duration1 > Time.h2Min(Constants.MAX_QUEST_DURATION_HOURS)) {
