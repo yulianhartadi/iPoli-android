@@ -72,6 +72,7 @@ import io.ipoli.android.quest.receivers.StartQuestReceiver;
 import io.ipoli.android.quest.receivers.StartQuestTimerReceiver;
 import io.ipoli.android.quest.receivers.StopQuestReceiver;
 import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
+import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
@@ -247,5 +248,7 @@ public interface AppComponent {
     void inject(TutorialActivity tutorialActivity);
 
     void inject(AndroidCalendarSyncJobService androidCalendarSyncJobService);
+
+    void inject(DurationPickerFragment durationPickerFragment);
 }
 
