@@ -44,6 +44,8 @@
             <include layout="@layout/coins_premium_pack" />
 
             <include layout="@layout/coins_jumbo_pack" />
+
+            <include layout="@layout/coins_donation_pack" />
         </LinearLayout>
 
     </ScrollView>

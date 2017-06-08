@@ -742,7 +742,7 @@
     <string name="premium_pack">Premium pack</string>
     <string name="premium_pack_desc">For the smart ones</string>
     <string name="most_popular">Most popular</string>
-    <string name="jumbo_pack">Jumbo pack</string>
+    <string name="jumbo_pack">King Size pack</string>
     <string name="jumbo_pack_desc">For the wealthy and famous</string>
     <string name="avatar_name_ipoli_classic">Classic iPoli</string>
     <string name="avatar_name_ipoli_yellow_glasses">Fancy iPoli</string>
@@ -882,6 +882,9 @@
     <string name="no_skip_tutorial">No, skip tutorial</string>
     <string name="quest_max_duration_value_message">Quests can\'t be longer than 4 hours</string>
     <string name="quest_min_duration_value_message">Quests can\'t be shorter than 10 minutes</string>
+    <string name="donation_pack">Donation pack</string>
+    <string name="donation_pack_desc">For the generous and selfless</string>
+    <string name="coins_pack_single_value">+ %d life coin</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

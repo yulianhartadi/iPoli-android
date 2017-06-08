@@ -53,6 +53,7 @@ public class CoinStoreFragment extends BaseFragment {
     private static final String SKU_STARTER_PACK = "starter_pack";
     private static final String SKU_PREMIUM_PACK = "premium_pack";
     private static final String SKU_JUMBO_PACK = "jumbo_pack";
+    private static final String SKU_DONATION_PACK = "donation_pack";
 
     private static final int RC_REQUEST = 10001;
 
@@ -89,6 +90,12 @@ public class CoinStoreFragment extends BaseFragment {
     @BindView(R.id.jumbo_buy)
     Button jumboBuy;
 
+    @BindView(R.id.donation_price)
+    TextView donationPrice;
+
+    @BindView(R.id.donation_buy)
+    Button donationBuy;
+
     @BindView(R.id.premium_root_layout)
     ViewGroup premiumContainer;
 
@@ -97,6 +104,9 @@ public class CoinStoreFragment extends BaseFragment {
 
     @BindView(R.id.jumbo_root_layout)
     ViewGroup jumboContainer;
+
+    @BindView(R.id.donation_root_layout)
+    ViewGroup donationContainer;
 
     @BindView(R.id.premium_ribbon)
     ImageView premiumRibbon;
@@ -128,6 +138,7 @@ public class CoinStoreFragment extends BaseFragment {
         skuToValue.put(SKU_STARTER_PACK, 300);
         skuToValue.put(SKU_PREMIUM_PACK, 2000);
         skuToValue.put(SKU_JUMBO_PACK, 4000);
+        skuToValue.put(SKU_DONATION_PACK, 1);
 
 
         if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
@@ -151,12 +162,19 @@ public class CoinStoreFragment extends BaseFragment {
     private void animatePacks() {
         Animation starterAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
         starterContainer.startAnimation(starterAnimation);
+
         Animation premiumAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
         premiumAnimation.setStartOffset(starterAnimation.getDuration() / 5);
         premiumContainer.startAnimation(premiumAnimation);
+
         Animation jumboAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
         jumboAnimation.setStartOffset(premiumAnimation.getStartOffset() + premiumAnimation.getDuration() / 5);
-        jumboAnimation.setAnimationListener(new Animation.AnimationListener() {
+        jumboContainer.startAnimation(jumboAnimation);
+
+        Animation donationAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
+        donationAnimation.setStartOffset(jumboAnimation.getStartOffset() + jumboAnimation.getDuration() / 5);
+
+        donationAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
                 // intentional
@@ -174,7 +192,7 @@ public class CoinStoreFragment extends BaseFragment {
                 // intentional
             }
         });
-        jumboContainer.startAnimation(jumboAnimation);
+        donationContainer.startAnimation(donationAnimation);
     }
 
     private void showFailureMessage(int messageRes) {
@@ -203,8 +221,9 @@ public class CoinStoreFragment extends BaseFragment {
         SkuDetails starterPack = inventory.getSkuDetails(SKU_STARTER_PACK);
         SkuDetails premiumPack = inventory.getSkuDetails(SKU_PREMIUM_PACK);
         SkuDetails jumboPack = inventory.getSkuDetails(SKU_JUMBO_PACK);
+        SkuDetails donationPack = inventory.getSkuDetails(SKU_DONATION_PACK);
 
-        if (starterPack == null || premiumPack == null || jumboPack == null) {
+        if (starterPack == null || premiumPack == null || jumboPack == null || donationPack == null) {
             showFailureMessage(R.string.something_went_wrong);
             return;
         }
@@ -217,6 +236,9 @@ public class CoinStoreFragment extends BaseFragment {
 
         jumboPrice.setText(getString(R.string.coins_pack_value, skuToValue.get(SKU_JUMBO_PACK)));
         jumboBuy.setText(jumboPack.getPrice());
+
+        donationPrice.setText(getString(R.string.coins_pack_single_value, skuToValue.get(SKU_DONATION_PACK)));
+        donationBuy.setText(donationPack.getPrice());
 
         hideLoaderContainer();
 
@@ -241,6 +263,11 @@ public class CoinStoreFragment extends BaseFragment {
     @OnClick(R.id.jumbo_buy)
     public void onBuyJumboClick(View v) {
         buyCoins(SKU_JUMBO_PACK);
+    }
+
+    @OnClick(R.id.donation_buy)
+    public void onBuyDonationClick(View v) {
+        buyCoins(SKU_DONATION_PACK);
     }
 
     private void hideLoaderContainer() {
