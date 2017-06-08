@@ -824,7 +824,7 @@
         focus on the current task and iPoli will notify you when the next one comes.
     </string>
 
-    <string name="custom_duration">Custom quest duration</string>
+    <string name="custom_duration">Custom duration</string>
     <string name="upgrade_custom_duration_sub_title">Choose the best duration for your quests</string>
     <string name="upgrade_custom_duration_short_desc">Not satisfied with provided options for quests duration? You can now define your own duration spans.</string>
     <string name="upgrade_custom_duration_long_desc">
