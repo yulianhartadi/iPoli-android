@@ -67,8 +67,6 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
-import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.scheduling.PriorityEstimator;
 import io.ipoli.android.app.ui.charts.ChartMarkerView;
@@ -228,7 +226,6 @@ public class GrowthFragment extends BaseFragment implements AdapterView.OnItemSe
         setupXpEarnedBarChart();
 
         showCharts(THIS_WEEK);
-        eventBus.post(new ScreenShownEvent(EventSource.GROWTH));
         return view;
     }
 

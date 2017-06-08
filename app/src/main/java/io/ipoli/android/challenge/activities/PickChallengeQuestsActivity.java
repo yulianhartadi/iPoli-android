@@ -99,7 +99,7 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         adapter = new ChallengePickQuestListAdapter(this, eventBus, new ArrayList<>(), true);
         questList.setAdapter(adapter);
 
-        eventBus.post(new ScreenShownEvent(EventSource.PICK_CHALLENGE_QUESTS));
+        eventBus.post(new ScreenShownEvent(this, EventSource.PICK_CHALLENGE_QUESTS));
     }
 
     @Override

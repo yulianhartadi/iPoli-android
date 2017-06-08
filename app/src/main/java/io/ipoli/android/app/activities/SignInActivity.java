@@ -128,7 +128,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         initFBLogin();
         initGuestLogin();
 
-        eventBus.post(new ScreenShownEvent(EventSource.SIGN_IN));
+        eventBus.post(new ScreenShownEvent(this, EventSource.SIGN_IN));
     }
 
     @Override

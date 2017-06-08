@@ -21,6 +21,7 @@ import com.couchbase.lite.Database;
 import com.couchbase.lite.replicator.Replication;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -61,6 +62,7 @@ import io.ipoli.android.app.events.FinishSignInActivityEvent;
 import io.ipoli.android.app.events.FinishTutorialActivityEvent;
 import io.ipoli.android.app.events.InitAppEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.StartQuickAddEvent;
 import io.ipoli.android.app.events.StartUpgradeDialogRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
@@ -983,6 +985,13 @@ public class App extends MultiDexApplication {
         Bundle bundle = new Bundle();
         bundle.putString(UpgradeDialogActivity.UPGRADE, e.upgrade.name());
         startNewActivity(UpgradeDialogActivity.class, bundle);
+    }
+
+    @Subscribe
+    public void onScreenShown(ScreenShownEvent e) {
+        if(e.activity != null) {
+            FirebaseAnalytics.getInstance(this).setCurrentScreen(e.activity, e.source.name(), null);
+        }
     }
 
     public static String getPlayerId() {

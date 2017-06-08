@@ -40,13 +40,10 @@ import butterknife.OnClick;
 import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
-import io.ipoli.android.app.sync.AndroidCalendarEventParser;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.sync.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.TimeOfDay;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.SyncCalendarRequestEvent;
 import io.ipoli.android.app.events.TimeFormatChangedEvent;
 import io.ipoli.android.app.persistence.CalendarPersistenceService;
@@ -59,7 +56,9 @@ import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
 import io.ipoli.android.app.settings.events.SleepHoursChangedEvent;
 import io.ipoli.android.app.settings.events.WorkDaysChangedEvent;
 import io.ipoli.android.app.settings.events.WorkHoursChangedEvent;
+import io.ipoli.android.app.sync.AndroidCalendarEventParser;
 import io.ipoli.android.app.sync.AndroidCalendarLoader;
+import io.ipoli.android.app.sync.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
 import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
@@ -219,7 +218,6 @@ public class SettingsActivity extends BaseActivity implements
         initDailyChallenge();
 
         appVersion.setText(BuildConfig.VERSION_NAME);
-        eventBus.post(new ScreenShownEvent(EventSource.SETTINGS));
     }
 
     @Override

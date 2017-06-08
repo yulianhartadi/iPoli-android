@@ -183,7 +183,7 @@ public class RepeatingQuestActivity extends BaseActivity {
             return;
         }
         this.repeatingQuest = repeatingQuest;
-        eventBus.post(new ScreenShownEvent(EventSource.REPEATING_QUEST));
+        eventBus.post(new ScreenShownEvent(this, EventSource.REPEATING_QUEST));
         displayRepeatingQuest();
     }
 

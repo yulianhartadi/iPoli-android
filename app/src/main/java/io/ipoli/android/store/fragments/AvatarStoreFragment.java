@@ -73,7 +73,7 @@ public class AvatarStoreFragment extends BaseFragment {
         adapter = new AvatarStoreAdapter(getContext(), eventBus, createAvatarViewModels());
         avatarList.setAdapter(adapter);
 
-        eventBus.post(new ScreenShownEvent(EventSource.STORE_AVATARS));
+        eventBus.post(new ScreenShownEvent(getActivity(), EventSource.STORE_AVATARS));
 
         return view;
     }

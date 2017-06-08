@@ -9,12 +9,21 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.squareup.otto.Bus;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
+import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.tutorial.TutorialActivity;
+import io.ipoli.android.app.tutorial.events.TutorialIntroSectionSkippedEvent;
+import io.ipoli.android.app.tutorial.events.TutorialSkippedEvent;
 import io.ipoli.android.app.ui.typewriter.TypewriterView;
 
 import static io.ipoli.android.app.utils.AnimationUtils.fadeIn;
@@ -25,6 +34,9 @@ import static io.ipoli.android.app.utils.AnimationUtils.fadeOut;
  * on 5/31/17.
  */
 public class TutorialIntroFragment extends Fragment {
+
+    @Inject
+    Bus eventBus;
 
     @BindView(R.id.tutorial_text)
     TypewriterView tutorialText;
@@ -111,6 +123,7 @@ public class TutorialIntroFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        App.getAppComponent(getContext()).inject(this);
         View v = inflater.inflate(R.layout.fragment_tutorial_intro, container, false);
         unbinder = ButterKnife.bind(this, v);
 
@@ -125,6 +138,7 @@ public class TutorialIntroFragment extends Fragment {
             fadeIn(positiveAnswer);
             fadeIn(negativeAnswer);
         });
+        eventBus.post(new ScreenShownEvent(getActivity(), EventSource.TUTORIAL_INTRO));
         return v;
     }
 
@@ -136,6 +150,7 @@ public class TutorialIntroFragment extends Fragment {
 
     @OnClick(R.id.tutorial_skip_section)
     public void onSkipSectionClick(View view) {
+        eventBus.post(new TutorialIntroSectionSkippedEvent());
         tutorialText.stop();
         onIntroDone();
     }
@@ -147,6 +162,7 @@ public class TutorialIntroFragment extends Fragment {
     }
 
     private void onTutorialSkipped() {
+        eventBus.post(new TutorialSkippedEvent());
         if (getActivity() != null) {
             ((TutorialActivity) getActivity()).onTutorialSkipped();
         }
