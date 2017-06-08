@@ -42,7 +42,7 @@ public enum Upgrade {
     NOTES(10, 200, R.string.notes, R.string.upgrade_notes_sub_title,
             R.string.upgrade_notes_short_desc, R.string.upgrade_notes_long_desc, R.drawable.ic_note_white_24dp),
 
-    CUSTOM_DURATION(11, 200, R.string.custom_duration, R.string.upgrade_custom_duration_sub_title,
+    CUSTOM_DURATION(11, 300, R.string.custom_duration, R.string.upgrade_custom_duration_sub_title,
             R.string.upgrade_custom_duration_short_desc, R.string.upgrade_custom_duration_long_desc, R.drawable.ic_timer_white_24dp);
 
 
