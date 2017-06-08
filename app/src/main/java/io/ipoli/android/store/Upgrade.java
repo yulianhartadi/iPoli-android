@@ -40,7 +40,12 @@ public enum Upgrade {
             R.string.upgrade_sub_quests_short_desc, R.string.upgrade_sub_quests_long_desc, R.drawable.ic_format_list_bulleted_white_24dp),
 
     NOTES(10, 200, R.string.notes, R.string.upgrade_notes_sub_title,
-            R.string.upgrade_notes_short_desc, R.string.upgrade_notes_long_desc, R.drawable.ic_note_white_24dp);
+            R.string.upgrade_notes_short_desc, R.string.upgrade_notes_long_desc, R.drawable.ic_note_white_24dp),
+
+    CUSTOM_DURATION(11, 300, R.string.custom_duration, R.string.upgrade_custom_duration_sub_title,
+            R.string.upgrade_custom_duration_short_desc, R.string.upgrade_custom_duration_long_desc, R.drawable.ic_timer_white_24dp);
+
+
 
     public final int code;
     public final int price;

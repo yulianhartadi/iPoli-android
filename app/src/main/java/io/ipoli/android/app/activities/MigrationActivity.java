@@ -102,7 +102,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
 
         schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
 
-        if(schemaVersion == 0 || schemaVersion > Constants.FIREBASE_LAST_SCHEMA_VERSION) {
+        if (schemaVersion == 0 || schemaVersion > Constants.FIREBASE_LAST_SCHEMA_VERSION) {
             schemaVersion = getPlayer().getSchemaVersion();
         }
 
@@ -308,7 +308,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
                 }
             }
 
-            if(player.getRewardPoints() == player.getCoins()) {
+            if (player.getRewardPoints() == player.getCoins()) {
                 player.setRewardPoints(player.getCoins());
             }
 
@@ -413,30 +413,30 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
 
         private boolean deleteOldCalendarQuests(List<Quest> questsToDelete, List<RepeatingQuest> repeatingQuestsToDelete) {
             return database.runInTransaction(() -> {
-                        for (Quest q : questsToDelete) {
+                for (Quest q : questsToDelete) {
+                    if (!delete(q.getId())) {
+                        return false;
+                    }
+                }
+
+                for (RepeatingQuest rq : repeatingQuestsToDelete) {
+                    List<Quest> quests = questPersistenceService.findAllForRepeatingQuest(rq.getId());
+                    for (Quest q : quests) {
+                        if (q.isCompleted()) {
+                            q.setRepeatingQuestId(null);
+                            questPersistenceService.save(q);
+                        } else {
                             if (!delete(q.getId())) {
                                 return false;
                             }
                         }
-
-                        for (RepeatingQuest rq : repeatingQuestsToDelete) {
-                            List<Quest> quests = questPersistenceService.findAllForRepeatingQuest(rq.getId());
-                            for (Quest q : quests) {
-                                if (q.isCompleted()) {
-                                    q.setRepeatingQuestId(null);
-                                    questPersistenceService.save(q);
-                                } else {
-                                    if (!delete(q.getId())) {
-                                        return false;
-                                    }
-                                }
-                            }
-                            if (!delete(rq.getId())) {
-                                return false;
-                            }
-                        }
-                        return true;
-                    });
+                    }
+                    if (!delete(rq.getId())) {
+                        return false;
+                    }
+                }
+                return true;
+            });
         }
 
         private boolean delete(String id) {
