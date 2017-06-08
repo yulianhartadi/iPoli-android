@@ -824,6 +824,14 @@
         focus on the current task and iPoli will notify you when the next one comes.
     </string>
 
+    <string name="custom_duration">Custom quest duration</string>
+    <string name="upgrade_custom_duration_sub_title">Choose the best duration for your quests</string>
+    <string name="upgrade_custom_duration_short_desc">Not satisfied with provided options for quests duration? You can now define your own duration spans.</string>
+    <string name="upgrade_custom_duration_long_desc">
+        Choose your own time intervals for quests. The minimum value is 10 minutes.
+        The maximum is still 4 hours. If you need longer value, then try to divide your quest into shorter quests.
+    </string>
+
     <string name="upgrade_dialog_name">You\'ve discovered %s!</string>
     <string name="upgrade_dialog_price_message">Do you want to unlock it now for %d of your life coins?</string>
     <string name="unlock">Unlock</string>
@@ -872,10 +880,8 @@
     <string name="want_to_skip_tutorial">Do you want me to show you how we will fight your life enemies together?</string>
     <string name="show_me">Show me</string>
     <string name="no_skip_tutorial">No, skip tutorial</string>
-    <string name="custom_duration">Custom quest duration</string>
-    <string name="upgrade_custom_duration_sub_title">Choose the best duration for your quests</string>
-    <string name="upgrade_custom_duration_short_desc">Duration</string>
-    <string name="upgrade_custom_duration_long_desc">No more than 4 hours</string>
+    <string name="quest_max_duration_value_message">Quests can\'t be longer than 4 hours</string>
+    <string name="quest_min_duration_value_message">Quests can\'t be shorter than 10 minutes</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

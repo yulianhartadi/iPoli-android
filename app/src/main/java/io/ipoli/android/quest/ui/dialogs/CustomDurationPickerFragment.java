@@ -126,13 +126,13 @@ public class CustomDurationPickerFragment extends DialogFragment {
                 if (duration1 > Time.h2Min(Constants.MAX_QUEST_DURATION_HOURS)) {
                     durationText = MAX_DURATION_TEXT;
                     updateHoursAndMinutes();
-                    Toast.makeText(getContext(), "More than 4", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.quest_max_duration_value_message, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (duration1 < Constants.QUEST_MIN_DURATION) {
                     durationText = MIN_DURATION_TEXT;
                     updateHoursAndMinutes();
-                    Toast.makeText(getContext(), "Less than 10", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.quest_min_duration_value_message, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 durationPickedListener.onDurationPicked(duration1);
