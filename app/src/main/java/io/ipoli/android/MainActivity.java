@@ -277,6 +277,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 break;
 
             case R.id.invite_friends:
+                source = EventSource.INVITE_FRIENDS;
                 inviteFriends();
                 break;
 
@@ -287,18 +288,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             case R.id.feedback:
                 eventBus.post(new FeedbackTapEvent());
+                source = EventSource.FEEDBACK;
                 RateDialog.newInstance(RateDialog.State.FEEDBACK).show(getSupportFragmentManager());
                 break;
 
             case R.id.contact_us:
                 eventBus.post(new ContactUsTapEvent());
+                source = EventSource.CONTACT_US;
                 EmailUtils.send(MainActivity.this, "Hi", localStorage.readString(Constants.KEY_PLAYER_ID), getString(R.string.contact_us_email_chooser_title));
                 break;
         }
 
         navigationView.setCheckedItem(navigationItemSelected.getItemId());
         if (source != null) {
-            eventBus.post(new ScreenShownEvent(source));
+            eventBus.post(new ScreenShownEvent(this, source));
         }
     }
 

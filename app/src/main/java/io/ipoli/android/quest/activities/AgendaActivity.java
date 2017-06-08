@@ -82,7 +82,7 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
             return;
         }
 
-        eventBus.post(new ScreenShownEvent(EventSource.AGENDA_CALENDAR));
+        eventBus.post(new ScreenShownEvent(this, EventSource.AGENDA_CALENDAR));
 
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
