@@ -162,6 +162,7 @@ public class TutorialIntroFragment extends Fragment {
     }
 
     private void onTutorialSkipped() {
+        tutorialText.stop();
         eventBus.post(new TutorialSkippedEvent());
         if (getActivity() != null) {
             ((TutorialActivity) getActivity()).onTutorialSkipped();
