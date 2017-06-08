@@ -81,9 +81,9 @@ dependencies {
     compile('org.antlr:antlr-runtime:3.5.2') {
         exclude group: "org.antlr", module: "stringtemplate"
     }
-    compile 'com.google.firebase:firebase-crash:10.2.6'
-    compile 'com.google.firebase:firebase-invites:10.2.6'
-    compile 'com.google.android.gms:play-services-auth:10.2.6'
+    compile 'com.google.firebase:firebase-crash:11.0.0'
+    compile 'com.google.firebase:firebase-invites:11.0.0'
+    compile 'com.google.android.gms:play-services-auth:11.0.0'
     compile 'com.amplitude:android-sdk:2.13.4'
     compile 'com.facebook.android:facebook-android-sdk:4.20.0'
     compile 'com.android.support:appcompat-v7:25.3.1'
