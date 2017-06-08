@@ -100,7 +100,7 @@ public interface Constants {
             DayOfWeek.FRIDAY.getValue()
     ));
 
-    Integer[] DURATIONS = {10, 15, 20, 25, 30, 60, 90, 120, 180, 240};
+    Integer[] DURATIONS = {10, 15, 25, 30, 45, 60, 90, 120};
 
     int DEFAULT_MIN_REWARD_PRICE = 10;
 
