@@ -74,7 +74,7 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
 
         if (getIntent() != null && getIntent().getStringExtra(Constants.REWARD_ID_EXTRA_KEY) != null) {
             isEdit = true;
-            eventBus.post(new ScreenShownEvent(EventSource.EDIT_REWARD));
+            eventBus.post(new ScreenShownEvent(this, EventSource.EDIT_REWARD));
             setTitle(getString(R.string.reward_activity_edit_title));
             String rewardId = getIntent().getStringExtra(Constants.REWARD_ID_EXTRA_KEY);
             rewardPersistenceService.findById(rewardId, reward -> {
@@ -82,7 +82,7 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
                 initUI();
             });
         } else {
-            eventBus.post(new ScreenShownEvent(EventSource.ADD_REWARD));
+            eventBus.post(new ScreenShownEvent(this, EventSource.ADD_REWARD));
             initUI();
         }
     }

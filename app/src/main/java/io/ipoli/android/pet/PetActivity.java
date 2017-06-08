@@ -94,7 +94,7 @@ public class PetActivity extends BaseActivity implements OnDataChangedListener<P
         getWindow().setNavigationBarColor(ContextCompat.getColor(this, android.R.color.transparent));
         getWindow().setStatusBarColor(ContextCompat.getColor(this, android.R.color.transparent));
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        eventBus.post(new ScreenShownEvent(EventSource.PET));
+        eventBus.post(new ScreenShownEvent(this, EventSource.PET));
     }
 
     @Override

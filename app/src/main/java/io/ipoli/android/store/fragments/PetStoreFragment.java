@@ -76,7 +76,7 @@ public class PetStoreFragment extends BaseFragment {
         adapter = new PetStoreAdapter(getContext(), eventBus, petViewModels);
         petList.setAdapter(adapter);
 
-        eventBus.post(new ScreenShownEvent(EventSource.STORE_PETS));
+        eventBus.post(new ScreenShownEvent(getActivity(), EventSource.STORE_PETS));
 
         return view;
     }

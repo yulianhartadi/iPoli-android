@@ -50,5 +50,8 @@ public enum EventSource {
     STORE_COINS,
     STORE_PETS,
     STORE_AVATARS,
-    STORE_UPGRADES;
+    STORE_UPGRADES,
+    CONTACT_US,
+    FEEDBACK,
+    INVITE_FRIENDS;
 }

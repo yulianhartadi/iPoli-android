@@ -108,7 +108,7 @@ public class UpgradeStoreFragment extends BaseFragment implements LoaderManager.
         adapter = new UpgradeStoreAdapter(getContext(), eventBus, upgrades, upgradeManager.getUnlockedCodes());
         upgradeList.setAdapter(adapter);
 
-        eventBus.post(new ScreenShownEvent(EventSource.STORE_UPGRADES));
+        eventBus.post(new ScreenShownEvent(getActivity(), EventSource.STORE_UPGRADES));
 
         return view;
     }
