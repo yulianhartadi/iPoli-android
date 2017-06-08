@@ -30,6 +30,8 @@ public class CustomDurationPickerFragment extends DialogFragment {
     private static final String TAG = "custom-duration-picker-dialog";
     private static final String DURATION = "duration";
     public static final int MAX_DIGIT_COUNT = 3;
+    public static final int HOUR_MINUTES = 60;
+    public static final String MAX_DURATION_TEXT = "400";
 
     @BindView(R.id.custom_duration_hours)
     TextView hoursView;
@@ -48,7 +50,7 @@ public class CustomDurationPickerFragment extends DialogFragment {
     private Unbinder unbinder;
 
     public interface OnCustomDurationPickedListener {
-        void onCustomDurationPicked(int duration);
+        void onDurationPicked(int duration);
     }
 
     public static CustomDurationPickerFragment newInstance(OnCustomDurationPickedListener durationPickedListener) {
@@ -79,7 +81,9 @@ public class CustomDurationPickerFragment extends DialogFragment {
         View titleView = inflater.inflate(R.layout.custom_duration_dialog_header, null);
         unbinder = ButterKnife.bind(this, titleView);
 
+        initDurationText();
         setHoursAndMinutes();
+
         delete.setOnClickListener(v -> {
             if (durationText.length() == 1) {
                 durationText = "";
@@ -100,8 +104,8 @@ public class CustomDurationPickerFragment extends DialogFragment {
                     return;
                 }
 
-                if (getDuration(durationText + v.getTag()) > Time.h2Min(4)) {
-                    durationText = "400";
+                if (getDuration(durationText + v.getTag()) > Time.h2Min(Constants.MAX_QUEST_DURATION_HOURS)) {
+                    durationText = MAX_DURATION_TEXT;
                     Toast.makeText(getContext(), "More than 4", Toast.LENGTH_SHORT).show();
                 } else {
                     durationText += v.getTag();
@@ -118,16 +122,37 @@ public class CustomDurationPickerFragment extends DialogFragment {
                 .setView(view)
                 .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
                     int duration = getDuration(durationText);
-                    if (duration > Time.h2Min(4)) {
+                    if (duration > Time.h2Min(Constants.MAX_QUEST_DURATION_HOURS)) {
                         return;
                     }
-                    durationPickedListener.onCustomDurationPicked(duration);
+                    durationPickedListener.onDurationPicked(duration);
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
 
                 });
         return builder.create();
 
+    }
+
+    private void initDurationText() {
+        if (duration == -1) {
+            durationText = "";
+            return;
+        }
+
+        int hours = duration / HOUR_MINUTES;
+        int minutes = duration % HOUR_MINUTES;
+        if (hours == 0 && minutes == 0) {
+            durationText = "";
+            return;
+        }
+
+        durationText = String.valueOf(hours);
+        if (minutes < 10) {
+            durationText += "0" + String.valueOf(minutes);
+        } else {
+            durationText += String.valueOf(minutes);
+        }
     }
 
     private int getDuration(String durationString) {
@@ -137,7 +162,7 @@ public class CustomDurationPickerFragment extends DialogFragment {
         int hours = Integer.parseInt(durationString.substring(0, 1));
         int minutes = Integer.parseInt(durationString.substring(1));
 
-        return hours * 60 + minutes;
+        return hours * HOUR_MINUTES + minutes;
     }
 
     private void setHoursAndMinutes() {
