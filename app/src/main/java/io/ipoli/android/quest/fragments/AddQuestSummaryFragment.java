@@ -21,6 +21,7 @@ import org.threeten.bp.LocalDate;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,6 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
@@ -64,8 +66,10 @@ import io.ipoli.android.quest.events.NewQuestSubQuestsPickedEvent;
 import io.ipoli.android.quest.events.NewQuestTimesADayPickedEvent;
 import io.ipoli.android.quest.ui.AddSubQuestView;
 import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
+import io.ipoli.android.quest.ui.dialogs.CustomDurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
+import io.ipoli.android.quest.ui.dialogs.OnDurationPickedListener;
 import io.ipoli.android.quest.ui.dialogs.TimesADayPickerFragment;
 import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
@@ -78,7 +82,7 @@ import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/8/17.
  */
-public class AddQuestSummaryFragment extends BaseFragment {
+public class AddQuestSummaryFragment extends BaseFragment implements OnDurationPickedListener {
 
     @Inject
     Bus eventBus;
@@ -281,11 +285,22 @@ public class AddQuestSummaryFragment extends BaseFragment {
 
     @OnClick(R.id.add_quest_summary_duration_container)
     public void onDurationClicked(View v) {
-        DurationPickerFragment fragment = DurationPickerFragment.newInstance((int) durationText.getTag(), duration -> {
-            postEvent(new NewQuestDurationPickedEvent(duration));
-            showDuration(duration);
-        });
-        fragment.show(getFragmentManager());
+        Integer duration = null;
+        if (durationText.getTag() != null && (int) durationText.getTag() > 0) {
+            duration = (Integer) durationText.getTag();
+        }
+        List<Integer> durations = Arrays.asList(Constants.DURATIONS);
+        if (durations.contains(duration) || upgradeManager.isLocked(Upgrade.CUSTOM_DURATION)) {
+            DurationPickerFragment.newInstance(duration, this).show(getFragmentManager());
+        } else if (upgradeManager.isUnlocked(Upgrade.CUSTOM_DURATION)) {
+            CustomDurationPickerFragment.newInstance(duration, this).show(getFragmentManager());
+        }
+    }
+
+    @Override
+    public void onDurationPicked(int duration) {
+        postEvent(new NewQuestDurationPickedEvent(duration));
+        showDuration(duration);
     }
 
     @OnClick(R.id.add_quest_summary_priority_container)
@@ -446,5 +461,4 @@ public class AddQuestSummaryFragment extends BaseFragment {
             }
         }
     }
-
 }
