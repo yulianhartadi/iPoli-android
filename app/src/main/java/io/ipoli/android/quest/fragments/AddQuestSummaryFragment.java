@@ -285,10 +285,7 @@ public class AddQuestSummaryFragment extends BaseFragment implements OnDurationP
 
     @OnClick(R.id.add_quest_summary_duration_container)
     public void onDurationClicked(View v) {
-        Integer duration = null;
-        if (durationText.getTag() != null && (int) durationText.getTag() > 0) {
-            duration = (Integer) durationText.getTag();
-        }
+        Integer duration = (Integer) durationText.getTag();
         List<Integer> durations = Arrays.asList(Constants.DURATIONS);
         if (durations.contains(duration) || upgradeManager.isLocked(Upgrade.CUSTOM_DURATION)) {
             DurationPickerFragment.newInstance(duration, this).show(getFragmentManager());

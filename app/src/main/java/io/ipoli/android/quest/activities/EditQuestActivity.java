@@ -588,10 +588,7 @@ public class EditQuestActivity extends BaseActivity implements
 
     @OnClick(R.id.quest_duration_container)
     public void onDurationClick(View view) {
-        Integer duration = null;
-        if (durationText.getTag() != null && (int) durationText.getTag() > 0) {
-            duration = (Integer) durationText.getTag();
-        }
+        Integer duration = (Integer) durationText.getTag();
         List<Integer> durations = Arrays.asList(Constants.DURATIONS);
         if (durations.contains(duration) || upgradeManager.isLocked(Upgrade.CUSTOM_DURATION)) {
             DurationPickerFragment.newInstance(duration, this).show(getSupportFragmentManager());
