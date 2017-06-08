@@ -590,7 +590,7 @@ public class EditQuestActivity extends BaseActivity implements
         if (durationText.getTag() != null && (int) durationText.getTag() > 0) {
             CustomDurationPickerFragment.newInstance(new CustomDurationPickerFragment.OnCustomDurationPickedListener() {
                 @Override
-                public void onCustomDurationPicked(int duration) {
+                public void onDurationPicked(int duration) {
 
                 }
             }).show(getSupportFragmentManager());
