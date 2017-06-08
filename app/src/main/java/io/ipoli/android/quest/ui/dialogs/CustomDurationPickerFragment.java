@@ -44,20 +44,16 @@ public class CustomDurationPickerFragment extends DialogFragment {
 
     private String durationText = "";
 
-    private OnCustomDurationPickedListener durationPickedListener;
+    private OnDurationPickedListener durationPickedListener;
 
     private int duration;
     private Unbinder unbinder;
 
-    public interface OnCustomDurationPickedListener {
-        void onDurationPicked(int duration);
-    }
-
-    public static CustomDurationPickerFragment newInstance(OnCustomDurationPickedListener durationPickedListener) {
+    public static CustomDurationPickerFragment newInstance(OnDurationPickedListener durationPickedListener) {
         return newInstance(-1, durationPickedListener);
     }
 
-    public static CustomDurationPickerFragment newInstance(int duration, OnCustomDurationPickedListener durationPickedListener) {
+    public static CustomDurationPickerFragment newInstance(int duration, OnDurationPickedListener durationPickedListener) {
         CustomDurationPickerFragment fragment = new CustomDurationPickerFragment();
         Bundle args = new Bundle();
         args.putInt(DURATION, Math.max(duration, Constants.QUEST_MIN_DURATION));

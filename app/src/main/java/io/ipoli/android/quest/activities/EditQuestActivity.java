@@ -32,6 +32,7 @@ import com.squareup.otto.Subscribe;
 import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -87,6 +88,7 @@ import io.ipoli.android.quest.ui.dialogs.ChallengePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.CustomDurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.DurationPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.EditReminderFragment;
+import io.ipoli.android.quest.ui.dialogs.OnDurationPickedListener;
 import io.ipoli.android.quest.ui.dialogs.PriorityPickerFragment;
 import io.ipoli.android.quest.ui.dialogs.RecurrencePickerFragment;
 import io.ipoli.android.quest.ui.dialogs.TimesADayPickerFragment;
@@ -107,7 +109,7 @@ import static io.ipoli.android.app.events.EventSource.EDIT_QUEST;
 public class EditQuestActivity extends BaseActivity implements
         DatePickerFragment.OnDatePickedListener,
         RecurrencePickerFragment.OnRecurrencePickedListener,
-        DurationPickerFragment.OnDurationPickedListener,
+        OnDurationPickedListener,
         TimePickerFragment.OnTimePickedListener,
         TextPickerFragment.OnTextPickedListener,
         ChallengePickerFragment.OnChallengePickedListener,
@@ -246,7 +248,7 @@ public class EditQuestActivity extends BaseActivity implements
 
         hideUnderline(addSubQuest);
 
-        if(upgradeManager.isUnlocked(Upgrade.SUB_QUESTS)) {
+        if (upgradeManager.isUnlocked(Upgrade.SUB_QUESTS)) {
             addSubQuest.setOnFocusChangeListener(onAddSubQuestsFocusChangeListener);
         } else {
             addSubQuest.setFocusable(false);
@@ -257,7 +259,7 @@ public class EditQuestActivity extends BaseActivity implements
 
     @Subscribe
     public void onUpgradeBought(UpgradeUnlockedEvent e) {
-        if(e.upgrade == Upgrade.SUB_QUESTS) {
+        if (e.upgrade == Upgrade.SUB_QUESTS) {
             addSubQuest.setOnClickListener(null);
             addSubQuest.setFocusable(true);
             addSubQuest.setFocusableInTouchMode(true);
@@ -586,19 +588,16 @@ public class EditQuestActivity extends BaseActivity implements
 
     @OnClick(R.id.quest_duration_container)
     public void onDurationClick(View view) {
-        DurationPickerFragment durationPickerFragment;
+        Integer duration = null;
         if (durationText.getTag() != null && (int) durationText.getTag() > 0) {
-            CustomDurationPickerFragment.newInstance(new CustomDurationPickerFragment.OnCustomDurationPickedListener() {
-                @Override
-                public void onDurationPicked(int duration) {
-
-                }
-            }).show(getSupportFragmentManager());
-            durationPickerFragment = DurationPickerFragment.newInstance((int) durationText.getTag(), this);
-        } else {
-            durationPickerFragment = DurationPickerFragment.newInstance(this);
+            duration = (Integer) durationText.getTag();
         }
-//        durationPickerFragment.show(getSupportFragmentManager());
+        List<Integer> durations = Arrays.asList(Constants.DURATIONS);
+        if (durations.contains(duration) || upgradeManager.isLocked(Upgrade.CUSTOM_DURATION)) {
+            DurationPickerFragment.newInstance(duration, this).show(getSupportFragmentManager());
+        } else if (upgradeManager.isUnlocked(Upgrade.CUSTOM_DURATION)) {
+            CustomDurationPickerFragment.newInstance(duration, this).show(getSupportFragmentManager());
+        }
     }
 
     @OnClick(R.id.quest_frequency_container)
@@ -615,7 +614,7 @@ public class EditQuestActivity extends BaseActivity implements
 
     @OnClick(R.id.quest_add_reminder_container)
     public void onRemindersClicked(View view) {
-        if(upgradeManager.isLocked(Upgrade.REMINDERS)) {
+        if (upgradeManager.isLocked(Upgrade.REMINDERS)) {
             UpgradeDialog.newInstance(Upgrade.REMINDERS).show(getSupportFragmentManager());
             return;
         }
