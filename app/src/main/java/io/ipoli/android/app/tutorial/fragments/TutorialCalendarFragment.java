@@ -26,6 +26,10 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.squareup.otto.Bus;
+
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -37,6 +41,9 @@ import co.mobiwise.materialintro.view.MaterialIntroView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.ui.calendar.CalendarDayView;
 import io.ipoli.android.app.utils.Time;
@@ -48,6 +55,9 @@ import io.ipoli.android.quest.data.Category;
  * on 6/4/17.
  */
 public class TutorialCalendarFragment extends Fragment {
+
+    @Inject
+    Bus eventBus;
 
     @BindView(R.id.tutorial_calendar)
     CalendarDayView calendarDayView;
@@ -80,6 +90,7 @@ public class TutorialCalendarFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        App.getAppComponent(getContext()).inject(this);
         View v = inflater.inflate(R.layout.fragment_tutorial_calendar, container, false);
         unbinder = ButterKnife.bind(this, v);
         calendarDayView.hideTimeLine();
@@ -110,6 +121,7 @@ public class TutorialCalendarFragment extends Fragment {
                     preferencesManager.resetAll();
                     onQuestComplete(v, checkBox);
                 }).show();
+        eventBus.post(new ScreenShownEvent(getActivity(), EventSource.TUTORIAL_CALENDAR));
         return v;
     }
 
