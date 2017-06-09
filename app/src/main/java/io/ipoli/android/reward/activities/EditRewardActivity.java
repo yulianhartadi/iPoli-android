@@ -15,6 +15,9 @@ import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -31,13 +34,17 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.NewRewardSavedEvent;
 import io.ipoli.android.reward.persistence.RewardPersistenceService;
-import io.ipoli.android.reward.ui.dialogs.PricePickerFragment;
+import io.ipoli.android.reward.ui.dialogs.CustomPointsPickerFragment;
+import io.ipoli.android.reward.ui.dialogs.OnPricePickedListener;
+import io.ipoli.android.reward.ui.dialogs.PointsPickerFragment;
+
+import static io.ipoli.android.Constants.DEFAULT_REWARD_PRICE;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/27/16.
  */
-public class EditRewardActivity extends BaseActivity implements PricePickerFragment.OnPricePickedListener, TextPickerFragment.OnTextPickedListener {
+public class EditRewardActivity extends BaseActivity implements OnPricePickedListener, TextPickerFragment.OnTextPickedListener {
 
     @Inject
     Bus eventBus;
@@ -112,7 +119,7 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
             setDescriptionText(reward.getDescription());
         } else {
             setDescriptionText("");
-            setPriceText(Constants.DEFAULT_MIN_REWARD_PRICE);
+            setPriceText(DEFAULT_REWARD_PRICE);
         }
     }
 
@@ -163,9 +170,13 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
 
     @OnClick(R.id.reward_price_container)
     public void onPriceClick(View view) {
-        int price = priceText.getTag() != null ? (int) priceText.getTag() : -1;
-        PricePickerFragment f = PricePickerFragment.newInstance(price, this);
-        f.show(this.getSupportFragmentManager());
+        Integer price = (Integer) priceText.getTag();
+        List<Integer> prices = Arrays.asList(Constants.REWARD_POINTS);
+        if (prices.contains(price)) {
+            PointsPickerFragment.newInstance(price, this).show(getSupportFragmentManager());
+        } else {
+            CustomPointsPickerFragment.newInstance(price, this).show(getSupportFragmentManager());
+        }
     }
 
     @Override
@@ -198,7 +209,7 @@ public class EditRewardActivity extends BaseActivity implements PricePickerFragm
             Toast.makeText(this, R.string.reward_name_validation, Toast.LENGTH_SHORT).show();
             return;
         }
-        int price = Math.max((int) priceText.getTag(), Constants.DEFAULT_MIN_REWARD_PRICE);
+        int price = (int) priceText.getTag();
         if (reward == null) {
             reward = new Reward(name.trim(), price);
         } else {

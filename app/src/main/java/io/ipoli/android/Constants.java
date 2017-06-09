@@ -102,7 +102,11 @@ public interface Constants {
 
     Integer[] DURATIONS = {10, 15, 25, 30, 45, 60, 90, 120};
 
-    int DEFAULT_MIN_REWARD_PRICE = 10;
+    Integer[] REWARD_POINTS = {10, 20, 50, 100, 200, 500, 1000};
+
+    int DEFAULT_REWARD_PRICE = 10;
+
+    int REWARD_MAX_PRICE = 10000;
 
     int DEFAULT_DAILY_CHALLENGE_REMINDER_START_MINUTE = 10 * 60;
 
