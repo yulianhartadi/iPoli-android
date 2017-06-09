@@ -11,6 +11,7 @@ import android.support.v7.app.AlertDialog;
 import android.widget.Button;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -64,11 +65,11 @@ public class DurationPickerFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Integer[] availableDurations = Constants.DURATIONS;
+        List<Integer> availableDurations = new ArrayList<>(Arrays.asList(Constants.DURATIONS));
         List<String> questDurations = new ArrayList<>();
         selectedDurationIndex = -1;
-        for (int i = 0; i < availableDurations.length; i++) {
-            int d = availableDurations[i];
+        for (int i = 0; i < availableDurations.size(); i++) {
+            int d = availableDurations.get(i);
             questDurations.add(DurationFormatter.formatReadable(getContext(), d));
             if (d == duration) {
                 selectedDurationIndex = i;
@@ -77,7 +78,8 @@ public class DurationPickerFragment extends DialogFragment {
 
         if (selectedDurationIndex == -1) {
             selectedDurationIndex = 0;
-            questDurations.add(0, DurationFormatter.formatReadable(getContext(), duration));
+            availableDurations.add(selectedDurationIndex, duration);
+            questDurations.add(selectedDurationIndex, DurationFormatter.formatReadable(getContext(), duration));
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -86,7 +88,7 @@ public class DurationPickerFragment extends DialogFragment {
                 .setSingleChoiceItems(questDurations.toArray(new String[questDurations.size()]), selectedDurationIndex, (dialog, which) -> {
                     selectedDurationIndex = which;
                 })
-                .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> durationPickedListener.onDurationPicked(availableDurations[selectedDurationIndex]))
+                .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> durationPickedListener.onDurationPicked(availableDurations.get(selectedDurationIndex)))
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
 
                 })

@@ -334,6 +334,9 @@ public class App extends MultiDexApplication {
         }
         if(hasPlayer()) {
             Player player = playerPersistenceService.get();
+            if(player == null) {
+                return;
+            }
             if(player.getSchemaVersion() != Constants.SCHEMA_VERSION) {
                 return;
             }
