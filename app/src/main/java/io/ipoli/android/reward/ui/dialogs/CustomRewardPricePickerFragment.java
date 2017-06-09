@@ -25,8 +25,8 @@ import io.ipoli.android.app.utils.StringUtils;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 6/09/17.
  */
-public class CustomPointsPickerFragment extends DialogFragment {
-    private static final String TAG = "custom-points-picker-dialog";
+public class CustomRewardPricePickerFragment extends DialogFragment {
+    private static final String TAG = "custom-reward-price-picker-dialog";
     private static final String POINTS = "points";
 
     @BindView(R.id.reward_points)
@@ -36,12 +36,12 @@ public class CustomPointsPickerFragment extends DialogFragment {
     private OnPricePickedListener pricePickedListener;
     private Unbinder unbinder;
 
-    public static CustomPointsPickerFragment newInstance(OnPricePickedListener pricePickedListener) {
+    public static CustomRewardPricePickerFragment newInstance(OnPricePickedListener pricePickedListener) {
         return newInstance(null, pricePickedListener);
     }
 
-    public static CustomPointsPickerFragment newInstance(Integer points, OnPricePickedListener pricePickedListener) {
-        CustomPointsPickerFragment fragment = new CustomPointsPickerFragment();
+    public static CustomRewardPricePickerFragment newInstance(Integer points, OnPricePickedListener pricePickedListener) {
+        CustomRewardPricePickerFragment fragment = new CustomRewardPricePickerFragment();
         if (points != null) {
             Bundle args = new Bundle();
             args.putInt(POINTS, points);

@@ -34,9 +34,9 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.NewRewardSavedEvent;
 import io.ipoli.android.reward.persistence.RewardPersistenceService;
-import io.ipoli.android.reward.ui.dialogs.CustomPointsPickerFragment;
+import io.ipoli.android.reward.ui.dialogs.CustomRewardPricePickerFragment;
 import io.ipoli.android.reward.ui.dialogs.OnPricePickedListener;
-import io.ipoli.android.reward.ui.dialogs.PointsPickerFragment;
+import io.ipoli.android.reward.ui.dialogs.RewardPricePickerFragment;
 
 import static io.ipoli.android.Constants.DEFAULT_REWARD_PRICE;
 
@@ -173,9 +173,9 @@ public class EditRewardActivity extends BaseActivity implements OnPricePickedLis
         Integer price = (Integer) priceText.getTag();
         List<Integer> prices = Arrays.asList(Constants.REWARD_POINTS);
         if (prices.contains(price)) {
-            PointsPickerFragment.newInstance(price, this).show(getSupportFragmentManager());
+            RewardPricePickerFragment.newInstance(price, this).show(getSupportFragmentManager());
         } else {
-            CustomPointsPickerFragment.newInstance(price, this).show(getSupportFragmentManager());
+            CustomRewardPricePickerFragment.newInstance(price, this).show(getSupportFragmentManager());
         }
     }
 
