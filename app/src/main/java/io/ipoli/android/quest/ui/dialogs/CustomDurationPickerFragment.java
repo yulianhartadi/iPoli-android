@@ -119,28 +119,30 @@ public class CustomDurationPickerFragment extends DialogFragment {
 
         AlertDialog dialog = builder.create();
 
-        dialog.setOnShowListener(d -> {
-            Button positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-            positive.setOnClickListener(v -> {
-                int duration1 = getDuration(durationText);
-                if (duration1 > Time.h2Min(Constants.MAX_QUEST_DURATION_HOURS)) {
-                    durationText = MAX_DURATION_TEXT;
-                    updateHoursAndMinutes();
-                    Toast.makeText(getContext(), R.string.quest_max_duration_value_message, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (duration1 < Constants.QUEST_MIN_DURATION) {
-                    durationText = MIN_DURATION_TEXT;
-                    updateHoursAndMinutes();
-                    Toast.makeText(getContext(), R.string.quest_min_duration_value_message, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                durationPickedListener.onDurationPicked(duration1);
-                dismiss();
-            });
-        });
+        dialog.setOnShowListener(d -> onShowDialog(dialog));
 
         return dialog;
+    }
+
+    private void onShowDialog(AlertDialog dialog) {
+        Button positive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        positive.setOnClickListener(v -> {
+            int dur = getDuration(durationText);
+            if (dur > Time.h2Min(Constants.MAX_QUEST_DURATION_HOURS)) {
+                durationText = MAX_DURATION_TEXT;
+                updateHoursAndMinutes();
+                Toast.makeText(getContext(), R.string.quest_max_duration_value_message, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (dur < Constants.QUEST_MIN_DURATION) {
+                durationText = MIN_DURATION_TEXT;
+                updateHoursAndMinutes();
+                Toast.makeText(getContext(), R.string.quest_min_duration_value_message, Toast.LENGTH_SHORT).show();
+                return;
+            }
+            durationPickedListener.onDurationPicked(dur);
+            dismiss();
+        });
     }
 
     private void initDurationText() {

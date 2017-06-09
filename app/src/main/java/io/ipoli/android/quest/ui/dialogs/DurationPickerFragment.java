@@ -96,27 +96,29 @@ public class DurationPickerFragment extends DialogFragment {
                 });
 
         AlertDialog dialog = builder.create();
-        dialog.setOnShowListener(d -> {
-            Button custom = dialog.getButton(DialogInterface.BUTTON_NEUTRAL);
-            custom.setOnClickListener(v -> {
-                if (upgradeManager.isLocked(Upgrade.CUSTOM_DURATION)) {
-                    UpgradeDialog.newInstance(Upgrade.CUSTOM_DURATION, new UpgradeDialog.OnUnlockListener() {
-                        @Override
-                        public void onUnlock() {
-                            CustomDurationPickerFragment.newInstance(durationPickedListener).show(getFragmentManager());
-                            dismiss();
-                        }
-                    }).show(getFragmentManager());
-                    return;
-                }
-
-                CustomDurationPickerFragment.newInstance(durationPickedListener).show(getFragmentManager());
-                dismiss();
-            });
-        });
+        dialog.setOnShowListener(d -> onShowDialog(dialog));
 
         return dialog;
 
+    }
+
+    private void onShowDialog(AlertDialog dialog) {
+        Button custom = dialog.getButton(DialogInterface.BUTTON_NEUTRAL);
+        custom.setOnClickListener(v -> {
+            if (upgradeManager.isLocked(Upgrade.CUSTOM_DURATION)) {
+                UpgradeDialog.newInstance(Upgrade.CUSTOM_DURATION, new UpgradeDialog.OnUnlockListener() {
+                    @Override
+                    public void onUnlock() {
+                        CustomDurationPickerFragment.newInstance(durationPickedListener).show(getFragmentManager());
+                        dismiss();
+                    }
+                }).show(getFragmentManager());
+                return;
+            }
+
+            CustomDurationPickerFragment.newInstance(durationPickedListener).show(getFragmentManager());
+            dismiss();
+        });
     }
 
     public void show(FragmentManager fragmentManager) {

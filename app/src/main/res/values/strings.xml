@@ -885,6 +885,11 @@
     <string name="donation_pack">Donation pack</string>
     <string name="donation_pack_desc">For the generous and selfless</string>
     <string name="coins_pack_single_value">+ %d life coin</string>
+    <string name="reward_points_hint">Reward points</string>
+    <string name="empty_reward_points_message">Can\'t have free rewards</string>
+    <string name="too_expensive_reward_points_message">Too expensive, be more realistic</string>
+    <string name="max_reward_points">max %d</string>
+    <string name="min_reward_points">min %d</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
