@@ -96,9 +96,7 @@ public class DurationPickerFragment extends DialogFragment {
                 });
 
         AlertDialog dialog = builder.create();
-        dialog.setOnShowListener(d -> {
-            onShowDialog(dialog);
-        });
+        dialog.setOnShowListener(d -> onShowDialog(dialog));
 
         return dialog;
 
