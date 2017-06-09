@@ -32,7 +32,7 @@ public class RewardPricePickerFragment extends DialogFragment {
 
     public static RewardPricePickerFragment newInstance(Integer points, OnPricePickedListener pricePickedListener) {
         RewardPricePickerFragment fragment = new RewardPricePickerFragment();
-        if(points != null) {
+        if (points != null) {
             Bundle args = new Bundle();
             args.putInt(POINTS, points);
             fragment.setArguments(args);
