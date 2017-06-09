@@ -108,6 +108,8 @@ public interface Constants {
 
     int REWARD_MAX_PRICE = 10000;
 
+    int REWARD_MIN_PRICE = 1;
+
     int DEFAULT_DAILY_CHALLENGE_REMINDER_START_MINUTE = 10 * 60;
 
     boolean DEFAULT_DAILY_CHALLENGE_ENABLE_REMINDER = true;

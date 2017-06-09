@@ -17,9 +17,11 @@ import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.StringUtils;
+
+import static io.ipoli.android.Constants.REWARD_MAX_PRICE;
+import static io.ipoli.android.Constants.REWARD_MIN_PRICE;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -81,9 +83,7 @@ public class CustomRewardPricePickerFragment extends DialogFragment {
         });
 
         AlertDialog dialog = builder.create();
-        dialog.setOnShowListener(dialog1 -> {
-            onShowDialog(dialog);
-        });
+        dialog.setOnShowListener(d -> onShowDialog(dialog));
         return dialog;
 
     }
@@ -93,17 +93,19 @@ public class CustomRewardPricePickerFragment extends DialogFragment {
         positiveButton.setOnClickListener(v -> {
             String text = pointsView.getText().toString();
             if (StringUtils.isEmpty(text)) {
+                pointsView.setError(getString(R.string.min_reward_points, REWARD_MIN_PRICE));
                 Toast.makeText(getContext(), R.string.empty_reward_points_message, Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            int selectedPoints = Constants.REWARD_MAX_PRICE + 1;
+            int selectedPoints = REWARD_MAX_PRICE + 1;
             try {
                 selectedPoints = Integer.parseInt(pointsView.getText().toString());
             } catch (Exception e) {
             }
 
-            if (selectedPoints > Constants.REWARD_MAX_PRICE) {
+            if (selectedPoints > REWARD_MAX_PRICE) {
+                pointsView.setError(getString(R.string.max_reward_points, REWARD_MAX_PRICE));
                 Toast.makeText(getContext(), R.string.too_expensive_reward_points_message, Toast.LENGTH_SHORT).show();
                 return;
             }
