@@ -18,20 +18,20 @@ import io.ipoli.android.R;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 6/17/16.
  */
-public class PointsPickerFragment extends DialogFragment {
-    private static final String TAG = "points-picker-dialog";
+public class RewardPricePickerFragment extends DialogFragment {
+    private static final String TAG = "reward-price-picker-dialog";
     private static final String POINTS = "points";
 
     private Integer points;
     private OnPricePickedListener pricePickedListener;
     private int selectedPriceIndex;
 
-    public static PointsPickerFragment newInstance(OnPricePickedListener pricePickedListener) {
+    public static RewardPricePickerFragment newInstance(OnPricePickedListener pricePickedListener) {
         return newInstance(null, pricePickedListener);
     }
 
-    public static PointsPickerFragment newInstance(Integer points, OnPricePickedListener pricePickedListener) {
-        PointsPickerFragment fragment = new PointsPickerFragment();
+    public static RewardPricePickerFragment newInstance(Integer points, OnPricePickedListener pricePickedListener) {
+        RewardPricePickerFragment fragment = new RewardPricePickerFragment();
         if(points != null) {
             Bundle args = new Bundle();
             args.putInt(POINTS, points);
@@ -73,7 +73,7 @@ public class PointsPickerFragment extends DialogFragment {
 
                 })
                 .setNeutralButton(R.string.custom, (dialog, which) ->
-                        CustomPointsPickerFragment.newInstance(points, pricePickedListener).show(getFragmentManager()));
+                        CustomRewardPricePickerFragment.newInstance(points, pricePickedListener).show(getFragmentManager()));
         return builder.create();
 
     }
