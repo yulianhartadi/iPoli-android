@@ -32,9 +32,11 @@ public class PointsPickerFragment extends DialogFragment {
 
     public static PointsPickerFragment newInstance(Integer points, OnPricePickedListener pricePickedListener) {
         PointsPickerFragment fragment = new PointsPickerFragment();
-        Bundle args = new Bundle();
-        args.putInt(POINTS, points);
-        fragment.setArguments(args);
+        if(points != null) {
+            Bundle args = new Bundle();
+            args.putInt(POINTS, points);
+            fragment.setArguments(args);
+        }
         fragment.pricePickedListener = pricePickedListener;
         return fragment;
     }
@@ -55,7 +57,7 @@ public class PointsPickerFragment extends DialogFragment {
         selectedPriceIndex = 0;
         for (int i = 0; i < availablePrices.size(); i++) {
             prices[i] = getString(R.string.reward_price_points, availablePrices.get(i));
-            if (availablePrices.get(i) == points) {
+            if (availablePrices.get(i).equals(points)) {
                 selectedPriceIndex = i;
             }
         }

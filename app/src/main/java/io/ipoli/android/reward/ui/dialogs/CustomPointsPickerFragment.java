@@ -93,7 +93,7 @@ public class CustomPointsPickerFragment extends DialogFragment {
         positiveButton.setOnClickListener(v -> {
             String text = pointsView.getText().toString();
             if (StringUtils.isEmpty(text)) {
-                Toast.makeText(getContext(), "Can't have free rewards", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.empty_reward_points_message, Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -104,7 +104,7 @@ public class CustomPointsPickerFragment extends DialogFragment {
             }
 
             if (selectedPoints > Constants.REWARD_MAX_PRICE) {
-                Toast.makeText(getContext(), "Too expensive, be more realistic", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.too_expensive_reward_points_message, Toast.LENGTH_SHORT).show();
                 return;
             }
 
