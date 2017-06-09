@@ -103,7 +103,10 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
         schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
 
         if (schemaVersion == 0 || schemaVersion > Constants.FIREBASE_LAST_SCHEMA_VERSION) {
-            schemaVersion = getPlayer().getSchemaVersion();
+            Player player = getPlayer();
+            if(player != null) {
+                schemaVersion = player.getSchemaVersion();
+            }
         }
 
         if (schemaVersion < VERSION_BEFORE_UPGRADES) {
