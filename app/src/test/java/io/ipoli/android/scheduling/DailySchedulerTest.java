@@ -620,8 +620,7 @@ public class DailySchedulerTest {
     }
 
     @Test
-    @Ignore
-    public void test() {
+    public void occupyStartingBeforeAndEndingAfterMidnight() {
         DailyScheduler scheduler = new DailySchedulerBuilder()
                 .setStartMinute(h2Min(8))
                 .setEndMinute(h2Min(2))

@@ -27,6 +27,8 @@ import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 import io.ipoli.android.app.scheduling.distributions.UniformDiscreteDistribution;
 import io.ipoli.android.app.utils.Time;
 
+import static io.ipoli.android.app.utils.Time.*;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 04/21/17.
@@ -111,7 +113,7 @@ public class DailyScheduler {
     private int getSlotCount() {
         int slotCount = (int) Math.ceil((endMinute - startMinute) / (float) timeSlotDuration);
         if (startMinute > endMinute) {
-            int slotsInADay = Time.MINUTES_IN_A_DAY / timeSlotDuration;
+            int slotsInADay = MINUTES_IN_A_DAY / timeSlotDuration;
             slotCount = slotsInADay + slotCount;
         }
         return slotCount;
@@ -130,9 +132,12 @@ public class DailyScheduler {
      * @param endMinute   exclusive
      */
     private void populateSlots(boolean[] slots, boolean value, int startMinute, int endMinute) {
+        if(endMinute < startMinute) {
+            endMinute = MINUTES_IN_A_DAY + endMinute;
+        }
         int slotMinute = startMinute;
         while (slotMinute < endMinute) {
-            int slotIndex = getSlotForMinute(slotMinute);
+            int slotIndex = getSlotForMinute(slotMinute % MINUTES_IN_A_DAY);
             if(slotIndex >= slots.length) {
                 StringBuilder builder = new StringBuilder();
                 builder.append("Slot index:").append(slotIndex)
@@ -153,10 +158,10 @@ public class DailyScheduler {
     }
 
     public boolean isFree(int startMinute, int endMinute) {
-        if (startMinute < 0 && startMinute > Time.MINUTES_IN_A_DAY) {
+        if (startMinute < 0 && startMinute > MINUTES_IN_A_DAY) {
             throw new IllegalArgumentException("Start minute out of bounds: " + startMinute);
         }
-        if (endMinute < 0 && endMinute > Time.MINUTES_IN_A_DAY) {
+        if (endMinute < 0 && endMinute > MINUTES_IN_A_DAY) {
             throw new IllegalArgumentException("End minute out of bounds: " + endMinute);
         }
 
@@ -188,12 +193,12 @@ public class DailyScheduler {
 
     public int getSlotForMinute(int minute) {
 
-        if (minute < 0 || minute > Time.MINUTES_IN_A_DAY) {
+        if (minute < 0 || minute > MINUTES_IN_A_DAY) {
             throw new IllegalArgumentException("Minute out of bounds: " + minute);
         }
 
         if (startMinute > minute) {
-            int mins = Time.MINUTES_IN_A_DAY - startMinute;
+            int mins = MINUTES_IN_A_DAY - startMinute;
             return (minute + mins) / timeSlotDuration;
         } else {
             return (minute - startMinute) / timeSlotDuration;
@@ -207,7 +212,7 @@ public class DailyScheduler {
      */
     private int getSlotCountBetween(int startMinute, int endMinute) {
         if (startMinute > endMinute) {
-            int totalSlots = getSlotCountBetween(startMinute, Time.MINUTES_IN_A_DAY);
+            int totalSlots = getSlotCountBetween(startMinute, MINUTES_IN_A_DAY);
             totalSlots += getSlotCountBetween(0, endMinute);
             return totalSlots;
         } else {
@@ -222,7 +227,7 @@ public class DailyScheduler {
         }
         Collections.sort(result, (t1, t2) -> -Integer.compare(t1.getPriority(), t2.getPriority()));
         for (Task t : result) {
-            DiscreteDistribution dist = UniformDiscreteDistribution.create((int) Math.ceil(Time.MINUTES_IN_A_DAY / (float) timeSlotDuration));
+            DiscreteDistribution dist = UniformDiscreteDistribution.create((int) Math.ceil(MINUTES_IN_A_DAY / (float) timeSlotDuration));
             for (Constraint constraint : constraints) {
                 if (constraint.shouldApply(t)) {
                     dist = dist.joint(constraint.apply());
@@ -260,7 +265,7 @@ public class DailyScheduler {
         int taskSlotCount = getSlotCountBetween(0, task.getDuration());
         int startMinute = Math.max(currentTime.toMinuteOfDay(), this.startMinute);
         int startSlot = getSlotForMinute(startMinute);
-        if (isNotAtSlotMinute(Time.of(startMinute))) {
+        if (isNotAtSlotMinute(of(startMinute))) {
             startSlot = Math.min(startSlot + 1, freeSlots.length - 1);
         }
         for (int curSlot = startSlot; curSlot < freeSlots.length; curSlot++) {
@@ -294,7 +299,7 @@ public class DailyScheduler {
     }
 
     public List<Task> scheduleTasks(List<Task> tasksToSchedule) {
-        return scheduleTasks(tasksToSchedule, Time.now());
+        return scheduleTasks(tasksToSchedule, now());
     }
 
     public List<Task> scheduleTasks(List<Task> tasksToSchedule, Time currentTime) {
@@ -302,7 +307,7 @@ public class DailyScheduler {
     }
 
     public List<Task> scheduleTasks(List<Task> tasksToSchedule, List<Task> scheduledTasks) {
-        return scheduleTasks(tasksToSchedule, scheduledTasks, Time.now());
+        return scheduleTasks(tasksToSchedule, scheduledTasks, now());
     }
 
     public List<Task> scheduleTasks(List<Task> tasksToSchedule, List<Task> scheduledTasks, Time currentTime) {
@@ -372,8 +377,8 @@ public class DailyScheduler {
         List<TimeSlot> blocks = new ArrayList<>();
         int endTimeBlockSlot = startSlot + slotCount;
         for (int i = startSlot; i < endTimeBlockSlot; i++) {
-            int startMinute = (this.startMinute + i * timeSlotDuration) % Time.MINUTES_IN_A_DAY;
-            int endMinute = (startMinute + taskSlotCount * timeSlotDuration) % Time.MINUTES_IN_A_DAY;
+            int startMinute = (this.startMinute + i * timeSlotDuration) % MINUTES_IN_A_DAY;
+            int endMinute = (startMinute + taskSlotCount * timeSlotDuration) % MINUTES_IN_A_DAY;
             if(i == endTimeBlockSlot - 1) {
                 endMinute = Math.min(endMinute, startMinute + taskDuration);
             }
