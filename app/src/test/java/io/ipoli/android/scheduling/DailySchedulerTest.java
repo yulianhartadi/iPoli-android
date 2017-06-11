@@ -572,6 +572,21 @@ public class DailySchedulerTest {
                 currentTimeSlot.getEndMinute() == h2Min(9));
     }
 
+    @Test
+    public void shouldNoScheduleWithEqualStartAndEndMinute() {
+        DailyScheduler scheduler = new DailySchedulerBuilder()
+                .setStartMinute(h2Min(21))
+                .setEndMinute(h2Min(22) + 30)
+                .setWorkStartMinute(h2Min(9) + 30)
+                .setWorkEndMinute(h2Min(17) + 30)
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .setSeed(random)
+                .create();
+        List<Task> scheduledTasks = Collections.singletonList(new Task("", h2Min(23) + 15, 10, Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT, TimePreference.ANY, Category.WELLNESS));
+        scheduler.scheduleTasks(new ArrayList<>(), scheduledTasks, defaultTime);
+        assertFalse(scheduler.isFree(h2Min(23) + 15, h2Min(23) + 30));
+    }
+
     private Task toTask(Quest quest) {
         PriorityEstimator priorityEstimator = new PriorityEstimator();
         return new Task(quest.getStartMinute() == null ? -1 : quest.getStartMinute(),
