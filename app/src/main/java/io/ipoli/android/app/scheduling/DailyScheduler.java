@@ -98,11 +98,11 @@ public class DailyScheduler {
     }
 
     private boolean isInSchedule(int minute) {
-        if (startMinute < endMinute && (minute < startMinute || minute > endMinute)) {
+        if (startMinute <= endMinute && (minute < startMinute || minute > endMinute)) {
             return false;
         }
 
-        if (startMinute > endMinute && (minute > endMinute && minute < startMinute)) {
+        if (startMinute >= endMinute && (minute > endMinute && minute < startMinute)) {
             return false;
         }
         return true;
@@ -160,17 +160,17 @@ public class DailyScheduler {
             throw new IllegalArgumentException("End minute out of bounds: " + endMinute);
         }
 
-        if (this.startMinute < this.endMinute && startMinute <= endMinute) {
+        if (this.startMinute <= this.endMinute && startMinute <= endMinute) {
             if (startMinute < this.startMinute || endMinute > this.endMinute) {
                 return false;
             }
         }
 
-        if (this.startMinute < this.endMinute && startMinute > endMinute) {
+        if (this.startMinute <= this.endMinute && startMinute > endMinute) {
             return false;
         }
 
-        if (this.startMinute > this.endMinute) {
+        if (this.startMinute >= this.endMinute) {
             if ((startMinute >= this.endMinute && startMinute < this.startMinute) || (endMinute > this.endMinute && endMinute <= this.startMinute)) {
                 return false;
             }
