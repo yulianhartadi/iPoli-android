@@ -98,11 +98,11 @@ public class DailyScheduler {
     }
 
     private boolean isInSchedule(int minute) {
-        if (startMinute <= endMinute && (minute < startMinute || minute > endMinute)) {
+        if (startMinute <= endMinute && (minute < startMinute || minute >= endMinute)) {
             return false;
         }
 
-        if (startMinute >= endMinute && (minute > endMinute && minute < startMinute)) {
+        if (startMinute >= endMinute && (minute >= endMinute && minute < startMinute)) {
             return false;
         }
         return true;
