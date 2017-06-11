@@ -1,6 +1,7 @@
 package io.ipoli.android.scheduling;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.threeten.bp.LocalDate;
 
@@ -573,9 +574,9 @@ public class DailySchedulerTest {
     }
 
     @Test
-    public void shouldNoScheduleWithEqualStartAndEndMinute() {
+    public void shouldNoOccupyWithEqualStartAndEndMinute() {
         DailyScheduler scheduler = new DailySchedulerBuilder()
-                .setStartMinute(h2Min(21))
+                .setStartMinute(h2Min(22) + 30)
                 .setEndMinute(h2Min(22) + 30)
                 .setWorkStartMinute(h2Min(9) + 30)
                 .setWorkEndMinute(h2Min(17) + 30)
@@ -584,7 +585,54 @@ public class DailySchedulerTest {
                 .create();
         List<Task> scheduledTasks = Collections.singletonList(new Task("", h2Min(23) + 15, 10, Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT, TimePreference.ANY, Category.WELLNESS));
         scheduler.scheduleTasks(new ArrayList<>(), scheduledTasks, defaultTime);
-        assertFalse(scheduler.isFree(h2Min(23) + 15, h2Min(23) + 30));
+        assertFalse(scheduler.isFree(h2Min(23) + 15, h2Min(23) + 25));
+    }
+
+    @Test
+    public void shouldNoOccupyWithStartOnEndBound() {
+        DailyScheduler scheduler = new DailySchedulerBuilder()
+                .setStartMinute(h2Min(8))
+                .setEndMinute(0)
+                .setWorkStartMinute(h2Min(9))
+                .setWorkEndMinute(h2Min(17))
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .setSeed(random)
+                .create();
+        List<Task> scheduledTasks = Collections.singletonList(new Task("", 0, 529, Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT, TimePreference.ANY, Category.WELLNESS));
+        scheduler.scheduleTasks(new ArrayList<>(), scheduledTasks, defaultTime);
+        assertFalse(scheduler.isFree(0, 529));
+    }
+
+    @Test
+    @Ignore
+    public void shouldNotScheduleWithOverlappingWholeSleepDuration() {
+        DailyScheduler scheduler = new DailySchedulerBuilder()
+                .setStartMinute(h2Min(8))
+                .setEndMinute(0)
+                .setWorkStartMinute(h2Min(9))
+                .setWorkEndMinute(h2Min(17))
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .setSeed(random)
+                .create();
+        List<Task> scheduledTasks = Collections.singletonList(new Task("", 1439, 529, Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT, TimePreference.ANY, Category.WELLNESS));
+        scheduler.scheduleTasks(new ArrayList<>(), scheduledTasks, defaultTime);
+        assertFalse(scheduler.isFree(1439, 529));
+    }
+
+    @Test
+    @Ignore
+    public void test() {
+        DailyScheduler scheduler = new DailySchedulerBuilder()
+                .setStartMinute(h2Min(8))
+                .setEndMinute(h2Min(2))
+                .setWorkStartMinute(h2Min(9))
+                .setWorkEndMinute(h2Min(17))
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .setSeed(random)
+                .create();
+        List<Task> scheduledTasks = Collections.singletonList(new Task("", h2Min(23) + 50, 20, Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT, TimePreference.ANY, Category.WELLNESS));
+        scheduler.scheduleTasks(new ArrayList<>(), scheduledTasks, defaultTime);
+        assertFalse(scheduler.isFree(h2Min(23) + 50, 10));
     }
 
     private Task toTask(Quest quest) {
