@@ -28,7 +28,7 @@ public class EisenhowerMatrixAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     private final Context context;
     private final Bus eventBus;
-    private final List<EisenhowerMatrixViewModel> viewModels;
+    private List<EisenhowerMatrixViewModel> viewModels;
 
     public EisenhowerMatrixAdapter(Context context, Bus eventBus, List<EisenhowerMatrixViewModel> viewModels) {
         this.context = context;
@@ -61,6 +61,11 @@ public class EisenhowerMatrixAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public int getItemCount() {
         return viewModels.size();
+    }
+
+    public void setViewModels(List<EisenhowerMatrixViewModel> viewModels) {
+        this.viewModels = viewModels;
+        notifyDataSetChanged();
     }
 
     static class EisenhowerMatrixViewHolder extends RecyclerView.ViewHolder {
