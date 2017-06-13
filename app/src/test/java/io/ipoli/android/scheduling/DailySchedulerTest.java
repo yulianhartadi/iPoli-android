@@ -1,7 +1,6 @@
 package io.ipoli.android.scheduling;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.threeten.bp.LocalDate;
 
@@ -604,22 +603,6 @@ public class DailySchedulerTest {
     }
 
     @Test
-    @Ignore
-    public void shouldNotScheduleWithOverlappingWholeSleepDuration() {
-        DailyScheduler scheduler = new DailySchedulerBuilder()
-                .setStartMinute(h2Min(8))
-                .setEndMinute(0)
-                .setWorkStartMinute(h2Min(9))
-                .setWorkEndMinute(h2Min(17))
-                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
-                .setSeed(random)
-                .create();
-        List<Task> scheduledTasks = Collections.singletonList(new Task("", 1439, 529, Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT, TimePreference.ANY, Category.WELLNESS));
-        scheduler.scheduleTasks(new ArrayList<>(), scheduledTasks, defaultTime);
-        assertFalse(scheduler.isFree(1439, 529));
-    }
-
-    @Test
     public void occupyStartingBeforeAndEndingAfterMidnight() {
         DailyScheduler scheduler = new DailySchedulerBuilder()
                 .setStartMinute(h2Min(8))
@@ -632,6 +615,53 @@ public class DailySchedulerTest {
         List<Task> scheduledTasks = Collections.singletonList(new Task("", h2Min(23) + 50, 20, Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT, TimePreference.ANY, Category.WELLNESS));
         scheduler.scheduleTasks(new ArrayList<>(), scheduledTasks, defaultTime);
         assertFalse(scheduler.isFree(h2Min(23) + 50, 10));
+    }
+
+    @Test
+    public void shouldNotOccupyWithOverlappingSleepDurationWithScheduleEndMinuteMidnight() {
+        DailyScheduler scheduler = new DailySchedulerBuilder()
+                .setStartMinute(h2Min(8))
+                .setEndMinute(0)
+                .setWorkStartMinute(h2Min(9))
+                .setWorkEndMinute(h2Min(17))
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .setSeed(random)
+                .create();
+        List<Task> scheduledTasks = Collections.singletonList(new Task("", h2Min(24) - 10, 9 * 60, Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT, TimePreference.ANY, Category.WELLNESS));
+        scheduler.scheduleTasks(new ArrayList<>(), scheduledTasks, defaultTime);
+        assertFalse(scheduler.isFree(h2Min(24) - 10, 0));
+    }
+
+    @Test
+    public void shouldNotOccupyWithOverlappingSleepDurationWithScheduleStartLessThanEnd() {
+        DailyScheduler scheduler = new DailySchedulerBuilder()
+                .setStartMinute(h2Min(8))
+                .setEndMinute(h2Min(23))
+                .setWorkStartMinute(h2Min(9))
+                .setWorkEndMinute(h2Min(17))
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .setSeed(random)
+                .create();
+        List<Task> scheduledTasks = Collections.singletonList(new Task("", h2Min(22), 11 * 60, Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT, TimePreference.ANY, Category.WELLNESS));
+        scheduler.scheduleTasks(new ArrayList<>(), scheduledTasks, defaultTime);
+        assertFalse(scheduler.isFree(h2Min(22), h2Min(23)));
+        assertTrue(scheduler.isFree(h2Min(8), h2Min(9)));
+    }
+
+    @Test
+    public void shouldNotOccupyWithOverlappingSleepDurationWithScheduleStartGreaterThanEnd() {
+        DailyScheduler scheduler = new DailySchedulerBuilder()
+                .setStartMinute(h2Min(8))
+                .setEndMinute(h2Min(1))
+                .setWorkStartMinute(h2Min(9))
+                .setWorkEndMinute(h2Min(17))
+                .setProductiveTimes(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES)
+                .setSeed(random)
+                .create();
+        List<Task> scheduledTasks = Collections.singletonList(new Task("", h2Min(22), 11 * 60, Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT, TimePreference.ANY, Category.WELLNESS));
+        scheduler.scheduleTasks(new ArrayList<>(), scheduledTasks, defaultTime);
+        assertFalse(scheduler.isFree(h2Min(22), h2Min(1)));
+        assertTrue(scheduler.isFree(h2Min(8), h2Min(9)));
     }
 
     private Task toTask(Quest quest) {
