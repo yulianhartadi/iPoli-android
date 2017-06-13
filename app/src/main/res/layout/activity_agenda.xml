@@ -3,76 +3,155 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_container"
+    android:background="@color/md_white"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/md_white">
+    android:layout_height="match_parent">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/Theme.iPoli.AppBarOverlay"
-        app:elevation="0dp">
+        android:layout_height="wrap_content">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/toolbar_collapsing_container"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:popupTheme="@style/Theme.iPoli.PopupOverlay" />
+            android:layout_height="match_parent"
+            android:minHeight="?attr/actionBarSize"
+            app:contentScrim="@color/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
+            app:statusBarScrim="@color/colorPrimary">
+
+            <CalendarView
+                android:id="@+id/agenda_calendar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="?attr/actionBarSize"
+                android:background="@color/md_white"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                android:weekDayTextAppearance="@style/AgendaCalendarWeekDayTextAppearance" />
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:titleTextColor="@color/md_white"
+                android:popupTheme="@style/Theme.iPoli.PopupOverlay"/>
+
+        </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.constraint.ConstraintLayout
+
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="?attr/actionBarSize">
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <CalendarView
-            android:id="@+id/agenda_calendar"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:weekDayTextAppearance="@style/AgendaCalendarWeekDayTextAppearance"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="match_parent"
+            android:background="@color/md_white"
+            android:orientation="vertical"
+            android:paddingBottom="60dp"
+            android:paddingTop="16dp">
 
-
-        <TextView
-            android:id="@+id/agenda_journey_text"
-            style="@style/TextAppearance.AppCompat.Subhead"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:text="@string/agenda_daily_journey"
-            android:textColor="@color/colorAccent"
-            android:visibility="visible"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/agenda_calendar" />
-
-        <FrameLayout
-            android:id="@+id/agenda_list_container"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/agenda_journey_text">
-
-            <io.ipoli.android.app.ui.EmptyStateRecyclerView
-                android:id="@+id/agenda_list"
+            <TextView
+                android:id="@+id/agenda_journey_text"
+                style="@style/TextAppearance.AppCompat.Subhead"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scrollbars="vertical"
-                tools:listitem="@layout/agenda_item" />
-        </FrameLayout>
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/agenda_daily_journey"
+                android:textColor="@color/colorAccent"
+                android:visibility="visible" />
 
-    </android.support.constraint.ConstraintLayout>
+            <FrameLayout
+                android:id="@+id/agenda_list_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <io.ipoli.android.app.ui.EmptyStateRecyclerView
+                    android:id="@+id/agenda_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scrollbars="vertical"
+                    tools:listitem="@layout/agenda_item" />
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+    <!--<android.support.design.widget.AppBarLayout-->
+    <!--android:id="@+id/appbar"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:theme="@style/Theme.iPoli.AppBarOverlay"-->
+    <!--app:elevation="0dp">-->
+
+    <!--<android.support.v7.widget.Toolbar-->
+    <!--android:id="@+id/toolbar"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="?attr/actionBarSize"-->
+    <!--android:theme="@style/Theme.iPoli.AppBarOverlay" />-->
+    <!--</android.support.design.widget.AppBarLayout>-->
+
+    <!--<android.support.constraint.ConstraintLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:layout_marginTop="?attr/actionBarSize">-->
+
+    <!--<CalendarView-->
+    <!--android:id="@+id/agenda_calendar"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:weekDayTextAppearance="@style/AgendaCalendarWeekDayTextAppearance"-->
+    <!--app:layout_constraintHorizontal_bias="0.5"-->
+    <!--app:layout_constraintLeft_toLeftOf="parent"-->
+    <!--app:layout_constraintRight_toRightOf="parent"-->
+    <!--app:layout_constraintTop_toTopOf="parent" />-->
+
+
+    <!--<TextView-->
+    <!--android:id="@+id/agenda_journey_text"-->
+    <!--style="@style/TextAppearance.AppCompat.Subhead"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginEnd="16dp"-->
+    <!--android:layout_marginLeft="16dp"-->
+    <!--android:layout_marginRight="16dp"-->
+    <!--android:layout_marginStart="16dp"-->
+    <!--android:layout_marginTop="16dp"-->
+    <!--android:text="@string/agenda_daily_journey"-->
+    <!--android:textColor="@color/colorAccent"-->
+    <!--android:visibility="visible"-->
+    <!--app:layout_constraintHorizontal_bias="0.5"-->
+    <!--app:layout_constraintLeft_toLeftOf="parent"-->
+    <!--app:layout_constraintRight_toRightOf="parent"-->
+    <!--app:layout_constraintTop_toBottomOf="@+id/agenda_calendar" />-->
+
+    <!--<FrameLayout-->
+    <!--android:id="@+id/agenda_list_container"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="0dp"-->
+    <!--android:layout_marginBottom="16dp"-->
+    <!--android:layout_marginTop="16dp"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintLeft_toLeftOf="parent"-->
+    <!--app:layout_constraintRight_toRightOf="parent"-->
+    <!--app:layout_constraintTop_toBottomOf="@+id/agenda_journey_text">-->
+
+    <!--<io.ipoli.android.app.ui.EmptyStateRecyclerView-->
+    <!--android:id="@+id/agenda_list"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:scrollbars="vertical"-->
+    <!--tools:listitem="@layout/agenda_item" />-->
+    <!--</FrameLayout>-->
+
+    <!--</android.support.constraint.ConstraintLayout>-->
 </android.support.design.widget.CoordinatorLayout>
