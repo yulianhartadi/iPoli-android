@@ -27,7 +27,9 @@ import io.ipoli.android.app.scheduling.distributions.DiscreteDistribution;
 import io.ipoli.android.app.scheduling.distributions.UniformDiscreteDistribution;
 import io.ipoli.android.app.utils.Time;
 
-import static io.ipoli.android.app.utils.Time.*;
+import static io.ipoli.android.app.utils.Time.MINUTES_IN_A_DAY;
+import static io.ipoli.android.app.utils.Time.now;
+import static io.ipoli.android.app.utils.Time.of;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -87,13 +89,16 @@ public class DailyScheduler {
                 continue;
             }
 
-            if (isInSchedule(startMinute) && !isInSchedule(endMinute)) {
+            if(isInSchedule(startMinute) && isInSchedule(endMinute)) {
+                if(endMinute < startMinute) {
+                    endMinute = this.endMinute;
+                }
+            } else if (isInSchedule(startMinute) && !isInSchedule(endMinute)) {
                 endMinute = this.endMinute;
-            }
-
-            if (!isInSchedule(startMinute) && isInSchedule(endMinute)) {
+            } else if (!isInSchedule(startMinute) && isInSchedule(endMinute)) {
                 startMinute = this.startMinute;
             }
+
             occupySlots(freeSlots, startMinute, endMinute);
         }
         return freeSlots;
@@ -176,7 +181,8 @@ public class DailyScheduler {
         }
 
         if (this.startMinute >= this.endMinute) {
-            if ((startMinute >= this.endMinute && startMinute < this.startMinute) || (endMinute > this.endMinute && endMinute <= this.startMinute)) {
+            if ((startMinute >= this.endMinute && startMinute < this.startMinute) ||
+                    (endMinute > this.endMinute && endMinute <= this.startMinute)) {
                 return false;
             }
         }
