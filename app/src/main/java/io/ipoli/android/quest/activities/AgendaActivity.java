@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -50,12 +49,6 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
     @Inject
     QuestPersistenceService questPersistenceService;
 
-    @BindView(R.id.appbar)
-    AppBarLayout appBarLayout;
-
-    @BindView(R.id.toolbar_collapsing_container)
-    CollapsingToolbarLayout collapsingToolbarLayout;
-
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -78,7 +71,11 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         appComponent().inject(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_agenda);
+        if (Build.VERSION.SDK_INT < 23) {
+            setContentView(R.layout.activity_agenda_lollipop);
+        } else {
+            setContentView(R.layout.activity_agenda);
+        }
         ButterKnife.bind(this);
 
         long selectedDateMillis = getIntent().getLongExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, 0);
@@ -96,7 +93,10 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
             ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         }
 
-        collapsingToolbarLayout.setTitleEnabled(false);
+        if (Build.VERSION.SDK_INT >= 23) {
+            CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_collapsing_container);
+            collapsingToolbarLayout.setTitleEnabled(false);
+        }
 
         use24HourFormat = shouldUse24HourFormat();
 
@@ -109,24 +109,6 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
         calendar.setDate(selectedDateMillis, true, true);
         calendar.setOnDateChangeListener(this);
         selectedDate = DateUtils.fromMillis(selectedDateMillis);
-
-        if (Build.VERSION.SDK_INT < 23) {
-//            questList.setNestedScrollingEnabled(false);
-//            appBarLayout.setExpanded(true, true);
-//            appBarLayout.setActivated(false);
-//            collapsingToolbarLayout.setActivated(false);
-//            toolbar.setCollapsible(false);
-//            collapsingToolbarLayout.setNestedScrollingEnabled(true);
-//            CollapsingToolbarLayout.LayoutParams lp = (CollapsingToolbarLayout.LayoutParams) calendar.getLayoutParams();
-//            lp.setCollapseMode(CollapsingToolbarLayout.LayoutParams.COLLAPSE_MODE_OFF);
-//            lp.height = (int) ViewUtils.dpToPx(300, getResources());
-//            lp.topMargin = (int) ViewUtils.dpToPx(16, getResources());
-//            calendar.setLayoutParams(lp);
-//            AppBarLayout.LayoutParams p = (AppBarLayout.LayoutParams) collapsingToolbarLayout.getLayoutParams();
-//            p.setScrollFlags(0);
-//            collapsingToolbarLayout.setLayoutParams(p);
-//            collapsingToolbarLayout.setNestedScrollingEnabled(true);
-        }
     }
 
     @Override
@@ -163,10 +145,10 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
         eventBus.post(new CalendarDayChangedEvent(date, CalendarDayChangedEvent.Source.AGENDA_CALENDAR));
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(getToolbarText(date)), Locale.getDefault());
         Date startOfDayDate = DateUtils.toStartOfDay(date);
-//        if (getSupportActionBar() != null) {
-//            getSupportActionBar().setTitle(simpleDateFormat.format(startOfDayDate));
-//        }
-        getSupportActionBar().setTitle(simpleDateFormat.format(startOfDayDate));
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(simpleDateFormat.format(startOfDayDate));
+        }
+//        getSupportActionBar().setTitle(simpleDateFormat.format(startOfDayDate));
         String dayNumberSuffix = DateUtils.getDayNumberSuffix(date.getDayOfMonth());
         DateFormat dateFormat = new SimpleDateFormat(getString(R.string.agenda_daily_journey_format, dayNumberSuffix));
         journeyText.setText(getString(R.string.agenda_daily_journey, dateFormat.format(startOfDayDate)));
