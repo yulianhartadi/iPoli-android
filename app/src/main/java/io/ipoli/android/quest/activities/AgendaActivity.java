@@ -93,8 +93,8 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
             ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         }
 
-        if (Build.VERSION.SDK_INT >= 23) {
-            CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_collapsing_container);
+        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_collapsing_container);
+        if (collapsingToolbarLayout != null) {
             collapsingToolbarLayout.setTitleEnabled(false);
         }
 
