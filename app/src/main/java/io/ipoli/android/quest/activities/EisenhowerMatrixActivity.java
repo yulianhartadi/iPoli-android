@@ -28,6 +28,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.adapters.EisenhowerMatrixAdapter;
 import io.ipoli.android.quest.data.Quest;
@@ -38,7 +39,7 @@ import io.ipoli.android.quest.viewmodels.EisenhowerMatrixViewModel;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 5/26/17.
  */
-public class EisenhowerMatrixActivity extends BaseActivity {
+public class EisenhowerMatrixActivity extends BaseActivity implements OnDataChangedListener<List<Quest>> {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -71,6 +72,12 @@ public class EisenhowerMatrixActivity extends BaseActivity {
     QuestPersistenceService questPersistenceService;
 
     private boolean use24HourFormat;
+    private LocalDate selectedDate;
+
+    private EisenhowerMatrixAdapter doListAdapter;
+    private EisenhowerMatrixAdapter accomplishListAdapter;
+    private EisenhowerMatrixAdapter delegateListAdapter;
+    private EisenhowerMatrixAdapter deleteListAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -88,7 +95,7 @@ public class EisenhowerMatrixActivity extends BaseActivity {
             return;
         }
 
-        LocalDate selectedDate = DateUtils.fromMillis(selectedDateMillis);
+        selectedDate = DateUtils.fromMillis(selectedDateMillis);
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(true);
             ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
@@ -102,43 +109,19 @@ public class EisenhowerMatrixActivity extends BaseActivity {
         setLayoutManagerToList(accomplishList);
         setLayoutManagerToList(delegateList);
         setLayoutManagerToList(deleteList);
-        showMatrix(selectedDate);
         eventBus.post(new ScreenShownEvent(this, EventSource.EISENHOWER_MATRIX));
     }
 
-    private void showMatrix(LocalDate selectedDate) {
-        questPersistenceService.findAllNonAllDayForDate(selectedDate, quests -> {
-            List<EisenhowerMatrixViewModel> doQuests = new ArrayList<>();
-            List<EisenhowerMatrixViewModel> accomplishQuests = new ArrayList<>();
-            List<EisenhowerMatrixViewModel> delegateQuests = new ArrayList<>();
-            List<EisenhowerMatrixViewModel> deleteQuests = new ArrayList<>();
-            for (Quest quest : quests) {
-                switch (quest.getPriority()) {
-                    case Quest.PRIORITY_IMPORTANT_NOT_URGENT:
-                        accomplishQuests.add(new EisenhowerMatrixViewModel(this, quest, use24HourFormat));
-                        break;
-                    case Quest.PRIORITY_NOT_IMPORTANT_URGENT:
-                        delegateQuests.add(new EisenhowerMatrixViewModel(this, quest, use24HourFormat));
-                        break;
-                    case Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT:
-                        deleteQuests.add(new EisenhowerMatrixViewModel(this, quest, use24HourFormat));
-                        break;
-                    default:
-                        doQuests.add(new EisenhowerMatrixViewModel(this, quest, use24HourFormat));
-                }
-            }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        questPersistenceService.listenForAllNonAllDayForDate(selectedDate, this);
+    }
 
-            if (doQuests.isEmpty() && accomplishQuests.isEmpty() && delegateQuests.isEmpty() && deleteQuests.isEmpty()) {
-                matrixContainer.setVisibility(View.GONE);
-                emptyView.setVisibility(View.VISIBLE);
-                return;
-            }
-
-            doList.setAdapter(new EisenhowerMatrixAdapter(this, eventBus, doQuests));
-            accomplishList.setAdapter(new EisenhowerMatrixAdapter(this, eventBus, accomplishQuests));
-            delegateList.setAdapter(new EisenhowerMatrixAdapter(this, eventBus, delegateQuests));
-            deleteList.setAdapter(new EisenhowerMatrixAdapter(this, eventBus, deleteQuests));
-        });
+    @Override
+    protected void onStop() {
+        questPersistenceService.removeAllListeners();
+        super.onStop();
     }
 
     private int getToolbarText(LocalDate date) {
@@ -182,5 +165,58 @@ public class EisenhowerMatrixActivity extends BaseActivity {
     private void onClose() {
         finish();
         overridePendingTransition(android.R.anim.fade_in, R.anim.slide_out_bottom);
+    }
+
+    @Override
+    public void onDataChanged(List<Quest> quests) {
+        List<EisenhowerMatrixViewModel> doQuests = new ArrayList<>();
+        List<EisenhowerMatrixViewModel> accomplishQuests = new ArrayList<>();
+        List<EisenhowerMatrixViewModel> delegateQuests = new ArrayList<>();
+        List<EisenhowerMatrixViewModel> deleteQuests = new ArrayList<>();
+        for (Quest quest : quests) {
+            switch (quest.getPriority()) {
+                case Quest.PRIORITY_IMPORTANT_NOT_URGENT:
+                    accomplishQuests.add(new EisenhowerMatrixViewModel(this, quest, use24HourFormat));
+                    break;
+                case Quest.PRIORITY_NOT_IMPORTANT_URGENT:
+                    delegateQuests.add(new EisenhowerMatrixViewModel(this, quest, use24HourFormat));
+                    break;
+                case Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT:
+                    deleteQuests.add(new EisenhowerMatrixViewModel(this, quest, use24HourFormat));
+                    break;
+                default:
+                    doQuests.add(new EisenhowerMatrixViewModel(this, quest, use24HourFormat));
+            }
+        }
+
+        if (doQuests.isEmpty() && accomplishQuests.isEmpty() && delegateQuests.isEmpty() && deleteQuests.isEmpty()) {
+            matrixContainer.setVisibility(View.GONE);
+            emptyView.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        if(doListAdapter == null) {
+            doListAdapter = new EisenhowerMatrixAdapter(this, eventBus, new ArrayList<>());
+            doList.setAdapter(doListAdapter);
+        }
+        doListAdapter.setViewModels(doQuests);
+
+        if(accomplishListAdapter == null) {
+            accomplishListAdapter = new EisenhowerMatrixAdapter(this, eventBus, new ArrayList<>());
+            accomplishList.setAdapter(accomplishListAdapter);
+        }
+        accomplishListAdapter.setViewModels(accomplishQuests);
+
+        if(delegateListAdapter == null) {
+            delegateListAdapter = new EisenhowerMatrixAdapter(this, eventBus, new ArrayList<>());
+            delegateList.setAdapter(delegateListAdapter);
+        }
+        delegateListAdapter.setViewModels(delegateQuests);
+
+        if(deleteListAdapter == null) {
+            deleteListAdapter = new EisenhowerMatrixAdapter(this, eventBus, new ArrayList<>());
+            deleteList.setAdapter(deleteListAdapter);
+        }
+        deleteListAdapter.setViewModels(deleteQuests);
     }
 }
