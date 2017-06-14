@@ -148,7 +148,6 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(simpleDateFormat.format(startOfDayDate));
         }
-//        getSupportActionBar().setTitle(simpleDateFormat.format(startOfDayDate));
         String dayNumberSuffix = DateUtils.getDayNumberSuffix(date.getDayOfMonth());
         DateFormat dateFormat = new SimpleDateFormat(getString(R.string.agenda_daily_journey_format, dayNumberSuffix));
         journeyText.setText(getString(R.string.agenda_daily_journey, dateFormat.format(startOfDayDate)));
