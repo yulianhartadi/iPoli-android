@@ -1,14 +1,12 @@
 package io.ipoli.android.quest.activities;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.CalendarView;
@@ -35,7 +33,6 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.quest.adapters.AgendaAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -91,6 +88,11 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
             ab.setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
         }
 
+        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_collapsing_container);
+        if (collapsingToolbarLayout != null) {
+            collapsingToolbarLayout.setTitleEnabled(false);
+        }
+
         use24HourFormat = shouldUse24HourFormat();
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -102,14 +104,6 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
         calendar.setDate(selectedDateMillis, true, true);
         calendar.setOnDateChangeListener(this);
         selectedDate = DateUtils.fromMillis(selectedDateMillis);
-
-        if (Build.VERSION.SDK_INT < 23) {
-            ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) calendar.getLayoutParams();
-            lp.height = (int) ViewUtils.dpToPx(300, getResources());
-            lp.topMargin = (int) ViewUtils.dpToPx(16, getResources());
-            calendar.setLayoutParams(lp);
-        }
-
     }
 
     @Override
@@ -119,12 +113,8 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem helpMenu = menu.findItem(R.id.action_help);
-        if (helpMenu != null) {
-            helpMenu.setVisible(false);
-        }
-        return super.onPrepareOptionsMenu(menu);
+    protected boolean useParentOptionsMenu() {
+        return false;
     }
 
     @Override
