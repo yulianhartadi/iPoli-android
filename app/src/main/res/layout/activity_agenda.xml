@@ -65,10 +65,10 @@
                 android:visibility="visible" />
 
             <FrameLayout
-                android:layout_marginTop="16dp"
                 android:id="@+id/agenda_list_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp">
 
                 <io.ipoli.android.app.ui.EmptyStateRecyclerView
                     android:id="@+id/agenda_list"

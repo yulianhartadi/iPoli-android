@@ -86,11 +86,6 @@
         <item name="android:textColor">?attr/colorAccent</item>
     </style>
 
-    <style name="AgendaCalendarDateTextAppearance" parent="TextAppearance.AppCompat.Small">
-        <item name="android:textColor">@color/md_black</item>
-        <item name="android:colorControlActivated">@color/md_white</item>
-    </style>
-
     <style name="WhiteEditTextTheme" parent="Base.TextAppearance.AppCompat.Small">
         <item name="android:singleLine">true</item>
         <item name="android:textColor">@color/md_light_text_87</item>
