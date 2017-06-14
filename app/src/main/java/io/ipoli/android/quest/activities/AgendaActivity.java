@@ -1,7 +1,6 @@
 package io.ipoli.android.quest.activities;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -71,11 +70,11 @@ public class AgendaActivity extends BaseActivity implements CalendarView.OnDateC
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         appComponent().inject(this);
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT < 23) {
-            setContentView(R.layout.activity_agenda_lollipop);
-        } else {
+//        if (Build.VERSION.SDK_INT < 23) {
+//            setContentView(R.layout.activity_agenda_lollipop);
+//        } else {
             setContentView(R.layout.activity_agenda);
-        }
+//        }
         ButterKnife.bind(this);
 
         long selectedDateMillis = getIntent().getLongExtra(Constants.CURRENT_SELECTED_DAY_EXTRA_KEY, 0);
