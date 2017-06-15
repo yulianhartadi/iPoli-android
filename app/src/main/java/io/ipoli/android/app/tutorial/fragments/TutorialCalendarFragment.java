@@ -86,6 +86,8 @@ public class TutorialCalendarFragment extends Fragment {
 
     private String name;
     private Category category;
+    private boolean isProgressReviewed = false;
+    private boolean isRewardTaken = false;
 
     @Nullable
     @Override
@@ -142,9 +144,12 @@ public class TutorialCalendarFragment extends Fragment {
                                 .setShape(ShapeType.RECTANGLE)
                                 .setTarget(snackBar.getView())
                                 .setListener(s -> {
-                                    preferencesManager.resetAll();
-                                    snackBar.dismiss();
-                                    onRewardTaken();
+                                    if(!isRewardTaken) {
+                                        isRewardTaken = true;
+                                        preferencesManager.resetAll();
+                                        snackBar.dismiss();
+                                        onRewardTaken();
+                                    }
                                 })
                                 .show()
                 , 500);
@@ -195,8 +200,11 @@ public class TutorialCalendarFragment extends Fragment {
                     .setShape(ShapeType.RECTANGLE)
                     .setTarget(headerView)
                     .setListener(s -> {
-                        preferencesManager.resetAll();
-                        onProgressReviewed();
+                        if (!isProgressReviewed) {
+                            isProgressReviewed = true;
+                            preferencesManager.resetAll();
+                            onProgressReviewed();
+                        }
                     })
                     .show();
         }, 500);
