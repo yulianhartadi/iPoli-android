@@ -15,8 +15,8 @@ import io.ipoli.android.app.events.CalendarPermissionResponseEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
-import io.ipoli.android.app.events.FriendsInvitedEvent;
-import io.ipoli.android.app.events.InviteFriendsCanceledEvent;
+import io.ipoli.android.app.events.FirebaseInviteCanceledEvent;
+import io.ipoli.android.app.events.FirebaseInviteSentEvent;
 import io.ipoli.android.app.events.InviteFriendsEvent;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
@@ -45,13 +45,14 @@ import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
 import io.ipoli.android.app.settings.events.SleepHoursChangedEvent;
 import io.ipoli.android.app.settings.events.WorkDaysChangedEvent;
 import io.ipoli.android.app.settings.events.WorkHoursChangedEvent;
+import io.ipoli.android.app.share.events.InviteFriendsProviderPickedEvent;
 import io.ipoli.android.app.tutorial.events.PredefinedQuestDeselectedEvent;
 import io.ipoli.android.app.tutorial.events.PredefinedQuestSelectedEvent;
 import io.ipoli.android.app.tutorial.events.PredefinedRepeatingQuestDeselectedEvent;
 import io.ipoli.android.app.tutorial.events.PredefinedRepeatingQuestSelectedEvent;
-import io.ipoli.android.app.tutorial.events.TutorialIntroSectionSkippedEvent;
 import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
 import io.ipoli.android.app.tutorial.events.TutorialDoneEvent;
+import io.ipoli.android.app.tutorial.events.TutorialIntroSectionSkippedEvent;
 import io.ipoli.android.app.tutorial.events.TutorialSkippedEvent;
 import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.app.ui.events.SuggestionsUnavailableEvent;
@@ -433,13 +434,18 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onFriendsInvited(FriendsInvitedEvent e) {
-        log("friends_invited", EventParams.of("count", e.invitationIds.length));
+    public void onInviteFriendsProviderPicked(InviteFriendsProviderPickedEvent e) {
+        log("invite_friends_provider_picked", EventParams.of("provider", e.providerName));
     }
 
     @Subscribe
-    public void onInviteFriendsCanceled(InviteFriendsCanceledEvent e) {
-        log("invite_friends_canceled");
+    public void onFirebaseInviteSent(FirebaseInviteSentEvent e) {
+        log("firebase_invite_sent", EventParams.of("count", e.invitationIds.length));
+    }
+
+    @Subscribe
+    public void onFirebaseInviteCanceled(FirebaseInviteCanceledEvent e) {
+        log("firebase_invite_canceled");
     }
 
     @Subscribe
@@ -610,9 +616,9 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     public void onGrowthCategoryFiltered(GrowthCategoryFilteredEvent e) {
         String interval = getIntervalName(e.interval);
         log("growth_category_filtered", EventParams.of("interval", interval)
-                                            .add("category", e.category.name())
-                                            .add("is_enabled", String.valueOf(e.isChecked))
-                                            .add("chart_type", e.chartType));
+                .add("category", e.category.name())
+                .add("is_enabled", String.valueOf(e.isChecked))
+                .add("chart_type", e.chartType));
     }
 
     @NonNull

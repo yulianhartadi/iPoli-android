@@ -891,6 +891,7 @@
     <string name="max_reward_points">max %d</string>
     <string name="min_reward_points">min %d</string>
     <string name="ready_for_upgrade">Ready for upgrade?</string>
+    <string name="invite_request_update_facebook">Please install/update the Facebook app</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
