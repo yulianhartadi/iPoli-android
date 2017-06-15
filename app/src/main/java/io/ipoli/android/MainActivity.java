@@ -49,8 +49,8 @@ import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
-import io.ipoli.android.app.events.FriendsInvitedEvent;
-import io.ipoli.android.app.events.InviteFriendsCanceledEvent;
+import io.ipoli.android.app.events.FirebaseInviteSentEvent;
+import io.ipoli.android.app.events.FirebaseInviteCanceledEvent;
 import io.ipoli.android.app.events.InviteFriendsEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
@@ -682,8 +682,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void inviteFriends() {
         eventBus.post(new InviteFriendsEvent());
-        InviteFriendsDialog bottomSheetDialogFragment = new InviteFriendsDialog();
-        bottomSheetDialogFragment.show(getSupportFragmentManager());
+        InviteFriendsDialog inviteFriendsDialog = new InviteFriendsDialog();
+        inviteFriendsDialog.show(getSupportFragmentManager());
     }
 
     @Override
@@ -696,9 +696,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if (inviteIds == null) {
                     inviteIds = new String[]{};
                 }
-                eventBus.post(new FriendsInvitedEvent(inviteIds));
+                eventBus.post(new FirebaseInviteSentEvent(inviteIds));
             } else {
-                eventBus.post(new InviteFriendsCanceledEvent());
+                eventBus.post(new FirebaseInviteCanceledEvent());
             }
         }
     }

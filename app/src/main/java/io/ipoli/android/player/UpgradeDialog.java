@@ -117,8 +117,8 @@ public class UpgradeDialog extends DialogFragment {
         View v = inflater.inflate(R.layout.fragment_upgrade_dialog, null);
         View headerView = inflater.inflate(R.layout.fancy_dialog_header, null);
 
-        TextView title = (TextView) headerView.findViewById(R.id.fancy_dialog_title);
-        title.setText(R.string.ready_for_upgrade);
+        TextView dialogTitle = (TextView) headerView.findViewById(R.id.fancy_dialog_title);
+        dialogTitle.setText(R.string.ready_for_upgrade);
 
         ImageView image = (ImageView) headerView.findViewById(R.id.fancy_dialog_image);
         image.setImageResource(upgrade.picture);

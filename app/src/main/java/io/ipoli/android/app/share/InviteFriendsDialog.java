@@ -87,9 +87,9 @@ public class InviteFriendsDialog extends DialogFragment {
     protected void onInviteProviderClicked(Intent inviteIntent, ShareDialogAdapter adapter, int item) {
         String message = getString(R.string.invite_message);
         ShareApp shareApp = adapter.getItem(item);
-        eventBus.post(new InviteFriendsProviderPickedEvent(shareApp.name));
 
         String packageName = shareApp.packageName;
+        eventBus.post(new InviteFriendsProviderPickedEvent(packageName != null ? shareApp.name : "Firebase"));
         if (packageName == null) {
             onInviteWithFirebase(message);
         } else if (isFacebook(packageName)) {
@@ -161,7 +161,7 @@ public class InviteFriendsDialog extends DialogFragment {
                 .setCustomImage(Uri.parse(Constants.INVITE_IMAGE_URL))
                 .setCallToActionText(getString(R.string.invite_call_to_action))
                 .build();
-        startActivityForResult(intent, INVITE_FRIEND_REQUEST_CODE);
+        getActivity().startActivityForResult(intent, INVITE_FRIEND_REQUEST_CODE);
     }
 
     public void onInviteWithFacebook() {
@@ -172,7 +172,7 @@ public class InviteFriendsDialog extends DialogFragment {
                     .build();
             AppInviteDialog.show(this, content);
         } else {
-            Toast.makeText(getContext(), "Please install/update the Facebook app", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), R.string.invite_request_update_facebook, Toast.LENGTH_LONG).show();
         }
     }
 }

@@ -19,7 +19,7 @@ public interface Constants {
 
     String FACEBOOK_APP_LINK = "https://fb.me/1609677589354576";
     String IPOLI_LOGO_URL = "https://i.imgur.com/Gz3rUi1.png";
-    String INVITE_IMAGE_URL = "http://i.imgur.com/fLToavB.png";
+    String INVITE_IMAGE_URL = "https://i.imgur.com/fLToavB.png";
     String SHARE_URL = "http://bit.ly/ipoli-android";
     String TWITTER_USERNAME = "@iPoliHQ";
 
