@@ -13,7 +13,7 @@
         android:layout_marginBottom="20dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
-        android:text="Ready for upgrade?"
+        android:text="@string/ready_for_upgrade"
         android:textColor="@color/md_light_text_87"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
