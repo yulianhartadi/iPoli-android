@@ -169,4 +169,6 @@ public interface Constants {
     int RC_CALENDAR_PERM = 102;
     String KEY_LAST_ANDROID_CALENDAR_SYNC_DATE = "LAST_ANDROID_CALENDAR_SYNC_DATE";
     int FIREBASE_LAST_SCHEMA_VERSION = 2;
+    String FACEBOOK_PACKAGE = "com.facebook.katana";
+    String TWITTER_PACKAGE = "com.twitter.android";
 }

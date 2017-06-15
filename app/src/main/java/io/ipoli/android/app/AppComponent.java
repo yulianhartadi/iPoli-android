@@ -27,6 +27,7 @@ import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.BootCompleteReceiver;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.settings.SettingsActivity;
+import io.ipoli.android.app.share.InviteFriendsDialog;
 import io.ipoli.android.app.sync.AndroidCalendarSyncJobService;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.tutorial.fragments.TutorialCalendarFragment;
@@ -262,5 +263,7 @@ public interface AppComponent {
     void inject(TutorialCalendarFragment tutorialCalendarFragment);
 
     void inject(TutorialOutroFragment tutorialOutroFragment);
+
+    void inject(InviteFriendsDialog inviteFriendsDialog);
 }
 
