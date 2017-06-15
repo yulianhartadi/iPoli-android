@@ -112,11 +112,15 @@ public class UpgradeDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        LayoutInflater inflater = getActivity().getLayoutInflater();
+        LayoutInflater inflater = LayoutInflater.from(getContext());
 
         View v = inflater.inflate(R.layout.fragment_upgrade_dialog, null);
-        View titleView = inflater.inflate(R.layout.upgrade_dialog_header, null);
-        ImageView image = (ImageView) titleView.findViewById(R.id.upgrade_dialog_image);
+        View headerView = inflater.inflate(R.layout.fancy_dialog_header, null);
+
+        TextView title = (TextView) headerView.findViewById(R.id.fancy_dialog_title);
+        title.setText(R.string.ready_for_upgrade);
+
+        ImageView image = (ImageView) headerView.findViewById(R.id.fancy_dialog_image);
         image.setImageResource(upgrade.picture);
 
         unbinder = ButterKnife.bind(this, v);
@@ -131,7 +135,7 @@ public class UpgradeDialog extends DialogFragment {
         price.setVisibility(hasEnoughCoins ? View.VISIBLE : View.GONE);
         notEnoughCoins.setVisibility(hasEnoughCoins ? View.GONE : View.VISIBLE);
 
-        AlertDialog.Builder builder = hasEnoughCoins ? buildDefault(v, titleView) : buildTooExpensive(v, titleView);
+        AlertDialog.Builder builder = hasEnoughCoins ? buildDefault(v, headerView) : buildTooExpensive(v, headerView);
         return builder.create();
     }
 

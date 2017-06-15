@@ -24,8 +24,6 @@ import io.ipoli.android.quest.data.Quest;
  * on 4/30/16.
  */
 public class ShareQuestDialog {
-    private final static String FACEBOOK_PACKAGE = "com.facebook.katana";
-    private final static String TWITTER_PACKAGE = "com.twitter.android";
 
     public static void show(Context context, Quest quest, Bus eventBus) {
         String title = "I completed my quest";
@@ -48,7 +46,7 @@ public class ShareQuestDialog {
 
             String packageName = shareApp.packageName;
             if (isFacebook(packageName)) {
-                showFBShareDialog((Activity) context, title, desc);
+                showFBShareDialog((Activity) context);
             } else {
                 String text = title + ": \"" + desc + "\" " + link;
                 if (isTwitter(packageName)) {
@@ -65,12 +63,9 @@ public class ShareQuestDialog {
         alert.show();
     }
 
-    private static void showFBShareDialog(Activity context, String title, String desc) {
+    private static void showFBShareDialog(Activity context) {
         ShareLinkContent content = new ShareLinkContent.Builder()
                 .setContentUrl(Uri.parse(Constants.FACEBOOK_APP_LINK))
-                .setContentTitle(title)
-                .setContentDescription(desc)
-                .setImageUrl(Uri.parse(Constants.IPOLI_LOGO_URL))
                 .build();
 
         ShareDialog sd = new ShareDialog(context);
@@ -109,11 +104,11 @@ public class ShareQuestDialog {
     }
 
     private static boolean isFacebook(String packageName) {
-        return packageName.startsWith(FACEBOOK_PACKAGE);
+        return packageName.startsWith(Constants.FACEBOOK_PACKAGE);
     }
 
     private static boolean isTwitter(String packageName) {
-        return packageName.startsWith(TWITTER_PACKAGE);
+        return packageName.startsWith(Constants.TWITTER_PACKAGE);
     }
 
 

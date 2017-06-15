@@ -122,4 +122,16 @@
     <style name="TextAppearance.iPoli.Challenge.TextInputLayout" parent="Base.TextAppearance.AppCompat">
         <item name="android:textColor">@color/md_light_text_54</item>
     </style>
+
+    <style name="AppInviteListItem" parent="TextAppearance.AppCompat.Subhead">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:drawablePadding">16dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:textSize">18sp</item>
+    </style>
 </resources>

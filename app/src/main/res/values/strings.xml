@@ -291,7 +291,7 @@
     <string name="agenda_daily_journey_format">MMMM d\'%s\'</string>
     <string name="empty_agenda_text">No quests for this date</string>
     <string name="invite_title">Invite Your Friends</string>
-    <string name="invite_message">I\'ll tell you a secret. I use this app to really get things done! Here is your invite!</string>
+    <string name="invite_message">This app really boosts my productivity and helps me stay organized. I am sure you will like it too!</string>
     <string name="invite_call_to_action">Download Now</string>
     <string name="completed">Completed</string>
     <string name="next">Next</string>
@@ -890,6 +890,7 @@
     <string name="too_expensive_reward_points_message">Too expensive, be more realistic</string>
     <string name="max_reward_points">max %d</string>
     <string name="min_reward_points">min %d</string>
+    <string name="ready_for_upgrade">Ready for upgrade?</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

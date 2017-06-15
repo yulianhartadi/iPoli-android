@@ -2,7 +2,6 @@ package io.ipoli.android;
 
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
@@ -59,6 +58,7 @@ import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.rate.RateDialogConstants;
 import io.ipoli.android.app.settings.SettingsActivity;
+import io.ipoli.android.app.share.InviteFriendsDialog;
 import io.ipoli.android.app.share.ShareQuestDialog;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
@@ -682,12 +682,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void inviteFriends() {
         eventBus.post(new InviteFriendsEvent());
-        Intent intent = new AppInviteInvitation.IntentBuilder(getString(R.string.invite_title))
-                .setMessage(getString(R.string.invite_message))
-                .setCustomImage(Uri.parse(Constants.INVITE_IMAGE_URL))
-                .setCallToActionText(getString(R.string.invite_call_to_action))
-                .build();
-        startActivityForResult(intent, INVITE_FRIEND_REQUEST_CODE);
+        InviteFriendsDialog bottomSheetDialogFragment = new InviteFriendsDialog();
+        bottomSheetDialogFragment.show(getSupportFragmentManager());
     }
 
     @Override
