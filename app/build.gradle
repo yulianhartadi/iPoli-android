@@ -24,8 +24,8 @@ android {
         multiDexEnabled true
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 197
-        versionName "1.13.19"
+        versionCode 198
+        versionName "1.13.20"
     }
 
     compileOptions {
