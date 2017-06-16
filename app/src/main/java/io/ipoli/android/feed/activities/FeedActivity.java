@@ -2,8 +2,10 @@ package io.ipoli.android.feed.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
@@ -27,6 +29,9 @@ public class FeedActivity extends BaseActivity {
     @BindView(R.id.feed_list)
     RecyclerView feedList;
 
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
     private FirebaseRecyclerAdapter<Post, PostViewHolder> adapter;
 
     @Override
@@ -35,6 +40,12 @@ public class FeedActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feed);
         ButterKnife.bind(this);
+
+        setSupportActionBar(toolbar);
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -81,5 +92,10 @@ public class FeedActivity extends BaseActivity {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+    }
+
+    @Override
+    protected boolean useParentOptionsMenu() {
+        return false;
     }
 }

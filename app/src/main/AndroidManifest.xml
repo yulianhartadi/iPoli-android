@@ -212,7 +212,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".feed.activities.FeedActivity"
-            android:label=""
+            android:label="@string/activity_feed_title"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data
