@@ -14,6 +14,7 @@ public class Post {
     private String title;
     private String message;
     private String category;
+    private Long completedAt;
     private Integer coins;
     private Integer experience;
     private Integer rewardPoints;
@@ -21,8 +22,6 @@ public class Post {
     private String username;
     private Integer level;
     private String avatar;
-    private String petAvatar;
-    private String petName;
     private Map<String, Boolean> likes;
 
     public Post() {
@@ -133,27 +132,19 @@ public class Post {
         this.avatar = avatar;
     }
 
-    public String getPetAvatar() {
-        return petAvatar;
-    }
-
-    public void setPetAvatar(String petAvatar) {
-        this.petAvatar = petAvatar;
-    }
-
-    public String getPetName() {
-        return petName;
-    }
-
-    public void setPetName(String petName) {
-        this.petName = petName;
-    }
-
     public Map<String, Boolean> getLikes() {
         return likes;
     }
 
     public void setLikes(Map<String, Boolean> likes) {
         this.likes = likes;
+    }
+
+    public Long getCompletedAt() {
+        return completedAt;
+    }
+
+    public void setCompletedAt(Long completedAt) {
+        this.completedAt = completedAt;
     }
 }
