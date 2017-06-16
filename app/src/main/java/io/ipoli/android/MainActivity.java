@@ -49,8 +49,8 @@ import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
-import io.ipoli.android.app.events.FirebaseInviteSentEvent;
 import io.ipoli.android.app.events.FirebaseInviteCanceledEvent;
+import io.ipoli.android.app.events.FirebaseInviteSentEvent;
 import io.ipoli.android.app.events.InviteFriendsEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
@@ -67,6 +67,7 @@ import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
+import io.ipoli.android.feed.activities.FeedActivity;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
@@ -180,11 +181,12 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         };
 
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
+        startActivity(new Intent(this, FeedActivity.class));
     }
 
     private boolean shouldMigratePlayer() {
         int firebaseSchemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
-        if(firebaseSchemaVersion > 0 && firebaseSchemaVersion <= Constants.FIREBASE_LAST_SCHEMA_VERSION) {
+        if (firebaseSchemaVersion > 0 && firebaseSchemaVersion <= Constants.FIREBASE_LAST_SCHEMA_VERSION) {
             return true;
         }
         if (getPlayer().getSchemaVersion() != Constants.SCHEMA_VERSION) {
