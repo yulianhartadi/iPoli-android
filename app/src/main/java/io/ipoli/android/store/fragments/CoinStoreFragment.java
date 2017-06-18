@@ -1,8 +1,6 @@
 package io.ipoli.android.store.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +16,6 @@ import com.squareup.otto.Bus;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -34,14 +31,10 @@ import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
-import io.ipoli.android.player.Player;
-import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.events.BuyCoinsTappedEvent;
-import io.ipoli.android.store.events.CoinsPurchasedEvent;
 import io.ipoli.android.store.iab.IabHelper;
 import io.ipoli.android.store.iab.Inventory;
-import io.ipoli.android.store.iab.Purchase;
 import io.ipoli.android.store.iab.SkuDetails;
 
 /**
@@ -55,7 +48,7 @@ public class CoinStoreFragment extends BaseFragment {
     private static final String SKU_JUMBO_PACK = "jumbo_pack";
     private static final String SKU_DONATION_PACK = "donation_pack";
 
-    private static final int RC_REQUEST = 10001;
+
 
     @Inject
     Bus eventBus;
@@ -113,9 +106,6 @@ public class CoinStoreFragment extends BaseFragment {
 
     @BindView(R.id.premium_most_popular)
     TextView premiumMostPopular;
-
-    @Inject
-    PlayerPersistenceService playerPersistenceService;
 
     private Unbinder unbinder;
     private IabHelper iabHelper;
@@ -279,6 +269,11 @@ public class CoinStoreFragment extends BaseFragment {
         return false;
     }
 
+    public void buyCoins(String sku) {
+        eventBus.post(new BuyCoinsTappedEvent(sku));
+        ((StoreActivity) getActivity()).buyCoins(iabHelper, sku, skuToValue.get(sku));
+    }
+
     @Override
     public void onDestroyView() {
         unbinder.unbind();
@@ -287,63 +282,6 @@ public class CoinStoreFragment extends BaseFragment {
             iabHelper = null;
         }
         super.onDestroyView();
-    }
-
-    public void buyCoins(String sku) {
-        eventBus.post(new BuyCoinsTappedEvent(sku));
-
-        String payload = UUID.randomUUID().toString();
-
-        try {
-            iabHelper.launchPurchaseFlow(this, sku, RC_REQUEST,
-                    (result, purchase) -> {
-                        if (result.isFailure()) {
-                            return;
-                        }
-                        if (!verifyDeveloperPayload(payload, purchase)) {
-                            return;
-                        }
-
-                        if (result.isSuccess() && purchase.getSku().equals(sku)) {
-                            eventBus.post(new CoinsPurchasedEvent(sku));
-                            consumePurchase(purchase, skuToValue.get(sku));
-                        }
-                    }, payload);
-        } catch (IabHelper.IabAsyncInProgressException ex) {
-            eventBus.post(new AppErrorEvent(ex));
-        }
-    }
-
-    private void consumePurchase(Purchase purchase, int value) {
-        try {
-            iabHelper.consumeAsync(purchase, (p, result) -> {
-                if (result.isSuccess()) {
-                    updateCoins(value);
-                }
-            });
-        } catch (IabHelper.IabAsyncInProgressException e) {
-            eventBus.post(new AppErrorEvent(e));
-        }
-    }
-
-    private void updateCoins(int coins) {
-        Player player = playerPersistenceService.get();
-        player.addCoins(coins);
-        playerPersistenceService.save(player);
-        Snackbar.make(rootLayout, getString(R.string.coins_bought, coins), Snackbar.LENGTH_SHORT).show();
-    }
-
-    boolean verifyDeveloperPayload(String payload, Purchase p) {
-        return p.getDeveloperPayload().equals(payload);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (iabHelper == null) return;
-        // Pass on the activity result to the helper for handling
-        if (!iabHelper.handleActivityResult(requestCode, resultCode, data)) {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
     }
 }
 
