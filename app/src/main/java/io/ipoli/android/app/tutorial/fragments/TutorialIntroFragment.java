@@ -22,7 +22,6 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.tutorial.TutorialActivity;
-import io.ipoli.android.app.tutorial.events.TutorialIntroSectionSkippedEvent;
 import io.ipoli.android.app.tutorial.events.TutorialSkippedEvent;
 import io.ipoli.android.app.ui.typewriter.TypewriterView;
 
@@ -148,11 +147,9 @@ public class TutorialIntroFragment extends Fragment {
         super.onDestroyView();
     }
 
-    @OnClick(R.id.tutorial_skip_section)
-    public void onSkipSectionClick(View view) {
-        eventBus.post(new TutorialIntroSectionSkippedEvent());
-        tutorialText.stop();
-        onIntroDone();
+    @OnClick(R.id.tutorial_skip)
+    public void onSkipTutorialClick(View view) {
+        onTutorialSkipped();
     }
 
     private void onIntroDone() {
