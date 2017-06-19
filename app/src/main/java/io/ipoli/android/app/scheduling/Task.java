@@ -80,7 +80,7 @@ public class Task implements Comparable<Task> {
         return recommendedSlots;
     }
 
-    protected int getCurrentTimeSlotIndex() {
+    public int getCurrentTimeSlotIndex() {
         return currentTimeSlotIndex;
     }
 

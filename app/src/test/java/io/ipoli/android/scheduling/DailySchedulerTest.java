@@ -474,9 +474,10 @@ public class DailySchedulerTest {
         String taskId = "123";
         List<Task> tasks = Collections.singletonList(new Task(taskId, 120, Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT, TimePreference.ANY, Category.WELLNESS));
         Time currentTime = Time.of(21 * 60);
-        scheduler.scheduleTasks(tasks, currentTime);
-        Task taskWithNewSlot = scheduler.chooseNewTimeSlot(taskId, Time.plusMinutes(currentTime, 1));
-        assertThat(taskWithNewSlot.getCurrentTimeSlot(), is(nullValue()));
+        List<Task> scheduledTasks = scheduler.scheduleTasks(tasks, currentTime);
+        int currentTimeSlotIndex = scheduledTasks.get(0).getCurrentTimeSlotIndex();
+        Task taskWithNewSlot = scheduler.chooseNewTimeSlot(taskId, currentTime);
+        assertThat(currentTimeSlotIndex, is(taskWithNewSlot.getCurrentTimeSlotIndex()));
     }
 
     @Test
