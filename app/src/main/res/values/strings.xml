@@ -892,6 +892,8 @@
     <string name="min_reward_points">min %d</string>
     <string name="ready_for_upgrade">Ready for upgrade?</string>
     <string name="invite_request_update_facebook">Please install/update the Facebook app</string>
+    <string name="no_more_suggestions">No more suggestions</string>
+    <string name="suggestion_accepted">Suggestion accepted</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

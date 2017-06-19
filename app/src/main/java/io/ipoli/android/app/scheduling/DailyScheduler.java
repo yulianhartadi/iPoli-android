@@ -89,8 +89,8 @@ public class DailyScheduler {
                 continue;
             }
 
-            if(isInSchedule(startMinute) && isInSchedule(endMinute)) {
-                if(endMinute < startMinute) {
+            if (isInSchedule(startMinute) && isInSchedule(endMinute)) {
+                if (endMinute < startMinute) {
                     endMinute = this.endMinute;
                 }
             } else if (isInSchedule(startMinute) && !isInSchedule(endMinute)) {
@@ -137,13 +137,13 @@ public class DailyScheduler {
      * @param endMinute   exclusive
      */
     private void populateSlots(boolean[] slots, boolean value, int startMinute, int endMinute) {
-        if(endMinute < startMinute) {
+        if (endMinute < startMinute) {
             endMinute = MINUTES_IN_A_DAY + endMinute;
         }
         int slotMinute = startMinute;
         while (slotMinute < endMinute) {
             int slotIndex = getSlotForMinute(slotMinute % MINUTES_IN_A_DAY);
-            if(slotIndex >= slots.length) {
+            if (slotIndex >= slots.length) {
                 StringBuilder builder = new StringBuilder();
                 builder.append("Slot index:").append(slotIndex)
                         .append(" slot minute:").append(slotMinute)
@@ -385,7 +385,7 @@ public class DailyScheduler {
         for (int i = startSlot; i < endTimeBlockSlot; i++) {
             int startMinute = (this.startMinute + i * timeSlotDuration) % MINUTES_IN_A_DAY;
             int endMinute = (startMinute + taskSlotCount * timeSlotDuration) % MINUTES_IN_A_DAY;
-            if(i == endTimeBlockSlot - 1) {
+            if (i == endTimeBlockSlot - 1) {
                 endMinute = Math.min(endMinute, startMinute + taskDuration);
             }
             blocks.add(new TimeSlot(startMinute, endMinute));
@@ -394,26 +394,41 @@ public class DailyScheduler {
     }
 
     public Task chooseNewTimeSlot(String taskId, Time currentTime) {
+        Task task = findTask(taskId);
+        if (task == null) {
+            return null;
+        }
+        return chooseNewTimeSlot(task, currentTime);
+    }
+
+    public Task chooseNewTimeSlot(Task task, Time currentTime) {
+        int size = task.getRecommendedSlots().size();
+        int end = size + task.getCurrentTimeSlotIndex();
+        for (int i = task.getCurrentTimeSlotIndex(); i < end; i++) {
+            int idx = (i + 1) % size;
+            TimeSlot slot = task.getRecommendedSlots().get(idx);
+            if (currentTime.toMinuteOfDay() > slot.getStartMinute() ||
+                    !isFree(slot.getStartMinute(), slot.getEndMinute())) {
+                continue;
+            }
+
+            freeUpSlots(freeSlots, task.getCurrentTimeSlot().getStartMinute(), task.getCurrentTimeSlot().getEndMinute());
+            task.setCurrentTimeSlotIndex(idx);
+            occupySlots(freeSlots, task.getCurrentTimeSlot().getStartMinute(), task.getCurrentTimeSlot().getEndMinute());
+            return task;
+        }
+
+        TimeSlot currentTimeSlot = task.getCurrentTimeSlot();
+        if (currentTime.toMinuteOfDay() > currentTimeSlot.getStartMinute()) {
+            freeUpSlots(freeSlots, currentTimeSlot.getStartMinute(), currentTimeSlot.getEndMinute());
+            task.setCurrentTimeSlotIndex(-1);
+        }
+        return task;
+    }
+
+    public Task findTask(String id) {
         for (Task t : tasks) {
-            if (t.getId().equals(taskId)) {
-                freeUpSlots(freeSlots, t.getCurrentTimeSlot().getStartMinute(), t.getCurrentTimeSlot().getEndMinute());
-
-                int size = t.getRecommendedSlots().size();
-                int end = size + t.getCurrentTimeSlotIndex();
-                for (int i = t.getCurrentTimeSlotIndex(); i < end; i++) {
-                    int idx = (i + 1) % size;
-                    TimeSlot slot = t.getRecommendedSlots().get(idx);
-                    if (!isFree(slot.getStartMinute(), slot.getEndMinute()) ||
-                            currentTime.toMinuteOfDay() > slot.getStartMinute()) {
-                        continue;
-                    }
-
-                    t.setCurrentTimeSlotIndex(idx);
-                    occupySlots(freeSlots, t.getCurrentTimeSlot().getStartMinute(), t.getCurrentTimeSlot().getEndMinute());
-                    return t;
-                }
-                t.setRecommendedSlots(new ArrayList<>());
-                t.setCurrentTimeSlotIndex(-1);
+            if (t.getId().equals(id)) {
                 return t;
             }
         }
