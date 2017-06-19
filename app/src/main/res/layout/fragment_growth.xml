@@ -32,32 +32,19 @@
 
                 <ImageView
                     android:id="@+id/imageView7"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginBottom="8dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_marginTop="0dp"
-                    android:src="@drawable/ic_growth_summary_background"
+                    android:src="@drawable/ic_done_white_24dp"
                     app:layout_constraintBottom_toTopOf="@+id/summary_done"
                     app:layout_constraintLeft_toLeftOf="@+id/summary_done"
                     app:layout_constraintRight_toRightOf="@+id/summary_done"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="1.0" />
-
-                <ImageView
-                    android:id="@+id/imageView6"
-                    android:layout_width="6dp"
-                    android:layout_height="6dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginTop="8dp"
-                    android:src="@drawable/ic_growth_summary_done"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageView7"
-                    app:layout_constraintLeft_toLeftOf="@+id/imageView7"
-                    app:layout_constraintRight_toRightOf="@+id/imageView7"
-                    app:layout_constraintTop_toTopOf="@+id/imageView7" />
+                    app:layout_constraintVertical_bias="1.0"
+                    app:srcCompat="@drawable/ic_done_white_24dp" />
 
                 <TextView
                     android:id="@+id/summary_done"
@@ -73,32 +60,19 @@
 
                 <ImageView
                     android:id="@+id/imageView3"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginBottom="8dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_marginTop="0dp"
-                    android:src="@drawable/ic_growth_summary_background"
+                    android:src="@drawable/ic_event_busy_white_24dp"
                     app:layout_constraintBottom_toTopOf="@+id/summary_overdue"
                     app:layout_constraintLeft_toLeftOf="@+id/summary_overdue"
                     app:layout_constraintRight_toRightOf="@+id/summary_overdue"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="1.0" />
-
-                <ImageView
-                    android:id="@+id/imageView8"
-                    android:layout_width="6dp"
-                    android:layout_height="6dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginTop="8dp"
-                    android:src="@drawable/ic_growth_summary_overdue"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageView3"
-                    app:layout_constraintLeft_toLeftOf="@+id/imageView3"
-                    app:layout_constraintRight_toRightOf="@+id/imageView3"
-                    app:layout_constraintTop_toTopOf="@+id/imageView3" />
+                    app:layout_constraintVertical_bias="1.0"
+                    app:srcCompat="@drawable/ic_event_busy_white_24dp" />
 
                 <TextView
                     android:id="@+id/summary_overdue"
@@ -118,34 +92,20 @@
 
                 <ImageView
                     android:id="@+id/imageView5"
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginBottom="8dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_marginTop="0dp"
-                    android:src="@drawable/ic_growth_summary_background"
+                    android:src="@drawable/ic_timer_white_24dp"
                     app:layout_constraintBottom_toTopOf="@+id/summary_time_tracked"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintLeft_toLeftOf="@+id/summary_time_tracked"
                     app:layout_constraintRight_toRightOf="@+id/summary_time_tracked"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="1.0" />
-
-                <ImageView
-                    android:layout_width="6dp"
-                    android:layout_height="6dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_marginTop="8dp"
-                    android:src="@drawable/ic_growth_summary_time_tracked"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageView5"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintLeft_toLeftOf="@+id/imageView5"
-                    app:layout_constraintRight_toRightOf="@+id/imageView5"
-                    app:layout_constraintTop_toTopOf="@+id/imageView5"
-                    app:layout_constraintVertical_bias="0.5" />
+                    app:layout_constraintVertical_bias="1.0"
+                    app:srcCompat="@drawable/ic_timer_white_24dp" />
 
                 <TextView
                     android:id="@+id/summary_time_tracked"
@@ -159,7 +119,6 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     tools:text="28\nTracked" />
-
 
             </android.support.constraint.ConstraintLayout>
 
