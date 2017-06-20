@@ -420,15 +420,24 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         Quest quest = e.quest;
         quest.setStartMinute(e.startMinute);
         saveQuest(quest);
-        Toast.makeText(getContext(), "Suggestion accepted", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), R.string.suggestion_accepted, Toast.LENGTH_SHORT).show();
     }
 
     @Subscribe
     public void onRescheduleQuest(RescheduleQuestEvent e) {
-        Task task = dailyScheduler.chooseNewTimeSlot(e.calendarEvent.getId(), Time.now());
+        String taskId = e.calendarEvent.getId();
+        Task task = dailyScheduler.findTask(taskId);
+        if(task.getCurrentTimeSlot() == null) {
+            Toast.makeText(getContext(), R.string.no_more_suggestions, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int currentStartMinute = e.calendarEvent.getStartMinute();
+        task = dailyScheduler.chooseNewTimeSlot(task, Time.now());
         TimeSlot currentTimeSlot = task.getCurrentTimeSlot();
-        if (currentTimeSlot == null) {
-            Toast.makeText(getContext(), "No more suggestions", Toast.LENGTH_SHORT).show();
+
+        if (currentTimeSlot == null || currentStartMinute == currentTimeSlot.getStartMinute()) {
+            Toast.makeText(getContext(), R.string.no_more_suggestions, Toast.LENGTH_SHORT).show();
             return;
         }
         QuestCalendarViewModel vm = QuestCalendarViewModel.createWithProposedTime(e.calendarEvent.getQuest(), currentTimeSlot.getStartMinute());
