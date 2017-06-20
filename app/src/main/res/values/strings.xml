@@ -850,7 +850,7 @@
     <string name="i_accept">I Accept</string>
     <string name="nah_not_me">Nah, not me</string>
     <string name="i_believe_in_you">Come on! I believe in you!</string>
-    <string name="skip_section">Skip section</string>
+    <string name="skip_tutorial">Skip tutorial</string>
     <string name="another_of_those">Gosh, we have another one of those…</string>
     <string name="lets_start_over">OK, OK. Let\'s start over!</string>
     <string name="welcome_hero">Welcome, Hero!</string>
@@ -893,6 +893,8 @@
     <string name="ready_for_upgrade">Ready for upgrade?</string>
     <string name="invite_request_update_facebook">Please install/update the Facebook app</string>
     <string name="activity_feed_title">Activity feed</string>
+    <string name="no_more_suggestions">No more suggestions</string>
+    <string name="suggestion_accepted">Suggestion accepted</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

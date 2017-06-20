@@ -1,14 +1,19 @@
 package io.ipoli.android.store.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.squareup.otto.Bus;
+
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -17,11 +22,15 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.store.StoreItemType;
+import io.ipoli.android.store.events.CoinsPurchasedEvent;
 import io.ipoli.android.store.fragments.StoreFragment;
+import io.ipoli.android.store.iab.IabHelper;
+import io.ipoli.android.store.iab.Purchase;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -29,6 +38,7 @@ import io.ipoli.android.store.fragments.StoreFragment;
  */
 
 public class StoreActivity extends BaseActivity implements OnDataChangedListener<Player> {
+    private static final int RC_BUY_COINS = 10001;
 
     public static final String START_ITEM_TYPE = "start_item_type";
     @Inject
@@ -36,6 +46,9 @@ public class StoreActivity extends BaseActivity implements OnDataChangedListener
 
     @Inject
     PlayerPersistenceService playerPersistenceService;
+
+    @BindView(R.id.root_layout)
+    ViewGroup rootLayout;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -45,6 +58,7 @@ public class StoreActivity extends BaseActivity implements OnDataChangedListener
 
     @BindView(R.id.player_coins)
     TextView coins;
+    private IabHelper iabHelper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -111,5 +125,66 @@ public class StoreActivity extends BaseActivity implements OnDataChangedListener
     @Override
     public void onDataChanged(Player player) {
         coins.setText(String.valueOf(player.getCoins()));
+    }
+
+    public void buyCoins(IabHelper iabHelper, String sku, int coins) {
+        this.iabHelper = iabHelper;
+        String payload = UUID.randomUUID().toString();
+
+        try {
+            iabHelper.launchPurchaseFlow(this, sku, RC_BUY_COINS,
+                    (result, purchase) -> {
+                        if (result.isFailure()) {
+                            return;
+                        }
+                        if (!verifyDeveloperPayload(payload, purchase)) {
+                            return;
+                        }
+
+                        if (result.isSuccess() && purchase.getSku().equals(sku)) {
+                            eventBus.post(new CoinsPurchasedEvent(sku));
+                            consumePurchase(purchase, coins);
+                        }
+                    }, payload);
+        } catch (IabHelper.IabAsyncInProgressException ex) {
+            eventBus.post(new AppErrorEvent(ex));
+        }
+    }
+
+    private void consumePurchase(Purchase purchase, int coins) {
+        try {
+            iabHelper.consumeAsync(purchase, (p, result) -> {
+                if (result.isSuccess()) {
+                    updateCoins(coins);
+                }
+            });
+        } catch (IabHelper.IabAsyncInProgressException e) {
+            eventBus.post(new AppErrorEvent(e));
+        }
+    }
+
+    private void updateCoins(int coins) {
+        Player player = playerPersistenceService.get();
+        player.addCoins(coins);
+        playerPersistenceService.save(player);
+        Snackbar.make(rootLayout, getString(R.string.coins_bought, coins), Snackbar.LENGTH_SHORT).show();
+    }
+
+    boolean verifyDeveloperPayload(String payload, Purchase p) {
+        return p.getDeveloperPayload().equals(payload);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode != RC_BUY_COINS) {
+            super.onActivityResult(requestCode, resultCode, data);
+            return;
+        }
+        if (iabHelper == null) {
+            return;
+        }
+        if (!iabHelper.handleActivityResult(requestCode, resultCode, data)) {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }
