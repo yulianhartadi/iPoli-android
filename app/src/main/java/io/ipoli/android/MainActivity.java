@@ -67,7 +67,7 @@ import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
-import io.ipoli.android.feed.activities.FeedActivity;
+import io.ipoli.android.feed.activities.AddPostActivity;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
@@ -181,7 +181,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         };
 
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
-        startActivity(new Intent(this, FeedActivity.class));
+//        startActivity(new Intent(this, FeedActivity.class));
+        startActivity(new Intent(this, AddPostActivity.class));
     }
 
     private boolean shouldMigratePlayer() {
