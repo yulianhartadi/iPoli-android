@@ -65,16 +65,16 @@ public class FeedActivity extends BaseActivity {
         };
 
         feedList.setAdapter(adapter);
-
-        Post post = new Post();
-        post.setTitle("Hello world, mirizlivke!");
-
-        ref.push().setValue(post);
-
-        Post post1 = new Post();
-        post1.setTitle("Poli is selqnka!");
-
-        ref.push().setValue(post1);
+//
+//        Post post = new Post();
+//        post.setTitle("Hello world, mirizlivke!");
+//
+//        ref.push().setValue(post);
+//
+//        Post post1 = new Post();
+//        post1.setTitle("Poli is selqnka!");
+//
+//        ref.push().setValue(post1);
     }
 
     @Override
