@@ -105,10 +105,8 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
             holder.check.setOnCheckedChangeListener((compoundButton, checked) -> {
                 if (checked) {
                     eventBus.post(new CompleteQuestRequestEvent(vm.getQuest(), EventSource.CALENDAR_UNSCHEDULED_SECTION));
-//                    eventBus.post(new CompleteUnscheduledQuestRequestEvent(vm.getQuest()));
                 } else {
                     eventBus.post(new UndoCompletedQuestRequestEvent(vm.getQuest()));
-//                    eventBus.post(new UncompleteUnscheduledQuestRequestEvent());
                 }
             });
 
