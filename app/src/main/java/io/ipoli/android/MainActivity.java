@@ -1,5 +1,10 @@
 package io.ipoli.android;
 
+import android.Manifest;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -49,8 +54,8 @@ import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.ContactUsTapEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.FeedbackTapEvent;
-import io.ipoli.android.app.events.FirebaseInviteSentEvent;
 import io.ipoli.android.app.events.FirebaseInviteCanceledEvent;
+import io.ipoli.android.app.events.FirebaseInviteSentEvent;
 import io.ipoli.android.app.events.InviteFriendsEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
@@ -60,6 +65,7 @@ import io.ipoli.android.app.rate.RateDialogConstants;
 import io.ipoli.android.app.settings.SettingsActivity;
 import io.ipoli.android.app.share.InviteFriendsDialog;
 import io.ipoli.android.app.share.ShareQuestDialog;
+import io.ipoli.android.app.sync.AndroidCalendarSyncJobService;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.ui.events.StartFabMenuIntentEvent;
@@ -101,10 +107,16 @@ import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.store.StoreItemType;
 import io.ipoli.android.store.Upgrade;
 import io.ipoli.android.store.activities.StoreActivity;
+import pub.devrel.easypermissions.EasyPermissions;
 
+import static io.ipoli.android.Constants.RC_CALENDAR_PERM;
+import static io.ipoli.android.Constants.SYNC_CALENDAR_JOB_ID;
 import static io.ipoli.android.app.App.hasPlayer;
 
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener, OnDataChangedListener<Player> {
+public class MainActivity extends BaseActivity implements
+        NavigationView.OnNavigationItemSelectedListener,
+        OnDataChangedListener<Player>,
+        EasyPermissions.PermissionCallbacks {
 
     public static final int INVITE_FRIEND_REQUEST_CODE = 102;
 
@@ -180,11 +192,39 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         };
 
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
+
+        if (!getPlayer().getAndroidCalendars().isEmpty() &&
+                !EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
+            EasyPermissions.requestPermissions(this, getString(R.string.allow_read_calendars_perm_reason_disable_option), RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int i, List<String> list) {
+        JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.cancel(SYNC_CALENDAR_JOB_ID);
+        JobInfo jobInfo = new JobInfo.Builder(SYNC_CALENDAR_JOB_ID,
+                new ComponentName(this, AndroidCalendarSyncJobService.class))
+                .setOverrideDeadline(0)
+                .build();
+        jobScheduler.schedule(jobInfo);
+    }
+
+    @Override
+    public void onPermissionsDenied(int i, List<String> list) {
+        //intentional
     }
 
     private boolean shouldMigratePlayer() {
         int firebaseSchemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
-        if(firebaseSchemaVersion > 0 && firebaseSchemaVersion <= Constants.FIREBASE_LAST_SCHEMA_VERSION) {
+        if (firebaseSchemaVersion > 0 && firebaseSchemaVersion <= Constants.FIREBASE_LAST_SCHEMA_VERSION) {
             return true;
         }
         if (getPlayer().getSchemaVersion() != Constants.SCHEMA_VERSION) {
