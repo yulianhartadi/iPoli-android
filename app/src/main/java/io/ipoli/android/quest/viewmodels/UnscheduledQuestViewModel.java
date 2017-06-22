@@ -35,10 +35,11 @@ public class UnscheduledQuestViewModel {
 
     public String getName() {
         String name = quest.getName();
-        if (quest.getRemainingCount() == 1) {
+        int remainingCount = quest.getRemainingCount();
+        if (remainingCount == 1 || isCompleted()) {
             return name;
         }
-        return name + " (x" + quest.getRemainingCount() + ")";
+        return name + " (x" + remainingCount + ")";
     }
 
     public boolean isRepeating() {
@@ -51,5 +52,9 @@ public class UnscheduledQuestViewModel {
 
     public boolean isForChallenge() {
         return quest.isFromChallenge();
+    }
+
+    public boolean isCompleted() {
+        return quest.isCompleted();
     }
 }
