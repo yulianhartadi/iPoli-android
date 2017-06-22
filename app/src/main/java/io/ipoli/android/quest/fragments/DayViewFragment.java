@@ -31,7 +31,6 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
-import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.StartQuickAddEvent;
 import io.ipoli.android.app.scheduling.DailyScheduler;
 import io.ipoli.android.app.scheduling.DailySchedulerBuilder;
@@ -51,8 +50,6 @@ import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestTask;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
-import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
@@ -290,14 +287,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         questPersistenceService.removeAllListeners();
         repeatingQuestPersistenceService.removeAllListeners();
         super.onDestroyView();
-    }
-
-    @Subscribe
-    public void onCompleteUnscheduledQuestRequest(CompleteUnscheduledQuestRequestEvent e) {
-        eventBus.post(new CompleteQuestRequestEvent(e.viewModel.getQuest(), EventSource.CALENDAR_UNSCHEDULED_SECTION));
-//        if (e.viewModel.getQuest().isCompleted()) {
-//            calendarDayView.smoothScrollToTime(Time.now());
-//        }
     }
 
     private void setUnscheduledQuestsHeight() {
