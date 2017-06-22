@@ -22,9 +22,10 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.quest.data.Quest;
-import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
+import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.ShowQuestEvent;
+import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.ui.menus.CalendarQuestPopupMenu;
 import io.ipoli.android.quest.viewmodels.UnscheduledQuestViewModel;
 
@@ -103,7 +104,11 @@ public class UnscheduledQuestsAdapter extends RecyclerView.Adapter<UnscheduledQu
             holder.check.setChecked(vm.isCompleted());
             holder.check.setOnCheckedChangeListener((compoundButton, checked) -> {
                 if (checked) {
-                    eventBus.post(new CompleteUnscheduledQuestRequestEvent(vm));
+                    eventBus.post(new CompleteQuestRequestEvent(vm.getQuest(), EventSource.CALENDAR_UNSCHEDULED_SECTION));
+//                    eventBus.post(new CompleteUnscheduledQuestRequestEvent(vm.getQuest()));
+                } else {
+                    eventBus.post(new UndoCompletedQuestRequestEvent(vm.getQuest()));
+//                    eventBus.post(new UncompleteUnscheduledQuestRequestEvent());
                 }
             });
 
