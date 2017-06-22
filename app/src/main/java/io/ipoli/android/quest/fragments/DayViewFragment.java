@@ -243,25 +243,32 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     private void questsForPresentUpdated(List<Quest> quests) {
         List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
         List<Quest> unscheduledQuests = new ArrayList<>();
+        List<Quest> completedUnscheduledQuests = new ArrayList<>();
         List<QuestCalendarViewModel> completedEvents = new ArrayList<>();
         for (Quest q : quests) {
             // completed events should be added first since we don't want them to intercept clicks
             // for incomplete events
 
-            if (q.getCompletedAtDate() != null) {
-                QuestCalendarViewModel event = new QuestCalendarViewModel(q);
-                if (hasNoStartTime(q) || LocalDate.now().isBefore(q.getScheduledDate())) {
-                    event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinuteOfDay());
+            if (hasNoStartTime(q)) {
+                if (q.isCompleted()) {
+                    completedUnscheduledQuests.add(q);
+                } else {
+                    unscheduledQuests.add(q);
                 }
-
-                completedEvents.add(event);
-            } else if (hasNoStartTime(q)) {
-                unscheduledQuests.add(q);
             } else {
-                calendarEvents.add(new QuestCalendarViewModel(q));
+                if (q.isCompleted()) {
+                    QuestCalendarViewModel event = new QuestCalendarViewModel(q);
+                    if (LocalDate.now().isBefore(q.getScheduledDate())) {
+                        event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinuteOfDay());
+                    }
+                    completedEvents.add(event);
+                } else {
+                    calendarEvents.add(new QuestCalendarViewModel(q));
+                }
             }
         }
         calendarEvents.addAll(0, completedEvents);
+        unscheduledQuests.addAll(completedUnscheduledQuests);
         updateSchedule(new Schedule(unscheduledQuests, calendarEvents));
     }
 
@@ -288,9 +295,9 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     @Subscribe
     public void onCompleteUnscheduledQuestRequest(CompleteUnscheduledQuestRequestEvent e) {
         eventBus.post(new CompleteQuestRequestEvent(e.viewModel.getQuest(), EventSource.CALENDAR_UNSCHEDULED_SECTION));
-        if (e.viewModel.getQuest().isCompleted()) {
-            calendarDayView.smoothScrollToTime(Time.now());
-        }
+//        if (e.viewModel.getQuest().isCompleted()) {
+//            calendarDayView.smoothScrollToTime(Time.now());
+//        }
     }
 
     private void setUnscheduledQuestsHeight() {
@@ -348,7 +355,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         List<Task> tasksToSchedule = new ArrayList<>();
         for (Quest q : schedule.getUnscheduledQuests()) {
             unscheduledViewModels.add(new UnscheduledQuestViewModel(q));
-            if (!q.shouldBeDoneMultipleTimesPerDay() && !q.isPlaceholder()) {
+            if (shoudProposeTimeForQuest(q)) {
                 tasksToSchedule.add(new QuestTask(q.getDuration(), q.getPriority(), q.getStartTimePreference(), q.getCategoryType(), q));
             }
         }
@@ -360,6 +367,10 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         setUnscheduledQuestsHeight();
         calendarDayView.onMinuteChanged();
+    }
+
+    private boolean shoudProposeTimeForQuest(Quest quest) {
+        return !quest.isCompleted() && !quest.shouldBeDoneMultipleTimesPerDay() && !quest.isPlaceholder();
     }
 
     private void scheduleUnscheduledEvents(List<QuestCalendarViewModel> scheduledEvents, List<Task> tasksToSchedule) {
