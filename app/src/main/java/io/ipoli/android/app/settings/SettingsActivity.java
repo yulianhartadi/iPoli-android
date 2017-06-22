@@ -85,6 +85,8 @@ import io.ipoli.android.store.activities.StoreActivity;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
+import static io.ipoli.android.Constants.RC_CALENDAR_PERM;
+
 public class SettingsActivity extends BaseActivity implements
         TimeOfDayPickerFragment.OnTimesOfDayPickedListener,
         TimePickerFragment.OnTimePickedListener,
@@ -92,6 +94,7 @@ public class SettingsActivity extends BaseActivity implements
         EasyPermissions.PermissionCallbacks,
         LoaderManager.LoaderCallbacks<Void> {
 
+    private static final int RC_DENIED_CALENDAR_PERM = 200;
     @Inject
     Bus eventBus;
 
@@ -190,7 +193,7 @@ public class SettingsActivity extends BaseActivity implements
             if (EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
                 onSyncCalendarsSelected();
             } else {
-                EasyPermissions.requestPermissions(this, getString(R.string.allow_read_calendars_perm_reason), Constants.RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
+                EasyPermissions.requestPermissions(this, getString(R.string.allow_read_calendars_perm_reason), RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
             }
         } else {
             showAlertSyncCalendarsDialog();
@@ -308,7 +311,7 @@ public class SettingsActivity extends BaseActivity implements
         onSyncCalendarsChanged(calendarsCount);
     }
 
-    @AfterPermissionGranted(Constants.RC_CALENDAR_PERM)
+    @AfterPermissionGranted(RC_CALENDAR_PERM)
     private void onSyncCalendarsSelected() {
         onSyncCalendarsChanged(0);
     }
@@ -457,6 +460,15 @@ public class SettingsActivity extends BaseActivity implements
             return;
         }
 
+        if (EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
+            showCalendarPickerFragment();
+        } else {
+            EasyPermissions.requestPermissions(this, getString(R.string.allow_read_calendars_perm_reason), RC_DENIED_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
+        }
+    }
+
+    @AfterPermissionGranted(RC_DENIED_CALENDAR_PERM)
+    private void showCalendarPickerFragment() {
         Player player = getPlayer();
         AndroidCalendarsPickerFragment fragment = AndroidCalendarsPickerFragment.newInstance(R.string.choose_calendars_title, player.getAndroidCalendars(), this::onSelectCalendarsToSync);
         fragment.show(getSupportFragmentManager());
@@ -546,13 +558,20 @@ public class SettingsActivity extends BaseActivity implements
 
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms) {
-        turnSyncCalendarsOff();
+        if(requestCode == RC_CALENDAR_PERM) {
+            turnSyncCalendarsOff();
+        }
     }
 
     private void turnSyncCalendarsOff() {
-        enableSyncCalendars.setOnCheckedChangeListener(null);
-        enableSyncCalendars.setChecked(false);
-        enableSyncCalendars.setOnCheckedChangeListener(onCheckSyncCalendarChangeListener);
+        Player player = getPlayer();
+        if (player.getAndroidCalendars().isEmpty()) {
+            enableSyncCalendars.setOnCheckedChangeListener(null);
+            enableSyncCalendars.setChecked(false);
+            enableSyncCalendars.setOnCheckedChangeListener(onCheckSyncCalendarChangeListener);
+        } else {
+            showAlertSyncCalendarsDialog();
+        }
     }
 
     @Override
