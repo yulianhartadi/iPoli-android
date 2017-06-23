@@ -1,6 +1,9 @@
 package io.ipoli.android.quest.viewmodels;
 
 import android.support.annotation.ColorRes;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.StrikethroughSpan;
 
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
@@ -33,12 +36,16 @@ public class UnscheduledQuestViewModel {
         return quest.getCategoryType();
     }
 
-    public String getName() {
-        String name = quest.getName();
-        if (quest.getRemainingCount() == 1) {
-            return name;
+    public SpannableString getName() {
+        if (isCompleted()) {
+            SpannableString spannableString = new SpannableString(quest.getName());
+            spannableString.setSpan(new StrikethroughSpan(), 0, spannableString.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            return spannableString;
         }
-        return name + " (x" + quest.getRemainingCount() + ")";
+        if(quest.getTimesADay() > 1 ) {
+            return new SpannableString(quest.getName() + " (x" + quest.getRemainingCount() + ")");
+        }
+        return new SpannableString(quest.getName());
     }
 
     public boolean isRepeating() {
@@ -51,5 +58,9 @@ public class UnscheduledQuestViewModel {
 
     public boolean isForChallenge() {
         return quest.isFromChallenge();
+    }
+
+    public boolean isCompleted() {
+        return quest.isCompleted();
     }
 }
