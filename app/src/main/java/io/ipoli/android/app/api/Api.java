@@ -91,7 +91,7 @@ public class Api {
     @NonNull
     private ApiResponseException getApiResponseException(Call call, Response response) {
         String message = response.message();
-        if(response.body() != null) {
+        if (response.body() != null) {
             try {
                 message += " " + response.body().string();
             } catch (IOException e) {

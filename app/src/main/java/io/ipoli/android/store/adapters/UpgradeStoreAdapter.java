@@ -87,7 +87,7 @@ public class UpgradeStoreAdapter extends EnterAnimationAdapter<UpgradeStoreAdapt
             holder.unlock.setVisibility(View.INVISIBLE);
             holder.unlockDate.setVisibility(View.VISIBLE);
             holder.unlockDate.setText(context.getString(R.string.upgrade_unloked_on, DateFormatter.format(context, vm.getUnlockDate())));
-        } else if(vm.requiresUpgrade() && !unlockedUpgrades.contains(vm.getRequiredUpgrade().code)) {
+        } else if (vm.requiresUpgrade() && !unlockedUpgrades.contains(vm.getRequiredUpgrade().code)) {
             holder.unlock.setVisibility(View.INVISIBLE);
             holder.unlockDate.setVisibility(View.VISIBLE);
             String requiredTitle = context.getString(vm.getRequiredUpgrade().title);

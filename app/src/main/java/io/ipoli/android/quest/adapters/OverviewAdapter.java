@@ -221,7 +221,7 @@ public class OverviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         holder.contextIndicatorImage.setImageResource(vm.getCategoryImage());
-        if(q.getScheduledDate().isEqual(today) || q.getScheduledDate().isEqual(today.plusDays(1))) {
+        if (q.getScheduledDate().isEqual(today) || q.getScheduledDate().isEqual(today.plusDays(1))) {
             holder.dueDate.setVisibility(View.GONE);
         } else {
             holder.dueDate.setVisibility(View.VISIBLE);

@@ -65,7 +65,7 @@ public class AddChallengeResultsFragment extends BaseFragment {
                 String result1Text = result1.getText().toString();
                 String result2Text = result2.getText().toString();
                 String result3Text = result3.getText().toString();
-                if(StringUtils.isEmpty(result1Text) && StringUtils.isEmpty(result2Text) && StringUtils.isEmpty(result3Text)) {
+                if (StringUtils.isEmpty(result1Text) && StringUtils.isEmpty(result2Text) && StringUtils.isEmpty(result3Text)) {
                     Toast.makeText(getContext(), R.string.add_challenge_expected_result, Toast.LENGTH_SHORT).show();
                 } else {
                     postEvent(new NewChallengeResultsPickedEvent(result1Text, result2Text, result3Text));

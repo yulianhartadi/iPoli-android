@@ -104,7 +104,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
 
         if (schemaVersion == 0 || schemaVersion > Constants.FIREBASE_LAST_SCHEMA_VERSION) {
             Player player = getPlayer();
-            if(player != null) {
+            if (player != null) {
                 schemaVersion = player.getSchemaVersion();
             }
         }

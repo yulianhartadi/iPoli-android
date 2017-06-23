@@ -11,6 +11,7 @@ public class CalendarPermissionResponseEvent {
     public enum Response {
         GRANTED, DENIED;
     }
+
     public CalendarPermissionResponseEvent(Response response, EventSource source) {
         this.response = response;
         this.source = source;

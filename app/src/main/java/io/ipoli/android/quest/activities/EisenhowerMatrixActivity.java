@@ -195,25 +195,25 @@ public class EisenhowerMatrixActivity extends BaseActivity implements OnDataChan
             return;
         }
 
-        if(doListAdapter == null) {
+        if (doListAdapter == null) {
             doListAdapter = new EisenhowerMatrixAdapter(this, eventBus, new ArrayList<>());
             doList.setAdapter(doListAdapter);
         }
         doListAdapter.setViewModels(doQuests);
 
-        if(accomplishListAdapter == null) {
+        if (accomplishListAdapter == null) {
             accomplishListAdapter = new EisenhowerMatrixAdapter(this, eventBus, new ArrayList<>());
             accomplishList.setAdapter(accomplishListAdapter);
         }
         accomplishListAdapter.setViewModels(accomplishQuests);
 
-        if(delegateListAdapter == null) {
+        if (delegateListAdapter == null) {
             delegateListAdapter = new EisenhowerMatrixAdapter(this, eventBus, new ArrayList<>());
             delegateList.setAdapter(delegateListAdapter);
         }
         delegateListAdapter.setViewModels(delegateQuests);
 
-        if(deleteListAdapter == null) {
+        if (deleteListAdapter == null) {
             deleteListAdapter = new EisenhowerMatrixAdapter(this, eventBus, new ArrayList<>());
             deleteList.setAdapter(deleteListAdapter);
         }

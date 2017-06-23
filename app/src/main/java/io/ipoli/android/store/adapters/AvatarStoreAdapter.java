@@ -29,7 +29,7 @@ import mehdi.sakout.fancybuttons.FancyButton;
  * on 5/25/17.
  */
 
-public class AvatarStoreAdapter extends EnterAnimationAdapter<AvatarStoreAdapter.ViewHolder>{
+public class AvatarStoreAdapter extends EnterAnimationAdapter<AvatarStoreAdapter.ViewHolder> {
     private final Context context;
     private final Bus eventBus;
     private List<AvatarViewModel> viewModels;
@@ -77,7 +77,7 @@ public class AvatarStoreAdapter extends EnterAnimationAdapter<AvatarStoreAdapter
         holder.picture.setImageDrawable(context.getDrawable(vm.getPicture()));
         holder.price.setText(vm.getPrice() + "");
 
-        if(vm.isCurrent()) {
+        if (vm.isCurrent()) {
             holder.current.setVisibility(View.VISIBLE);
             holder.price.setVisibility(View.INVISIBLE);
         } else if (vm.isBought()) {

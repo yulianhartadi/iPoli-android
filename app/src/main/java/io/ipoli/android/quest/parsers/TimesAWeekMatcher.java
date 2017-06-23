@@ -33,7 +33,7 @@ public class TimesAWeekMatcher extends BaseMatcher<Integer> {
         Matcher tpdm = pattern.matcher(text);
         if (tpdm.find()) {
             int tpd = Integer.valueOf(tpdm.group(1));
-            if(tpd > 0) {
+            if (tpd > 0) {
                 return tpd;
             }
         }

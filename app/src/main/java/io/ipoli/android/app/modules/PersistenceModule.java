@@ -52,7 +52,7 @@ public class PersistenceModule {
     }
 
     @Provides
-    public CalendarPersistenceService provideAndroidCalendarPersistenceService(Database database, PlayerPersistenceService playerPersistenceService, QuestPersistenceService questPersistenceService, Bus eventBus){
+    public CalendarPersistenceService provideAndroidCalendarPersistenceService(Database database, PlayerPersistenceService playerPersistenceService, QuestPersistenceService questPersistenceService, Bus eventBus) {
         return new AndroidCalendarPersistenceService(database, playerPersistenceService, questPersistenceService, eventBus);
     }
 

@@ -56,7 +56,7 @@ public class EditQuestSubQuestListAdapter extends RecyclerView.Adapter<EditQuest
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         int layoutRes = R.layout.edit_quest_sub_quest_list_item;
-        if(itemLayout != null) {
+        if (itemLayout != null) {
             layoutRes = itemLayout;
         }
         View v = LayoutInflater.from(parent.getContext()).inflate(layoutRes, parent, false);
@@ -131,7 +131,7 @@ public class EditQuestSubQuestListAdapter extends RecyclerView.Adapter<EditQuest
 
     public void setSubQuests(List<SubQuest> subQuests) {
         this.subQuests.clear();
-        if(subQuests != null) {
+        if (subQuests != null) {
             this.subQuests.addAll(subQuests);
         }
         notifyDataSetChanged();
@@ -146,7 +146,7 @@ public class EditQuestSubQuestListAdapter extends RecyclerView.Adapter<EditQuest
     }
 
     private void callItemChangedListener() {
-        if(itemChangedListener != null) {
+        if (itemChangedListener != null) {
             itemChangedListener.onItemChanged();
         }
     }

@@ -10,9 +10,14 @@ import io.ipoli.android.quest.suggestions.providers.SuggestionsProvider;
  */
 public interface QuestTextMatcher<R> {
     Match match(String text);
+
     R parse(String text);
+
     Match partialMatch(String text);
+
     MatcherType getMatcherType();
+
     TextEntityType getTextEntityType();
+
     SuggestionsProvider getSuggestionsProvider();
 }

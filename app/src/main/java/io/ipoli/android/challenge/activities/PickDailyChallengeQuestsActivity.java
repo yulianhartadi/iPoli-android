@@ -28,15 +28,15 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
-import io.ipoli.android.challenge.viewmodels.PickQuestViewModel;
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.challenge.adapters.PickDailyChallengeQuestsAdapter;
 import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
+import io.ipoli.android.challenge.viewmodels.PickQuestViewModel;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
-import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 /**
