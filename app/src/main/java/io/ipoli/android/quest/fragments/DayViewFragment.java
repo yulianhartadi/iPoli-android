@@ -254,11 +254,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
                 }
             } else {
                 if (q.isCompleted()) {
-                    QuestCalendarViewModel event = new QuestCalendarViewModel(q);
-                    if (LocalDate.now().isBefore(q.getScheduledDate())) {
-                        event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinuteOfDay());
-                    }
-                    completedEvents.add(event);
+                    completedEvents.add(new QuestCalendarViewModel(q));
                 } else {
                     calendarEvents.add(new QuestCalendarViewModel(q));
                 }
@@ -271,14 +267,16 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     private void questsForPastUpdated(List<Quest> quests) {
         List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
+        List<Quest> unscheduled = new ArrayList<>();
         for (Quest q : quests) {
             QuestCalendarViewModel event = new QuestCalendarViewModel(q);
             if (hasNoStartTime(q)) {
-                event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinuteOfDay());
+                unscheduled.add(q);
+            } else {
+                calendarEvents.add(event);
             }
-            calendarEvents.add(event);
         }
-        updateSchedule(new Schedule(new ArrayList<>(), calendarEvents));
+        updateSchedule(new Schedule(unscheduled, calendarEvents));
     }
 
     @Override
@@ -464,11 +462,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     @Subscribe
     public void onScrollToTime(ScrollToTimeEvent e) {
         calendarDayView.smoothScrollToTime(e.time);
-    }
-
-    private Time getStartTimeForUnscheduledQuest(Quest q) {
-        int duration = Math.max(q.getActualDuration(), Constants.CALENDAR_EVENT_MIN_DURATION);
-        return Time.of(Math.max(q.getCompletedAtMinute() - duration, 0));
     }
 
     private boolean currentDateIsInTheFuture() {
