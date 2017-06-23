@@ -18,8 +18,8 @@ public enum Difficulty {
     }
 
     public static Difficulty getByValue(int value) {
-        for(Difficulty difficulty : values()) {
-            if(difficulty.getValue() == value) {
+        for (Difficulty difficulty : values()) {
+            if (difficulty.getValue() == value) {
                 return difficulty;
             }
         }

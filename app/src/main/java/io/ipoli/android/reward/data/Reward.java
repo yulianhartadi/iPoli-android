@@ -63,7 +63,7 @@ public class Reward extends PersistedObject {
     }
 
     public List<RewardPurchase> getPurchases() {
-        if(purchases == null) {
+        if (purchases == null) {
             purchases = new ArrayList<>();
         }
         return purchases;
@@ -80,7 +80,7 @@ public class Reward extends PersistedObject {
 
     @JsonIgnore
     public LocalDate getLastPurchaseDate() {
-        if(getPurchases().isEmpty()) {
+        if (getPurchases().isEmpty()) {
             return null;
         }
         return DateUtils.fromMillis(getPurchases().get(getPurchaseCount() - 1).getDate());

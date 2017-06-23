@@ -14,17 +14,17 @@ public class StartTimeFormatter {
     private static SimpleDateFormat SHORT_12_HOUR_TIME_FORMAT = new SimpleDateFormat("h:mm a", Locale.getDefault());
 
     public static String format(Date time) {
-        if(time == null) {
+        if (time == null) {
             return formatEmptyTime();
         }
         return DEFAULT_TIME_FORMAT.format(time);
     }
 
     public static String formatShort(Date time, boolean use24HourFormat) {
-        if(time == null) {
+        if (time == null) {
             formatEmptyTime();
         }
-        if(use24HourFormat) {
+        if (use24HourFormat) {
             return SHORT_TIME_FORMAT.format(time);
         }
         return SHORT_12_HOUR_TIME_FORMAT.format(time);

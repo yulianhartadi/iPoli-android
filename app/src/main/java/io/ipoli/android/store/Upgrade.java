@@ -46,7 +46,6 @@ public enum Upgrade {
             R.string.upgrade_custom_duration_short_desc, R.string.upgrade_custom_duration_long_desc, R.drawable.ic_timer_white_24dp);
 
 
-
     public final int code;
     public final int price;
 

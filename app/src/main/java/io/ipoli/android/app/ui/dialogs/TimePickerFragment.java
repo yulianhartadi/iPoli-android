@@ -44,7 +44,7 @@ public class TimePickerFragment extends DialogFragment
 
     public static TimePickerFragment newInstance(boolean enableUnknownTimeSelection, Time time, OnTimePickedListener timePickedListener) {
         TimePickerFragment fragment = new TimePickerFragment();
-        if(time == null) {
+        if (time == null) {
             time = Time.now();
         }
         Bundle args = new Bundle();
@@ -69,7 +69,7 @@ public class TimePickerFragment extends DialogFragment
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         TimePickerDialog dialog = new TimePickerDialog(getActivity(), R.style.Theme_iPoli_AlertDialog, this, time.getHours(), time.getMinutes(),
                 DateFormat.is24HourFormat(getActivity()));
-        if(enableUnknownTimeSelection) {
+        if (enableUnknownTimeSelection) {
             dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getContext().getString(R.string.unknown_choice), this);
         }
         return dialog;

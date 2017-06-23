@@ -11,12 +11,12 @@ import io.ipoli.android.R;
 public class TimesADayFormatter {
 
     public static String formatReadableShort(Context context, int value) {
-        if(value <= 0) {
+        if (value <= 0) {
             value = 1;
         }
-        if(value == 1) {
+        if (value == 1) {
             return context.getString(R.string.once);
-        } else if(value == 2) {
+        } else if (value == 2) {
             return context.getString(R.string.twice);
         }
 
@@ -24,12 +24,12 @@ public class TimesADayFormatter {
     }
 
     public static String formatReadable(Context context, int value) {
-        if(value <= 0) {
+        if (value <= 0) {
             value = 1;
         }
-        if(value == 1) {
+        if (value == 1) {
             return context.getString(R.string.once_a_day);
-        } else if(value == 2) {
+        } else if (value == 2) {
             return context.getString(R.string.twice_a_day);
         }
 

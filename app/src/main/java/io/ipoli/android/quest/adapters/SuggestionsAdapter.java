@@ -7,8 +7,8 @@ import com.squareup.otto.Bus;
 
 import java.util.List;
 
-import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.quest.events.SuggestionAdapterItemClickEvent;
+import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

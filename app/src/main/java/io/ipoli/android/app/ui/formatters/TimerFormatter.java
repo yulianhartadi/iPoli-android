@@ -14,7 +14,7 @@ public class TimerFormatter {
         int seconds = (int) TimeUnit.MILLISECONDS.toSeconds(timerMillis) - hours * 3600 - minutes * 60;
 
         String text = String.format("%02d:%02d", minutes, seconds);
-        if(hours > 0) {
+        if (hours > 0) {
             text = String.format("%d:", hours) + text;
         }
 

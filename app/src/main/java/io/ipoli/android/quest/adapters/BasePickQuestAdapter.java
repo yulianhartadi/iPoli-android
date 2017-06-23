@@ -19,9 +19,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
-import io.ipoli.android.quest.data.Category;
-import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.challenge.viewmodels.PickQuestViewModel;
+import io.ipoli.android.quest.data.BaseQuest;
+import io.ipoli.android.quest.data.Category;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

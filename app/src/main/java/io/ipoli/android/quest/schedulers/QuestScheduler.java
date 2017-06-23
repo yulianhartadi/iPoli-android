@@ -17,7 +17,7 @@ public class QuestScheduler {
 
     public Date schedule(Quest quest) {
         LocalDate start = quest.getStartDate();
-        LocalDate end =  quest.getEndDate();
+        LocalDate end = quest.getEndDate();
         int daysBetween = (int) ChronoUnit.DAYS.between(start, end);
         int dayOffset = new Random().nextInt(daysBetween + 1);
         return DateUtils.toStartOfDayUTC(start.plusDays(dayOffset));

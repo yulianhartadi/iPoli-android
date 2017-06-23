@@ -59,7 +59,7 @@ public class SuggestionsManager {
 
     private SuggestionsManager(DateTimeParser parser, boolean disableRepeating, boolean use24HourFormat) {
         Set<TextEntityType> disabledEntityTypes = new HashSet<>();
-        if(disableRepeating) {
+        if (disableRepeating) {
             disabledEntityTypes.add(TextEntityType.RECURRENT);
             disabledEntityTypes.add(TextEntityType.FLEXIBLE);
         } else {
@@ -70,7 +70,7 @@ public class SuggestionsManager {
             put(TextEntityType.MAIN, new MainMatcher(disabledEntityTypes));
             put(TextEntityType.DURATION, new DurationMatcher());
             put(TextEntityType.START_TIME, new StartTimeMatcher(parser, use24HourFormat));
-            if(disableRepeating) {
+            if (disableRepeating) {
                 put(TextEntityType.DUE_DATE, new EndDateMatcher(parser));
                 excludedTypes.add(TextEntityType.FLEXIBLE);
                 excludedTypes.add(TextEntityType.TIMES_A_WEEK);
@@ -188,7 +188,7 @@ public class SuggestionsManager {
             unusedTextEntityTypes.removeAll(matcherTypeToTextEntityTypes.get(mt));
         }
 
-        for(TextEntityType type : excludedTypes) {
+        for (TextEntityType type : excludedTypes) {
             unusedTextEntityTypes.remove(type);
         }
         return unusedTextEntityTypes;

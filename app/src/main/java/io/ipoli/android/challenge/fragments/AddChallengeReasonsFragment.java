@@ -65,7 +65,7 @@ public class AddChallengeReasonsFragment extends BaseFragment {
                 String reason1Text = reason1.getText().toString();
                 String reason2Text = reason2.getText().toString();
                 String reason3Text = reason3.getText().toString();
-                if(StringUtils.isEmpty(reason1Text) && StringUtils.isEmpty(reason2Text) && StringUtils.isEmpty(reason3Text)) {
+                if (StringUtils.isEmpty(reason1Text) && StringUtils.isEmpty(reason2Text) && StringUtils.isEmpty(reason3Text)) {
                     Toast.makeText(getContext(), R.string.add_challenge_reason, Toast.LENGTH_SHORT).show();
                 } else {
                     postEvent(new NewChallengeReasonsPickedEvent(reason1Text, reason2Text, reason3Text));
