@@ -583,11 +583,11 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     private QuerySort<Quest> createDefaultQuestSortQuery() {
         return (q1, q2) -> {
 
-            if(q1.isCompleted()) {
+            if (q1.isCompleted()) {
                 return 1;
             }
 
-            if(q2.isCompleted()) {
+            if (q2.isCompleted()) {
                 return -1;
             }
 

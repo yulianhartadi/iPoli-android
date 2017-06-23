@@ -127,7 +127,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
                 result.add(obj);
             }
         }
-        if(querySort != null) {
+        if (querySort != null) {
             Collections.sort(result, querySort::sort);
         }
         return result;

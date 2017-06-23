@@ -7,6 +7,8 @@ package io.ipoli.android.quest.generators;
 public interface RewardProvider {
 
     Long getExperience();
+
     Long getCoins();
+
     Long getRewardPoints();
 }

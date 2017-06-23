@@ -329,15 +329,15 @@ public class App extends MultiDexApplication {
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
 
         int firebaseSchemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
-        if(firebaseSchemaVersion > 0 && firebaseSchemaVersion <= Constants.FIREBASE_LAST_SCHEMA_VERSION) {
+        if (firebaseSchemaVersion > 0 && firebaseSchemaVersion <= Constants.FIREBASE_LAST_SCHEMA_VERSION) {
             return;
         }
-        if(hasPlayer()) {
+        if (hasPlayer()) {
             Player player = playerPersistenceService.get();
-            if(player == null) {
+            if (player == null) {
                 return;
             }
-            if(player.getSchemaVersion() != Constants.SCHEMA_VERSION) {
+            if (player.getSchemaVersion() != Constants.SCHEMA_VERSION) {
                 return;
             }
         }
@@ -992,7 +992,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onScreenShown(ScreenShownEvent e) {
-        if(e.activity != null) {
+        if (e.activity != null) {
             FirebaseAnalytics.getInstance(this).setCurrentScreen(e.activity, e.source.name(), null);
         }
     }

@@ -41,7 +41,7 @@ public class Inventory {
     }
 
     public Map<Integer, Long> getUpgrades() {
-        if(upgrades == null) {
+        if (upgrades == null) {
             upgrades = new HashMap<>();
         }
         return upgrades;
@@ -52,7 +52,7 @@ public class Inventory {
     }
 
     public Map<Integer, Long> getPets() {
-        if(pets == null) {
+        if (pets == null) {
             pets = new HashMap<>();
         }
         return pets;
@@ -63,7 +63,7 @@ public class Inventory {
     }
 
     public Map<Integer, Long> getAvatars() {
-        if(avatars == null) {
+        if (avatars == null) {
             avatars = new HashMap<>();
         }
         return avatars;

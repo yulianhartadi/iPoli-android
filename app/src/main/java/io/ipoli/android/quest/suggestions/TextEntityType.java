@@ -3,7 +3,7 @@ package io.ipoli.android.quest.suggestions;
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 3/25/16.
- *
+ * <p>
  * The order of the values is important for quest text parsers
  */
 public enum TextEntityType {

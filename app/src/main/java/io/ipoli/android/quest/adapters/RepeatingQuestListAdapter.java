@@ -107,7 +107,7 @@ public class RepeatingQuestListAdapter extends RecyclerView.Adapter<RecyclerView
             questHolder.progressContainer.addView(progressViewEmpty);
         }
 
-        if(questHolder.progressContainer.getChildCount() == 0) {
+        if (questHolder.progressContainer.getChildCount() == 0) {
             questHolder.progressContainer.setVisibility(View.GONE);
         } else {
             questHolder.progressContainer.setVisibility(View.VISIBLE);

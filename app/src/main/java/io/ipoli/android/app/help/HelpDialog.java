@@ -69,7 +69,7 @@ public class HelpDialog extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(getArguments() == null) {
+        if (getArguments() == null) {
             dismiss();
         }
 
@@ -86,7 +86,7 @@ public class HelpDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return createDialog(layout, title);
     }
-    
+
     public void show(FragmentManager fragmentManager) {
         show(fragmentManager, TAG);
     }

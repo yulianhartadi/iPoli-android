@@ -16,7 +16,7 @@ public class TimesAWeekTextSuggestionsProvider extends BaseSuggestionsProvider {
     @Override
     protected List<String> getSuggestions() {
         List<String> suggestions = new ArrayList<>();
-        for(int i = Constants.MIN_FLEXIBLE_TIMES_A_WEEK_COUNT; i <= Constants.MAX_FLEXIBLE_TIMES_A_WEEK_COUNT; i++) {
+        for (int i = Constants.MIN_FLEXIBLE_TIMES_A_WEEK_COUNT; i <= Constants.MAX_FLEXIBLE_TIMES_A_WEEK_COUNT; i++) {
             suggestions.add(FlexibleTimesFormatter.formatReadable(i) + " a week");
         }
         return suggestions;

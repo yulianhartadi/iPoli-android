@@ -32,6 +32,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
@@ -44,7 +45,6 @@ import io.ipoli.android.challenge.events.ChallengeCompletedEvent;
 import io.ipoli.android.challenge.events.ShowChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
-import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.player.UpgradeDialog;
 import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.store.Upgrade;
@@ -121,7 +121,7 @@ public class ChallengeListFragment extends BaseFragment implements OnDataChanged
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_pick_challenge:
-                if(upgradeManager.isLocked(Upgrade.PREDEFINED_CHALLENGES)) {
+                if (upgradeManager.isLocked(Upgrade.PREDEFINED_CHALLENGES)) {
                     UpgradeDialog.newInstance(Upgrade.PREDEFINED_CHALLENGES).show(getFragmentManager());
                     return true;
                 }

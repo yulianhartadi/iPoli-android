@@ -427,7 +427,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     public void onRescheduleQuest(RescheduleQuestEvent e) {
         String taskId = e.calendarEvent.getId();
         Task task = dailyScheduler.findTask(taskId);
-        if(task.getCurrentTimeSlot() == null) {
+        if (task.getCurrentTimeSlot() == null) {
             Toast.makeText(getContext(), R.string.no_more_suggestions, Toast.LENGTH_SHORT).show();
             return;
         }

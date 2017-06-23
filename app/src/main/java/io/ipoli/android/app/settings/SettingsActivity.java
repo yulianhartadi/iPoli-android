@@ -558,7 +558,7 @@ public class SettingsActivity extends BaseActivity implements
 
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms) {
-        if(requestCode == RC_CALENDAR_PERM) {
+        if (requestCode == RC_CALENDAR_PERM) {
             turnSyncCalendarsOff();
         }
     }
