@@ -80,7 +80,6 @@ public class AddChallengeEndDateFragment extends BaseFragment {
         }));
 
 
-
         dateOptions.setAdapter(new QuestOptionsAdapter(options));
 
 

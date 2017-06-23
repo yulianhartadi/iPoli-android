@@ -224,7 +224,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @OnClick(R.id.quest_details_timer)
     public void onTimerTap(View v) {
-        if(upgradeManager.isLocked(Upgrade.TIMER)) {
+        if (upgradeManager.isLocked(Upgrade.TIMER)) {
             UpgradeDialog.newInstance(Upgrade.TIMER).show(getSupportFragmentManager());
             return;
         }
@@ -279,7 +279,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @Subscribe
     public void onEditNoteRequest(EditNoteRequestEvent e) {
-        if(upgradeManager.isLocked(Upgrade.NOTES)) {
+        if (upgradeManager.isLocked(Upgrade.NOTES)) {
             UpgradeDialog.newInstance(Upgrade.NOTES).show(getSupportFragmentManager());
             return;
         }

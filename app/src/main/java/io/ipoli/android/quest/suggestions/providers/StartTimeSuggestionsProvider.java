@@ -32,7 +32,7 @@ public class StartTimeSuggestionsProvider extends BaseSuggestionsProvider {
 
     @Override
     protected void createSuggestionItems() {
-        for(Map.Entry<String, String> entry : suggestionToVisibleText.entrySet()) {
+        for (Map.Entry<String, String> entry : suggestionToVisibleText.entrySet()) {
             defaultSuggestionItems.add(new SuggestionDropDownItem(getIcon(), entry.getValue(), getMatchingStartWord() + entry.getKey()));
         }
     }

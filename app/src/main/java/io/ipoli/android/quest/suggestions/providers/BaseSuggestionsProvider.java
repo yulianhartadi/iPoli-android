@@ -18,14 +18,14 @@ public abstract class BaseSuggestionsProvider implements SuggestionsProvider {
     protected List<SuggestionDropDownItem> defaultSuggestionItems = new ArrayList<>();
 
     public BaseSuggestionsProvider() {
-        for(String s : getSuggestions()) {
+        for (String s : getSuggestions()) {
             suggestionToVisibleText.put(s, s);
         }
         createSuggestionItems();
     }
 
     protected void createSuggestionItems() {
-        for(Map.Entry<String, String> entry : suggestionToVisibleText.entrySet()) {
+        for (Map.Entry<String, String> entry : suggestionToVisibleText.entrySet()) {
             defaultSuggestionItems.add(new SuggestionDropDownItem(getIcon(), entry.getValue(), getMatchingStartWord() + entry.getKey()));
         }
     }
@@ -52,8 +52,8 @@ public abstract class BaseSuggestionsProvider implements SuggestionsProvider {
 
     protected List<SuggestionDropDownItem> applyFilters(String text) {
         List<SuggestionDropDownItem> suggestionItems = new ArrayList<>();
-        for(Map.Entry<String, String> entry : suggestionToVisibleText.entrySet()) {
-            if(entry.getKey().toLowerCase().startsWith(text.toLowerCase())) {
+        for (Map.Entry<String, String> entry : suggestionToVisibleText.entrySet()) {
+            if (entry.getKey().toLowerCase().startsWith(text.toLowerCase())) {
                 suggestionItems.add(new SuggestionDropDownItem(getIcon(), entry.getValue(), getMatchingStartWord() + entry.getKey()));
             }
         }

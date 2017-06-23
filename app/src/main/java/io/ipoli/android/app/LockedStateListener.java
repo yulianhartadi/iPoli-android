@@ -7,5 +7,6 @@ package io.ipoli.android.app;
 
 public interface LockedStateListener {
     boolean isLocked();
+
     void onLockedAction();
 }

@@ -155,7 +155,7 @@ public class RateDialog extends DialogFragment {
                 .setPositiveButton(getString(R.string.rate_dialog_feedback_send), (dialog, which) -> {
                     EditText feedback = (EditText) v.findViewById(R.id.feedback);
                     String feedbackText = feedback.getText().toString();
-                    if(!StringUtils.isEmpty(feedbackText)) {
+                    if (!StringUtils.isEmpty(feedbackText)) {
                         eventBus.post(new RateDialogFeedbackSentEvent(feedbackText, appRun));
                         Toast.makeText(getContext(), R.string.rate_dialog_feedback_thanks, Toast.LENGTH_SHORT).show();
                     }

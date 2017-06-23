@@ -30,7 +30,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
     public static DatePickerFragment newInstance(LocalDate date, boolean disablePastDaySelection, boolean enableUnknownDateSelection, OnDatePickedListener onDatePickedListener) {
         LocalDate currentDate = date;
-        if(currentDate == null) {
+        if (currentDate == null) {
             currentDate = LocalDate.now();
         }
         return newInstance(currentDate.getYear(), currentDate.getMonthValue() - 1, currentDate.getDayOfMonth(), disablePastDaySelection, enableUnknownDateSelection, onDatePickedListener);

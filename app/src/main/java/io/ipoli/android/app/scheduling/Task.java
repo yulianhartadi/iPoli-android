@@ -89,7 +89,7 @@ public class Task implements Comparable<Task> {
     }
 
     public TimeSlot getCurrentTimeSlot() {
-        if(recommendedSlots == null || recommendedSlots.isEmpty() || currentTimeSlotIndex >= recommendedSlots.size()
+        if (recommendedSlots == null || recommendedSlots.isEmpty() || currentTimeSlotIndex >= recommendedSlots.size()
                 || currentTimeSlotIndex < 0) {
             return null;
         }

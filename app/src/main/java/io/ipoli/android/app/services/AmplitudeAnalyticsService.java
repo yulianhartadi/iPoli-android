@@ -8,6 +8,8 @@ import com.amplitude.api.Amplitude;
 import com.google.firebase.crash.FirebaseCrash;
 import com.squareup.otto.Subscribe;
 
+import io.ipoli.android.app.api.events.NewSessionCreatedEvent;
+import io.ipoli.android.app.api.events.SessionExpiredEvent;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.AvatarCoinsTappedEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
@@ -930,6 +932,16 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
         log("player_signed_in", EventParams.create()
                 .add("provider", e.provider)
                 .add("is_new", String.valueOf(e.isNew)));
+    }
+
+    @Subscribe
+    public void onSessionExpired(SessionExpiredEvent e) {
+        log("session_expired");
+    }
+
+    @Subscribe
+    public void onNewSessionCreated(NewSessionCreatedEvent e) {
+        log("new_session_created");
     }
 
     @Subscribe

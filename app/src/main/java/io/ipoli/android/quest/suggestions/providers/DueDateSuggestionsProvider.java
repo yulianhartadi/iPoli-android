@@ -94,8 +94,8 @@ public class DueDateSuggestionsProvider extends BaseSuggestionsProvider {
             } else {
                 String monthPart = parts[parts.length - 1];
                 String startPart = TextUtils.join(" ", Arrays.asList(parts).subList(0, parts.length - 1));
-                for(String m : months) {
-                    if(m.toLowerCase().startsWith(monthPart.toLowerCase())) {
+                for (String m : months) {
+                    if (m.toLowerCase().startsWith(monthPart.toLowerCase())) {
                         String visibleText = startPart + " " + m;
                         items.add(new SuggestionDropDownItem(getIcon(), visibleText, getMatchingStartWord() + visibleText));
                     }

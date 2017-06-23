@@ -1,5 +1,5 @@
 package io.ipoli.android.quest.suggestions;
 
-public interface OnSuggestionsUpdatedListener{
+public interface OnSuggestionsUpdatedListener {
     void onSuggestionsUpdated();
 }

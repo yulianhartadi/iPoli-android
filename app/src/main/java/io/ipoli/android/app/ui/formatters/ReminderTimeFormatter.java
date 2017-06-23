@@ -14,11 +14,11 @@ import io.ipoli.android.reminder.TimeOffsetType;
 public class ReminderTimeFormatter {
 
     public static String formatMinutesBeforeReadable(Context context, long minutes) {
-        if(minutes < 0) {
+        if (minutes < 0) {
             return "";
         }
 
-        if(minutes == 0) {
+        if (minutes == 0) {
             return context.getString(R.string.reminder_at_start);
         }
 
@@ -39,16 +39,16 @@ public class ReminderTimeFormatter {
     }
 
     public static String formatTimeOffset(Context context, long timeValue, TimeOffsetType timeOffsetType) {
-        if(timeValue < 0) {
+        if (timeValue < 0) {
             return "";
         }
 
-        if(timeValue == 0) {
+        if (timeValue == 0) {
             return context.getString(R.string.reminder_at_start);
         }
 
         String type = context.getString(TimeOffsetType.getNameRes(timeOffsetType)).toLowerCase();
-        if(timeValue == 1) {
+        if (timeValue == 1) {
             type = context.getString(TimeOffsetType.getNameSingleRes(timeOffsetType)).toLowerCase();
         }
 

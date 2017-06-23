@@ -160,7 +160,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     public void onNameAndCategoryPicked(NameAndCategoryPickedEvent e) {
         quest = new Quest(e.name);
         quest.setDuration(Constants.QUEST_MIN_DURATION);
-        if(upgradeManager.isUnlocked(Upgrade.REMINDERS)) {
+        if (upgradeManager.isUnlocked(Upgrade.REMINDERS)) {
             quest.addReminder(new Reminder(0));
         }
         quest.setCategoryType(e.category);
@@ -186,7 +186,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     public void onNewQuestTimePicked(NewQuestTimePickedEvent e) {
         quest.setStartTimePreference(e.timePreference);
         quest.setStartTime(e.time);
-        if(e.time != null) {
+        if (e.time != null) {
             quest.setTimesADay(1);
         }
         goToNextPage();
