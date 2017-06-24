@@ -53,6 +53,8 @@ import io.ipoli.android.app.activities.SignInActivity;
 import io.ipoli.android.app.activities.UpgradeDialogActivity;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.api.UrlProvider;
+import io.ipoli.android.app.api.events.NewSessionCreatedEvent;
+import io.ipoli.android.app.api.events.SessionExpiredEvent;
 import io.ipoli.android.app.auth.FacebookAuthService;
 import io.ipoli.android.app.auth.GoogleAuthService;
 import io.ipoli.android.app.events.AppErrorEvent;
@@ -518,6 +520,7 @@ public class App extends MultiDexApplication {
                     if (error instanceof RemoteRequestResponseException) {
                         RemoteRequestResponseException ex = (RemoteRequestResponseException) error;
                         if (ex.getCode() == 401) {
+                            eventBus.post(new SessionExpiredEvent());
                             for (Replication replication : database.getAllReplications()) {
                                 replication.stop();
                                 replication.clearAuthenticationStores();
@@ -544,6 +547,7 @@ public class App extends MultiDexApplication {
             api.createSession(player.getCurrentAuthProvider(), accessToken, new Api.SessionResponseListener() {
                 @Override
                 public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
+                    eventBus.post(new NewSessionCreatedEvent());
                     syncData(cookies);
                 }
 
