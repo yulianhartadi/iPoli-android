@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.amplitude.api.Amplitude;
 import com.couchbase.lite.Database;
+import com.couchbase.lite.replicator.RemoteRequestResponseException;
 import com.couchbase.lite.replicator.Replication;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -484,28 +485,7 @@ public class App extends MultiDexApplication {
         if (!player.isAuthenticated()) {
             return;
         }
-        AccessTokenListener listener = accessToken -> {
-            if (StringUtils.isEmpty(accessToken)) {
-                return;
-            }
-            api.createSession(player.getCurrentAuthProvider(), accessToken, new Api.SessionResponseListener() {
-                @Override
-                public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
-                    syncData(cookies);
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    eventBus.post(new AppErrorEvent(e));
-                }
-            });
-        };
-        AuthProvider.Provider authProvider = player.getCurrentAuthProvider().getProviderType();
-        if (authProvider == AuthProvider.Provider.GOOGLE) {
-            new GoogleAuthService(eventBus).getIdToken(this, listener::onAccessTokenReceived);
-        } else if (authProvider == AuthProvider.Provider.FACEBOOK) {
-            listener.onAccessTokenReceived(new FacebookAuthService(eventBus).getAccessToken());
-        }
+        syncData(new ArrayList<>());
     }
 
     @Subscribe
@@ -532,10 +512,52 @@ public class App extends MultiDexApplication {
             }
             push.setContinuous(true);
 
+            push.addChangeListener(changeEvent -> {
+                Throwable error = changeEvent.getError();
+                if (error != null) {
+                    if (error instanceof RemoteRequestResponseException) {
+                        RemoteRequestResponseException ex = (RemoteRequestResponseException) error;
+                        if (ex.getCode() == 401) {
+                            for (Replication replication : database.getAllReplications()) {
+                                replication.stop();
+                                replication.clearAuthenticationStores();
+                            }
+                            requestNewSession();
+                        }
+                    }
+                }
+            });
+
             pull.start();
             push.start();
         } catch (Exception e) {
             eventBus.post(new AppErrorEvent(e));
+        }
+    }
+
+    private void requestNewSession() {
+        Player player = getPlayer();
+        AccessTokenListener listener = accessToken -> {
+            if (StringUtils.isEmpty(accessToken)) {
+                return;
+            }
+            api.createSession(player.getCurrentAuthProvider(), accessToken, new Api.SessionResponseListener() {
+                @Override
+                public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
+                    syncData(cookies);
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    eventBus.post(new AppErrorEvent(e));
+                }
+            });
+        };
+        AuthProvider.Provider authProvider = player.getCurrentAuthProvider().getProviderType();
+        if (authProvider == AuthProvider.Provider.GOOGLE) {
+            new GoogleAuthService(eventBus).getIdToken(this, listener::onAccessTokenReceived);
+        } else if (authProvider == AuthProvider.Provider.FACEBOOK) {
+            listener.onAccessTokenReceived(new FacebookAuthService(eventBus).getAccessToken());
         }
     }
 
