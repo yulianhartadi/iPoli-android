@@ -1,9 +1,13 @@
 package io.ipoli.android.feed.data;
 
+import com.google.firebase.database.Exclude;
+
+import java.util.HashMap;
 import java.util.Map;
 
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.Player;
+import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 
 /**
@@ -152,6 +156,9 @@ public class Post {
     }
 
     public Map<String, Boolean> getLikes() {
+        if(likes == null) {
+            likes = new HashMap<>();
+        }
         return likes;
     }
 
@@ -165,5 +172,10 @@ public class Post {
 
     public void setCompletedAt(Long completedAt) {
         this.completedAt = completedAt;
+    }
+
+    @Exclude
+    public Category getCategoryType() {
+        return Category.valueOf(category);
     }
 }
