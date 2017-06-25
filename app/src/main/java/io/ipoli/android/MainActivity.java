@@ -64,7 +64,6 @@ import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.rate.RateDialogConstants;
 import io.ipoli.android.app.settings.SettingsActivity;
 import io.ipoli.android.app.share.InviteFriendsDialog;
-import io.ipoli.android.app.share.ShareQuestDialog;
 import io.ipoli.android.app.sync.AndroidCalendarSyncJobService;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
@@ -74,6 +73,7 @@ import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.feed.activities.AddPostActivity;
+import io.ipoli.android.feed.activities.FeedActivity;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
@@ -193,8 +193,7 @@ public class MainActivity extends BaseActivity implements
         };
 
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
-//        startActivity(new Intent(this, FeedActivity.class));
-        startActivity(new Intent(this, AddPostActivity.class));
+        startActivity(new Intent(this, FeedActivity.class));
 
         if (!getPlayer().getAndroidCalendars().isEmpty() &&
                 !EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
@@ -372,8 +371,7 @@ public class MainActivity extends BaseActivity implements
         View header = navigationView.getHeaderView(0);
         TextView level = (TextView) header.findViewById(R.id.player_level);
         int playerLevel = player.getLevel();
-        String[] playerTitles = getResources().getStringArray(R.array.player_titles);
-        String title = playerTitles[Math.min(playerLevel / 10, playerTitles.length - 1)];
+        String title = player.getTitle(getResources().getStringArray(R.array.player_titles));
         level.setText(String.format(getString(R.string.player_level), playerLevel, title));
 
         populateHeaderCoins(player, header);
@@ -662,7 +660,10 @@ public class MainActivity extends BaseActivity implements
 
     @Subscribe
     public void onShareQuest(ShareQuestEvent e) {
-        ShareQuestDialog.show(this, e.quest, eventBus);
+        Intent addPostIntent = new Intent(this, AddPostActivity.class);
+        addPostIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        startActivity(addPostIntent);
+//        ShareQuestDialog.show(this, e.quest, eventBus);
     }
 
     @Subscribe

@@ -2,6 +2,10 @@ package io.ipoli.android.feed.data;
 
 import java.util.Map;
 
+import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.player.Player;
+import io.ipoli.android.quest.data.Quest;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/16/17.
@@ -26,6 +30,21 @@ public class Post {
 
     public Post() {
 
+    }
+
+    public Post(String title, String message, Player player, Quest quest) {
+        setCreatedAt(DateUtils.nowUTC().getTime());
+        setTitle(title);
+        setMessage(message);
+        setCategory(quest.getCategory());
+        setCompletedAt(quest.getCompletedAt());
+        setCoins(quest.getCoins().intValue());
+        setExperience(quest.getExperience().intValue());
+        setRewardPoints(quest.getRewardPoints().intValue());
+        setPlayerId(player.getId());
+        setUsername(player.getUsername());
+        setLevel(player.getLevel());
+        setAvatar(String.valueOf(player.getAvatarCode()));
     }
 
     public String getId() {
