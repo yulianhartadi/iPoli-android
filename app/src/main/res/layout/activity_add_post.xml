@@ -87,8 +87,7 @@
             android:layout_height="wrap_content"
             android:imeOptions="actionDone"
             android:inputType="textCapSentences|textMultiLine"
-            android:maxLines="2"
-            android:text="Ride my bike to work" />
+            android:maxLines="2"/>
 
     </android.support.design.widget.TextInputLayout>
 
