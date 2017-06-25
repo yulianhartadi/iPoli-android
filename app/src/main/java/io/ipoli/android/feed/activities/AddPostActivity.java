@@ -3,7 +3,6 @@ package io.ipoli.android.feed.activities;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -37,9 +36,6 @@ public class AddPostActivity extends BaseActivity implements OnDataChangedListen
 
     @Inject
     FeedPersistenceService feedPersistenceService;
-
-    @BindView(R.id.post_header)
-    ViewGroup header;
 
     @BindView(R.id.fancy_dialog_title)
     TextView headerTitle;
