@@ -31,7 +31,6 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
-import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.StartQuickAddEvent;
 import io.ipoli.android.app.scheduling.DailyScheduler;
 import io.ipoli.android.app.scheduling.DailySchedulerBuilder;
@@ -51,8 +50,6 @@ import io.ipoli.android.quest.adapters.UnscheduledQuestsAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.QuestTask;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.quest.events.CompleteQuestRequestEvent;
-import io.ipoli.android.quest.events.CompleteUnscheduledQuestRequestEvent;
 import io.ipoli.android.quest.events.MoveQuestToCalendarRequestEvent;
 import io.ipoli.android.quest.events.QuestAddedToCalendarEvent;
 import io.ipoli.android.quest.events.QuestCompletedEvent;
@@ -243,38 +240,43 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     private void questsForPresentUpdated(List<Quest> quests) {
         List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
         List<Quest> unscheduledQuests = new ArrayList<>();
+        List<Quest> completedUnscheduledQuests = new ArrayList<>();
         List<QuestCalendarViewModel> completedEvents = new ArrayList<>();
         for (Quest q : quests) {
             // completed events should be added first since we don't want them to intercept clicks
             // for incomplete events
 
-            if (q.getCompletedAtDate() != null) {
-                QuestCalendarViewModel event = new QuestCalendarViewModel(q);
-                if (hasNoStartTime(q) || LocalDate.now().isBefore(q.getScheduledDate())) {
-                    event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinuteOfDay());
+            if (hasNoStartTime(q)) {
+                if (q.isCompleted()) {
+                    completedUnscheduledQuests.add(q);
+                } else {
+                    unscheduledQuests.add(q);
                 }
-
-                completedEvents.add(event);
-            } else if (hasNoStartTime(q)) {
-                unscheduledQuests.add(q);
             } else {
-                calendarEvents.add(new QuestCalendarViewModel(q));
+                if (q.isCompleted()) {
+                    completedEvents.add(new QuestCalendarViewModel(q));
+                } else {
+                    calendarEvents.add(new QuestCalendarViewModel(q));
+                }
             }
         }
         calendarEvents.addAll(0, completedEvents);
+        unscheduledQuests.addAll(completedUnscheduledQuests);
         updateSchedule(new Schedule(unscheduledQuests, calendarEvents));
     }
 
     private void questsForPastUpdated(List<Quest> quests) {
         List<QuestCalendarViewModel> calendarEvents = new ArrayList<>();
+        List<Quest> unscheduled = new ArrayList<>();
         for (Quest q : quests) {
             QuestCalendarViewModel event = new QuestCalendarViewModel(q);
             if (hasNoStartTime(q)) {
-                event.setStartMinute(getStartTimeForUnscheduledQuest(q).toMinuteOfDay());
+                unscheduled.add(q);
+            } else {
+                calendarEvents.add(event);
             }
-            calendarEvents.add(event);
         }
-        updateSchedule(new Schedule(new ArrayList<>(), calendarEvents));
+        updateSchedule(new Schedule(unscheduled, calendarEvents));
     }
 
     @Override
@@ -283,14 +285,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         questPersistenceService.removeAllListeners();
         repeatingQuestPersistenceService.removeAllListeners();
         super.onDestroyView();
-    }
-
-    @Subscribe
-    public void onCompleteUnscheduledQuestRequest(CompleteUnscheduledQuestRequestEvent e) {
-        eventBus.post(new CompleteQuestRequestEvent(e.viewModel.getQuest(), EventSource.CALENDAR_UNSCHEDULED_SECTION));
-        if (e.viewModel.getQuest().isCompleted()) {
-            calendarDayView.smoothScrollToTime(Time.now());
-        }
     }
 
     private void setUnscheduledQuestsHeight() {
@@ -348,7 +342,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
         List<Task> tasksToSchedule = new ArrayList<>();
         for (Quest q : schedule.getUnscheduledQuests()) {
             unscheduledViewModels.add(new UnscheduledQuestViewModel(q));
-            if (!q.shouldBeDoneMultipleTimesPerDay() && !q.isPlaceholder()) {
+            if (shoudProposeTimeForQuest(q)) {
                 tasksToSchedule.add(new QuestTask(q.getDuration(), q.getPriority(), q.getStartTimePreference(), q.getCategoryType(), q));
             }
         }
@@ -360,6 +354,10 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
         setUnscheduledQuestsHeight();
         calendarDayView.onMinuteChanged();
+    }
+
+    private boolean shoudProposeTimeForQuest(Quest quest) {
+        return !quest.isCompleted() && !quest.shouldBeDoneMultipleTimesPerDay() && !quest.isPlaceholder();
     }
 
     private void scheduleUnscheduledEvents(List<QuestCalendarViewModel> scheduledEvents, List<Task> tasksToSchedule) {
@@ -427,7 +425,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     public void onRescheduleQuest(RescheduleQuestEvent e) {
         String taskId = e.calendarEvent.getId();
         Task task = dailyScheduler.findTask(taskId);
-        if(task.getCurrentTimeSlot() == null) {
+        if (task.getCurrentTimeSlot() == null) {
             Toast.makeText(getContext(), R.string.no_more_suggestions, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -464,11 +462,6 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
     @Subscribe
     public void onScrollToTime(ScrollToTimeEvent e) {
         calendarDayView.smoothScrollToTime(e.time);
-    }
-
-    private Time getStartTimeForUnscheduledQuest(Quest q) {
-        int duration = Math.max(q.getActualDuration(), Constants.CALENDAR_EVENT_MIN_DURATION);
-        return Time.of(Math.max(q.getCompletedAtMinute() - duration, 0));
     }
 
     private boolean currentDateIsInTheFuture() {

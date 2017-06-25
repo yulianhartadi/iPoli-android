@@ -384,6 +384,7 @@
     <string name="empty_calendars_text">No calendars</string>
     <string name="empty_eisenhower_matrix_text">No quests for this date. Why not add some?</string>
     <string name="allow_read_calendars_perm_reason">iPoli needs to read your calendars to import your events as quests</string>
+    <string name="allow_read_calendars_perm_reason_disable_option">iPoli needs to read your calendars to import your events as quests. You can disable it from Settings.</string>
     <string name="sync_calendars_delete_loading_dialog_title">Deleting quests</string>
     <string name="empty_store_items">No available items</string>
     <string name="challenge_deadline_question">When is the deadline?</string>

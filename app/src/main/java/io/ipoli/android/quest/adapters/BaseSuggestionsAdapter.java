@@ -39,13 +39,13 @@ public abstract class BaseSuggestionsAdapter extends ArrayAdapter<SuggestionDrop
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-        if( convertView == null ){
+        if (convertView == null) {
             holder = new ViewHolder();
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.add_quest_suggestion_item, parent, false);
             holder.text = (TextView) convertView.findViewById(R.id.suggestion_text);
             holder.icon = (ImageView) convertView.findViewById(R.id.suggestion_icon);
             convertView.setTag(holder);
-        }else{
+        } else {
             holder = (ViewHolder) convertView.getTag();
         }
         holder.text.setText(suggestions.get(position).visibleText);
@@ -88,24 +88,23 @@ public abstract class BaseSuggestionsAdapter extends ArrayAdapter<SuggestionDrop
 
     protected Filter textFilter = new Filter() {
         @Override
-        public String convertResultToString(Object resultValue){
-            return ((SuggestionDropDownItem)resultValue).visibleText;
+        public String convertResultToString(Object resultValue) {
+            return ((SuggestionDropDownItem) resultValue).visibleText;
         }
 
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults filterResults = new FilterResults();
-                filterResults.values = suggestions;
-                filterResults.count = suggestions.size();
-                return filterResults;
+            FilterResults filterResults = new FilterResults();
+            filterResults.values = suggestions;
+            filterResults.count = suggestions.size();
+            return filterResults;
         }
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             if (results != null && results.count > 0) {
                 notifyDataSetChanged();
-            }
-            else {
+            } else {
                 notifyDataSetInvalidated();
             }
         }

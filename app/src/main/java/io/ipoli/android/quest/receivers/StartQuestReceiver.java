@@ -41,7 +41,7 @@ public class StartQuestReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         App.getAppComponent(context).inject(this);
 
-        if(upgradeManager.isLocked(Upgrade.TIMER)) {
+        if (upgradeManager.isLocked(Upgrade.TIMER)) {
             eventBus.post(new StartUpgradeDialogRequestEvent(Upgrade.TIMER));
             return;
         }

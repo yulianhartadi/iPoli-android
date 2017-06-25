@@ -113,14 +113,14 @@ public class EndDateMatcher extends BaseMatcher<LocalDate> {
     public boolean partiallyMatches(String text) {
         Matcher tmm = dueThisMonthPattern.matcher(text);
         tmm.matches();
-        if(tmm.hitEnd()) {
+        if (tmm.hitEnd()) {
             return true;
         }
 
         for (Pattern p : dueDatePatterns) {
             Matcher matcher = p.matcher(text);
             matcher.matches();
-            if(matcher.hitEnd()) {
+            if (matcher.hitEnd()) {
                 return true;
             }
         }

@@ -9,7 +9,7 @@ import android.support.v4.util.Pair;
 public class ReminderMinutesParser {
 
     public static Pair<Long, TimeOffsetType> parseCustomMinutes(long minutes) {
-        if(minutes == 0) {
+        if (minutes == 0) {
             return new Pair<>(minutes, TimeOffsetType.MINUTES);
         }
 

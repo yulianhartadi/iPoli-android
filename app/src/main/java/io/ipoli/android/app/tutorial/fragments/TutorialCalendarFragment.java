@@ -144,7 +144,7 @@ public class TutorialCalendarFragment extends Fragment {
                                 .setShape(ShapeType.RECTANGLE)
                                 .setTarget(snackBar.getView())
                                 .setListener(s -> {
-                                    if(!isRewardTaken) {
+                                    if (!isRewardTaken) {
                                         isRewardTaken = true;
                                         preferencesManager.resetAll();
                                         snackBar.dismiss();

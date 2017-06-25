@@ -18,7 +18,7 @@ public class MostProductiveTimesChangedEvent {
 
     public Set<String> getTimesOfDay() {
         Set<String> names = new HashSet<>();
-        for(TimeOfDay timeOfDay : timesOfDay) {
+        for (TimeOfDay timeOfDay : timesOfDay) {
             names.add(timeOfDay.name());
         }
         return names;

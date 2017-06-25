@@ -153,13 +153,13 @@ public class AddChallengeSummaryFragment extends BaseFragment {
     private void showQuests(List<Quest> quests, List<RepeatingQuest> repeatingQuests) {
         questsContainer.removeAllViews();
 
-        for(Quest q : quests) {
+        for (Quest q : quests) {
             View v = LayoutInflater.from(getActivity()).inflate(R.layout.add_challenge_quest_item, questsContainer, false);
             populateQuestView(q.getName(), false, v);
             questsContainer.addView(v);
 
         }
-        for(RepeatingQuest rq : repeatingQuests) {
+        for (RepeatingQuest rq : repeatingQuests) {
             View v = LayoutInflater.from(getActivity()).inflate(R.layout.add_challenge_quest_item, questsContainer, false);
             populateQuestView(rq.getName(), true, v);
             questsContainer.addView(v);

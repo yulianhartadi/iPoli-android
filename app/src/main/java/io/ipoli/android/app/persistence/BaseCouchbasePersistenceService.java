@@ -11,7 +11,6 @@ import com.couchbase.lite.LiveQuery;
 import com.couchbase.lite.Query;
 import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.QueryRow;
-import com.couchbase.lite.UnsavedRevision;
 import com.couchbase.lite.View;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -127,7 +126,7 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
                 result.add(obj);
             }
         }
-        if(querySort != null) {
+        if (querySort != null) {
             Collections.sort(result, querySort::sort);
         }
         return result;
@@ -154,10 +153,12 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
         } else {
             obj.markUpdated();
             data = objectMapper.convertValue(obj, mapTypeReference);
-            UnsavedRevision revision = database.getExistingDocument(obj.getId()).createRevision();
-            revision.setProperties(data);
+            Document doc = database.getExistingDocument(obj.getId());
             try {
-                revision.save();
+                doc.update(newRevision -> {
+                    newRevision.setUserProperties(data);
+                    return true;
+                });
             } catch (CouchbaseLiteException e) {
                 postError(e);
             }

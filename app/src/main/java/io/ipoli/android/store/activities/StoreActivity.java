@@ -176,7 +176,7 @@ public class StoreActivity extends BaseActivity implements OnDataChangedListener
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode != RC_BUY_COINS) {
+        if (requestCode != RC_BUY_COINS) {
             super.onActivityResult(requestCode, resultCode, data);
             return;
         }

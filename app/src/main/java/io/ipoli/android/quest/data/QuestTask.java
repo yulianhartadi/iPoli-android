@@ -43,9 +43,12 @@ public class QuestTask extends Task {
         if (q1.getPreferredStartTime() != null ? !q1.getPreferredStartTime().equals(q2.getPreferredStartTime()) : q2.getPreferredStartTime() != null)
             return false;
         if (q1.getDuration() != q2.getDuration()) return false;
-        if (q1.getStart() != null ? !q1.getStart().equals(q2.getStart()) : q2.getStart() != null) return false;
-        if (q1.getEnd() != null ? !q1.getEnd().equals(q2.getEnd()) : q2.getEnd() != null) return false;
-        if (q1.getScheduled() != null ? !q1.getScheduled().equals(q2.getScheduled()) : q2.getScheduled() != null) return false;
+        if (q1.getStart() != null ? !q1.getStart().equals(q2.getStart()) : q2.getStart() != null)
+            return false;
+        if (q1.getEnd() != null ? !q1.getEnd().equals(q2.getEnd()) : q2.getEnd() != null)
+            return false;
+        if (q1.getScheduled() != null ? !q1.getScheduled().equals(q2.getScheduled()) : q2.getScheduled() != null)
+            return false;
         if (q1.getDifficulty() != null ? !q1.getDifficulty().equals(q2.getDifficulty()) : q2.getDifficulty() != null)
             return false;
         if (q1.getCompletedAt() != null ? !q1.getCompletedAt().equals(q2.getCompletedAt()) : q2.getCompletedAt() != null)

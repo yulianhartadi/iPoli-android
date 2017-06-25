@@ -16,7 +16,7 @@ public class TimesAMonthTextSuggestionsProvider extends BaseSuggestionsProvider 
     @Override
     protected List<String> getSuggestions() {
         List<String> suggestions = new ArrayList<>();
-        for(int i = Constants.MIN_FLEXIBLE_TIMES_A_MONTH_COUNT; i <= Constants.MAX_FLEXIBLE_TIMES_A_MONTH_COUNT; i++) {
+        for (int i = Constants.MIN_FLEXIBLE_TIMES_A_MONTH_COUNT; i <= Constants.MAX_FLEXIBLE_TIMES_A_MONTH_COUNT; i++) {
             suggestions.add(FlexibleTimesFormatter.formatReadable(i) + " a month");
         }
         return suggestions;
