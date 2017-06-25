@@ -5,11 +5,11 @@ import android.util.Pair;
 import java.util.List;
 import java.util.Map;
 
+import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
-import io.ipoli.android.app.persistence.OnDataChangedListener;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

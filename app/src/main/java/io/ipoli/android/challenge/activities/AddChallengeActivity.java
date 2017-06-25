@@ -139,17 +139,17 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
         KeyboardUtils.hideKeyboard(this);
         challengePersistenceService.save(challenge);
         String challengeId = challenge.getId();
-        for(Quest q : quests) {
+        for (Quest q : quests) {
             q.setChallengeId(challengeId);
         }
-        for(RepeatingQuest rq : repeatingQuests) {
+        for (RepeatingQuest rq : repeatingQuests) {
             rq.setChallengeId(challengeId);
         }
 
-        if(!quests.isEmpty()) {
+        if (!quests.isEmpty()) {
             questPersistenceService.save(quests);
         }
-        if(!repeatingQuests.isEmpty()) {
+        if (!repeatingQuests.isEmpty()) {
             repeatingQuestPersistenceService.addToChallenge(repeatingQuests, challengeId);
         }
 

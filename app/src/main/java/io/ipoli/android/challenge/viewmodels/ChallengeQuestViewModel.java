@@ -1,7 +1,7 @@
 package io.ipoli.android.challenge.viewmodels;
 
-import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.BaseQuest;
+import io.ipoli.android.quest.data.Category;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

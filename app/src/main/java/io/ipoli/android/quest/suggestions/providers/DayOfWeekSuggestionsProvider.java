@@ -18,25 +18,25 @@ public class DayOfWeekSuggestionsProvider implements SuggestionsProvider {
     public List<SuggestionDropDownItem> filter(String text) {
         text = text.toLowerCase();
         List<SuggestionDropDownItem> suggestions = new ArrayList<>();
-        if(!text.contains("mon")) {
+        if (!text.contains("mon")) {
             suggestions.add(new SuggestionDropDownItem(ICON, "Monday", "Mon", TextEntityType.RECURRENT_DAY_OF_WEEK, false, false));
         }
-        if(!text.contains("tue")) {
+        if (!text.contains("tue")) {
             suggestions.add(new SuggestionDropDownItem(ICON, "Tuesday", "Tue", TextEntityType.RECURRENT_DAY_OF_WEEK, false, false));
         }
-        if(!text.contains("wed")) {
+        if (!text.contains("wed")) {
             suggestions.add(new SuggestionDropDownItem(ICON, "Wednesday", "Wed", TextEntityType.RECURRENT_DAY_OF_WEEK, false, false));
         }
-        if(!text.contains("thur")) {
+        if (!text.contains("thur")) {
             suggestions.add(new SuggestionDropDownItem(ICON, "Thursday", "Thur", TextEntityType.RECURRENT_DAY_OF_WEEK, false, false));
         }
-        if(!text.contains("fri")) {
+        if (!text.contains("fri")) {
             suggestions.add(new SuggestionDropDownItem(ICON, "Friday", "Fri", TextEntityType.RECURRENT_DAY_OF_WEEK, false, false));
         }
-        if(!text.contains("sat")) {
+        if (!text.contains("sat")) {
             suggestions.add(new SuggestionDropDownItem(ICON, "Saturday", "Sat", TextEntityType.RECURRENT_DAY_OF_WEEK, false, false));
         }
-        if(!text.contains("sun")) {
+        if (!text.contains("sun")) {
             suggestions.add(new SuggestionDropDownItem(ICON, "Sunday", "Sun", TextEntityType.RECURRENT_DAY_OF_WEEK, false, false));
         }
         return suggestions;

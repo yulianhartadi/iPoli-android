@@ -59,7 +59,6 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
     }
 
 
-
     public Map<Event, List<InstanceData>> getCalendarEvents(long calendarId, LocalDate startDate, LocalDate endDate) {
 
         String selection = CalendarContract.Instances.CALENDAR_ID + "=?";
@@ -100,7 +99,7 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
                 result.get(idToEvent.get(i.eventId)).add(i);
             } else {
                 Event e = getEvent(i.eventId);
-                if(e == null) {
+                if (e == null) {
                     eventBus.post(new AppErrorEvent(
                             new RuntimeException("Google calendar event with id: " + i.eventId + " not found")));
                     continue;
@@ -121,7 +120,7 @@ public class SyncAndroidCalendarProvider extends CalendarProvider {
 
     public List<Reminder> getEventReminders(long eventId) {
         Data<Reminder> data = getReminders(eventId);
-        if(data == null) {
+        if (data == null) {
             return new ArrayList<>();
         }
         List<Reminder> reminders = new ArrayList<>();

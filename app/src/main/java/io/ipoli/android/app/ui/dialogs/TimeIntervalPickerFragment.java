@@ -49,11 +49,11 @@ public class TimeIntervalPickerFragment extends DialogFragment {
 
     public static TimeIntervalPickerFragment newInstance(@StringRes int title, Time startTime, Time endTime, OnTimePickedListener timePickedListener) {
         TimeIntervalPickerFragment fragment = new TimeIntervalPickerFragment();
-        if(startTime == null) {
+        if (startTime == null) {
             startTime = Time.now();
         }
 
-        if(endTime == null) {
+        if (endTime == null) {
             endTime = Time.now();
         }
         Bundle args = new Bundle();

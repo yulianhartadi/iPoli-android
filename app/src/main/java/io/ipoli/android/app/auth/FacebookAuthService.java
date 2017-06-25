@@ -19,9 +19,9 @@ public class FacebookAuthService {
         this.eventBus = eventBus;
     }
 
-    public String getAccessToken(){
+    public String getAccessToken() {
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        if(accessToken == null) {
+        if (accessToken == null) {
             eventBus.post(new AppErrorEvent(new SignInException("Facebook access token in null")));
         }
         return accessToken != null ? accessToken.getToken() : null;

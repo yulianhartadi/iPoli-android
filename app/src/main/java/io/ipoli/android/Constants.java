@@ -171,4 +171,5 @@ public interface Constants {
     int FIREBASE_LAST_SCHEMA_VERSION = 2;
     String FACEBOOK_PACKAGE = "com.facebook.katana";
     String TWITTER_PACKAGE = "com.twitter.android";
+    int SYNC_CALENDAR_JOB_ID = 1;
 }

@@ -30,8 +30,8 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.sync.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.adapters.AndroidCalendarAdapter;
+import io.ipoli.android.app.sync.SyncAndroidCalendarProvider;
 import io.ipoli.android.app.ui.viewmodels.AndroidCalendarViewModel;
 import io.ipoli.android.quest.data.Category;
 import me.everything.providers.android.calendar.Calendar;
@@ -70,7 +70,7 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
         AndroidCalendarsPickerFragment fragment = new AndroidCalendarsPickerFragment();
         Bundle args = new Bundle();
         args.putInt(TITLE, title);
-        if(selectedCalendars != null && !selectedCalendars.isEmpty()) {
+        if (selectedCalendars != null && !selectedCalendars.isEmpty()) {
             try {
                 args.putString(PREDEFINED_CALENDARS_KEY, new ObjectMapper().writeValueAsString(selectedCalendars));
             } catch (JsonProcessingException e) {
@@ -93,7 +93,7 @@ public class AndroidCalendarsPickerFragment extends DialogFragment {
         Bundle arguments = getArguments();
         title = arguments.getInt(TITLE);
         preSelectedCalendars = new HashMap<>();
-        if(arguments.containsKey(PREDEFINED_CALENDARS_KEY)) {
+        if (arguments.containsKey(PREDEFINED_CALENDARS_KEY)) {
             try {
                 TypeReference<Map<Long, Category>> mapTypeReference = new TypeReference<Map<Long, Category>>() {
                 };

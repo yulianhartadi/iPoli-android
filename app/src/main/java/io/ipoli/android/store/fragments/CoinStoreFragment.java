@@ -49,7 +49,6 @@ public class CoinStoreFragment extends BaseFragment {
     private static final String SKU_DONATION_PACK = "donation_pack";
 
 
-
     @Inject
     Bus eventBus;
 

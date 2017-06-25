@@ -93,7 +93,7 @@ public class AndroidCalendarAdapter extends RecyclerView.Adapter<AndroidCalendar
     public Map<Long, Category> getSelectedCalendars() {
         Map<Long, Category> selectedCalendars = new HashMap<>();
         for (AndroidCalendarViewModel vm : viewModels) {
-            if(vm.isSelected()) {
+            if (vm.isSelected()) {
                 selectedCalendars.put(vm.getId(), vm.getCategory());
             }
         }

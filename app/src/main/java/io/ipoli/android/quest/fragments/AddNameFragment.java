@@ -62,7 +62,7 @@ public class AddNameFragment extends BaseFragment implements CategoryView.OnCate
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(getArguments() != null && getArguments().containsKey(HINT_NAME_RES)) {
+        if (getArguments() != null && getArguments().containsKey(HINT_NAME_RES)) {
             hintName = getArguments().getInt(HINT_NAME_RES);
         } else {
             hintName = R.string.add_quest_name_hint;
@@ -90,7 +90,7 @@ public class AddNameFragment extends BaseFragment implements CategoryView.OnCate
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_next:
-                if(StringUtils.isEmpty(name.getText().toString())) {
+                if (StringUtils.isEmpty(name.getText().toString())) {
                     Toast.makeText(getContext(), R.string.name_validation, Toast.LENGTH_SHORT).show();
                 } else {
                     postEvent(new NameAndCategoryPickedEvent(name.getText().toString(), currentCategory));

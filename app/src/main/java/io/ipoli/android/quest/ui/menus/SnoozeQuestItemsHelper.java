@@ -21,7 +21,7 @@ import io.ipoli.android.quest.data.Quest;
  * on 8/14/16.
  */
 public class SnoozeQuestItemsHelper {
-    
+
     public static Map<Integer, SnoozeTimeItem> createSnoozeTimeMap(Context context, Quest quest, MenuItem snoozeItem) {
         List<SnoozeTimeItem> snoozeTimeItems = getSnoozeTimeItems(context, quest);
         Map<Integer, SnoozeTimeItem> itemIdToSnoozeTimeItem = new HashMap<>();

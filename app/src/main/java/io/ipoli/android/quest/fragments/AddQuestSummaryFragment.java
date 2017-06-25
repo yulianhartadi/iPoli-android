@@ -181,7 +181,7 @@ public class AddQuestSummaryFragment extends BaseFragment implements OnDurationP
 
     @OnClick(R.id.add_quest_summary_reminders)
     public void onRemindersClicked(View view) {
-        if(upgradeManager.isLocked(Upgrade.REMINDERS)) {
+        if (upgradeManager.isLocked(Upgrade.REMINDERS)) {
             UpgradeDialog.newInstance(Upgrade.REMINDERS).show(getFragmentManager());
             return;
         }
@@ -329,7 +329,7 @@ public class AddQuestSummaryFragment extends BaseFragment implements OnDurationP
 
     @OnClick(R.id.add_quest_summary_note_container)
     public void onNoteClicked(View v) {
-        if(upgradeManager.isLocked(Upgrade.NOTES)) {
+        if (upgradeManager.isLocked(Upgrade.NOTES)) {
             UpgradeDialog.newInstance(Upgrade.NOTES).show(getFragmentManager());
             return;
         }
@@ -348,7 +348,7 @@ public class AddQuestSummaryFragment extends BaseFragment implements OnDurationP
 
     @OnClick(R.id.sub_quests_container)
     public void onAddSubQuestClicked(View v) {
-        if(upgradeManager.isLocked(Upgrade.SUB_QUESTS)) {
+        if (upgradeManager.isLocked(Upgrade.SUB_QUESTS)) {
             UpgradeDialog.newInstance(Upgrade.SUB_QUESTS).show(getFragmentManager());
             return;
         }

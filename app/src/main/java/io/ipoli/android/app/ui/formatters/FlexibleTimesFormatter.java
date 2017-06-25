@@ -13,14 +13,14 @@ import io.ipoli.android.R;
  */
 public class FlexibleTimesFormatter {
     public static String formatReadable(int value) {
-        if(value <= 0) {
+        if (value <= 0) {
             value = 1;
         }
         return value == 1 ? value + " time" : value + " times";
     }
 
     public static String formatLocalReadable(Context context, int value) {
-        if(value <= 0) {
+        if (value <= 0) {
             value = 1;
         }
         return value == 1 ? String.format(context.getString(R.string.times_per_period_single), value) :

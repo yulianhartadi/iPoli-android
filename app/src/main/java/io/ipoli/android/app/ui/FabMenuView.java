@@ -136,7 +136,7 @@ public class FabMenuView extends RelativeLayout {
         rotateForwardAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_forward);
         rotateBackwardAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.rotate_backward);
 
-        if(onlyQuests) {
+        if (onlyQuests) {
             challenge.setVisibility(GONE);
             challengeLabel.setVisibility(GONE);
             reward.setVisibility(GONE);
@@ -238,7 +238,7 @@ public class FabMenuView extends RelativeLayout {
         questLabel.startAnimation(fabOpenAnimation);
         repeatingQuest.startAnimation(fabOpenAnimation);
         repeatingQuestLabel.startAnimation(fabOpenAnimation);
-        if(!onlyQuests) {
+        if (!onlyQuests) {
             challenge.startAnimation(fabOpenAnimation);
             challengeLabel.startAnimation(fabOpenAnimation);
             reward.startAnimation(fabOpenAnimation);
@@ -286,7 +286,7 @@ public class FabMenuView extends RelativeLayout {
         quest.startAnimation(rotateBackwardAnimation);
         quickAddLabel.startAnimation(fabCloseAnimation);
         quickAddQuest.startAnimation(fabCloseAnimation);
-        if(!onlyQuests) {
+        if (!onlyQuests) {
             rewardLabel.startAnimation(fabCloseAnimation);
             reward.startAnimation(fabCloseAnimation);
             challengeLabel.startAnimation(fabCloseAnimation);

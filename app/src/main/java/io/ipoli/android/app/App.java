@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.amplitude.api.Amplitude;
 import com.couchbase.lite.Database;
+import com.couchbase.lite.replicator.RemoteRequestResponseException;
 import com.couchbase.lite.replicator.Replication;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,6 +53,8 @@ import io.ipoli.android.app.activities.SignInActivity;
 import io.ipoli.android.app.activities.UpgradeDialogActivity;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.api.UrlProvider;
+import io.ipoli.android.app.api.events.NewSessionCreatedEvent;
+import io.ipoli.android.app.api.events.SessionExpiredEvent;
 import io.ipoli.android.app.auth.FacebookAuthService;
 import io.ipoli.android.app.auth.GoogleAuthService;
 import io.ipoli.android.app.events.AppErrorEvent;
@@ -329,15 +332,15 @@ public class App extends MultiDexApplication {
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
 
         int firebaseSchemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
-        if(firebaseSchemaVersion > 0 && firebaseSchemaVersion <= Constants.FIREBASE_LAST_SCHEMA_VERSION) {
+        if (firebaseSchemaVersion > 0 && firebaseSchemaVersion <= Constants.FIREBASE_LAST_SCHEMA_VERSION) {
             return;
         }
-        if(hasPlayer()) {
+        if (hasPlayer()) {
             Player player = playerPersistenceService.get();
-            if(player == null) {
+            if (player == null) {
                 return;
             }
-            if(player.getSchemaVersion() != Constants.SCHEMA_VERSION) {
+            if (player.getSchemaVersion() != Constants.SCHEMA_VERSION) {
                 return;
             }
         }
@@ -484,28 +487,7 @@ public class App extends MultiDexApplication {
         if (!player.isAuthenticated()) {
             return;
         }
-        AccessTokenListener listener = accessToken -> {
-            if (StringUtils.isEmpty(accessToken)) {
-                return;
-            }
-            api.createSession(player.getCurrentAuthProvider(), accessToken, new Api.SessionResponseListener() {
-                @Override
-                public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
-                    syncData(cookies);
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    eventBus.post(new AppErrorEvent(e));
-                }
-            });
-        };
-        AuthProvider.Provider authProvider = player.getCurrentAuthProvider().getProviderType();
-        if (authProvider == AuthProvider.Provider.GOOGLE) {
-            new GoogleAuthService(eventBus).getIdToken(this, listener::onAccessTokenReceived);
-        } else if (authProvider == AuthProvider.Provider.FACEBOOK) {
-            listener.onAccessTokenReceived(new FacebookAuthService(eventBus).getAccessToken());
-        }
+        syncData(new ArrayList<>());
     }
 
     @Subscribe
@@ -532,10 +514,54 @@ public class App extends MultiDexApplication {
             }
             push.setContinuous(true);
 
+            push.addChangeListener(changeEvent -> {
+                Throwable error = changeEvent.getError();
+                if (error != null) {
+                    if (error instanceof RemoteRequestResponseException) {
+                        RemoteRequestResponseException ex = (RemoteRequestResponseException) error;
+                        if (ex.getCode() == 401) {
+                            eventBus.post(new SessionExpiredEvent());
+                            for (Replication replication : database.getAllReplications()) {
+                                replication.stop();
+                                replication.clearAuthenticationStores();
+                            }
+                            requestNewSession();
+                        }
+                    }
+                }
+            });
+
             pull.start();
             push.start();
         } catch (Exception e) {
             eventBus.post(new AppErrorEvent(e));
+        }
+    }
+
+    private void requestNewSession() {
+        Player player = getPlayer();
+        AccessTokenListener listener = accessToken -> {
+            if (StringUtils.isEmpty(accessToken)) {
+                return;
+            }
+            api.createSession(player.getCurrentAuthProvider(), accessToken, new Api.SessionResponseListener() {
+                @Override
+                public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
+                    eventBus.post(new NewSessionCreatedEvent());
+                    syncData(cookies);
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    eventBus.post(new AppErrorEvent(e));
+                }
+            });
+        };
+        AuthProvider.Provider authProvider = player.getCurrentAuthProvider().getProviderType();
+        if (authProvider == AuthProvider.Provider.GOOGLE) {
+            new GoogleAuthService(eventBus).getIdToken(this, listener::onAccessTokenReceived);
+        } else if (authProvider == AuthProvider.Provider.FACEBOOK) {
+            listener.onAccessTokenReceived(new FacebookAuthService(eventBus).getAccessToken());
         }
     }
 
@@ -992,7 +1018,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onScreenShown(ScreenShownEvent e) {
-        if(e.activity != null) {
+        if (e.activity != null) {
             FirebaseAnalytics.getInstance(this).setCurrentScreen(e.activity, e.source.name(), null);
         }
     }

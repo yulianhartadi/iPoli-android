@@ -7,7 +7,9 @@ package io.ipoli.android.quest.data;
 public interface BaseQuest {
 
     String getId();
+
     String getName();
+
     String getCategory();
 
 }

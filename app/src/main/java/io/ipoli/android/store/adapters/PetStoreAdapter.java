@@ -67,7 +67,7 @@ public class PetStoreAdapter extends EnterAnimationAdapter<PetStoreAdapter.ViewH
         holder.picture.setImageDrawable(context.getDrawable(vm.getPicture()));
         holder.pictureState.setImageDrawable(context.getDrawable(vm.getPictureState()));
 
-        if(vm.isCurrent()) {
+        if (vm.isCurrent()) {
             holder.current.setVisibility(View.VISIBLE);
             holder.price.setVisibility(View.INVISIBLE);
         } else if (vm.isBought()) {
