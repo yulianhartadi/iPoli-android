@@ -4,24 +4,15 @@
     android:id="@+id/root_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/md_grey_200">
+    android:orientation="vertical">
 
     <include layout="@layout/default_app_bar" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/feed_list"
+    <io.ipoli.android.app.ui.EmptyStateRecyclerView
+        android:id="@+id/result_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/md_grey_200"
+        android:background="@color/md_white"
+        android:scrollbars="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/add_quest_to_feed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:clickable="true"
-        android:src="@drawable/ic_add_white_24dp" />
-
 </android.support.design.widget.CoordinatorLayout>
