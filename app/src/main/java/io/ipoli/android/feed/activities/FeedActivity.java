@@ -1,5 +1,6 @@
 package io.ipoli.android.feed.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -20,6 +21,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
@@ -27,6 +29,7 @@ import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.player.Avatar;
+import io.ipoli.android.quest.activities.QuestPickerActivity;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -128,6 +131,11 @@ public class FeedActivity extends BaseActivity {
             post.addLike(playerId);
         }
         feedPersistenceService.updatePost(post);
+    }
+
+    @OnClick(R.id.add_quest_to_feed)
+    public void onAddQuestToFeed(View view) {
+        startActivity(new Intent(this, QuestPickerActivity.class));
     }
 
     @Override

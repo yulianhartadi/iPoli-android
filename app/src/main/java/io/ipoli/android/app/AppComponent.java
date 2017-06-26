@@ -60,6 +60,7 @@ import io.ipoli.android.quest.activities.AgendaActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.EisenhowerMatrixActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
+import io.ipoli.android.quest.activities.QuestPickerActivity;
 import io.ipoli.android.quest.activities.RepeatingQuestActivity;
 import io.ipoli.android.quest.fragments.AddNameFragment;
 import io.ipoli.android.quest.fragments.AddQuestDateFragment;
@@ -271,5 +272,6 @@ public interface AppComponent {
     void inject(FeedActivity feedActivity);
 
     void inject(AddPostActivity addPostActivity);
-}
 
+    void inject(QuestPickerActivity questPickerActivity);
+}

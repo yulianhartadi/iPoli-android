@@ -225,10 +225,17 @@
             android:theme="@style/Theme.iPoli.DialogActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".quest.activities.QuestPickerActivity"
+            android:parentActivityName=".feed.activities.FeedActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".feed.activities.FeedActivity" />
+        </activity>
+        <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name" />
-
         <provider
             android:name="com.facebook.FacebookContentProvider"
             android:authorities="com.facebook.app.FacebookContentProvider1609232436065758"
