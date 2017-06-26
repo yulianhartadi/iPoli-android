@@ -200,4 +200,29 @@ public class Post {
     public Category getCategoryType() {
         return Category.valueOf(category);
     }
+
+    @Exclude
+    public void addLike(String playerId) {
+        getLikes().put(playerId, true);
+    }
+
+    @Exclude
+    public boolean isLikedByPlayer(String playerId) {
+        return getLikes().containsKey(playerId);
+    }
+
+    @Exclude
+    public void removeLike(String playerId) {
+        getLikes().remove(playerId);
+    }
+
+    @Exclude
+    public boolean isAddedByPlayer(String playerId) {
+        return getAddedBy().containsKey(playerId);
+    }
+
+    @Exclude
+    public void addAddedBy(String playerId) {
+        getAddedBy().put(playerId, true);
+    }
 }

@@ -9,4 +9,6 @@ import io.ipoli.android.feed.data.Post;
 public interface FeedPersistenceService {
 
     void addPost(Post post);
+
+    void updatePost(Post post);
 }
