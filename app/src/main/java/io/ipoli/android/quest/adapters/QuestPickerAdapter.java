@@ -18,6 +18,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.events.QuestPickedEvent;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -48,7 +49,7 @@ public class QuestPickerAdapter extends RecyclerView.Adapter<QuestPickerAdapter.
         holder.categoryIndicatorImage.setImageResource(q.getCategoryType().colorfulImage);
         holder.name.setText(q.getName());
         holder.completedAt.setText(DateFormatter.formatWithoutYear(context, DateUtils.fromMillis(q.getCompletedAt())));
-
+        holder.itemView.setOnClickListener(v -> evenBus.post(new QuestPickedEvent(q)));
 
     }
 

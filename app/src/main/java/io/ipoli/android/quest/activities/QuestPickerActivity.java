@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
@@ -9,6 +10,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+
+import com.squareup.otto.Subscribe;
 
 import org.threeten.bp.LocalDate;
 
@@ -20,6 +23,7 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
@@ -27,8 +31,10 @@ import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.feed.activities.AddPostActivity;
 import io.ipoli.android.quest.adapters.QuestPickerAdapter;
 import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.events.QuestPickedEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 /**
@@ -78,6 +84,18 @@ public class QuestPickerActivity extends BaseActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        eventBus.register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        eventBus.unregister(this);
+        super.onPause();
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         questPersistenceService.listenForAllNonAllDayCompletedBetween(LocalDate.now().minusDays(1), LocalDate.now(), new OnDataChangedListener<List<Quest>>() {
@@ -101,7 +119,7 @@ public class QuestPickerActivity extends BaseActivity {
         }
 
         List<Quest> quests = new ArrayList<>();
-        for(Quest q : allQuests) {
+        for (Quest q : allQuests) {
             if (q.getName().toLowerCase().contains(query.toLowerCase())) {
                 quests.add(q);
             }
@@ -109,12 +127,12 @@ public class QuestPickerActivity extends BaseActivity {
 
         Collections.sort(quests,
                 (q1, q2) -> {
-                    int dateResult = - Long.compare(q1.getCompletedAt(), q2.getCompletedAt());
-                    if(dateResult != 0) {
+                    int dateResult = -Long.compare(q1.getCompletedAt(), q2.getCompletedAt());
+                    if (dateResult != 0) {
                         return dateResult;
                     }
 
-                    return - Long.compare(q1.getCompletedAtMinute(), q2.getCompletedAtMinute());
+                    return -Long.compare(q1.getCompletedAtMinute(), q2.getCompletedAtMinute());
                 });
         filterListener.onFilterCompleted(quests);
     }
@@ -159,6 +177,14 @@ public class QuestPickerActivity extends BaseActivity {
 
         return true;
     }
+
+    @Subscribe
+    public void onQuestPicked(QuestPickedEvent e) {
+        Intent addPostIntent = new Intent(this, AddPostActivity.class);
+        addPostIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        startActivity(addPostIntent);
+    }
+
 
     public interface FilterListener {
         void onFilterCompleted(List<Quest> quests);
