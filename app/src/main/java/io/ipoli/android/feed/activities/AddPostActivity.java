@@ -19,6 +19,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.feed.data.PlayerProfile;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.player.Player;
@@ -78,6 +79,12 @@ public class AddPostActivity extends BaseActivity implements OnDataChangedListen
         }
 
         questPersistenceService.findById(questId, this);
+
+        feedPersistenceService.findPlayerProfile(App.getPlayerId(), profile -> {
+            if(profile == null) {
+                feedPersistenceService.createPlayerProfile(new PlayerProfile(getPlayer()));
+            }
+        });
     }
 
     @Override
