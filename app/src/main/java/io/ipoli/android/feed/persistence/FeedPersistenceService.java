@@ -10,11 +10,15 @@ import io.ipoli.android.feed.data.Post;
  */
 public interface FeedPersistenceService {
 
-    void addPost(Post post);
+    void addPost(Post post, String playerId);
 
     void updatePost(Post post);
 
     void createPlayerProfile(PlayerProfile playerProfile);
 
     void findPlayerProfile(String playerId, OnDataChangedListener<PlayerProfile> listener);
+
+    void listenForPlayerProfile(String playerId, OnDataChangedListener<PlayerProfile> listener);
+
+    void removeAllListeners();
 }

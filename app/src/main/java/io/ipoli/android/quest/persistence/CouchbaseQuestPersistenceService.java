@@ -277,19 +277,12 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     }
 
     @Override
-    public void listenForAllNonAllDayCompletedBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
+    public void findAllNonAllDayCompletedBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
         LiveQuery query = dayQuestsView.createQuery().toLiveQuery();
         query.setMapOnly(true);
         query.setStartKey(toStartOfDayUTC(startDate).getTime());
         query.setEndKey(toStartOfDayUTC(endDate).getTime());
-
-        LiveQuery.ChangeListener changeListener = event -> {
-            if (event.getSource().equals(query)) {
-                postResult(listener, getResult(event, Quest::isCompleted));
-            }
-        };
-
-        startLiveQuery(query, changeListener);
+        runQuery(query, listener, Quest::isCompleted);
     }
 
     @Override

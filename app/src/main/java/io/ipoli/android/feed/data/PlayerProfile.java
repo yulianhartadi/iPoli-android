@@ -1,8 +1,6 @@
 package io.ipoli.android.feed.data;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.player.Player;
@@ -20,10 +18,10 @@ public class PlayerProfile {
     private String petName;
     private Integer petAvatar;
     private Long createdAt;
-    private List<Post> posts;
+    private Map<String, Post> posts;
     private Map<String, Follower> followers;
     private Map<String, Follower> followings;
-    private List<String> likes;
+    private Map<String, Boolean> likes;
 
     public PlayerProfile() {
     }
@@ -94,16 +92,19 @@ public class PlayerProfile {
         this.createdAt = createdAt;
     }
 
-    public List<Post> getPosts() {
+    public Map<String, Post> getPosts() {
+        if (posts == null) {
+            posts = new HashMap<>();
+        }
         return posts;
     }
 
-    public void setPosts(List<Post> posts) {
+    public void setPosts(Map<String, Post> posts) {
         this.posts = posts;
     }
 
     public Map<String, Follower> getFollowers() {
-        if(followers == null) {
+        if (followers == null) {
             followers = new HashMap<>();
         }
         return followers;
@@ -114,7 +115,7 @@ public class PlayerProfile {
     }
 
     public Map<String, Follower> getFollowings() {
-        if(followings == null) {
+        if (followings == null) {
             followings = new HashMap<>();
         }
         return followings;
@@ -124,14 +125,14 @@ public class PlayerProfile {
         this.followings = followings;
     }
 
-    public List<String> getLikes() {
-        if(likes == null) {
-            likes = new ArrayList<>();
+    public Map<String, Boolean> getLikes() {
+        if (likes == null) {
+            likes = new HashMap<>();
         }
         return likes;
     }
 
-    public void setLikes(List<String> likes) {
+    public void setLikes(Map<String, Boolean> likes) {
         this.likes = likes;
     }
 }
