@@ -27,16 +27,18 @@ public class Post {
     private Integer experience;
     private Integer rewardPoints;
     private String playerId;
-    private String username;
-    private Integer level;
-    private String avatar;
+    private Integer playerLevel;
+    private String playerTitle;
+    private String playerUsername;
+    private String playerAvatar;
     private Map<String, Boolean> likes;
+    private Map<String, Boolean> addedBy;
 
     public Post() {
 
     }
 
-    public Post(String title, String message, Player player, Quest quest) {
+    public Post(String title, String message, String playerTitle, Player player, Quest quest) {
         setCreatedAt(DateUtils.nowUTC().getTime());
         setTitle(title);
         setMessage(message);
@@ -46,9 +48,10 @@ public class Post {
         setExperience(quest.getExperience().intValue());
         setRewardPoints(quest.getRewardPoints().intValue());
         setPlayerId(player.getId());
-        setUsername(player.getUsername());
-        setLevel(player.getLevel());
-        setAvatar(String.valueOf(player.getAvatarCode()));
+        setPlayerUsername(player.getUsername());
+        setPlayerLevel(player.getLevel());
+        setPlayerTitle(playerTitle);
+        setPlayerAvatar(String.valueOf(player.getAvatarCode()));
     }
 
     public String getId() {
@@ -131,32 +134,32 @@ public class Post {
         this.playerId = playerId;
     }
 
-    public String getUsername() {
-        return username;
+    public String getPlayerUsername() {
+        return playerUsername;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setPlayerUsername(String playerUsername) {
+        this.playerUsername = playerUsername;
     }
 
-    public Integer getLevel() {
-        return level;
+    public Integer getPlayerLevel() {
+        return playerLevel;
     }
 
-    public void setLevel(Integer level) {
-        this.level = level;
+    public void setPlayerLevel(Integer playerLevel) {
+        this.playerLevel = playerLevel;
     }
 
-    public String getAvatar() {
-        return avatar;
+    public String getPlayerAvatar() {
+        return playerAvatar;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+    public void setPlayerAvatar(String playerAvatar) {
+        this.playerAvatar = playerAvatar;
     }
 
     public Map<String, Boolean> getLikes() {
-        if(likes == null) {
+        if (likes == null) {
             likes = new HashMap<>();
         }
         return likes;
@@ -166,12 +169,31 @@ public class Post {
         this.likes = likes;
     }
 
+    public Map<String, Boolean> getAddedBy() {
+        if (addedBy == null) {
+            addedBy = new HashMap<>();
+        }
+        return addedBy;
+    }
+
+    public void setAddedBy(Map<String, Boolean> addedBy) {
+        this.addedBy = addedBy;
+    }
+
     public Long getCompletedAt() {
         return completedAt;
     }
 
     public void setCompletedAt(Long completedAt) {
         this.completedAt = completedAt;
+    }
+
+    public String getPlayerTitle() {
+        return playerTitle;
+    }
+
+    public void setPlayerTitle(String playerTitle) {
+        this.playerTitle = playerTitle;
     }
 
     @Exclude

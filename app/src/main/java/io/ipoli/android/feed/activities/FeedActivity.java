@@ -62,30 +62,20 @@ public class FeedActivity extends BaseActivity {
                 ref) {
             @Override
             protected void populateViewHolder(PostViewHolder holder, Post post, int position) {
-                holder.playerUsername.setText(post.getUsername());
+                holder.playerUsername.setText(post.getPlayerUsername());
                 String[] playerTitles = getResources().getStringArray(R.array.player_titles);
-                String playerTitle = playerTitles[Math.min(post.getLevel()/ 10, playerTitles.length - 1)];
-                holder.playerTitle.setText(playerTitle);
+                String playerTitle = playerTitles[Math.min(post.getPlayerLevel() / 10, playerTitles.length - 1)];
+                holder.playerTitle.setText("Level " + post.getPlayerLevel() + ": " + playerTitle);
                 holder.postTitle.setText(post.getTitle());
                 holder.postMessage.setText(post.getMessage());
                 holder.postImage.setImageResource(post.getCategoryType().colorfulImage);
-                holder.playerAvatar.setImageResource(Avatar.get(Integer.parseInt(post.getAvatar())).picture);
+                holder.playerAvatar.setImageResource(Avatar.get(Integer.parseInt(post.getPlayerAvatar())).picture);
                 holder.postLikesCount.setText(String.valueOf(post.getLikes().size()));
-//                holder.postAddedCount
+                holder.postAddedCount.setText(String.valueOf(post.getAddedBy().size()));
             }
         };
 
         feedList.setAdapter(adapter);
-//
-//        Post post = new Post();
-//        post.setTitle("Hello world, mirizlivke!");
-//
-//        ref.push().setValue(post);
-//
-//        Post post1 = new Post();
-//        post1.setTitle("Poli is selqnka!");
-//
-//        ref.push().setValue(post1);
     }
 
     @Override
@@ -119,6 +109,16 @@ public class FeedActivity extends BaseActivity {
 
         @BindView(R.id.post_added_count)
         TextView postAddedCount;
+
+        @BindView(R.id.quest_coins)
+        TextView questCoins;
+
+        @BindView(R.id.quest_reward_points)
+        TextView questRewardPoints;
+
+        @BindView(R.id.quest_experience)
+        TextView questExperience;
+
 
         public PostViewHolder(View itemView) {
             super(itemView);
