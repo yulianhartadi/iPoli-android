@@ -23,6 +23,7 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.player.Avatar;
@@ -67,9 +68,14 @@ public class FeedActivity extends BaseActivity {
         adapter = new FirebaseRecyclerAdapter<Post, PostViewHolder>(Post.class,
                 R.layout.feed_post_item,
                 PostViewHolder.class,
-                ref) {
+                ref.limitToLast(100)) {
             @Override
             protected void populateViewHolder(PostViewHolder holder, Post post, int position) {
+                int marginBottom = position == 0 ? 92 : 4;
+                RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
+                lp.bottomMargin = (int) ViewUtils.dpToPx(marginBottom, getResources());
+                holder.itemView.setLayoutParams(lp);
+
                 holder.playerUsername.setText(post.getPlayerUsername());
                 String[] playerTitles = getResources().getStringArray(R.array.player_titles);
                 String playerTitle = playerTitles[Math.min(post.getPlayerLevel() / 10, playerTitles.length - 1)];
