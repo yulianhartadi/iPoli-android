@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -77,10 +78,20 @@ public class FeedActivity extends BaseActivity {
                 holder.questRewardPoints.setText(post.getRewardPoints().toString());
                 holder.questExperience.setText(post.getExperience().toString() + " XP");
                 holder.postCreatedAt.setText(DateUtils.getRelativeTimeSpanString(post.getCreatedAt(), System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS));
+                holder.likePost.setOnClickListener(v -> onLikePost(post));
+                holder.addQuest.setOnClickListener(v -> onAddQuest(post));
             }
         };
 
         feedList.setAdapter(adapter);
+    }
+
+    private void onAddQuest(Post post) {
+
+    }
+
+    private void onLikePost(Post post) {
+
     }
 
     @Override
@@ -126,6 +137,12 @@ public class FeedActivity extends BaseActivity {
 
         @BindView(R.id.quest_experience)
         TextView questExperience;
+
+        @BindView(R.id.post_like)
+        ImageButton likePost;
+
+        @BindView(R.id.post_add_quest)
+        ImageButton addQuest;
 
         public PostViewHolder(View itemView) {
             super(itemView);
