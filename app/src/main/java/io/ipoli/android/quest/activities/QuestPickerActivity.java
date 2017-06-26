@@ -17,7 +17,10 @@ import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -28,10 +31,11 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
-import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.feed.activities.AddPostActivity;
+import io.ipoli.android.feed.data.Post;
+import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.quest.adapters.QuestPickerAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.QuestPickedEvent;
@@ -47,6 +51,9 @@ public class QuestPickerActivity extends BaseActivity {
 
     @Inject
     QuestPersistenceService questPersistenceService;
+
+    @Inject
+    FeedPersistenceService feedPersistenceService;
 
     @BindView(R.id.root_container)
     ViewGroup rootContainer;
@@ -98,14 +105,27 @@ public class QuestPickerActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        questPersistenceService.listenForAllNonAllDayCompletedBetween(LocalDate.now().minusDays(1), LocalDate.now(), new OnDataChangedListener<List<Quest>>() {
-            @Override
-            public void onDataChanged(List<Quest> result) {
-                allQuests = new ArrayList<>();
-                allQuests.addAll(result);
+        questPersistenceService.findAllNonAllDayCompletedBetween(LocalDate.now().minusDays(1), LocalDate.now(), result -> {
+            allQuests = new ArrayList<>();
+            allQuests.addAll(result);
+
+            feedPersistenceService.listenForPlayerProfile(getPlayerId(), playerProfile -> {
+
+                Set<String> postedQuestIds = new HashSet<>();
+                for (Post p : playerProfile.getPosts().values()) {
+                    postedQuestIds.add(p.getQuestId());
+                }
+
+                Iterator<Quest> it = allQuests.iterator();
+                while (it.hasNext()) {
+                    Quest q = it.next();
+                    if (postedQuestIds.contains(q.getId())) {
+                        it.remove();
+                    }
+                }
                 String searchQuery = searchView != null ? searchView.getQuery().toString() : "";
                 updateAdapter(searchQuery);
-            }
+            });
         });
     }
 
@@ -144,7 +164,7 @@ public class QuestPickerActivity extends BaseActivity {
 
     @Override
     protected void onStop() {
-        questPersistenceService.removeAllListeners();
+        feedPersistenceService.removeAllListeners();
         super.onStop();
     }
 

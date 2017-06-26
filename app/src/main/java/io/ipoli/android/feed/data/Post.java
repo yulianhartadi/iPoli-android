@@ -26,6 +26,7 @@ public class Post {
     private Integer coins;
     private Integer experience;
     private Integer rewardPoints;
+    private String questId;
     private String playerId;
     private Integer playerLevel;
     private String playerTitle;
@@ -43,6 +44,7 @@ public class Post {
         setTitle(title);
         setMessage(message);
         setCategory(quest.getCategory());
+        setQuestId(quest.getId());
         setCompletedAt(quest.getCompletedAt());
         setCoins(quest.getCoins().intValue());
         setExperience(quest.getExperience().intValue());
@@ -194,6 +196,14 @@ public class Post {
 
     public void setPlayerTitle(String playerTitle) {
         this.playerTitle = playerTitle;
+    }
+
+    public String getQuestId() {
+        return questId;
+    }
+
+    public void setQuestId(String questId) {
+        this.questId = questId;
     }
 
     @Exclude

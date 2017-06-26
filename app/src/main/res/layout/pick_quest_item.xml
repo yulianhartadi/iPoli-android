@@ -12,7 +12,7 @@
         android:id="@+id/quest_category_indicator_image"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -34,7 +34,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/quest_repeating_indicator"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.512"
+        app:layout_constraintVertical_bias="0.5"
         tools:text="Run 5 km" />
 
     <ImageView

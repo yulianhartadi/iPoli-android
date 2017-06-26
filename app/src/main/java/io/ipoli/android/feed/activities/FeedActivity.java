@@ -26,6 +26,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.utils.ViewUtils;
+import io.ipoli.android.feed.data.PlayerProfile;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.player.Avatar;
@@ -66,6 +67,13 @@ public class FeedActivity extends BaseActivity {
         layoutManager.setReverseLayout(true);
         layoutManager.setStackFromEnd(true);
         feedList.setLayoutManager(layoutManager);
+
+        // @TODO remove this
+        feedPersistenceService.findPlayerProfile(App.getPlayerId(), profile -> {
+            if (profile == null) {
+                feedPersistenceService.createPlayerProfile(new PlayerProfile(getPlayer()));
+            }
+        });
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("/posts");
         adapter = new FirebaseRecyclerAdapter<Post, PostViewHolder>(Post.class,
