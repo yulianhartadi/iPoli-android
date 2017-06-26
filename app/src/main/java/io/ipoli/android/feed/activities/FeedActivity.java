@@ -16,12 +16,15 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.feed.data.Post;
+import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.player.Avatar;
 
 /**
@@ -29,6 +32,9 @@ import io.ipoli.android.player.Avatar;
  * on 6/16/17.
  */
 public class FeedActivity extends BaseActivity {
+
+    @Inject
+    FeedPersistenceService feedPersistenceService;
 
     @BindView(R.id.feed_list)
     RecyclerView feedList;
@@ -78,6 +84,19 @@ public class FeedActivity extends BaseActivity {
                 holder.questRewardPoints.setText(post.getRewardPoints().toString());
                 holder.questExperience.setText(post.getExperience().toString() + " XP");
                 holder.postCreatedAt.setText(DateUtils.getRelativeTimeSpanString(post.getCreatedAt(), System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS));
+                String playerId = App.getPlayerId();
+                if (post.isLikedByPlayer(playerId)) {
+                    holder.likePost.setImageResource(R.drawable.ic_favorite_accent_24dp);
+                } else {
+                    holder.likePost.setImageResource(R.drawable.ic_favorite_outline_black_24dp);
+                }
+
+                if (post.isAddedByPlayer(playerId)) {
+                    holder.addQuest.setImageResource(R.drawable.ic_playlist_add_accent_24dp);
+                } else {
+                    holder.addQuest.setImageResource(R.drawable.ic_playlist_add_black_24dp);
+                }
+
                 holder.likePost.setOnClickListener(v -> onLikePost(post));
                 holder.addQuest.setOnClickListener(v -> onAddQuest(post));
             }
@@ -87,11 +106,22 @@ public class FeedActivity extends BaseActivity {
     }
 
     private void onAddQuest(Post post) {
-
+        String playerId = App.getPlayerId();
+        if (!post.isAddedByPlayer(playerId)) {
+            post.addAddedBy(playerId);
+            feedPersistenceService.updatePost(post);
+        }
+        // @TODO show schedule dialog
     }
 
     private void onLikePost(Post post) {
-
+        String playerId = App.getPlayerId();
+        if (post.isLikedByPlayer(playerId)) {
+            post.removeLike(playerId);
+        } else {
+            post.addLike(playerId);
+        }
+        feedPersistenceService.updatePost(post);
     }
 
     @Override
