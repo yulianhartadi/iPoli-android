@@ -80,7 +80,7 @@ public class QuestPickerActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        questPersistenceService.listenForAllNonAllDayCompletedForDate(LocalDate.now(), new OnDataChangedListener<List<Quest>>() {
+        questPersistenceService.listenForAllNonAllDayCompletedBetween(LocalDate.now().minusDays(1), LocalDate.now(), new OnDataChangedListener<List<Quest>>() {
             @Override
             public void onDataChanged(List<Quest> result) {
                 allQuests = new ArrayList<>();
