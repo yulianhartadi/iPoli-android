@@ -27,8 +27,6 @@ import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.challenge.activities.PickChallengeQuestsActivity;
-import io.ipoli.android.challenge.viewmodels.PickQuestViewModel;
 import io.ipoli.android.quest.adapters.QuestPickerAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -55,7 +53,7 @@ public class QuestPickerActivity extends BaseActivity {
 
     private QuestPickerAdapter adapter;
 
-    private List<PickQuestViewModel> allViewModels;
+    private List<Quest> allQuests;
 
     private SearchView searchView;
 
@@ -73,7 +71,7 @@ public class QuestPickerActivity extends BaseActivity {
 
         resultList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         resultList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
-        adapter = new QuestPickerAdapter(this, eventBus, new ArrayList<>(), true);
+        adapter = new QuestPickerAdapter(this, eventBus, new ArrayList<>());
         resultList.setAdapter(adapter);
 
         eventBus.post(new ScreenShownEvent(this, EventSource.PICK_CHALLENGE_QUESTS));
@@ -85,10 +83,8 @@ public class QuestPickerActivity extends BaseActivity {
         questPersistenceService.listenForAllNonAllDayCompletedForDate(LocalDate.now(), new OnDataChangedListener<List<Quest>>() {
             @Override
             public void onDataChanged(List<Quest> result) {
-                allViewModels = new ArrayList<>();
-                for (Quest q : result) {
-                    allViewModels.add(new PickQuestViewModel(q, q.getName(), q.getStartDate(), false));
-                }
+                allQuests = new ArrayList<>();
+                allQuests.addAll(result);
                 String searchQuery = searchView != null ? searchView.getQuery().toString() : "";
                 updateAdapter(searchQuery);
             }
@@ -96,46 +92,31 @@ public class QuestPickerActivity extends BaseActivity {
     }
 
     private void updateAdapter(String query) {
-        filter(query, vms -> adapter.setViewModels(vms));
+        filter(query, quests -> adapter.setQuests(quests));
     }
 
-    private void filter(String query, PickChallengeQuestsActivity.FilterListener filterListener) {
+    private void filter(String query, QuestPickerActivity.FilterListener filterListener) {
         if (query == null) {
             return;
         }
-        List<PickQuestViewModel> viewModels = new ArrayList<>();
-        for (PickQuestViewModel vm : allViewModels) {
-            if (vm.getText().toLowerCase().contains(query.toLowerCase())) {
-                viewModels.add(vm);
+
+        List<Quest> quests = new ArrayList<>();
+        for(Quest q : allQuests) {
+            if (q.getName().toLowerCase().contains(query.toLowerCase())) {
+                quests.add(q);
             }
         }
 
-        Collections.sort(viewModels, (vm1, vm2) -> {
-            LocalDate d1 = vm1.getStartDate();
-            LocalDate d2 = vm2.getStartDate();
-            if (d1 == null && d2 == null) {
-                return -1;
-            }
+        Collections.sort(quests,
+                (q1, q2) -> {
+                    int dateResult = - Long.compare(q1.getCompletedAt(), q2.getCompletedAt());
+                    if(dateResult != 0) {
+                        return dateResult;
+                    }
 
-            if (d1 == null) {
-                return 1;
-            }
-
-            if (d2 == null) {
-                return -1;
-            }
-
-            if (d2.isAfter(d1)) {
-                return 1;
-            }
-
-            if (d1.isAfter(d2)) {
-                return -1;
-            }
-
-            return 0;
-        });
-        filterListener.onFilterCompleted(viewModels);
+                    return - Long.compare(q1.getCompletedAtMinute(), q2.getCompletedAtMinute());
+                });
+        filterListener.onFilterCompleted(quests);
     }
 
     @Override
@@ -164,18 +145,22 @@ public class QuestPickerActivity extends BaseActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (StringUtils.isEmpty(newText)) {
-                    filter("", viewModels -> adapter.setViewModels(viewModels));
+                    filter("", quests -> adapter.setQuests(quests));
                     return true;
                 }
 
                 if (newText.trim().length() < MIN_FILTER_QUERY_LEN) {
                     return true;
                 }
-                filter(newText.trim(), viewModels -> adapter.setViewModels(viewModels));
+                filter(newText.trim(), quests -> adapter.setQuests(quests));
                 return true;
             }
         });
 
         return true;
+    }
+
+    public interface FilterListener {
+        void onFilterCompleted(List<Quest> quests);
     }
 }

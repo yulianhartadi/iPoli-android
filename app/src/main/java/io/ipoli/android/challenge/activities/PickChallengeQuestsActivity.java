@@ -33,7 +33,7 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.ui.events.QuestsPickedForChallengeEvent;
 import io.ipoli.android.challenge.viewmodels.PickQuestViewModel;
-import io.ipoli.android.quest.adapters.QuestPickerAdapter;
+import io.ipoli.android.quest.adapters.SelectableQuestPickerAdapter;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -69,7 +69,7 @@ public class PickChallengeQuestsActivity extends BaseActivity {
     @BindView(R.id.result_list)
     EmptyStateRecyclerView questList;
 
-    private QuestPickerAdapter adapter;
+    private SelectableQuestPickerAdapter adapter;
     private String challengeId;
     private List<PickQuestViewModel> allViewModels;
     private SearchView searchView;
@@ -96,7 +96,7 @@ public class PickChallengeQuestsActivity extends BaseActivity {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
         questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
-        adapter = new QuestPickerAdapter(this, eventBus, new ArrayList<>(), true);
+        adapter = new SelectableQuestPickerAdapter(this, eventBus, new ArrayList<>(), true);
         questList.setAdapter(adapter);
 
         eventBus.post(new ScreenShownEvent(this, EventSource.PICK_CHALLENGE_QUESTS));
