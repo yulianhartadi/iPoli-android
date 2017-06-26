@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -72,6 +73,10 @@ public class FeedActivity extends BaseActivity {
                 holder.playerAvatar.setImageResource(Avatar.get(Integer.parseInt(post.getPlayerAvatar())).picture);
                 holder.postLikesCount.setText(String.valueOf(post.getLikes().size()));
                 holder.postAddedCount.setText(String.valueOf(post.getAddedBy().size()));
+                holder.questCoins.setText(post.getCoins().toString());
+                holder.questRewardPoints.setText(post.getRewardPoints().toString());
+                holder.questExperience.setText(post.getExperience().toString() + " XP");
+                holder.postCreatedAt.setText(DateUtils.getRelativeTimeSpanString(post.getCreatedAt(), System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS));
             }
         };
 
@@ -104,6 +109,9 @@ public class FeedActivity extends BaseActivity {
         @BindView(R.id.post_message)
         TextView postMessage;
 
+        @BindView(R.id.post_created_at)
+        TextView postCreatedAt;
+
         @BindView(R.id.post_like_count)
         TextView postLikesCount;
 
@@ -118,7 +126,6 @@ public class FeedActivity extends BaseActivity {
 
         @BindView(R.id.quest_experience)
         TextView questExperience;
-
 
         public PostViewHolder(View itemView) {
             super(itemView);
