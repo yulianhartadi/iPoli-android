@@ -277,6 +277,22 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
     }
 
     @Override
+    public void listenForAllNonAllDayCompletedBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener) {
+        LiveQuery query = dayQuestsView.createQuery().toLiveQuery();
+        query.setMapOnly(true);
+        query.setStartKey(toStartOfDayUTC(startDate).getTime());
+        query.setEndKey(toStartOfDayUTC(endDate).getTime());
+
+        LiveQuery.ChangeListener changeListener = event -> {
+            if (event.getSource().equals(query)) {
+                postResult(listener, getResult(event, Quest::isCompleted));
+            }
+        };
+
+        startLiveQuery(query, changeListener);
+    }
+
+    @Override
     public void findAllPlannedAndStarted(OnDataChangedListener<List<Quest>> listener) {
         runQuery(startedQuestsView, listener);
     }
@@ -489,7 +505,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
     @Override
     public List<Quest> findNotCompletedFromAndroidCalendar(Long calendarId) {
-        return doFindFromAndroid(calendarId, false);
+        return doFindFromAndroidCalendar(calendarId, false);
     }
 
     @Override
@@ -524,7 +540,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
 
     @Override
     public List<Quest> findFromAndroidCalendar(Long calendarId) {
-        return doFindFromAndroid(calendarId, true);
+        return doFindFromAndroidCalendar(calendarId, true);
     }
 
     @Override
@@ -554,7 +570,7 @@ public class CouchbaseQuestPersistenceService extends BaseCouchbasePersistenceSe
         return result;
     }
 
-    private List<Quest> doFindFromAndroid(Long calendarId, boolean includeCompleted) {
+    private List<Quest> doFindFromAndroidCalendar(Long calendarId, boolean includeCompleted) {
         Query query = questFromAndroidCalendar.createQuery();
         query.setGroupLevel(1);
         query.setStartKey(Arrays.asList(String.valueOf(calendarId), null));

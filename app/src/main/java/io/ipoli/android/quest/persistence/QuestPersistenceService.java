@@ -59,4 +59,5 @@ public interface QuestPersistenceService extends PersistenceService<Quest> {
 
     void findAllScheduledBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener);
 
+    void listenForAllNonAllDayCompletedBetween(LocalDate startDate, LocalDate endDate, OnDataChangedListener<List<Quest>> listener);
 }
