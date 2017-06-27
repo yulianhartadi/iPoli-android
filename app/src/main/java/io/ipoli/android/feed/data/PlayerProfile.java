@@ -1,8 +1,12 @@
 package io.ipoli.android.feed.data;
 
+import com.google.firebase.database.Exclude;
+
 import java.util.HashMap;
 import java.util.Map;
 
+import io.ipoli.android.player.Avatar;
+import io.ipoli.android.player.PetAvatar;
 import io.ipoli.android.player.Player;
 
 /**
@@ -12,11 +16,12 @@ import io.ipoli.android.player.Player;
 
 public class PlayerProfile {
     private String id;
+    private String displayName;
     private String username;
     private Integer level;
-    private String avatar;
+    private Integer avatarCode;
     private String petName;
-    private Integer petAvatar;
+    private Integer petAvatarCode;
     private Long createdAt;
     private Map<String, Boolean> postedQuests;
     private Map<String, Follower> followers;
@@ -27,11 +32,12 @@ public class PlayerProfile {
 
     public PlayerProfile(Player player) {
         setId(player.getId());
+        setDisplayName(player.getDisplayName());
         setUsername(player.getUsername());
         setLevel(player.getLevel());
-        setAvatar(String.valueOf(player.getAvatarCode()));
+        setAvatarCode(player.getAvatarCode());
         setPetName(player.getPet().getName());
-        setPetAvatar(player.getPet().getAvatarCode());
+        setPetAvatarCode(player.getPet().getAvatarCode());
         setCreatedAt(player.getCreatedAt());
     }
 
@@ -41,6 +47,14 @@ public class PlayerProfile {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getUsername() {
@@ -59,12 +73,12 @@ public class PlayerProfile {
         this.level = level;
     }
 
-    public String getAvatar() {
-        return avatar;
+    public Integer getAvatarCode() {
+        return avatarCode;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+    public void setAvatarCode(Integer avatarCode) {
+        this.avatarCode = avatarCode;
     }
 
     public String getPetName() {
@@ -75,12 +89,12 @@ public class PlayerProfile {
         this.petName = petName;
     }
 
-    public Integer getPetAvatar() {
-        return petAvatar;
+    public Integer getPetAvatarCode() {
+        return petAvatarCode;
     }
 
-    public void setPetAvatar(Integer petAvatar) {
-        this.petAvatar = petAvatar;
+    public void setPetAvatarCode(Integer petAvatarCode) {
+        this.petAvatarCode = petAvatarCode;
     }
 
     public Long getCreatedAt() {
@@ -122,5 +136,15 @@ public class PlayerProfile {
 
     public void setFollowings(Map<String, Follower> followings) {
         this.followings = followings;
+    }
+
+    @Exclude
+    public Avatar getPlayerAvatar() {
+        return Avatar.get(avatarCode);
+    }
+
+    @Exclude
+    public PetAvatar getPetAvatar() {
+        return PetAvatar.get(petAvatarCode);
     }
 }

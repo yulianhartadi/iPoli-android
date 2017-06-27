@@ -420,11 +420,21 @@ public class Player extends PersistedObject {
 
     @JsonIgnore
     public String getTitle(String[] playerTitles) {
-        return playerTitles[Math.min(getLevel()/ 10, playerTitles.length - 1)];
+        return playerTitles[Math.min(getLevel() / 10, playerTitles.length - 1)];
     }
 
     @JsonIgnore
     public void setAvatar(Avatar avatar) {
         avatarCode = avatar.code;
+    }
+
+    @JsonIgnore
+    public String getDisplayName() {
+        if (!isAuthenticated()) {
+//            throw new IllegalStateException("Asking for display name of unauthenticated player " + getId());
+            return  "";
+        }
+        AuthProvider authProvider = getCurrentAuthProvider();
+        return authProvider.getFirstName() + " " + authProvider.getLastName();
     }
 }
