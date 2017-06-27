@@ -193,7 +193,6 @@ public class MainActivity extends BaseActivity implements
         };
 
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
-        startActivity(new Intent(this, FeedActivity.class));
 
         if (!getPlayer().getAndroidCalendars().isEmpty() &&
                 !EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
@@ -311,6 +310,11 @@ public class MainActivity extends BaseActivity implements
             case R.id.rewards:
                 source = EventSource.REWARDS;
                 changeCurrentFragment(new RewardListFragment());
+                break;
+
+            case R.id.feed:
+                source = EventSource.FEED;
+                startActivity(new Intent(this, FeedActivity.class));
                 break;
 
             case R.id.store:
