@@ -4,7 +4,6 @@ import android.text.format.DateUtils;
 
 import io.ipoli.android.R;
 import io.ipoli.android.feed.data.Post;
-import io.ipoli.android.player.Avatar;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -28,7 +27,7 @@ public class PostBinder {
         holder.postTitle.setText(post.getTitle());
         holder.postMessage.setText(post.getMessage());
         holder.postImage.setImageResource(post.getCategoryType().colorfulImage);
-        holder.playerAvatar.setImageResource(Avatar.get(Integer.parseInt(post.getPlayerAvatar())).picture);
+        holder.playerAvatar.setImageResource(post.getPlayerAvatar().picture);
         holder.postLikesCount.setText(String.valueOf(post.getLikes().size()));
         holder.postAddedCount.setText(String.valueOf(post.getAddedBy().size()));
         holder.questCoins.setText(post.getCoins().toString());

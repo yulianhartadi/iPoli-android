@@ -382,7 +382,7 @@ public class MainActivity extends BaseActivity implements
         experienceBar.setMax(Constants.XP_BAR_MAX_VALUE);
         experienceBar.setProgress(getCurrentProgress(player));
 
-        CircleImageView avatarPictureView = (CircleImageView) header.findViewById(R.id.player_picture);
+        CircleImageView avatarPictureView = (CircleImageView) header.findViewById(R.id.player_avatar);
         avatarPictureView.setImageResource(player.getCurrentAvatar().picture);
         avatarPictureView.setOnClickListener(v -> {
             eventBus.post(new OpenAvatarStoreRequestEvent(EventSource.NAVIGATION_DRAWER));

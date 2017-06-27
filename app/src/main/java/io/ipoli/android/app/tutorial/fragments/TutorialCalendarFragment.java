@@ -178,7 +178,7 @@ public class TutorialCalendarFragment extends Fragment {
         experienceBar.setMax(Constants.XP_BAR_MAX_VALUE);
         experienceBar.setProgress(Constants.DEFAULT_PLAYER_XP);
 
-        CircleImageView avatarPictureView = (CircleImageView) headerView.findViewById(R.id.player_picture);
+        CircleImageView avatarPictureView = (CircleImageView) headerView.findViewById(R.id.player_avatar);
         avatarPictureView.setImageResource(Constants.DEFAULT_PLAYER_AVATAR.picture);
 
         CircleImageView petPictureView = (CircleImageView) headerView.findViewById(R.id.pet_picture);

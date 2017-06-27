@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.player.Avatar;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
@@ -31,7 +32,7 @@ public class Post {
     private Integer playerLevel;
     private String playerTitle;
     private String playerUsername;
-    private String playerAvatar;
+    private Integer playerAvatarCode;
     private Map<String, Boolean> likes;
     private Map<String, Boolean> addedBy;
 
@@ -53,7 +54,7 @@ public class Post {
         setPlayerUsername(player.getUsername());
         setPlayerLevel(player.getLevel());
         setPlayerTitle(playerTitle);
-        setPlayerAvatar(String.valueOf(player.getAvatarCode()));
+        setPlayerAvatarCode(player.getAvatarCode());
     }
 
     public String getId() {
@@ -152,12 +153,12 @@ public class Post {
         this.playerLevel = playerLevel;
     }
 
-    public String getPlayerAvatar() {
-        return playerAvatar;
+    public Integer getPlayerAvatarCode() {
+        return playerAvatarCode;
     }
 
-    public void setPlayerAvatar(String playerAvatar) {
-        this.playerAvatar = playerAvatar;
+    public void setPlayerAvatarCode(Integer playerAvatarCode) {
+        this.playerAvatarCode = playerAvatarCode;
     }
 
     public Map<String, Boolean> getLikes() {
@@ -234,5 +235,10 @@ public class Post {
     @Exclude
     public void addAddedBy(String playerId) {
         getAddedBy().put(playerId, true);
+    }
+
+    @Exclude
+    public Avatar getPlayerAvatar() {
+        return Avatar.get(playerAvatarCode);
     }
 }
