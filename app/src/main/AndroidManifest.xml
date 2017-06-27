@@ -211,26 +211,17 @@
             android:label=""
             android:screenOrientation="portrait" />
         <activity
-            android:name=".feed.activities.FeedActivity"
-            android:label="@string/activity_feed_title"
-            android:parentActivityName=".MainActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-        <activity
             android:name=".feed.activities.AddPostActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.iPoli.DialogActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".quest.activities.QuestPickerActivity"
-            android:parentActivityName=".feed.activities.FeedActivity"
+            android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".feed.activities.FeedActivity" />
+                android:value=".MainActivity" />
         </activity>
         <activity
             android:name=".player.activities.PlayerProfileActivity"
