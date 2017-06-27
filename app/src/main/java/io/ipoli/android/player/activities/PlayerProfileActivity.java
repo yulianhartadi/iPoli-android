@@ -1,11 +1,14 @@
 package io.ipoli.android.player.activities;
 
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -15,20 +18,29 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.math.RoundingMode;
+import java.text.NumberFormat;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.feed.data.PlayerProfile;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.feed.ui.PostBinder;
 import io.ipoli.android.feed.ui.PostViewHolder;
+import io.ipoli.android.pet.data.Pet;
+import io.ipoli.android.player.ExperienceForLevelGenerator;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -98,12 +110,21 @@ public class PlayerProfileActivity extends BaseActivity implements OnDataChanged
 
     private FirebaseRecyclerAdapter<Post, PostViewHolder> adapter;
 
+    private String playerId;
+    private NumberFormat numberFormatter;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         App.getAppComponent(this).inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player_profile);
         ButterKnife.bind(this);
+
+        playerId = getIntent().getStringExtra(Constants.PLAYER_ID_EXTRA_KEY);
+
+        if (StringUtils.isEmpty(playerId)) {
+            throw new IllegalArgumentException("Player id is required");
+        }
 
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
@@ -133,12 +154,43 @@ public class PlayerProfileActivity extends BaseActivity implements OnDataChanged
         };
 
         postList.setAdapter(adapter);
+
+        numberFormatter = NumberFormat.getNumberInstance();
     }
 
 
     @Override
     public void onDataChanged(PlayerProfile playerProfile) {
-        
+        playerAvatar.setImageResource(playerProfile.getPlayerAvatar().picture);
+        petAvatar.setImageResource(playerProfile.getPetAvatar().headPicture);
+        GradientDrawable drawable = (GradientDrawable) petState.getBackground();
+        drawable.setColor(ContextCompat.getColor(this, Pet.PetState.valueOf(playerProfile.getPetState()).color));
+        petName.setText(playerProfile.getPetName());
+        playerName.setText(playerProfile.getDisplayName());
+        playerUsername.setText("@" + playerProfile.getUsername());
+        playerDesc.setText(playerProfile.getDescription());
+        playerLevel.setText("Level " + playerProfile.getLevel() + ": " + playerProfile.getTitle());
+        postCount.setText(String.valueOf(playerProfile.getPostedQuests().size()));
+        followerCount.setText(String.valueOf(playerProfile.getFollowers().size()));
+        followingCount.setText(String.valueOf(playerProfile.getFollowings().size()));
+        updateExperienceProgress(playerProfile);
+        if (playerProfile.getId().equals(getPlayerId())) {
+            follow.setVisibility(View.GONE);
+        }
+    }
+
+    private void updateExperienceProgress(PlayerProfile playerProfile) {
+        int currentLevel = playerProfile.getLevel();
+        BigInteger requiredXPForCurrentLevel = ExperienceForLevelGenerator.forLevel(currentLevel);
+        BigInteger requiredXPForNextLevel = ExperienceForLevelGenerator.forLevel(currentLevel + 1);
+        BigDecimal xpForNextLevel = new BigDecimal(requiredXPForNextLevel.subtract(requiredXPForCurrentLevel));
+        BigDecimal currentXP = new BigDecimal(new BigInteger(playerProfile.getExperience()).subtract(requiredXPForCurrentLevel));
+        int levelProgress = (int) (currentXP.divide(xpForNextLevel, 2, RoundingMode.HALF_UP).doubleValue() * Constants.XP_BAR_MAX_VALUE);
+        xpLevelStart.setText(numberFormatter.format(requiredXPForCurrentLevel));
+        xpLevelEnd.setText(numberFormatter.format(requiredXPForNextLevel));
+        playerCurrentExperience.setText("Current XP: " + numberFormatter.format(new BigInteger(playerProfile.getExperience())));
+        playerExperienceProgress.setMax(Constants.XP_BAR_MAX_VALUE);
+        playerExperienceProgress.setProgress(levelProgress);
     }
 
     private void onAddQuest(Post post) {
@@ -162,7 +214,7 @@ public class PlayerProfileActivity extends BaseActivity implements OnDataChanged
     @Override
     protected void onStart() {
         super.onStart();
-        feedPersistenceService.listenForPlayerProfile(getPlayerId(), this);
+        feedPersistenceService.listenForPlayerProfile(playerId, this);
     }
 
     @Override

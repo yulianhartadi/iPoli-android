@@ -18,10 +18,14 @@ public class PlayerProfile {
     private String id;
     private String displayName;
     private String username;
+    private String description;
     private Integer level;
+    private String experience;
+    private String title;
     private Integer avatarCode;
     private String petName;
     private Integer petAvatarCode;
+    private String petState;
     private Long createdAt;
     private Map<String, Boolean> postedQuests;
     private Map<String, Follower> followers;
@@ -30,14 +34,18 @@ public class PlayerProfile {
     public PlayerProfile() {
     }
 
-    public PlayerProfile(Player player) {
+    public PlayerProfile(Player player, String title) {
         setId(player.getId());
         setDisplayName(player.getDisplayName());
         setUsername(player.getUsername());
+        setDescription(player.getDescription());
+        setTitle(title);
         setLevel(player.getLevel());
+        setExperience(player.getExperience());
         setAvatarCode(player.getAvatarCode());
         setPetName(player.getPet().getName());
         setPetAvatarCode(player.getPet().getAvatarCode());
+        setPetState(player.getPet().getState().name());
         setCreatedAt(player.getCreatedAt());
     }
 
@@ -146,5 +154,37 @@ public class PlayerProfile {
     @Exclude
     public PetAvatar getPetAvatar() {
         return PetAvatar.get(petAvatarCode);
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getExperience() {
+        return experience;
+    }
+
+    public void setExperience(String experience) {
+        this.experience = experience;
+    }
+
+    public String getPetState() {
+        return petState;
+    }
+
+    public void setPetState(String petState) {
+        this.petState = petState;
     }
 }

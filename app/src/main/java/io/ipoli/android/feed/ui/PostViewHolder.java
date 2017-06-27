@@ -1,5 +1,6 @@
 package io.ipoli.android.feed.ui;
 
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageButton;
@@ -15,6 +16,9 @@ import io.ipoli.android.R;
  * on 6/27/17.
  */
 public class PostViewHolder extends RecyclerView.ViewHolder {
+
+    @BindView(R.id.post_container)
+    public CardView postContainer;
 
     @BindView(R.id.player_avatar)
     public ImageView playerAvatar;
