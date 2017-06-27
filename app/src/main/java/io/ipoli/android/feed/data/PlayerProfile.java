@@ -21,7 +21,6 @@ public class PlayerProfile {
     private Map<String, Post> posts;
     private Map<String, Follower> followers;
     private Map<String, Follower> followings;
-    private Map<String, Boolean> likes;
 
     public PlayerProfile() {
     }
@@ -123,16 +122,5 @@ public class PlayerProfile {
 
     public void setFollowings(Map<String, Follower> followings) {
         this.followings = followings;
-    }
-
-    public Map<String, Boolean> getLikes() {
-        if (likes == null) {
-            likes = new HashMap<>();
-        }
-        return likes;
-    }
-
-    public void setLikes(Map<String, Boolean> likes) {
-        this.likes = likes;
     }
 }
