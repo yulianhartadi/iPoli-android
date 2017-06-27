@@ -33,6 +33,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.app.ui.animations.ProgressBarAnimation;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.feed.data.PlayerProfile;
 import io.ipoli.android.feed.data.Post;
@@ -190,7 +191,9 @@ public class PlayerProfileActivity extends BaseActivity implements OnDataChanged
         xpLevelEnd.setText(numberFormatter.format(requiredXPForNextLevel));
         playerCurrentExperience.setText("Current XP: " + numberFormatter.format(new BigInteger(playerProfile.getExperience())));
         playerExperienceProgress.setMax(Constants.XP_BAR_MAX_VALUE);
-        playerExperienceProgress.setProgress(levelProgress);
+        ProgressBarAnimation anim = new ProgressBarAnimation(playerExperienceProgress, 0, levelProgress);
+        anim.setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime));
+        playerExperienceProgress.startAnimation(anim);
     }
 
     private void onAddQuest(Post post) {
