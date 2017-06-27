@@ -50,7 +50,7 @@ import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.challenge.receivers.DailyChallengeReminderReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
 import io.ipoli.android.feed.activities.AddPostActivity;
-import io.ipoli.android.feed.activities.FeedActivity;
+import io.ipoli.android.feed.fragments.FeedFragment;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.player.UpgradeDialog;
 import io.ipoli.android.player.activities.PlayerProfileActivity;
@@ -270,11 +270,11 @@ public interface AppComponent {
 
     void inject(InviteFriendsDialog inviteFriendsDialog);
 
-    void inject(FeedActivity feedActivity);
-
     void inject(AddPostActivity addPostActivity);
 
     void inject(QuestPickerActivity questPickerActivity);
 
     void inject(PlayerProfileActivity playerProfileActivity);
+
+    void inject(FeedFragment feedFragment);
 }

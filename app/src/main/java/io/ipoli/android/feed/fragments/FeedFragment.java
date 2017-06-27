@@ -1,13 +1,14 @@
-package io.ipoli.android.feed.activities;
+package io.ipoli.android.feed.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
@@ -18,10 +19,12 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 import io.ipoli.android.Constants;
+import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.feed.data.PlayerProfile;
 import io.ipoli.android.feed.data.Post;
@@ -32,11 +35,14 @@ import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.PlayerProfileActivity;
 import io.ipoli.android.quest.activities.QuestPickerActivity;
 
+import static io.ipoli.android.app.App.getPlayerId;
+
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
- * on 6/16/17.
+ * Created by Polina Zhelyazkova <polina@ipoli.io>
+ * on 6/28/17.
  */
-public class FeedActivity extends BaseActivity {
+
+public class FeedFragment extends BaseFragment {
 
     @Inject
     FeedPersistenceService feedPersistenceService;
@@ -49,27 +55,25 @@ public class FeedActivity extends BaseActivity {
 
     private FirebaseRecyclerAdapter<Post, PostViewHolder> adapter;
 
+    private Unbinder unbinder;
+
+    @Nullable
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        App.getAppComponent(this).inject(this);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_feed);
-        ButterKnife.bind(this);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        View view = inflater.inflate(R.layout.fragment_feed, container, false);
+        unbinder = ButterKnife.bind(this, view);
+        App.getAppComponent(getContext()).inject(this);
+        ((MainActivity) getActivity()).initToolbar(toolbar, R.string.achievement_feed);
 
-        setSupportActionBar(toolbar);
-        ActionBar ab = getSupportActionBar();
-        if (ab != null) {
-            ab.setDisplayHomeAsUpEnabled(true);
-        }
-
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.setReverseLayout(true);
         layoutManager.setStackFromEnd(true);
         feedList.setLayoutManager(layoutManager);
 
         // @TODO remove this
-        feedPersistenceService.findPlayerProfile(App.getPlayerId(), profile -> {
+        feedPersistenceService.findPlayerProfile(getPlayerId(), profile -> {
             if (profile == null) {
                 Player player = getPlayer();
                 String[] titles = getResources().getStringArray(R.array.player_titles);
@@ -94,7 +98,7 @@ public class FeedActivity extends BaseActivity {
                 holder.likePost.setOnClickListener(v -> onLikePost(post));
                 holder.addQuest.setOnClickListener(v -> onAddQuest(post));
                 holder.postContainer.setOnClickListener(v -> {
-                    Intent intent = new Intent(FeedActivity.this, PlayerProfileActivity.class);
+                    Intent intent = new Intent(getContext(), PlayerProfileActivity.class);
                     intent.putExtra(Constants.PLAYER_ID_EXTRA_KEY, post.getPlayerId());
                     startActivity(intent);
                 });
@@ -102,10 +106,12 @@ public class FeedActivity extends BaseActivity {
         };
 
         feedList.setAdapter(adapter);
+
+        return view;
     }
 
     private void onAddQuest(Post post) {
-        String playerId = App.getPlayerId();
+        String playerId = getPlayerId();
         if (!post.isAddedByPlayer(playerId)) {
             feedPersistenceService.addPostToPlayer(post, playerId);
         }
@@ -113,7 +119,7 @@ public class FeedActivity extends BaseActivity {
     }
 
     private void onLikePost(Post post) {
-        String playerId = App.getPlayerId();
+        String playerId = getPlayerId();
         if (post.isLikedByPlayer(playerId)) {
             feedPersistenceService.removeLike(post, playerId);
         } else {
@@ -123,17 +129,18 @@ public class FeedActivity extends BaseActivity {
 
     @OnClick(R.id.add_quest_to_feed)
     public void onAddQuestToFeed(View view) {
-        startActivity(new Intent(this, QuestPickerActivity.class));
+        startActivity(new Intent(getContext(), QuestPickerActivity.class));
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        unbinder.unbind();
         adapter.cleanup();
+        super.onDestroyView();
     }
 
     @Override
-    protected boolean useParentOptionsMenu() {
+    protected boolean useOptionsMenu() {
         return false;
     }
 }
