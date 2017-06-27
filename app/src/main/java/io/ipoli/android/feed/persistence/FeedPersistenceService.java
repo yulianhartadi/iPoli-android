@@ -10,9 +10,7 @@ import io.ipoli.android.feed.data.Post;
  */
 public interface FeedPersistenceService {
 
-    void addPost(Post post, String playerId);
-
-    void updatePost(Post post);
+    void addPost(Post post);
 
     void createPlayerProfile(PlayerProfile playerProfile);
 

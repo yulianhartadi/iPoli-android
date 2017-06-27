@@ -17,10 +17,9 @@ import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -34,7 +33,6 @@ import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.feed.activities.AddPostActivity;
-import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.quest.adapters.QuestPickerAdapter;
 import io.ipoli.android.quest.data.Quest;
@@ -110,16 +108,11 @@ public class QuestPickerActivity extends BaseActivity {
             allQuests.addAll(result);
 
             feedPersistenceService.listenForPlayerProfile(getPlayerId(), playerProfile -> {
-
-                Set<String> postedQuestIds = new HashSet<>();
-                for (Post p : playerProfile.getPosts().values()) {
-                    postedQuestIds.add(p.getQuestId());
-                }
-
+                Map<String, Boolean> postedQuests = playerProfile.getPostedQuests();
                 Iterator<Quest> it = allQuests.iterator();
                 while (it.hasNext()) {
                     Quest q = it.next();
-                    if (postedQuestIds.contains(q.getId())) {
+                    if (postedQuests.containsKey(q.getId())) {
                         it.remove();
                     }
                 }

@@ -101,7 +101,7 @@ public class AddPostActivity extends BaseActivity implements OnDataChangedListen
         Player player = getPlayer();
         Post post = new Post(postTitle.getText().toString(), postMessage.getText().toString(),
                 playerTitle.getText().toString(), player, quest);
-        feedPersistenceService.addPost(post, player.getId());
+        feedPersistenceService.addPost(post);
         finish();
     }
 

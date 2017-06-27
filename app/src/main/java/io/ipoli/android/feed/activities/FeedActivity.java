@@ -9,9 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
@@ -29,6 +26,7 @@ import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.feed.data.PlayerProfile;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
+import io.ipoli.android.feed.ui.PostViewHolder;
 import io.ipoli.android.player.Avatar;
 import io.ipoli.android.quest.activities.QuestPickerActivity;
 
@@ -148,56 +146,6 @@ public class FeedActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         adapter.cleanup();
-    }
-
-    public static class PostViewHolder extends RecyclerView.ViewHolder {
-
-        @BindView(R.id.player_avatar)
-        ImageView playerAvatar;
-
-        @BindView(R.id.player_username)
-        TextView playerUsername;
-
-        @BindView(R.id.player_title)
-        TextView playerTitle;
-
-        @BindView(R.id.post_image)
-        ImageView postImage;
-
-        @BindView(R.id.post_title)
-        TextView postTitle;
-
-        @BindView(R.id.post_message)
-        TextView postMessage;
-
-        @BindView(R.id.post_created_at)
-        TextView postCreatedAt;
-
-        @BindView(R.id.post_like_count)
-        TextView postLikesCount;
-
-        @BindView(R.id.post_added_count)
-        TextView postAddedCount;
-
-        @BindView(R.id.quest_coins)
-        TextView questCoins;
-
-        @BindView(R.id.quest_reward_points)
-        TextView questRewardPoints;
-
-        @BindView(R.id.quest_experience)
-        TextView questExperience;
-
-        @BindView(R.id.post_like)
-        ImageButton likePost;
-
-        @BindView(R.id.post_add_quest)
-        ImageButton addQuest;
-
-        public PostViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
     }
 
     @Override
