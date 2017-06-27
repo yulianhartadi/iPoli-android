@@ -18,7 +18,7 @@ public class PlayerProfile {
     private String petName;
     private Integer petAvatar;
     private Long createdAt;
-    private Map<String, Post> posts;
+    private Map<String, Boolean> postedQuests;
     private Map<String, Follower> followers;
     private Map<String, Follower> followings;
 
@@ -91,15 +91,15 @@ public class PlayerProfile {
         this.createdAt = createdAt;
     }
 
-    public Map<String, Post> getPosts() {
-        if (posts == null) {
-            posts = new HashMap<>();
+    public Map<String, Boolean> getPostedQuests() {
+        if (postedQuests == null) {
+            postedQuests = new HashMap<>();
         }
-        return posts;
+        return postedQuests;
     }
 
-    public void setPosts(Map<String, Post> posts) {
-        this.posts = posts;
+    public void setPostedQuests(Map<String, Boolean> postedQuests) {
+        this.postedQuests = postedQuests;
     }
 
     public Map<String, Follower> getFollowers() {

@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.OnDataChangedListener;
-import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.feed.data.PlayerProfile;
 import io.ipoli.android.feed.data.Post;
 
@@ -30,22 +29,15 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
     }
 
     @Override
-    public void addPost(Post post, String playerId) {
+    public void addPost(Post post) {
         DatabaseReference postsRef = database.getReference("/posts");
         DatabaseReference ref = postsRef.push();
         post.setId(ref.getKey());
 
         Map<String, Object> update = new HashMap<>();
         update.put("/posts/" + post.getId(), post);
-        update.put("/profiles/" + playerId + "/posts/" + post.getId(), post);
+        update.put("/profiles/" + post.getPlayerId() + "/postedQuests/" + post.getQuestId(), true);
         database.getReference().updateChildren(update);
-    }
-
-    @Override
-    public void updatePost(Post post) {
-        post.setUpdatedAt(DateUtils.nowUTC().getTime());
-        DatabaseReference postRef = database.getReference("/posts/" + post.getId());
-        postRef.setValue(post);
     }
 
     @Override
@@ -101,7 +93,6 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
     public void removeLike(Post post, String playerId) {
         Map<String, Object> update = new HashMap<>();
         update.put("/posts/" + post.getId() + "/likes/" + playerId, null);
-        update.put("/profiles/" + post.getPlayerId() + "/posts/" + post.getId() + "/likes/" + playerId, null);
         database.getReference().updateChildren(update);
     }
 
@@ -109,7 +100,6 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
     public void addLike(Post post, String playerId) {
         Map<String, Object> update = new HashMap<>();
         update.put("/posts/" + post.getId() + "/likes/" + playerId, true);
-        update.put("/profiles/" + post.getPlayerId() + "/posts/" + post.getId() + "/likes/" + playerId, true);
         database.getReference().updateChildren(update);
     }
 
@@ -117,7 +107,6 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
     public void addPostToPlayer(Post post, String playerId) {
         Map<String, Object> update = new HashMap<>();
         update.put("/posts/" + post.getId() + "/addedBy/" + playerId, true);
-        update.put("/profiles/" + post.getPlayerId() + "/posts/" + post.getId() + "/addedBy/" + playerId, true);
         database.getReference().updateChildren(update);
     }
 }
