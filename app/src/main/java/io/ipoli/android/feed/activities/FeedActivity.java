@@ -125,8 +125,7 @@ public class FeedActivity extends BaseActivity {
     private void onAddQuest(Post post) {
         String playerId = App.getPlayerId();
         if (!post.isAddedByPlayer(playerId)) {
-            post.addAddedBy(playerId);
-            feedPersistenceService.updatePost(post);
+            feedPersistenceService.addPostToPlayer(post, playerId);
         }
         // @TODO show schedule dialog
     }
@@ -134,11 +133,10 @@ public class FeedActivity extends BaseActivity {
     private void onLikePost(Post post) {
         String playerId = App.getPlayerId();
         if (post.isLikedByPlayer(playerId)) {
-            post.removeLike(playerId);
+            feedPersistenceService.removeLike(post, playerId);
         } else {
-            post.addLike(playerId);
+            feedPersistenceService.addLike(post, playerId);
         }
-        feedPersistenceService.updatePost(post);
     }
 
     @OnClick(R.id.add_quest_to_feed)

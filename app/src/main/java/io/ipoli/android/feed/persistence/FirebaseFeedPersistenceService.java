@@ -96,4 +96,28 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
         }
         valueListeners.clear();
     }
+
+    @Override
+    public void removeLike(Post post, String playerId) {
+        Map<String, Object> update = new HashMap<>();
+        update.put("/posts/" + post.getId() + "/likes/" + playerId, null);
+        update.put("/profiles/" + post.getPlayerId() + "/posts/" + post.getId() + "/likes/" + playerId, null);
+        database.getReference().updateChildren(update);
+    }
+
+    @Override
+    public void addLike(Post post, String playerId) {
+        Map<String, Object> update = new HashMap<>();
+        update.put("/posts/" + post.getId() + "/likes/" + playerId, true);
+        update.put("/profiles/" + post.getPlayerId() + "/posts/" + post.getId() + "/likes/" + playerId, true);
+        database.getReference().updateChildren(update);
+    }
+
+    @Override
+    public void addPostToPlayer(Post post, String playerId) {
+        Map<String, Object> update = new HashMap<>();
+        update.put("/posts/" + post.getId() + "/addedBy/" + playerId, true);
+        update.put("/profiles/" + post.getPlayerId() + "/posts/" + post.getId() + "/addedBy/" + playerId, true);
+        database.getReference().updateChildren(update);
+    }
 }

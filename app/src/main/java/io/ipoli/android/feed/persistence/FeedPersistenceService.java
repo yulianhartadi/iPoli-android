@@ -21,4 +21,10 @@ public interface FeedPersistenceService {
     void listenForPlayerProfile(String playerId, OnDataChangedListener<PlayerProfile> listener);
 
     void removeAllListeners();
+
+    void removeLike(Post post, String playerId);
+
+    void addLike(Post post, String playerId);
+
+    void addPostToPlayer(Post post, String playerId);
 }
