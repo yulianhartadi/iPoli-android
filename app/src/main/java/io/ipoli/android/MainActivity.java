@@ -73,7 +73,6 @@ import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.feed.activities.AddPostActivity;
-import io.ipoli.android.feed.activities.FeedActivity;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
@@ -81,6 +80,7 @@ import io.ipoli.android.player.Player;
 import io.ipoli.android.player.UpgradeDialog;
 import io.ipoli.android.player.UpgradeDialog.OnUnlockListener;
 import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.player.activities.PlayerProfileActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
@@ -193,7 +193,7 @@ public class MainActivity extends BaseActivity implements
         };
 
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
-        startActivity(new Intent(this, FeedActivity.class));
+        startActivity(new Intent(this, PlayerProfileActivity.class));
 
         if (!getPlayer().getAndroidCalendars().isEmpty() &&
                 !EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
