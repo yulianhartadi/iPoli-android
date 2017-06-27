@@ -17,6 +17,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.TimeOfDay;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.quest.data.Category;
@@ -30,6 +31,8 @@ public class Player extends PersistedObject {
     public static final String TYPE = "player";
 
     private String username;
+    private String displayName;
+    private String description;
     private Integer level;
     private String experience;
     private Long coins;
@@ -428,13 +431,28 @@ public class Player extends PersistedObject {
         avatarCode = avatar.code;
     }
 
-    @JsonIgnore
     public String getDisplayName() {
+        if(StringUtils.isNotEmpty(displayName)) {
+            return displayName;
+        }
+
         if (!isAuthenticated()) {
 //            throw new IllegalStateException("Asking for display name of unauthenticated player " + getId());
             return  "";
         }
         AuthProvider authProvider = getCurrentAuthProvider();
         return authProvider.getFirstName() + " " + authProvider.getLastName();
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

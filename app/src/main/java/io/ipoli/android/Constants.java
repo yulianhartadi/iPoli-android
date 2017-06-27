@@ -35,7 +35,11 @@ public interface Constants {
 
     int QUEST_WITH_NO_DURATION_TIMER_MINUTES = 30;
     int MAX_QUEST_DURATION_HOURS = 4;
+
+    String PLAYER_ID_EXTRA_KEY = "player_id";
+
     String QUEST_ID_EXTRA_KEY = "quest_id";
+
     String REPEATING_QUEST_ID_EXTRA_KEY = "repeating_quest_id";
 
     String CHALLENGE_ID_EXTRA_KEY = "challenge_id";

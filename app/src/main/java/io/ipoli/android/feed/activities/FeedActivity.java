@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
@@ -27,6 +28,8 @@ import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.feed.ui.PostBinder;
 import io.ipoli.android.feed.ui.PostViewHolder;
+import io.ipoli.android.player.Player;
+import io.ipoli.android.player.activities.PlayerProfileActivity;
 import io.ipoli.android.quest.activities.QuestPickerActivity;
 
 /**
@@ -68,7 +71,9 @@ public class FeedActivity extends BaseActivity {
         // @TODO remove this
         feedPersistenceService.findPlayerProfile(App.getPlayerId(), profile -> {
             if (profile == null) {
-                feedPersistenceService.createPlayerProfile(new PlayerProfile(getPlayer()));
+                Player player = getPlayer();
+                String[] titles = getResources().getStringArray(R.array.player_titles);
+                feedPersistenceService.createPlayerProfile(new PlayerProfile(player, player.getTitle(titles)));
             }
         });
 
@@ -88,6 +93,11 @@ public class FeedActivity extends BaseActivity {
 
                 holder.likePost.setOnClickListener(v -> onLikePost(post));
                 holder.addQuest.setOnClickListener(v -> onAddQuest(post));
+                holder.postContainer.setOnClickListener(v -> {
+                    Intent intent = new Intent(FeedActivity.this, PlayerProfileActivity.class);
+                    intent.putExtra(Constants.PLAYER_ID_EXTRA_KEY, post.getPlayerId());
+                    startActivity(intent);
+                });
             }
         };
 
