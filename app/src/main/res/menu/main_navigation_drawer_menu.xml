@@ -44,6 +44,13 @@
             android:checked="false"
             android:icon="@drawable/ic_gift_white_24dp"
             android:title="@string/rewards" />
+
+        <item
+            android:id="@+id/feed"
+            android:checkable="false"
+            android:checked="false"
+            android:icon="@drawable/ic_rocket_black_24dp"
+            android:title="@string/achievement_feed" />
     </group>
 
     <group

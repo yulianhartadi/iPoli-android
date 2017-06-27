@@ -896,6 +896,7 @@
     <string name="activity_feed_title">Activity feed</string>
     <string name="no_more_suggestions">No more suggestions</string>
     <string name="suggestion_accepted">Suggestion accepted</string>
+    <string name="achievement_feed">Achievement Feed</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
