@@ -7,7 +7,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateUtils;
 import android.view.View;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -26,8 +25,8 @@ import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.feed.data.PlayerProfile;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
+import io.ipoli.android.feed.ui.PostBinder;
 import io.ipoli.android.feed.ui.PostViewHolder;
-import io.ipoli.android.player.Avatar;
 import io.ipoli.android.quest.activities.QuestPickerActivity;
 
 /**
@@ -85,32 +84,7 @@ public class FeedActivity extends BaseActivity {
                 lp.bottomMargin = (int) ViewUtils.dpToPx(marginBottom, getResources());
                 holder.itemView.setLayoutParams(lp);
 
-                holder.playerUsername.setText(post.getPlayerUsername());
-                String[] playerTitles = getResources().getStringArray(R.array.player_titles);
-                String playerTitle = playerTitles[Math.min(post.getPlayerLevel() / 10, playerTitles.length - 1)];
-                holder.playerTitle.setText("Level " + post.getPlayerLevel() + ": " + playerTitle);
-                holder.postTitle.setText(post.getTitle());
-                holder.postMessage.setText(post.getMessage());
-                holder.postImage.setImageResource(post.getCategoryType().colorfulImage);
-                holder.playerAvatar.setImageResource(Avatar.get(Integer.parseInt(post.getPlayerAvatar())).picture);
-                holder.postLikesCount.setText(String.valueOf(post.getLikes().size()));
-                holder.postAddedCount.setText(String.valueOf(post.getAddedBy().size()));
-                holder.questCoins.setText(post.getCoins().toString());
-                holder.questRewardPoints.setText(post.getRewardPoints().toString());
-                holder.questExperience.setText(post.getExperience().toString() + " XP");
-                holder.postCreatedAt.setText(DateUtils.getRelativeTimeSpanString(post.getCreatedAt(), System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS));
-                String playerId = App.getPlayerId();
-                if (post.isLikedByPlayer(playerId)) {
-                    holder.likePost.setImageResource(R.drawable.ic_favorite_accent_24dp);
-                } else {
-                    holder.likePost.setImageResource(R.drawable.ic_favorite_outline_black_24dp);
-                }
-
-                if (post.isAddedByPlayer(playerId)) {
-                    holder.addQuest.setImageResource(R.drawable.ic_playlist_add_accent_24dp);
-                } else {
-                    holder.addQuest.setImageResource(R.drawable.ic_playlist_add_black_24dp);
-                }
+                PostBinder.bind(holder, post, getPlayerId());
 
                 holder.likePost.setOnClickListener(v -> onLikePost(post));
                 holder.addQuest.setOnClickListener(v -> onAddQuest(post));

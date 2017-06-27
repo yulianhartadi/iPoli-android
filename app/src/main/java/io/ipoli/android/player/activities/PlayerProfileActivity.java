@@ -6,11 +6,12 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.text.format.DateUtils;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,14 +20,18 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.feed.data.Post;
+import io.ipoli.android.feed.persistence.FeedPersistenceService;
+import io.ipoli.android.feed.ui.PostBinder;
 import io.ipoli.android.feed.ui.PostViewHolder;
-import io.ipoli.android.player.Avatar;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/27/17.
  */
 public class PlayerProfileActivity extends BaseActivity {
+
+    @Inject
+    FeedPersistenceService feedPersistenceService;
 
     @BindView(R.id.toolbar_collapsing_container)
     CollapsingToolbarLayout collapsingToolbarLayout;
@@ -67,39 +72,36 @@ public class PlayerProfileActivity extends BaseActivity {
                 ref.orderByChild("playerId").equalTo(getPlayerId()).limitToLast(100)) {
             @Override
             protected void populateViewHolder(PostViewHolder holder, Post post, int position) {
-                holder.playerUsername.setText(post.getPlayerUsername());
-                String[] playerTitles = getResources().getStringArray(R.array.player_titles);
-                String playerTitle = playerTitles[Math.min(post.getPlayerLevel() / 10, playerTitles.length - 1)];
-                holder.playerTitle.setText("Level " + post.getPlayerLevel() + ": " + playerTitle);
-                holder.postTitle.setText(post.getTitle());
-                holder.postMessage.setText(post.getMessage());
-                holder.postImage.setImageResource(post.getCategoryType().colorfulImage);
-                holder.playerAvatar.setImageResource(Avatar.get(Integer.parseInt(post.getPlayerAvatar())).picture);
-                holder.postLikesCount.setText(String.valueOf(post.getLikes().size()));
-                holder.postAddedCount.setText(String.valueOf(post.getAddedBy().size()));
-                holder.questCoins.setText(post.getCoins().toString());
-                holder.questRewardPoints.setText(post.getRewardPoints().toString());
-                holder.questExperience.setText(post.getExperience().toString() + " XP");
-                holder.postCreatedAt.setText(DateUtils.getRelativeTimeSpanString(post.getCreatedAt(), System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS));
-                String playerId = App.getPlayerId();
-                if (post.isLikedByPlayer(playerId)) {
-                    holder.likePost.setImageResource(R.drawable.ic_favorite_accent_24dp);
-                } else {
-                    holder.likePost.setImageResource(R.drawable.ic_favorite_outline_black_24dp);
-                }
-
-                if (post.isAddedByPlayer(playerId)) {
-                    holder.addQuest.setImageResource(R.drawable.ic_playlist_add_accent_24dp);
-                } else {
-                    holder.addQuest.setImageResource(R.drawable.ic_playlist_add_black_24dp);
-                }
-
-//                holder.likePost.setOnClickListener(v -> onLikePost(post));
-//                holder.addQuest.setOnClickListener(v -> onAddQuest(post));
+                PostBinder.bind(holder, post, getPlayerId());
+                holder.likePost.setOnClickListener(v -> onLikePost(post));
+                holder.addQuest.setOnClickListener(v -> onAddQuest(post));
             }
         };
 
         postList.setAdapter(adapter);
+    }
+
+    private void onAddQuest(Post post) {
+        String playerId = App.getPlayerId();
+        if (!post.isAddedByPlayer(playerId)) {
+            feedPersistenceService.addPostToPlayer(post, playerId);
+        }
+        // @TODO show schedule dialog
+    }
+
+    private void onLikePost(Post post) {
+        String playerId = App.getPlayerId();
+        if (post.isLikedByPlayer(playerId)) {
+            feedPersistenceService.removeLike(post, playerId);
+        } else {
+            feedPersistenceService.addLike(post, playerId);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        adapter.cleanup();
     }
 
     @Override
