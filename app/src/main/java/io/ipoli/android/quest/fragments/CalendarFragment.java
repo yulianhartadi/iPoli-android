@@ -66,6 +66,9 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
     @Inject
     UpgradeManager upgradeManager;
 
+    @BindView(R.id.root_container)
+    ViewGroup rootContainer;
+
     @BindView(R.id.toolbar_title)
     TextView toolbarTitle;
 

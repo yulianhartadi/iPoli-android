@@ -1,14 +1,17 @@
 package io.ipoli.android.player.activities;
 
+import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -31,6 +34,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.activities.SignInActivity;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.animations.ProgressBarAnimation;
@@ -42,6 +46,7 @@ import io.ipoli.android.feed.ui.PostBinder;
 import io.ipoli.android.feed.ui.PostViewHolder;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
+import io.ipoli.android.player.Player;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -51,6 +56,9 @@ public class PlayerProfileActivity extends BaseActivity implements OnDataChanged
 
     @Inject
     FeedPersistenceService feedPersistenceService;
+
+    @BindView(R.id.root_container)
+    ViewGroup rootContainer;
 
     @BindView(R.id.toolbar_collapsing_container)
     CollapsingToolbarLayout collapsingToolbarLayout;
@@ -133,7 +141,7 @@ public class PlayerProfileActivity extends BaseActivity implements OnDataChanged
             ab.setDisplayHomeAsUpEnabled(true);
         }
         collapsingToolbarLayout.setTitleEnabled(false);
-        getSupportActionBar().setTitle("Profile");
+        getSupportActionBar().setTitle(R.string.activity_player_profile_title);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -170,13 +178,21 @@ public class PlayerProfileActivity extends BaseActivity implements OnDataChanged
         playerName.setText(playerProfile.getDisplayName());
         playerUsername.setText("@" + playerProfile.getUsername());
         playerDesc.setText(playerProfile.getDescription());
-        playerLevel.setText("Level " + playerProfile.getLevel() + ": " + playerProfile.getTitle());
+        playerLevel.setText(getString(R.string.player_profile_level, playerProfile.getLevel(), playerProfile.getTitle()));
         postCount.setText(String.valueOf(playerProfile.getPostedQuests().size()));
         followerCount.setText(String.valueOf(playerProfile.getFollowers().size()));
         followingCount.setText(String.valueOf(playerProfile.getFollowings().size()));
         updateExperienceProgress(playerProfile);
-        if (playerProfile.getId().equals(getPlayerId())) {
-            follow.setVisibility(View.GONE);
+        if (!playerProfile.getId().equals(getPlayerId())) {
+            follow.setVisibility(View.VISIBLE);
+            follow.setOnClickListener(v -> {
+                if(getPlayer().isGuest()) {
+                    Snackbar snackbar = Snackbar.make(rootContainer, R.string.sign_in_to_follow_message, Snackbar.LENGTH_LONG);
+                    snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(this, SignInActivity.class)));
+                    snackbar.show();
+                    return;
+                }
+            });
         }
     }
 
@@ -189,7 +205,7 @@ public class PlayerProfileActivity extends BaseActivity implements OnDataChanged
         int levelProgress = (int) (currentXP.divide(xpForNextLevel, 2, RoundingMode.HALF_UP).doubleValue() * Constants.XP_BAR_MAX_VALUE);
         xpLevelStart.setText(numberFormatter.format(requiredXPForCurrentLevel));
         xpLevelEnd.setText(numberFormatter.format(requiredXPForNextLevel));
-        playerCurrentExperience.setText("Current XP: " + numberFormatter.format(new BigInteger(playerProfile.getExperience())));
+        playerCurrentExperience.setText(getString(R.string.player_profile_current_xp, numberFormatter.format(new BigInteger(playerProfile.getExperience()))));
         playerExperienceProgress.setMax(Constants.XP_BAR_MAX_VALUE);
         ProgressBarAnimation anim = new ProgressBarAnimation(playerExperienceProgress, 0, levelProgress);
         anim.setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime));
@@ -197,22 +213,33 @@ public class PlayerProfileActivity extends BaseActivity implements OnDataChanged
     }
 
     private void onAddQuest(Post post) {
-        String playerId = App.getPlayerId();
-        if (!post.isAddedByPlayer(playerId)) {
-            feedPersistenceService.addPostToPlayer(post, playerId);
+        Player player = getPlayer();
+        if(player.isGuest()) {
+            Snackbar snackbar = Snackbar.make(rootContainer, R.string.sign_in_to_add_post_as_quest_message, Snackbar.LENGTH_LONG);
+            snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(this, SignInActivity.class)));
+            snackbar.show();
+            return;
+        }
+        if (!post.isAddedByPlayer(player.getId())) {
+            feedPersistenceService.addPostToPlayer(post, player.getId());
         }
         // @TODO show schedule dialog
     }
 
     private void onLikePost(Post post) {
-        String playerId = App.getPlayerId();
-        if (post.isLikedByPlayer(playerId)) {
-            feedPersistenceService.removeLike(post, playerId);
+        Player player = getPlayer();
+        if(player.isGuest()) {
+            Snackbar snackbar = Snackbar.make(rootContainer, R.string.sign_in_to_like_post_message, Snackbar.LENGTH_LONG);
+            snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(this, SignInActivity.class)));
+            snackbar.show();
+            return;
+        }
+        if (post.isLikedByPlayer(player.getId())) {
+            feedPersistenceService.removeLike(post, player.getId());
         } else {
-            feedPersistenceService.addLike(post, playerId);
+            feedPersistenceService.addLike(post, player.getId());
         }
     }
-
 
     @Override
     protected void onStart() {

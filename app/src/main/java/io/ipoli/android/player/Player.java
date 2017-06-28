@@ -378,6 +378,11 @@ public class Player extends PersistedObject {
         return currentAuthProvider != null;
     }
 
+    @JsonIgnore
+    public boolean isGuest() {
+        return currentAuthProvider == null;
+    }
+
     public Map<Long, Category> getAndroidCalendars() {
         if (androidCalendars == null) {
             androidCalendars = new HashMap<>();
