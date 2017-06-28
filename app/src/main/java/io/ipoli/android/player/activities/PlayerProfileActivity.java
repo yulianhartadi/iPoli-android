@@ -181,7 +181,7 @@ public class PlayerProfileActivity extends BaseActivity implements OnDataChanged
         playerLevel.setText(getString(R.string.player_profile_level, playerProfile.getLevel(), playerProfile.getTitle()));
         postCount.setText(String.valueOf(playerProfile.getPostedQuests().size()));
         followerCount.setText(String.valueOf(playerProfile.getFollowers().size()));
-        followingCount.setText(String.valueOf(playerProfile.getFollowings().size()));
+        followingCount.setText(String.valueOf(playerProfile.getFollowing().size()));
         updateExperienceProgress(playerProfile);
         if (!playerProfile.getId().equals(getPlayerId())) {
             follow.setVisibility(View.VISIBLE);

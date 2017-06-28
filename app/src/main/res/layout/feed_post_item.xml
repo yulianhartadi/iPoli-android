@@ -22,10 +22,7 @@
             style="@style/TextAppearance.AppCompat.Body2"
             android:layout_width="86dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
-            android:text="\@Pencho"
-            android:visibility="visible"
             app:layout_constraintLeft_toRightOf="@+id/player_avatar"
             app:layout_constraintTop_toTopOf="@+id/player_avatar"
             tools:text="\@Pencho" />
@@ -35,10 +32,7 @@
             style="@style/TextAppearance.AppCompat.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
-            android:text="Newbie"
-            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@+id/player_avatar"
             app:layout_constraintLeft_toRightOf="@+id/player_avatar"
             app:layout_constraintTop_toBottomOf="@+id/player_username"
@@ -49,10 +43,8 @@
             android:id="@+id/post_image"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="24dp"
-            android:visibility="visible"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/player_avatar"
             app:srcCompat="@drawable/ic_context_wellness_green_24dp" />
@@ -61,11 +53,8 @@
             android:id="@+id/post_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
-            android:text="Bike to work"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
-            android:visibility="visible"
             app:layout_constraintLeft_toRightOf="@+id/post_image"
             app:layout_constraintTop_toTopOf="@+id/post_image"
             tools:text="Bike to work" />
@@ -75,13 +64,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:text="I rode my bike for the first time today. It was awesome!"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:visibility="visible"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -93,8 +78,6 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             app:layout_constraintHorizontal_bias="0.0"
@@ -114,29 +97,40 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/quest_coins" />
 
-        <ImageButton
-            android:id="@+id/post_like"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="16dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
+        <LinearLayout
+            android:id="@+id/post_like_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="0dp"
+            android:orientation="horizontal"
+            android:paddingBottom="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/post_like_count"
-            app:layout_constraintTop_toBottomOf="@+id/view" />
+            app:layout_constraintRight_toLeftOf="@+id/post_add_quest_container"
+            app:layout_constraintTop_toBottomOf="@+id/view"
+            app:layout_constraintVertical_bias="0.0">
 
-        <ImageButton
-            android:id="@+id/post_add_quest"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="16dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/ic_playlist_add_black_24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/post_added_count" />
+            <ImageButton
+                android:id="@+id/post_like"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:duplicateParentState="true" />
+
+            <TextView
+                android:id="@+id/post_like_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="0dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="0dp"
+                app:layout_constraintBottom_toBottomOf="@+id/post_like_container"
+                app:layout_constraintRight_toLeftOf="@+id/post_add_quest_container"
+                app:layout_constraintTop_toTopOf="@+id/post_like_container"
+                app:layout_constraintVertical_bias="0.5" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/post_created_at"
@@ -152,41 +146,14 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/post_like_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="0dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="0dp"
-            android:text="15"
-            app:layout_constraintBottom_toBottomOf="@+id/post_like"
-            app:layout_constraintRight_toLeftOf="@+id/post_add_quest"
-            app:layout_constraintTop_toTopOf="@+id/post_like"
-            app:layout_constraintVertical_bias="0.571" />
-
-        <TextView
-            android:id="@+id/post_added_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="0dp"
-            android:text="8"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/post_add_quest" />
-
-        <TextView
             android:id="@+id/quest_coins"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:drawablePadding="8dp"
             android:drawableStart="@drawable/ic_life_coin_black_24dp"
             android:gravity="center_vertical"
-            android:text="5"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/post_message" />
 
@@ -195,12 +162,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="0dp"
-            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="0dp"
             android:drawablePadding="4dp"
             android:drawableStart="@drawable/ic_reward_candy_black_24dp"
             android:gravity="center_vertical"
-            android:text="10"
             app:layout_constraintBottom_toBottomOf="@+id/quest_coins"
             app:layout_constraintLeft_toRightOf="@+id/quest_coins"
             app:layout_constraintTop_toTopOf="@+id/quest_coins" />
@@ -210,13 +176,48 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="0dp"
-            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="0dp"
             android:gravity="center_vertical"
-            android:text="+12 XP"
             app:layout_constraintBottom_toBottomOf="@+id/quest_reward_points"
             app:layout_constraintLeft_toRightOf="@+id/quest_reward_points"
             app:layout_constraintTop_toTopOf="@+id/quest_reward_points" />
+
+        <LinearLayout
+            android:id="@+id/post_add_quest_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="0dp"
+            android:orientation="horizontal"
+            android:paddingBottom="16dp"
+            android:paddingStart="16dp"
+            android:paddingTop="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view">
+
+            <ImageButton
+                android:id="@+id/post_add_quest"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:duplicateParentState="true" />
+
+            <TextView
+                android:id="@+id/post_added_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginBottom="0dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/post_add_quest_container" />
+        </LinearLayout>
     </android.support.constraint.ConstraintLayout>
 
 

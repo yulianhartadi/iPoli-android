@@ -103,7 +103,7 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
     compile 'com.github.devlight:infinitecycleviewpager:1.0.2'
-    compile 'com.lnikkila:extendedtouchview:0.1.0'
+    compile 'com.lnikkila:extendedtouchview:0.1.1'
     compile 'com.couchbase.lite:couchbase-lite-android:1.4.0'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.0.pr3'
     compile 'com.squareup.okhttp3:okhttp:3.8.0'

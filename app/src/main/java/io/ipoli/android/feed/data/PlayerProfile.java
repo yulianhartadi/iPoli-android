@@ -28,8 +28,8 @@ public class PlayerProfile {
     private String petState;
     private Long createdAt;
     private Map<String, Boolean> postedQuests;
-    private Map<String, Follower> followers;
-    private Map<String, Follower> followings;
+    private Map<String, Boolean> followers;
+    private Map<String, Boolean> following;
 
     public PlayerProfile() {
     }
@@ -124,26 +124,26 @@ public class PlayerProfile {
         this.postedQuests = postedQuests;
     }
 
-    public Map<String, Follower> getFollowers() {
+    public Map<String, Boolean> getFollowers() {
         if (followers == null) {
             followers = new HashMap<>();
         }
         return followers;
     }
 
-    public void setFollowers(Map<String, Follower> followers) {
+    public void setFollowers(Map<String, Boolean> followers) {
         this.followers = followers;
     }
 
-    public Map<String, Follower> getFollowings() {
-        if (followings == null) {
-            followings = new HashMap<>();
+    public Map<String, Boolean> getFollowing() {
+        if (following == null) {
+            following = new HashMap<>();
         }
-        return followings;
+        return following;
     }
 
-    public void setFollowings(Map<String, Follower> followings) {
-        this.followings = followings;
+    public void setFollowing(Map<String, Boolean> following) {
+        this.following = following;
     }
 
     @Exclude
