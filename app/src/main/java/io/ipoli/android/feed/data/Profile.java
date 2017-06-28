@@ -13,8 +13,7 @@ import io.ipoli.android.player.Player;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 6/26/17.
  */
-
-public class PlayerProfile {
+public class Profile {
     private String id;
     private String displayName;
     private String username;
@@ -31,10 +30,10 @@ public class PlayerProfile {
     private Map<String, Boolean> followers;
     private Map<String, Boolean> following;
 
-    public PlayerProfile() {
+    public Profile() {
     }
 
-    public PlayerProfile(Player player, String title) {
+    public Profile(Player player, String title) {
         setId(player.getId());
         setDisplayName(player.getDisplayName());
         setUsername(player.getUsername());

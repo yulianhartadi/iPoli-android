@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.OnDataChangedListener;
-import io.ipoli.android.feed.data.PlayerProfile;
+import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.data.Post;
 
 /**
@@ -41,18 +41,18 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
     }
 
     @Override
-    public void createPlayerProfile(PlayerProfile playerProfile) {
-        DatabaseReference profileRef = database.getReference("/profiles/" + playerProfile.getId());
-        profileRef.setValue(playerProfile);
+    public void createPlayerProfile(Profile profile) {
+        DatabaseReference profileRef = database.getReference("/profiles/" + profile.getId());
+        profileRef.setValue(profile);
     }
 
     @Override
-    public void findPlayerProfile(String playerId, OnDataChangedListener<PlayerProfile> listener) {
+    public void findPlayerProfile(String playerId, OnDataChangedListener<Profile> listener) {
         DatabaseReference profileRef = database.getReference("/profiles/" + playerId);
         profileRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                listener.onDataChanged(dataSnapshot.getValue(PlayerProfile.class));
+                listener.onDataChanged(dataSnapshot.getValue(Profile.class));
             }
 
             @Override
@@ -63,12 +63,12 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
     }
 
     @Override
-    public void listenForPlayerProfile(String playerId, OnDataChangedListener<PlayerProfile> listener) {
+    public void listenForPlayerProfile(String playerId, OnDataChangedListener<Profile> listener) {
         DatabaseReference profileRef = database.getReference("/profiles/" + playerId);
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                listener.onDataChanged(dataSnapshot.getValue(PlayerProfile.class));
+                listener.onDataChanged(dataSnapshot.getValue(Profile.class));
             }
 
             @Override
@@ -111,18 +111,18 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
     }
 
     @Override
-    public void unfollow(PlayerProfile playerProfile, String playerId) {
+    public void unfollow(Profile profile, String playerId) {
         Map<String, Object> update = new HashMap<>();
-        update.put("/profiles/" + playerProfile.getId() + "/followers/" + playerId, null);
-        update.put("/profiles/" + playerId + "/following/" + playerProfile.getId(), null);
+        update.put("/profiles/" + profile.getId() + "/followers/" + playerId, null);
+        update.put("/profiles/" + playerId + "/following/" + profile.getId(), null);
         database.getReference().updateChildren(update);
     }
 
     @Override
-    public void follow(PlayerProfile playerProfile, String playerId) {
+    public void follow(Profile profile, String playerId) {
         Map<String, Object> update = new HashMap<>();
-        update.put("/profiles/" + playerProfile.getId() + "/followers/" + playerId, true);
-        update.put("/profiles/" + playerId + "/following/" + playerProfile.getId(), true);
+        update.put("/profiles/" + profile.getId() + "/followers/" + playerId, true);
+        update.put("/profiles/" + playerId + "/following/" + profile.getId(), true);
         database.getReference().updateChildren(update);
     }
 }

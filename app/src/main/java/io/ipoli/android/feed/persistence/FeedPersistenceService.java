@@ -1,7 +1,7 @@
 package io.ipoli.android.feed.persistence;
 
 import io.ipoli.android.app.persistence.OnDataChangedListener;
-import io.ipoli.android.feed.data.PlayerProfile;
+import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.data.Post;
 
 /**
@@ -12,11 +12,11 @@ public interface FeedPersistenceService {
 
     void addPost(Post post);
 
-    void createPlayerProfile(PlayerProfile playerProfile);
+    void createPlayerProfile(Profile profile);
 
-    void findPlayerProfile(String playerId, OnDataChangedListener<PlayerProfile> listener);
+    void findPlayerProfile(String playerId, OnDataChangedListener<Profile> listener);
 
-    void listenForPlayerProfile(String playerId, OnDataChangedListener<PlayerProfile> listener);
+    void listenForPlayerProfile(String playerId, OnDataChangedListener<Profile> listener);
 
     void removeAllListeners();
 
@@ -26,7 +26,7 @@ public interface FeedPersistenceService {
 
     void addPostToPlayer(Post post, String playerId);
 
-    void unfollow(PlayerProfile playerProfile, String playerId);
+    void unfollow(Profile profile, String playerId);
 
-    void follow(PlayerProfile playerProfile, String playerId);
+    void follow(Profile profile, String playerId);
 }

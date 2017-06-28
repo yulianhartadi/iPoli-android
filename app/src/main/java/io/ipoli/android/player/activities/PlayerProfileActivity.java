@@ -10,6 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -39,7 +40,7 @@ import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.animations.ProgressBarAnimation;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.feed.data.PlayerProfile;
+import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.feed.ui.PostBinder;
@@ -52,7 +53,7 @@ import io.ipoli.android.player.Player;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/27/17.
  */
-public class PlayerProfileActivity extends BaseActivity implements OnDataChangedListener<PlayerProfile> {
+public class PlayerProfileActivity extends BaseActivity implements OnDataChangedListener<Profile> {
 
     @Inject
     FeedPersistenceService feedPersistenceService;
@@ -167,33 +168,42 @@ public class PlayerProfileActivity extends BaseActivity implements OnDataChanged
         numberFormatter = NumberFormat.getNumberInstance();
     }
 
-
     @Override
-    public void onDataChanged(PlayerProfile playerProfile) {
-        playerAvatar.setImageResource(playerProfile.getPlayerAvatar().picture);
-        petAvatar.setImageResource(playerProfile.getPetAvatar().headPicture);
-        GradientDrawable drawable = (GradientDrawable) petState.getBackground();
-        drawable.setColor(ContextCompat.getColor(this, Pet.PetState.valueOf(playerProfile.getPetState()).color));
-        petName.setText(playerProfile.getPetName());
-        playerName.setText(playerProfile.getDisplayName());
-        playerUsername.setText("@" + playerProfile.getUsername());
-        playerDesc.setText(playerProfile.getDescription());
-        playerLevel.setText(getString(R.string.player_profile_level, playerProfile.getLevel(), playerProfile.getTitle()));
-        postCount.setText(String.valueOf(playerProfile.getPostedQuests().size()));
-        followerCount.setText(String.valueOf(playerProfile.getFollowers().size()));
-        followingCount.setText(String.valueOf(playerProfile.getFollowing().size()));
-        updateExperienceProgress(playerProfile);
-        updateFollow(playerProfile);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
-    private void updateFollow(PlayerProfile playerProfile) {
+    @Override
+    public void onDataChanged(Profile profile) {
+        playerAvatar.setImageResource(profile.getPlayerAvatar().picture);
+        petAvatar.setImageResource(profile.getPetAvatar().headPicture);
+        GradientDrawable drawable = (GradientDrawable) petState.getBackground();
+        drawable.setColor(ContextCompat.getColor(this, Pet.PetState.valueOf(profile.getPetState()).color));
+        petName.setText(profile.getPetName());
+        playerName.setText(profile.getDisplayName());
+        playerUsername.setText("@" + profile.getUsername());
+        playerDesc.setText(profile.getDescription());
+        playerLevel.setText(getString(R.string.player_profile_level, profile.getLevel(), profile.getTitle()));
+        postCount.setText(String.valueOf(profile.getPostedQuests().size()));
+        followerCount.setText(String.valueOf(profile.getFollowers().size()));
+        followingCount.setText(String.valueOf(profile.getFollowing().size()));
+        updateExperienceProgress(profile);
+        updateFollow(profile);
+    }
+
+    private void updateFollow(Profile profile) {
         String playerId = getPlayerId();
-        if (playerProfile.getId().equals(playerId)) {
+        if (profile.getId().equals(playerId)) {
             follow.setVisibility(View.GONE);
             return;
         }
         follow.setVisibility(View.VISIBLE);
-        boolean following = playerProfile.isFollowedBy(playerId);
+        boolean following = profile.isFollowedBy(playerId);
         if (following) {
             follow.setText(R.string.following);
         } else {
@@ -208,23 +218,23 @@ public class PlayerProfileActivity extends BaseActivity implements OnDataChanged
             }
 
             if (following) {
-                feedPersistenceService.unfollow(playerProfile, playerId);
+                feedPersistenceService.unfollow(profile, playerId);
             } else {
-                feedPersistenceService.follow(playerProfile, playerId);
+                feedPersistenceService.follow(profile, playerId);
             }
         });
     }
 
-    private void updateExperienceProgress(PlayerProfile playerProfile) {
-        int currentLevel = playerProfile.getLevel();
+    private void updateExperienceProgress(Profile profile) {
+        int currentLevel = profile.getLevel();
         BigInteger requiredXPForCurrentLevel = ExperienceForLevelGenerator.forLevel(currentLevel);
         BigInteger requiredXPForNextLevel = ExperienceForLevelGenerator.forLevel(currentLevel + 1);
         BigDecimal xpForNextLevel = new BigDecimal(requiredXPForNextLevel.subtract(requiredXPForCurrentLevel));
-        BigDecimal currentXP = new BigDecimal(new BigInteger(playerProfile.getExperience()).subtract(requiredXPForCurrentLevel));
+        BigDecimal currentXP = new BigDecimal(new BigInteger(profile.getExperience()).subtract(requiredXPForCurrentLevel));
         int levelProgress = (int) (currentXP.divide(xpForNextLevel, 2, RoundingMode.HALF_UP).doubleValue() * Constants.XP_BAR_MAX_VALUE);
         xpLevelStart.setText(numberFormatter.format(requiredXPForCurrentLevel));
         xpLevelEnd.setText(numberFormatter.format(requiredXPForNextLevel));
-        playerCurrentExperience.setText(getString(R.string.player_profile_current_xp, numberFormatter.format(new BigInteger(playerProfile.getExperience()))));
+        playerCurrentExperience.setText(getString(R.string.player_profile_current_xp, numberFormatter.format(new BigInteger(profile.getExperience()))));
         playerExperienceProgress.setMax(Constants.XP_BAR_MAX_VALUE);
         ProgressBarAnimation anim = new ProgressBarAnimation(playerExperienceProgress, 0, levelProgress);
         anim.setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime));
