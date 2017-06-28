@@ -897,6 +897,17 @@
     <string name="no_more_suggestions">No more suggestions</string>
     <string name="suggestion_accepted">Suggestion accepted</string>
     <string name="achievement_feed">Achievement Feed</string>
+    <string name="sign_in_to_post_message">Please, sign in to share your achievement!</string>
+    <string name="sign_in_to_like_post_message">Please, sign in to like a post</string>
+    <string name="sign_in_to_add_post_as_quest_message">Please, sign in to schedule a posted quest</string>
+    <string name="player_profile_current_xp">Current XP: %s</string>
+    <string name="activity_player_profile_title">Profile</string>
+    <string name="player_profile_level">Level %1$d: %2$s</string>
+    <string name="following">Following</string>
+    <string name="followers">Followers</string>
+    <string name="posts">Posts</string>
+    <string name="sign_in_to_follow_message">Please, sign in to follow players</string>
+    <string name="share_achievement">Share Achievement</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

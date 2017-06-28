@@ -3,6 +3,7 @@ package io.ipoli.android.feed.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -25,6 +26,7 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.activities.SignInActivity;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.feed.data.PlayerProfile;
 import io.ipoli.android.feed.data.Post;
@@ -46,6 +48,9 @@ public class FeedFragment extends BaseFragment {
 
     @Inject
     FeedPersistenceService feedPersistenceService;
+
+    @BindView(R.id.root_container)
+    ViewGroup rootContainer;
 
     @BindView(R.id.feed_list)
     RecyclerView feedList;
@@ -111,24 +116,36 @@ public class FeedFragment extends BaseFragment {
     }
 
     private void onAddQuest(Post post) {
-        String playerId = getPlayerId();
-        if (!post.isAddedByPlayer(playerId)) {
-            feedPersistenceService.addPostToPlayer(post, playerId);
+        Player player = getPlayer();
+        if (player.isGuest()) {
+            Snackbar snackbar = Snackbar.make(rootContainer, R.string.sign_in_to_add_post_as_quest_message, Snackbar.LENGTH_LONG);
+            snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(getContext(), SignInActivity.class)));
+            snackbar.show();
+            return;
+        }
+        if (!post.isAddedByPlayer(player.getId())) {
+            feedPersistenceService.addPostToPlayer(post, player.getId());
         }
         // @TODO show schedule dialog
     }
 
     private void onLikePost(Post post) {
-        String playerId = getPlayerId();
-        if (post.isLikedByPlayer(playerId)) {
-            feedPersistenceService.removeLike(post, playerId);
+        Player player = getPlayer();
+        if (player.isGuest()) {
+            Snackbar snackbar = Snackbar.make(rootContainer, R.string.sign_in_to_like_post_message, Snackbar.LENGTH_LONG);
+            snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(getContext(), SignInActivity.class)));
+            snackbar.show();
+            return;
+        }
+        if (post.isLikedByPlayer(player.getId())) {
+            feedPersistenceService.removeLike(post, player.getId());
         } else {
-            feedPersistenceService.addLike(post, playerId);
+            feedPersistenceService.addLike(post, player.getId());
         }
     }
 
     @OnClick(R.id.add_quest_to_feed)
-    public void onAddQuestToFeed(View view) {
+    public void onAddQuestToFeed(View v) {
         startActivity(new Intent(getContext(), QuestPickerActivity.class));
     }
 

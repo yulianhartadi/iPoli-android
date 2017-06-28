@@ -487,7 +487,7 @@ public class MainActivity extends BaseActivity implements
         long coins = q.getCoins();
 
         Snackbar snackbar = Snackbar
-                .make(contentContainer,
+                .make(findViewById(R.id.root_container),
                         getString(R.string.quest_complete_with_bounty, experience, coins),
                         Snackbar.LENGTH_LONG);
 
@@ -501,6 +501,19 @@ public class MainActivity extends BaseActivity implements
             isRateDialogShown = true;
             new RateDialog().show(getSupportFragmentManager());
         }
+    }
+
+    @Subscribe
+    public void onShareQuest(ShareQuestEvent e) {
+        if(getPlayer().isGuest()) {
+            Snackbar snackbar = Snackbar.make(findViewById(R.id.root_container), R.string.sign_in_to_post_message, Snackbar.LENGTH_LONG);
+            snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(this, SignInActivity.class)));
+            snackbar.show();
+            return;
+        }
+        Intent addPostIntent = new Intent(this, AddPostActivity.class);
+        addPostIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+        startActivity(addPostIntent);
     }
 
     private boolean shouldShowRateDialog() {
@@ -660,14 +673,6 @@ public class MainActivity extends BaseActivity implements
         }
 
         snackbar.show();
-    }
-
-    @Subscribe
-    public void onShareQuest(ShareQuestEvent e) {
-        Intent addPostIntent = new Intent(this, AddPostActivity.class);
-        addPostIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
-        startActivity(addPostIntent);
-//        ShareQuestDialog.show(this, e.quest, eventBus);
     }
 
     @Subscribe

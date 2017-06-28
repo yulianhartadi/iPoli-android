@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -222,7 +223,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="4dp"
-                    android:text="Posts"
+                    android:text="@string/posts"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/post_count" />
 
@@ -234,7 +235,7 @@
                     android:layout_marginEnd="32dp"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="4dp"
-                    android:text="Followers"
+                    android:text="@string/followers"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/follower_count" />
@@ -246,7 +247,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="32dp"
                     android:layout_marginTop="4dp"
-                    android:text="Following"
+                    android:text="@string/following"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/following_count" />
 
@@ -286,6 +287,7 @@
 
                 <Button
                     android:id="@+id/follow"
+                    android:visibility="gone"
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
