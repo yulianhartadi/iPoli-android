@@ -183,17 +183,36 @@ public class PlayerProfileActivity extends BaseActivity implements OnDataChanged
         followerCount.setText(String.valueOf(playerProfile.getFollowers().size()));
         followingCount.setText(String.valueOf(playerProfile.getFollowing().size()));
         updateExperienceProgress(playerProfile);
-        if (!playerProfile.getId().equals(getPlayerId())) {
-            follow.setVisibility(View.VISIBLE);
-            follow.setOnClickListener(v -> {
-                if(getPlayer().isGuest()) {
-                    Snackbar snackbar = Snackbar.make(rootContainer, R.string.sign_in_to_follow_message, Snackbar.LENGTH_LONG);
-                    snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(this, SignInActivity.class)));
-                    snackbar.show();
-                    return;
-                }
-            });
+        updateFollow(playerProfile);
+    }
+
+    private void updateFollow(PlayerProfile playerProfile) {
+        String playerId = getPlayerId();
+        if (playerProfile.getId().equals(playerId)) {
+            follow.setVisibility(View.GONE);
+            return;
         }
+        follow.setVisibility(View.VISIBLE);
+        boolean following = playerProfile.isFollowedBy(playerId);
+        if (following) {
+            follow.setText(R.string.following);
+        } else {
+            follow.setText(R.string.follow);
+        }
+        follow.setOnClickListener(v -> {
+            if (getPlayer().isGuest()) {
+                Snackbar snackbar = Snackbar.make(rootContainer, R.string.sign_in_to_follow_message, Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(this, SignInActivity.class)));
+                snackbar.show();
+                return;
+            }
+
+            if (following) {
+                feedPersistenceService.unfollow(playerProfile, playerId);
+            } else {
+                feedPersistenceService.follow(playerProfile, playerId);
+            }
+        });
     }
 
     private void updateExperienceProgress(PlayerProfile playerProfile) {
@@ -214,7 +233,7 @@ public class PlayerProfileActivity extends BaseActivity implements OnDataChanged
 
     private void onAddQuest(Post post) {
         Player player = getPlayer();
-        if(player.isGuest()) {
+        if (player.isGuest()) {
             Snackbar snackbar = Snackbar.make(rootContainer, R.string.sign_in_to_add_post_as_quest_message, Snackbar.LENGTH_LONG);
             snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(this, SignInActivity.class)));
             snackbar.show();
@@ -228,7 +247,7 @@ public class PlayerProfileActivity extends BaseActivity implements OnDataChanged
 
     private void onLikePost(Post post) {
         Player player = getPlayer();
-        if(player.isGuest()) {
+        if (player.isGuest()) {
             Snackbar snackbar = Snackbar.make(rootContainer, R.string.sign_in_to_like_post_message, Snackbar.LENGTH_LONG);
             snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(this, SignInActivity.class)));
             snackbar.show();

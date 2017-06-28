@@ -187,4 +187,9 @@ public class PlayerProfile {
     public void setPetState(String petState) {
         this.petState = petState;
     }
+
+    @Exclude
+    public boolean isFollowedBy(String playerId) {
+        return getFollowers().containsKey(playerId);
+    }
 }

@@ -111,7 +111,7 @@
             app:layout_constraintTop_toBottomOf="@+id/view"
             app:layout_constraintVertical_bias="0.0">
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/post_like"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
@@ -188,17 +188,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="0dp"
-            android:layout_marginRight="0dp"
+            android:layout_marginEnd="0dp"
             android:layout_marginTop="0dp"
             android:orientation="horizontal"
             android:paddingBottom="16dp"
+            android:paddingEnd="0dp"
             android:paddingStart="16dp"
             android:paddingTop="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view">
 
-            <ImageButton
+            <ImageView
                 android:id="@+id/post_add_quest"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
