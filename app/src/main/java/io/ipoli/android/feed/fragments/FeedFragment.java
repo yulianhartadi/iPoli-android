@@ -100,8 +100,8 @@ public class FeedFragment extends BaseFragment {
 
                 PostBinder.bind(holder, post, getPlayerId());
 
-                holder.likePost.setOnClickListener(v -> onLikePost(post));
-                holder.addQuest.setOnClickListener(v -> onAddQuest(post));
+                holder.likePostContainer.setOnClickListener(v -> onLikePost(post));
+                holder.addQuestContainer.setOnClickListener(v -> onAddQuest(post));
                 holder.postContainer.setOnClickListener(v -> {
                     Intent intent = new Intent(getContext(), PlayerProfileActivity.class);
                     intent.putExtra(Constants.PLAYER_ID_EXTRA_KEY, post.getPlayerId());
