@@ -908,6 +908,7 @@
     <string name="posts">Posts</string>
     <string name="sign_in_to_follow_message">Please, sign in to follow players</string>
     <string name="share_achievement">Share Achievement</string>
+    <string name="follow">follow</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

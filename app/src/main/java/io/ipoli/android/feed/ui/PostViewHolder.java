@@ -4,7 +4,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -58,13 +57,13 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     public TextView questExperience;
 
     @BindView(R.id.post_like)
-    public ImageButton likePost;
+    public ImageView likePost;
 
     @BindView(R.id.post_like_container)
     public ViewGroup likePostContainer;
 
     @BindView(R.id.post_add_quest)
-    public ImageButton addQuest;
+    public ImageView addQuest;
 
     @BindView(R.id.post_add_quest_container)
     public ViewGroup addQuestContainer;

@@ -109,4 +109,20 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
         update.put("/posts/" + post.getId() + "/addedBy/" + playerId, true);
         database.getReference().updateChildren(update);
     }
+
+    @Override
+    public void unfollow(PlayerProfile playerProfile, String playerId) {
+        Map<String, Object> update = new HashMap<>();
+        update.put("/profiles/" + playerProfile.getId() + "/followers/" + playerId, null);
+        update.put("/profiles/" + playerId + "/following/" + playerProfile.getId(), null);
+        database.getReference().updateChildren(update);
+    }
+
+    @Override
+    public void follow(PlayerProfile playerProfile, String playerId) {
+        Map<String, Object> update = new HashMap<>();
+        update.put("/profiles/" + playerProfile.getId() + "/followers/" + playerId, true);
+        update.put("/profiles/" + playerId + "/following/" + playerProfile.getId(), true);
+        database.getReference().updateChildren(update);
+    }
 }
