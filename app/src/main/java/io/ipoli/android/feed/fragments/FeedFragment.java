@@ -28,7 +28,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.activities.SignInActivity;
 import io.ipoli.android.app.utils.ViewUtils;
-import io.ipoli.android.feed.data.PlayerProfile;
+import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.feed.ui.PostBinder;
@@ -82,7 +82,7 @@ public class FeedFragment extends BaseFragment {
             if (profile == null) {
                 Player player = getPlayer();
                 String[] titles = getResources().getStringArray(R.array.player_titles);
-                feedPersistenceService.createPlayerProfile(new PlayerProfile(player, player.getTitle(titles)));
+                feedPersistenceService.createPlayerProfile(new Profile(player, player.getTitle(titles)));
             }
         });
 
