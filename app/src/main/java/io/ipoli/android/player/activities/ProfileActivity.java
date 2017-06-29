@@ -53,7 +53,7 @@ import io.ipoli.android.player.Player;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/27/17.
  */
-public class PlayerProfileActivity extends BaseActivity implements OnDataChangedListener<Profile> {
+public class ProfileActivity extends BaseActivity implements OnDataChangedListener<Profile> {
 
     @Inject
     FeedPersistenceService feedPersistenceService;
@@ -127,7 +127,7 @@ public class PlayerProfileActivity extends BaseActivity implements OnDataChanged
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         App.getAppComponent(this).inject(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_player_profile);
+        setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);
 
         playerId = getIntent().getStringExtra(Constants.PLAYER_ID_EXTRA_KEY);
@@ -273,7 +273,7 @@ public class PlayerProfileActivity extends BaseActivity implements OnDataChanged
     @Override
     protected void onStart() {
         super.onStart();
-        feedPersistenceService.listenForPlayerProfile(playerId, this);
+        feedPersistenceService.listenForProfile(playerId, this);
     }
 
     @Override
