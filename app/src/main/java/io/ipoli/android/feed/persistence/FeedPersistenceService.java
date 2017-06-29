@@ -12,11 +12,11 @@ public interface FeedPersistenceService {
 
     void addPost(Post post);
 
-    void createPlayerProfile(Profile profile);
+    void createProfile(Profile profile);
 
-    void findPlayerProfile(String playerId, OnDataChangedListener<Profile> listener);
+    void findProfile(String playerId, OnDataChangedListener<Profile> listener);
 
-    void listenForPlayerProfile(String playerId, OnDataChangedListener<Profile> listener);
+    void listenForProfile(String playerId, OnDataChangedListener<Profile> listener);
 
     void removeAllListeners();
 

@@ -34,7 +34,7 @@ import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.feed.ui.PostBinder;
 import io.ipoli.android.feed.ui.PostViewHolder;
 import io.ipoli.android.player.Player;
-import io.ipoli.android.player.activities.PlayerProfileActivity;
+import io.ipoli.android.player.activities.ProfileActivity;
 import io.ipoli.android.quest.activities.QuestPickerActivity;
 
 import static io.ipoli.android.app.App.getPlayerId;
@@ -78,11 +78,11 @@ public class FeedFragment extends BaseFragment {
         feedList.setLayoutManager(layoutManager);
 
         // @TODO remove this
-        feedPersistenceService.findPlayerProfile(getPlayerId(), profile -> {
+        feedPersistenceService.findProfile(getPlayerId(), profile -> {
             if (profile == null) {
                 Player player = getPlayer();
                 String[] titles = getResources().getStringArray(R.array.player_titles);
-                feedPersistenceService.createPlayerProfile(new Profile(player, player.getTitle(titles)));
+                feedPersistenceService.createProfile(new Profile(player, player.getTitle(titles)));
             }
         });
 
@@ -103,7 +103,7 @@ public class FeedFragment extends BaseFragment {
                 holder.likePostContainer.setOnClickListener(v -> onLikePost(post));
                 holder.addQuestContainer.setOnClickListener(v -> onAddQuest(post));
                 holder.postContainer.setOnClickListener(v -> {
-                    Intent intent = new Intent(getContext(), PlayerProfileActivity.class);
+                    Intent intent = new Intent(getContext(), ProfileActivity.class);
                     intent.putExtra(Constants.PLAYER_ID_EXTRA_KEY, post.getPlayerId());
                     startActivity(intent);
                 });

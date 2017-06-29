@@ -41,13 +41,13 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
     }
 
     @Override
-    public void createPlayerProfile(Profile profile) {
+    public void createProfile(Profile profile) {
         DatabaseReference profileRef = database.getReference("/profiles/" + profile.getId());
         profileRef.setValue(profile);
     }
 
     @Override
-    public void findPlayerProfile(String playerId, OnDataChangedListener<Profile> listener) {
+    public void findProfile(String playerId, OnDataChangedListener<Profile> listener) {
         DatabaseReference profileRef = database.getReference("/profiles/" + playerId);
         profileRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -63,7 +63,7 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
     }
 
     @Override
-    public void listenForPlayerProfile(String playerId, OnDataChangedListener<Profile> listener) {
+    public void listenForProfile(String playerId, OnDataChangedListener<Profile> listener) {
         DatabaseReference profileRef = database.getReference("/profiles/" + playerId);
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
