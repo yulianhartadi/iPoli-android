@@ -57,6 +57,7 @@ import io.ipoli.android.app.exceptions.SignInException;
 import io.ipoli.android.app.ui.dialogs.LoadingDialog;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
@@ -96,7 +97,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     TextInputEditText usernameView;
 
     @BindView(R.id.existing_player)
-    CheckBox existingPlayer;
+    CheckBox existingPlayerView;
 
     @BindView(R.id.google_sign_in)
     SignInButton googleSignInButton;
@@ -141,8 +142,8 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         initFBLogin();
         initGuestLogin();
 
-        existingPlayer.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if(isChecked) {
+        existingPlayerView.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
                 usernameView.setEnabled(false);
                 usernameView.setFocusable(false);
             } else {
@@ -235,24 +236,25 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             return;
         }
 
-        if(existingPlayer.isChecked()) {
+        if (existingPlayerView.isChecked()) {
             createLoadingDialog();
             validationListener.onSuccess();
             return;
         }
 
         String username = usernameView.getText().toString();
-        if(StringUtils.isEmpty(username)) {
+        if (StringUtils.isEmpty(username)) {
             usernameView.setError("Come on, you need username");
             return;
         }
 
+        createLoadingDialog();
         feedPersistenceService.isUsernameAvailable(username, isAvailable -> {
-            if(!isAvailable) {
+            if (!isAvailable) {
+                closeLoadingDialog();
                 usernameView.setError("Sorry, that one is taken");
                 return;
             }
-            createLoadingDialog();
             validationListener.onSuccess();
         });
     }
@@ -335,10 +337,19 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                 authProvider.setEmail(email);
                 eventBus.post(new PlayerSignedInEvent(authProvider.getProvider(), isNew));
                 String usernameText = usernameView.getText().toString();
+                Player existingPlayer = null;
                 if (shouldCreatePlayer) {
-                    createPlayer(playerId, usernameText, SignInActivity.this.displayName, authProvider);
+                    existingPlayer = createPlayer(playerId, usernameText, SignInActivity.this.displayName, authProvider);
                 } else if (isNew) {
                     updatePlayerWithAuthProviderAndUsername(authProvider, usernameText);
+                }
+                if (!existingPlayerView.isChecked() && isNew) {
+                    if (existingPlayer == null) {
+                        existingPlayer = getPlayer();
+                    }
+                    existingPlayer.setId(playerId);
+                    String[] titles = getResources().getStringArray(R.array.player_titles);
+                    feedPersistenceService.createProfile(new Profile(existingPlayer, existingPlayer.getTitle(titles)));
                 }
                 if (!isNew) {
                     pullPlayerDocs(cookies, playerId);
@@ -399,7 +410,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         createPlayer("", "", "", null);
     }
 
-    private void createPlayer(String playerId, String username, String displayName, AuthProvider authProvider) {
+    private Player createPlayer(String playerId, String username, String displayName, AuthProvider authProvider) {
         Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR.code,
                 Constants.DEFAULT_PET_BACKGROUND_PICTURE, Constants.DEFAULT_PET_HP);
 
@@ -422,6 +433,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
         playerPersistenceService.save(player, playerId);
         eventBus.post(new PlayerCreatedEvent(player.getId()));
+        return player;
     }
 
     @Override
