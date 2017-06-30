@@ -198,6 +198,8 @@ public class MainActivity extends BaseActivity implements
                 !EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
             EasyPermissions.requestPermissions(this, getString(R.string.allow_read_calendars_perm_reason_disable_option), RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
         }
+
+        startActivity(new Intent(this, SignInActivity.class));
     }
 
     @Override
