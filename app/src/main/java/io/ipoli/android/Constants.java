@@ -48,7 +48,7 @@ public interface Constants {
 
     String CURRENT_SELECTED_DAY_EXTRA_KEY = "CURRENT_SELECTED_DAY";
 
-    String USERNAME_EXTRA_KEY = "username";
+    String DISPLAY_NAME_EXTRA_KEY = "display_name";
 
     int CALENDAR_EVENT_MIN_DURATION = 15;
 
