@@ -23,6 +23,7 @@ import com.couchbase.lite.replicator.Replication;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.database.FirebaseDatabase;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -326,6 +327,9 @@ public class App extends MultiDexApplication {
                 .enableForegroundTracking(this)
                 .trackSessionEvents(false);
 
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        db.setPersistenceEnabled(true);
+
         getAppComponent(this).inject(this);
 
         registerServices();
@@ -472,6 +476,9 @@ public class App extends MultiDexApplication {
                 eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
             }
         }
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        db.getReference("/").keepSynced(false);
+        db.getReference("/profiles/" + getPlayerId()).keepSynced(true);
 
         scheduleDateChanged();
         scheduleNextReminder();

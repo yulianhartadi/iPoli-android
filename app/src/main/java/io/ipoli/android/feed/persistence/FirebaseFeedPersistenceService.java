@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.OnDataChangedListener;
-import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.data.Post;
+import io.ipoli.android.feed.data.Profile;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -42,8 +42,10 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
 
     @Override
     public void createPlayerProfile(Profile profile) {
-        DatabaseReference profileRef = database.getReference("/profiles/" + profile.getId());
-        profileRef.setValue(profile);
+        Map<String, Object> update = new HashMap<>();
+        update.put("/profiles/" + profile.getId(), profile);
+        update.put("/usernames/" + profile.getUsername(), profile.getId());
+        database.getReference().updateChildren(update);
     }
 
     @Override
@@ -78,6 +80,27 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
         };
         valueListeners.put(valueEventListener, profileRef);
         profileRef.addValueEventListener(valueEventListener);
+    }
+
+    @Override
+    public void isUsernameAvailable(String username, OnDataChangedListener<Boolean> listener) {
+        DatabaseReference usernamesRef = database.getReference("/usernames/" + username);
+        usernamesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Object result = dataSnapshot.getValue();
+                if (result == null) {
+                    listener.onDataChanged(true);
+                } else {
+                    listener.onDataChanged(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
