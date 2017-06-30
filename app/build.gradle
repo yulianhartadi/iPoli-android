@@ -18,7 +18,6 @@ android {
         threadCount 8
     }
 
-
     defaultConfig {
         applicationId "io.ipoli.android"
         multiDexEnabled true
@@ -81,10 +80,13 @@ dependencies {
     compile('org.antlr:antlr-runtime:3.5.2') {
         exclude group: "org.antlr", module: "stringtemplate"
     }
-    compile 'com.google.firebase:firebase-crash:11.0.1'
-    compile 'com.google.firebase:firebase-invites:11.0.1'
-    compile 'com.google.android.gms:play-services-auth:11.0.1'
-    compile 'com.firebaseui:firebase-ui-database:2.0.1'
+    compile 'com.google.firebase:firebase-crash:11.0.2'
+    compile 'com.google.firebase:firebase-invites:11.0.2'
+    compile 'com.google.firebase:firebase-database:11.0.2'
+    compile 'com.google.android.gms:play-services-auth:11.0.2'
+    compile('com.firebaseui:firebase-ui-database:2.0.1') {
+        exclude group: 'com.google.firebase'
+    }
     compile 'com.amplitude:android-sdk:2.13.4'
     compile 'com.facebook.android:facebook-android-sdk:4.23.0'
     compile 'com.android.support:appcompat-v7:25.3.1'
