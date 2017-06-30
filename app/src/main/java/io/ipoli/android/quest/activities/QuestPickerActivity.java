@@ -109,8 +109,8 @@ public class QuestPickerActivity extends BaseActivity {
             allQuests = new ArrayList<>();
             allQuests.addAll(result);
 
-            feedPersistenceService.listenForPlayerProfile(getPlayerId(), playerProfile -> {
-                Map<String, Boolean> postedQuests = playerProfile.getPostedQuests();
+            feedPersistenceService.listenForProfile(getPlayerId(), profile -> {
+                Map<String, Boolean> postedQuests = profile.getPostedQuests();
                 Iterator<Quest> it = allQuests.iterator();
                 while (it.hasNext()) {
                     Quest q = it.next();
@@ -197,7 +197,6 @@ public class QuestPickerActivity extends BaseActivity {
     public void onQuestPicked(QuestPickedEvent e) {
         if(getPlayer().isGuest()) {
             Snackbar snackbar = Snackbar.make(rootContainer, R.string.sign_in_to_post_message, Snackbar.LENGTH_LONG);
-//            snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.colorPrimary));
             snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(this, SignInActivity.class)));
             snackbar.show();
             return;

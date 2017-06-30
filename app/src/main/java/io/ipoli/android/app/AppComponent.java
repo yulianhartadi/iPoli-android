@@ -53,7 +53,7 @@ import io.ipoli.android.feed.activities.AddPostActivity;
 import io.ipoli.android.feed.fragments.FeedFragment;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.player.UpgradeDialog;
-import io.ipoli.android.player.activities.PlayerProfileActivity;
+import io.ipoli.android.player.activities.ProfileActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.AddRepeatingQuestActivity;
@@ -274,7 +274,7 @@ public interface AppComponent {
 
     void inject(QuestPickerActivity questPickerActivity);
 
-    void inject(PlayerProfileActivity playerProfileActivity);
+    void inject(ProfileActivity profileActivity);
 
     void inject(FeedFragment feedFragment);
 }
