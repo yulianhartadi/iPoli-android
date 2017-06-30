@@ -1,8 +1,8 @@
 package io.ipoli.android.feed.persistence;
 
 import io.ipoli.android.app.persistence.OnDataChangedListener;
-import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.data.Post;
+import io.ipoli.android.feed.data.Profile;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -17,6 +17,8 @@ public interface FeedPersistenceService {
     void findPlayerProfile(String playerId, OnDataChangedListener<Profile> listener);
 
     void listenForPlayerProfile(String playerId, OnDataChangedListener<Profile> listener);
+
+    void isUsernameAvailable(String username, OnDataChangedListener<Boolean> listener);
 
     void removeAllListeners();
 
