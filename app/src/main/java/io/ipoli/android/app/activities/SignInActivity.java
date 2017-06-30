@@ -235,6 +235,12 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             return;
         }
 
+        if(existingPlayer.isChecked()) {
+            createLoadingDialog();
+            validationListener.onSuccess();
+            return;
+        }
+
         String username = usernameView.getText().toString();
         if(StringUtils.isEmpty(username)) {
             usernameView.setError("Come on, you need username");
@@ -328,14 +334,14 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
                 authProvider.setEmail(email);
                 eventBus.post(new PlayerSignedInEvent(authProvider.getProvider(), isNew));
+                String usernameText = usernameView.getText().toString();
                 if (shouldCreatePlayer) {
-                    createPlayer(playerId, usernameView.getText().toString(), SignInActivity.this.displayName, authProvider);
+                    createPlayer(playerId, usernameText, SignInActivity.this.displayName, authProvider);
                 } else if (isNew) {
-                    updatePlayerWithAuthProvider(authProvider);
+                    updatePlayerWithAuthProviderAndUsername(authProvider, usernameText);
                 }
                 if (!isNew) {
                     pullPlayerDocs(cookies, playerId);
-
                 } else {
                     eventBus.post(new StartReplicationEvent(cookies));
                     onFinish();
@@ -379,17 +385,18 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         pull.start();
     }
 
-    private void updatePlayerWithAuthProvider(AuthProvider authProvider) {
+    private void updatePlayerWithAuthProviderAndUsername(AuthProvider authProvider, String username) {
         Player player = getPlayer();
         player.setCurrentAuthProvider(authProvider);
         List<AuthProvider> authProviders = new ArrayList<>();
         authProviders.add(authProvider);
         player.setAuthProviders(authProviders);
+        player.setUsername(username);
         playerPersistenceService.save(player);
     }
 
     private void createPlayer() {
-        createPlayer(null, "", "", null);
+        createPlayer("", "", "", null);
     }
 
     private void createPlayer(String playerId, String username, String displayName, AuthProvider authProvider) {
