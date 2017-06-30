@@ -224,7 +224,7 @@
                 android:value=".MainActivity" />
         </activity>
         <activity
-            android:name=".player.activities.PlayerProfileActivity"
+            android:name=".player.activities.ProfileActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.facebook.FacebookActivity"

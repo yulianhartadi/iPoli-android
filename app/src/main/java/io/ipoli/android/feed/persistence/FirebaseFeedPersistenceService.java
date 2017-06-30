@@ -41,7 +41,7 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
     }
 
     @Override
-    public void createPlayerProfile(Profile profile) {
+    public void createProfile(Profile profile) {
         Map<String, Object> update = new HashMap<>();
         update.put("/profiles/" + profile.getId(), profile);
         update.put("/usernames/" + profile.getUsername(), profile.getId());
@@ -49,7 +49,7 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
     }
 
     @Override
-    public void findPlayerProfile(String playerId, OnDataChangedListener<Profile> listener) {
+    public void findProfile(String playerId, OnDataChangedListener<Profile> listener) {
         DatabaseReference profileRef = database.getReference("/profiles/" + playerId);
         profileRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -65,7 +65,7 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
     }
 
     @Override
-    public void listenForPlayerProfile(String playerId, OnDataChangedListener<Profile> listener) {
+    public void listenForProfile(String playerId, OnDataChangedListener<Profile> listener) {
         DatabaseReference profileRef = database.getReference("/profiles/" + playerId);
         ValueEventListener valueEventListener = new ValueEventListener() {
             @Override
