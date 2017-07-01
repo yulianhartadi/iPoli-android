@@ -912,6 +912,7 @@
     <string name="username_is_taken">Sorry, that one is taken</string>
     <string name="username_is_empty">Come on, you need username</string>
     <string name="username_picker_title">Choose your username</string>
+    <string name="username_wrong_format">Use only letters, digits and _</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

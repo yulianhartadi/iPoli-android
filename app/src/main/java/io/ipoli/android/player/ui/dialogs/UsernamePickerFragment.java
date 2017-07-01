@@ -88,7 +88,7 @@ public class UsernamePickerFragment extends DialogFragment {
                                     usernameView.setError(getString(R.string.username_is_taken));
                                     break;
                                 default:
-                                    usernameView.setError("Wrong format");
+                                    usernameView.setError(getString(R.string.username_wrong_format));
                             }
                         }
                     });
