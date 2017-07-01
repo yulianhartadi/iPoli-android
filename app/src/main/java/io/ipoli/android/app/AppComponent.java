@@ -55,6 +55,7 @@ import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.player.UpgradeDialog;
 import io.ipoli.android.player.activities.ProfileActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
+import io.ipoli.android.player.ui.dialogs.UsernamePickerFragment;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.AddRepeatingQuestActivity;
 import io.ipoli.android.quest.activities.AgendaActivity;
@@ -277,4 +278,7 @@ public interface AppComponent {
     void inject(ProfileActivity profileActivity);
 
     void inject(FeedFragment feedFragment);
+
+    void inject(UsernamePickerFragment usernamePickerFragment);
+
 }
