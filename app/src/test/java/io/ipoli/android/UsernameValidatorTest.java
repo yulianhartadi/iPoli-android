@@ -78,4 +78,34 @@ public class UsernameValidatorTest {
         UsernameValidator.validate("iPoli", notUniqueFeedPersistenceService, resultListener);
         verify(resultListener).onInvalid(UsernameValidator.UsernameValidationError.NOT_UNIQUE);
     }
+
+    @Test
+    public void validate_usernameWithSpace_callOnInvalidWithFormatError() {
+        UsernameValidator.validate("i Poli", defaultFeedPersistenceService, resultListener);
+        verify(resultListener).onInvalid(UsernameValidator.UsernameValidationError.FORMAT);
+    }
+
+    @Test
+    public void validate_usernameWithSpecialCharacter_callOnInvalidWithFormatError() {
+        UsernameValidator.validate("i*Poli", defaultFeedPersistenceService, resultListener);
+        verify(resultListener).onInvalid(UsernameValidator.UsernameValidationError.FORMAT);
+    }
+
+    @Test
+    public void validate_usernameWithPunctuationMark_callOnInvalidWithFormatError() {
+        UsernameValidator.validate("i.Poli", defaultFeedPersistenceService, resultListener);
+        verify(resultListener).onInvalid(UsernameValidator.UsernameValidationError.FORMAT);
+    }
+
+    @Test
+    public void validate_anotherLanguageUsername_callOnValid() {
+        UsernameValidator.validate("ÁáÂâÃãÀàÇ", defaultFeedPersistenceService, resultListener);
+        verify(resultListener).onValid();
+    }
+
+    @Test
+    public void validate_usernameWithUnderscore_callOnValid() {
+        UsernameValidator.validate("i_Poli", defaultFeedPersistenceService, resultListener);
+        verify(resultListener).onValid();
+    }
 }
