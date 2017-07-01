@@ -44,7 +44,7 @@
                 android:text="@string/continue_as_guest"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView3"
+                app:layout_constraintTop_toBottomOf="@+id/divider_or"
                 fancy:fb_defaultColor="#E0E0E0"
                 fancy:fb_focusColor="#9E9E9E"
                 fancy:fb_textColor="@color/md_dark_text_54"
@@ -160,32 +160,32 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="I already have an account"
-                android:layout_marginLeft="0dp"
                 app:layout_constraintLeft_toLeftOf="@+id/player_username_container"
                 android:layout_marginRight="8dp"
                 app:layout_constraintRight_toRightOf="parent"
                 android:layout_marginTop="16dp"
                 app:layout_constraintTop_toBottomOf="@+id/player_username_container"
                 app:layout_constraintHorizontal_bias="0.0"
-                android:id="@+id/existing_player" />
+                android:id="@+id/existing_player"
+                android:layout_marginEnd="8dp" />
 
             <View
                 android:id="@+id/divider"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="1dp"
-                android:layout_marginBottom="0dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="0dp"
                 android:background="@color/md_dark_text_26"
-                app:layout_constraintBottom_toBottomOf="@+id/textView3"
+                app:layout_constraintBottom_toBottomOf="@+id/divider_or"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/textView3" />
+                app:layout_constraintTop_toTopOf="@+id/divider_or"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp" />
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/divider_or"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"

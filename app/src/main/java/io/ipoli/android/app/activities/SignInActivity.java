@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.couchbase.lite.Database;
@@ -54,6 +55,7 @@ import io.ipoli.android.app.events.FinishSignInActivityEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.exceptions.SignInException;
+import io.ipoli.android.app.ui.UsernameValidator;
 import io.ipoli.android.app.ui.dialogs.LoadingDialog;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
@@ -107,6 +109,12 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @BindView(R.id.guest_login)
     FancyButton guestButton;
+
+    @BindView(R.id.divider)
+    View divider;
+
+    @BindView(R.id.divider_or)
+    TextView dividerOr;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -163,6 +171,8 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     private void initGuestLogin() {
         if (!StringUtils.isEmpty(App.getPlayerId())) {
 //            guestButton.setVisibility(View.GONE);
+//            divider.setVisibility(View.GONE);
+//            dividerOr.setVisibility(View.GONE);
         }
     }
 
@@ -242,20 +252,28 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             return;
         }
 
-        String username = usernameView.getText().toString();
-        if (StringUtils.isEmpty(username)) {
-            usernameView.setError(getString(R.string.username_is_empty));
-            return;
-        }
-
         createLoadingDialog();
-        feedPersistenceService.isUsernameAvailable(username, isAvailable -> {
-            if (!isAvailable) {
-                closeLoadingDialog();
-                usernameView.setError(getString(R.string.username_is_taken));
-                return;
+        String username = usernameView.getText().toString();
+        UsernameValidator.validate(username, feedPersistenceService, new UsernameValidator.ResultListener() {
+            @Override
+            public void onValid() {
+                validationListener.onSuccess();
             }
-            validationListener.onSuccess();
+
+            @Override
+            public void onInvalid(UsernameValidator.UsernameValidationError error) {
+                closeLoadingDialog();
+                switch (error) {
+                    case EMPTY:
+                        usernameView.setError(getString(R.string.username_is_empty));
+                        break;
+                    case NOT_UNIQUE:
+                        usernameView.setError(getString(R.string.username_is_taken));
+                        break;
+                    default:
+                        usernameView.setError("Wrong format");
+                }
+            }
         });
     }
 
