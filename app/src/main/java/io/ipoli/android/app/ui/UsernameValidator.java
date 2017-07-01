@@ -1,5 +1,7 @@
 package io.ipoli.android.app.ui;
 
+import java.util.regex.Pattern;
+
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 
@@ -15,7 +17,11 @@ public class UsernameValidator {
             return;
         }
 
-        //validate format
+        Pattern p = Pattern.compile("^\\w+$", Pattern.UNICODE_CHARACTER_CLASS);
+        if(!p.matcher(username).matches()) {
+            resultListener.onInvalid(UsernameValidationError.FORMAT);
+            return;
+        }
 
         feedPersistenceService.isUsernameAvailable(username, isAvailable -> {
             if (!isAvailable) {
