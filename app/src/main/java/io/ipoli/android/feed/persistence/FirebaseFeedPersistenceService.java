@@ -44,7 +44,7 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
     public void createProfile(Profile profile) {
         Map<String, Object> update = new HashMap<>();
         update.put("/profiles/" + profile.getId(), profile);
-        update.put("/usernames/" + profile.getUsername(), profile.getId());
+        update.put("/usernames/" + profile.getUsername().toLowerCase(), profile.getId());
         database.getReference().updateChildren(update);
     }
 
@@ -84,7 +84,7 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
 
     @Override
     public void isUsernameAvailable(String username, OnDataChangedListener<Boolean> listener) {
-        DatabaseReference usernamesRef = database.getReference("/usernames/" + username);
+        DatabaseReference usernamesRef = database.getReference("/usernames/" + username.toLowerCase());
         usernamesRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
