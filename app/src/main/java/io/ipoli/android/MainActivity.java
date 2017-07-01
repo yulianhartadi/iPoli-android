@@ -66,6 +66,7 @@ import io.ipoli.android.app.settings.SettingsActivity;
 import io.ipoli.android.app.share.InviteFriendsDialog;
 import io.ipoli.android.app.sync.AndroidCalendarSyncJobService;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
+import io.ipoli.android.app.ui.dialogs.DateTimePickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.ui.events.StartFabMenuIntentEvent;
 import io.ipoli.android.app.utils.EmailUtils;
@@ -199,7 +200,8 @@ public class MainActivity extends BaseActivity implements
             EasyPermissions.requestPermissions(this, getString(R.string.allow_read_calendars_perm_reason_disable_option), RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
         }
 
-        startActivity(new Intent(this, SignInActivity.class));
+        new DateTimePickerFragment().show(getSupportFragmentManager());
+
     }
 
     @Override
