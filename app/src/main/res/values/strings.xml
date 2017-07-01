@@ -909,6 +909,8 @@
     <string name="sign_in_to_follow_message">Please, sign in to follow players</string>
     <string name="share_achievement">Share Achievement</string>
     <string name="follow">follow</string>
+    <string name="username_is_taken">Sorry, that one is taken</string>
+    <string name="username_is_empty">Come on, you need username</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
