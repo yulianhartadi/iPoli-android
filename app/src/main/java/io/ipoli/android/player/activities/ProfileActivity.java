@@ -40,14 +40,16 @@ import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.animations.ProgressBarAnimation;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.data.Post;
+import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.feed.ui.PostBinder;
 import io.ipoli.android.feed.ui.PostViewHolder;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.player.ui.dialogs.UsernamePickerFragment;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -57,6 +59,9 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
 
     @Inject
     FeedPersistenceService feedPersistenceService;
+
+    @Inject
+    PlayerPersistenceService playerPersistenceService;
 
     @BindView(R.id.root_container)
     ViewGroup rootContainer;
@@ -210,19 +215,27 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
             follow.setText(R.string.follow);
         }
         follow.setOnClickListener(v -> {
-            if (getPlayer().isGuest()) {
-                Snackbar snackbar = Snackbar.make(rootContainer, R.string.sign_in_to_follow_message, Snackbar.LENGTH_LONG);
-                snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(this, SignInActivity.class)));
-                snackbar.show();
-                return;
-            }
-
-            if (following) {
-                feedPersistenceService.unfollow(profile, playerId);
-            } else {
-                feedPersistenceService.follow(profile, playerId);
-            }
+            onFollowPlayer(profile, playerId, following);
         });
+    }
+
+    private void onFollowPlayer(Profile profile, String playerId, boolean following) {
+        if (getPlayer().isGuest()) {
+            Snackbar snackbar = Snackbar.make(rootContainer, R.string.sign_in_to_follow_message, Snackbar.LENGTH_LONG);
+            snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(this, SignInActivity.class)));
+            snackbar.show();
+            return;
+        }
+        Player player = getPlayer();
+        if (player.doesNotHaveUsername()) {
+            pickUsername(player);
+            return;
+        }
+        if (following) {
+            feedPersistenceService.unfollow(profile, playerId);
+        } else {
+            feedPersistenceService.follow(profile, playerId);
+        }
     }
 
     private void updateExperienceProgress(Profile profile) {
@@ -249,6 +262,10 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
             snackbar.show();
             return;
         }
+        if (player.doesNotHaveUsername()) {
+            pickUsername(player);
+            return;
+        }
         if (!post.isAddedByPlayer(player.getId())) {
             feedPersistenceService.addPostToPlayer(post, player.getId());
         }
@@ -263,11 +280,24 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
             snackbar.show();
             return;
         }
+        if (player.doesNotHaveUsername()) {
+            pickUsername(player);
+            return;
+        }
         if (post.isLikedByPlayer(player.getId())) {
             feedPersistenceService.removeLike(post, player.getId());
         } else {
             feedPersistenceService.addLike(post, player.getId());
         }
+    }
+
+    private void pickUsername(Player player) {
+        UsernamePickerFragment.newInstance(username -> {
+            player.setUsername(username);
+            playerPersistenceService.save(player);
+            String[] titles = getResources().getStringArray(R.array.player_titles);
+            feedPersistenceService.createProfile(new Profile(player, player.getTitle(titles)));
+        }).show(getSupportFragmentManager());
     }
 
     @Override

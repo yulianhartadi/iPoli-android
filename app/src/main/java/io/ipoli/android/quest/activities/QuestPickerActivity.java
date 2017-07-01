@@ -2,7 +2,6 @@ package io.ipoli.android.quest.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,7 +28,6 @@ import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
-import io.ipoli.android.app.activities.SignInActivity;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
@@ -195,12 +193,6 @@ public class QuestPickerActivity extends BaseActivity {
 
     @Subscribe
     public void onQuestPicked(QuestPickedEvent e) {
-        if(getPlayer().isGuest()) {
-            Snackbar snackbar = Snackbar.make(rootContainer, R.string.sign_in_to_post_message, Snackbar.LENGTH_LONG);
-            snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(this, SignInActivity.class)));
-            snackbar.show();
-            return;
-        }
         Intent addPostIntent = new Intent(this, AddPostActivity.class);
         addPostIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
         startActivity(addPostIntent);
