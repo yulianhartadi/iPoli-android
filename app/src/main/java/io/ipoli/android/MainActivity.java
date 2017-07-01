@@ -73,7 +73,9 @@ import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.feed.activities.AddPostActivity;
+import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.fragments.FeedFragment;
+import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
@@ -113,6 +115,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 import static io.ipoli.android.Constants.RC_CALENDAR_PERM;
 import static io.ipoli.android.Constants.SYNC_CALENDAR_JOB_ID;
+import static io.ipoli.android.R.id.feed;
 import static io.ipoli.android.app.App.hasPlayer;
 
 public class MainActivity extends BaseActivity implements
@@ -142,6 +145,9 @@ public class MainActivity extends BaseActivity implements
 
     @Inject
     PlayerPersistenceService playerPersistenceService;
+
+    @Inject
+    FeedPersistenceService feedPersistenceService;
 
     @Inject
     UpgradeManager upgradeManager;
@@ -315,7 +321,7 @@ public class MainActivity extends BaseActivity implements
                 changeCurrentFragment(new RewardListFragment());
                 break;
 
-            case R.id.feed:
+            case feed:
                 source = EventSource.FEED;
                 changeCurrentFragment(new FeedFragment());
                 break;
@@ -509,15 +515,18 @@ public class MainActivity extends BaseActivity implements
     @Subscribe
     public void onShareQuest(ShareQuestEvent e) {
         Player player = getPlayer();
-        if(player.isGuest()) {
+        if (player.isGuest()) {
             Snackbar snackbar = Snackbar.make(findViewById(R.id.root_container), R.string.sign_in_to_post_message, Snackbar.LENGTH_LONG);
             snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(this, SignInActivity.class)));
             snackbar.show();
             return;
         }
-        if(player.doesNotHaveProfile()) {
+        if (player.doesNotHaveUsername()) {
             UsernamePickerFragment.newInstance(username -> {
-
+                player.setUsername(username);
+                playerPersistenceService.save(player);
+                String[] titles = getResources().getStringArray(R.array.player_titles);
+                feedPersistenceService.createProfile(new Profile(player, player.getTitle(titles)));
             }).show(getSupportFragmentManager());
             return;
         }

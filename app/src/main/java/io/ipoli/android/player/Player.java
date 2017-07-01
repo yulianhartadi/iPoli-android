@@ -463,7 +463,7 @@ public class Player extends PersistedObject {
     }
 
     @JsonIgnore
-    public boolean doesNotHaveProfile() {
+    public boolean doesNotHaveUsername() {
         return StringUtils.isEmpty(username);
     }
 }

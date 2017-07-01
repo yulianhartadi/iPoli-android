@@ -28,13 +28,15 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.activities.SignInActivity;
 import io.ipoli.android.app.utils.ViewUtils;
-import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.data.Post;
+import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.feed.ui.PostBinder;
 import io.ipoli.android.feed.ui.PostViewHolder;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.ProfileActivity;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.player.ui.dialogs.UsernamePickerFragment;
 import io.ipoli.android.quest.activities.QuestPickerActivity;
 
 import static io.ipoli.android.app.App.getPlayerId;
@@ -48,6 +50,9 @@ public class FeedFragment extends BaseFragment {
 
     @Inject
     FeedPersistenceService feedPersistenceService;
+
+    @Inject
+    PlayerPersistenceService playerPersistenceService;
 
     @BindView(R.id.root_container)
     ViewGroup rootContainer;
@@ -119,8 +124,12 @@ public class FeedFragment extends BaseFragment {
         Player player = getPlayer();
         if (player.isGuest()) {
             Snackbar snackbar = Snackbar.make(rootContainer, R.string.sign_in_to_add_post_as_quest_message, Snackbar.LENGTH_LONG);
-            snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(getContext(), SignInActivity.class)));
+            snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(getActivity(), SignInActivity.class)));
             snackbar.show();
+            return;
+        }
+        if (player.doesNotHaveUsername()) {
+            pickUsername(player);
             return;
         }
         if (!post.isAddedByPlayer(player.getId())) {
@@ -129,12 +138,25 @@ public class FeedFragment extends BaseFragment {
         // @TODO show schedule dialog
     }
 
+    private void pickUsername(Player player) {
+        UsernamePickerFragment.newInstance(username -> {
+            player.setUsername(username);
+            playerPersistenceService.save(player);
+            String[] titles = getResources().getStringArray(R.array.player_titles);
+            feedPersistenceService.createProfile(new Profile(player, player.getTitle(titles)));
+        }).show(getFragmentManager());
+    }
+
     private void onLikePost(Post post) {
         Player player = getPlayer();
         if (player.isGuest()) {
             Snackbar snackbar = Snackbar.make(rootContainer, R.string.sign_in_to_like_post_message, Snackbar.LENGTH_LONG);
-            snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(getContext(), SignInActivity.class)));
+            snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(getActivity(), SignInActivity.class)));
             snackbar.show();
+            return;
+        }
+        if (player.doesNotHaveUsername()) {
+            pickUsername(player);
             return;
         }
         if (post.isLikedByPlayer(player.getId())) {
@@ -146,6 +168,17 @@ public class FeedFragment extends BaseFragment {
 
     @OnClick(R.id.add_quest_to_feed)
     public void onAddQuestToFeed(View v) {
+        Player player = getPlayer();
+        if (player.isGuest()) {
+            Snackbar snackbar = Snackbar.make(rootContainer, R.string.sign_in_to_post_message, Snackbar.LENGTH_LONG);
+            snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(getActivity(), SignInActivity.class)));
+            snackbar.show();
+            return;
+        }
+        if (player.doesNotHaveUsername()) {
+            pickUsername(player);
+            return;
+        }
         startActivity(new Intent(getContext(), QuestPickerActivity.class));
     }
 
