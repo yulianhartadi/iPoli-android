@@ -244,7 +244,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
         String username = usernameView.getText().toString();
         if (StringUtils.isEmpty(username)) {
-            usernameView.setError("Come on, you need username");
+            usernameView.setError(getString(R.string.username_is_empty));
             return;
         }
 
@@ -252,7 +252,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         feedPersistenceService.isUsernameAvailable(username, isAvailable -> {
             if (!isAvailable) {
                 closeLoadingDialog();
-                usernameView.setError("Sorry, that one is taken");
+                usernameView.setError(getString(R.string.username_is_taken));
                 return;
             }
             validationListener.onSuccess();
