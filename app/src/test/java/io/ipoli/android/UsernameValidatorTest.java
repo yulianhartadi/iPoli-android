@@ -98,12 +98,6 @@ public class UsernameValidatorTest {
     }
 
     @Test
-    public void validate_anotherLanguageUsername_callOnValid() {
-        UsernameValidator.validate("ÁáÂâÃãÀàÇ", defaultFeedPersistenceService, resultListener);
-        verify(resultListener).onValid();
-    }
-
-    @Test
     public void validate_usernameWithUnderscore_callOnValid() {
         UsernameValidator.validate("i_Poli", defaultFeedPersistenceService, resultListener);
         verify(resultListener).onValid();

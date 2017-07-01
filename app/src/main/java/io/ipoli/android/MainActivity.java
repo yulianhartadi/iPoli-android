@@ -85,6 +85,7 @@ import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.player.ui.dialogs.UsernamePickerFragment;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
@@ -507,10 +508,17 @@ public class MainActivity extends BaseActivity implements
 
     @Subscribe
     public void onShareQuest(ShareQuestEvent e) {
-        if(getPlayer().isGuest()) {
+        Player player = getPlayer();
+        if(player.isGuest()) {
             Snackbar snackbar = Snackbar.make(findViewById(R.id.root_container), R.string.sign_in_to_post_message, Snackbar.LENGTH_LONG);
             snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(this, SignInActivity.class)));
             snackbar.show();
+            return;
+        }
+        if(player.doesNotHaveProfile()) {
+            UsernamePickerFragment.newInstance(username -> {
+
+            }).show(getSupportFragmentManager());
             return;
         }
         Intent addPostIntent = new Intent(this, AddPostActivity.class);
