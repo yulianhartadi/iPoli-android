@@ -1,5 +1,6 @@
 package io.ipoli.android;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -101,5 +102,27 @@ public class UsernameValidatorTest {
     public void validate_usernameWithUnderscore_callOnValid() {
         UsernameValidator.validate("i_Poli", defaultFeedPersistenceService, resultListener);
         verify(resultListener).onValid();
+    }
+
+    @Test
+    public void validate_usernameWithBulgarianChars_callOnInvalidWithFormatError() {
+        UsernameValidator.validate("AsГуйчо1", defaultFeedPersistenceService, resultListener);
+        verify(resultListener).onInvalid(UsernameValidator.UsernameValidationError.FORMAT);
+    }
+
+    @Test
+    public void validate_tooShortUsername_callOnInvalidWithLengthError() {
+        UsernameValidator.validate(generateUsername(UsernameValidator.MIN_LENGTH - 1), defaultFeedPersistenceService, resultListener);
+        verify(resultListener).onInvalid(UsernameValidator.UsernameValidationError.LENGTH);
+    }
+
+    @Test
+    public void validate_tooLongUsername_callOnInvalidWithLengthError() {
+        UsernameValidator.validate(generateUsername(UsernameValidator.MAX_LENGTH + 1), defaultFeedPersistenceService, resultListener);
+        verify(resultListener).onInvalid(UsernameValidator.UsernameValidationError.LENGTH);
+    }
+
+    private String generateUsername(int length) {
+        return RandomStringUtils.randomAlphanumeric(length);
     }
 }
