@@ -461,4 +461,9 @@ public class Player extends PersistedObject {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @JsonIgnore
+    public boolean doesNotHaveProfile() {
+        return StringUtils.isEmpty(username);
+    }
 }

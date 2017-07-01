@@ -17,7 +17,7 @@ public class UsernameValidator {
             return;
         }
 
-        Pattern p = Pattern.compile("^\\w+$", Pattern.UNICODE_CHARACTER_CLASS);
+        Pattern p = Pattern.compile("^\\w+$");
         if(!p.matcher(username).matches()) {
             resultListener.onInvalid(UsernameValidationError.FORMAT);
             return;

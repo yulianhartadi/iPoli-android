@@ -1,6 +1,7 @@
 package io.ipoli.android.player.ui.dialogs;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 
 import javax.inject.Inject;
 
@@ -70,35 +72,44 @@ public class UsernamePickerFragment extends DialogFragment {
                 .setView(view)
                 .setTitle(R.string.username_picker_title)
                 .setPositiveButton(getString(R.string.help_dialog_ok), (dialog, which) -> {
-                    String username = usernameView.getText().toString();
-                    UsernameValidator.validate(username, feedPersistenceService, new UsernameValidator.ResultListener() {
-                        @Override
-                        public void onValid() {
-                            hideKeyboard(getDialog());
-                            usernamePickedListener.onUsernamePicked(username);
-                        }
-
-                        @Override
-                        public void onInvalid(UsernameValidator.UsernameValidationError error) {
-                            switch (error) {
-                                case EMPTY:
-                                    usernameView.setError(getString(R.string.username_is_empty));
-                                    break;
-                                case NOT_UNIQUE:
-                                    usernameView.setError(getString(R.string.username_is_taken));
-                                    break;
-                                default:
-                                    usernameView.setError(getString(R.string.username_wrong_format));
-                            }
-                        }
-                    });
-
                 })
                 .setNegativeButton(R.string.cancel, (dialog, which) -> {
                     hideKeyboard(getDialog());
                 });
-        return builder.create();
+        AlertDialog dialog = builder.create();
+        dialog.setOnShowListener(d -> onShowDialog(dialog));
+        return dialog;
     }
+
+    private void onShowDialog(AlertDialog dialog) {
+        Button positiveButton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        positiveButton.setOnClickListener(v -> {
+            String username = usernameView.getText().toString();
+            UsernameValidator.validate(username, feedPersistenceService, new UsernameValidator.ResultListener() {
+                @Override
+                public void onValid() {
+                    hideKeyboard(getDialog());
+                    usernamePickedListener.onUsernamePicked(username);
+                    dismiss();
+                }
+
+                @Override
+                public void onInvalid(UsernameValidator.UsernameValidationError error) {
+                    switch (error) {
+                        case EMPTY:
+                            usernameView.setError(getString(R.string.username_is_empty));
+                            break;
+                        case NOT_UNIQUE:
+                            usernameView.setError(getString(R.string.username_is_taken));
+                            break;
+                        default:
+                            usernameView.setError(getString(R.string.username_wrong_format));
+                    }
+                }
+            });
+        });
+    }
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
