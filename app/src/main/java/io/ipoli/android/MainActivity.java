@@ -74,6 +74,7 @@ import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.feed.activities.AddPostActivity;
+import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.fragments.FeedFragment;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.pet.PetActivity;
@@ -85,10 +86,12 @@ import io.ipoli.android.player.PlayerCredentialsHandler;
 import io.ipoli.android.player.UpgradeDialog;
 import io.ipoli.android.player.UpgradeDialog.OnUnlockListener;
 import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.player.activities.ProfileActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.player.ui.dialogs.UsernamePickerFragment;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
@@ -118,6 +121,10 @@ import static io.ipoli.android.Constants.RC_CALENDAR_PERM;
 import static io.ipoli.android.Constants.SYNC_CALENDAR_JOB_ID;
 import static io.ipoli.android.R.id.feed;
 import static io.ipoli.android.app.App.hasPlayer;
+import static io.ipoli.android.player.PlayerCredentialChecker.Status.AUTHORIZED;
+import static io.ipoli.android.player.PlayerCredentialChecker.Status.GUEST;
+import static io.ipoli.android.player.PlayerCredentialChecker.Status.NO_USERNAME;
+import static io.ipoli.android.player.PlayerCredentialChecker.checkStatus;
 
 public class MainActivity extends BaseActivity implements
         NavigationView.OnNavigationItemSelectedListener,
@@ -384,6 +391,30 @@ public class MainActivity extends BaseActivity implements
     private void updatePlayerInDrawer(Player player) {
 
         View header = navigationView.getHeaderView(0);
+        header.setOnClickListener(v -> {
+            PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
+            if (status == AUTHORIZED) {
+                startProfileActivity(player);
+                return;
+            }
+            if(!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+                Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
+                return;
+            }
+            if(status == GUEST) {
+                Toast.makeText(this, R.string.sign_in_to_view_profile, Toast.LENGTH_LONG).show();
+                return;
+            }
+            if(status == NO_USERNAME) {
+                UsernamePickerFragment.newInstance(username -> {
+                    player.setUsername(username);
+                    playerPersistenceService.save(player);
+                    String[] titles = getResources().getStringArray(R.array.player_titles);
+                    feedPersistenceService.createProfile(new Profile(player, player.getTitle(titles)));
+                    startProfileActivity(player);
+                }).show(getSupportFragmentManager());
+            }
+        });
         TextView level = (TextView) header.findViewById(R.id.player_level);
         int playerLevel = player.getLevel();
         String title = player.getTitle(getResources().getStringArray(R.array.player_titles));
@@ -416,6 +447,12 @@ public class MainActivity extends BaseActivity implements
             signIn.setVisibility(View.VISIBLE);
             signIn.setOnClickListener(v -> startActivity(new Intent(this, SignInActivity.class)));
         }
+    }
+
+    private void startProfileActivity(Player player) {
+        Intent intent = new Intent(this, ProfileActivity.class);
+        intent.putExtra(Constants.PLAYER_ID_EXTRA_KEY, player.getId());
+        startActivity(intent);
     }
 
     private void populateHeaderCoins(Player player, View header) {
@@ -518,13 +555,13 @@ public class MainActivity extends BaseActivity implements
     public void onShareQuest(ShareQuestEvent e) {
         Player player = getPlayer();
 
-        if(NetworkConnectivityUtils.isConnectedToInternet(this)) {
+        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
             return;
         }
 
-        PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
-        if (status != PlayerCredentialChecker.Status.AUTHORIZED) {
+        PlayerCredentialChecker.Status status = checkStatus(player);
+        if (status != AUTHORIZED) {
             playerCredentialsHandler.authorizeAccess(player, status, PlayerCredentialsHandler.Action.SHARE_QUEST,
                     this, findViewById(R.id.root_container));
             return;
