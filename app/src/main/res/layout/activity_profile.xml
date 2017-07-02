@@ -65,6 +65,7 @@
                     android:layout_marginEnd="2dp"
                     android:background="@drawable/ic_context_indicator"
                     android:scaleType="fitXY"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@+id/pet_avatar"
                     app:layout_constraintRight_toRightOf="@+id/pet_avatar" />
 
