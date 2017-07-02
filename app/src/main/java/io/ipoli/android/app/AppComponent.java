@@ -18,6 +18,7 @@ import io.ipoli.android.app.modules.CouchbaseModule;
 import io.ipoli.android.app.modules.LocalStorageModule;
 import io.ipoli.android.app.modules.ObjectMapperModule;
 import io.ipoli.android.app.modules.PersistenceModule;
+import io.ipoli.android.app.modules.PlayerCredentialsModule;
 import io.ipoli.android.app.modules.RewardGeneratorModule;
 import io.ipoli.android.app.modules.SchedulerModule;
 import io.ipoli.android.app.modules.TimeParserModule;
@@ -116,7 +117,8 @@ import io.ipoli.android.store.fragments.UpgradeStoreFragment;
                 ApiModule.class,
                 UrlProviderModule.class,
                 AndroidCalendarModule.class,
-                UpgradesModule.class
+                UpgradesModule.class,
+                PlayerCredentialsModule.class
         }
 )
 public interface AppComponent {
