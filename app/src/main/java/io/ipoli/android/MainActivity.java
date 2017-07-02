@@ -566,9 +566,15 @@ public class MainActivity extends BaseActivity implements
             return;
         }
 
-        Intent addPostIntent = new Intent(this, AddPostActivity.class);
-        addPostIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
-        startActivity(addPostIntent);
+        feedPersistenceService.findProfile(player.getId(), profile -> {
+            if(profile.getPosts().containsValue(e.quest.getId())) {
+                Toast.makeText(this, R.string.achievement_already_shared, Toast.LENGTH_LONG).show();
+                return;
+            }
+            Intent addPostIntent = new Intent(this, AddPostActivity.class);
+            addPostIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+            startActivity(addPostIntent);
+        });
     }
 
     private boolean shouldShowRateDialog() {
