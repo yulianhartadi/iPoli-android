@@ -190,6 +190,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     public void onDataChanged(Profile profile) {
         playerAvatar.setImageResource(profile.getPlayerAvatar().picture);
         petAvatar.setImageResource(profile.getPetAvatar().headPicture);
+        petState.setVisibility(View.VISIBLE);
         GradientDrawable drawable = (GradientDrawable) petState.getBackground();
         drawable.setColor(ContextCompat.getColor(this, Pet.PetState.valueOf(profile.getPetState()).color));
         petName.setText(profile.getPetName());
@@ -223,7 +224,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     }
 
     private void onFollowPlayer(Profile profile, String playerId, boolean following) {
-        if(!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
             return;
         }
@@ -260,7 +261,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     }
 
     private void onAddQuest(Post post) {
-        if(!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
             return;
         }
@@ -280,7 +281,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     }
 
     private void onLikePost(Post post) {
-        if(!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
             return;
         }
