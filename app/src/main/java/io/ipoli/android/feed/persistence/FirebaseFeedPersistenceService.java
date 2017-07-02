@@ -1,17 +1,17 @@
 package io.ipoli.android.feed.persistence;
 
-import android.util.Log;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.otto.Bus;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.data.Profile;
@@ -23,10 +23,12 @@ import io.ipoli.android.feed.data.Profile;
 public class FirebaseFeedPersistenceService implements FeedPersistenceService {
 
     private final FirebaseDatabase database;
+    private final Bus eventBus;
     private final Map<ValueEventListener, Query> valueListeners;
 
-    public FirebaseFeedPersistenceService(FirebaseDatabase database) {
+    public FirebaseFeedPersistenceService(FirebaseDatabase database, Bus eventBus) {
         this.database = database;
+        this.eventBus = eventBus;
         valueListeners = new HashMap<>();
     }
 
@@ -53,15 +55,10 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
     @Override
     public void findProfile(String playerId, OnDataChangedListener<Profile> listener) {
         DatabaseReference profileRef = database.getReference("/profiles/" + playerId);
-        profileRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        profileRef.addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 listener.onDataChanged(dataSnapshot.getValue(Profile.class));
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
             }
         });
     }
@@ -69,15 +66,10 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
     @Override
     public void listenForProfile(String playerId, OnDataChangedListener<Profile> listener) {
         DatabaseReference profileRef = database.getReference("/profiles/" + playerId);
-        ValueEventListener valueEventListener = new ValueEventListener() {
+        ValueEventListener valueEventListener = new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 listener.onDataChanged(dataSnapshot.getValue(Profile.class));
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
             }
         };
         valueListeners.put(valueEventListener, profileRef);
@@ -87,7 +79,7 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
     @Override
     public void isUsernameAvailable(String username, OnDataChangedListener<Boolean> listener) {
         DatabaseReference usernamesRef = database.getReference("/usernames/" + username.toLowerCase());
-        usernamesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        usernamesRef.addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Object result = dataSnapshot.getValue();
@@ -96,11 +88,6 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
                 } else {
                     listener.onDataChanged(false);
                 }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("Tag", "Taggy");
             }
         });
     }
@@ -149,5 +136,13 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
         update.put("/profiles/" + profile.getId() + "/followers/" + playerId, true);
         update.put("/profiles/" + playerId + "/following/" + profile.getId(), true);
         database.getReference().updateChildren(update);
+    }
+
+    private abstract class FirebaseValueEventListener implements ValueEventListener {
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            eventBus.post(new AppErrorEvent(databaseError.toException()));
+        }
     }
 }
