@@ -63,8 +63,8 @@ public class PersistenceModule {
 
     @Provides
     @Singleton
-    public FeedPersistenceService provideFeedPersistenceService() {
-        return new FirebaseFeedPersistenceService(FirebaseDatabase.getInstance());
+    public FeedPersistenceService provideFeedPersistenceService(Bus eventBus) {
+        return new FirebaseFeedPersistenceService(FirebaseDatabase.getInstance(), eventBus);
     }
 
 }
