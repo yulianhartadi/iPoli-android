@@ -66,7 +66,6 @@ import io.ipoli.android.app.settings.SettingsActivity;
 import io.ipoli.android.app.share.InviteFriendsDialog;
 import io.ipoli.android.app.sync.AndroidCalendarSyncJobService;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
-import io.ipoli.android.app.ui.dialogs.DateTimePickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.ui.events.StartFabMenuIntentEvent;
 import io.ipoli.android.app.utils.EmailUtils;
@@ -410,8 +409,7 @@ public class MainActivity extends BaseActivity implements
                 UsernamePickerFragment.newInstance(username -> {
                     player.setUsername(username);
                     playerPersistenceService.save(player);
-                    String[] titles = getResources().getStringArray(R.array.player_titles);
-                    feedPersistenceService.createProfile(new Profile(player, player.getTitle(titles)));
+                    feedPersistenceService.createProfile(new Profile(player));
                     startProfileActivity(player);
                 }).show(getSupportFragmentManager());
             }

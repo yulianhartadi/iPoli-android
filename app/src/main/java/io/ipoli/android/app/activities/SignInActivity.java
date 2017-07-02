@@ -366,8 +366,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                         existingPlayer = getPlayer();
                     }
                     existingPlayer.setId(playerId);
-                    String[] titles = getResources().getStringArray(R.array.player_titles);
-                    feedPersistenceService.createProfile(new Profile(existingPlayer, existingPlayer.getTitle(titles)));
+                    feedPersistenceService.createProfile(new Profile(existingPlayer));
                 }
                 if (!isNew) {
                     pullPlayerDocs(cookies, playerId);

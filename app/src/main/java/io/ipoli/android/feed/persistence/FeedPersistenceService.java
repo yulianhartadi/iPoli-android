@@ -3,6 +3,7 @@ package io.ipoli.android.feed.persistence;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.data.Profile;
+import io.ipoli.android.player.Player;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -31,4 +32,6 @@ public interface FeedPersistenceService {
     void unfollow(Profile profile, String playerId);
 
     void follow(Profile profile, String playerId);
+
+    void updateProfile(Profile profile, Player player);
 }

@@ -30,7 +30,6 @@ public class Post {
     private String questId;
     private String playerId;
     private Integer playerLevel;
-    private String playerTitle;
     private String playerUsername;
     private Integer playerAvatarCode;
     private Map<String, Boolean> likes;
@@ -40,7 +39,7 @@ public class Post {
 
     }
 
-    public Post(String title, String message, String playerTitle, Player player, Quest quest) {
+    public Post(String title, String message, Player player, Quest quest) {
         setCreatedAt(DateUtils.nowUTC().getTime());
         setTitle(title);
         setMessage(message);
@@ -53,7 +52,6 @@ public class Post {
         setPlayerId(player.getId());
         setPlayerUsername(player.getUsername());
         setPlayerLevel(player.getLevel());
-        setPlayerTitle(playerTitle);
         setPlayerAvatarCode(player.getAvatarCode());
     }
 
@@ -189,14 +187,6 @@ public class Post {
 
     public void setCompletedAt(Long completedAt) {
         this.completedAt = completedAt;
-    }
-
-    public String getPlayerTitle() {
-        return playerTitle;
-    }
-
-    public void setPlayerTitle(String playerTitle) {
-        this.playerTitle = playerTitle;
     }
 
     public String getQuestId() {

@@ -15,6 +15,7 @@ import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.data.Profile;
+import io.ipoli.android.player.Player;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -40,7 +41,7 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
 
         Map<String, Object> update = new HashMap<>();
         update.put("/posts/" + post.getId(), post);
-        update.put("/profiles/" + post.getPlayerId() + "/postedQuests/" + post.getQuestId(), true);
+        update.put("/profiles/" + post.getPlayerId() + "/posts/" + post.getId(), post.getQuestId());
         database.getReference().updateChildren(update);
     }
 
@@ -135,6 +136,25 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
         Map<String, Object> update = new HashMap<>();
         update.put("/profiles/" + profile.getId() + "/followers/" + playerId, true);
         update.put("/profiles/" + playerId + "/following/" + profile.getId(), true);
+        database.getReference().updateChildren(update);
+    }
+
+    @Override
+    public void updateProfile(Profile profile, Player player) {
+        Map<String, Object> update = new HashMap<>();
+        String path = "/profiles/" + profile.getId() + "/";
+        update.put(path + "displayName", player.getDisplayName());
+        update.put(path + "description", player.getDescription());
+        update.put(path + "level", player.getLevel());
+        update.put(path + "experience", player.getExperience());
+        update.put(path + "avatarCode", player.getAvatarCode());
+        update.put(path + "petName", player.getPet().getName());
+        update.put(path + "petAvatarCode", player.getPet().getAvatarCode());
+        update.put(path + "petState", player.getPet().getState().name());
+        for (String postId : profile.getPosts().keySet()) {
+            update.put("/posts/" + postId + "/playerLevel", player.getLevel());
+            update.put("/posts/" + postId + "/playerAvatarCode", player.getAvatarCode());
+        }
         database.getReference().updateChildren(update);
     }
 
