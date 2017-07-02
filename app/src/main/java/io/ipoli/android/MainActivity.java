@@ -73,13 +73,14 @@ import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.feed.activities.AddPostActivity;
-import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.fragments.FeedFragment;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
+import io.ipoli.android.player.PlayerCredentialChecker;
+import io.ipoli.android.player.PlayerCredentialsHandler;
 import io.ipoli.android.player.UpgradeDialog;
 import io.ipoli.android.player.UpgradeDialog.OnUnlockListener;
 import io.ipoli.android.player.UpgradeManager;
@@ -87,7 +88,6 @@ import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.player.ui.dialogs.UsernamePickerFragment;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
@@ -152,6 +152,9 @@ public class MainActivity extends BaseActivity implements
     @Inject
     UpgradeManager upgradeManager;
 
+    @Inject
+    PlayerCredentialsHandler playerCredentialsHandler;
+
     private boolean isRateDialogShown;
     public ActionBarDrawerToggle actionBarDrawerToggle;
     private MenuItem navigationItemSelected;
@@ -205,8 +208,6 @@ public class MainActivity extends BaseActivity implements
                 !EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
             EasyPermissions.requestPermissions(this, getString(R.string.allow_read_calendars_perm_reason_disable_option), RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
         }
-
-        startActivity(new Intent(this, SignInActivity.class));
     }
 
     @Override
@@ -515,21 +516,14 @@ public class MainActivity extends BaseActivity implements
     @Subscribe
     public void onShareQuest(ShareQuestEvent e) {
         Player player = getPlayer();
-        if (player.isGuest()) {
-            Snackbar snackbar = Snackbar.make(findViewById(R.id.root_container), R.string.sign_in_to_post_message, Snackbar.LENGTH_LONG);
-            snackbar.setAction(R.string.sign_in_button, view -> startActivity(new Intent(this, SignInActivity.class)));
-            snackbar.show();
+
+        PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
+        if (status != PlayerCredentialChecker.Status.AUTHORIZED) {
+            playerCredentialsHandler.authorizeAccess(player, status, PlayerCredentialsHandler.Action.SHARE_QUEST,
+                    this, findViewById(R.id.root_container));
             return;
         }
-        if (player.doesNotHaveUsername()) {
-            UsernamePickerFragment.newInstance(username -> {
-                player.setUsername(username);
-                playerPersistenceService.save(player);
-                String[] titles = getResources().getStringArray(R.array.player_titles);
-                feedPersistenceService.createProfile(new Profile(player, player.getTitle(titles)));
-            }).show(getSupportFragmentManager());
-            return;
-        }
+
         Intent addPostIntent = new Intent(this, AddPostActivity.class);
         addPostIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
         startActivity(addPostIntent);
