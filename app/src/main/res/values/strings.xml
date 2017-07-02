@@ -914,6 +914,7 @@
     <string name="username_picker_title">Choose your username</string>
     <string name="username_wrong_format">Use only letters, digits and _</string>
     <string name="enable_internet_to_do_action">You need internet to do this</string>
+    <string name="sign_in_to_view_profile">Please, sign in to view your profile</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

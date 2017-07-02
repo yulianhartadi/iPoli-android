@@ -116,7 +116,7 @@ public class FeedFragment extends BaseFragment {
     }
 
     private void onAddQuest(Post post) {
-        if(NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
+        if(!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
             Toast.makeText(getContext(), R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
             return;
         }
@@ -136,7 +136,7 @@ public class FeedFragment extends BaseFragment {
     }
 
     private void onLikePost(Post post) {
-        if(NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
+        if(!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
             Toast.makeText(getContext(), R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
             return;
         }
@@ -157,7 +157,7 @@ public class FeedFragment extends BaseFragment {
 
     @OnClick(R.id.add_quest_to_feed)
     public void onAddQuestToFeed(View v) {
-        if(NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
+        if(!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
             Toast.makeText(getContext(), R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
             return;
         }

@@ -223,7 +223,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     }
 
     private void onFollowPlayer(Profile profile, String playerId, boolean following) {
-        if(NetworkConnectivityUtils.isConnectedToInternet(this)) {
+        if(!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
             return;
         }
@@ -260,7 +260,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     }
 
     private void onAddQuest(Post post) {
-        if(NetworkConnectivityUtils.isConnectedToInternet(this)) {
+        if(!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
             return;
         }
@@ -280,11 +280,11 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     }
 
     private void onLikePost(Post post) {
-        if(NetworkConnectivityUtils.isConnectedToInternet(this)) {
+        if(!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
             return;
         }
-        
+
         Player player = getPlayer();
         PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
         if (status != PlayerCredentialChecker.Status.AUTHORIZED) {
