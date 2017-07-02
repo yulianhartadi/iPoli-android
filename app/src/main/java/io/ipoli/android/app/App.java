@@ -97,6 +97,7 @@ import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiv
 import io.ipoli.android.challenge.ui.events.CompleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
+import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
@@ -197,6 +198,9 @@ public class App extends MultiDexApplication {
 
     @Inject
     UrlProvider urlProvider;
+
+    @Inject
+    FeedPersistenceService feedPersistenceService;
 
     private void listenForChanges() {
         questPersistenceService.removeAllListeners();
@@ -483,6 +487,14 @@ public class App extends MultiDexApplication {
         scheduleDateChanged();
         scheduleNextReminder();
         listenForChanges();
+
+        playerPersistenceService.listen(player -> {
+            if (player.isGuest() || player.doesNotHaveUsername()) {
+                return;
+            }
+            feedPersistenceService.findProfile(player.getId(), profile ->
+                    feedPersistenceService.updateProfile(profile, player));
+        });
     }
 
     private void initReplication() {

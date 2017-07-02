@@ -23,7 +23,9 @@ public class PostBinder {
 
     protected void bind() {
         holder.playerUsername.setText(post.getPlayerUsername());
-        holder.playerTitle.setText("Level " + post.getPlayerLevel() + ": " + post.getPlayerTitle());
+        String[] playerTitles = holder.playerTitle.getResources().getStringArray(R.array.player_titles);
+        String playerTitle = playerTitles[Math.min(post.getPlayerLevel() / 10, playerTitles.length - 1)];
+        holder.playerTitle.setText("Level " + post.getPlayerLevel() + ": " + playerTitle);
         holder.postTitle.setText(post.getTitle());
         holder.postMessage.setText(post.getMessage());
         holder.postImage.setImageResource(post.getCategoryType().colorfulImage);

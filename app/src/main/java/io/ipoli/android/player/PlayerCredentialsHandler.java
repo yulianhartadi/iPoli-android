@@ -64,8 +64,7 @@ public class PlayerCredentialsHandler {
             UsernamePickerFragment.newInstance(username -> {
                 player.setUsername(username);
                 playerPersistenceService.save(player);
-                String[] titles = context.getResources().getStringArray(R.array.player_titles);
-                feedPersistenceService.createProfile(new Profile(player, player.getTitle(titles)));
+                feedPersistenceService.createProfile(new Profile(player));
             }).show(context.getSupportFragmentManager());
         }
     }

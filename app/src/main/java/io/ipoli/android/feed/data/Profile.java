@@ -20,25 +20,24 @@ public class Profile {
     private String description;
     private Integer level;
     private String experience;
-    private String title;
     private Integer avatarCode;
     private String petName;
     private Integer petAvatarCode;
     private String petState;
     private Long createdAt;
-    private Map<String, Boolean> postedQuests;
+    // postId -> questId
+    private Map<String, String> posts;
     private Map<String, Boolean> followers;
     private Map<String, Boolean> following;
 
     public Profile() {
     }
 
-    public Profile(Player player, String title) {
+    public Profile(Player player) {
         setId(player.getId());
         setDisplayName(player.getDisplayName());
         setUsername(player.getUsername());
         setDescription(player.getDescription());
-        setTitle(title);
         setLevel(player.getLevel());
         setExperience(player.getExperience());
         setAvatarCode(player.getAvatarCode());
@@ -112,15 +111,15 @@ public class Profile {
         this.createdAt = createdAt;
     }
 
-    public Map<String, Boolean> getPostedQuests() {
-        if (postedQuests == null) {
-            postedQuests = new HashMap<>();
+    public Map<String, String> getPosts() {
+        if (posts == null) {
+            posts = new HashMap<>();
         }
-        return postedQuests;
+        return posts;
     }
 
-    public void setPostedQuests(Map<String, Boolean> postedQuests) {
-        this.postedQuests = postedQuests;
+    public void setPosts(Map<String, String> posts) {
+        this.posts = posts;
     }
 
     public Map<String, Boolean> getFollowers() {
@@ -161,14 +160,6 @@ public class Profile {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getExperience() {

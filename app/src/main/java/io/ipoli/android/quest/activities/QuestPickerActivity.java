@@ -108,11 +108,11 @@ public class QuestPickerActivity extends BaseActivity {
             allQuests.addAll(result);
 
             feedPersistenceService.listenForProfile(getPlayerId(), profile -> {
-                Map<String, Boolean> postedQuests = profile.getPostedQuests();
+                Map<String, String> posts = profile.getPosts();
                 Iterator<Quest> it = allQuests.iterator();
                 while (it.hasNext()) {
                     Quest q = it.next();
-                    if (postedQuests.containsKey(q.getId())) {
+                    if (posts.containsValue(q.getId())) {
                         it.remove();
                     }
                 }

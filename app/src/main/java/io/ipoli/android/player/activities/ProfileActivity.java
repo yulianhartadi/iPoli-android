@@ -4,9 +4,13 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,9 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.otto.Subscribe;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -35,15 +37,17 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
-import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.animations.ProgressBarAnimation;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.data.Profile;
+import io.ipoli.android.feed.events.AddQuestFromPostEvent;
+import io.ipoli.android.feed.events.GiveKudosEvent;
+import io.ipoli.android.feed.fragments.FollowersFragment;
+import io.ipoli.android.feed.fragments.FollowingFragment;
+import io.ipoli.android.feed.fragments.PostsFragment;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
-import io.ipoli.android.feed.ui.PostBinder;
-import io.ipoli.android.feed.ui.PostViewHolder;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
@@ -111,25 +115,42 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     @BindView(R.id.player_current_experience)
     TextView playerCurrentExperience;
 
-    @BindView(R.id.post_count)
-    TextView postCount;
-
-    @BindView(R.id.follower_count)
-    TextView followerCount;
-
-    @BindView(R.id.following_count)
-    TextView followingCount;
-
     @BindView(R.id.follow)
     Button follow;
 
-    @BindView(R.id.player_post_list)
-    EmptyStateRecyclerView postList;
+    @BindView(R.id.profile_tabs)
+    TabLayout tabContainer;
 
-    private FirebaseRecyclerAdapter<Post, PostViewHolder> adapter;
+    @BindView(R.id.profile_pager)
+    ViewPager pagerContainer;
 
     private String playerId;
     private NumberFormat numberFormatter;
+    private TabPagerAdapter fragmentPagerAdapter;
+
+    class TabPagerAdapter extends FragmentPagerAdapter {
+
+        public TabPagerAdapter(FragmentManager fragmentManager) {
+            super(fragmentManager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            switch (position) {
+                case 0:
+                    return PostsFragment.newInstance(playerId);
+                case 1:
+                    return new FollowingFragment();
+                default:
+                    return new FollowersFragment();
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -152,26 +173,10 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         collapsingToolbarLayout.setTitleEnabled(false);
         getSupportActionBar().setTitle(R.string.activity_player_profile_title);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        layoutManager.setReverseLayout(true);
-        layoutManager.setStackFromEnd(true);
-        postList.setLayoutManager(layoutManager);
+        tabContainer.setupWithViewPager(pagerContainer);
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("/posts");
-        adapter = new FirebaseRecyclerAdapter<Post, PostViewHolder>(Post.class,
-                R.layout.feed_post_item,
-                PostViewHolder.class,
-                ref.orderByChild("playerId").equalTo(getPlayerId()).limitToLast(100)) {
-            @Override
-            protected void populateViewHolder(PostViewHolder holder, Post post, int position) {
-                PostBinder.bind(holder, post, getPlayerId());
-                holder.likePost.setOnClickListener(v -> onLikePost(post));
-                holder.addQuest.setOnClickListener(v -> onAddQuest(post));
-            }
-        };
-
-        postList.setAdapter(adapter);
+        fragmentPagerAdapter = new TabPagerAdapter(getSupportFragmentManager());
+        pagerContainer.setAdapter(fragmentPagerAdapter);
 
         numberFormatter = NumberFormat.getNumberInstance();
     }
@@ -196,13 +201,27 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         petName.setText(profile.getPetName());
         playerName.setText(profile.getDisplayName());
         playerUsername.setText("@" + profile.getUsername());
-        playerDesc.setText(profile.getDescription());
-        playerLevel.setText(getString(R.string.player_profile_level, profile.getLevel(), profile.getTitle()));
-        postCount.setText(String.valueOf(profile.getPostedQuests().size()));
-        followerCount.setText(String.valueOf(profile.getFollowers().size()));
-        followingCount.setText(String.valueOf(profile.getFollowing().size()));
+        String description = StringUtils.isEmpty(profile.getDescription()) ? getString(R.string.profile_default_description) : profile.getDescription();
+        playerDesc.setText(description);
+
+        String[] playerTitles = getResources().getStringArray(R.array.player_titles);
+        String playerTitle = playerTitles[Math.min(profile.getLevel() / 10, playerTitles.length - 1)];
+        playerLevel.setText(getString(R.string.player_profile_level, profile.getLevel(), playerTitle));
+
+        tabContainer.getTabAt(0).setCustomView(getTabView(profile.getPosts().size(), R.string.posts));
+        tabContainer.getTabAt(1).setCustomView(getTabView(profile.getFollowing().size(), R.string.following));
+        tabContainer.getTabAt(2).setCustomView(getTabView(profile.getFollowers().size(), R.string.followers));
         updateExperienceProgress(profile);
         updateFollow(profile);
+    }
+
+    public View getTabView(int count, int labelRes) {
+        View v = getLayoutInflater().inflate(R.layout.view_profile_tab, null);
+        TextView itemCount = (TextView) v.findViewById(R.id.item_count);
+        TextView itemLabel = (TextView) v.findViewById(R.id.item_label);
+        itemCount.setText(String.valueOf(count));
+        itemLabel.setText(labelRes);
+        return v;
     }
 
     private void updateFollow(Profile profile) {
@@ -223,7 +242,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         });
     }
 
-    private void onFollowPlayer(Profile profile, String playerId, boolean following) {
+    public void onFollowPlayer(Profile profile, String playerId, boolean following) {
         if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
             return;
@@ -260,7 +279,8 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         playerExperienceProgress.startAnimation(anim);
     }
 
-    private void onAddQuest(Post post) {
+    @Subscribe
+    public void onAddQuest(AddQuestFromPostEvent event) {
         if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
             return;
@@ -274,13 +294,16 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
             return;
         }
 
+        Post post = event.post;
+
         if (!post.isAddedByPlayer(player.getId())) {
             feedPersistenceService.addPostToPlayer(post, player.getId());
         }
         // @TODO show schedule dialog
     }
 
-    private void onLikePost(Post post) {
+    @Subscribe
+    public void onLikePost(GiveKudosEvent event) {
         if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
             return;
@@ -294,11 +317,25 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
             return;
         }
 
+        Post post = event.post;
+
         if (post.isLikedByPlayer(player.getId())) {
             feedPersistenceService.removeLike(post, player.getId());
         } else {
             feedPersistenceService.addLike(post, player.getId());
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        eventBus.register(this);
+    }
+
+    @Override
+    public void onPause() {
+        eventBus.unregister(this);
+        super.onPause();
     }
 
     @Override
@@ -311,12 +348,6 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     protected void onStop() {
         feedPersistenceService.removeAllListeners();
         super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        adapter.cleanup();
     }
 
     @Override
