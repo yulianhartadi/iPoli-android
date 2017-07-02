@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
@@ -36,6 +37,7 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.animations.ProgressBarAnimation;
+import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.data.Profile;
@@ -221,6 +223,11 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     }
 
     private void onFollowPlayer(Profile profile, String playerId, boolean following) {
+        if(NetworkConnectivityUtils.isConnectedToInternet(this)) {
+            Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         Player player = getPlayer();
         PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
         if (status != PlayerCredentialChecker.Status.AUTHORIZED) {
@@ -253,6 +260,11 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     }
 
     private void onAddQuest(Post post) {
+        if(NetworkConnectivityUtils.isConnectedToInternet(this)) {
+            Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         Player player = getPlayer();
         PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
         if (status != PlayerCredentialChecker.Status.AUTHORIZED) {
@@ -268,6 +280,11 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     }
 
     private void onLikePost(Post post) {
+        if(NetworkConnectivityUtils.isConnectedToInternet(this)) {
+            Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
+            return;
+        }
+        
         Player player = getPlayer();
         PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
         if (status != PlayerCredentialChecker.Status.AUTHORIZED) {

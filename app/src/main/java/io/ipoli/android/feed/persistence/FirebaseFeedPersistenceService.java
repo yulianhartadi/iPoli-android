@@ -1,5 +1,7 @@
 package io.ipoli.android.feed.persistence;
 
+import android.util.Log;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -98,7 +100,7 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.d("Tag", "Taggy");
             }
         });
     }

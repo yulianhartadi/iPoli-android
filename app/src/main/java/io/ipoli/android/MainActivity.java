@@ -70,6 +70,7 @@ import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.ui.events.StartFabMenuIntentEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.feed.activities.AddPostActivity;
@@ -516,6 +517,11 @@ public class MainActivity extends BaseActivity implements
     @Subscribe
     public void onShareQuest(ShareQuestEvent e) {
         Player player = getPlayer();
+
+        if(NetworkConnectivityUtils.isConnectedToInternet(this)) {
+            Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
+            return;
+        }
 
         PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
         if (status != PlayerCredentialChecker.Status.AUTHORIZED) {

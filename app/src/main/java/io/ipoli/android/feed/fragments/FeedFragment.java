@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
@@ -26,9 +27,9 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.feed.data.Post;
-import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.feed.ui.PostBinder;
 import io.ipoli.android.feed.ui.PostViewHolder;
@@ -85,15 +86,6 @@ public class FeedFragment extends BaseFragment {
         layoutManager.setStackFromEnd(true);
         feedList.setLayoutManager(layoutManager);
 
-        // @TODO remove this
-        feedPersistenceService.findProfile(getPlayerId(), profile -> {
-            if (profile == null) {
-                Player player = getPlayer();
-                String[] titles = getResources().getStringArray(R.array.player_titles);
-                feedPersistenceService.createProfile(new Profile(player, player.getTitle(titles)));
-            }
-        });
-
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("/posts");
         adapter = new FirebaseRecyclerAdapter<Post, PostViewHolder>(Post.class,
                 R.layout.feed_post_item,
@@ -124,6 +116,11 @@ public class FeedFragment extends BaseFragment {
     }
 
     private void onAddQuest(Post post) {
+        if(NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
+            Toast.makeText(getContext(), R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         Player player = getPlayer();
         PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
         if (status != PlayerCredentialChecker.Status.AUTHORIZED) {
@@ -139,6 +136,11 @@ public class FeedFragment extends BaseFragment {
     }
 
     private void onLikePost(Post post) {
+        if(NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
+            Toast.makeText(getContext(), R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         Player player = getPlayer();
         PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
         if (status != PlayerCredentialChecker.Status.AUTHORIZED) {
@@ -155,6 +157,11 @@ public class FeedFragment extends BaseFragment {
 
     @OnClick(R.id.add_quest_to_feed)
     public void onAddQuestToFeed(View v) {
+        if(NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
+            Toast.makeText(getContext(), R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         Player player = getPlayer();
         PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
         if (status != PlayerCredentialChecker.Status.AUTHORIZED) {
