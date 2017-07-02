@@ -916,6 +916,7 @@
     <string name="enable_internet_to_do_action">You need internet to do this</string>
     <string name="sign_in_to_view_profile">Please, sign in to view your profile</string>
     <string name="profile_default_description">This player likes to keep things mysterious</string>
+    <string name="achievement_already_shared">You already shared this achievement</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
