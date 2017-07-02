@@ -140,9 +140,9 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
                 case 0:
                     return PostsFragment.newInstance(playerId);
                 case 1:
-                    return new FollowingFragment();
+                    return FollowingFragment.newInstance(playerId);
                 default:
-                    return new FollowersFragment();
+                    return FollowersFragment.newInstance(playerId);
             }
         }
 
