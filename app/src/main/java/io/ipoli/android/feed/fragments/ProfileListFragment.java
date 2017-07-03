@@ -115,9 +115,4 @@ public class ProfileListFragment extends BaseFragment {
         adapter.cleanup();
         super.onDestroyView();
     }
-
-    @Override
-    protected boolean useOptionsMenu() {
-        return false;
-    }
 }
