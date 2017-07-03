@@ -39,6 +39,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.animations.ProgressBarAnimation;
 import io.ipoli.android.app.ui.dialogs.DateTimePickerFragment;
@@ -61,6 +62,8 @@ import io.ipoli.android.player.Player;
 import io.ipoli.android.player.PlayerCredentialChecker;
 import io.ipoli.android.player.PlayerCredentialsHandler;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.events.NewQuestEvent;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -314,7 +317,13 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         if (!post.isAddedByPlayer(player.getId())) {
             feedPersistenceService.addPostToPlayer(post, player.getId());
         }
-        new DateTimePickerFragment().show(getSupportFragmentManager());
+        DateTimePickerFragment.newInstance(player.getUse24HourFormat(), (date, time) -> {
+            Quest quest = new Quest(post.getTitle(), date, post.getCategoryType());
+            quest.setDuration(post.getDuration());
+            quest.setStartTime(time);
+            eventBus.post(new NewQuestEvent(quest, EventSource.PROFILE));
+            Toast.makeText(this, R.string.quest_from_post_added, Toast.LENGTH_LONG).show();
+        }).show(getSupportFragmentManager());
     }
 
     @Subscribe
