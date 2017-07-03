@@ -101,8 +101,11 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     @BindView(R.id.pet_name)
     TextView petName;
 
-    @BindView(R.id.player_name)
-    TextView playerName;
+    @BindView(R.id.player_display_name)
+    TextView playerDisplayName;
+
+    @BindView(R.id.player_display_name_edit)
+    EditText playerDisplayNameEdit;
 
     @BindView(R.id.player_username)
     TextView playerUsername;
@@ -138,8 +141,8 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     ViewPager pagerContainer;
 
     private String playerId;
+
     private NumberFormat numberFormatter;
-    private TabPagerAdapter fragmentPagerAdapter;
 
     class TabPagerAdapter extends FragmentPagerAdapter {
 
@@ -188,7 +191,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
 
         tabContainer.setupWithViewPager(pagerContainer);
 
-        fragmentPagerAdapter = new TabPagerAdapter(getSupportFragmentManager());
+        TabPagerAdapter fragmentPagerAdapter = new TabPagerAdapter(getSupportFragmentManager());
         pagerContainer.setAdapter(fragmentPagerAdapter);
 
         numberFormatter = NumberFormat.getNumberInstance();
@@ -206,7 +209,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         GradientDrawable drawable = (GradientDrawable) petState.getBackground();
         drawable.setColor(ContextCompat.getColor(this, Pet.PetState.valueOf(profile.getPetState()).color));
         petName.setText(profile.getPetName());
-        playerName.setText(profile.getDisplayName());
+        playerDisplayName.setText(profile.getDisplayName());
         playerUsername.setText("@" + profile.getUsername());
         String description = StringUtils.isEmpty(profile.getDescription()) ? getString(R.string.profile_default_bio) : profile.getDescription();
         playerBio.setText(description);
@@ -413,20 +416,33 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
 
             case R.id.action_edit:
                 Player player = getPlayer();
-                if (playerBioEdit.getTag() == null) {
+                if (isInEditMode()) {
                     playerBioEdit.setTag(true);
                     playerBio.setVisibility(View.INVISIBLE);
+
                     playerBioEdit.setText(StringUtils.isEmpty(player.getDescription()) ? "" : player.getDescription());
                     playerBioEdit.setSelection(playerBio.getText().length());
                     playerBioEdit.setVisibility(View.VISIBLE);
-                    playerBioEdit.requestFocus();
-                    KeyboardUtils.showKeyboard(this, playerBioEdit);
+
+                    playerDisplayName.setVisibility(View.INVISIBLE);
+                    playerDisplayNameEdit.setVisibility(View.VISIBLE);
+                    playerDisplayNameEdit.setText(playerDisplayName.getText());
+
                     item.setTitle(R.string.save);
                 } else {
+
+                    String newDisplayName = playerDisplayNameEdit.getText().toString();
+                    if (StringUtils.isEmpty(newDisplayName)) {
+                        playerDisplayNameEdit.setError("Huh? That can't be empty!");
+                        return true;
+                    }
+
                     playerBioEdit.setTag(null);
                     item.setTitle(R.string.edit_menu);
                     playerBio.setVisibility(View.VISIBLE);
                     playerBioEdit.setVisibility(View.INVISIBLE);
+                    playerDisplayName.setVisibility(View.VISIBLE);
+                    playerDisplayNameEdit.setVisibility(View.INVISIBLE);
                     String newBio = playerBioEdit.getText().toString();
 
                     if (StringUtils.isEmpty(newBio)) {
@@ -434,13 +450,19 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
                     } else {
                         playerBio.setText(newBio.trim());
                     }
+                    playerDisplayName.setText(newDisplayName);
                     KeyboardUtils.hideKeyboard(this);
+                    player.setDisplayName(newDisplayName);
                     player.setDescription(newBio);
                     playerPersistenceService.save(player);
                 }
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean isInEditMode() {
+        return playerBioEdit.getTag() == null;
     }
 
     @Override
