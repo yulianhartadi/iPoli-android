@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -41,6 +42,7 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.animations.ProgressBarAnimation;
 import io.ipoli.android.app.ui.dialogs.DateTimePickerFragment;
+import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.feed.data.Post;
@@ -105,8 +107,11 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     @BindView(R.id.player_level)
     TextView playerLevel;
 
-    @BindView(R.id.player_desc)
-    TextView playerDesc;
+    @BindView(R.id.player_bio)
+    TextView playerBio;
+
+    @BindView(R.id.player_bio_edit)
+    EditText playerBioEdit;
 
     @BindView(R.id.player_experience)
     ProgressBar playerExperienceProgress;
@@ -200,8 +205,8 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         petName.setText(profile.getPetName());
         playerName.setText(profile.getDisplayName());
         playerUsername.setText("@" + profile.getUsername());
-        String description = StringUtils.isEmpty(profile.getDescription()) ? getString(R.string.profile_default_description) : profile.getDescription();
-        playerDesc.setText(description);
+        String description = StringUtils.isEmpty(profile.getDescription()) ? getString(R.string.profile_default_bio) : profile.getDescription();
+        playerBio.setText(description);
 
         String[] playerTitles = getResources().getStringArray(R.array.player_titles);
         String playerTitle = playerTitles[Math.min(profile.getLevel() / 10, playerTitles.length - 1)];
@@ -395,6 +400,35 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                return true;
+
+            case R.id.action_edit:
+                Player player = getPlayer();
+                if (playerBioEdit.getTag() == null) {
+                    playerBioEdit.setTag(true);
+                    playerBio.setVisibility(View.INVISIBLE);
+                    playerBioEdit.setText(StringUtils.isEmpty(player.getDescription()) ? "" : player.getDescription());
+                    playerBioEdit.setSelection(playerBio.getText().length());
+                    playerBioEdit.setVisibility(View.VISIBLE);
+                    playerBioEdit.requestFocus();
+                    KeyboardUtils.showKeyboard(this, playerBioEdit);
+                    item.setTitle(R.string.save);
+                } else {
+                    playerBioEdit.setTag(null);
+                    item.setTitle(R.string.edit_menu);
+                    playerBio.setVisibility(View.VISIBLE);
+                    playerBioEdit.setVisibility(View.INVISIBLE);
+                    String newBio = playerBioEdit.getText().toString();
+
+                    if (StringUtils.isEmpty(newBio)) {
+                        playerBio.setText(R.string.profile_default_bio);
+                    } else {
+                        playerBio.setText(newBio.trim());
+                    }
+                    KeyboardUtils.hideKeyboard(this);
+                    player.setDescription(newBio);
+                    playerPersistenceService.save(player);
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
