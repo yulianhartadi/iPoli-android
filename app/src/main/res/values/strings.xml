@@ -915,11 +915,12 @@
     <string name="username_wrong_format">Use only letters, digits and _</string>
     <string name="enable_internet_to_do_action">You need internet to do this</string>
     <string name="sign_in_to_view_profile">Please, sign in to view your profile</string>
-    <string name="profile_default_description">This player likes to keep things mysterious</string>
+    <string name="profile_default_bio">This player likes to keep things mysterious</string>
     <string name="achievement_already_shared">You already shared this achievement</string>
     <string name="player_profile_list_level">Level %1$d:\n%2$s</string>
     <string name="empty_quest_picker_text">No quests to share. Go complete some!</string>
     <string name="title_activity_quest_picker">Pick Quest to Share</string>
+    <string name="short_bio_hint">Enter a short bio</string>
     <string name="date_time_picker_title">Schedule your quest</string>
     <string name="quest_from_post_added">Quest scheduled in your calendar</string>
 
