@@ -309,7 +309,9 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         if (!post.isAddedByPlayer(player.getId())) {
             feedPersistenceService.addPostToPlayer(post, player.getId());
         }
-        new DateTimePickerFragment().show(getSupportFragmentManager());
+        DateTimePickerFragment.newInstance(player.getUse24HourFormat(), (date, time) -> {
+
+        }).show(getSupportFragmentManager());
     }
 
     @Subscribe
