@@ -17,23 +17,30 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.feed.data.Profile;
-import io.ipoli.android.feed.ui.ProfileBinder;
-import io.ipoli.android.feed.ui.ProfileViewHolder;
+import io.ipoli.android.feed.ui.ProfileListBinder;
+import io.ipoli.android.feed.ui.ProfileListViewHolder;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 7/2/17.
  */
-public class FollowersFragment extends BaseFragment {
+public class ProfileListFragment extends BaseFragment {
 
     private static final String PLAYER_ID = "player_id";
-    private String playerId;
-    private FirebaseRecyclerAdapter<Profile, ProfileViewHolder> adapter;
+    private static final String PROFILE_LIST_TYPE = "profile_list_type";
 
-    public static FollowersFragment newInstance(String playerId) {
-        FollowersFragment fragment = new FollowersFragment();
+    public static final String LIST_TYPE_FOLLOWERS = "following";
+    public static final String LIST_TYPE_FOLLOWING = "followers";
+
+    private String playerId;
+    private FirebaseRecyclerAdapter<Profile, ProfileListViewHolder> adapter;
+    private String listType;
+
+    public static ProfileListFragment newInstance(String playerId, String listType) {
+        ProfileListFragment fragment = new ProfileListFragment();
         Bundle args = new Bundle();
         args.putString(PLAYER_ID, playerId);
+        args.putString(PROFILE_LIST_TYPE, listType);
         fragment.setArguments(args);
         return fragment;
     }
@@ -41,10 +48,23 @@ public class FollowersFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() == null || StringUtils.isEmpty(getArguments().getString(PLAYER_ID))) {
+        Bundle arguments = getArguments();
+        if (arguments == null) {
+            throw new IllegalArgumentException("Player id and list type are required");
+        }
+        if (StringUtils.isEmpty(arguments.getString(PLAYER_ID))) {
             throw new IllegalArgumentException("Player id is required");
         }
-        playerId = getArguments().getString(PLAYER_ID);
+        if (StringUtils.isEmpty(arguments.getString(PROFILE_LIST_TYPE))) {
+            throw new IllegalArgumentException("Player id is required");
+        }
+
+        playerId = arguments.getString(PLAYER_ID);
+        listType = arguments.getString(PROFILE_LIST_TYPE);
+
+        if (!listType.equals(LIST_TYPE_FOLLOWERS) && !listType.equals(LIST_TYPE_FOLLOWING)) {
+            throw new IllegalArgumentException("Unknown list type " + listType);
+        }
     }
 
     @Nullable
@@ -62,13 +82,13 @@ public class FollowersFragment extends BaseFragment {
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("/profiles");
 
-        adapter = new FirebaseRecyclerAdapter<Profile, ProfileViewHolder>(Profile.class,
+        adapter = new FirebaseRecyclerAdapter<Profile, ProfileListViewHolder>(Profile.class,
                 R.layout.follower_item,
-                ProfileViewHolder.class,
-                ref.orderByChild("following/" + playerId).equalTo(true).limitToLast(100)) {
+                ProfileListViewHolder.class,
+                ref.orderByChild(listType + "/" + playerId).equalTo(true).limitToLast(100)) {
             @Override
-            protected void populateViewHolder(ProfileViewHolder profileViewHolder, Profile profile, int position) {
-                ProfileBinder.bind(profileViewHolder, profile, playerId);
+            protected void populateViewHolder(ProfileListViewHolder profileListViewHolder, Profile profile, int position) {
+                ProfileListBinder.bind(profileListViewHolder, profile, getPlayerId());
             }
         };
 

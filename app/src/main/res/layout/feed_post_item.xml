@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:card_view="http://schemas.android.com/tools"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/post_container"
     android:layout_width="match_parent"
@@ -10,7 +9,7 @@
     android:layout_marginTop="4dp"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    card_view:cardCornerRadius="8dp">
+    app:cardCornerRadius="4dp">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -47,7 +46,7 @@
             android:layout_marginTop="24dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/player_avatar"
-            app:srcCompat="@drawable/ic_context_wellness_green_24dp" />
+            tools:src="@drawable/ic_context_wellness_green_24dp" />
 
         <TextView
             android:id="@+id/post_title"
@@ -84,7 +83,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/avatar_01" />
+            tools:src="@drawable/avatar_01" />
 
         <View
             android:id="@+id/view"

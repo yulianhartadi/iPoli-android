@@ -58,6 +58,10 @@ public abstract class BaseFragment extends Fragment {
         return playerPersistenceService.get();
     }
 
+    protected String getPlayerId() {
+        return App.getPlayerId();
+    }
+
     protected boolean shouldUse24HourFormat() {
         return getPlayer().getUse24HourFormat();
     }
