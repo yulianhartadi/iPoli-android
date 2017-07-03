@@ -29,7 +29,9 @@ public abstract class BaseFragment extends Fragment {
     @Inject
     PlayerPersistenceService playerPersistenceService;
 
-    protected abstract boolean useOptionsMenu();
+    protected boolean useOptionsMenu() {
+        return true;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -13,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -187,16 +188,6 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         tabContainer.getTabAt(0).setCustomView(getLayoutInflater().inflate(R.layout.view_profile_tab, null));
         tabContainer.getTabAt(1).setCustomView(getLayoutInflater().inflate(R.layout.view_profile_tab, null));
         tabContainer.getTabAt(2).setCustomView(getLayoutInflater().inflate(R.layout.view_profile_tab, null));
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -387,6 +378,26 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     protected void onStop() {
         feedPersistenceService.removeAllListeners();
         super.onStop();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.profile_menu, menu);
+        MenuItem editItem = menu.findItem(R.id.action_edit);
+        if (!playerId.equals(getPlayerId())) {
+            editItem.setVisible(false);
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
