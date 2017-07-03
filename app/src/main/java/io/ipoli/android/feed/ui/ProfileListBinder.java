@@ -28,7 +28,7 @@ public class ProfileListBinder {
         holder.displayName.setText(profile.getDisplayName());
         holder.username.setText("@" + profile.getUsername());
         String desc = StringUtils.isEmpty(profile.getDescription()) ?
-                context.getString(R.string.profile_default_description) :
+                context.getString(R.string.profile_default_bio) :
                 profile.getDescription();
         holder.description.setText(desc);
 
