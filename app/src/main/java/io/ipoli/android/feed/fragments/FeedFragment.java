@@ -27,6 +27,7 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.ui.dialogs.DateTimePickerFragment;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.ViewUtils;
@@ -40,6 +41,9 @@ import io.ipoli.android.player.PlayerCredentialsHandler;
 import io.ipoli.android.player.activities.ProfileActivity;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.activities.QuestPickerActivity;
+import io.ipoli.android.quest.data.Quest;
+import io.ipoli.android.quest.events.NewQuestEvent;
+import io.ipoli.android.quest.persistence.QuestPersistenceService;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -47,6 +51,9 @@ import io.ipoli.android.quest.activities.QuestPickerActivity;
  */
 
 public class FeedFragment extends BaseFragment {
+
+    @Inject
+    QuestPersistenceService questPersistenceService;
 
     @Inject
     FeedPersistenceService feedPersistenceService;
@@ -133,7 +140,11 @@ public class FeedFragment extends BaseFragment {
         }
 
         DateTimePickerFragment.newInstance(player.getUse24HourFormat(), (date, time) -> {
-
+            Quest quest = new Quest(post.getTitle(), date, post.getCategoryType());
+            quest.setDuration(post.getDuration());
+            quest.setStartTime(time);
+            postEvent(new NewQuestEvent(quest, EventSource.FEED));
+            Toast.makeText(getContext(), R.string.quest_from_post_added, Toast.LENGTH_LONG).show();
         }).show(getFragmentManager());
     }
 
