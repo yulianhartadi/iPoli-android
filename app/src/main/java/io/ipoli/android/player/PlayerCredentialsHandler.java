@@ -46,7 +46,7 @@ public class PlayerCredentialsHandler {
                     messageRes = R.string.sign_in_to_post_message;
                     break;
                 case GIVE_KUDOS:
-                    messageRes = R.string.sign_in_to_like_post_message;
+                    messageRes = R.string.sign_in_to_give_kudos_message;
                     break;
                 case ADD_QUEST:
                     messageRes = R.string.sign_in_to_add_post_as_quest_message;

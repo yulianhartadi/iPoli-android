@@ -347,9 +347,9 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         Post post = event.post;
 
         if (post.isGivenKudosByPlayer(player.getId())) {
-            feedPersistenceService.removeLike(post, player.getId());
+            feedPersistenceService.removeKudos(post, player.getId());
         } else {
-            feedPersistenceService.addLike(post, player.getId());
+            feedPersistenceService.addKudos(post, player.getId());
         }
     }
 

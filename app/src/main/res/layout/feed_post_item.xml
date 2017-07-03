@@ -96,7 +96,7 @@
             app:layout_constraintTop_toBottomOf="@+id/quest_coins" />
 
         <LinearLayout
-            android:id="@+id/post_like_container"
+            android:id="@+id/post_give_kudos_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="0dp"
@@ -124,9 +124,9 @@
                 android:layout_marginBottom="0dp"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="0dp"
-                app:layout_constraintBottom_toBottomOf="@+id/post_like_container"
+                app:layout_constraintBottom_toBottomOf="@+id/post_give_kudos_container"
                 app:layout_constraintRight_toLeftOf="@+id/post_add_quest_container"
-                app:layout_constraintTop_toTopOf="@+id/post_like_container"
+                app:layout_constraintTop_toTopOf="@+id/post_give_kudos_container"
                 app:layout_constraintVertical_bias="0.5" />
         </LinearLayout>
 

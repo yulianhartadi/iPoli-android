@@ -33,7 +33,7 @@ public class Post {
     private Integer playerLevel;
     private String playerUsername;
     private Integer playerAvatarCode;
-    private Map<String, Boolean> likes;
+    private Map<String, Boolean> kudos;
     private Map<String, Boolean> addedBy;
 
     public Post() {
@@ -161,15 +161,15 @@ public class Post {
         this.playerAvatarCode = playerAvatarCode;
     }
 
-    public Map<String, Boolean> getLikes() {
-        if (likes == null) {
-            likes = new HashMap<>();
+    public Map<String, Boolean> getKudos() {
+        if (kudos == null) {
+            kudos = new HashMap<>();
         }
-        return likes;
+        return kudos;
     }
 
-    public void setLikes(Map<String, Boolean> likes) {
-        this.likes = likes;
+    public void setKudos(Map<String, Boolean> kudos) {
+        this.kudos = kudos;
     }
 
     public Map<String, Boolean> getAddedBy() {
@@ -213,28 +213,13 @@ public class Post {
     }
 
     @Exclude
-    public void addLike(String playerId) {
-        getLikes().put(playerId, true);
-    }
-
-    @Exclude
     public boolean isGivenKudosByPlayer(String playerId) {
-        return getLikes().containsKey(playerId);
-    }
-
-    @Exclude
-    public void removeLike(String playerId) {
-        getLikes().remove(playerId);
+        return getKudos().containsKey(playerId);
     }
 
     @Exclude
     public boolean isAddedByPlayer(String playerId) {
         return getAddedBy().containsKey(playerId);
-    }
-
-    @Exclude
-    public void addAddedBy(String playerId) {
-        getAddedBy().put(playerId, true);
     }
 
     @Exclude

@@ -38,7 +38,7 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     public TextView postCreatedAt;
 
     @BindView(R.id.post_kudos_count)
-    public TextView postLikesCount;
+    public TextView postKudosCount;
 
     @BindView(R.id.post_added_count)
     public TextView postAddedCount;
@@ -55,8 +55,8 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.post_give_kudos)
     public ImageView giveKudos;
 
-    @BindView(R.id.post_like_container)
-    public ViewGroup likePostContainer;
+    @BindView(R.id.post_give_kudos_container)
+    public ViewGroup giveKudosContainer;
 
     @BindView(R.id.post_add_quest)
     public ImageView addQuest;

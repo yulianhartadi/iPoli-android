@@ -112,7 +112,7 @@ public class FeedFragment extends BaseFragment {
 
                 PostBinder.bind(holder, post, getPlayerId());
 
-                holder.likePostContainer.setOnClickListener(v -> onLikePost(post));
+                holder.giveKudosContainer.setOnClickListener(v -> onLikePost(post));
                 holder.addQuestContainer.setOnClickListener(v -> onAddQuest(post));
                 holder.itemView.setOnClickListener(v -> {
                     Intent intent = new Intent(getContext(), ProfileActivity.class);
@@ -176,9 +176,9 @@ public class FeedFragment extends BaseFragment {
             return;
         }
         if (post.isGivenKudosByPlayer(player.getId())) {
-            feedPersistenceService.removeLike(post, player.getId());
+            feedPersistenceService.removeKudos(post, player.getId());
         } else {
-            feedPersistenceService.addLike(post, player.getId());
+            feedPersistenceService.addKudos(post, player.getId());
         }
     }
 

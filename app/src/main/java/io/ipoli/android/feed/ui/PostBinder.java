@@ -30,7 +30,7 @@ public class PostBinder {
         holder.postMessage.setText(post.getMessage());
         holder.postImage.setImageResource(post.getCategoryType().colorfulImage);
         holder.playerAvatar.setImageResource(post.getPlayerAvatar().picture);
-        holder.postLikesCount.setText(String.valueOf(post.getLikes().size()));
+        holder.postKudosCount.setText(String.valueOf(post.getKudos().size()));
         holder.postAddedCount.setText(String.valueOf(post.getAddedBy().size()));
         holder.questCoins.setText(post.getCoins().toString());
         holder.questRewardPoints.setText(post.getRewardPoints().toString());
