@@ -180,6 +180,10 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         pagerContainer.setAdapter(fragmentPagerAdapter);
 
         numberFormatter = NumberFormat.getNumberInstance();
+
+        tabContainer.getTabAt(0).setCustomView(getLayoutInflater().inflate(R.layout.view_profile_tab, null));
+        tabContainer.getTabAt(1).setCustomView(getLayoutInflater().inflate(R.layout.view_profile_tab, null));
+        tabContainer.getTabAt(2).setCustomView(getLayoutInflater().inflate(R.layout.view_profile_tab, null));
     }
 
     @Override
@@ -209,25 +213,24 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         String playerTitle = playerTitles[Math.min(profile.getLevel() / 10, playerTitles.length - 1)];
         playerLevel.setText(getString(R.string.player_profile_level, profile.getLevel(), playerTitle));
 
-        for (int i = 0; i < tabContainer.getTabCount(); i++) {
-            tabContainer.getTabAt(i).setCustomView(null);
-        }
+        View postsTabView = tabContainer.getTabAt(0).getCustomView();
+        bindTabView(postsTabView, profile.getPosts().size(), R.string.posts);
 
-        tabContainer.getTabAt(0).setCustomView(getTabView(profile.getPosts().size(), R.string.posts));
-        tabContainer.getTabAt(1).setCustomView(getTabView(profile.getFollowing().size(), R.string.following));
-        tabContainer.getTabAt(2).setCustomView(getTabView(profile.getFollowers().size(), R.string.followers));
+        View followingTabView = tabContainer.getTabAt(1).getCustomView();
+        bindTabView(followingTabView, profile.getFollowing().size(), R.string.following);
+
+        View followersTabView = tabContainer.getTabAt(2).getCustomView();
+        bindTabView(followersTabView, profile.getFollowers().size(), R.string.followers);
 
         updateExperienceProgress(profile);
         updateFollow(profile);
     }
 
-    public View getTabView(int count, int labelRes) {
-        View v = getLayoutInflater().inflate(R.layout.view_profile_tab, null);
-        TextView itemCount = (TextView) v.findViewById(R.id.item_count);
-        TextView itemLabel = (TextView) v.findViewById(R.id.item_label);
+    public void bindTabView(View tabView, int count, int labelRes) {
+        TextView itemCount = (TextView) tabView.findViewById(R.id.item_count);
+        TextView itemLabel = (TextView) tabView.findViewById(R.id.item_label);
         itemCount.setText(String.valueOf(count));
         itemLabel.setText(labelRes);
-        return v;
     }
 
     private void updateFollow(Profile profile) {
