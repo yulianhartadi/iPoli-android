@@ -7,6 +7,7 @@ import android.view.View;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.SignInActivity;
+import io.ipoli.android.app.ui.ThemedSnackbar;
 import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
@@ -54,7 +55,7 @@ public class PlayerCredentialsHandler {
                     messageRes = R.string.sign_in_to_follow_message;
             }
 
-            Snackbar snackbar = Snackbar.make(signInRootView, messageRes, Snackbar.LENGTH_LONG);
+            Snackbar snackbar = ThemedSnackbar.make(signInRootView, messageRes, Snackbar.LENGTH_LONG);
             snackbar.setAction(R.string.sign_in_button, view -> context.startActivity(new Intent(context, SignInActivity.class)));
             snackbar.show();
             return;
