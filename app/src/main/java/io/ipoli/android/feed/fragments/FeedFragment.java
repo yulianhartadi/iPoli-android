@@ -132,7 +132,9 @@ public class FeedFragment extends BaseFragment {
             feedPersistenceService.addPostToPlayer(post, player.getId());
         }
 
-        new DateTimePickerFragment().show(getFragmentManager());
+        DateTimePickerFragment.newInstance(player.getUse24HourFormat(), (date, time) -> {
+
+        }).show(getFragmentManager());
     }
 
     private void onLikePost(Post post) {

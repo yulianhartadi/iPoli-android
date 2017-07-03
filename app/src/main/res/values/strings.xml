@@ -920,6 +920,7 @@
     <string name="player_profile_list_level">Level %1$d:\n%2$s</string>
     <string name="empty_quest_picker_text">No quests to share. Go complete some!</string>
     <string name="title_activity_quest_picker">Pick Quest to Share</string>
+    <string name="date_time_picker_title">Schedule your quest</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
