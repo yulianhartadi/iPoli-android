@@ -146,7 +146,7 @@ public class FeedFragment extends BaseFragment {
                     (AppCompatActivity) getActivity(), rootContainer);
             return;
         }
-        if (post.isLikedByPlayer(player.getId())) {
+        if (post.isGivenKudosByPlayer(player.getId())) {
             feedPersistenceService.removeLike(post, player.getId());
         } else {
             feedPersistenceService.addLike(post, player.getId());

@@ -321,7 +321,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     }
 
     @Subscribe
-    public void onLikePost(GiveKudosEvent event) {
+    public void onGiveKudos(GiveKudosEvent event) {
         if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
             return;
@@ -337,7 +337,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
 
         Post post = event.post;
 
-        if (post.isLikedByPlayer(player.getId())) {
+        if (post.isGivenKudosByPlayer(player.getId())) {
             feedPersistenceService.removeLike(post, player.getId());
         } else {
             feedPersistenceService.addLike(post, player.getId());

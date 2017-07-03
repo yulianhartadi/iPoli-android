@@ -36,10 +36,10 @@ public class PostBinder {
         holder.questRewardPoints.setText(post.getRewardPoints().toString());
         holder.questExperience.setText(post.getExperience().toString() + " XP");
         holder.postCreatedAt.setText(DateUtils.getRelativeTimeSpanString(post.getCreatedAt(), System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS));
-        if (post.isLikedByPlayer(playerId)) {
-            holder.likePost.setImageResource(R.drawable.ic_favorite_accent_24dp);
+        if (post.isGivenKudosByPlayer(playerId)) {
+            holder.giveKudos.setImageResource(R.drawable.ic_thumb_up_accent_24dp);
         } else {
-            holder.likePost.setImageResource(R.drawable.ic_favorite_outline_black_24dp);
+            holder.giveKudos.setImageResource(R.drawable.ic_thumb_up_outline_black_24dp);
         }
 
         if (post.isAddedByPlayer(playerId)) {

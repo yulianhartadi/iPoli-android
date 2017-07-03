@@ -208,7 +208,7 @@ public class Post {
     }
 
     @Exclude
-    public boolean isLikedByPlayer(String playerId) {
+    public boolean isGivenKudosByPlayer(String playerId) {
         return getLikes().containsKey(playerId);
     }
 

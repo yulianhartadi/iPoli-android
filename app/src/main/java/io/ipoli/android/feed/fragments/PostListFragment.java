@@ -72,7 +72,7 @@ public class PostListFragment extends BaseFragment {
             protected void populateViewHolder(PostViewHolder holder, Post post, int position) {
                 PostBinder.bind(holder, post, playerId);
                 holder.itemView.setOnClickListener(v -> postEvent(new ShowProfileEvent(post.getPlayerId())));
-                holder.likePost.setOnClickListener(v -> postEvent(new GiveKudosEvent(post)));
+                holder.giveKudos.setOnClickListener(v -> postEvent(new GiveKudosEvent(post)));
                 holder.addQuest.setOnClickListener(v -> postEvent(new AddQuestFromPostEvent(post)));
             }
         };
