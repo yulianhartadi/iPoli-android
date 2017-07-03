@@ -81,7 +81,7 @@ public class QuestPickerActivity extends BaseActivity {
         }
 
         resultList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        resultList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
+        resultList.setEmptyView(rootContainer, R.string.empty_quest_picker_text, R.drawable.ic_summit_grey_24dp);
         adapter = new QuestPickerAdapter(this, eventBus, new ArrayList<>());
         resultList.setAdapter(adapter);
 
