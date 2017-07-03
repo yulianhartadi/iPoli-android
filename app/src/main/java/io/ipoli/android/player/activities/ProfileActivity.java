@@ -39,6 +39,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.animations.ProgressBarAnimation;
+import io.ipoli.android.app.ui.dialogs.DateTimePickerFragment;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.feed.data.Post;
@@ -317,7 +318,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         if (!post.isAddedByPlayer(player.getId())) {
             feedPersistenceService.addPostToPlayer(post, player.getId());
         }
-        // @TODO show schedule dialog
+        new DateTimePickerFragment().show(getSupportFragmentManager());
     }
 
     @Subscribe
