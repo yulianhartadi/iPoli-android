@@ -19,6 +19,7 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.events.AddQuestFromPostEvent;
 import io.ipoli.android.feed.events.GiveKudosEvent;
+import io.ipoli.android.feed.events.ShowProfileEvent;
 import io.ipoli.android.feed.ui.PostBinder;
 import io.ipoli.android.feed.ui.PostViewHolder;
 
@@ -70,6 +71,7 @@ public class PostListFragment extends BaseFragment {
             @Override
             protected void populateViewHolder(PostViewHolder holder, Post post, int position) {
                 PostBinder.bind(holder, post, playerId);
+                holder.itemView.setOnClickListener(v -> postEvent(new ShowProfileEvent(post.getPlayerId())));
                 holder.likePost.setOnClickListener(v -> postEvent(new GiveKudosEvent(post)));
                 holder.addQuest.setOnClickListener(v -> postEvent(new AddQuestFromPostEvent(post)));
             }

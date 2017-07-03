@@ -18,6 +18,7 @@ import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.events.FollowPlayerEvent;
+import io.ipoli.android.feed.events.ShowProfileEvent;
 import io.ipoli.android.feed.events.UnfollowPlayerEvent;
 import io.ipoli.android.feed.ui.ProfileListBinder;
 import io.ipoli.android.feed.ui.ProfileListViewHolder;
@@ -91,6 +92,7 @@ public class ProfileListFragment extends BaseFragment {
             @Override
             protected void populateViewHolder(ProfileListViewHolder holder, Profile profile, int position) {
                 ProfileListBinder.bind(holder, profile, getPlayerId());
+                holder.itemView.setOnClickListener(v -> postEvent(new ShowProfileEvent(profile.getId())));
                 holder.follow.setEnabled(true);
                 holder.follow.setOnClickListener(v -> {
                     v.setEnabled(false);

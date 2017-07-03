@@ -40,8 +40,6 @@ import io.ipoli.android.player.activities.ProfileActivity;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.activities.QuestPickerActivity;
 
-import static io.ipoli.android.app.App.getPlayerId;
-
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 6/28/17.
@@ -102,7 +100,7 @@ public class FeedFragment extends BaseFragment {
 
                 holder.likePostContainer.setOnClickListener(v -> onLikePost(post));
                 holder.addQuestContainer.setOnClickListener(v -> onAddQuest(post));
-                holder.postContainer.setOnClickListener(v -> {
+                holder.itemView.setOnClickListener(v -> {
                     Intent intent = new Intent(getContext(), ProfileActivity.class);
                     intent.putExtra(Constants.PLAYER_ID_EXTRA_KEY, post.getPlayerId());
                     startActivity(intent);

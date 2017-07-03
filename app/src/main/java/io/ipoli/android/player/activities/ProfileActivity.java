@@ -1,5 +1,6 @@
 package io.ipoli.android.player.activities;
 
+import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -44,6 +45,7 @@ import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.events.AddQuestFromPostEvent;
 import io.ipoli.android.feed.events.GiveKudosEvent;
+import io.ipoli.android.feed.events.ShowProfileEvent;
 import io.ipoli.android.feed.fragments.PostListFragment;
 import io.ipoli.android.feed.fragments.ProfileListFragment;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
@@ -207,9 +209,14 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         String playerTitle = playerTitles[Math.min(profile.getLevel() / 10, playerTitles.length - 1)];
         playerLevel.setText(getString(R.string.player_profile_level, profile.getLevel(), playerTitle));
 
+        for (int i = 0; i < tabContainer.getTabCount(); i++) {
+            tabContainer.getTabAt(i).setCustomView(null);
+        }
+
         tabContainer.getTabAt(0).setCustomView(getTabView(profile.getPosts().size(), R.string.posts));
         tabContainer.getTabAt(1).setCustomView(getTabView(profile.getFollowing().size(), R.string.following));
         tabContainer.getTabAt(2).setCustomView(getTabView(profile.getFollowers().size(), R.string.followers));
+
         updateExperienceProgress(profile);
         updateFollow(profile);
     }
@@ -323,6 +330,16 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         } else {
             feedPersistenceService.addLike(post, player.getId());
         }
+    }
+
+    @Subscribe
+    public void onShowProfile(ShowProfileEvent event) {
+        if (playerId.equals(event.playerId)) {
+            return;
+        }
+        Intent intent = new Intent(this, ProfileActivity.class);
+        intent.putExtra(Constants.PLAYER_ID_EXTRA_KEY, event.playerId);
+        startActivity(intent);
     }
 
     @Override
