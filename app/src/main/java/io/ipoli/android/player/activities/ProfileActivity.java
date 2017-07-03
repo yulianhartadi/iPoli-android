@@ -44,7 +44,7 @@ import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.events.AddQuestFromPostEvent;
 import io.ipoli.android.feed.events.GiveKudosEvent;
-import io.ipoli.android.feed.fragments.PostsFragment;
+import io.ipoli.android.feed.fragments.PostListFragment;
 import io.ipoli.android.feed.fragments.ProfileListFragment;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.pet.data.Pet;
@@ -137,7 +137,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return PostsFragment.newInstance(playerId);
+                    return PostListFragment.newInstance(playerId);
                 case 1:
                     return ProfileListFragment.newInstance(playerId, ProfileListFragment.LIST_TYPE_FOLLOWING);
                 default:

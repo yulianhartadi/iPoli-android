@@ -26,14 +26,14 @@ import io.ipoli.android.feed.ui.PostViewHolder;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 7/2/17.
  */
-public class PostsFragment extends BaseFragment {
+public class PostListFragment extends BaseFragment {
 
     private static final String PLAYER_ID = "player_id";
     private FirebaseRecyclerAdapter<Post, PostViewHolder> adapter;
     private String playerId;
 
-    public static PostsFragment newInstance(String playerId) {
-        PostsFragment fragment = new PostsFragment();
+    public static PostListFragment newInstance(String playerId) {
+        PostListFragment fragment = new PostListFragment();
         Bundle args = new Bundle();
         args.putString(PLAYER_ID, playerId);
         fragment.setArguments(args);

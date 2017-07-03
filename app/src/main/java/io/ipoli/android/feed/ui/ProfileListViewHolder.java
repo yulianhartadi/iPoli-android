@@ -17,26 +17,25 @@ import io.ipoli.android.R;
 public class ProfileListViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.player_display_name)
-    TextView displayName;
+    public TextView displayName;
 
     @BindView(R.id.player_username)
-    TextView username;
+    public TextView username;
 
     @BindView(R.id.player_description)
-    TextView description;
-
+    public TextView description;
 
     @BindView(R.id.player_level)
-    TextView level;
+    public TextView level;
 
     @BindView(R.id.player_avatar)
-    ImageView avatar;
+    public ImageView avatar;
 
     @BindView(R.id.follow)
-    Button follow;
+    public Button follow;
 
     @BindView(R.id.following)
-    Button following;
+    public Button following;
 
     public ProfileListViewHolder(View itemView) {
         super(itemView);
