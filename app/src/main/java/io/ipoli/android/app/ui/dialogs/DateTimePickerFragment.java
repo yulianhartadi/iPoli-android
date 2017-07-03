@@ -5,13 +5,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,7 +42,7 @@ public class DateTimePickerFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_date_time_picker, null);
         unbinder = ButterKnife.bind(this, view);
 
-        PickerPagerAdapter adapter = new PickerPagerAdapter(getFragmentManager());
+        PickerPagerAdapter adapter = new PickerPagerAdapter();
 
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -67,10 +67,20 @@ public class DateTimePickerFragment extends DialogFragment {
         show(fragmentManager, TAG);
     }
 
-    private class PickerPagerAdapter extends FragmentPagerAdapter {
+    private class PickerPagerAdapter extends PagerAdapter {
 
-        PickerPagerAdapter(FragmentManager fragmentManager) {
-            super(fragmentManager);
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+//            LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+            LayoutInflater layoutInflater = getActivity().getLayoutInflater();
+            View item;
+            if(position == 0) {
+                item = layoutInflater.inflate(R.layout.view_date_picker, null);
+            } else {
+                item = layoutInflater.inflate(R.layout.view_time_picker, null);
+            }
+            container.addView(item);
+            return item;
         }
 
         @Override
@@ -79,15 +89,32 @@ public class DateTimePickerFragment extends DialogFragment {
         }
 
         @Override
-        public Fragment getItem(int position) {
-            switch (position) {
-//                case 0:
-//                    return new DateFragment();
-//                default:
-//                    return new AddChallengeSummaryFragment();
-            }
-            return null;
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
         }
     }
+
+//    private class PickerPagerAdapter extends FragmentPagerAdapter {
+//
+//        PickerPagerAdapter(FragmentManager fragmentManager) {
+//            super(fragmentManager);
+//        }
+//
+//        @Override
+//        public int getCount() {
+//            return 2;
+//        }
+//
+//        @Override
+//        public Fragment getItem(int position) {
+//            switch (position) {
+////                case 0:
+////                    return new DateFragment();
+////                default:
+////                    return new AddChallengeSummaryFragment();
+//            }
+//            return null;
+//        }
+//    }
 
 }

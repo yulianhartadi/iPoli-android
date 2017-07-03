@@ -27,6 +27,7 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.ui.dialogs.DateTimePickerFragment;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.ViewUtils;
 import io.ipoli.android.feed.data.Post;
@@ -114,7 +115,7 @@ public class FeedFragment extends BaseFragment {
     }
 
     private void onAddQuest(Post post) {
-        if(!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
+        if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
             Toast.makeText(getContext(), R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
             return;
         }
@@ -130,11 +131,12 @@ public class FeedFragment extends BaseFragment {
         if (!post.isAddedByPlayer(player.getId())) {
             feedPersistenceService.addPostToPlayer(post, player.getId());
         }
-        // @TODO show schedule dialog
+
+        new DateTimePickerFragment().show(getFragmentManager());
     }
 
     private void onLikePost(Post post) {
-        if(!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
+        if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
             Toast.makeText(getContext(), R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
             return;
         }
@@ -155,7 +157,7 @@ public class FeedFragment extends BaseFragment {
 
     @OnClick(R.id.add_quest_to_feed)
     public void onAddQuestToFeed(View v) {
-        if(!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
+        if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
             Toast.makeText(getContext(), R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
             return;
         }
