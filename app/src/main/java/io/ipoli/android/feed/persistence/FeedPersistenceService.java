@@ -23,9 +23,9 @@ public interface FeedPersistenceService {
 
     void removeAllListeners();
 
-    void removeLike(Post post, String playerId);
+    void removeKudos(Post post, String playerId);
 
-    void addLike(Post post, String playerId);
+    void addKudos(Post post, String playerId);
 
     void addPostToPlayer(Post post, String playerId);
 
