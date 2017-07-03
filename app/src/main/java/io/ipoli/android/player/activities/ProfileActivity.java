@@ -44,8 +44,10 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.events.AddQuestFromPostEvent;
+import io.ipoli.android.feed.events.FollowPlayerEvent;
 import io.ipoli.android.feed.events.GiveKudosEvent;
 import io.ipoli.android.feed.events.ShowProfileEvent;
+import io.ipoli.android.feed.events.UnfollowPlayerEvent;
 import io.ipoli.android.feed.fragments.PostListFragment;
 import io.ipoli.android.feed.fragments.ProfileListFragment;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
@@ -283,9 +285,16 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         xpLevelEnd.setText(numberFormatter.format(requiredXPForNextLevel));
         playerCurrentExperience.setText(getString(R.string.player_profile_current_xp, numberFormatter.format(new BigInteger(profile.getExperience()))));
         playerExperienceProgress.setMax(Constants.XP_BAR_MAX_VALUE);
-        ProgressBarAnimation anim = new ProgressBarAnimation(playerExperienceProgress, 0, levelProgress);
-        anim.setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime));
-        playerExperienceProgress.startAnimation(anim);
+
+        if (playerExperienceProgress.getTag() == null) {
+            playerExperienceProgress.setTag(true);
+            ProgressBarAnimation anim = new ProgressBarAnimation(playerExperienceProgress, 0, levelProgress);
+            anim.setDuration(getResources().getInteger(android.R.integer.config_mediumAnimTime));
+            playerExperienceProgress.startAnimation(anim);
+        } else {
+            playerExperienceProgress.setProgress(levelProgress);
+        }
+
     }
 
     @Subscribe
@@ -343,6 +352,16 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         Intent intent = new Intent(this, ProfileActivity.class);
         intent.putExtra(Constants.PLAYER_ID_EXTRA_KEY, event.playerId);
         startActivity(intent);
+    }
+
+    @Subscribe
+    public void onFollowPlayer(FollowPlayerEvent event) {
+        feedPersistenceService.follow(event.profile, getPlayerId());
+    }
+
+    @Subscribe
+    public void onUnfollowPlayer(UnfollowPlayerEvent event) {
+        feedPersistenceService.unfollow(event.profile, getPlayerId());
     }
 
     @Override
