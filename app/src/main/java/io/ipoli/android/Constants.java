@@ -79,8 +79,6 @@ public interface Constants {
 
     String KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL";
 
-    String KEY_SCHEMA_VERSION = "SCHEMA_VERSION";
-
     String IPOLI_EMAIL = "hi@ipoli.io";
 
     String API_RESOURCE_SOURCE = "ipoli-android";
@@ -158,7 +156,7 @@ public interface Constants {
     String PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index";
     int RANDOM_SEED = 42; // duh!
     int MAX_TIMES_A_DAY_COUNT = 8;
-    int SCHEMA_VERSION = 6;
+    int SCHEMA_VERSION = 7;
 
     double MAX_PENALTY_COEFFICIENT = 0.5;
     double NO_QUESTS_PENALTY_COEFFICIENT = 0.3;
@@ -172,7 +170,6 @@ public interface Constants {
     int XP_BAR_MAX_VALUE = 100;
     int RC_CALENDAR_PERM = 102;
     String KEY_LAST_ANDROID_CALENDAR_SYNC_DATE = "LAST_ANDROID_CALENDAR_SYNC_DATE";
-    int FIREBASE_LAST_SCHEMA_VERSION = 2;
     String FACEBOOK_PACKAGE = "com.facebook.katana";
     String TWITTER_PACKAGE = "com.twitter.android";
     int SYNC_CALENDAR_JOB_ID = 1;
