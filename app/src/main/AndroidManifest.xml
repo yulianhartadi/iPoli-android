@@ -217,6 +217,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".quest.activities.QuestPickerActivity"
+            android:label="@string/title_activity_quest_picker"
             android:parentActivityName=".MainActivity"
             android:screenOrientation="portrait">
             <meta-data
