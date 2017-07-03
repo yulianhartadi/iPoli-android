@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -67,6 +68,9 @@ public class FeedFragment extends BaseFragment {
     @BindView(R.id.root_container)
     ViewGroup rootContainer;
 
+    @BindView(R.id.loader)
+    ProgressBar loader;
+
     @BindView(R.id.feed_list)
     RecyclerView feedList;
 
@@ -85,6 +89,8 @@ public class FeedFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
         ((MainActivity) getActivity()).initToolbar(toolbar, R.string.achievement_feed);
+
+        loader.setVisibility(View.VISIBLE);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -113,6 +119,14 @@ public class FeedFragment extends BaseFragment {
                     intent.putExtra(Constants.PLAYER_ID_EXTRA_KEY, post.getPlayerId());
                     startActivity(intent);
                 });
+            }
+
+            @Override
+            public void onDataChanged() {
+                super.onDataChanged();
+                if(loader.getVisibility() == View.VISIBLE) {
+                    loader.setVisibility(View.GONE);
+                }
             }
         };
 
