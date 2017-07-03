@@ -37,18 +37,18 @@ public class ProfileListBinder {
         holder.level.setText(context.getString(R.string.player_profile_list_level, profile.getLevel(), playerTitle));
         holder.avatar.setImageResource(profile.getPlayerAvatar().picture);
 
-        if(profile.getId().equals(playerId)) {
+        if (profile.getId().equals(playerId)) {
             holder.follow.setVisibility(View.INVISIBLE);
+            holder.following.setVisibility(View.INVISIBLE);
         } else {
-            holder.follow.setVisibility(View.VISIBLE);
-            if(profile.getFollowers().containsKey(playerId)) {
-                holder.follow.setText(context.getString(R.string.following));
+            if (profile.getFollowers().containsKey(playerId)) {
+                holder.follow.setVisibility(View.INVISIBLE);
+                holder.following.setVisibility(View.VISIBLE);
             } else {
-                holder.follow.setText(context.getString(R.string.follow));
+                holder.follow.setVisibility(View.VISIBLE);
+                holder.following.setVisibility(View.INVISIBLE);
             }
         }
-
-
     }
 
     public static void bind(ProfileListViewHolder holder, Profile profile, String playerId) {
