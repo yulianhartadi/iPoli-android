@@ -242,10 +242,6 @@ public class MainActivity extends BaseActivity implements
     }
 
     private boolean shouldMigratePlayer() {
-        int firebaseSchemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
-        if (firebaseSchemaVersion > 0 && firebaseSchemaVersion <= Constants.FIREBASE_LAST_SCHEMA_VERSION) {
-            return true;
-        }
         if (getPlayer().getSchemaVersion() != Constants.SCHEMA_VERSION) {
             return true;
         }
