@@ -429,20 +429,22 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
                     playerDisplayNameEdit.setText(playerDisplayName.getText());
 
                     item.setTitle(R.string.save);
+                    playerDisplayNameEdit.requestFocus();
+                    KeyboardUtils.showKeyboard(this, playerDisplayNameEdit);
                 } else {
 
                     String newDisplayName = playerDisplayNameEdit.getText().toString();
                     if (StringUtils.isEmpty(newDisplayName)) {
-                        playerDisplayNameEdit.setError("Huh? That can't be empty!");
+                        Toast.makeText(this, "Your name can't be empty, right?", Toast.LENGTH_SHORT).show();
                         return true;
                     }
 
                     playerBioEdit.setTag(null);
                     item.setTitle(R.string.edit_menu);
                     playerBio.setVisibility(View.VISIBLE);
-                    playerBioEdit.setVisibility(View.INVISIBLE);
+                    playerBioEdit.setVisibility(View.GONE);
                     playerDisplayName.setVisibility(View.VISIBLE);
-                    playerDisplayNameEdit.setVisibility(View.INVISIBLE);
+                    playerDisplayNameEdit.setVisibility(View.GONE);
                     String newBio = playerBioEdit.getText().toString();
 
                     if (StringUtils.isEmpty(newBio)) {
