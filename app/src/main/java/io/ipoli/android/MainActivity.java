@@ -65,6 +65,7 @@ import io.ipoli.android.app.rate.RateDialogConstants;
 import io.ipoli.android.app.settings.SettingsActivity;
 import io.ipoli.android.app.share.InviteFriendsDialog;
 import io.ipoli.android.app.sync.AndroidCalendarSyncJobService;
+import io.ipoli.android.app.ui.ThemedSnackbar;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.ui.events.StartFabMenuIntentEvent;
@@ -529,14 +530,12 @@ public class MainActivity extends BaseActivity implements
         long experience = q.getExperience();
         long coins = q.getCoins();
 
-        Snackbar snackbar = Snackbar
-                .make(findViewById(R.id.root_container),
-                        getString(R.string.quest_complete_with_bounty, experience, coins),
-                        Snackbar.LENGTH_LONG);
+        Snackbar snackbar = ThemedSnackbar.make(findViewById(R.id.root_container),
+                getString(R.string.quest_complete_with_bounty, experience, coins),
+                Snackbar.LENGTH_LONG);
 
-        snackbar.setAction(R.string.share, view -> {
-            eventBus.post(new ShareQuestEvent(q, EventSource.SNACKBAR));
-        });
+        snackbar.setAction(R.string.share, view ->
+                eventBus.post(new ShareQuestEvent(q, EventSource.SNACKBAR)));
 
         snackbar.show();
 
@@ -649,7 +648,7 @@ public class MainActivity extends BaseActivity implements
         quest.setReminders(newReminders);
         eventBus.post(new NewQuestEvent(quest, EventSource.CALENDAR));
 
-        Snackbar snackbar = Snackbar.make(contentContainer, R.string.quest_duplicated, Snackbar.LENGTH_LONG);
+        Snackbar snackbar = ThemedSnackbar.make(contentContainer, R.string.quest_duplicated, Snackbar.LENGTH_LONG);
 
         if (!isForSameDay && showAction) {
             snackbar.setAction(R.string.view, view -> {
@@ -713,7 +712,7 @@ public class MainActivity extends BaseActivity implements
             message = getString(R.string.quest_moved_to_inbox);
         }
 
-        Snackbar snackbar = Snackbar.make(contentContainer, message, Snackbar.LENGTH_LONG);
+        Snackbar snackbar = ThemedSnackbar.make(contentContainer, message, Snackbar.LENGTH_LONG);
 
         if (isDateChanged && showAction) {
             snackbar.setAction(R.string.view, view -> {
