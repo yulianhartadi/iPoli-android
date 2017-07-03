@@ -124,7 +124,7 @@ public class DayViewFragment extends BaseFragment implements CalendarListener<Qu
 
     @Override
     protected boolean useOptionsMenu() {
-        return false;
+        return true;
     }
 
     @Override
