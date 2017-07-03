@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
-import com.couchbase.lite.Document;
 import com.couchbase.lite.UnsavedRevision;
 import com.squareup.otto.Bus;
 
@@ -25,7 +24,6 @@ import org.threeten.bp.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -36,13 +34,9 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.events.AppErrorEvent;
-import io.ipoli.android.app.events.PlayerCreatedEvent;
-import io.ipoli.android.app.events.PlayerMigratedEvent;
 import io.ipoli.android.app.sync.AndroidCalendarSyncJobService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
-import io.ipoli.android.app.utils.NetworkConnectivityUtils;
-import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.player.Avatar;
 import io.ipoli.android.player.PetAvatar;
 import io.ipoli.android.player.Player;
@@ -61,6 +55,7 @@ import io.ipoli.android.store.Upgrade;
 public class MigrationActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Boolean> {
     public static final int VERSION_BEFORE_UPGRADES = 3;
     private static final int NEW_CALENDAR_IMPORT_VERSION = 6;
+    private static final int PROFILES_FIRST_VERSION = 7;
 
     @Inject
     Api api;
@@ -100,100 +95,14 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         getWindow().getDecorView().setSystemUiVisibility(flags);
 
-        schemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
+        Player player = getPlayer();
+        schemaVersion = player.getSchemaVersion();
 
-        if (schemaVersion == 0 || schemaVersion > Constants.FIREBASE_LAST_SCHEMA_VERSION) {
-            Player player = getPlayer();
-            if (player != null) {
-                schemaVersion = player.getSchemaVersion();
-            }
-        }
-
-        if (schemaVersion < VERSION_BEFORE_UPGRADES) {
-            migrateFromFirebase(() ->
-                    getSupportLoaderManager().initLoader(1, null, this));
-        } else if (schemaVersion >= VERSION_BEFORE_UPGRADES) {//leave only == when null pointers for rewardPoints and avatars are fixed
+        if (schemaVersion >= VERSION_BEFORE_UPGRADES) {//leave only == when null pointers for rewardPoints and avatars are fixed
             getSupportLoaderManager().initLoader(1, null, this);
         } else {
             onFinish();
         }
-    }
-
-    private void migrateFromFirebase(OnMigrationFinishListener migrationFinishListener) {
-        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
-            Toast.makeText(this, R.string.migration_no_internet, Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-
-        String firebasePlayerId = App.getPlayerId();
-        api.migratePlayer(firebasePlayerId, new Api.PlayerMigratedListener() {
-            @Override
-            public void onSuccess(Map<String, List<Map<String, Object>>> documents) {
-                if (!documents.containsKey("player")) {
-                    showErrorMessageAndFinish(new MigrationException("Player with firebase id:" + firebasePlayerId + " not found", schemaVersion));
-                    return;
-                }
-                Map<String, Object> player = documents.get("player").get(0);
-                saveDocuments(documents, player);
-                String playerId = (String) player.get("id");
-                eventBus.post(new PlayerCreatedEvent(playerId));
-                eventBus.post(new PlayerMigratedEvent(firebasePlayerId, playerId));
-                migrationFinishListener.onMigrationFinish();
-            }
-
-            @Override
-            public void onError(Exception e) {
-                showErrorMessageAndFinish(e);
-            }
-        });
-    }
-
-    private void saveDocuments(Map<String, List<Map<String, Object>>> documents, Map<String, Object> player) {
-        database.runInTransaction(() -> {
-            player.put("schemaVersion", Constants.SCHEMA_VERSION);
-            save(player);
-
-            saveProps(documents, "rewards");
-
-            saveProps(documents, "challenges");
-
-            saveProps(documents, "repeating_quests");
-
-            if (documents.containsKey("quests")) {
-                List<Map<String, Object>> quests = documents.get("quests");
-                for (Map<String, Object> q : quests) {
-                    if (q.containsKey("scheduled") && q.containsKey("startMinute") && q.containsKey("reminders")) {
-                        List<Map<String, Object>> reminders = (List<Map<String, Object>>) q.get("reminders");
-                        for (Map<String, Object> reminder : reminders) {
-                            if (reminder.containsKey("start")) {
-                                continue;
-                            }
-                            Time startTime = Time.of((Integer) q.get("startMinute"));
-                            long questStart = Long.valueOf((String) q.get("scheduled")) + startTime.toMillisOfDay();
-                            Long reminderStart = questStart + TimeUnit.MINUTES.toMillis(Long.valueOf((String) reminder.get("minutesFromStart")));
-                            reminder.put("start", String.valueOf(reminderStart));
-                        }
-                    }
-                    save(q);
-                }
-            }
-            return true;
-        });
-    }
-
-    private void saveProps(Map<String, List<Map<String, Object>>> documents, String rewards2) {
-        if (documents.containsKey(rewards2)) {
-            List<Map<String, Object>> rewards = documents.get(rewards2);
-            for (Map<String, Object> reward : rewards) {
-                save(reward);
-            }
-        }
-    }
-
-    private void showErrorMessageAndFinish(Exception e) {
-        eventBus.post(new AppErrorEvent(e));
-        showErrorMessageAndFinish();
     }
 
     private void showErrorMessageAndFinish() {
@@ -206,15 +115,6 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
     @Override
     public void onBackPressed() {
 
-    }
-
-    private void save(Map<String, Object> obj) {
-        try {
-            Document document = database.getDocument((String) obj.get("id"));
-            document.putProperties(obj);
-        } catch (CouchbaseLiteException e) {
-            eventBus.post(new AppErrorEvent(e));
-        }
     }
 
     private void onFinish() {
@@ -284,6 +184,9 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
         @Override
         public Boolean loadInBackground() {
             unlockUpgrades();
+            if(schemaVersion < PROFILES_FIRST_VERSION) {
+                migrateUsername();
+            }
             if (schemaVersion < NEW_CALENDAR_IMPORT_VERSION) {
                 return migrateAndroidCalendars();
             }
@@ -294,6 +197,14 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
         protected void onStopLoading() {
             cancelLoad();
         }
+
+        private void migrateUsername() {
+            Player player = playerPersistenceService.get();
+            player.setDisplayName(player.getUsername());
+            player.setUsername("");
+            playerPersistenceService.save(player);
+        }
+
 
         private void unlockUpgrades() {
             Player player = playerPersistenceService.get();

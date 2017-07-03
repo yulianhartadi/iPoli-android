@@ -339,10 +339,6 @@ public class App extends MultiDexApplication {
         registerServices();
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
 
-        int firebaseSchemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
-        if (firebaseSchemaVersion > 0 && firebaseSchemaVersion <= Constants.FIREBASE_LAST_SCHEMA_VERSION) {
-            return;
-        }
         if (hasPlayer()) {
             Player player = playerPersistenceService.get();
             if (player == null) {
