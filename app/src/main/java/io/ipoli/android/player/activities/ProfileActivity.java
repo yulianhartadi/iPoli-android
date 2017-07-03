@@ -44,9 +44,8 @@ import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.events.AddQuestFromPostEvent;
 import io.ipoli.android.feed.events.GiveKudosEvent;
-import io.ipoli.android.feed.fragments.FollowersFragment;
-import io.ipoli.android.feed.fragments.FollowingFragment;
 import io.ipoli.android.feed.fragments.PostsFragment;
+import io.ipoli.android.feed.fragments.ProfileListFragment;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
@@ -140,9 +139,9 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
                 case 0:
                     return PostsFragment.newInstance(playerId);
                 case 1:
-                    return FollowingFragment.newInstance(playerId);
+                    return ProfileListFragment.newInstance(playerId, ProfileListFragment.LIST_TYPE_FOLLOWING);
                 default:
-                    return FollowersFragment.newInstance(playerId);
+                    return ProfileListFragment.newInstance(playerId, ProfileListFragment.LIST_TYPE_FOLLOWERS);
             }
         }
 
