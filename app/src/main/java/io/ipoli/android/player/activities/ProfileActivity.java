@@ -485,8 +485,10 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
                     playerPersistenceService.save(player);
                 }
                 return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private boolean isInEditMode() {

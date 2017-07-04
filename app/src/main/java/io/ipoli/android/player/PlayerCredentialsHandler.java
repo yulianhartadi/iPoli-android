@@ -53,6 +53,7 @@ public class PlayerCredentialsHandler {
                     break;
                 default:
                     messageRes = R.string.sign_in_to_follow_message;
+                    break;
             }
 
             Snackbar snackbar = ThemedSnackbar.make(signInRootView, messageRes, Snackbar.LENGTH_LONG);
