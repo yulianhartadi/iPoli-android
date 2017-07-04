@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -22,6 +21,8 @@ import io.ipoli.android.feed.events.GiveKudosEvent;
 import io.ipoli.android.feed.events.ShowProfileEvent;
 import io.ipoli.android.feed.ui.PostBinder;
 import io.ipoli.android.feed.ui.PostViewHolder;
+
+import static io.ipoli.android.feed.persistence.FirebaseFeedPersistenceService.postsPath;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -63,11 +64,11 @@ public class PostListFragment extends BaseFragment {
         layoutManager.setStackFromEnd(true);
         postList.setLayoutManager(layoutManager);
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("/posts");
+        DatabaseReference postsReference = postsPath().toReference();
         adapter = new FirebaseRecyclerAdapter<Post, PostViewHolder>(Post.class,
                 R.layout.feed_post_item,
                 PostViewHolder.class,
-                ref.orderByChild("playerId").equalTo(playerId).limitToLast(100)) {
+                postsReference.orderByChild("playerId").equalTo(playerId).limitToLast(100)) {
             @Override
             protected void populateViewHolder(PostViewHolder holder, Post post, int position) {
                 PostBinder.bind(holder, post, playerId);

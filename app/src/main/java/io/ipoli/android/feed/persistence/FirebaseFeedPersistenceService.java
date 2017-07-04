@@ -38,6 +38,10 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
         return rootPath().add("posts");
     }
 
+    public static FirebasePath profilesPath() {
+        return rootPath().add("profiles");
+    }
+
     public static FirebasePath postPath(String postId) {
         return postsPath().add(postId);
     }

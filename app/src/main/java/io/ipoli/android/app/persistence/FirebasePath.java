@@ -45,6 +45,10 @@ public class FirebasePath {
         return database.getReference(path);
     }
 
+    public DatabaseReference toReference() {
+        return FirebaseDatabase.getInstance().getReference(path);
+    }
+
     public AddMapEntry update(Map<String, Object> map) {
         return new AddMapEntry(map, path);
     }

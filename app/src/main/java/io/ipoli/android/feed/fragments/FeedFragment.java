@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import javax.inject.Inject;
 
@@ -48,6 +47,8 @@ import io.ipoli.android.quest.activities.QuestPickerActivity;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.NewQuestEvent;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
+
+import static io.ipoli.android.feed.persistence.FirebaseFeedPersistenceService.postsPath;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -91,7 +92,7 @@ public class FeedFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        ((MainActivity) getActivity()).initToolbar(toolbar, R.string.achievement_feed);
+        ((MainActivity) getActivity()).initToolbar(toolbar, R.string.title_fragment_feed);
 
         loader.setVisibility(View.VISIBLE);
 
@@ -101,11 +102,11 @@ public class FeedFragment extends BaseFragment {
         layoutManager.setStackFromEnd(true);
         feedList.setLayoutManager(layoutManager);
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("/posts");
+        DatabaseReference postsReference = postsPath().toReference();
         adapter = new FirebaseRecyclerAdapter<Post, PostViewHolder>(Post.class,
                 R.layout.feed_post_item,
                 PostViewHolder.class,
-                ref.limitToLast(100)) {
+                postsReference.limitToLast(100)) {
             @Override
             protected void populateViewHolder(PostViewHolder holder, Post post, int position) {
                 int marginBottom = position == 0 ? 92 : 4;
@@ -127,7 +128,7 @@ public class FeedFragment extends BaseFragment {
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
-                if(loader.getVisibility() == View.VISIBLE) {
+                if (loader.getVisibility() == View.VISIBLE) {
                     loader.setVisibility(View.GONE);
                 }
             }
