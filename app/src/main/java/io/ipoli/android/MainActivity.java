@@ -81,6 +81,7 @@ import io.ipoli.android.feed.fragments.FeedFragment;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
+import io.ipoli.android.player.CredentialStatus;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.PlayerCredentialChecker;
@@ -123,9 +124,9 @@ import static io.ipoli.android.Constants.RC_CALENDAR_PERM;
 import static io.ipoli.android.Constants.SYNC_CALENDAR_JOB_ID;
 import static io.ipoli.android.R.id.feed;
 import static io.ipoli.android.app.App.hasPlayer;
-import static io.ipoli.android.player.PlayerCredentialChecker.Status.AUTHORIZED;
-import static io.ipoli.android.player.PlayerCredentialChecker.Status.GUEST;
-import static io.ipoli.android.player.PlayerCredentialChecker.Status.NO_USERNAME;
+import static io.ipoli.android.player.CredentialStatus.AUTHORIZED;
+import static io.ipoli.android.player.CredentialStatus.GUEST;
+import static io.ipoli.android.player.CredentialStatus.NO_USERNAME;
 import static io.ipoli.android.player.PlayerCredentialChecker.checkStatus;
 
 public class MainActivity extends BaseActivity implements
@@ -390,8 +391,8 @@ public class MainActivity extends BaseActivity implements
 
         View header = navigationView.getHeaderView(0);
         header.setOnClickListener(v -> {
-            PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
-            if (status == AUTHORIZED) {
+            CredentialStatus credentialStatus = PlayerCredentialChecker.checkStatus(player);
+            if (credentialStatus == AUTHORIZED) {
                 eventBus.post(new OpenProfileFromDrawerEvent());
                 startProfileActivity(player);
                 return;
@@ -400,11 +401,11 @@ public class MainActivity extends BaseActivity implements
                 Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
                 return;
             }
-            if(status == GUEST) {
+            if(credentialStatus == GUEST) {
                 Toast.makeText(this, R.string.sign_in_to_view_profile, Toast.LENGTH_LONG).show();
                 return;
             }
-            if(status == NO_USERNAME) {
+            if(credentialStatus == NO_USERNAME) {
                 UsernamePickerFragment.newInstance(username -> {
                     player.setUsername(username);
                     playerPersistenceService.save(player);
@@ -556,9 +557,9 @@ public class MainActivity extends BaseActivity implements
             return;
         }
 
-        PlayerCredentialChecker.Status status = checkStatus(player);
-        if (status != AUTHORIZED) {
-            playerCredentialsHandler.authorizeAccess(player, status, PlayerCredentialsHandler.Action.SHARE_QUEST,
+        CredentialStatus credentialStatus = checkStatus(player);
+        if (credentialStatus != AUTHORIZED) {
+            playerCredentialsHandler.authorizeAccess(player, credentialStatus, PlayerCredentialsHandler.Action.SHARE_QUEST,
                     this, findViewById(R.id.root_container));
             return;
         }

@@ -35,6 +35,7 @@ import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.feed.ui.PostBinder;
 import io.ipoli.android.feed.ui.PostViewHolder;
+import io.ipoli.android.player.CredentialStatus;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.PlayerCredentialChecker;
 import io.ipoli.android.player.PlayerCredentialsHandler;
@@ -146,9 +147,9 @@ public class FeedFragment extends BaseFragment {
         }
 
         Player player = getPlayer();
-        PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
-        if (status != PlayerCredentialChecker.Status.AUTHORIZED) {
-            playerCredentialsHandler.authorizeAccess(player, status, PlayerCredentialsHandler.Action.ADD_QUEST,
+        CredentialStatus credentialStatus = PlayerCredentialChecker.checkStatus(player);
+        if (credentialStatus != CredentialStatus.AUTHORIZED) {
+            playerCredentialsHandler.authorizeAccess(player, credentialStatus, PlayerCredentialsHandler.Action.ADD_QUEST,
                     (AppCompatActivity) getActivity(), rootContainer);
             return;
         }
@@ -174,9 +175,9 @@ public class FeedFragment extends BaseFragment {
         }
 
         Player player = getPlayer();
-        PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
-        if (status != PlayerCredentialChecker.Status.AUTHORIZED) {
-            playerCredentialsHandler.authorizeAccess(player, status, PlayerCredentialsHandler.Action.GIVE_KUDOS,
+        CredentialStatus credentialStatus = PlayerCredentialChecker.checkStatus(player);
+        if (credentialStatus != CredentialStatus.AUTHORIZED) {
+            playerCredentialsHandler.authorizeAccess(player, credentialStatus, PlayerCredentialsHandler.Action.GIVE_KUDOS,
                     (AppCompatActivity) getActivity(), rootContainer);
             return;
         }
@@ -197,9 +198,9 @@ public class FeedFragment extends BaseFragment {
         }
 
         Player player = getPlayer();
-        PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
-        if (status != PlayerCredentialChecker.Status.AUTHORIZED) {
-            playerCredentialsHandler.authorizeAccess(player, status, PlayerCredentialsHandler.Action.SHARE_QUEST,
+        CredentialStatus credentialStatus = PlayerCredentialChecker.checkStatus(player);
+        if (credentialStatus != CredentialStatus.AUTHORIZED) {
+            playerCredentialsHandler.authorizeAccess(player, credentialStatus, PlayerCredentialsHandler.Action.SHARE_QUEST,
                     (AppCompatActivity) getActivity(), rootContainer);
             return;
         }

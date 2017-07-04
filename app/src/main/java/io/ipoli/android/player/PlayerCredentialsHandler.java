@@ -32,14 +32,14 @@ public class PlayerCredentialsHandler {
         this.feedPersistenceService = feedPersistenceService;
     }
 
-    public void authorizeAccess(Player player, PlayerCredentialChecker.Status status, Action action, AppCompatActivity context,
+    public void authorizeAccess(Player player, CredentialStatus credentialStatus, Action action, AppCompatActivity context,
                                 View signInRootView) {
 
-        if (status == PlayerCredentialChecker.Status.AUTHORIZED) {
+        if (credentialStatus == CredentialStatus.AUTHORIZED) {
             return;
         }
 
-        if (status == PlayerCredentialChecker.Status.GUEST) {
+        if (credentialStatus == CredentialStatus.GUEST) {
             int messageRes;
             switch (action) {
                 case SHARE_QUEST:
@@ -61,7 +61,7 @@ public class PlayerCredentialsHandler {
             return;
         }
 
-        if (status == PlayerCredentialChecker.Status.NO_USERNAME) {
+        if (credentialStatus == CredentialStatus.NO_USERNAME) {
             UsernamePickerFragment.newInstance(username -> {
                 player.setUsername(username);
                 playerPersistenceService.save(player);

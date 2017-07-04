@@ -6,17 +6,13 @@ package io.ipoli.android.player;
  */
 public class PlayerCredentialChecker {
 
-    public enum Status {
-        AUTHORIZED, GUEST, NO_USERNAME
-    }
-
-    public static Status checkStatus(Player player) {
+    public static CredentialStatus checkStatus(Player player) {
         if (player.isGuest()) {
-            return Status.GUEST;
+            return CredentialStatus.GUEST;
         }
         if (player.doesNotHaveUsername()) {
-            return Status.NO_USERNAME;
+            return CredentialStatus.NO_USERNAME;
         }
-        return Status.AUTHORIZED;
+        return CredentialStatus.AUTHORIZED;
     }
 }

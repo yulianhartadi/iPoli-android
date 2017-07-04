@@ -59,6 +59,7 @@ import io.ipoli.android.feed.fragments.PostListFragment;
 import io.ipoli.android.feed.fragments.ProfileListFragment;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.pet.data.Pet;
+import io.ipoli.android.player.CredentialStatus;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.PlayerCredentialChecker;
@@ -273,9 +274,9 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         }
 
         Player player = getPlayer();
-        PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
-        if (status != PlayerCredentialChecker.Status.AUTHORIZED) {
-            playerCredentialsHandler.authorizeAccess(player, status, PlayerCredentialsHandler.Action.FOLLOW_PLAYER,
+        CredentialStatus credentialStatus = PlayerCredentialChecker.checkStatus(player);
+        if (credentialStatus != CredentialStatus.AUTHORIZED) {
+            playerCredentialsHandler.authorizeAccess(player, credentialStatus, PlayerCredentialsHandler.Action.FOLLOW_PLAYER,
                     this, rootContainer);
             return;
         }
@@ -320,9 +321,9 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         }
 
         Player player = getPlayer();
-        PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
-        if (status != PlayerCredentialChecker.Status.AUTHORIZED) {
-            playerCredentialsHandler.authorizeAccess(player, status, PlayerCredentialsHandler.Action.ADD_QUEST,
+        CredentialStatus credentialStatus = PlayerCredentialChecker.checkStatus(player);
+        if (credentialStatus != CredentialStatus.AUTHORIZED) {
+            playerCredentialsHandler.authorizeAccess(player, credentialStatus, PlayerCredentialsHandler.Action.ADD_QUEST,
                     this, rootContainer);
             return;
         }
@@ -350,9 +351,9 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         }
 
         Player player = getPlayer();
-        PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
-        if (status != PlayerCredentialChecker.Status.AUTHORIZED) {
-            playerCredentialsHandler.authorizeAccess(player, status, PlayerCredentialsHandler.Action.GIVE_KUDOS,
+        CredentialStatus credentialStatus = PlayerCredentialChecker.checkStatus(player);
+        if (credentialStatus != CredentialStatus.AUTHORIZED) {
+            playerCredentialsHandler.authorizeAccess(player, credentialStatus, PlayerCredentialsHandler.Action.GIVE_KUDOS,
                     this, rootContainer);
             return;
         }
