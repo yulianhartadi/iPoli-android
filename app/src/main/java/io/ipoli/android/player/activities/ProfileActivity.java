@@ -40,6 +40,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.animations.ProgressBarAnimation;
 import io.ipoli.android.app.ui.dialogs.DateTimePickerFragment;
@@ -61,6 +62,12 @@ import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.PlayerCredentialChecker;
 import io.ipoli.android.player.PlayerCredentialsHandler;
+import io.ipoli.android.player.events.AddKudosEvent;
+import io.ipoli.android.player.events.CreateQuestFromPostEvent;
+import io.ipoli.android.player.events.EditProfileEvent;
+import io.ipoli.android.player.events.PlayerFollowedEvent;
+import io.ipoli.android.player.events.PlayerUnfollowedEvent;
+import io.ipoli.android.player.events.RemoveKudosEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.NewQuestEvent;
@@ -199,6 +206,8 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         tabContainer.getTabAt(0).setCustomView(getLayoutInflater().inflate(R.layout.view_profile_tab, null));
         tabContainer.getTabAt(1).setCustomView(getLayoutInflater().inflate(R.layout.view_profile_tab, null));
         tabContainer.getTabAt(2).setCustomView(getLayoutInflater().inflate(R.layout.view_profile_tab, null));
+
+        eventBus.post(new ScreenShownEvent(this, EventSource.PROFILE));
     }
 
     @Override
@@ -272,8 +281,10 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
 
         if (following) {
             feedPersistenceService.unfollow(profile, playerId);
+            eventBus.post(new PlayerUnfollowedEvent(playerId, profile.getId()));
         } else {
             feedPersistenceService.follow(profile, playerId);
+            eventBus.post(new PlayerFollowedEvent(playerId, profile.getId()));
         }
     }
 
@@ -327,6 +338,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
             eventBus.post(new NewQuestEvent(quest, EventSource.PROFILE));
             Toast.makeText(this, R.string.quest_from_post_added, Toast.LENGTH_LONG).show();
         }).show(getSupportFragmentManager());
+        eventBus.post(new CreateQuestFromPostEvent(post, EventSource.PROFILE));
     }
 
     @Subscribe
@@ -348,8 +360,10 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
 
         if (post.isGivenKudosByPlayer(player.getId())) {
             feedPersistenceService.removeKudos(post, player.getId());
+            eventBus.post(new RemoveKudosEvent(post, EventSource.PROFILE));
         } else {
             feedPersistenceService.addKudos(post, player.getId());
+            eventBus.post(new AddKudosEvent(post, EventSource.PROFILE));
         }
     }
 
@@ -365,12 +379,16 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
 
     @Subscribe
     public void onFollowPlayer(FollowPlayerEvent event) {
-        feedPersistenceService.follow(event.profile, getPlayerId());
+        String playerId = getPlayerId();
+        feedPersistenceService.follow(event.profile, playerId);
+        eventBus.post(new PlayerFollowedEvent(playerId, event.profile.getId()));
     }
 
     @Subscribe
     public void onUnfollowPlayer(UnfollowPlayerEvent event) {
-        feedPersistenceService.unfollow(event.profile, getPlayerId());
+        String playerId = getPlayerId();
+        feedPersistenceService.unfollow(event.profile, playerId);
+        eventBus.post(new PlayerUnfollowedEvent(playerId, event.profile.getId()));
     }
 
     @Override
@@ -431,6 +449,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
                     item.setTitle(R.string.save);
                     playerDisplayNameEdit.requestFocus();
                     KeyboardUtils.showKeyboard(this, playerDisplayNameEdit);
+                    eventBus.post(new EditProfileEvent(playerId));
                 } else {
 
                     String newDisplayName = playerDisplayNameEdit.getText().toString();
