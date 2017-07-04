@@ -170,9 +170,9 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     private void initGuestLogin() {
         if (!StringUtils.isEmpty(App.getPlayerId())) {
-//            guestButton.setVisibility(View.GONE);
-//            divider.setVisibility(View.GONE);
-//            dividerOr.setVisibility(View.GONE);
+            guestButton.setVisibility(View.GONE);
+            divider.setVisibility(View.GONE);
+            dividerOr.setVisibility(View.GONE);
         }
     }
 
