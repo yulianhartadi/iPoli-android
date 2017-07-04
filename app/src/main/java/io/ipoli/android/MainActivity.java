@@ -57,6 +57,7 @@ import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.FirebaseInviteCanceledEvent;
 import io.ipoli.android.app.events.FirebaseInviteSentEvent;
 import io.ipoli.android.app.events.InviteFriendsEvent;
+import io.ipoli.android.app.events.OpenProfileFromDrawerEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
@@ -391,6 +392,7 @@ public class MainActivity extends BaseActivity implements
         header.setOnClickListener(v -> {
             PlayerCredentialChecker.Status status = PlayerCredentialChecker.checkStatus(player);
             if (status == AUTHORIZED) {
+                eventBus.post(new OpenProfileFromDrawerEvent());
                 startProfileActivity(player);
                 return;
             }

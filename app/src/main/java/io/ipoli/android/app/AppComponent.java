@@ -37,6 +37,7 @@ import io.ipoli.android.app.tutorial.fragments.TutorialNamePromptFragment;
 import io.ipoli.android.app.tutorial.fragments.TutorialOutroFragment;
 import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
+import io.ipoli.android.app.ui.dialogs.DateTimePickerFragment;
 import io.ipoli.android.challenge.activities.AddChallengeActivity;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
@@ -283,4 +284,5 @@ public interface AppComponent {
 
     void inject(UsernamePickerFragment usernamePickerFragment);
 
+    void inject(DateTimePickerFragment dateTimePickerFragment);
 }
