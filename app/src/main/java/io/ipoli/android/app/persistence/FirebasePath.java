@@ -11,6 +11,8 @@ import java.util.Map;
  */
 public class FirebasePath {
 
+    private String path;
+    
     public class AddMapEntry {
 
         private final Map<String, Object> map;
@@ -25,8 +27,6 @@ public class FirebasePath {
             map.put(path, value);
         }
     }
-
-    private String path;
 
     public FirebasePath(String initialPath) {
         this.path = initialPath;
