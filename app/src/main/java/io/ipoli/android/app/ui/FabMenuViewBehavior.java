@@ -7,9 +7,6 @@ import android.widget.RelativeLayout;
 
 public class FabMenuViewBehavior extends CoordinatorLayout.Behavior<RelativeLayout> {
 
-    public FabMenuViewBehavior() {
-    }
-
     @Override
     public boolean layoutDependsOn(CoordinatorLayout parent, RelativeLayout child, View dependency) {
         return dependency instanceof Snackbar.SnackbarLayout;
