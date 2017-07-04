@@ -272,6 +272,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                         break;
                     default:
                         usernameView.setError(getString(R.string.username_wrong_format));
+                        break;
                 }
             }
         });

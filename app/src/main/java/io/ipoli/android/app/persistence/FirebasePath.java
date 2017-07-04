@@ -12,7 +12,7 @@ import java.util.Map;
 public class FirebasePath {
 
     private String path;
-    
+
     public class AddMapEntry {
 
         private final Map<String, Object> map;
