@@ -64,5 +64,4 @@ public abstract class PersistedObject {
     public void setOwner(String owner) {
         this.owner = owner;
     }
-
 }
