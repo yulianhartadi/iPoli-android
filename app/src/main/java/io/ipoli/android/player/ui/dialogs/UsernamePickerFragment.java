@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 
+import com.squareup.otto.Bus;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -20,6 +22,8 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.ui.UsernameValidator;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 
@@ -33,6 +37,9 @@ import static io.ipoli.android.app.utils.KeyboardUtils.showKeyboard;
 public class UsernamePickerFragment extends DialogFragment {
 
     private static final String TAG = "username-picker-dialog";
+
+    @Inject
+    Bus eventBus;
 
     @Inject
     FeedPersistenceService feedPersistenceService;
@@ -59,6 +66,7 @@ public class UsernamePickerFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         App.getAppComponent(getContext()).inject(this);
+        eventBus.post(new ScreenShownEvent(getActivity(), EventSource.USERNAME_PICKER));
     }
 
     @NonNull

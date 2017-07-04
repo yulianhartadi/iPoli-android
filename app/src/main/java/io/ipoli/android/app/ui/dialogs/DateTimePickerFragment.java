@@ -19,12 +19,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.squareup.otto.Bus;
+
 import org.threeten.bp.LocalDate;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import io.ipoli.android.R;
+import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.EventSource;
+import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
@@ -44,6 +51,9 @@ public class DateTimePickerFragment extends DialogFragment {
     private static final String MINUTES_AFTER_MIDNIGHT = "minutes_after_midnight";
     private static final String DISABLE_PAST_DAY_SELECTION = "disable_past_day_selection";
     private static final String USE_24_HOUR_FORMAT = "use_24_hour_format";
+
+    @Inject
+    Bus eventBus;
 
     @BindView(R.id.pickers_tabs)
     TabLayout tabLayout;
@@ -90,6 +100,7 @@ public class DateTimePickerFragment extends DialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        App.getAppComponent(getActivity()).inject(this);
 
         if (getArguments().containsKey(DATE)) {
             date = DateUtils.fromMillis(getArguments().getLong(DATE));
@@ -114,6 +125,8 @@ public class DateTimePickerFragment extends DialogFragment {
         } else {
             disablePastDaySelection = true;
         }
+
+        eventBus.post(new ScreenShownEvent(getActivity(), EventSource.DATE_TIME_PICKER));
     }
 
     @NonNull

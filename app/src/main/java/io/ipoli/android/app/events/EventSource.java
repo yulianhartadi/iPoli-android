@@ -59,5 +59,7 @@ public enum EventSource {
     TUTORIAL_CALENDAR,
     TUTORIAL_OUTRO,
     FEED,
-    PROFILE;
+    PROFILE,
+    DATE_TIME_PICKER,
+    USERNAME_PICKER;
 }

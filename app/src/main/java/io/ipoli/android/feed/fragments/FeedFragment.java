@@ -40,6 +40,9 @@ import io.ipoli.android.player.Player;
 import io.ipoli.android.player.PlayerCredentialChecker;
 import io.ipoli.android.player.PlayerCredentialsHandler;
 import io.ipoli.android.player.activities.ProfileActivity;
+import io.ipoli.android.player.events.AddKudosEvent;
+import io.ipoli.android.player.events.CreateQuestFromPostEvent;
+import io.ipoli.android.player.events.RemoveKudosEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.activities.QuestPickerActivity;
 import io.ipoli.android.quest.data.Quest;
@@ -160,6 +163,7 @@ public class FeedFragment extends BaseFragment {
             postEvent(new NewQuestEvent(quest, EventSource.FEED));
             Toast.makeText(getContext(), R.string.quest_from_post_added, Toast.LENGTH_LONG).show();
         }).show(getFragmentManager());
+        postEvent(new CreateQuestFromPostEvent(post, EventSource.FEED));
     }
 
     private void onLikePost(Post post) {
@@ -177,8 +181,10 @@ public class FeedFragment extends BaseFragment {
         }
         if (post.isGivenKudosByPlayer(player.getId())) {
             feedPersistenceService.removeKudos(post, player.getId());
+            postEvent(new RemoveKudosEvent(post, EventSource.FEED));
         } else {
             feedPersistenceService.addKudos(post, player.getId());
+            postEvent(new AddKudosEvent(post, EventSource.FEED));
         }
     }
 
