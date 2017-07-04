@@ -127,7 +127,6 @@ import static io.ipoli.android.app.App.hasPlayer;
 import static io.ipoli.android.player.CredentialStatus.AUTHORIZED;
 import static io.ipoli.android.player.CredentialStatus.GUEST;
 import static io.ipoli.android.player.CredentialStatus.NO_USERNAME;
-import static io.ipoli.android.player.PlayerCredentialChecker.checkStatus;
 
 public class MainActivity extends BaseActivity implements
         NavigationView.OnNavigationItemSelectedListener,
@@ -397,15 +396,15 @@ public class MainActivity extends BaseActivity implements
                 startProfileActivity(player);
                 return;
             }
-            if(!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+            if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
                 Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
                 return;
             }
-            if(credentialStatus == GUEST) {
+            if (credentialStatus == GUEST) {
                 Toast.makeText(this, R.string.sign_in_to_view_profile, Toast.LENGTH_LONG).show();
                 return;
             }
-            if(credentialStatus == NO_USERNAME) {
+            if (credentialStatus == NO_USERNAME) {
                 UsernamePickerFragment.newInstance(username -> {
                     player.setUsername(username);
                     playerPersistenceService.save(player);
@@ -557,7 +556,7 @@ public class MainActivity extends BaseActivity implements
             return;
         }
 
-        CredentialStatus credentialStatus = checkStatus(player);
+        CredentialStatus credentialStatus = PlayerCredentialChecker.checkStatus(player);
         if (credentialStatus != AUTHORIZED) {
             playerCredentialsHandler.authorizeAccess(player, credentialStatus, PlayerCredentialsHandler.Action.SHARE_QUEST,
                     this, findViewById(R.id.root_container));
@@ -565,7 +564,7 @@ public class MainActivity extends BaseActivity implements
         }
 
         feedPersistenceService.findProfile(player.getId(), profile -> {
-            if(profile.getPosts().containsValue(e.quest.getId())) {
+            if (profile.getPosts().containsValue(e.quest.getId())) {
                 Toast.makeText(this, R.string.achievement_already_shared, Toast.LENGTH_LONG).show();
                 return;
             }
