@@ -2,7 +2,6 @@ package io.ipoli.android.feed.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +10,9 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 
 import io.ipoli.android.R;
-import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
+import io.ipoli.android.app.ui.LayoutManagerFactory;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.events.FollowPlayerEvent;
@@ -74,15 +73,10 @@ public class ProfileListFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        App.getAppComponent(getContext()).inject(this);
         super.onCreateView(inflater, container, savedInstanceState);
-        EmptyStateRecyclerView postList = (EmptyStateRecyclerView) inflater.inflate(R.layout.fragment_profile_list, container, false);
+        EmptyStateRecyclerView profileList = (EmptyStateRecyclerView) inflater.inflate(R.layout.fragment_profile_list, container, false);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        layoutManager.setReverseLayout(true);
-        layoutManager.setStackFromEnd(true);
-        postList.setLayoutManager(layoutManager);
+        profileList.setLayoutManager(LayoutManagerFactory.createReverseLayoutManager(getContext()));
 
         DatabaseReference profilesPath = profilesPath().toReference();
         adapter = new FirebaseRecyclerAdapter<Profile, ProfileListViewHolder>(Profile.class,
@@ -106,8 +100,8 @@ public class ProfileListFragment extends BaseFragment {
             }
         };
 
-        postList.setAdapter(adapter);
-        return postList;
+        profileList.setAdapter(adapter);
+        return profileList;
     }
 
     @Override
