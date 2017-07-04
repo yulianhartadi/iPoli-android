@@ -32,7 +32,7 @@ public class Player extends PersistedObject {
 
     private String username;
     private String displayName;
-    private String description;
+    private String bio;
     private Integer level;
     private String experience;
     private Long coins;
@@ -454,12 +454,12 @@ public class Player extends PersistedObject {
         this.displayName = displayName;
     }
 
-    public String getDescription() {
-        return description;
+    public String getBio() {
+        return bio;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 
     @JsonIgnore

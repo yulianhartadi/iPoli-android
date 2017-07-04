@@ -141,6 +141,8 @@ import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import okhttp3.Cookie;
 
+import static io.ipoli.android.feed.persistence.FirebaseFeedPersistenceService.profilePath;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 1/7/16.
@@ -478,7 +480,7 @@ public class App extends MultiDexApplication {
         }
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         db.getReference("/").keepSynced(false);
-        db.getReference("/profiles/" + getPlayerId()).keepSynced(true);
+        profilePath(getPlayerId()).toReference(db).keepSynced(true);
 
         scheduleDateChanged();
         scheduleNextReminder();

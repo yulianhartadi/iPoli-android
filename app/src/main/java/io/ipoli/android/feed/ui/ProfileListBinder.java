@@ -27,9 +27,9 @@ public class ProfileListBinder {
         Context context = holder.itemView.getContext();
         holder.displayName.setText(profile.getDisplayName());
         holder.username.setText("@" + profile.getUsername());
-        String desc = StringUtils.isEmpty(profile.getDescription()) ?
+        String desc = StringUtils.isEmpty(profile.getBio()) ?
                 context.getString(R.string.profile_default_bio) :
-                profile.getDescription();
+                profile.getBio();
         holder.description.setText(desc);
 
         String[] playerTitles = context.getResources().getStringArray(R.array.player_titles);

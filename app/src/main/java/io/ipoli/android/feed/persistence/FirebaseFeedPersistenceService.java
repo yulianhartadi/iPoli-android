@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.ipoli.android.app.events.AppErrorEvent;
+import io.ipoli.android.app.persistence.FirebasePath;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.data.Profile;
@@ -23,9 +24,31 @@ import io.ipoli.android.player.Player;
  */
 public class FirebaseFeedPersistenceService implements FeedPersistenceService {
 
+    public static final String ROOT_PATH = "/v2";
+
     private final FirebaseDatabase database;
     private final Bus eventBus;
     private final Map<ValueEventListener, Query> valueListeners;
+
+    public static FirebasePath rootPath() {
+        return new FirebasePath(ROOT_PATH);
+    }
+
+    public static FirebasePath postsPath() {
+        return rootPath().add("posts");
+    }
+
+    public static FirebasePath postPath(String postId) {
+        return postsPath().add(postId);
+    }
+
+    public static FirebasePath profilePath(String profileId) {
+        return rootPath().add("profiles").add(profileId);
+    }
+
+    public static FirebasePath usernamePath(String username) {
+        return rootPath().add("usernames").add(username);
+    }
 
     public FirebaseFeedPersistenceService(FirebaseDatabase database, Bus eventBus) {
         this.database = database;
@@ -35,27 +58,27 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
 
     @Override
     public void addPost(Post post) {
-        DatabaseReference postsRef = database.getReference("/posts");
-        DatabaseReference ref = postsRef.push();
+        DatabaseReference postsReference = postsPath().toReference(database);
+        DatabaseReference ref = postsReference.push();
         post.setId(ref.getKey());
 
         Map<String, Object> update = new HashMap<>();
-        update.put("/posts/" + post.getId(), post);
-        update.put("/profiles/" + post.getPlayerId() + "/posts/" + post.getId(), post.getQuestId());
+        postPath(post.getId()).update(update).withValue(post);
+        profilePath(post.getPlayerId()).add("posts").add(post.getId()).update(update).withValue(post.getQuestId());
         database.getReference().updateChildren(update);
     }
 
     @Override
     public void createProfile(Profile profile) {
         Map<String, Object> update = new HashMap<>();
-        update.put("/profiles/" + profile.getId(), profile);
-        update.put("/usernames/" + profile.getUsername().toLowerCase(), profile.getId());
+        profilePath(profile.getId()).update(update).withValue(profile);
+        usernamePath(profile.getUsername().toLowerCase()).update(update).withValue(profile.getId());
         database.getReference().updateChildren(update);
     }
 
     @Override
     public void findProfile(String playerId, OnDataChangedListener<Profile> listener) {
-        DatabaseReference profileRef = database.getReference("/profiles/" + playerId);
+        DatabaseReference profileRef = profilePath(playerId).toReference(database);
         profileRef.addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -66,7 +89,7 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
 
     @Override
     public void listenForProfile(String playerId, OnDataChangedListener<Profile> listener) {
-        DatabaseReference profileRef = database.getReference("/profiles/" + playerId);
+        DatabaseReference profileRef = profilePath(playerId).toReference(database);
         ValueEventListener valueEventListener = new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -79,8 +102,8 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
 
     @Override
     public void isUsernameAvailable(String username, OnDataChangedListener<Boolean> listener) {
-        DatabaseReference usernamesRef = database.getReference("/usernames/" + username.toLowerCase());
-        usernamesRef.addListenerForSingleValueEvent(new FirebaseValueEventListener() {
+        DatabaseReference usernameRef = usernamePath(username.toLowerCase()).toReference(database);
+        usernameRef.addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Object result = dataSnapshot.getValue();
@@ -105,55 +128,55 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
     @Override
     public void removeKudos(Post post, String playerId) {
         Map<String, Object> update = new HashMap<>();
-        update.put("/posts/" + post.getId() + "/kudos/" + playerId, null);
+        postPath(post.getId()).add("kudos").add(playerId).update(update).withValue(null);
         database.getReference().updateChildren(update);
     }
 
     @Override
     public void addKudos(Post post, String playerId) {
         Map<String, Object> update = new HashMap<>();
-        update.put("/posts/" + post.getId() + "/kudos/" + playerId, true);
+        postPath(post.getId()).add("kudos").add(playerId).update(update).withValue(true);
         database.getReference().updateChildren(update);
     }
 
     @Override
     public void addPostToPlayer(Post post, String playerId) {
         Map<String, Object> update = new HashMap<>();
-        update.put("/posts/" + post.getId() + "/addedBy/" + playerId, true);
+        postPath(post.getId()).add("addedBy").add(playerId).update(update).withValue(true);
         database.getReference().updateChildren(update);
     }
 
     @Override
     public void unfollow(Profile profile, String playerId) {
         Map<String, Object> update = new HashMap<>();
-        update.put("/profiles/" + profile.getId() + "/followers/" + playerId, null);
-        update.put("/profiles/" + playerId + "/following/" + profile.getId(), null);
+        profilePath(profile.getId()).add("followers").add(playerId).update(update).withValue(null);
+        profilePath(playerId).add("following").add(profile.getId()).update(update).withValue(null);
         database.getReference().updateChildren(update);
     }
 
     @Override
     public void follow(Profile profile, String playerId) {
         Map<String, Object> update = new HashMap<>();
-        update.put("/profiles/" + profile.getId() + "/followers/" + playerId, true);
-        update.put("/profiles/" + playerId + "/following/" + profile.getId(), true);
+        profilePath(profile.getId()).add("followers").add(playerId).update(update).withValue(true);
+        profilePath(playerId).add("following").add(profile.getId()).update(update).withValue(true);
         database.getReference().updateChildren(update);
     }
 
     @Override
     public void updateProfile(Profile profile, Player player) {
         Map<String, Object> update = new HashMap<>();
-        String path = "/profiles/" + profile.getId() + "/";
-        update.put(path + "displayName", player.getDisplayName());
-        update.put(path + "description", player.getDescription());
-        update.put(path + "level", player.getLevel());
-        update.put(path + "experience", player.getExperience());
-        update.put(path + "avatarCode", player.getAvatarCode());
-        update.put(path + "petName", player.getPet().getName());
-        update.put(path + "petAvatarCode", player.getPet().getAvatarCode());
-        update.put(path + "petState", player.getPet().getState().name());
+        FirebasePath profilePath = profilePath(profile.getId());
+        profilePath.add("displayName").update(update).withValue(player.getDisplayName());
+        profilePath.add("bio").update(update).withValue(player.getBio());
+        profilePath.add("level").update(update).withValue(player.getLevel());
+        profilePath.add("experience").update(update).withValue(player.getExperience());
+        profilePath.add("avatarCode").update(update).withValue(player.getAvatarCode());
+        profilePath.add("petName").update(update).withValue(player.getPet().getName());
+        profilePath.add("petAvatarCode").update(update).withValue(player.getPet().getAvatarCode());
+        profilePath.add("petState").update(update).withValue(player.getPet().getState().name());
         for (String postId : profile.getPosts().keySet()) {
-            update.put("/posts/" + postId + "/playerLevel", player.getLevel());
-            update.put("/posts/" + postId + "/playerAvatarCode", player.getAvatarCode());
+            postPath(postId).add("playerLevel").update(update).withValue(player.getLevel());
+            postPath(postId).add("playerAvatarCode").update(update).withValue(player.getAvatarCode());
         }
         database.getReference().updateChildren(update);
     }
