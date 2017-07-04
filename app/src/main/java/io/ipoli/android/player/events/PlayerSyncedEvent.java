@@ -5,10 +5,10 @@ package io.ipoli.android.player.events;
  * on 3/27/17.
  */
 
-public class PlayerUpdatedEvent {
+public class PlayerSyncedEvent {
     public final String playerId;
 
-    public PlayerUpdatedEvent(String playerId) {
+    public PlayerSyncedEvent(String playerId) {
         this.playerId = playerId;
     }
 }

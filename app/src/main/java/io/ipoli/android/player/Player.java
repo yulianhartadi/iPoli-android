@@ -438,13 +438,12 @@ public class Player extends PersistedObject {
     }
 
     public String getDisplayName() {
-        if(StringUtils.isNotEmpty(displayName)) {
+        if (StringUtils.isNotEmpty(displayName)) {
             return displayName;
         }
 
         if (!isAuthenticated()) {
-//            throw new IllegalStateException("Asking for display name of unauthenticated player " + getId());
-            return  "";
+            throw new IllegalStateException("Asking for display name of unauthenticated player " + getId());
         }
         AuthProvider authProvider = getCurrentAuthProvider();
         return authProvider.getFirstName() + " " + authProvider.getLastName();
@@ -465,5 +464,10 @@ public class Player extends PersistedObject {
     @JsonIgnore
     public boolean doesNotHaveUsername() {
         return StringUtils.isEmpty(username);
+    }
+
+    @JsonIgnore
+    public boolean hasUsername() {
+        return !doesNotHaveUsername();
     }
 }

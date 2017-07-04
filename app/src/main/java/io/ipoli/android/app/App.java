@@ -106,7 +106,8 @@ import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.LevelUpActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
-import io.ipoli.android.player.events.PlayerUpdatedEvent;
+import io.ipoli.android.player.events.PlayerSyncedEvent;
+import io.ipoli.android.player.events.ProfileCreatedEvent;
 import io.ipoli.android.player.events.StartReplicationEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.activities.QuestActivity;
@@ -486,13 +487,21 @@ public class App extends MultiDexApplication {
         scheduleNextReminder();
         listenForChanges();
 
-        playerPersistenceService.listen(player -> {
-            if (player.isGuest() || player.doesNotHaveUsername()) {
-                return;
-            }
-            feedPersistenceService.findProfile(player.getId(), profile ->
-                    feedPersistenceService.updateProfile(profile, player));
-        });
+        Player player = getPlayer();
+        if (player.isAuthenticated() && player.hasUsername()) {
+            listenForPlayerChanges();
+        }
+    }
+
+    @Subscribe
+    public void onProfileCreated(ProfileCreatedEvent e) {
+        listenForPlayerChanges();
+    }
+
+    private void listenForPlayerChanges() {
+        playerPersistenceService.listen(player ->
+                feedPersistenceService.findProfile(player.getId(), profile ->
+                        feedPersistenceService.updateProfile(profile, player)));
     }
 
     private void initReplication() {
@@ -625,9 +634,12 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onPlayerUpdated(PlayerUpdatedEvent e) {
+    public void onPlayerSynced(PlayerSyncedEvent e) {
         localStorage.saveString(Constants.KEY_PLAYER_ID, e.playerId);
         playerId = e.playerId;
+        if(getPlayer().hasUsername()) {
+            listenForPlayerChanges();
+        }
     }
 
     @Subscribe

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.ipoli.android.app.events.AppErrorEvent;
+import io.ipoli.android.player.events.ProfileCreatedEvent;
 import io.ipoli.android.app.persistence.FirebasePath;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.feed.data.Post;
@@ -78,6 +79,7 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
         profilePath(profile.getId()).update(update).withValue(profile);
         usernamePath(profile.getUsername().toLowerCase()).update(update).withValue(profile.getId());
         database.getReference().updateChildren(update);
+        eventBus.post(new ProfileCreatedEvent());
     }
 
     @Override
