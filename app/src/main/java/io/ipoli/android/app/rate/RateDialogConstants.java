@@ -6,5 +6,5 @@ package io.ipoli.android.app.rate;
  */
 public interface RateDialogConstants {
     String KEY_SHOULD_SHOW_RATE_DIALOG = "SHOULD_SHOW_RATE_DIALOG";
-    int MIN_APP_RUN_FOR_RATE_DIALOG = 2;
+    int MIN_APP_RUN_FOR_RATE_DIALOG = 5;
 }
