@@ -2,7 +2,10 @@ package io.ipoli.android.app.modules;
 
 import com.couchbase.lite.Database;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.otto.Bus;
+
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -10,6 +13,8 @@ import io.ipoli.android.app.persistence.AndroidCalendarPersistenceService;
 import io.ipoli.android.app.persistence.CalendarPersistenceService;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.persistence.CouchbaseChallengePersistenceService;
+import io.ipoli.android.feed.persistence.FeedPersistenceService;
+import io.ipoli.android.feed.persistence.FirebaseFeedPersistenceService;
 import io.ipoli.android.player.persistence.CouchbasePlayerPersistenceService;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.persistence.CouchbaseQuestPersistenceService;
@@ -54,6 +59,12 @@ public class PersistenceModule {
     @Provides
     public CalendarPersistenceService provideAndroidCalendarPersistenceService(Database database, PlayerPersistenceService playerPersistenceService, QuestPersistenceService questPersistenceService, Bus eventBus) {
         return new AndroidCalendarPersistenceService(database, playerPersistenceService, questPersistenceService, eventBus);
+    }
+
+    @Provides
+    @Singleton
+    public FeedPersistenceService provideFeedPersistenceService(Bus eventBus) {
+        return new FirebaseFeedPersistenceService(FirebaseDatabase.getInstance(), eventBus);
     }
 
 }

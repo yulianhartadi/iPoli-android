@@ -18,6 +18,7 @@ import io.ipoli.android.app.modules.CouchbaseModule;
 import io.ipoli.android.app.modules.LocalStorageModule;
 import io.ipoli.android.app.modules.ObjectMapperModule;
 import io.ipoli.android.app.modules.PersistenceModule;
+import io.ipoli.android.app.modules.PlayerCredentialsModule;
 import io.ipoli.android.app.modules.RewardGeneratorModule;
 import io.ipoli.android.app.modules.SchedulerModule;
 import io.ipoli.android.app.modules.TimeParserModule;
@@ -36,6 +37,7 @@ import io.ipoli.android.app.tutorial.fragments.TutorialNamePromptFragment;
 import io.ipoli.android.app.tutorial.fragments.TutorialOutroFragment;
 import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.ui.dialogs.AndroidCalendarsPickerFragment;
+import io.ipoli.android.app.ui.dialogs.DateTimePickerFragment;
 import io.ipoli.android.challenge.activities.AddChallengeActivity;
 import io.ipoli.android.challenge.activities.ChallengeActivity;
 import io.ipoli.android.challenge.activities.EditChallengeActivity;
@@ -49,15 +51,20 @@ import io.ipoli.android.challenge.fragments.AddChallengeResultsFragment;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
 import io.ipoli.android.challenge.receivers.DailyChallengeReminderReceiver;
 import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiver;
+import io.ipoli.android.feed.activities.AddPostActivity;
+import io.ipoli.android.feed.fragments.FeedFragment;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.player.UpgradeDialog;
+import io.ipoli.android.player.activities.ProfileActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
+import io.ipoli.android.player.ui.dialogs.UsernamePickerFragment;
 import io.ipoli.android.quest.activities.AddQuestActivity;
 import io.ipoli.android.quest.activities.AddRepeatingQuestActivity;
 import io.ipoli.android.quest.activities.AgendaActivity;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.activities.EisenhowerMatrixActivity;
 import io.ipoli.android.quest.activities.QuestActivity;
+import io.ipoli.android.quest.activities.QuestPickerActivity;
 import io.ipoli.android.quest.activities.RepeatingQuestActivity;
 import io.ipoli.android.quest.fragments.AddNameFragment;
 import io.ipoli.android.quest.fragments.AddQuestDateFragment;
@@ -111,7 +118,8 @@ import io.ipoli.android.store.fragments.UpgradeStoreFragment;
                 ApiModule.class,
                 UrlProviderModule.class,
                 AndroidCalendarModule.class,
-                UpgradesModule.class
+                UpgradesModule.class,
+                PlayerCredentialsModule.class
         }
 )
 public interface AppComponent {
@@ -265,5 +273,16 @@ public interface AppComponent {
     void inject(TutorialOutroFragment tutorialOutroFragment);
 
     void inject(InviteFriendsDialog inviteFriendsDialog);
-}
 
+    void inject(AddPostActivity addPostActivity);
+
+    void inject(QuestPickerActivity questPickerActivity);
+
+    void inject(ProfileActivity profileActivity);
+
+    void inject(FeedFragment feedFragment);
+
+    void inject(UsernamePickerFragment usernamePickerFragment);
+
+    void inject(DateTimePickerFragment dateTimePickerFragment);
+}

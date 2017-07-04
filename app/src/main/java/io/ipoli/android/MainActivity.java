@@ -57,6 +57,7 @@ import io.ipoli.android.app.events.FeedbackTapEvent;
 import io.ipoli.android.app.events.FirebaseInviteCanceledEvent;
 import io.ipoli.android.app.events.FirebaseInviteSentEvent;
 import io.ipoli.android.app.events.InviteFriendsEvent;
+import io.ipoli.android.app.events.OpenProfileFromDrawerEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
@@ -64,26 +65,36 @@ import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.rate.RateDialogConstants;
 import io.ipoli.android.app.settings.SettingsActivity;
 import io.ipoli.android.app.share.InviteFriendsDialog;
-import io.ipoli.android.app.share.ShareQuestDialog;
 import io.ipoli.android.app.sync.AndroidCalendarSyncJobService;
+import io.ipoli.android.app.ui.ThemedSnackbar;
 import io.ipoli.android.app.ui.dialogs.DatePickerFragment;
 import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.ui.events.StartFabMenuIntentEvent;
 import io.ipoli.android.app.utils.EmailUtils;
 import io.ipoli.android.app.utils.LocalStorage;
+import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.fragments.ChallengeListFragment;
+import io.ipoli.android.feed.activities.AddPostActivity;
+import io.ipoli.android.feed.data.Profile;
+import io.ipoli.android.feed.fragments.FeedFragment;
+import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
+import io.ipoli.android.player.CredentialStatus;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.Player;
+import io.ipoli.android.player.PlayerCredentialChecker;
+import io.ipoli.android.player.PlayerCredentialsHandler;
 import io.ipoli.android.player.UpgradeDialog;
 import io.ipoli.android.player.UpgradeDialog.OnUnlockListener;
 import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.player.activities.ProfileActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.player.ui.dialogs.UsernamePickerFragment;
 import io.ipoli.android.quest.activities.EditQuestActivity;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
@@ -111,7 +122,11 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 import static io.ipoli.android.Constants.RC_CALENDAR_PERM;
 import static io.ipoli.android.Constants.SYNC_CALENDAR_JOB_ID;
+import static io.ipoli.android.R.id.feed;
 import static io.ipoli.android.app.App.hasPlayer;
+import static io.ipoli.android.player.CredentialStatus.AUTHORIZED;
+import static io.ipoli.android.player.CredentialStatus.GUEST;
+import static io.ipoli.android.player.CredentialStatus.NO_USERNAME;
 
 public class MainActivity extends BaseActivity implements
         NavigationView.OnNavigationItemSelectedListener,
@@ -142,7 +157,13 @@ public class MainActivity extends BaseActivity implements
     PlayerPersistenceService playerPersistenceService;
 
     @Inject
+    FeedPersistenceService feedPersistenceService;
+
+    @Inject
     UpgradeManager upgradeManager;
+
+    @Inject
+    PlayerCredentialsHandler playerCredentialsHandler;
 
     private boolean isRateDialogShown;
     public ActionBarDrawerToggle actionBarDrawerToggle;
@@ -223,10 +244,6 @@ public class MainActivity extends BaseActivity implements
     }
 
     private boolean shouldMigratePlayer() {
-        int firebaseSchemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
-        if (firebaseSchemaVersion > 0 && firebaseSchemaVersion <= Constants.FIREBASE_LAST_SCHEMA_VERSION) {
-            return true;
-        }
         if (getPlayer().getSchemaVersion() != Constants.SCHEMA_VERSION) {
             return true;
         }
@@ -311,6 +328,11 @@ public class MainActivity extends BaseActivity implements
                 changeCurrentFragment(new RewardListFragment());
                 break;
 
+            case feed:
+                source = EventSource.FEED;
+                changeCurrentFragment(new FeedFragment());
+                break;
+
             case R.id.store:
                 source = EventSource.STORE;
                 startActivity(new Intent(this, StoreActivity.class));
@@ -367,10 +389,33 @@ public class MainActivity extends BaseActivity implements
     private void updatePlayerInDrawer(Player player) {
 
         View header = navigationView.getHeaderView(0);
+        header.setOnClickListener(v -> {
+            CredentialStatus credentialStatus = PlayerCredentialChecker.checkStatus(player);
+            if (credentialStatus == AUTHORIZED) {
+                eventBus.post(new OpenProfileFromDrawerEvent());
+                startProfileActivity(player);
+                return;
+            }
+            if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+                Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (credentialStatus == GUEST) {
+                Toast.makeText(this, R.string.sign_in_to_view_profile, Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (credentialStatus == NO_USERNAME) {
+                UsernamePickerFragment.newInstance(username -> {
+                    player.setUsername(username);
+                    playerPersistenceService.save(player);
+                    feedPersistenceService.createProfile(new Profile(player));
+                    startProfileActivity(player);
+                }).show(getSupportFragmentManager());
+            }
+        });
         TextView level = (TextView) header.findViewById(R.id.player_level);
         int playerLevel = player.getLevel();
-        String[] playerTitles = getResources().getStringArray(R.array.player_titles);
-        String title = playerTitles[Math.min(playerLevel / 10, playerTitles.length - 1)];
+        String title = player.getTitle(getResources().getStringArray(R.array.player_titles));
         level.setText(String.format(getString(R.string.player_level), playerLevel, title));
 
         populateHeaderCoins(player, header);
@@ -381,7 +426,7 @@ public class MainActivity extends BaseActivity implements
         experienceBar.setMax(Constants.XP_BAR_MAX_VALUE);
         experienceBar.setProgress(getCurrentProgress(player));
 
-        CircleImageView avatarPictureView = (CircleImageView) header.findViewById(R.id.player_picture);
+        CircleImageView avatarPictureView = (CircleImageView) header.findViewById(R.id.player_avatar);
         avatarPictureView.setImageResource(player.getCurrentAvatar().picture);
         avatarPictureView.setOnClickListener(v -> {
             eventBus.post(new OpenAvatarStoreRequestEvent(EventSource.NAVIGATION_DRAWER));
@@ -400,6 +445,12 @@ public class MainActivity extends BaseActivity implements
             signIn.setVisibility(View.VISIBLE);
             signIn.setOnClickListener(v -> startActivity(new Intent(this, SignInActivity.class)));
         }
+    }
+
+    private void startProfileActivity(Player player) {
+        Intent intent = new Intent(this, ProfileActivity.class);
+        intent.putExtra(Constants.PLAYER_ID_EXTRA_KEY, player.getId());
+        startActivity(intent);
     }
 
     private void populateHeaderCoins(Player player, View header) {
@@ -481,14 +532,12 @@ public class MainActivity extends BaseActivity implements
         long experience = q.getExperience();
         long coins = q.getCoins();
 
-        Snackbar snackbar = Snackbar
-                .make(contentContainer,
-                        getString(R.string.quest_complete_with_bounty, experience, coins),
-                        Snackbar.LENGTH_LONG);
+        Snackbar snackbar = ThemedSnackbar.make(findViewById(R.id.root_container),
+                getString(R.string.quest_complete_with_bounty, experience, coins),
+                Snackbar.LENGTH_LONG);
 
-        snackbar.setAction(R.string.share, view -> {
-            eventBus.post(new ShareQuestEvent(q, EventSource.SNACKBAR));
-        });
+        snackbar.setAction(R.string.share, view ->
+                eventBus.post(new ShareQuestEvent(q, EventSource.SNACKBAR)));
 
         snackbar.show();
 
@@ -496,6 +545,33 @@ public class MainActivity extends BaseActivity implements
             isRateDialogShown = true;
             new RateDialog().show(getSupportFragmentManager());
         }
+    }
+
+    @Subscribe
+    public void onShareQuest(ShareQuestEvent e) {
+        Player player = getPlayer();
+
+        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+            Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        CredentialStatus credentialStatus = PlayerCredentialChecker.checkStatus(player);
+        if (credentialStatus != AUTHORIZED) {
+            playerCredentialsHandler.authorizeAccess(player, credentialStatus, PlayerCredentialsHandler.Action.SHARE_QUEST,
+                    this, findViewById(R.id.root_container));
+            return;
+        }
+
+        feedPersistenceService.findProfile(player.getId(), profile -> {
+            if (profile.getPosts().containsValue(e.quest.getId())) {
+                Toast.makeText(this, R.string.achievement_already_shared, Toast.LENGTH_LONG).show();
+                return;
+            }
+            Intent addPostIntent = new Intent(this, AddPostActivity.class);
+            addPostIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, e.quest.getId());
+            startActivity(addPostIntent);
+        });
     }
 
     private boolean shouldShowRateDialog() {
@@ -574,7 +650,7 @@ public class MainActivity extends BaseActivity implements
         quest.setReminders(newReminders);
         eventBus.post(new NewQuestEvent(quest, EventSource.CALENDAR));
 
-        Snackbar snackbar = Snackbar.make(contentContainer, R.string.quest_duplicated, Snackbar.LENGTH_LONG);
+        Snackbar snackbar = ThemedSnackbar.make(contentContainer, R.string.quest_duplicated, Snackbar.LENGTH_LONG);
 
         if (!isForSameDay && showAction) {
             snackbar.setAction(R.string.view, view -> {
@@ -638,7 +714,7 @@ public class MainActivity extends BaseActivity implements
             message = getString(R.string.quest_moved_to_inbox);
         }
 
-        Snackbar snackbar = Snackbar.make(contentContainer, message, Snackbar.LENGTH_LONG);
+        Snackbar snackbar = ThemedSnackbar.make(contentContainer, message, Snackbar.LENGTH_LONG);
 
         if (isDateChanged && showAction) {
             snackbar.setAction(R.string.view, view -> {
@@ -655,11 +731,6 @@ public class MainActivity extends BaseActivity implements
         }
 
         snackbar.show();
-    }
-
-    @Subscribe
-    public void onShareQuest(ShareQuestEvent e) {
-        ShareQuestDialog.show(this, e.quest, eventBus);
     }
 
     @Subscribe

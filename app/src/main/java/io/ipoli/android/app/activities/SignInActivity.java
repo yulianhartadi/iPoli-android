@@ -4,10 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.couchbase.lite.Database;
@@ -52,14 +55,17 @@ import io.ipoli.android.app.events.FinishSignInActivityEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.exceptions.SignInException;
+import io.ipoli.android.app.ui.UsernameValidator;
 import io.ipoli.android.app.ui.dialogs.LoadingDialog;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.feed.data.Profile;
+import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.events.PlayerSignedInEvent;
-import io.ipoli.android.player.events.PlayerUpdatedEvent;
+import io.ipoli.android.player.events.PlayerSyncedEvent;
 import io.ipoli.android.player.events.StartReplicationEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.store.Upgrade;
@@ -84,7 +90,16 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     PlayerPersistenceService playerPersistenceService;
 
     @Inject
+    FeedPersistenceService feedPersistenceService;
+
+    @Inject
     UrlProvider urlProvider;
+
+    @BindView(R.id.player_username)
+    TextInputEditText usernameView;
+
+    @BindView(R.id.existing_player)
+    CheckBox existingPlayerView;
 
     @BindView(R.id.google_sign_in)
     SignInButton googleSignInButton;
@@ -94,6 +109,12 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @BindView(R.id.guest_login)
     FancyButton guestButton;
+
+    @BindView(R.id.divider)
+    View divider;
+
+    @BindView(R.id.divider_or)
+    TextView dividerOr;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -106,7 +127,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     private LoadingDialog dialog;
 
-    private String username;
+    private String displayName;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -115,7 +136,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         App.getAppComponent(this).inject(this);
         ButterKnife.bind(this);
 
-        this.username = getIntent().getStringExtra(Constants.USERNAME_EXTRA_KEY);
+        this.displayName = getIntent().getStringExtra(Constants.DISPLAY_NAME_EXTRA_KEY);
 
         setSupportActionBar(toolbar);
         ActionBar ab = getSupportActionBar();
@@ -129,6 +150,16 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         initFBLogin();
         initGuestLogin();
 
+        existingPlayerView.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                usernameView.setEnabled(false);
+                usernameView.setFocusable(false);
+            } else {
+                usernameView.setEnabled(true);
+                usernameView.setFocusable(true);
+            }
+        });
+
         eventBus.post(new ScreenShownEvent(this, EventSource.SIGN_IN));
     }
 
@@ -140,6 +171,8 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     private void initGuestLogin() {
         if (!StringUtils.isEmpty(App.getPlayerId())) {
             guestButton.setVisibility(View.GONE);
+            divider.setVisibility(View.GONE);
+            dividerOr.setVisibility(View.GONE);
         }
     }
 
@@ -181,12 +214,9 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @OnClick(R.id.facebook_login)
     public void onFacebookSignIn(View v) {
-        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
-            showNoInternetMessage();
-            return;
-        }
-        createLoadingDialog();
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email"));
+        signInIfValid(() -> {
+            LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("email"));
+        });
     }
 
     private void showNoInternetMessage() {
@@ -199,18 +229,53 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @OnClick(R.id.google_sign_in)
     public void onGoogleSignIn(View v) {
-        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
-            showNoInternetMessage();
-            return;
-        }
-        createLoadingDialog();
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-        startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
+        signInIfValid(() -> {
+            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+            startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
+        });
     }
 
     @OnClick(R.id.guest_login)
     public void onGuestLogin(View v) {
         signUpAsGuest();
+    }
+
+    private void signInIfValid(ValidationListener validationListener) {
+        if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+            showNoInternetMessage();
+            return;
+        }
+
+        if (existingPlayerView.isChecked()) {
+            createLoadingDialog();
+            validationListener.onSuccess();
+            return;
+        }
+
+        createLoadingDialog();
+        String username = usernameView.getText().toString();
+        UsernameValidator.validate(username, feedPersistenceService, new UsernameValidator.ResultListener() {
+            @Override
+            public void onValid() {
+                validationListener.onSuccess();
+            }
+
+            @Override
+            public void onInvalid(UsernameValidator.UsernameValidationError error) {
+                closeLoadingDialog();
+                switch (error) {
+                    case EMPTY:
+                        usernameView.setError(getString(R.string.username_is_empty));
+                        break;
+                    case NOT_UNIQUE:
+                        usernameView.setError(getString(R.string.username_is_taken));
+                        break;
+                    default:
+                        usernameView.setError(getString(R.string.username_wrong_format));
+                        break;
+                }
+            }
+        });
     }
 
     public void getUserDetailsFromFB(AccessToken accessToken) {
@@ -290,14 +355,22 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
                 authProvider.setEmail(email);
                 eventBus.post(new PlayerSignedInEvent(authProvider.getProvider(), isNew));
+                String usernameText = usernameView.getText().toString();
+                Player existingPlayer = null;
                 if (shouldCreatePlayer) {
-                    createPlayer(playerId, SignInActivity.this.username, authProvider);
+                    existingPlayer = createPlayer(playerId, usernameText, SignInActivity.this.displayName, authProvider);
                 } else if (isNew) {
-                    updatePlayerWithAuthProvider(authProvider);
+                    updatePlayerWithAuthProviderAndUsername(authProvider, usernameText);
+                }
+                if (!existingPlayerView.isChecked() && isNew) {
+                    if (existingPlayer == null) {
+                        existingPlayer = getPlayer();
+                    }
+                    existingPlayer.setId(playerId);
+                    feedPersistenceService.createProfile(new Profile(existingPlayer));
                 }
                 if (!isNew) {
                     pullPlayerDocs(cookies, playerId);
-
                 } else {
                     eventBus.post(new StartReplicationEvent(cookies));
                     onFinish();
@@ -333,7 +406,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         pull.setChannels(channels);
         pull.addChangeListener(event -> {
             if (event.getStatus() == Replication.ReplicationStatus.REPLICATION_STOPPED) {
-                eventBus.post(new PlayerUpdatedEvent(playerId));
+                eventBus.post(new PlayerSyncedEvent(playerId));
                 eventBus.post(new StartReplicationEvent(cookies));
                 onFinish();
             }
@@ -341,24 +414,25 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         pull.start();
     }
 
-    private void updatePlayerWithAuthProvider(AuthProvider authProvider) {
+    private void updatePlayerWithAuthProviderAndUsername(AuthProvider authProvider, String username) {
         Player player = getPlayer();
         player.setCurrentAuthProvider(authProvider);
         List<AuthProvider> authProviders = new ArrayList<>();
         authProviders.add(authProvider);
         player.setAuthProviders(authProviders);
+        player.setUsername(username);
         playerPersistenceService.save(player);
     }
 
     private void createPlayer() {
-        createPlayer(null, "", null);
+        createPlayer("", "", "", null);
     }
 
-    private void createPlayer(String playerId, String username, AuthProvider authProvider) {
+    private Player createPlayer(String playerId, String username, String displayName, AuthProvider authProvider) {
         Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR.code,
                 Constants.DEFAULT_PET_BACKGROUND_PICTURE, Constants.DEFAULT_PET_HP);
 
-        Player player = new Player(username,
+        Player player = new Player(username, displayName,
                 String.valueOf(Constants.DEFAULT_PLAYER_XP),
                 Constants.DEFAULT_PLAYER_LEVEL,
                 Constants.DEFAULT_PLAYER_COINS,
@@ -377,6 +451,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
         playerPersistenceService.save(player, playerId);
         eventBus.post(new PlayerCreatedEvent(player.getId()));
+        return player;
     }
 
     @Override
@@ -430,5 +505,9 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         closeLoadingDialog();
         eventBus.post(new FinishSignInActivityEvent(isNewPlayer));
         finish();
+    }
+
+    private interface ValidationListener {
+        void onSuccess();
     }
 }

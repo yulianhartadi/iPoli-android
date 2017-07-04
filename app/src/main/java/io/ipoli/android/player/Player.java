@@ -17,6 +17,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.app.TimeOfDay;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.quest.data.Category;
@@ -30,6 +31,8 @@ public class Player extends PersistedObject {
     public static final String TYPE = "player";
 
     private String username;
+    private String displayName;
+    private String bio;
     private Integer level;
     private String experience;
     private Long coins;
@@ -54,9 +57,10 @@ public class Player extends PersistedObject {
         super(TYPE);
     }
 
-    public Player(String username, String experience, int level, long coins, long rewardPoints, Integer avatarCode, boolean use24HourFormat, Pet pet) {
+    public Player(String username, String displayName, String experience, int level, long coins, long rewardPoints, Integer avatarCode, boolean use24HourFormat, Pet pet) {
         super(TYPE);
-        this.username = username;
+        setUsername(username);
+        setDisplayName(displayName);
         pets = new ArrayList<>();
         pets.add(pet);
         this.schemaVersion = Constants.SCHEMA_VERSION;
@@ -375,6 +379,11 @@ public class Player extends PersistedObject {
         return currentAuthProvider != null;
     }
 
+    @JsonIgnore
+    public boolean isGuest() {
+        return currentAuthProvider == null;
+    }
+
     public Map<Long, Category> getAndroidCalendars() {
         if (androidCalendars == null) {
             androidCalendars = new HashMap<>();
@@ -419,7 +428,46 @@ public class Player extends PersistedObject {
     }
 
     @JsonIgnore
+    public String getTitle(String[] playerTitles) {
+        return playerTitles[Math.min(getLevel() / 10, playerTitles.length - 1)];
+    }
+
+    @JsonIgnore
     public void setAvatar(Avatar avatar) {
         avatarCode = avatar.code;
+    }
+
+    public String getDisplayName() {
+        if (StringUtils.isNotEmpty(displayName)) {
+            return displayName;
+        }
+
+        if (!isAuthenticated()) {
+            throw new IllegalStateException("Asking for display name of unauthenticated player " + getId());
+        }
+        AuthProvider authProvider = getCurrentAuthProvider();
+        return authProvider.getFirstName() + " " + authProvider.getLastName();
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    @JsonIgnore
+    public boolean doesNotHaveUsername() {
+        return StringUtils.isEmpty(username);
+    }
+
+    @JsonIgnore
+    public boolean hasUsername() {
+        return !doesNotHaveUsername();
     }
 }

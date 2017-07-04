@@ -1,8 +1,6 @@
 package io.ipoli.android.quest.adapters;
 
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,23 +19,22 @@ import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.challenge.viewmodels.PickQuestViewModel;
 import io.ipoli.android.quest.data.BaseQuest;
-import io.ipoli.android.quest.data.Category;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 4/28/16.
  */
-public abstract class BasePickQuestAdapter extends RecyclerView.Adapter<BasePickQuestAdapter.ViewHolder> {
+public class SelectableQuestPickerAdapter extends RecyclerView.Adapter<SelectableQuestPickerAdapter.ViewHolder> {
     protected Context context;
     protected final Bus evenBus;
     protected List<PickQuestViewModel> viewModels;
     private final boolean isRepeatingIndicatorVisible;
 
-    public BasePickQuestAdapter(Context context, Bus evenBus, List<PickQuestViewModel> viewModels) {
+    public SelectableQuestPickerAdapter(Context context, Bus evenBus, List<PickQuestViewModel> viewModels) {
         this(context, evenBus, viewModels, false);
     }
 
-    public BasePickQuestAdapter(Context context, Bus evenBus, List<PickQuestViewModel> viewModels, boolean isRepeatingIndicatorVisible) {
+    public SelectableQuestPickerAdapter(Context context, Bus evenBus, List<PickQuestViewModel> viewModels, boolean isRepeatingIndicatorVisible) {
         this.context = context;
         this.evenBus = evenBus;
         this.viewModels = viewModels;
@@ -55,10 +52,7 @@ public abstract class BasePickQuestAdapter extends RecyclerView.Adapter<BasePick
     public void onBindViewHolder(ViewHolder holder, int position) {
         final PickQuestViewModel vm = viewModels.get(holder.getAdapterPosition());
 
-        Category category = vm.getCategory();
-        GradientDrawable drawable = (GradientDrawable) holder.categoryIndicatorBackground.getBackground();
-        drawable.setColor(ContextCompat.getColor(context, category.color500));
-        holder.categoryIndicatorImage.setImageResource(category.whiteImage);
+        holder.categoryIndicatorImage.setImageResource(vm.getCategory().colorfulImage);
 
         holder.name.setText(vm.getText());
         holder.repeatingIndicator.setVisibility(isRepeatingIndicatorVisible && vm.isRepeating() ? View.VISIBLE : View.GONE);
@@ -71,11 +65,8 @@ public abstract class BasePickQuestAdapter extends RecyclerView.Adapter<BasePick
             holder.check.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if (isChecked) {
                     vm.select();
-                    sendQuestSelectedEvent(holder.getAdapterPosition());
                 } else {
                     vm.deselect();
-                    sendQuestDeselectEvent(holder.getAdapterPosition());
-
                 }
             });
             holder.itemView.setOnClickListener(view -> {
@@ -85,10 +76,6 @@ public abstract class BasePickQuestAdapter extends RecyclerView.Adapter<BasePick
             });
         }
     }
-
-    protected abstract void sendQuestDeselectEvent(int adapterPosition);
-
-    protected abstract void sendQuestSelectedEvent(int adapterPosition);
 
     public List<BaseQuest> getSelectedBaseQuests() {
         List<BaseQuest> selectedQuests = new ArrayList<>();
@@ -117,9 +104,6 @@ public abstract class BasePickQuestAdapter extends RecyclerView.Adapter<BasePick
 
         @BindView(R.id.quest_text)
         TextView name;
-
-        @BindView(R.id.quest_category_indicator_background)
-        View categoryIndicatorBackground;
 
         @BindView(R.id.quest_category_indicator_image)
         ImageView categoryIndicatorImage;

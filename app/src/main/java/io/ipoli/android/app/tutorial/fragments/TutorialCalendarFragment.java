@@ -178,7 +178,7 @@ public class TutorialCalendarFragment extends Fragment {
         experienceBar.setMax(Constants.XP_BAR_MAX_VALUE);
         experienceBar.setProgress(Constants.DEFAULT_PLAYER_XP);
 
-        CircleImageView avatarPictureView = (CircleImageView) headerView.findViewById(R.id.player_picture);
+        CircleImageView avatarPictureView = (CircleImageView) headerView.findViewById(R.id.player_avatar);
         avatarPictureView.setImageResource(Constants.DEFAULT_PLAYER_AVATAR.picture);
 
         CircleImageView petPictureView = (CircleImageView) headerView.findViewById(R.id.pet_picture);
@@ -213,7 +213,7 @@ public class TutorialCalendarFragment extends Fragment {
     private void onProgressReviewed() {
         NavigationMenuView navigationMenuView = (NavigationMenuView) navigationView.getChildAt(0);
         LinearLayoutManager linearLayoutManager = (LinearLayoutManager) navigationMenuView.getLayoutManager();
-        linearLayoutManager.scrollToPositionWithOffset(6, 0);
+        linearLayoutManager.scrollToPositionWithOffset(7, 0);
         RecyclerView.ViewHolder viewHolder = navigationMenuView.findViewHolderForAdapterPosition(9);
         View targetView = viewHolder != null && viewHolder.itemView != null ? viewHolder.itemView : navigationMenuView;
         new MaterialIntroView.Builder(getActivity())

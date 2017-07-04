@@ -21,6 +21,7 @@ import io.ipoli.android.app.events.FirebaseInviteCanceledEvent;
 import io.ipoli.android.app.events.FirebaseInviteSentEvent;
 import io.ipoli.android.app.events.InviteFriendsEvent;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
+import io.ipoli.android.app.events.OpenProfileFromDrawerEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.PlayerMigratedEvent;
 import io.ipoli.android.app.events.QuestShareProviderPickedEvent;
@@ -72,16 +73,24 @@ import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.QuestsPickedForChallengeEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
+import io.ipoli.android.feed.data.Post;
+import io.ipoli.android.feed.events.DeletePostEvent;
 import io.ipoli.android.note.events.OpenNoteEvent;
 import io.ipoli.android.pet.events.PetRenamedEvent;
 import io.ipoli.android.pet.events.RevivePetRequest;
+import io.ipoli.android.player.events.AddKudosEvent;
 import io.ipoli.android.player.events.AvatarBoughtEvent;
+import io.ipoli.android.player.events.CreateQuestFromPostEvent;
+import io.ipoli.android.player.events.EditProfileEvent;
 import io.ipoli.android.player.events.GrowthCategoryFilteredEvent;
 import io.ipoli.android.player.events.GrowthIntervalSelectedEvent;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
+import io.ipoli.android.player.events.PlayerFollowedEvent;
 import io.ipoli.android.player.events.PlayerSignedInEvent;
+import io.ipoli.android.player.events.PlayerUnfollowedEvent;
+import io.ipoli.android.player.events.RemoveKudosEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
@@ -942,6 +951,73 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onNewSessionCreated(NewSessionCreatedEvent e) {
         log("new_session_created");
+    }
+
+    @Subscribe
+    public void onOpenProfileFromDrawer(OpenProfileFromDrawerEvent e) {
+        log("open_profile_from_drawer");
+    }
+
+    @Subscribe
+    public void onGiveKudos(AddKudosEvent e) {
+        Post post = e.post;
+        log("give_kudos", EventParams.create()
+                .add("source", e.source.name().toLowerCase())
+                .add("post_id", post.getId())
+                .add("name", post.getTitle())
+                .add("category", post.getCategory())
+                .add("message", post.getMessage()));
+    }
+
+    @Subscribe
+    public void onRemoveKudos(RemoveKudosEvent e) {
+        Post post = e.post;
+        log("remove_kudos", EventParams.create()
+                .add("source", e.source.name().toLowerCase())
+                .add("post_id", post.getId())
+                .add("name", post.getTitle())
+                .add("category", post.getCategory())
+                .add("message", post.getMessage()));
+    }
+
+    @Subscribe
+    public void onCreateQuestFromPost(CreateQuestFromPostEvent e) {
+        Post post = e.post;
+        log("create_quest_from_post", EventParams.create()
+                .add("source", e.source.name().toLowerCase())
+                .add("post_id", post.getId())
+                .add("name", post.getTitle())
+                .add("category", post.getCategory())
+                .add("message", post.getMessage()));
+    }
+
+    @Subscribe
+    public void onDeletePost(DeletePostEvent e) {
+        Post post = e.post;
+        log("delete_post", EventParams.create()
+                .add("post_id", post.getId())
+                .add("name", post.getTitle())
+                .add("category", post.getCategory())
+                .add("message", post.getMessage()));
+    }
+
+    @Subscribe
+    public void onEditProfile(EditProfileEvent e) {
+        log("edit_profile", EventParams.of("player_id", e.playerId));
+    }
+
+    @Subscribe
+    public void onPlayerFollowed(PlayerFollowedEvent e) {
+        log("player_followed", EventParams.create()
+                .add("follower", e.follower)
+                .add("following", e.following));
+    }
+
+    @Subscribe
+    public void onPlayerUnfollowed(PlayerUnfollowedEvent e) {
+        log("player_unfollowed", EventParams.create()
+                .add("follower", e.follower)
+                .add("following", e.following));
     }
 
     @Subscribe

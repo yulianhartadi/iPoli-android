@@ -23,6 +23,7 @@ import com.couchbase.lite.replicator.Replication;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.database.FirebaseDatabase;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
@@ -96,6 +97,7 @@ import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiv
 import io.ipoli.android.challenge.ui.events.CompleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
+import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
@@ -104,7 +106,8 @@ import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.LevelUpActivity;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
-import io.ipoli.android.player.events.PlayerUpdatedEvent;
+import io.ipoli.android.player.events.PlayerSyncedEvent;
+import io.ipoli.android.player.events.ProfileCreatedEvent;
 import io.ipoli.android.player.events.StartReplicationEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.activities.QuestActivity;
@@ -138,6 +141,8 @@ import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import okhttp3.Cookie;
+
+import static io.ipoli.android.feed.persistence.FirebaseFeedPersistenceService.profilePath;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -196,6 +201,9 @@ public class App extends MultiDexApplication {
 
     @Inject
     UrlProvider urlProvider;
+
+    @Inject
+    FeedPersistenceService feedPersistenceService;
 
     private void listenForChanges() {
         questPersistenceService.removeAllListeners();
@@ -326,15 +334,14 @@ public class App extends MultiDexApplication {
                 .enableForegroundTracking(this)
                 .trackSessionEvents(false);
 
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        db.setPersistenceEnabled(true);
+
         getAppComponent(this).inject(this);
 
         registerServices();
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
 
-        int firebaseSchemaVersion = localStorage.readInt(Constants.KEY_SCHEMA_VERSION);
-        if (firebaseSchemaVersion > 0 && firebaseSchemaVersion <= Constants.FIREBASE_LAST_SCHEMA_VERSION) {
-            return;
-        }
         if (hasPlayer()) {
             Player player = playerPersistenceService.get();
             if (player == null) {
@@ -361,7 +368,7 @@ public class App extends MultiDexApplication {
     public void onFinishTutorialActivity(FinishTutorialActivityEvent e) {
         if (!hasPlayer()) {
             Bundle bundle = new Bundle();
-            bundle.putString(Constants.USERNAME_EXTRA_KEY, e.playerName);
+            bundle.putString(Constants.DISPLAY_NAME_EXTRA_KEY, e.playerName);
             startNewActivity(SignInActivity.class, bundle);
         } else {
             Player player = getPlayer();
@@ -472,10 +479,29 @@ public class App extends MultiDexApplication {
                 eventBus.post(new VersionUpdatedEvent(versionCode, BuildConfig.VERSION_CODE));
             }
         }
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        db.getReference("/").keepSynced(false);
+        profilePath(getPlayerId()).toReference(db).keepSynced(true);
 
         scheduleDateChanged();
         scheduleNextReminder();
         listenForChanges();
+
+        Player player = getPlayer();
+        if (player.isAuthenticated() && player.hasUsername()) {
+            listenForPlayerChanges();
+        }
+    }
+
+    @Subscribe
+    public void onProfileCreated(ProfileCreatedEvent e) {
+        listenForPlayerChanges();
+    }
+
+    private void listenForPlayerChanges() {
+        playerPersistenceService.listen(player ->
+                feedPersistenceService.findProfile(player.getId(), profile ->
+                        feedPersistenceService.updateProfile(profile, player)));
     }
 
     private void initReplication() {
@@ -608,9 +634,12 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onPlayerUpdated(PlayerUpdatedEvent e) {
+    public void onPlayerSynced(PlayerSyncedEvent e) {
         localStorage.saveString(Constants.KEY_PLAYER_ID, e.playerId);
         playerId = e.playerId;
+        if(getPlayer().hasUsername()) {
+            listenForPlayerChanges();
+        }
     }
 
     @Subscribe
