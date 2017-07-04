@@ -211,7 +211,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         petName.setText(profile.getPetName());
         playerDisplayName.setText(profile.getDisplayName());
         playerUsername.setText("@" + profile.getUsername());
-        String description = StringUtils.isEmpty(profile.getDescription()) ? getString(R.string.profile_default_bio) : profile.getDescription();
+        String description = StringUtils.isEmpty(profile.getBio()) ? getString(R.string.profile_default_bio) : profile.getBio();
         playerBio.setText(description);
 
         String[] playerTitles = getResources().getStringArray(R.array.player_titles);
@@ -420,8 +420,8 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
                     playerBioEdit.setTag(true);
                     playerBio.setVisibility(View.INVISIBLE);
 
-                    playerBioEdit.setText(StringUtils.isEmpty(player.getDescription()) ? "" : player.getDescription());
-                    playerBioEdit.setSelection(playerBio.getText().length());
+                    playerBioEdit.setText(StringUtils.isEmpty(player.getBio()) ? "" : player.getBio());
+                    playerBioEdit.setSelection(StringUtils.isEmpty(player.getBio()) ? 0 : playerBio.getText().length());
                     playerBioEdit.setVisibility(View.VISIBLE);
 
                     playerDisplayName.setVisibility(View.INVISIBLE);
@@ -455,7 +455,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
                     playerDisplayName.setText(newDisplayName);
                     KeyboardUtils.hideKeyboard(this);
                     player.setDisplayName(newDisplayName);
-                    player.setDescription(newBio);
+                    player.setBio(newBio);
                     playerPersistenceService.save(player);
                 }
                 return true;
