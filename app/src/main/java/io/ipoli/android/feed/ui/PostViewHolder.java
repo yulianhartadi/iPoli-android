@@ -3,6 +3,7 @@ package io.ipoli.android.feed.ui;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -63,6 +64,9 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
 
     @BindView(R.id.post_add_quest_container)
     public ViewGroup addQuestContainer;
+
+    @BindView(R.id.post_delete)
+    public Button delete;
 
     public PostViewHolder(View itemView) {
         super(itemView);

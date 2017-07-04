@@ -34,4 +34,6 @@ public interface FeedPersistenceService {
     void follow(Profile profile, String playerId);
 
     void updateProfile(Profile profile, Player player);
+
+    void deletePost(Post post);
 }
