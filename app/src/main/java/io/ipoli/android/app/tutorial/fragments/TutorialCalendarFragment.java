@@ -213,7 +213,7 @@ public class TutorialCalendarFragment extends Fragment {
     private void onProgressReviewed() {
         NavigationMenuView navigationMenuView = (NavigationMenuView) navigationView.getChildAt(0);
         LinearLayoutManager linearLayoutManager = (LinearLayoutManager) navigationMenuView.getLayoutManager();
-        linearLayoutManager.scrollToPositionWithOffset(6, 0);
+        linearLayoutManager.scrollToPositionWithOffset(7, 0);
         RecyclerView.ViewHolder viewHolder = navigationMenuView.findViewHolderForAdapterPosition(9);
         View targetView = viewHolder != null && viewHolder.itemView != null ? viewHolder.itemView : navigationMenuView;
         new MaterialIntroView.Builder(getActivity())
