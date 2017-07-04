@@ -16,7 +16,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_weight="3"
         android:scaleType="centerInside"
-        android:src="@drawable/logo_with_glasses" />
+        android:src="@drawable/logo" />
 
     <ProgressBar
         android:id="@+id/migration_progress"
