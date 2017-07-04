@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
@@ -22,6 +21,8 @@ import io.ipoli.android.feed.events.ShowProfileEvent;
 import io.ipoli.android.feed.events.UnfollowPlayerEvent;
 import io.ipoli.android.feed.ui.ProfileListBinder;
 import io.ipoli.android.feed.ui.ProfileListViewHolder;
+
+import static io.ipoli.android.feed.persistence.FirebaseFeedPersistenceService.profilesPath;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -83,12 +84,11 @@ public class ProfileListFragment extends BaseFragment {
         layoutManager.setStackFromEnd(true);
         postList.setLayoutManager(layoutManager);
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("/profiles");
-
+        DatabaseReference profilesPath = profilesPath().toReference();
         adapter = new FirebaseRecyclerAdapter<Profile, ProfileListViewHolder>(Profile.class,
                 R.layout.follower_item,
                 ProfileListViewHolder.class,
-                ref.orderByChild(listType + "/" + playerId).equalTo(true).limitToLast(100)) {
+                profilesPath.orderByChild(listType + "/" + playerId).equalTo(true).limitToLast(100)) {
             @Override
             protected void populateViewHolder(ProfileListViewHolder holder, Profile profile, int position) {
                 ProfileListBinder.bind(holder, profile, getPlayerId());
