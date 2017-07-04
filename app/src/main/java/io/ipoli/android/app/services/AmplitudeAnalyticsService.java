@@ -74,6 +74,7 @@ import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.QuestsPickedForChallengeEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
 import io.ipoli.android.feed.data.Post;
+import io.ipoli.android.feed.events.DeletePostEvent;
 import io.ipoli.android.note.events.OpenNoteEvent;
 import io.ipoli.android.pet.events.PetRenamedEvent;
 import io.ipoli.android.pet.events.RevivePetRequest;
@@ -984,6 +985,16 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
         Post post = e.post;
         log("create_quest_from_post", EventParams.create()
                 .add("source", e.source.name().toLowerCase())
+                .add("post_id", post.getId())
+                .add("name", post.getTitle())
+                .add("category", post.getCategory())
+                .add("message", post.getMessage()));
+    }
+
+    @Subscribe
+    public void onDeletePost(DeletePostEvent e) {
+        Post post = e.post;
+        log("delete_post", EventParams.create()
                 .add("post_id", post.getId())
                 .add("name", post.getTitle())
                 .add("category", post.getCategory())
