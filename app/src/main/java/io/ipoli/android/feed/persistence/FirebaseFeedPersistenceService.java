@@ -187,6 +187,14 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
         database.getReference().updateChildren(update);
     }
 
+    @Override
+    public void deletePost(Post post) {
+        Map<String, Object> update = new HashMap<>();
+        postPath(post.getId()).update(update).withValue(null);
+        profilePath(post.getPlayerId()).add("posts").add(post.getId()).update(update).withValue(null);
+        database.getReference().updateChildren(update);
+    }
+
     private abstract class FirebaseValueEventListener implements ValueEventListener {
 
         @Override

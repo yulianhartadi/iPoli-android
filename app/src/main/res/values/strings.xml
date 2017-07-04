@@ -924,6 +924,8 @@
     <string name="date_time_picker_title">Schedule your quest</string>
     <string name="quest_from_post_added">Quest scheduled in your calendar</string>
     <string name="title_fragment_feed">Achievements by Heroes</string>
+    <string name="dialog_delete_post_title">Delete post</string>
+    <string name="dialog_delete_post_message">Sure you want to delete this amazing post?</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

@@ -50,6 +50,7 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.events.AddQuestFromPostEvent;
+import io.ipoli.android.feed.events.DeletePostEvent;
 import io.ipoli.android.feed.events.FollowPlayerEvent;
 import io.ipoli.android.feed.events.GiveKudosEvent;
 import io.ipoli.android.feed.events.ShowProfileEvent;
@@ -389,6 +390,11 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         String playerId = getPlayerId();
         feedPersistenceService.unfollow(event.profile, playerId);
         eventBus.post(new PlayerUnfollowedEvent(playerId, event.profile.getId()));
+    }
+
+    @Subscribe
+    public void onDeletePost(DeletePostEvent e) {
+        feedPersistenceService.deletePost(e.post);
     }
 
     @Override

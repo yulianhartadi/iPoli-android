@@ -2,6 +2,7 @@ package io.ipoli.android.feed.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.events.AddQuestFromPostEvent;
+import io.ipoli.android.feed.events.DeletePostEvent;
 import io.ipoli.android.feed.events.GiveKudosEvent;
 import io.ipoli.android.feed.events.ShowProfileEvent;
 import io.ipoli.android.feed.ui.PostBinder;
@@ -75,11 +77,32 @@ public class PostListFragment extends BaseFragment {
                 holder.itemView.setOnClickListener(v -> postEvent(new ShowProfileEvent(post.getPlayerId())));
                 holder.giveKudos.setOnClickListener(v -> postEvent(new GiveKudosEvent(post)));
                 holder.addQuest.setOnClickListener(v -> postEvent(new AddQuestFromPostEvent(post)));
+                if (playerId.equals(getPlayerId())) {
+                    holder.delete.setVisibility(View.VISIBLE);
+                    holder.delete.setOnClickListener(v -> {
+                        showDeleteConfirmationDialog(post);
+                    });
+                } else {
+                    holder.delete.setVisibility(View.GONE);
+                }
             }
         };
 
         postList.setAdapter(adapter);
         return postList;
+    }
+
+    private void showDeleteConfirmationDialog(Post post) {
+        AlertDialog d = new AlertDialog.Builder(getContext())
+                .setTitle(getString(R.string.dialog_delete_post_title))
+                .setMessage(getString(R.string.dialog_delete_post_message))
+                .setPositiveButton(getString(R.string.dialog_yes), (dialog, which) -> {
+                    postEvent(new DeletePostEvent(post));
+                })
+                .setNegativeButton(getString(R.string.dialog_no), (dialog, which) -> {
+                })
+                .create();
+        d.show();
     }
 
     @Override
