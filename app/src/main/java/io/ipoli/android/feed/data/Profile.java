@@ -17,7 +17,7 @@ public class Profile {
     private String id;
     private String displayName;
     private String username;
-    private String description;
+    private String bio;
     private Integer level;
     private String experience;
     private Integer avatarCode;
@@ -37,7 +37,7 @@ public class Profile {
         setId(player.getId());
         setDisplayName(player.getDisplayName());
         setUsername(player.getUsername());
-        setDescription(player.getDescription());
+        setBio(player.getBio());
         setLevel(player.getLevel());
         setExperience(player.getExperience());
         setAvatarCode(player.getAvatarCode());
@@ -154,12 +154,12 @@ public class Profile {
         return PetAvatar.get(petAvatarCode);
     }
 
-    public String getDescription() {
-        return description;
+    public String getBio() {
+        return bio;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 
     public String getExperience() {
