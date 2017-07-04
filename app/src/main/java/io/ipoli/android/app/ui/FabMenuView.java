@@ -119,16 +119,12 @@ public class FabMenuView extends RelativeLayout {
             }
 
             if (!isInEditMode()) {
-                initUI(context, attrs);
+                initUI(context);
             }
         }
     }
 
     private void initUI(Context context) {
-        initUI(context, null);
-    }
-
-    private void initUI(Context context, AttributeSet attrs) {
         View view = LayoutInflater.from(context).inflate(
                 R.layout.layout_fab_menu, this);
         unbinder = ButterKnife.bind(this, view);
