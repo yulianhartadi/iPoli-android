@@ -35,7 +35,11 @@ public interface Constants {
 
     int QUEST_WITH_NO_DURATION_TIMER_MINUTES = 30;
     int MAX_QUEST_DURATION_HOURS = 4;
+
+    String PLAYER_ID_EXTRA_KEY = "player_id";
+
     String QUEST_ID_EXTRA_KEY = "quest_id";
+
     String REPEATING_QUEST_ID_EXTRA_KEY = "repeating_quest_id";
 
     String CHALLENGE_ID_EXTRA_KEY = "challenge_id";
@@ -44,7 +48,7 @@ public interface Constants {
 
     String CURRENT_SELECTED_DAY_EXTRA_KEY = "CURRENT_SELECTED_DAY";
 
-    String USERNAME_EXTRA_KEY = "username";
+    String DISPLAY_NAME_EXTRA_KEY = "display_name";
 
     int CALENDAR_EVENT_MIN_DURATION = 15;
 
@@ -74,8 +78,6 @@ public interface Constants {
     String KEY_ONGOING_NOTIFICATION_ENABLED = "ONGOING_NOTIFICATION_ENABLED";
 
     String KEY_SHOULD_SHOW_TUTORIAL = "SHOULD_SHOW_TUTORIAL";
-
-    String KEY_SCHEMA_VERSION = "SCHEMA_VERSION";
 
     String IPOLI_EMAIL = "hi@ipoli.io";
 
@@ -154,7 +156,7 @@ public interface Constants {
     String PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index";
     int RANDOM_SEED = 42; // duh!
     int MAX_TIMES_A_DAY_COUNT = 8;
-    int SCHEMA_VERSION = 6;
+    int SCHEMA_VERSION = 7;
 
     double MAX_PENALTY_COEFFICIENT = 0.5;
     double NO_QUESTS_PENALTY_COEFFICIENT = 0.3;
@@ -168,7 +170,6 @@ public interface Constants {
     int XP_BAR_MAX_VALUE = 100;
     int RC_CALENDAR_PERM = 102;
     String KEY_LAST_ANDROID_CALENDAR_SYNC_DATE = "LAST_ANDROID_CALENDAR_SYNC_DATE";
-    int FIREBASE_LAST_SCHEMA_VERSION = 2;
     String FACEBOOK_PACKAGE = "com.facebook.katana";
     String TWITTER_PACKAGE = "com.twitter.android";
     int SYNC_CALENDAR_JOB_ID = 1;

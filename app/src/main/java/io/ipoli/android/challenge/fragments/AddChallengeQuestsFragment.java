@@ -33,12 +33,12 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.events.StartFabMenuIntentEvent;
 import io.ipoli.android.app.utils.StringUtils;
-import io.ipoli.android.challenge.adapters.ChallengePickQuestListAdapter;
 import io.ipoli.android.challenge.events.NewChallengeQuestsPickedEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.viewmodels.PickQuestViewModel;
 import io.ipoli.android.player.UpgradeDialog;
 import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.quest.adapters.SelectableQuestPickerAdapter;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -75,7 +75,7 @@ public class AddChallengeQuestsFragment extends BaseFragment {
     @BindView(R.id.result_list)
     EmptyStateRecyclerView questList;
 
-    private ChallengePickQuestListAdapter adapter;
+    private SelectableQuestPickerAdapter adapter;
 
     private List<Quest> selectedQuests = new ArrayList<>();
     private List<RepeatingQuest> selectedRepeatingQuests = new ArrayList<>();
@@ -96,7 +96,7 @@ public class AddChallengeQuestsFragment extends BaseFragment {
         questList.setLayoutManager(layoutManager);
         questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
 
-        adapter = new ChallengePickQuestListAdapter(getContext(), eventBus, new ArrayList<>(), true);
+        adapter = new SelectableQuestPickerAdapter(getContext(), eventBus, new ArrayList<>(), true);
         questList.setAdapter(adapter);
 
         challengePersistenceService.listenForAllQuestsAndRepeatingQuests(result -> {

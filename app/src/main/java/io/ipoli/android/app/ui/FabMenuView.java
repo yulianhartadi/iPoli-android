@@ -3,6 +3,7 @@ package io.ipoli.android.app.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
@@ -127,6 +128,7 @@ public class FabMenuView extends RelativeLayout {
         View view = LayoutInflater.from(context).inflate(
                 R.layout.layout_fab_menu, this);
         unbinder = ButterKnife.bind(this, view);
+
         fabClickListeners = new ArrayList<>();
 
         setElevation(ViewUtils.dpToPx(5, getResources()));
@@ -142,7 +144,14 @@ public class FabMenuView extends RelativeLayout {
             reward.setVisibility(GONE);
             rewardLabel.setVisibility(GONE);
         }
+    }
 
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams) getLayoutParams();
+        lp.setBehavior(new FabMenuViewBehavior());
+        requestLayout();
     }
 
     @OnClick({R.id.fab_add_quest, R.id.fab_quest_label})

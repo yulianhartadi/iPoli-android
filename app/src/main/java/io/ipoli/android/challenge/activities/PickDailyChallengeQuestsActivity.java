@@ -30,10 +30,10 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.ui.EmptyStateRecyclerView;
-import io.ipoli.android.challenge.adapters.PickDailyChallengeQuestsAdapter;
 import io.ipoli.android.challenge.events.DailyChallengeQuestsSelectedEvent;
 import io.ipoli.android.challenge.viewmodels.PickQuestViewModel;
 import io.ipoli.android.quest.activities.AddQuestActivity;
+import io.ipoli.android.quest.adapters.SelectableQuestPickerAdapter;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.AddQuestButtonTappedEvent;
@@ -60,7 +60,7 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
     @BindView(R.id.quest_list)
     EmptyStateRecyclerView questList;
 
-    private PickDailyChallengeQuestsAdapter pickQuestsAdapter;
+    private SelectableQuestPickerAdapter selectableQuestPickerAdapter;
 
     private List<Quest> previouslySelectedQuests = new ArrayList<>();
 
@@ -81,8 +81,8 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         questList.setLayoutManager(layoutManager);
 
-        pickQuestsAdapter = new PickDailyChallengeQuestsAdapter(this, eventBus, new ArrayList<>());
-        questList.setAdapter(pickQuestsAdapter);
+        selectableQuestPickerAdapter = new SelectableQuestPickerAdapter(this, eventBus, new ArrayList<>());
+        questList.setAdapter(selectableQuestPickerAdapter);
         questList.setEmptyView(rootContainer, R.string.empty_daily_challenge_quests_text, R.drawable.ic_compass_grey_24dp);
     }
 
@@ -143,7 +143,7 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
     }
 
     private void saveQuests() {
-        List<BaseQuest> selectedBaseQuests = pickQuestsAdapter.getSelectedBaseQuests();
+        List<BaseQuest> selectedBaseQuests = selectableQuestPickerAdapter.getSelectedBaseQuests();
         eventBus.post(new DailyChallengeQuestsSelectedEvent(selectedBaseQuests.size()));
         if (selectedBaseQuests.size() > Constants.DAILY_CHALLENGE_QUEST_COUNT) {
             Toast.makeText(this, R.string.pick_max_3_miq, Toast.LENGTH_LONG).show();
@@ -195,6 +195,6 @@ public class PickDailyChallengeQuestsActivity extends BaseActivity implements On
             viewModels.add(vm);
         }
 
-        pickQuestsAdapter.setViewModels(viewModels);
+        selectableQuestPickerAdapter.setViewModels(viewModels);
     }
 }

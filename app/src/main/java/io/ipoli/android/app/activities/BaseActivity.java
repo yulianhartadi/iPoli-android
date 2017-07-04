@@ -109,4 +109,8 @@ public class BaseActivity extends AppCompatActivity {
     protected boolean shouldUse24HourFormat() {
         return getPlayer().getUse24HourFormat();
     }
+
+    protected String getPlayerId() {
+        return App.getPlayerId();
+    }
 }
