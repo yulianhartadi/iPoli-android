@@ -65,7 +65,7 @@ import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.Player;
 import io.ipoli.android.player.events.PlayerSignedInEvent;
-import io.ipoli.android.player.events.PlayerUpdatedEvent;
+import io.ipoli.android.player.events.PlayerSyncedEvent;
 import io.ipoli.android.player.events.StartReplicationEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.store.Upgrade;
@@ -405,7 +405,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         pull.setChannels(channels);
         pull.addChangeListener(event -> {
             if (event.getStatus() == Replication.ReplicationStatus.REPLICATION_STOPPED) {
-                eventBus.post(new PlayerUpdatedEvent(playerId));
+                eventBus.post(new PlayerSyncedEvent(playerId));
                 eventBus.post(new StartReplicationEvent(cookies));
                 onFinish();
             }
