@@ -438,6 +438,11 @@ public class Player extends PersistedObject {
     }
 
     public String getDisplayName() {
+        return displayName;
+    }
+
+    @JsonIgnore
+    public String getFullDisplayName() {
         if (StringUtils.isNotEmpty(displayName)) {
             return displayName;
         }
@@ -448,6 +453,7 @@ public class Player extends PersistedObject {
         AuthProvider authProvider = getCurrentAuthProvider();
         return authProvider.getFirstName() + " " + authProvider.getLastName();
     }
+
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
