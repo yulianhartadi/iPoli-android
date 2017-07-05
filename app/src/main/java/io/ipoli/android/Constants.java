@@ -173,4 +173,5 @@ public interface Constants {
     String FACEBOOK_PACKAGE = "com.facebook.katana";
     String TWITTER_PACKAGE = "com.twitter.android";
     int SYNC_CALENDAR_JOB_ID = 1;
+    int PROFILES_FIRST_SCHEMA_VERSION = 7;
 }
