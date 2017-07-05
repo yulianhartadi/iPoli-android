@@ -172,7 +172,7 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
     public void updateProfile(Profile profile, Player player) {
         Map<String, Object> update = new HashMap<>();
         FirebasePath profilePath = profilePath(profile.getId());
-        profilePath.add("displayName").update(update).withValue(player.getDisplayName());
+        profilePath.add("displayName").update(update).withValue(player.getFullDisplayName());
         profilePath.add("bio").update(update).withValue(player.getBio());
         profilePath.add("level").update(update).withValue(player.getLevel());
         profilePath.add("experience").update(update).withValue(player.getExperience());

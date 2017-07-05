@@ -35,7 +35,7 @@ public class Profile {
 
     public Profile(Player player) {
         setId(player.getId());
-        setDisplayName(player.getDisplayName());
+        setDisplayName(player.getFullDisplayName());
         setUsername(player.getUsername());
         setBio(player.getBio());
         setLevel(player.getLevel());
