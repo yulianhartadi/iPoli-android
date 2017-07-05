@@ -637,7 +637,8 @@ public class App extends MultiDexApplication {
     public void onPlayerSynced(PlayerSyncedEvent e) {
         localStorage.saveString(Constants.KEY_PLAYER_ID, e.playerId);
         playerId = e.playerId;
-        if(getPlayer().hasUsername()) {
+        Player player = getPlayer();
+        if(player.hasUsername() && player.getSchemaVersion() >= Constants.PROFILES_FIRST_SCHEMA_VERSION) {
             listenForPlayerChanges();
         }
     }

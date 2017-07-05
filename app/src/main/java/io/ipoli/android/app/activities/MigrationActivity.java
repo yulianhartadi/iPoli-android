@@ -53,9 +53,8 @@ import io.ipoli.android.store.Upgrade;
  */
 
 public class MigrationActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Boolean> {
-    public static final int VERSION_BEFORE_UPGRADES = 3;
+    private static final int VERSION_BEFORE_UPGRADES = 3;
     private static final int NEW_CALENDAR_IMPORT_VERSION = 6;
-    private static final int PROFILES_FIRST_VERSION = 7;
 
     @Inject
     Api api;
@@ -184,7 +183,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
         @Override
         public Boolean loadInBackground() {
             unlockUpgrades();
-            if(schemaVersion < PROFILES_FIRST_VERSION) {
+            if(schemaVersion < Constants.PROFILES_FIRST_SCHEMA_VERSION) {
                 migrateUsername();
             }
             if (schemaVersion < NEW_CALENDAR_IMPORT_VERSION) {
