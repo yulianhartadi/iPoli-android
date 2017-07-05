@@ -20,6 +20,9 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.player_avatar)
     public ImageView playerAvatar;
 
+    @BindView(R.id.player_display_name)
+    public TextView playerDisplayName;
+
     @BindView(R.id.player_username)
     public TextView playerUsername;
 

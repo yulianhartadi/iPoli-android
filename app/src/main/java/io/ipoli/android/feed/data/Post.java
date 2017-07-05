@@ -31,6 +31,7 @@ public class Post {
     private String questId;
     private String playerId;
     private Integer playerLevel;
+    private String playerDisplayName;
     private String playerUsername;
     private Integer playerAvatarCode;
     private Map<String, Boolean> kudos;
@@ -53,6 +54,7 @@ public class Post {
         setRewardPoints(quest.getRewardPoints().intValue());
         setPlayerId(player.getId());
         setPlayerUsername(player.getUsername());
+        setPlayerDisplayName(player.getFullDisplayName());
         setPlayerLevel(player.getLevel());
         setPlayerAvatarCode(player.getAvatarCode());
     }
@@ -205,6 +207,14 @@ public class Post {
 
     public void setDuration(Integer duration) {
         this.duration = duration;
+    }
+
+    public String getPlayerDisplayName() {
+        return playerDisplayName;
+    }
+
+    public void setPlayerDisplayName(String playerDisplayName) {
+        this.playerDisplayName = playerDisplayName;
     }
 
     @Exclude
