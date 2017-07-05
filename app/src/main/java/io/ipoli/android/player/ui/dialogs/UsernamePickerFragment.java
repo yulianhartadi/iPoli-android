@@ -96,7 +96,7 @@ public class UsernamePickerFragment extends DialogFragment {
             UsernameValidator.validate(username, feedPersistenceService, new UsernameValidator.ResultListener() {
                 @Override
                 public void onValid() {
-                    hideKeyboard(getDialog());
+                    hideKeyboard(dialog);
                     usernamePickedListener.onUsernamePicked(username);
                     dismiss();
                 }

@@ -213,8 +213,7 @@
         <activity
             android:name=".feed.activities.AddPostActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.iPoli.DialogActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:theme="@style/Theme.iPoli.DialogActivity" />
         <activity
             android:name=".quest.activities.QuestPickerActivity"
             android:label="@string/title_activity_quest_picker"
