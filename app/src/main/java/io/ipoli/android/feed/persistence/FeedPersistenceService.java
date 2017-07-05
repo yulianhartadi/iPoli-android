@@ -29,9 +29,9 @@ public interface FeedPersistenceService {
 
     void addPostToPlayer(Post post, String playerId);
 
-    void unfollow(Profile profile, String playerId);
+    void unfollow(String profileId, String playerId);
 
-    void follow(Profile profile, String playerId);
+    void follow(String profileId, String playerId);
 
     void updateProfile(Profile profile, Player player);
 

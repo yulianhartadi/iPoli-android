@@ -90,12 +90,12 @@ public class ProfileListFragment extends BaseFragment {
                 holder.follow.setEnabled(true);
                 holder.follow.setOnClickListener(v -> {
                     v.setEnabled(false);
-                    postEvent(new FollowPlayerEvent(profile));
+                    postEvent(new FollowPlayerEvent(profile.getId()));
                 });
                 holder.following.setEnabled(true);
                 holder.following.setOnClickListener(v -> {
                     v.setEnabled(false);
-                    postEvent(new UnfollowPlayerEvent(profile));
+                    postEvent(new UnfollowPlayerEvent(profile.getId()));
                 });
             }
         };

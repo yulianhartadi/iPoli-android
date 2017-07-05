@@ -1,15 +1,13 @@
 package io.ipoli.android.feed.events;
 
-import io.ipoli.android.feed.data.Profile;
-
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 7/3/17.
  */
 public class FollowPlayerEvent {
-    public final Profile profile;
+    public final String profileId;
 
-    public FollowPlayerEvent(Profile profile) {
-        this.profile = profile;
+    public FollowPlayerEvent(String profileId) {
+        this.profileId = profileId;
     }
 }

@@ -149,7 +149,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     @BindView(R.id.profile_pager)
     ViewPager pagerContainer;
 
-    private String playerId;
+    private String profileId;
 
     private NumberFormat numberFormatter;
 
@@ -163,11 +163,11 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return PostListFragment.newInstance(playerId);
+                    return PostListFragment.newInstance(profileId);
                 case 1:
-                    return ProfileListFragment.newInstance(playerId, ProfileListFragment.LIST_TYPE_FOLLOWING);
+                    return ProfileListFragment.newInstance(profileId, ProfileListFragment.LIST_TYPE_FOLLOWING);
                 default:
-                    return ProfileListFragment.newInstance(playerId, ProfileListFragment.LIST_TYPE_FOLLOWERS);
+                    return ProfileListFragment.newInstance(profileId, ProfileListFragment.LIST_TYPE_FOLLOWERS);
             }
         }
 
@@ -184,9 +184,9 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);
 
-        playerId = getIntent().getStringExtra(Constants.PLAYER_ID_EXTRA_KEY);
+        profileId = getIntent().getStringExtra(Constants.PLAYER_ID_EXTRA_KEY);
 
-        if (StringUtils.isEmpty(playerId)) {
+        if (StringUtils.isEmpty(profileId)) {
             throw new IllegalArgumentException("Player id is required");
         }
 
@@ -262,13 +262,13 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         } else {
             follow.setText(R.string.follow);
         }
+
         follow.setOnClickListener(null);
-        follow.setOnClickListener(v -> {
-            onFollowPlayer(profile, playerId, following);
-        });
+        follow.setOnClickListener(v ->
+                onFollowPlayer(profileId, getPlayerId(), following));
     }
 
-    public void onFollowPlayer(Profile profile, String playerId, boolean following) {
+    public void onFollowPlayer(String profileId, String playerId, boolean following) {
         if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
             Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
             return;
@@ -283,11 +283,11 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         }
 
         if (following) {
-            feedPersistenceService.unfollow(profile, playerId);
-            eventBus.post(new PlayerUnfollowedEvent(playerId, profile.getId()));
+            feedPersistenceService.unfollow(profileId, playerId);
+            eventBus.post(new PlayerUnfollowedEvent(playerId, profileId));
         } else {
-            feedPersistenceService.follow(profile, playerId);
-            eventBus.post(new PlayerFollowedEvent(playerId, profile.getId()));
+            feedPersistenceService.follow(profileId, playerId);
+            eventBus.post(new PlayerFollowedEvent(playerId, profileId));
         }
     }
 
@@ -372,7 +372,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
 
     @Subscribe
     public void onShowProfile(ShowProfileEvent event) {
-        if (playerId.equals(event.playerId)) {
+        if (profileId.equals(event.playerId)) {
             return;
         }
         Intent intent = new Intent(this, ProfileActivity.class);
@@ -383,15 +383,15 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     @Subscribe
     public void onFollowPlayer(FollowPlayerEvent event) {
         String playerId = getPlayerId();
-        feedPersistenceService.follow(event.profile, playerId);
-        eventBus.post(new PlayerFollowedEvent(playerId, event.profile.getId()));
+        feedPersistenceService.follow(event.profileId, playerId);
+        eventBus.post(new PlayerFollowedEvent(playerId, event.profileId));
     }
 
     @Subscribe
     public void onUnfollowPlayer(UnfollowPlayerEvent event) {
         String playerId = getPlayerId();
-        feedPersistenceService.unfollow(event.profile, playerId);
-        eventBus.post(new PlayerUnfollowedEvent(playerId, event.profile.getId()));
+        feedPersistenceService.unfollow(event.profileId, playerId);
+        eventBus.post(new PlayerUnfollowedEvent(playerId, event.profileId));
     }
 
     @Subscribe
@@ -402,7 +402,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     @Override
     public void onResume() {
         super.onResume();
-        feedPersistenceService.listenForProfile(playerId, this);
+        feedPersistenceService.listenForProfile(profileId, this);
         eventBus.register(this);
     }
 
@@ -414,22 +414,10 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
-    }
-
-    @Override
-    protected void onStop() {
-
-        super.onStop();
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.profile_menu, menu);
         MenuItem editItem = menu.findItem(R.id.action_edit);
-        if (!playerId.equals(getPlayerId())) {
+        if (!profileId.equals(getPlayerId())) {
             editItem.setVisible(false);
         }
         return super.onCreateOptionsMenu(menu);
@@ -459,7 +447,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
                     item.setTitle(R.string.save);
                     playerDisplayNameEdit.requestFocus();
                     KeyboardUtils.showKeyboard(this, playerDisplayNameEdit);
-                    eventBus.post(new EditProfileEvent(playerId));
+                    eventBus.post(new EditProfileEvent(profileId));
                 } else {
 
                     String newDisplayName = playerDisplayNameEdit.getText().toString();
