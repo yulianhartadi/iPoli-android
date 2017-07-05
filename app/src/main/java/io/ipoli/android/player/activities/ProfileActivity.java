@@ -262,6 +262,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         } else {
             follow.setText(R.string.follow);
         }
+        follow.setOnClickListener(null);
         follow.setOnClickListener(v -> {
             onFollowPlayer(profile, playerId, following);
         });
@@ -401,24 +402,26 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     @Override
     public void onResume() {
         super.onResume();
+        feedPersistenceService.listenForProfile(playerId, this);
         eventBus.register(this);
     }
 
     @Override
     public void onPause() {
         eventBus.unregister(this);
+        feedPersistenceService.removeAllListeners();
         super.onPause();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        feedPersistenceService.listenForProfile(playerId, this);
+
     }
 
     @Override
     protected void onStop() {
-        feedPersistenceService.removeAllListeners();
+
         super.onStop();
     }
 
