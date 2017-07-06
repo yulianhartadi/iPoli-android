@@ -152,6 +152,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
         existingPlayerView.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
+                usernameView.setText("");
                 usernameView.setEnabled(false);
                 usernameView.setFocusable(false);
             } else {
@@ -267,6 +268,9 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                     case EMPTY:
                         usernameView.setError(getString(R.string.username_is_empty));
                         break;
+                    case LENGTH:
+                        usernameView.setError(getString(R.string.username_wrong_length, UsernameValidator.MIN_LENGTH, UsernameValidator.MAX_LENGTH));
+                        break;
                     case NOT_UNIQUE:
                         usernameView.setError(getString(R.string.username_is_taken));
                         break;
@@ -356,18 +360,15 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                 authProvider.setEmail(email);
                 eventBus.post(new PlayerSignedInEvent(authProvider.getProvider(), isNew));
                 String usernameText = usernameView.getText().toString();
-                Player existingPlayer = null;
                 if (shouldCreatePlayer) {
-                    existingPlayer = createPlayer(playerId, usernameText, SignInActivity.this.displayName, authProvider);
+                    createPlayer(playerId, usernameText, SignInActivity.this.displayName, authProvider);
                 } else if (isNew) {
                     updatePlayerWithAuthProviderAndUsername(authProvider, usernameText);
                 }
                 if (!existingPlayerView.isChecked() && isNew) {
-                    if (existingPlayer == null) {
-                        existingPlayer = getPlayer();
-                    }
-                    existingPlayer.setId(playerId);
-                    feedPersistenceService.createProfile(new Profile(existingPlayer));
+                    Player player = getPlayer();
+                    player.setId(playerId);
+                    feedPersistenceService.createProfile(new Profile(player));
                 }
                 if (!isNew) {
                     pullPlayerDocs(cookies, playerId);
@@ -428,7 +429,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         createPlayer("", "", "", null);
     }
 
-    private Player createPlayer(String playerId, String username, String displayName, AuthProvider authProvider) {
+    private void createPlayer(String playerId, String username, String displayName, AuthProvider authProvider) {
         Pet pet = new Pet(Constants.DEFAULT_PET_NAME, Constants.DEFAULT_PET_AVATAR.code,
                 Constants.DEFAULT_PET_BACKGROUND_PICTURE, Constants.DEFAULT_PET_HP);
 
@@ -451,7 +452,6 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
         playerPersistenceService.save(player, playerId);
         eventBus.post(new PlayerCreatedEvent(player.getId()));
-        return player;
     }
 
     @Override

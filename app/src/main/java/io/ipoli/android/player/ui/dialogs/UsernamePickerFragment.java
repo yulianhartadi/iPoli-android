@@ -107,6 +107,9 @@ public class UsernamePickerFragment extends DialogFragment {
                         case EMPTY:
                             usernameView.setError(getString(R.string.username_is_empty));
                             break;
+                        case LENGTH:
+                            usernameView.setError(getString(R.string.username_wrong_length, UsernameValidator.MIN_LENGTH, UsernameValidator.MAX_LENGTH));
+                            break;
                         case NOT_UNIQUE:
                             usernameView.setError(getString(R.string.username_is_taken));
                             break;
