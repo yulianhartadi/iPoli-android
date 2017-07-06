@@ -154,6 +154,7 @@ public class DateTimePickerFragment extends DialogFragment {
 
     private void initTimePicker() {
         tabLayout.getTabAt(TIME_PICKER_TAB).setText(time.toString());
+        timePicker.setIs24HourView(use24HourFormat);
         timePicker.setOnTimeChangedListener((v, hourOfDay, minute) -> {
             time = Time.at(hourOfDay, minute);
             tabLayout.getTabAt(TIME_PICKER_TAB).setText(time.toString(use24HourFormat));
