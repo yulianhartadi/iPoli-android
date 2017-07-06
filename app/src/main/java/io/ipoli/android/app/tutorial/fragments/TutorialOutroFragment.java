@@ -63,8 +63,9 @@ public class TutorialOutroFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
+        tutorialText.stop();
         unbinder.unbind();
+        super.onDestroyView();
     }
 
     public void setPlayerName(String playerName) {

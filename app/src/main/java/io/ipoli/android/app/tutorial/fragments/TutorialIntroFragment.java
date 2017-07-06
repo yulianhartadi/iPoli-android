@@ -143,6 +143,7 @@ public class TutorialIntroFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+        tutorialText.stop();
         unbinder.unbind();
         super.onDestroyView();
     }

@@ -261,8 +261,8 @@ public class TutorialCalendarFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         unbinder.unbind();
+        super.onDestroyView();
     }
 
     public void setQuestInfo(String name, Category category) {
