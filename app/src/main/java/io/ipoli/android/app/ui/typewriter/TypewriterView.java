@@ -35,22 +35,14 @@ public class TypewriterView extends AppCompatEditText {
         setOnTouchListener((v, event) -> true);
     }
 
-    public TypewriterView type(CharSequence text, long speed) {
-        repeaters.add(new TextAdder(this, text, speed, nextRunnable));
-        return runNextIfRunning();
-    }
-
     public TypewriterView type(CharSequence text) {
-        return type(text, TYPE_SPEED);
-    }
-
-    public TypewriterView delete(CharSequence text, long speed) {
-        repeaters.add(new TextEraser(this, text, speed, nextRunnable));
+        repeaters.add(new TextAdder(this, text, TYPE_SPEED, nextRunnable));
         return runNextIfRunning();
     }
 
     public TypewriterView delete(CharSequence text) {
-        return delete(text, DELETE_SPEED);
+        repeaters.add(new TextEraser(this, text, DELETE_SPEED, nextRunnable));
+        return runNextIfRunning();
     }
 
     public TypewriterView pause(long millis) {

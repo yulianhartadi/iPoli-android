@@ -110,7 +110,8 @@ public class TutorialNamePromptFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
+        tutorialText.stop();
         unbinder.unbind();
+        super.onDestroyView();
     }
 }
