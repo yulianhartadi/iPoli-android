@@ -587,7 +587,7 @@ public class MainActivity extends BaseActivity implements
     public void onUndoCompletedQuest(UndoCompletedQuestEvent e) {
         Quest q = e.quest;
         String text = getString(q.getScheduledDate() == null ? R.string.quest_undone_to_inbox : R.string.quest_undone, e.experience, e.coins);
-        Snackbar.make(contentContainer, text, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(findViewById(R.id.root_container), text, Snackbar.LENGTH_SHORT).show();
     }
 
     public void initToolbar(Toolbar toolbar, @StringRes int title) {
@@ -650,7 +650,7 @@ public class MainActivity extends BaseActivity implements
         quest.setReminders(newReminders);
         eventBus.post(new NewQuestEvent(quest, EventSource.CALENDAR));
 
-        Snackbar snackbar = ThemedSnackbar.make(contentContainer, R.string.quest_duplicated, Snackbar.LENGTH_LONG);
+        Snackbar snackbar = ThemedSnackbar.make(findViewById(R.id.root_container), R.string.quest_duplicated, Snackbar.LENGTH_LONG);
 
         if (!isForSameDay && showAction) {
             snackbar.setAction(R.string.view, view -> {
@@ -714,7 +714,7 @@ public class MainActivity extends BaseActivity implements
             message = getString(R.string.quest_moved_to_inbox);
         }
 
-        Snackbar snackbar = ThemedSnackbar.make(contentContainer, message, Snackbar.LENGTH_LONG);
+        Snackbar snackbar = ThemedSnackbar.make(findViewById(R.id.root_container), message, Snackbar.LENGTH_LONG);
 
         if (isDateChanged && showAction) {
             snackbar.setAction(R.string.view, view -> {
