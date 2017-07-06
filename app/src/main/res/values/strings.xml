@@ -912,7 +912,8 @@
     <string name="username_is_taken">Sorry, that one is taken</string>
     <string name="username_is_empty">Come on, you need username</string>
     <string name="username_picker_title">Choose your username</string>
-    <string name="username_wrong_format">Use only letters, digits and _</string>
+    <string name="username_wrong_format">Use only english letters, digits and underscore</string>
+    <string name="username_wrong_length">Use between %1$d and %2$d character</string>
     <string name="enable_internet_to_do_action">You need internet to do this</string>
     <string name="sign_in_to_view_profile">Please, sign in to view your profile</string>
     <string name="profile_default_bio">This player likes to keep things mysterious</string>

@@ -372,7 +372,7 @@ public class App extends MultiDexApplication {
             startNewActivity(SignInActivity.class, bundle);
         } else {
             Player player = getPlayer();
-            player.setUsername(e.playerName);
+            player.setDisplayName(e.playerName);
             playerPersistenceService.save(player);
         }
     }
