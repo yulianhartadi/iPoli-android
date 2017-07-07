@@ -19,7 +19,9 @@ class EditRewardController(val rewardId: String = "") : RestoreViewOnCreateMviCo
         val view = inflater.inflate(R.layout.controller_edit_reward, container, false) as ViewGroup
         val rewardRepository = RewardRepository()
         val reward = rewardRepository.findById(rewardId)
+        view.name.setText(reward.name)
         view.description.setText(reward.description)
+        view.price.setText(reward.price.toString())
         return view
     }
 

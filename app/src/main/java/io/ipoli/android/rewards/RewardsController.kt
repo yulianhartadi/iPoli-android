@@ -7,10 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bluelinelabs.conductor.RouterTransaction
-
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import com.hannesdorfmann.mosby3.RestoreViewOnCreateMviController
 import io.ipoli.android.R
 import kotlinx.android.synthetic.main.item_reward.view.*
+
 
 class RewardsController : RestoreViewOnCreateMviController<RewardsController, RewardsPresenter>() {
 
@@ -29,7 +31,12 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
 //        rewardRepository.save(Reward(name = "Hello", description = "It is a great reward!"))
 
         rewardList.adapter = RewardListAdapter(rewardRepository.loadRewards(), { reward ->
-            router.pushController(RouterTransaction.with(EditRewardController(rewardId = reward.id)))
+
+            val pushHandler = HorizontalChangeHandler()
+            val popHandler = HorizontalChangeHandler()
+            router.pushController(RouterTransaction.with(EditRewardController(rewardId = reward.id))
+                    .pushChangeHandler(pushHandler)
+                    .popChangeHandler(popHandler))
         })
 
         return view;
