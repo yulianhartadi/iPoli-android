@@ -1,13 +1,12 @@
 package io.ipoli.android
 
-import android.databinding.DataBindingUtil
-import android.databinding.ViewDataBinding
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.ViewGroup
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import io.ipoli.android.rewards.RewardsController
 
 /**
  * Created by vini on 7/6/17.

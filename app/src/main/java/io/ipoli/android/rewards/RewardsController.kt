@@ -1,4 +1,4 @@
-package io.ipoli.android
+package io.ipoli.android.rewards
 
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -6,8 +6,10 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bluelinelabs.conductor.RouterTransaction
 
 import com.hannesdorfmann.mosby3.RestoreViewOnCreateMviController
+import io.ipoli.android.R
 import kotlinx.android.synthetic.main.item_reward.view.*
 
 class RewardsController : RestoreViewOnCreateMviController<RewardsController, RewardsPresenter>() {
@@ -24,12 +26,10 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
 
         val rewardRepository = RewardRepository()
 
-        rewardRepository.save(Reward(name = "Hello", description = "It is a great reward!"))
+//        rewardRepository.save(Reward(name = "Hello", description = "It is a great reward!"))
 
         rewardList.adapter = RewardListAdapter(rewardRepository.loadRewards(), { reward ->
-            {
-
-            }
+            router.pushController(RouterTransaction.with(EditRewardController(rewardId = reward.id)))
         })
 
         return view;
@@ -46,7 +46,7 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
     class RewardListAdapter(val rewards: List<Reward>, val itemClick: (Reward) -> Unit) :
             RecyclerView.Adapter<RewardListAdapter.ViewHolder>() {
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RewardListAdapter.ViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context).inflate(R.layout.item_reward, parent, false)
             return ViewHolder(view, itemClick)
         }
@@ -61,6 +61,7 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
 
             fun bindReward(reward: Reward) {
                 with(reward) {
+                    itemView.setOnClickListener { itemClick.invoke(reward) }
                     itemView.name.setText(reward.name)
                     itemView.description.setText(reward.description)
                 }

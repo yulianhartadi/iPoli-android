@@ -1,4 +1,4 @@
-package io.ipoli.android
+package io.ipoli.android.rewards
 
 import io.realm.Realm
 import io.realm.RealmResults
@@ -12,6 +12,10 @@ class RewardRepository {
 
     fun loadRewards(): RealmResults<Reward> {
         return realm.where(Reward::class.java).findAll()
+    }
+
+    fun findById(id: String): Reward {
+        return realm.where(Reward::class.java).equalTo("id", id).findFirst()
     }
 
     fun save(reward: Reward) {

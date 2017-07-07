@@ -1,4 +1,4 @@
-package io.ipoli.android
+package io.ipoli.android.rewards
 
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
