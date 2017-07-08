@@ -3,14 +3,18 @@ package io.ipoli.android.rewards
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import com.hannesdorfmann.mosby3.RestoreViewOnCreateMviController
 import io.ipoli.android.R
+import io.ipoli.android.RewardViewState
+import io.ipoli.android.RewardsLoadedState
+import io.reactivex.Observable
+import io.realm.RealmResults
 import kotlinx.android.synthetic.main.item_reward.view.*
 
 
@@ -30,14 +34,14 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
 
 //        rewardRepository.save(Reward(name = "Hello", description = "It is a great reward!"))
 
-        rewardList.adapter = RewardListAdapter(rewardRepository.loadRewards(), { reward ->
-
-            val pushHandler = HorizontalChangeHandler()
-            val popHandler = HorizontalChangeHandler()
-            router.pushController(RouterTransaction.with(EditRewardController(rewardId = reward.id))
-                    .pushChangeHandler(pushHandler)
-                    .popChangeHandler(popHandler))
-        })
+//        rewardList.adapter = RewardListAdapter(rewardRepository.loadRewards(), { reward ->
+//
+//            val pushHandler = HorizontalChangeHandler()
+//            val popHandler = HorizontalChangeHandler()
+//            router.pushController(RouterTransaction.with(EditRewardController(rewardId = reward.id))
+//                    .pushChangeHandler(pushHandler)
+//                    .popChangeHandler(popHandler))
+//        })
 
         return view;
     }
@@ -50,7 +54,32 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
         return RewardsPresenter()
     }
 
-    class RewardListAdapter(val rewards: List<Reward>, val itemClick: (Reward) -> Unit) :
+    fun loadData(): Observable<Boolean> {
+        return Observable.just(!restoringState).filter { value -> true }.doOnComplete { Log.d("Chingy", "thingy") }
+    }
+
+    fun render(state: RewardViewState): Unit {
+        when(state) {
+            is RewardsLoadedState -> {
+                rewardList.adapter = RewardListAdapter(state.rewards!!, { reward ->
+
+                    val pushHandler = HorizontalChangeHandler()
+                    val popHandler = HorizontalChangeHandler()
+                    router.pushController(RouterTransaction.with(EditRewardController(rewardId = reward.id))
+                            .pushChangeHandler(pushHandler)
+                            .popChangeHandler(popHandler))
+                })
+            }
+        }
+//        if (!state.isLoading) {
+//
+//
+//
+//        }
+
+    }
+
+    class RewardListAdapter(val rewards: RealmResults<Reward>, val itemClick: (Reward) -> Unit) :
             RecyclerView.Adapter<RewardListAdapter.ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
