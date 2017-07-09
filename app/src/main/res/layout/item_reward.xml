@@ -85,7 +85,7 @@
 
 
         <Button
-            android:id="@+id/reward_buy"
+            android:id="@+id/buyReward"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -170,11 +170,11 @@
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
             android:background="@null"
-            app:layout_constraintBottom_toBottomOf="@+id/reward_buy"
+            app:layout_constraintBottom_toBottomOf="@+id/buyReward"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toRightOf="@+id/reward_edit"
-            app:layout_constraintRight_toLeftOf="@+id/reward_buy"
-            app:layout_constraintTop_toTopOf="@+id/reward_buy"
+            app:layout_constraintRight_toLeftOf="@+id/buyReward"
+            app:layout_constraintTop_toTopOf="@+id/buyReward"
             app:srcCompat="@drawable/ic_delete_black_24dp" />
 
     </android.support.constraint.ConstraintLayout>

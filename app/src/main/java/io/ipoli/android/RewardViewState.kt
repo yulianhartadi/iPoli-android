@@ -7,8 +7,11 @@ import io.realm.RealmResults
  * Created by vini on 7/7/17.
  */
 open class RewardViewState(
-        val isLoading: Boolean,
         val rewards: RealmResults<Reward>?
 )
 
-class RewardsLoadedState(rewards: RealmResults<Reward>?) : RewardViewState(false, rewards)
+class RewardsLoadedState(rewards: RealmResults<Reward>?) : RewardViewState(rewards)
+
+class RewardsLoadingState : RewardViewState(null)
+
+class RewardLoadingErrorState : RewardViewState(null)

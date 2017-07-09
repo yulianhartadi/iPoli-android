@@ -1,26 +1,28 @@
 package io.ipoli.android.rewards
 
 import io.ipoli.android.RewardViewState
+import io.ipoli.android.RewardsLoadedState
+import io.ipoli.android.RewardsLoadingState
 import io.realm.RealmResults
 
 
 /**
  * Created by vini on 7/8/17.
  */
-interface RewardStateChange {
+interface RewardStatePartialChange {
     fun computeNewState(prevStateReward: RewardViewState): RewardViewState
 }
 
-class LoadingData : RewardStateChange {
+class RewardsLoadingPartialChange : RewardStatePartialChange {
     override fun computeNewState(prevStateReward: RewardViewState): RewardViewState {
-        return RewardViewState(true, null)
+        return RewardsLoadingState()
     }
 }
 
-class RewardsLoaded(val data: RealmResults<Reward>) : RewardStateChange {
+class RewardsLoadedPartialChange(val data: RealmResults<Reward>) : RewardStatePartialChange {
 
     override fun computeNewState(prevStateReward: RewardViewState): RewardViewState {
-        return RewardViewState(false, data)
+        return RewardsLoadedState(data)
     }
 
 }

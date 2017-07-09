@@ -7,14 +7,22 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
+import com.hannesdorfmann.adapterdelegates3.AdapterDelegate
+import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
+import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import com.hannesdorfmann.mosby3.RestoreViewOnCreateMviController
+import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
 import io.ipoli.android.RewardViewState
 import io.ipoli.android.RewardsLoadedState
+import io.ipoli.android.RewardsLoadingState
 import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
 import io.realm.RealmResults
+import kotlinx.android.synthetic.main.controller_rewards.view.*
 import kotlinx.android.synthetic.main.item_reward.view.*
 
 
@@ -24,13 +32,18 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
 
     lateinit private var rewardList: RecyclerView
 
+    private lateinit var adapter: RewardsAdapter
+
+    private val useRewardSubject = PublishSubject.create<Reward>()
+
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_rewards, container, false) as ViewGroup
-        rewardList = view.findViewById<RecyclerView>(R.id.reward_list)
+        rewardList = view.rewardList
         rewardList.setHasFixedSize(true)
         rewardList.layoutManager = LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false)
 
-        val rewardRepository = RewardRepository()
+//        val rewardRepository = RewardRepository()
 
 //        rewardRepository.save(Reward(name = "Hello", description = "It is a great reward!"))
 
@@ -43,6 +56,20 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
 //                    .popChangeHandler(popHandler))
 //        })
 
+
+        val delegatesManager = AdapterDelegatesManager<RealmResults<Reward>>()
+                .addDelegate(RewardAdapterDelegate(LayoutInflater.from(activity), useRewardSubject, {
+                    val pushHandler = HorizontalChangeHandler()
+                    val popHandler = HorizontalChangeHandler()
+                    router.pushController(RouterTransaction.with(EditRewardController(rewardId = it.id))
+                            .pushChangeHandler(pushHandler)
+                            .popChangeHandler(popHandler))
+                }))
+
+        adapter = RewardsAdapter(delegatesManager)
+
+        rewardList.adapter = adapter
+
         return view;
     }
 
@@ -51,58 +78,76 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
     }
 
     override fun createPresenter(): RewardsPresenter {
-        return RewardsPresenter()
+        return RewardsPresenter(RewardListInteractor())
     }
 
-    fun loadData(): Observable<Boolean> {
-        return Observable.just(!restoringState).filter { value -> true }.doOnComplete { Log.d("Chingy", "thingy") }
+    fun loadRewardsIntent(): Observable<Boolean> {
+        return Observable.just(!restoringState).filter { _ -> true }.doOnComplete { Log.d("Chingy", "thingy") }
+    }
+
+    fun useRewardIntent(): Observable<Reward> {
+        return useRewardSubject
     }
 
     fun render(state: RewardViewState): Unit {
-        when(state) {
+        when (state) {
+            is RewardsLoadingState -> {
+                Toast.makeText(activity, "Loading", Toast.LENGTH_LONG).show()
+            }
             is RewardsLoadedState -> {
-                rewardList.adapter = RewardListAdapter(state.rewards!!, { reward ->
-
-                    val pushHandler = HorizontalChangeHandler()
-                    val popHandler = HorizontalChangeHandler()
-                    router.pushController(RouterTransaction.with(EditRewardController(rewardId = reward.id))
-                            .pushChangeHandler(pushHandler)
-                            .popChangeHandler(popHandler))
-                })
+                adapter.items = state.rewards
+                adapter.notifyDataSetChanged()
+//                rewardList.adapter = RewardListAdapter(state.rewards!!, { reward ->
+//
+//                    val pushHandler = HorizontalChangeHandler()
+//                    val popHandler = HorizontalChangeHandler()
+//                    router.pushController(RouterTransaction.with(EditRewardController(rewardId = reward.id))
+//                            .pushChangeHandler(pushHandler)
+//                            .popChangeHandler(popHandler))
+//                })
             }
         }
-//        if (!state.isLoading) {
-//
-//
-//
+    }
+
+    class RewardsAdapter(manager: AdapterDelegatesManager<RealmResults<Reward>>) : ListDelegationAdapter<RealmResults<Reward>>(
+            manager) {
+
+//        init {
+//            setHasStableIds(true)
 //        }
+
+//        override fun getItemId(position: Int): Long = items[position].id
 
     }
 
-    class RewardListAdapter(val rewards: RealmResults<Reward>, val itemClick: (Reward) -> Unit) :
-            RecyclerView.Adapter<RewardListAdapter.ViewHolder>() {
+    class RewardAdapterDelegate(private val inflater: LayoutInflater,
+                                private val clickSubject: PublishSubject<Reward>,
+                                private val clickListener: (Reward) -> Unit) : AdapterDelegate<RealmResults<Reward>>() {
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_reward, parent, false)
-            return ViewHolder(view, itemClick)
+        override fun onBindViewHolder(items: RealmResults<Reward>, position: Int, holder: RecyclerView.ViewHolder, payloads: MutableList<Any>) {
+            val vh = holder as RewardViewHolder
+            val reward = items[position] as Reward
+            vh.bindReward(reward)
         }
 
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.bindReward(rewards[position])
-        }
+        override fun isForViewType(items: RealmResults<Reward>, position: Int): Boolean = true
 
-        override fun getItemCount() = rewards.size
+        override fun onCreateViewHolder(parent: ViewGroup?): RecyclerView.ViewHolder =
+                RewardViewHolder(inflater.inflate(R.layout.item_reward, parent, false))
 
-        class ViewHolder(view: View, val itemClick: (Reward) -> Unit) : RecyclerView.ViewHolder(view) {
+
+        inner class RewardViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
             fun bindReward(reward: Reward) {
                 with(reward) {
-                    itemView.setOnClickListener { itemClick.invoke(reward) }
-                    itemView.name.setText(reward.name)
-                    itemView.description.setText(reward.description)
+                    RxView.clicks(itemView.buyReward).takeUntil(RxView.detaches(itemView)).map { reward }.subscribe(clickSubject)
+                    itemView.setOnClickListener { clickListener(reward) }
+                    itemView.name.setText(name)
+                    itemView.description.setText(description)
                 }
             }
         }
+
     }
 
 }
