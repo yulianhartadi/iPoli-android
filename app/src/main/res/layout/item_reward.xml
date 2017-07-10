@@ -156,13 +156,13 @@
             android:layout_marginLeft="16dp"
             android:layout_marginTop="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:layout_constraintBottom_toBottomOf="@+id/reward_delete"
+            app:layout_constraintBottom_toBottomOf="@+id/delete"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/reward_delete"
+            app:layout_constraintTop_toTopOf="@+id/delete"
             app:srcCompat="@drawable/ic_edit_black_24dp" />
 
         <ImageButton
-            android:id="@+id/reward_delete"
+            android:id="@+id/delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="0dp"

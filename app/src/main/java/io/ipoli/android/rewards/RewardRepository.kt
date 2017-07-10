@@ -1,11 +1,8 @@
 package io.ipoli.android.rewards
 
-import io.reactivex.Flowable
 import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
 import io.realm.RealmResults
-import org.reactivestreams.Subscription
 import java.util.*
 
 /**
@@ -14,7 +11,7 @@ import java.util.*
 class RewardRepository {
     val realm: Realm = Realm.getDefaultInstance()
 
-    fun loadRewards() : Observable<RealmResults<Reward>> {
+    fun loadRewards(): Observable<RealmResults<Reward>> {
 
         return RxRealm.loadRewards()
 //        return RxRealm.getRealm(realm).map { r ->
@@ -36,6 +33,16 @@ class RewardRepository {
             rewardObject.description = reward.description
             reward.id = rewardObject.id
         }
+    }
+
+    fun delete(reward: Reward) {
+
+        val id = reward.id
+
+        realm.executeTransactionAsync({ realmAsync ->
+            val realmReward = realmAsync.where(Reward::class.java).equalTo("id", id).findFirst()
+            realmReward.deleteFromRealm()
+        })
     }
 
 //

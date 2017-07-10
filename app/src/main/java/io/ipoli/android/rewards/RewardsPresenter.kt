@@ -1,10 +1,12 @@
 package io.ipoli.android.rewards
 
+import android.util.Log
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.ipoli.android.RewardViewState
-import io.ipoli.android.RewardsLoadingState
+import io.ipoli.android.RewardsInitialLoadingState
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 
@@ -13,13 +15,21 @@ import io.reactivex.schedulers.Schedulers
  */
 class RewardsPresenter(private val interactor: RewardListInteractor) : MviBasePresenter<RewardsController, RewardViewState>() {
 
+//    lateinit var loadRewardsObs: Observable<RewardStatePartialChange>
+
+//    lateinit var disp: Disposable
+
+//    lateinit var disposable:
+
+    lateinit var disp: Disposable
+
     override fun bindIntents() {
 
 //        val loadDataState: Observable<RewardViewState> = intent { it.loadRewardsIntent() }
 //                .switchMap { interactor.loadRewards() }
 //                .switchMap { data -> Observable.just(RewardsLoadedState(data) as RewardViewState) }
-//                .startWith(RewardsLoadingState())
-//                .onErrorReturn { RewardLoadingErrorState() }
+//                .startWith(RewardsInitialLoadingState())
+//                .onErrorReturn { RewardInitialLoadingErrorState() }
 //                .observeOn(AndroidSchedulers.mainThread())
 //
 //        intent { it.useRewardIntent() }
@@ -31,24 +41,42 @@ class RewardsPresenter(private val interactor: RewardListInteractor) : MviBasePr
 
         val observables = ArrayList<Observable<RewardStatePartialChange>>()
 
-//
-        observables.add(intent { view -> view.loadRewardsIntent() }.flatMap { ignored ->
-            interactor.loadRewards()
-                    .map { data -> RewardsLoadedPartialChange(data) as RewardStatePartialChange }
-                    .startWith(RewardsLoadingPartialChange()).subscribeOn(Schedulers.io())
-        })
+        val obs = interactor.loadRewards()
+                .doOnNext { rewards -> Log.d("Loading rewards", "Loading all " + rewards.size) }
+                .map { data -> RewardsLoadedPartialChange(data) as RewardStatePartialChange }
+                .startWith(RewardsLoadingPartialChange()).subscribeOn(Schedulers.io())
 
-        val allIntents: Observable<RewardStatePartialChange> = Observable.merge(observables)
-        val initialState: RewardViewState = RewardsLoadingState()
+        disp = obs.subscribe()
+
+        observables.add(
+                intent { it.loadRewardsIntent() }.switchMap { ignored ->
+                    obs
+                })
+
+        observables.add(
+                intent { it.deleteRewardIntent() }
+                        .doOnNext { reward -> Log.d("Deleting reward", reward.name) }
+                        .switchMap { reward -> interactor.deleteReward(reward) }
+                        .map { ignored -> RewardDeletedPartialChange() })
+
+        val allIntents: Observable <RewardStatePartialChange> = Observable.merge(observables)
+        val initialState: RewardViewState = RewardsInitialLoadingState()
         val stateObservable = allIntents.scan(initialState, this::viewStateReducer)
                 .observeOn(AndroidSchedulers.mainThread())
 
         subscribeViewState(stateObservable, RewardsController::render)
+    }
 
-//        val stateObservable = allIntents.scan(initialState, {t1, t2 -> viewStateReducer(t2 as RewardViewState, t1) })
-//                .observeOn(AndroidSchedulers.mainThread())
-//
-//        subscribeViewState(stateObservable, {view -> RewardsController::loadRewardsIntent})
+    override fun unbindIntents() {
+        Log.d("Unbind", "Presenter")
+        disp.dispose()
+        super.unbindIntents()
+    }
+
+    override fun detachView(retainInstance: Boolean) {
+        Log.d("Unbind", retainInstance.toString())
+
+        super.detachView(retainInstance)
     }
 
     private fun viewStateReducer(previousStateReward: RewardViewState, statePartialChange: RewardStatePartialChange): RewardViewState {

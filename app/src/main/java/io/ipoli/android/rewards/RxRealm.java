@@ -1,5 +1,7 @@
 package io.ipoli.android.rewards;
 
+import android.util.Log;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -77,6 +79,7 @@ public class RxRealm {
                 emitter.setDisposable(Disposables.fromRunnable(new Runnable() {
                     @Override
                     public void run() {
+                        Log.d("RealmListener", "Removed");
                         results.removeChangeListener(listener);
                         realm.close();
                     }

@@ -17,4 +17,10 @@ class RewardListInteractor {
         val rewardRepository = RewardRepository()
         return rewardRepository.loadRewards()
     }
+
+    fun deleteReward(reward: Reward): Observable<Unit> {
+        val rewardRepository = RewardRepository()
+        rewardRepository.delete(reward)
+        return Observable.just(Unit)
+    }
 }

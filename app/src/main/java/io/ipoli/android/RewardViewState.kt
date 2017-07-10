@@ -10,8 +10,10 @@ open class RewardViewState(
         val rewards: RealmResults<Reward>?
 )
 
-class RewardsLoadedState(rewards: RealmResults<Reward>?) : RewardViewState(rewards)
+class RewardsLoadedState(rewards: RealmResults<Reward>) : RewardViewState(rewards)
 
-class RewardsLoadingState : RewardViewState(null)
+class RewardsInitialLoadingState : RewardViewState(null)
 
-class RewardLoadingErrorState : RewardViewState(null)
+class RewardInitialLoadingErrorState : RewardViewState(null)
+
+class RewardDeleteState(rewards: RealmResults<Reward>) : RewardViewState(rewards)

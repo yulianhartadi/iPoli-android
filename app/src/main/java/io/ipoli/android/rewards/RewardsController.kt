@@ -17,8 +17,8 @@ import com.hannesdorfmann.mosby3.RestoreViewOnCreateMviController
 import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
 import io.ipoli.android.RewardViewState
+import io.ipoli.android.RewardsInitialLoadingState
 import io.ipoli.android.RewardsLoadedState
-import io.ipoli.android.RewardsLoadingState
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import io.realm.RealmResults
@@ -35,7 +35,7 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
     private lateinit var adapter: RewardsAdapter
 
     private val useRewardSubject = PublishSubject.create<Reward>()
-
+    private val deleteRewardSubject = PublishSubject.create<Reward>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_rewards, container, false) as ViewGroup
@@ -58,7 +58,7 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
 
 
         val delegatesManager = AdapterDelegatesManager<RealmResults<Reward>>()
-                .addDelegate(RewardAdapterDelegate(LayoutInflater.from(activity), useRewardSubject, {
+                .addDelegate(RewardAdapterDelegate(LayoutInflater.from(activity), useRewardSubject, deleteRewardSubject, {
                     val pushHandler = HorizontalChangeHandler()
                     val popHandler = HorizontalChangeHandler()
                     router.pushController(RouterTransaction.with(EditRewardController(rewardId = it.id))
@@ -89,9 +89,13 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
         return useRewardSubject
     }
 
+    fun deleteRewardIntent(): Observable<Reward> {
+        return deleteRewardSubject;
+    }
+
     fun render(state: RewardViewState): Unit {
         when (state) {
-            is RewardsLoadingState -> {
+            is RewardsInitialLoadingState -> {
                 Toast.makeText(activity, "Loading", Toast.LENGTH_LONG).show()
             }
             is RewardsLoadedState -> {
@@ -122,6 +126,7 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
 
     class RewardAdapterDelegate(private val inflater: LayoutInflater,
                                 private val clickSubject: PublishSubject<Reward>,
+                                private val deleteSubject: PublishSubject<Reward>,
                                 private val clickListener: (Reward) -> Unit) : AdapterDelegate<RealmResults<Reward>>() {
 
         override fun onBindViewHolder(items: RealmResults<Reward>, position: Int, holder: RecyclerView.ViewHolder, payloads: MutableList<Any>) {
@@ -141,6 +146,7 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
             fun bindReward(reward: Reward) {
                 with(reward) {
                     RxView.clicks(itemView.buyReward).takeUntil(RxView.detaches(itemView)).map { reward }.subscribe(clickSubject)
+                    RxView.clicks(itemView.delete).takeUntil(RxView.detaches(itemView)).map { reward }.subscribe(deleteSubject)
                     itemView.setOnClickListener { clickListener(reward) }
                     itemView.name.setText(name)
                     itemView.description.setText(description)
