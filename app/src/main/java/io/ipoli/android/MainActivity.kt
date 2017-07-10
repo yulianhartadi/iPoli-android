@@ -13,8 +13,7 @@ import io.ipoli.android.rewards.RewardsController
  */
 class MainActivity : AppCompatActivity() {
 
-    lateinit private var router: Router
-
+    lateinit public var router: Router
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
