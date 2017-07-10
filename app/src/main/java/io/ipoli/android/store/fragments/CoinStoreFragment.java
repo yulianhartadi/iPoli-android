@@ -21,17 +21,23 @@ import android.widget.TextView;
 import com.squareup.otto.Bus;
 
 import org.solovyev.android.checkout.Billing;
+import org.solovyev.android.checkout.BillingRequests;
 import org.solovyev.android.checkout.Checkout;
 import org.solovyev.android.checkout.EmptyRequestListener;
 import org.solovyev.android.checkout.IntentStarter;
 import org.solovyev.android.checkout.Inventory;
 import org.solovyev.android.checkout.ProductTypes;
 import org.solovyev.android.checkout.Purchase;
+import org.solovyev.android.checkout.PurchaseFlow;
+import org.solovyev.android.checkout.RequestListener;
 import org.solovyev.android.checkout.Sku;
 import org.solovyev.android.checkout.UiCheckout;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
@@ -126,7 +132,8 @@ public class CoinStoreFragment extends BaseFragment {
     private Map<String, Integer> skuToValue;
     private Billing billing;
     private UiCheckout checkout;
-    private Sku testSKU;
+
+    private Set<String> activeSkus;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -200,11 +207,7 @@ public class CoinStoreFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        checkout.loadInventory(Inventory.Request.create().loadAllPurchases().loadSkus(ProductTypes.SUBSCRIPTION, "test_subscription"), products -> {
-            Inventory.Product subscriptions = products.get(ProductTypes.SUBSCRIPTION);
-            initItems(subscriptions);
-        });
+        queryInventory();
     }
 
 
@@ -264,23 +267,19 @@ public class CoinStoreFragment extends BaseFragment {
     }
 
     private void queryInventory() {
-//        try {
-//            ArrayList<String> skuList = new ArrayList<>();
-//            skuList.addAll(skuToValue.keySet());
-//            iabHelper.queryInventoryAsync(true, skuList, (result, inv) -> {
-//                if (!result.isSuccess() || iabHelper == null) {
-//                    showFailureMessage(R.string.something_went_wrong);
-//                    return;
-//                }
-//                initItems(inv);
-//            });
-//        } catch (IabHelper.IabAsyncInProgressException e) {
-//            eventBus.post(new AppErrorEvent(e));
-//        }
+        checkout.loadInventory(Inventory.Request.create().loadAllPurchases().loadSkus(ProductTypes.SUBSCRIPTION, "test_subscription"), products -> {
+            Inventory.Product subscriptions = products.get(ProductTypes.SUBSCRIPTION);
+            activeSkus = new HashSet<>();
+            for (Purchase purchase : subscriptions.getPurchases()) {
+                if (purchase.state == Purchase.State.PURCHASED) {
+                    activeSkus.add(purchase.sku);
+                }
+            }
+            initItems(subscriptions);
+        });
     }
 
     private void initItems(Inventory.Product subscriptions) {
-        testSKU = subscriptions.getSku(SKU_SUBSCRIPTION);
         Sku starterPack = subscriptions.getSku(SKU_SUBSCRIPTION);
         Sku premiumPack = subscriptions.getSku(SKU_SUBSCRIPTION);
         Sku jumboPack = subscriptions.getSku(SKU_SUBSCRIPTION);
@@ -315,22 +314,22 @@ public class CoinStoreFragment extends BaseFragment {
 
     @OnClick(R.id.starter_buy)
     public void onBuyStarterClick(View v) {
-        buyCoins(SKU_SUBSCRIPTION);
+        subscribe(SKU_SUBSCRIPTION);
     }
 
     @OnClick(R.id.premium_buy)
     public void onBuyPremiumClick(View v) {
-        buyCoins(SKU_SUBSCRIPTION);
+        subscribe(SKU_SUBSCRIPTION);
     }
 
     @OnClick(R.id.jumbo_buy)
     public void onBuyJumboClick(View v) {
-        buyCoins(SKU_SUBSCRIPTION);
+        subscribe(SKU_SUBSCRIPTION);
     }
 
     @OnClick(R.id.donation_buy)
     public void onBuyDonationClick(View v) {
-        buyCoins(SKU_SUBSCRIPTION);
+        subscribe(SKU_SUBSCRIPTION);
     }
 
     private void hideLoaderContainer() {
@@ -342,14 +341,43 @@ public class CoinStoreFragment extends BaseFragment {
         return false;
     }
 
-    public void buyCoins(String sku) {
+    public void subscribe(String sku) {
         eventBus.post(new BuyCoinsTappedEvent(sku));
+        if (activeSkus.isEmpty()) {
+            doSubscribe(sku);
+        } else {
+            changeSubscription(sku);
+        }
+    }
+
+    private void changeSubscription(String sku) {
+        checkout.whenReady(new Checkout.EmptyListener() {
+            @Override
+            public void onReady(@Nonnull BillingRequests requests) {
+                final PurchaseFlow flow = checkout.createOneShotPurchaseFlow(new RequestListener<Purchase>() {
+                    @Override
+                    public void onSuccess(@Nonnull Purchase purchase) {
+                        queryInventory();
+                    }
+
+                    @Override
+                    public void onError(int i, @Nonnull Exception e) {
+                        //log error
+                    }
+                });
+                requests.changeSubscription(new ArrayList<>(activeSkus), sku, null, flow);
+            }
+        });
+    }
+
+    private void doSubscribe(final String sku) {
         String payload = UUID.randomUUID().toString();
         checkout.startPurchaseFlow(ProductTypes.SUBSCRIPTION, sku, payload, new EmptyRequestListener<Purchase>() {
             @Override
             public void onSuccess(@Nonnull Purchase purchase) {
                 eventBus.post(new CoinsPurchasedEvent(sku));
                 Log.d("Subscription", "Purchased");
+                queryInventory();
             }
 
             @Override
@@ -357,17 +385,11 @@ public class CoinStoreFragment extends BaseFragment {
 
             }
         });
-
-//        ((StoreActivity) getActivity()).buyCoins(iabHelper, sku, skuToValue.get(sku));
     }
 
     @Override
     public void onDestroyView() {
         unbinder.unbind();
-//        if (iabHelper != null) {
-//            iabHelper.disposeWhenFinished();
-//            iabHelper = null;
-//        }
         super.onDestroyView();
     }
 }
