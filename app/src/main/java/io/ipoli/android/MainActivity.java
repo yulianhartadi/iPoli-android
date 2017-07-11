@@ -83,13 +83,14 @@ import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.CredentialStatus;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
-import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.PlayerCredentialChecker;
 import io.ipoli.android.player.PlayerCredentialsHandler;
+import io.ipoli.android.player.SubscriptionsJobService;
 import io.ipoli.android.player.UpgradeDialog;
 import io.ipoli.android.player.UpgradeDialog.OnUnlockListener;
 import io.ipoli.android.player.UpgradeManager;
 import io.ipoli.android.player.activities.ProfileActivity;
+import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
@@ -218,6 +219,14 @@ public class MainActivity extends BaseActivity implements
                 !EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
             EasyPermissions.requestPermissions(this, getString(R.string.allow_read_calendars_perm_reason_disable_option), RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
         }
+
+        JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.cancel(2);
+        JobInfo jobInfo = new JobInfo.Builder(2,
+                new ComponentName(this, SubscriptionsJobService.class))
+                .setOverrideDeadline(0)
+                .build();
+        jobScheduler.schedule(jobInfo);
     }
 
     @Override
