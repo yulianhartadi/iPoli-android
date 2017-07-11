@@ -79,4 +79,9 @@ public class Inventory {
             addUpgrade(upgrade, expirationDate);
         }
     }
+
+    @JsonIgnore
+    public void lockAllUpgrades() {
+        upgrades.clear();
+    }
 }

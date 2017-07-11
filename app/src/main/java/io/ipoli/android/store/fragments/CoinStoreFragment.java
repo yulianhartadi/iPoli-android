@@ -1,5 +1,8 @@
 package io.ipoli.android.store.fragments;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -57,6 +60,7 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
+import io.ipoli.android.player.SubscriptionsJobService;
 import io.ipoli.android.player.data.MembershipType;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
@@ -369,6 +373,7 @@ public class CoinStoreFragment extends BaseFragment {
                     @Override
                     public void onSuccess(@Nonnull Purchase purchase) {
                         updatePlayer(sku, purchase.time);
+                        schedule(0, 0);
                         queryInventory();
                     }
 
@@ -390,6 +395,7 @@ public class CoinStoreFragment extends BaseFragment {
                 postEvent(new CoinsPurchasedEvent(sku));
                 Log.d("Subscription", "Purchased");
                 updatePlayer(sku, purchase.time);
+                schedule(0, 0);
                 queryInventory();
             }
 
@@ -426,6 +432,17 @@ public class CoinStoreFragment extends BaseFragment {
         player.getInventory().unlockAllUpgrades(expirationDate);
         player.setMembership(membershipType);
         playerPersistenceService.save(player);
+    }
+
+    private void schedule(long startTime, long endTime) {
+        JobScheduler jobScheduler = (JobScheduler) getContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.cancel(SubscriptionsJobService.JOB_ID);
+        JobInfo jobInfo = new JobInfo.Builder(SubscriptionsJobService.JOB_ID,
+                new ComponentName(getContext(), SubscriptionsJobService.class))
+                .setMinimumLatency(startTime)
+                .setOverrideDeadline(endTime)
+                .build();
+        jobScheduler.schedule(jobInfo);
     }
 
     @Override
