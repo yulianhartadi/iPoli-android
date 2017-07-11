@@ -11,7 +11,7 @@ import javax.inject.Inject;
 
 import io.ipoli.android.R;
 import io.ipoli.android.app.utils.LocalStorage;
-import io.ipoli.android.player.Player;
+import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 
 /**

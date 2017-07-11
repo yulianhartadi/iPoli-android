@@ -8,8 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import io.ipoli.android.app.TimeOfDay;
-import io.ipoli.android.player.Avatar;
-import io.ipoli.android.player.PetAvatar;
+import io.ipoli.android.player.data.Avatar;
+import io.ipoli.android.player.data.PetAvatar;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

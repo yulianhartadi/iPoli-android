@@ -21,7 +21,7 @@ import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
-import io.ipoli.android.player.Player;
+import io.ipoli.android.player.data.Player;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 

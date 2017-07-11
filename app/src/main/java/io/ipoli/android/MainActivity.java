@@ -83,7 +83,7 @@ import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.CredentialStatus;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
-import io.ipoli.android.player.Player;
+import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.PlayerCredentialChecker;
 import io.ipoli.android.player.PlayerCredentialsHandler;
 import io.ipoli.android.player.UpgradeDialog;

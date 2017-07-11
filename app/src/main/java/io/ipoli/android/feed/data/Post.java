@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.player.Avatar;
-import io.ipoli.android.player.Player;
+import io.ipoli.android.player.data.Avatar;
+import io.ipoli.android.player.data.Player;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 

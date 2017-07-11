@@ -1,4 +1,4 @@
-package io.ipoli.android.player;
+package io.ipoli.android.player.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

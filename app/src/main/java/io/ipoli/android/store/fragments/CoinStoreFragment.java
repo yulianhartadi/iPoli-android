@@ -34,8 +34,10 @@ import org.solovyev.android.checkout.Sku;
 import org.solovyev.android.checkout.UiCheckout;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -69,6 +71,7 @@ public class CoinStoreFragment extends BaseFragment {
     private static final String SKU_JUMBO_PACK = "jumbo_pack";
     private static final String SKU_DONATION_PACK = "donation_pack";
     private static final String SKU_SUBSCRIPTION = "test_subscription";
+    private static final String SKU_SUBSCRIPTION_YEARLY = "test_subscription_yearly";
 
     @Inject
     Bus eventBus;
@@ -156,15 +159,6 @@ public class CoinStoreFragment extends BaseFragment {
 
         if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
             showFailureMessage(R.string.no_internet_to_buy_coins);
-        } else {
-//            iabHelper = new IabHelper(getContext(), BillingConstants.getAppPublicKey());
-//            iabHelper.startSetup(result -> {
-//                if (!result.isSuccess() || iabHelper == null) {
-//                    showFailureMessage(R.string.something_went_wrong);
-//                    return;
-//                }
-//                queryInventory();
-//            });
         }
 
         eventBus.post(new ScreenShownEvent(getActivity(), EventSource.STORE_COINS));
@@ -267,12 +261,20 @@ public class CoinStoreFragment extends BaseFragment {
     }
 
     private void queryInventory() {
-        checkout.loadInventory(Inventory.Request.create().loadAllPurchases().loadSkus(ProductTypes.SUBSCRIPTION, "test_subscription"), products -> {
+        List<String> skus = new ArrayList<>();
+        skus.add(SKU_SUBSCRIPTION);
+        skus.add(SKU_SUBSCRIPTION_YEARLY);
+
+        checkout.loadInventory(Inventory.Request.create().loadAllPurchases()
+                .loadSkus(ProductTypes.SUBSCRIPTION, skus), products -> {
             Inventory.Product subscriptions = products.get(ProductTypes.SUBSCRIPTION);
             activeSkus = new HashSet<>();
             for (Purchase purchase : subscriptions.getPurchases()) {
                 if (purchase.state == Purchase.State.PURCHASED) {
                     activeSkus.add(purchase.sku);
+                    Date date = new Date();
+                    date.setTime(purchase.time);
+                    Log.d("AAA active", purchase.sku + " " + date.toString());
                 }
             }
             initItems(subscriptions);
@@ -281,7 +283,7 @@ public class CoinStoreFragment extends BaseFragment {
 
     private void initItems(Inventory.Product subscriptions) {
         Sku starterPack = subscriptions.getSku(SKU_SUBSCRIPTION);
-        Sku premiumPack = subscriptions.getSku(SKU_SUBSCRIPTION);
+        Sku premiumPack = subscriptions.getSku(SKU_SUBSCRIPTION_YEARLY);
         Sku jumboPack = subscriptions.getSku(SKU_SUBSCRIPTION);
         Sku donationPack = subscriptions.getSku(SKU_SUBSCRIPTION);
 
@@ -319,7 +321,7 @@ public class CoinStoreFragment extends BaseFragment {
 
     @OnClick(R.id.premium_buy)
     public void onBuyPremiumClick(View v) {
-        subscribe(SKU_SUBSCRIPTION);
+        subscribe(SKU_SUBSCRIPTION_YEARLY);
     }
 
     @OnClick(R.id.jumbo_buy)

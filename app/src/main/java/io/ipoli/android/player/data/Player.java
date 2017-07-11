@@ -1,4 +1,4 @@
-package io.ipoli.android.player;
+package io.ipoli.android.player.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.firebase.crash.FirebaseCrash;
@@ -20,6 +20,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.pet.data.Pet;
+import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.quest.data.Category;
 
 /**

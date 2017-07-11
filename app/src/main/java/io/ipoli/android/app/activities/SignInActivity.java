@@ -63,7 +63,7 @@ import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
-import io.ipoli.android.player.Player;
+import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.events.PlayerSignedInEvent;
 import io.ipoli.android.player.events.PlayerSyncedEvent;
 import io.ipoli.android.player.events.StartReplicationEvent;

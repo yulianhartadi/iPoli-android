@@ -8,7 +8,7 @@ import com.google.firebase.crash.FirebaseCrash;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.player.PetAvatar;
+import io.ipoli.android.player.data.PetAvatar;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

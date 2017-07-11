@@ -5,6 +5,8 @@ import org.threeten.bp.LocalDate;
 import java.util.Set;
 
 import io.ipoli.android.app.persistence.OnDataChangedListener;
+import io.ipoli.android.player.data.Inventory;
+import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.store.Upgrade;
 

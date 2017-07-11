@@ -5,9 +5,9 @@ import com.google.firebase.database.Exclude;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.ipoli.android.player.Avatar;
-import io.ipoli.android.player.PetAvatar;
-import io.ipoli.android.player.Player;
+import io.ipoli.android.player.data.Avatar;
+import io.ipoli.android.player.data.PetAvatar;
+import io.ipoli.android.player.data.Player;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

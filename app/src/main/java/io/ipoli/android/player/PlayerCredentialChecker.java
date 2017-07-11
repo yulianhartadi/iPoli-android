@@ -1,5 +1,7 @@
 package io.ipoli.android.player;
 
+import io.ipoli.android.player.data.Player;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 7/2/17.
