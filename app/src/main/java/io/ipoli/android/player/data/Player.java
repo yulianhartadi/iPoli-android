@@ -53,6 +53,7 @@ public class Player extends PersistedObject {
     private List<AuthProvider> authProviders;
     private Map<Long, Category> androidCalendars;
     private Inventory inventory;
+    private String membershipType;
 
     public Player() {
         super(TYPE);
@@ -82,6 +83,7 @@ public class Player extends PersistedObject {
         setCompleteDailyQuestsEndMinute(Constants.DEFAULT_PLAYER_COMPLETE_DAILY_QUESTS_MINUTE);
         setUse24HourFormat(use24HourFormat);
         setAndroidCalendars(new HashMap<>());
+        setMembership(MembershipType.NONE);
     }
 
     public String getUsername() {
@@ -466,6 +468,24 @@ public class Player extends PersistedObject {
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    public String getMembershipType() {
+        return membershipType;
+    }
+
+    public void setMembershipType(String membershipType) {
+        this.membershipType = membershipType;
+    }
+
+    @JsonIgnore
+    public MembershipType getMembership() {
+        return MembershipType.valueOf(getMembershipType());
+    }
+
+    @JsonIgnore
+    public void setMembership(MembershipType membershipType) {
+        setMembershipType(membershipType.name());
     }
 
     @JsonIgnore

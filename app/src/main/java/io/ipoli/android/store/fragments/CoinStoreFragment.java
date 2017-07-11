@@ -18,8 +18,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.squareup.otto.Bus;
-
 import org.solovyev.android.checkout.Billing;
 import org.solovyev.android.checkout.BillingRequests;
 import org.solovyev.android.checkout.Checkout;
@@ -56,6 +54,9 @@ import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
+import io.ipoli.android.player.data.MembershipType;
+import io.ipoli.android.player.data.Player;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.events.BuyCoinsTappedEvent;
 import io.ipoli.android.store.events.CoinsPurchasedEvent;
@@ -71,10 +72,14 @@ public class CoinStoreFragment extends BaseFragment {
     private static final String SKU_JUMBO_PACK = "jumbo_pack";
     private static final String SKU_DONATION_PACK = "donation_pack";
     private static final String SKU_SUBSCRIPTION = "test_subscription";
-    private static final String SKU_SUBSCRIPTION_YEARLY = "test_subscription_yearly";
+    private static final String SKU_SUBSCRIPTION_YEARLY_TEST = "test_subscription_yearly";
+    private static final String SKU_SUBSCRIPTION_MONTHLY = "m";
+    private static final String SKU_SUBSCRIPTION_THREE_MONTHS = "3m";
+    private static final String SKU_SUBSCRIPTION_YEARLY = "y";
+
 
     @Inject
-    Bus eventBus;
+    PlayerPersistenceService playerPersistenceService;
 
     @BindView(R.id.root_layout)
     ViewGroup rootLayout;
@@ -161,7 +166,7 @@ public class CoinStoreFragment extends BaseFragment {
             showFailureMessage(R.string.no_internet_to_buy_coins);
         }
 
-        eventBus.post(new ScreenShownEvent(getActivity(), EventSource.STORE_COINS));
+        postEvent(new ScreenShownEvent(getActivity(), EventSource.STORE_COINS));
         return view;
     }
 
@@ -263,13 +268,14 @@ public class CoinStoreFragment extends BaseFragment {
     private void queryInventory() {
         List<String> skus = new ArrayList<>();
         skus.add(SKU_SUBSCRIPTION);
-        skus.add(SKU_SUBSCRIPTION_YEARLY);
+        skus.add(SKU_SUBSCRIPTION_YEARLY_TEST);
 
         checkout.loadInventory(Inventory.Request.create().loadAllPurchases()
                 .loadSkus(ProductTypes.SUBSCRIPTION, skus), products -> {
             Inventory.Product subscriptions = products.get(ProductTypes.SUBSCRIPTION);
             activeSkus = new HashSet<>();
             for (Purchase purchase : subscriptions.getPurchases()) {
+                Log.d("AAA purchase", purchase.state + " " + purchase.autoRenewing);
                 if (purchase.state == Purchase.State.PURCHASED) {
                     activeSkus.add(purchase.sku);
                     Date date = new Date();
@@ -283,7 +289,7 @@ public class CoinStoreFragment extends BaseFragment {
 
     private void initItems(Inventory.Product subscriptions) {
         Sku starterPack = subscriptions.getSku(SKU_SUBSCRIPTION);
-        Sku premiumPack = subscriptions.getSku(SKU_SUBSCRIPTION_YEARLY);
+        Sku premiumPack = subscriptions.getSku(SKU_SUBSCRIPTION_YEARLY_TEST);
         Sku jumboPack = subscriptions.getSku(SKU_SUBSCRIPTION);
         Sku donationPack = subscriptions.getSku(SKU_SUBSCRIPTION);
 
@@ -321,7 +327,7 @@ public class CoinStoreFragment extends BaseFragment {
 
     @OnClick(R.id.premium_buy)
     public void onBuyPremiumClick(View v) {
-        subscribe(SKU_SUBSCRIPTION_YEARLY);
+        subscribe(SKU_SUBSCRIPTION_YEARLY_TEST);
     }
 
     @OnClick(R.id.jumbo_buy)
@@ -344,7 +350,7 @@ public class CoinStoreFragment extends BaseFragment {
     }
 
     public void subscribe(String sku) {
-        eventBus.post(new BuyCoinsTappedEvent(sku));
+        postEvent(new BuyCoinsTappedEvent(sku));
         if (activeSkus.isEmpty()) {
             doSubscribe(sku);
         } else {
@@ -359,6 +365,7 @@ public class CoinStoreFragment extends BaseFragment {
                 final PurchaseFlow flow = checkout.createOneShotPurchaseFlow(new RequestListener<Purchase>() {
                     @Override
                     public void onSuccess(@Nonnull Purchase purchase) {
+                        updatePlayerMembership(sku);
                         queryInventory();
                     }
 
@@ -377,8 +384,9 @@ public class CoinStoreFragment extends BaseFragment {
         checkout.startPurchaseFlow(ProductTypes.SUBSCRIPTION, sku, payload, new EmptyRequestListener<Purchase>() {
             @Override
             public void onSuccess(@Nonnull Purchase purchase) {
-                eventBus.post(new CoinsPurchasedEvent(sku));
+                postEvent(new CoinsPurchasedEvent(sku));
                 Log.d("Subscription", "Purchased");
+                updatePlayerMembership(sku);
                 queryInventory();
             }
 
@@ -387,6 +395,27 @@ public class CoinStoreFragment extends BaseFragment {
 
             }
         });
+    }
+
+    private void updatePlayerMembership(String sku) {
+        MembershipType membershipType;
+        switch (sku) {
+            case SKU_SUBSCRIPTION_MONTHLY:
+                membershipType = MembershipType.MONTHLY;
+                break;
+            case SKU_SUBSCRIPTION_THREE_MONTHS:
+                membershipType = MembershipType.THREE_MONTHS;
+                break;
+            case SKU_SUBSCRIPTION_YEARLY:
+                membershipType = MembershipType.YEARLY;
+                break;
+            default:
+                membershipType = MembershipType.NONE;
+        }
+
+        Player player = getPlayer();
+        player.setMembership(membershipType);
+        playerPersistenceService.save(player);
     }
 
     @Override
