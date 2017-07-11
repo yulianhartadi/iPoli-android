@@ -26,8 +26,8 @@ public class Inventory {
     }
 
     @JsonIgnore
-    public void addUpgrade(Upgrade upgrade, LocalDate localDate) {
-        getUpgrades().put(upgrade.code, toMillis(localDate));
+    public void addUpgrade(Upgrade upgrade, LocalDate expirationDate) {
+        getUpgrades().put(upgrade.code, toMillis(expirationDate));
     }
 
     @JsonIgnore
@@ -71,5 +71,12 @@ public class Inventory {
 
     public void setAvatars(Map<Integer, Long> avatars) {
         this.avatars = avatars;
+    }
+
+    @JsonIgnore
+    public void unlockAllUpgrades(LocalDate expirationDate) {
+        for(Upgrade upgrade : Upgrade.values()) {
+            addUpgrade(upgrade, expirationDate);
+        }
     }
 }

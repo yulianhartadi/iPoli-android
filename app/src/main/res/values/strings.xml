@@ -711,7 +711,7 @@
 
     <string name="coins_pack_value">+ %d life coins</string>
     <string name="upgrade_price">%d life coins</string>
-    <string name="upgrade_unloked_on">Unlocked on %s</string>
+    <string name="upgrade_expires_on">Unlocked until %s</string>
     <string name="fragment_avatar_store_title">Buy avatar</string>
     <string name="fragment_pet_store_title">Buy pet</string>
     <string name="fragment_upgrade_store_title">Unlock upgrade</string>

@@ -30,6 +30,7 @@ import org.solovyev.android.checkout.PurchaseFlow;
 import org.solovyev.android.checkout.RequestListener;
 import org.solovyev.android.checkout.Sku;
 import org.solovyev.android.checkout.UiCheckout;
+import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,11 +49,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.BillingConstants;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.player.data.MembershipType;
 import io.ipoli.android.player.data.Player;
@@ -365,7 +368,7 @@ public class CoinStoreFragment extends BaseFragment {
                 final PurchaseFlow flow = checkout.createOneShotPurchaseFlow(new RequestListener<Purchase>() {
                     @Override
                     public void onSuccess(@Nonnull Purchase purchase) {
-                        updatePlayerMembership(sku);
+                        updatePlayer(sku, purchase.time);
                         queryInventory();
                     }
 
@@ -386,7 +389,7 @@ public class CoinStoreFragment extends BaseFragment {
             public void onSuccess(@Nonnull Purchase purchase) {
                 postEvent(new CoinsPurchasedEvent(sku));
                 Log.d("Subscription", "Purchased");
-                updatePlayerMembership(sku);
+                updatePlayer(sku, purchase.time);
                 queryInventory();
             }
 
@@ -397,23 +400,30 @@ public class CoinStoreFragment extends BaseFragment {
         });
     }
 
-    private void updatePlayerMembership(String sku) {
+    private void updatePlayer(String sku, Long purchasedTime) {
         MembershipType membershipType;
+        LocalDate purchasedDate = DateUtils.fromMillis(purchasedTime).plusDays(Constants.UPGRADE_EXPIRATION_GRACE_DAYS);
+        LocalDate expirationDate;
         switch (sku) {
             case SKU_SUBSCRIPTION_MONTHLY:
                 membershipType = MembershipType.MONTHLY;
+                expirationDate = purchasedDate.plusMonths(1);
                 break;
             case SKU_SUBSCRIPTION_THREE_MONTHS:
                 membershipType = MembershipType.THREE_MONTHS;
+                expirationDate = purchasedDate.plusMonths(3);
                 break;
             case SKU_SUBSCRIPTION_YEARLY:
                 membershipType = MembershipType.YEARLY;
+                expirationDate = purchasedDate.plusYears(1);
                 break;
             default:
                 membershipType = MembershipType.NONE;
+                expirationDate = LocalDate.now();
         }
 
         Player player = getPlayer();
+        player.getInventory().unlockAllUpgrades(expirationDate);
         player.setMembership(membershipType);
         playerPersistenceService.save(player);
     }

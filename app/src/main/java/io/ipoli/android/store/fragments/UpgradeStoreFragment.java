@@ -128,14 +128,14 @@ public class UpgradeStoreFragment extends BaseFragment implements LoaderManager.
         }
 
         Collections.sort(unlockedUpgrades, ((u1, u2) ->
-                -Long.compare(upgradeManager.getUnlockDate(u1), upgradeManager.getUnlockDate(u2))));
+                -Long.compare(upgradeManager.getExpirationDate(u1), upgradeManager.getExpirationDate(u2))));
 
         for (Upgrade upgrade : lockedUpgrades) {
             upgrades.add(new UpgradeViewModel(getContext(), upgrade));
         }
 
         for (Upgrade upgrade : unlockedUpgrades) {
-            upgrades.add(new UpgradeViewModel(getContext(), upgrade, DateUtils.fromMillis(upgradeManager.getUnlockDate(upgrade))));
+            upgrades.add(new UpgradeViewModel(getContext(), upgrade, DateUtils.fromMillis(upgradeManager.getExpirationDate(upgrade))));
         }
         return upgrades;
     }

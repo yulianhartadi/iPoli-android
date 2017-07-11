@@ -85,16 +85,16 @@ public class UpgradeStoreAdapter extends EnterAnimationAdapter<UpgradeStoreAdapt
 
         if (vm.isUnlocked()) {
             holder.unlock.setVisibility(View.INVISIBLE);
-            holder.unlockDate.setVisibility(View.VISIBLE);
-            holder.unlockDate.setText(context.getString(R.string.upgrade_unloked_on, DateFormatter.format(context, vm.getUnlockDate())));
+            holder.expirationDate.setVisibility(View.VISIBLE);
+            holder.expirationDate.setText(context.getString(R.string.upgrade_expires_on, DateFormatter.format(context, vm.getExpirationDate())));
         } else if (vm.requiresUpgrade() && !unlockedUpgrades.contains(vm.getRequiredUpgrade().code)) {
             holder.unlock.setVisibility(View.INVISIBLE);
-            holder.unlockDate.setVisibility(View.VISIBLE);
+            holder.expirationDate.setVisibility(View.VISIBLE);
             String requiredTitle = context.getString(vm.getRequiredUpgrade().title);
-            holder.unlockDate.setText(context.getString(R.string.requires_upgrade_message, requiredTitle));
+            holder.expirationDate.setText(context.getString(R.string.requires_upgrade_message, requiredTitle));
         } else {
             holder.unlock.setVisibility(View.VISIBLE);
-            holder.unlockDate.setVisibility(View.GONE);
+            holder.expirationDate.setVisibility(View.GONE);
         }
 
         holder.unlock.setOnClickListener(v -> eventBus.post(new BuyUpgradeEvent(vm.getUpgrade())));
@@ -130,7 +130,7 @@ public class UpgradeStoreAdapter extends EnterAnimationAdapter<UpgradeStoreAdapt
         TextView price;
 
         @BindView(R.id.upgrade_unlock_date)
-        TextView unlockDate;
+        TextView expirationDate;
 
         @BindView(R.id.upgrade_image)
         ImageView image;

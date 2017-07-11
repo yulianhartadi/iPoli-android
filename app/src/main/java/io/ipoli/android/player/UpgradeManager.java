@@ -2,9 +2,12 @@ package io.ipoli.android.player;
 
 import org.threeten.bp.LocalDate;
 
+import java.util.Map;
 import java.util.Set;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
+import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.data.Inventory;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
@@ -16,6 +19,7 @@ import io.ipoli.android.store.Upgrade;
  */
 
 public class UpgradeManager implements OnDataChangedListener<Player> {
+    private static final int DEFAULT_EXPIRATION_MONTHS = 1;
 
     private Player player;
 
@@ -47,7 +51,13 @@ public class UpgradeManager implements OnDataChangedListener<Player> {
         if (player.getInventory() == null) {
             return false;
         }
-        return player.getInventory().getUpgrades().containsKey(upgrade.code);
+        Map<Integer, Long> upgrades = player.getInventory().getUpgrades();
+        if(!upgrades.containsKey(upgrade.code)) {
+            return false;
+        }
+
+        LocalDate expirationDate = DateUtils.fromMillis(upgrades.get(upgrade.code));
+        return !expirationDate.isBefore(LocalDate.now(DateUtils.ZONE_UTC));
     }
 
     public boolean hasEnoughCoinsForUpgrade(Upgrade upgrade) {
@@ -55,16 +65,20 @@ public class UpgradeManager implements OnDataChangedListener<Player> {
     }
 
     public void unlock(Upgrade upgrade) {
+        unlock(upgrade, LocalDate.now().plusMonths(DEFAULT_EXPIRATION_MONTHS).plusDays(Constants.UPGRADE_EXPIRATION_GRACE_DAYS));
+    }
+
+    public void unlock(Upgrade upgrade, LocalDate expirationDate) {
         Player player = getPlayer();
         player.removeCoins(upgrade.price);
         if (player.getInventory() == null) {
             player.setInventory(new Inventory());
         }
-        player.getInventory().addUpgrade(upgrade, LocalDate.now());
+        player.getInventory().addUpgrade(upgrade, expirationDate);
         playerPersistenceService.save(player);
     }
 
-    public Long getUnlockDate(Upgrade upgrade) {
+    public Long getExpirationDate(Upgrade upgrade) {
         Player player = getPlayer();
         if (player.getInventory() == null) {
             return null;

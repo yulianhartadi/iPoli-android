@@ -174,4 +174,6 @@ public interface Constants {
     String TWITTER_PACKAGE = "com.twitter.android";
     int SYNC_CALENDAR_JOB_ID = 1;
     int PROFILES_FIRST_SCHEMA_VERSION = 7;
+
+    int UPGRADE_EXPIRATION_GRACE_DAYS = 3;
 }

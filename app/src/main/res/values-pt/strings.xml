@@ -685,7 +685,7 @@
     <string name="not_urgent">Adiável</string>
     <string name="coins_pack_value">+ %d moedas da vida</string>
     <string name="upgrade_price">%d moedas da vida</string>
-    <string name="upgrade_unloked_on">Desbloqueado em %s</string>
+    <string name="upgrade_expires_on">Desbloqueado em %s</string>
     <string name="fragment_avatar_store_title">Comprar avatar</string>
     <string name="fragment_pet_store_title">Comprar animal</string>
     <string name="fragment_upgrade_store_title">Desbloquear melhoria</string>
