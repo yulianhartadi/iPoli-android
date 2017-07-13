@@ -9,7 +9,6 @@ import io.ipoli.android.R;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 5/21/17.
  */
-
 public enum Upgrade {
     REMINDERS(1, 300, R.string.reminders, R.string.upgrade_reminders_sub_title,
             R.string.upgrade_reminders_short_desc, R.string.upgrade_reminders_long_desc, R.drawable.ic_reminders_white_24dp),

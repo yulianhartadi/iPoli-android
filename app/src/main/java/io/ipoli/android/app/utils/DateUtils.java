@@ -26,6 +26,10 @@ public class DateUtils {
 
     public static final ZoneId ZONE_UTC = ZoneId.of("UTC");
 
+    /**
+     * @param dateMillis in UTC timezone
+     * @return LocalDate
+     */
     public static LocalDate fromMillis(long dateMillis) {
         return Instant.ofEpochMilli(dateMillis).atZone(DateUtils.ZONE_UTC).toLocalDate();
     }
@@ -66,6 +70,10 @@ public class DateUtils {
         return fromZonedDateTime(localDate.atStartOfDay(ZoneId.systemDefault()));
     }
 
+    /**
+     * @param localDate
+     * @return timestamp in UTC
+     */
     public static long toMillis(LocalDate localDate) {
         return toStartOfDayUTC(localDate).getTime();
     }
