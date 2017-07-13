@@ -1,6 +1,5 @@
 package io.ipoli.android.player;
 
-import org.solovyev.android.checkout.Purchase;
 import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
@@ -30,12 +29,12 @@ public class UpgradeStatusChecker {
     private final List<PurchaseState> purchases;
 
     public static class PurchaseState {
-        public final Purchase.State state;
-        public final boolean isAutoRenew;
+        public final long expiration;
+        public boolean isInGrace;
 
-        public PurchaseState(Purchase.State state, boolean isAutoRenew) {
-            this.state = state;
-            this.isAutoRenew = isAutoRenew;
+        public PurchaseState(long expiration, boolean isInGrace) {
+            this.expiration = expiration;
+            this.isInGrace = isInGrace;
         }
     }
 

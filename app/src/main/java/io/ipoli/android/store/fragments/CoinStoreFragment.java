@@ -281,13 +281,14 @@ public class CoinStoreFragment extends BaseFragment {
                 .loadSkus(ProductTypes.SUBSCRIPTION, skus), products -> {
             Inventory.Product subscriptions = products.get(ProductTypes.SUBSCRIPTION);
             activeSkus = new HashSet<>();
+            Log.d("AAA subs id", subscriptions.id);
             for (Purchase purchase : subscriptions.getPurchases()) {
-                Log.d("AAA purchase", purchase.state + " " + purchase.autoRenewing);
+                Log.d("AAA purchase", purchase.data);
                 if (purchase.state == Purchase.State.PURCHASED && purchase.autoRenewing) {
                     activeSkus.add(purchase.sku);
                     Date date = new Date();
                     date.setTime(purchase.time);
-                    Log.d("AAA active", purchase.sku + " " + date.toString());
+//                    Log.d("AAA active", purchase.sku + " " + date.toString());
                 }
             }
             initItems(subscriptions);

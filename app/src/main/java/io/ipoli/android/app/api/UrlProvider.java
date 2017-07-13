@@ -15,4 +15,6 @@ public interface UrlProvider {
     URL createUser();
 
     URL migrateUser(String firebasePlayerId);
+
+    URL getMembershipStatus();
 }
