@@ -3,11 +3,14 @@ package io.ipoli.android.player;
 import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.utils.DateUtils;
+import io.ipoli.android.player.data.MembershipType;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.store.Upgrade;
 
@@ -22,16 +25,20 @@ import io.ipoli.android.store.Upgrade;
 public class UpgradeStatusChecker {
 
     public static class UpgradeStatus {
+        public enum StatusType {
+            TRIAL, TRIAL_GRACE, MEMBER, MEMBER_GRACE, NOT_MEMBER
+        }
 
-        public List<Upgrade> aboutToExpire;
+        public final List<Upgrade> inGracePeriod;
+        public final List<Upgrade> expired;
+        public final Map<Upgrade, Long> toBeRenewed;
+        public final StatusType type;
 
-        public List<Upgrade> expired;
-        public Map<Upgrade, Long> toBeRenewed;
-
-        public UpgradeStatus(List<Upgrade> aboutToExpire, List<Upgrade> expired, Map<Upgrade, Long> toBeRenewed) {
-            this.aboutToExpire = aboutToExpire;
+        public UpgradeStatus(List<Upgrade> inGracePeriod, List<Upgrade> expired, Map<Upgrade, Long> toBeRenewed, StatusType type) {
+            this.inGracePeriod = inGracePeriod;
             this.expired = expired;
             this.toBeRenewed = toBeRenewed;
+            this.type = type;
         }
     }
 
@@ -48,9 +55,27 @@ public class UpgradeStatusChecker {
     }
 
     public UpgradeStatus checkStatus() {
-        List<Upgrade> aboutToExpire = new ArrayList<>();
+        List<Upgrade> inGracePeriod = new ArrayList<>();
         List<Upgrade> expired = new ArrayList<>();
         Map<Upgrade, Long> toBeRenewed = new HashMap<>();
+        UpgradeStatus.StatusType statusType = UpgradeStatus.StatusType.TRIAL;
+
+        LocalDate trialGraceStart = player.getCreatedAtDate().plusDays(Constants.UPGRADE_TRIAL_PERIOD_DAYS);
+        LocalDate trialGraceEndDate = trialGraceStart.plusDays(Constants.UPGRADE_TRIAL_GRACE_PERIOD_DAYS - 1);
+
+        if (currentDate.isBefore(trialGraceStart)) {
+            return new UpgradeStatus(inGracePeriod, expired, toBeRenewed, statusType);
+        }
+
+        if (DateUtils.isBetween(currentDate, trialGraceStart, trialGraceEndDate)) {
+            statusType = UpgradeStatus.StatusType.TRIAL_GRACE;
+            inGracePeriod.addAll(Arrays.asList(Upgrade.values()));
+            return new UpgradeStatus(inGracePeriod, expired, toBeRenewed, statusType);
+        }
+
+        if (player.getMembership() == MembershipType.NONE) {
+            statusType = UpgradeStatus.StatusType.NOT_MEMBER;
+        }
 
         Map<Integer, Long> upgrades = player.getInventory().getUpgrades();
         for (Map.Entry<Integer, Long> entry : upgrades.entrySet()) {
@@ -58,8 +83,16 @@ public class UpgradeStatusChecker {
             if (expirationDate.isBefore(currentDate)) {
                 expired.add(Upgrade.get(entry.getKey()));
             }
+            LocalDate upgradeGracePeriodStart = expirationDate.minusDays(Constants.UPGRADE_EXPIRATION_GRACE_PERIOD_DAYS - 1);
+            if (DateUtils.isBetween(currentDate, upgradeGracePeriodStart, expirationDate)) {
+                inGracePeriod.add(Upgrade.get(entry.getKey()));
+            }
         }
 
-        return new UpgradeStatus(aboutToExpire, expired, toBeRenewed);
+        if (expired.size() == Upgrade.values().length) {
+            statusType = UpgradeStatus.StatusType.NOT_MEMBER;
+        }
+
+        return new UpgradeStatus(inGracePeriod, expired, toBeRenewed, statusType);
     }
 }

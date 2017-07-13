@@ -497,4 +497,5 @@ public class Player extends PersistedObject {
     public boolean hasUsername() {
         return !doesNotHaveUsername();
     }
+
 }
