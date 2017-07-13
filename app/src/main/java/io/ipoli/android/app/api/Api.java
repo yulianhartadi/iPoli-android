@@ -105,7 +105,7 @@ public class Api {
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
         Map<String, String> params = new HashMap<>();
-        params.put("subscriptionId", subscriptionId);
+        params.put("subscription_id", subscriptionId);
         params.put("token", token);
 
         JSONObject jsonObject = new JSONObject(params);
