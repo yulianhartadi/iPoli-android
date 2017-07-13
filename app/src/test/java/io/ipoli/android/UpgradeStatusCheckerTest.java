@@ -1,8 +1,13 @@
 package io.ipoli.android;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.solovyev.android.checkout.Purchase;
 import org.threeten.bp.LocalDate;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.UpgradeStatus;
@@ -106,8 +111,8 @@ public class UpgradeStatusCheckerTest {
 
     @Test
     public void checkStatus_PlayerMemberWithValidUpgrades_EmptyListsAndMemberStatus() {
-        player.setMembership(MembershipType.YEARLY);
-        player.setCreatedAt(DateUtils.toMillis(LocalDate.now().minusDays(Constants.UPGRADE_TRIAL_PERIOD_DAYS + Constants.UPGRADE_GRACE_PERIOD_DAYS)));
+        player.setMembership(MembershipType.MONTHLY);
+        player.setCreatedAtDate(LocalDate.now().minusDays(Constants.UPGRADE_TRIAL_PERIOD_DAYS + Constants.UPGRADE_GRACE_PERIOD_DAYS));
         player.getInventory().unlockAllUpgrades(LocalDate.now().plusDays(Constants.UPGRADE_GRACE_PERIOD_DAYS));
         UpgradeStatusChecker checker = new UpgradeStatusChecker(player, LocalDate.now());
         UpgradeStatus status = checker.checkStatus();
@@ -117,4 +122,21 @@ public class UpgradeStatusCheckerTest {
         assertThat(status.type, is(UpgradeStatus.StatusType.MEMBER));
     }
 
+    @Ignore
+    @Test
+    public void checkStatus_PlayerMemberWithinGracePeriodIsRenewed_RenewUpgrades() {
+        player.setMembership(MembershipType.MONTHLY);
+        player.setCreatedAtDate(LocalDate.now().minusMonths(2));
+        player.getInventory().unlockAllUpgrades(LocalDate.now().minusMonths(1));
+
+        List<UpgradeStatusChecker.PurchaseState> purchases = new ArrayList<>();
+        purchases.add(new UpgradeStatusChecker.PurchaseState(Purchase.State.PURCHASED, true));
+        UpgradeStatusChecker checker = new UpgradeStatusChecker(player, LocalDate.now(), purchases);
+        UpgradeStatus status = checker.checkStatus();
+
+        assertThat(status.inGracePeriod.size(), is(0));
+        assertThat(status.expired.size(), is(0));
+        assertThat(status.toBeRenewed.size(), is(Upgrade.values().length));
+        assertThat(status.type, is(UpgradeStatus.StatusType.MEMBER));
+    }
 }

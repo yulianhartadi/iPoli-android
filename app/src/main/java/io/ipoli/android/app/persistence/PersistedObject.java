@@ -72,4 +72,9 @@ public abstract class PersistedObject {
     public LocalDate getCreatedAtDate() {
         return DateUtils.fromMillis(createdAt);
     }
+
+    @JsonIgnore
+    public void setCreatedAtDate(LocalDate date) {
+        setCreatedAt(DateUtils.toMillis(date));
+    }
 }

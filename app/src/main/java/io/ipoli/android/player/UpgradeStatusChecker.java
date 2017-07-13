@@ -1,5 +1,6 @@
 package io.ipoli.android.player;
 
+import org.solovyev.android.checkout.Purchase;
 import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
@@ -26,14 +27,30 @@ public class UpgradeStatusChecker {
 
     private final Player player;
     private final LocalDate currentDate;
+    private final List<PurchaseState> purchases;
+
+    public static class PurchaseState {
+        public final Purchase.State state;
+        public final boolean isAutoRenew;
+
+        public PurchaseState(Purchase.State state, boolean isAutoRenew) {
+            this.state = state;
+            this.isAutoRenew = isAutoRenew;
+        }
+    }
 
     public UpgradeStatusChecker(Player player) {
         this(player, LocalDate.now());
     }
 
     public UpgradeStatusChecker(Player player, LocalDate currentDate) {
+        this(player, currentDate, new ArrayList<>());
+    }
+
+    public UpgradeStatusChecker(Player player, LocalDate currentDate, List<PurchaseState> purchases) {
         this.player = player;
         this.currentDate = currentDate;
+        this.purchases = purchases;
     }
 
     public UpgradeStatus checkStatus() {
@@ -72,6 +89,8 @@ public class UpgradeStatusChecker {
                 inGracePeriod.add(Upgrade.get(entry.getKey()));
             }
         }
+
+        //      renewed =  purchase.state == Purchase.State.PURCHASED && purchase.autoRenewing
 
         if (expired.size() == Upgrade.values().length) {
             statusType = UpgradeStatus.StatusType.NOT_MEMBER;

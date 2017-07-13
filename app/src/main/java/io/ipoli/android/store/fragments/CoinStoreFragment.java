@@ -283,7 +283,7 @@ public class CoinStoreFragment extends BaseFragment {
             activeSkus = new HashSet<>();
             for (Purchase purchase : subscriptions.getPurchases()) {
                 Log.d("AAA purchase", purchase.state + " " + purchase.autoRenewing);
-                if (purchase.state == Purchase.State.PURCHASED) {
+                if (purchase.state == Purchase.State.PURCHASED && purchase.autoRenewing) {
                     activeSkus.add(purchase.sku);
                     Date date = new Date();
                     date.setTime(purchase.time);
