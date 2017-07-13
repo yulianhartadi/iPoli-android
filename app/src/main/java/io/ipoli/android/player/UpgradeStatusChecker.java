@@ -24,24 +24,6 @@ import io.ipoli.android.store.Upgrade;
  */
 public class UpgradeStatusChecker {
 
-    public static class UpgradeStatus {
-        public enum StatusType {
-            TRIAL, TRIAL_GRACE, MEMBER, MEMBER_GRACE, NOT_MEMBER
-        }
-
-        public final List<Upgrade> inGracePeriod;
-        public final List<Upgrade> expired;
-        public final Map<Upgrade, Long> toBeRenewed;
-        public final StatusType type;
-
-        public UpgradeStatus(List<Upgrade> inGracePeriod, List<Upgrade> expired, Map<Upgrade, Long> toBeRenewed, StatusType type) {
-            this.inGracePeriod = inGracePeriod;
-            this.expired = expired;
-            this.toBeRenewed = toBeRenewed;
-            this.type = type;
-        }
-    }
-
     private final Player player;
     private final LocalDate currentDate;
 
@@ -61,7 +43,7 @@ public class UpgradeStatusChecker {
         UpgradeStatus.StatusType statusType = UpgradeStatus.StatusType.TRIAL;
 
         LocalDate trialGraceStart = player.getCreatedAtDate().plusDays(Constants.UPGRADE_TRIAL_PERIOD_DAYS);
-        LocalDate trialGraceEndDate = trialGraceStart.plusDays(Constants.UPGRADE_TRIAL_GRACE_PERIOD_DAYS - 1);
+        LocalDate trialGraceEndDate = trialGraceStart.plusDays(Constants.UPGRADE_GRACE_PERIOD_DAYS - 1);
 
         if (currentDate.isBefore(trialGraceStart)) {
             return new UpgradeStatus(inGracePeriod, expired, toBeRenewed, statusType);
@@ -75,6 +57,8 @@ public class UpgradeStatusChecker {
 
         if (player.getMembership() == MembershipType.NONE) {
             statusType = UpgradeStatus.StatusType.NOT_MEMBER;
+        } else {
+            statusType = UpgradeStatus.StatusType.MEMBER;
         }
 
         Map<Integer, Long> upgrades = player.getInventory().getUpgrades();
@@ -83,7 +67,7 @@ public class UpgradeStatusChecker {
             if (expirationDate.isBefore(currentDate)) {
                 expired.add(Upgrade.get(entry.getKey()));
             }
-            LocalDate upgradeGracePeriodStart = expirationDate.minusDays(Constants.UPGRADE_EXPIRATION_GRACE_PERIOD_DAYS - 1);
+            LocalDate upgradeGracePeriodStart = expirationDate.minusDays(Constants.UPGRADE_GRACE_PERIOD_DAYS - 1);
             if (DateUtils.isBetween(currentDate, upgradeGracePeriodStart, expirationDate)) {
                 inGracePeriod.add(Upgrade.get(entry.getKey()));
             }

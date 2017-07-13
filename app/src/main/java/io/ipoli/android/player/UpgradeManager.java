@@ -65,7 +65,7 @@ public class UpgradeManager implements OnDataChangedListener<Player> {
     }
 
     public void unlock(Upgrade upgrade) {
-        unlock(upgrade, LocalDate.now().plusMonths(DEFAULT_EXPIRATION_MONTHS).plusDays(Constants.UPGRADE_EXPIRATION_GRACE_PERIOD_DAYS));
+        unlock(upgrade, LocalDate.now().plusMonths(DEFAULT_EXPIRATION_MONTHS).plusDays(Constants.UPGRADE_GRACE_PERIOD_DAYS));
     }
 
     public void unlock(Upgrade upgrade, LocalDate expirationDate) {

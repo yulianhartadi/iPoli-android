@@ -408,7 +408,7 @@ public class CoinStoreFragment extends BaseFragment {
 
     private void updatePlayer(String sku, Long purchasedTime) {
         MembershipType membershipType;
-        LocalDate purchasedDate = DateUtils.fromMillis(purchasedTime).plusDays(Constants.UPGRADE_EXPIRATION_GRACE_PERIOD_DAYS);
+        LocalDate purchasedDate = DateUtils.fromMillis(purchasedTime).plusDays(Constants.UPGRADE_GRACE_PERIOD_DAYS);
         LocalDate expirationDate;
         switch (sku) {
             case SKU_SUBSCRIPTION_MONTHLY:
