@@ -13,8 +13,6 @@ public interface UrlProvider {
     URL api();
 
     URL createUser();
-
-    URL migrateUser(String firebasePlayerId);
-
+    
     URL getMembershipStatus();
 }
