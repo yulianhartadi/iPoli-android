@@ -84,4 +84,5 @@ public class Inventory {
     public void lockAllUpgrades() {
         upgrades.clear();
     }
+
 }

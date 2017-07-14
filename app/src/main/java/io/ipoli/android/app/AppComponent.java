@@ -54,7 +54,7 @@ import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiv
 import io.ipoli.android.feed.activities.AddPostActivity;
 import io.ipoli.android.feed.fragments.FeedFragment;
 import io.ipoli.android.pet.PetActivity;
-import io.ipoli.android.player.SubscriptionsJobService;
+import io.ipoli.android.player.UpgradesJobService;
 import io.ipoli.android.player.UpgradeDialog;
 import io.ipoli.android.player.activities.ProfileActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
@@ -287,5 +287,5 @@ public interface AppComponent {
 
     void inject(DateTimePickerFragment dateTimePickerFragment);
 
-    void inject(SubscriptionsJobService subscriptionsJobService);
+    void inject(UpgradesJobService upgradesJobService);
 }

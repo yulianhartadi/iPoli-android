@@ -44,13 +44,16 @@ public class UpgradeStatusValidator {
         this(player, currentDate, null, isAutoRenew);
     }
 
+    public UpgradeStatusValidator(Player player, boolean isAutoRenew) {
+        this(player, LocalDate.now(), isAutoRenew);
+    }
+
     public UpgradeStatusValidator(Player player, LocalDate currentDate, LocalDate membershipExpirationDate, boolean isAutoRenew) {
         this.player = player;
         this.currentDate = currentDate;
         this.membershipExpirationDate = membershipExpirationDate;
         this.isAutoRenew = isAutoRenew;
     }
-
 
     public ValidationStatus validate() {
         List<Upgrade> expired = new ArrayList<>();

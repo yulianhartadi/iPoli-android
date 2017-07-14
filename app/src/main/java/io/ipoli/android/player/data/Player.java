@@ -498,4 +498,8 @@ public class Player extends PersistedObject {
         return !doesNotHaveUsername();
     }
 
+    @JsonIgnore
+    public boolean hasNoUpgrades() {
+        return getInventory().getUpgrades().isEmpty();
+    }
 }

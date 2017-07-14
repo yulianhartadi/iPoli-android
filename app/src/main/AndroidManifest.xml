@@ -349,7 +349,7 @@
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <service android:name=".player.SubscriptionsJobService"
+        <service android:name=".player.UpgradesJobService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
