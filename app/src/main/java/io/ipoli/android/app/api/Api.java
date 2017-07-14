@@ -127,9 +127,10 @@ public class Api {
                     TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {
                     };
                     Map<String, Object> subs = objectMapper.readValue(response.body().charStream(), mapTypeReference);
-                    Long expiration = (Long) subs.get("expiration");
-                    Boolean isInGrace = (Boolean) subs.get("is_in_grace");
-                    responseListener.onSuccess(expiration, isInGrace);
+                    Long startTimeMillis = (Long) subs.get("startTimeMillis");
+                    Long expiryTimeMillis = (Long) subs.get("expiryTimeMillis");
+                    Boolean autoRenewing = (Boolean) subs.get("autoRenewing");
+                    responseListener.onSuccess(startTimeMillis, expiryTimeMillis, autoRenewing);
                 } else {
                     responseListener.onError(getApiResponseException(call, response));
                 }
@@ -144,7 +145,7 @@ public class Api {
     }
 
     public interface MembershipStatusResponseListener {
-        void onSuccess(Long expiration, Boolean isInGrace);
+        void onSuccess(Long startTimeMillis, Long expiryTimeMillis, Boolean autoRenewing);
 
         void onError(Exception e);
     }

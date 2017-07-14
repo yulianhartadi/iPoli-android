@@ -25,10 +25,10 @@ public class ProdUrlProvider implements UrlProvider {
     public URL createUser() {
         return getURL(ApiConstants.PROD_API_URL + "users/");
     }
-    
+
     @Override
     public URL getMembershipStatus() {
-        return getURL(ApiConstants.PROD_API_URL + "membership/");
+        return getURL(ApiConstants.PROD_API_URL + "subscriptions/");
     }
 
     private static URL getURL(String path) {

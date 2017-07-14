@@ -28,7 +28,7 @@ public class DevUrlProvider implements UrlProvider {
 
     @Override
     public URL getMembershipStatus() {
-        return getURL(ApiConstants.DEV_API_URL + "membership/");
+        return getURL(ApiConstants.DEV_API_URL + "subscriptions/");
     }
 
     private static URL getURL(String path) {

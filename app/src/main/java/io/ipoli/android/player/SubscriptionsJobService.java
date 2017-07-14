@@ -80,10 +80,9 @@ public class SubscriptionsJobService extends JobService {
                 if (StringUtils.isNotEmpty(subscriptionId)) {
                     //send map <subscriptionId, token>, subscriptionId -> expirationlong, isInGrace
                     api.getMembershipStatus(subscriptionId, token, new Api.MembershipStatusResponseListener() {
-
                         @Override
-                        public void onSuccess(Long expiration, Boolean isInGrace) {
-
+                        public void onSuccess(Long startTimeMillis, Long expiryTimeMillis, Boolean autoRenewing) {
+                            
                         }
 
                         @Override
