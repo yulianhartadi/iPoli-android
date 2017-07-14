@@ -39,13 +39,12 @@
             android:background="@color/md_grey_200"
             android:orientation="vertical">
 
-            <include layout="@layout/coins_starter_pack" />
+            <include layout="@layout/subscription_monthly" />
 
-            <include layout="@layout/coins_premium_pack" />
+            <include layout="@layout/subscription_yearly" />
 
-            <include layout="@layout/coins_jumbo_pack" />
+            <include layout="@layout/subscription_quarterly" />
 
-            <include layout="@layout/coins_donation_pack" />
         </LinearLayout>
 
     </ScrollView>

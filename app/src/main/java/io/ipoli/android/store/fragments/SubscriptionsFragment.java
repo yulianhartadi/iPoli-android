@@ -68,16 +68,9 @@ import io.ipoli.android.store.events.CoinsPurchasedEvent;
  * on 5/23/17.
  */
 public class SubscriptionsFragment extends BaseFragment {
-
-    private static final String SKU_STARTER_PACK = "starter_pack";
-    private static final String SKU_PREMIUM_PACK = "premium_pack";
-    private static final String SKU_JUMBO_PACK = "jumbo_pack";
-    private static final String SKU_DONATION_PACK = "donation_pack";
-    private static final String SKU_SUBSCRIPTION = "test_subscription";
-    private static final String SKU_SUBSCRIPTION_YEARLY_TEST = "test_subscription_yearly";
-    private static final String SKU_SUBSCRIPTION_MONTHLY = "m";
-    private static final String SKU_SUBSCRIPTION_THREE_MONTHS = "3m";
-    private static final String SKU_SUBSCRIPTION_YEARLY = "y";
+    private static final String SKU_SUBSCRIPTION_MONTHLY = "test_subscription";
+    private static final String SKU_SUBSCRIPTION_THREE_MONTHS = "test_subscription_3_months";
+    private static final String SKU_SUBSCRIPTION_YEARLY = "test_subscription_yearly";
 
 
     @Inject
@@ -95,78 +88,58 @@ public class SubscriptionsFragment extends BaseFragment {
     @BindView(R.id.failure_message)
     TextView failureMessage;
 
-    @BindView(R.id.starter_price)
-    TextView starterPrice;
+    @BindView(R.id.monthly_price)
+    TextView monthlyBuy;
 
-    @BindView(R.id.starter_buy)
-    Button starterBuy;
+    @BindView(R.id.yearly_buy)
+    Button yearlyBuy;
 
-    @BindView(R.id.premium_price)
-    TextView premiumPrice;
+    @BindView(R.id.quarterly_buy)
+    Button quarterlyBuy;
 
-    @BindView(R.id.premium_buy)
-    Button premiumBuy;
+    @BindView(R.id.yearly_root_layout)
+    ViewGroup yearlyContainer;
 
-    @BindView(R.id.jumbo_price)
-    TextView jumboPrice;
+    @BindView(R.id.monthly_root_layout)
+    ViewGroup monthlyPlanContainer;
 
-    @BindView(R.id.jumbo_buy)
-    Button jumboBuy;
+    @BindView(R.id.quarterly_root_layout)
+    ViewGroup quarterlyContainer;
 
-    @BindView(R.id.donation_price)
-    TextView donationPrice;
+    @BindView(R.id.yearly_ribbon)
+    ImageView yearlyRibbon;
 
-    @BindView(R.id.donation_buy)
-    Button donationBuy;
-
-    @BindView(R.id.premium_root_layout)
-    ViewGroup premiumContainer;
-
-    @BindView(R.id.starter_root_layout)
-    ViewGroup starterContainer;
-
-    @BindView(R.id.jumbo_root_layout)
-    ViewGroup jumboContainer;
-
-    @BindView(R.id.donation_root_layout)
-    ViewGroup donationContainer;
-
-    @BindView(R.id.premium_ribbon)
-    ImageView premiumRibbon;
-
-    @BindView(R.id.premium_most_popular)
-    TextView premiumMostPopular;
+    @BindView(R.id.yearly_most_popular)
+    TextView yearlyMostPopular;
 
     private Unbinder unbinder;
 
-    private Map<String, Integer> skuToValue;
     private Billing billing;
     private UiCheckout checkout;
 
     private Set<String> activeSkus;
+    private List<String> skus;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.fragment_coin_store, container, false);
+        View view = inflater.inflate(R.layout.fragment_subscriptions, container, false);
         App.getAppComponent(getContext()).inject(this);
         unbinder = ButterKnife.bind(this, view);
         ((StoreActivity) getActivity()).populateTitle(R.string.fragment_coin_store_title);
 
         loaderContainer.setVisibility(View.VISIBLE);
 
-        skuToValue = new HashMap<>();
-        skuToValue.put(SKU_STARTER_PACK, 300);
-        skuToValue.put(SKU_PREMIUM_PACK, 2000);
-        skuToValue.put(SKU_JUMBO_PACK, 4000);
-        skuToValue.put(SKU_DONATION_PACK, 1);
-
-
         if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
             showFailureMessage(R.string.no_internet_to_buy_coins);
         }
+
+        skus = new ArrayList<>();
+        skus.add(SKU_SUBSCRIPTION_MONTHLY);
+        skus.add(SKU_SUBSCRIPTION_THREE_MONTHS);
+        skus.add(SKU_SUBSCRIPTION_YEARLY);
 
         postEvent(new ScreenShownEvent(getActivity(), EventSource.STORE_COINS));
         return view;
@@ -226,21 +199,16 @@ public class SubscriptionsFragment extends BaseFragment {
 
 
     private void animatePacks() {
-        Animation starterAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
-        starterContainer.startAnimation(starterAnimation);
+        Animation monthlyAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
+        monthlyPlanContainer.startAnimation(monthlyAnimation);
 
-        Animation premiumAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
-        premiumAnimation.setStartOffset(starterAnimation.getDuration() / 5);
-        premiumContainer.startAnimation(premiumAnimation);
+        Animation yearlyAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
+        yearlyAnimation.setStartOffset(monthlyAnimation.getDuration() / 5);
+        yearlyContainer.startAnimation(yearlyAnimation);
 
-        Animation jumboAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
-        jumboAnimation.setStartOffset(premiumAnimation.getStartOffset() + premiumAnimation.getDuration() / 5);
-        jumboContainer.startAnimation(jumboAnimation);
-
-        Animation donationAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
-        donationAnimation.setStartOffset(jumboAnimation.getStartOffset() + jumboAnimation.getDuration() / 5);
-
-        donationAnimation.setAnimationListener(new Animation.AnimationListener() {
+        Animation quarterlyAnimation = AnimationUtils.loadAnimation(getContext(), R.anim.fade_in);
+        quarterlyAnimation.setStartOffset(yearlyAnimation.getStartOffset() + yearlyAnimation.getDuration() / 5);
+        quarterlyAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
                 // intentional
@@ -248,8 +216,8 @@ public class SubscriptionsFragment extends BaseFragment {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                premiumRibbon.setVisibility(View.VISIBLE);
-                premiumMostPopular.setVisibility(View.VISIBLE);
+                yearlyRibbon.setVisibility(View.VISIBLE);
+                yearlyMostPopular.setVisibility(View.VISIBLE);
                 animateMostPopular();
             }
 
@@ -258,7 +226,7 @@ public class SubscriptionsFragment extends BaseFragment {
                 // intentional
             }
         });
-        donationContainer.startAnimation(donationAnimation);
+        quarterlyContainer.startAnimation(quarterlyAnimation);
     }
 
     private void showFailureMessage(int messageRes) {
@@ -268,10 +236,6 @@ public class SubscriptionsFragment extends BaseFragment {
     }
 
     private void queryInventory() {
-        List<String> skus = new ArrayList<>();
-        skus.add(SKU_SUBSCRIPTION);
-        skus.add(SKU_SUBSCRIPTION_YEARLY_TEST);
-
         checkout.loadInventory(Inventory.Request.create().loadAllPurchases()
                 .loadSkus(ProductTypes.SUBSCRIPTION, skus), products -> {
             Inventory.Product subscriptions = products.get(ProductTypes.SUBSCRIPTION);
@@ -286,56 +250,51 @@ public class SubscriptionsFragment extends BaseFragment {
     }
 
     private void initItems(Inventory.Product subscriptions) {
-        Sku starterPack = subscriptions.getSku(SKU_SUBSCRIPTION);
-        Sku premiumPack = subscriptions.getSku(SKU_SUBSCRIPTION_YEARLY_TEST);
-        Sku jumboPack = subscriptions.getSku(SKU_SUBSCRIPTION);
-        Sku donationPack = subscriptions.getSku(SKU_SUBSCRIPTION);
+        Sku monthlySubscription = subscriptions.getSku(SKU_SUBSCRIPTION_MONTHLY);
+        Sku quarterlySubscription = subscriptions.getSku(SKU_SUBSCRIPTION_THREE_MONTHS);
+        Sku yearlySubscription = subscriptions.getSku(SKU_SUBSCRIPTION_YEARLY);
 
-        if (starterPack == null || premiumPack == null || jumboPack == null || donationPack == null) {
+        if (monthlySubscription == null || quarterlySubscription == null || yearlySubscription == null) {
             showFailureMessage(R.string.something_went_wrong);
             return;
         }
 
-        starterPrice.setText(getString(R.string.coins_pack_value, skuToValue.get(SKU_STARTER_PACK)));
-        starterBuy.setText(starterPack.price);
+        Sku.Price monthlyPrice = monthlySubscription.detailedPrice;
+        monthlyBuy.setText(calculatePricePerMonth(monthlyPrice.amount, 1) + monthlyPrice.currency + " per month");
 
-        premiumPrice.setText(getString(R.string.coins_pack_value, skuToValue.get(SKU_PREMIUM_PACK)));
-        premiumBuy.setText(premiumPack.price);
+        yearlyBuy.setText(quarterlySubscription.price);
 
-        jumboPrice.setText(getString(R.string.coins_pack_value, skuToValue.get(SKU_JUMBO_PACK)));
-        jumboBuy.setText(jumboPack.price);
-
-        donationPrice.setText(getString(R.string.coins_pack_single_value, skuToValue.get(SKU_DONATION_PACK)));
-        donationBuy.setText(donationPack.price);
+        quarterlyBuy.setText(yearlySubscription.price);
 
         hideLoaderContainer();
 
         animatePacks();
     }
 
+    private double calculatePricePerMonth(long price, int months) {
+        double pricePerMonth = price / (double) months;
+        int x = (int) (pricePerMonth / 10000);
+        return x / 100.0;
+    }
+
     private void animateMostPopular() {
-        premiumRibbon.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.scale_in_from_right_top));
-        premiumMostPopular.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.scale_in_from_right_top));
+        yearlyRibbon.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.scale_in_from_right_top));
+        yearlyMostPopular.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.scale_in_from_right_top));
     }
 
-    @OnClick(R.id.starter_buy)
-    public void onBuyStarterClick(View v) {
-        subscribe(SKU_SUBSCRIPTION);
+    @OnClick(R.id.monthly_buy)
+    public void onSubscribeMonthlyClick(View v) {
+        subscribe(SKU_SUBSCRIPTION_MONTHLY);
     }
 
-    @OnClick(R.id.premium_buy)
-    public void onBuyPremiumClick(View v) {
-        subscribe(SKU_SUBSCRIPTION_YEARLY_TEST);
+    @OnClick(R.id.yearly_buy)
+    public void onSubscribeYearlyClick(View v) {
+        subscribe(SKU_SUBSCRIPTION_YEARLY);
     }
 
-    @OnClick(R.id.jumbo_buy)
-    public void onBuyJumboClick(View v) {
-        subscribe(SKU_SUBSCRIPTION);
-    }
-
-    @OnClick(R.id.donation_buy)
-    public void onBuyDonationClick(View v) {
-        subscribe(SKU_SUBSCRIPTION);
+    @OnClick(R.id.quarterly_buy)
+    public void onSubscribeQuarterlyClick(View v) {
+        subscribe(SKU_SUBSCRIPTION_THREE_MONTHS);
     }
 
     private void hideLoaderContainer() {
@@ -403,14 +362,13 @@ public class SubscriptionsFragment extends BaseFragment {
     private int findCoinsToReturn(Map<Integer, Long> activeUpgrades) {
         int coinsToReturn = 0;
         LocalDate today = LocalDate.now();
-        for(Map.Entry<Integer, Long> entry : activeUpgrades.entrySet()) {
+        for (Map.Entry<Integer, Long> entry : activeUpgrades.entrySet()) {
             LocalDate expiration = DateUtils.fromMillis(entry.getValue());
             int days = (int) ChronoUnit.DAYS.between(today, expiration) + 1;
             coinsToReturn += (Upgrade.get(entry.getKey()).price / 30f) * days;
         }
         return coinsToReturn;
     }
-
 
 
     private Map<Integer, Long> getActiveUpgrades(Player player) {
@@ -423,7 +381,7 @@ public class SubscriptionsFragment extends BaseFragment {
         LocalDate yesterday = LocalDate.now().minusDays(1);
         for (Map.Entry<Integer, Long> entry : upgrades.entrySet()) {
             LocalDate expirationDate = DateUtils.fromMillis(entry.getValue());
-            if(expirationDate.isAfter(yesterday)) {
+            if (expirationDate.isAfter(yesterday)) {
                 activeUpgrades.put(entry.getKey(), entry.getValue());
             }
         }

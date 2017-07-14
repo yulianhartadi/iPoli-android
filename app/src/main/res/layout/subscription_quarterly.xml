@@ -2,7 +2,7 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/tools"
-    android:id="@+id/jumbo_root_layout"
+    android:id="@+id/quarterly_root_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
@@ -18,7 +18,7 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/jumbo_title"
+            android:id="@+id/quarterly_title"
             style="@style/TextAppearance.AppCompat.Headline"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -27,14 +27,14 @@
             android:layout_marginRight="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="24dp"
-            android:text="@string/jumbo_pack"
+            android:text="@string/quarterly_plan"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/jumbo_image"
+            app:layout_constraintRight_toLeftOf="@+id/quarterly_image"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/jumbo_desc"
+            android:id="@+id/quarterly_desc"
             style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -43,14 +43,14 @@
             android:layout_marginRight="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:text="@string/jumbo_pack_desc"
+            android:text="@string/quarterly_plan_desc"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/jumbo_image"
-            app:layout_constraintTop_toBottomOf="@+id/jumbo_title" />
+            app:layout_constraintRight_toLeftOf="@+id/quarterly_image"
+            app:layout_constraintTop_toBottomOf="@+id/quarterly_title" />
 
         <ImageView
-            android:id="@+id/jumbo_image"
+            android:id="@+id/quarterly_image"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginEnd="16dp"
@@ -63,7 +63,7 @@
 
 
         <Button
-            android:id="@+id/jumbo_buy"
+            android:id="@+id/quarterly_buy"
             style="@style/Widget.AppCompat.Button"
             android:layout_width="96dp"
             android:layout_height="32dp"
@@ -82,12 +82,12 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/jumbo_image"
-            app:layout_constraintTop_toBottomOf="@+id/jumbo_price"
+            app:layout_constraintRight_toLeftOf="@+id/quarterly_image"
+            app:layout_constraintTop_toBottomOf="@+id/quarterly_price"
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView
-            android:id="@+id/jumbo_price"
+            android:id="@+id/quarterly_price"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -99,8 +99,8 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/jumbo_image"
-            app:layout_constraintTop_toBottomOf="@+id/jumbo_desc" />
+            app:layout_constraintRight_toLeftOf="@+id/quarterly_image"
+            app:layout_constraintTop_toBottomOf="@+id/quarterly_desc" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.v7.widget.CardView>
