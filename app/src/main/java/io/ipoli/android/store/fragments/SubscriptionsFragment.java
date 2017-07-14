@@ -30,6 +30,7 @@ import org.solovyev.android.checkout.RequestListener;
 import org.solovyev.android.checkout.Sku;
 import org.solovyev.android.checkout.UiCheckout;
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.temporal.ChronoUnit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,6 +58,7 @@ import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.player.data.MembershipType;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.store.Upgrade;
 import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.events.BuyCoinsTappedEvent;
 import io.ipoli.android.store.events.CoinsPurchasedEvent;
@@ -361,7 +363,7 @@ public class SubscriptionsFragment extends BaseFragment {
                 final PurchaseFlow flow = checkout.createOneShotPurchaseFlow(new RequestListener<Purchase>() {
                     @Override
                     public void onSuccess(@Nonnull Purchase purchase) {
-                        updatePlayer(sku, purchase.time);
+                        updatePlayer(getPlayer(), sku, purchase.time);
                         queryInventory();
                     }
 
@@ -381,7 +383,13 @@ public class SubscriptionsFragment extends BaseFragment {
             @Override
             public void onSuccess(@Nonnull Purchase purchase) {
                 postEvent(new CoinsPurchasedEvent(sku));
-                updatePlayer(sku, purchase.time);
+
+                Player player = getPlayer();
+                Map<Integer, Long> activeUpgrades = getActiveUpgrades(player);
+                int coinsToReturn = findCoinsToReturn(activeUpgrades);
+                player.addCoins(coinsToReturn);
+
+                updatePlayer(player, sku, purchase.time);
                 queryInventory();
             }
 
@@ -392,9 +400,38 @@ public class SubscriptionsFragment extends BaseFragment {
         });
     }
 
-    private void updatePlayer(String sku, Long purchasedTime) {
-        Player player = getPlayer();
+    private int findCoinsToReturn(Map<Integer, Long> activeUpgrades) {
+        int coinsToReturn = 0;
+        LocalDate today = LocalDate.now();
+        for(Map.Entry<Integer, Long> entry : activeUpgrades.entrySet()) {
+            LocalDate expiration = DateUtils.fromMillis(entry.getValue());
+            int days = (int) ChronoUnit.DAYS.between(today, expiration) + 1;
+            coinsToReturn += (Upgrade.get(entry.getKey()).price / 30f) * days;
+        }
+        return coinsToReturn;
+    }
 
+
+
+    private Map<Integer, Long> getActiveUpgrades(Player player) {
+        Map<Integer, Long> upgrades = player.getInventory().getUpgrades();
+        if (upgrades.isEmpty()) {
+            return new HashMap<>();
+        }
+
+        Map<Integer, Long> activeUpgrades = new HashMap<>();
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        for (Map.Entry<Integer, Long> entry : upgrades.entrySet()) {
+            LocalDate expirationDate = DateUtils.fromMillis(entry.getValue());
+            if(expirationDate.isAfter(yesterday)) {
+                activeUpgrades.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return activeUpgrades;
+    }
+
+    private void updatePlayer(Player player, String sku, Long purchasedTime) {
         MembershipType membershipType;
         LocalDate purchasedDate = DateUtils.fromMillis(purchasedTime);
         LocalDate expirationDate;
