@@ -100,7 +100,7 @@ public class StoreFragment extends BaseFragment {
     private void changeCurrentItem(StoreItemType type) {
         switch (type) {
             case COINS:
-                changeCurrentFragment(new CoinStoreFragment());
+                changeCurrentFragment(new SubscriptionsFragment());
                 break;
             case UPGRADES:
                 changeCurrentFragment(new UpgradeStoreFragment());

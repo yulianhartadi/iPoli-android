@@ -1,8 +1,5 @@
 package io.ipoli.android.store.fragments;
 
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -10,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +32,6 @@ import org.solovyev.android.checkout.UiCheckout;
 import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -52,7 +47,6 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.BillingConstants;
-import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
@@ -60,7 +54,6 @@ import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.NetworkConnectivityUtils;
-import io.ipoli.android.player.UpgradesJobService;
 import io.ipoli.android.player.data.MembershipType;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
@@ -72,7 +65,7 @@ import io.ipoli.android.store.events.CoinsPurchasedEvent;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 5/23/17.
  */
-public class CoinStoreFragment extends BaseFragment {
+public class SubscriptionsFragment extends BaseFragment {
 
     private static final String SKU_STARTER_PACK = "starter_pack";
     private static final String SKU_PREMIUM_PACK = "premium_pack";
@@ -281,14 +274,9 @@ public class CoinStoreFragment extends BaseFragment {
                 .loadSkus(ProductTypes.SUBSCRIPTION, skus), products -> {
             Inventory.Product subscriptions = products.get(ProductTypes.SUBSCRIPTION);
             activeSkus = new HashSet<>();
-            Log.d("AAA subs id", subscriptions.id);
             for (Purchase purchase : subscriptions.getPurchases()) {
-                Log.d("AAA purchase", purchase.data);
                 if (purchase.state == Purchase.State.PURCHASED && purchase.autoRenewing) {
                     activeSkus.add(purchase.sku);
-                    Date date = new Date();
-                    date.setTime(purchase.time);
-//                    Log.d("AAA active", purchase.sku + " " + date.toString());
                 }
             }
             initItems(subscriptions);
@@ -393,7 +381,6 @@ public class CoinStoreFragment extends BaseFragment {
             @Override
             public void onSuccess(@Nonnull Purchase purchase) {
                 postEvent(new CoinsPurchasedEvent(sku));
-                Log.d("Subscription", "Purchased");
                 updatePlayer(sku, purchase.time);
                 queryInventory();
             }
@@ -406,41 +393,32 @@ public class CoinStoreFragment extends BaseFragment {
     }
 
     private void updatePlayer(String sku, Long purchasedTime) {
+        Player player = getPlayer();
+
         MembershipType membershipType;
-        LocalDate purchasedDate = DateUtils.fromMillis(purchasedTime).plusDays(Constants.UPGRADE_GRACE_PERIOD_DAYS);
+        LocalDate purchasedDate = DateUtils.fromMillis(purchasedTime);
         LocalDate expirationDate;
         switch (sku) {
             case SKU_SUBSCRIPTION_MONTHLY:
                 membershipType = MembershipType.MONTHLY;
-                expirationDate = purchasedDate.plusMonths(1);
+                expirationDate = purchasedDate.plusMonths(1).minusDays(1);
                 break;
             case SKU_SUBSCRIPTION_THREE_MONTHS:
                 membershipType = MembershipType.THREE_MONTHS;
-                expirationDate = purchasedDate.plusMonths(3);
+                expirationDate = purchasedDate.plusMonths(3).minusDays(1);
                 break;
             case SKU_SUBSCRIPTION_YEARLY:
                 membershipType = MembershipType.YEARLY;
-                expirationDate = purchasedDate.plusYears(1);
+                expirationDate = purchasedDate.plusYears(1).minusDays(1);
                 break;
             default:
                 membershipType = MembershipType.NONE;
                 expirationDate = LocalDate.now();
         }
 
-        Player player = getPlayer();
         player.getInventory().unlockAllUpgrades(expirationDate);
         player.setMembership(membershipType);
         playerPersistenceService.save(player);
-    }
-
-    private void schedule() {
-        JobScheduler jobScheduler = (JobScheduler) getContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        jobScheduler.cancel(UpgradesJobService.JOB_ID);
-        JobInfo jobInfo = new JobInfo.Builder(UpgradesJobService.JOB_ID,
-                new ComponentName(getContext(), UpgradesJobService.class))
-                .setOverrideDeadline(0)
-                .build();
-        jobScheduler.schedule(jobInfo);
     }
 
     @Override

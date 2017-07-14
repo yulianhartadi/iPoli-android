@@ -5,7 +5,6 @@ import org.threeten.bp.LocalDate;
 import java.util.Map;
 import java.util.Set;
 
-import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.data.Inventory;
@@ -65,7 +64,7 @@ public class UpgradeManager implements OnDataChangedListener<Player> {
     }
 
     public void unlock(Upgrade upgrade) {
-        unlock(upgrade, LocalDate.now().plusMonths(DEFAULT_EXPIRATION_MONTHS).plusDays(Constants.UPGRADE_GRACE_PERIOD_DAYS));
+        unlock(upgrade, LocalDate.now().plusMonths(DEFAULT_EXPIRATION_MONTHS).minusDays(1));
     }
 
     public void unlock(Upgrade upgrade, LocalDate expirationDate) {
