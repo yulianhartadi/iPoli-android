@@ -11,7 +11,7 @@ import io.ipoli.android.store.Upgrade;
  */
 public class ValidationStatus {
     public enum StatusType {
-        TRIAL, MEMBER, MEMBER_GRACE, NOT_MEMBER
+        TRIAL, MEMBER, NOT_MEMBER
     }
 
     public final List<Upgrade> expired;

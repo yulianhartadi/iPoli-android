@@ -68,7 +68,6 @@ import io.ipoli.android.player.events.PlayerSignedInEvent;
 import io.ipoli.android.player.events.PlayerSyncedEvent;
 import io.ipoli.android.player.events.StartReplicationEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.store.Upgrade;
 import mehdi.sakout.fancybuttons.FancyButton;
 import okhttp3.Cookie;
 
@@ -446,7 +445,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
         player.getInventory().addAvatar(Constants.DEFAULT_PLAYER_AVATAR, LocalDate.now());
         player.getInventory().addPet(Constants.DEFAULT_PET_AVATAR, LocalDate.now());
-        player.getInventory().addUpgrade(Upgrade.REPEATING_QUESTS, LocalDate.now());
+        player.getInventory().unlockAllUpgrades(LocalDate.now().plusDays(Constants.UPGRADE_TRIAL_PERIOD_DAYS - 1));
 
         if (authProvider != null) {
             player.setCurrentAuthProvider(authProvider);
