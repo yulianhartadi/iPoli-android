@@ -12,8 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -86,13 +84,13 @@ public class SubscriptionsFragment extends BaseFragment {
     TextView failureMessage;
 
     @BindView(R.id.monthly_price)
-    TextView monthlyBuy;
+    TextView monthlyPrice;
 
-    @BindView(R.id.yearly_buy)
-    Button yearlyBuy;
+    @BindView(R.id.yearly_price)
+    TextView yearlyPrice;
 
-    @BindView(R.id.quarterly_buy)
-    Button quarterlyBuy;
+    @BindView(R.id.quarterly_price)
+    TextView quarterlyPrice;
 
     @BindView(R.id.yearly_root_layout)
     ViewGroup yearlyContainer;
@@ -103,11 +101,11 @@ public class SubscriptionsFragment extends BaseFragment {
     @BindView(R.id.quarterly_root_layout)
     ViewGroup quarterlyContainer;
 
-    @BindView(R.id.yearly_ribbon)
-    ImageView yearlyRibbon;
-
-    @BindView(R.id.yearly_most_popular)
-    TextView yearlyMostPopular;
+//    @BindView(R.id.yearly_ribbon)
+//    ImageView yearlyRibbon;
+//
+//    @BindView(R.id.yearly_most_popular)
+//    TextView yearlyMostPopular;
 
     private Unbinder unbinder;
 
@@ -213,8 +211,8 @@ public class SubscriptionsFragment extends BaseFragment {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-                yearlyRibbon.setVisibility(View.VISIBLE);
-                yearlyMostPopular.setVisibility(View.VISIBLE);
+//                yearlyRibbon.setVisibility(View.VISIBLE);
+//                yearlyMostPopular.setVisibility(View.VISIBLE);
                 animateMostPopular();
             }
 
@@ -257,11 +255,13 @@ public class SubscriptionsFragment extends BaseFragment {
         }
 
         Sku.Price monthlyPrice = monthlySubscription.detailedPrice;
-        monthlyBuy.setText(calculatePricePerMonth(monthlyPrice.amount, 1) + monthlyPrice.currency + " per month");
+        this.monthlyPrice.setText(calculatePricePerMonth(monthlyPrice.amount, 1) + monthlyPrice.currency + " per month");
 
-        yearlyBuy.setText(quarterlySubscription.price);
+        Sku.Price yearlyPrice = yearlySubscription.detailedPrice;
+        this.yearlyPrice.setText(calculatePricePerMonth(yearlyPrice.amount, 1) + yearlyPrice.currency + " per month");
 
-        quarterlyBuy.setText(yearlySubscription.price);
+        Sku.Price quarterlyPrice = quarterlySubscription.detailedPrice;
+        this.quarterlyPrice.setText(calculatePricePerMonth(quarterlyPrice.amount, 1) + quarterlyPrice.currency + " per month");
 
         hideLoaderContainer();
 
@@ -275,8 +275,8 @@ public class SubscriptionsFragment extends BaseFragment {
     }
 
     private void animateMostPopular() {
-        yearlyRibbon.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.scale_in_from_right_top));
-        yearlyMostPopular.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.scale_in_from_right_top));
+//        yearlyRibbon.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.scale_in_from_right_top));
+//        yearlyMostPopular.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.scale_in_from_right_top));
     }
 
     @OnClick(R.id.monthly_buy)
@@ -396,7 +396,7 @@ public class SubscriptionsFragment extends BaseFragment {
                 expirationDate = purchasedDate.plusMonths(1).minusDays(1);
                 break;
             case Constants.SKU_SUBSCRIPTION_QUARTERLY:
-                membershipType = MembershipType.THREE_MONTHS;
+                membershipType = MembershipType.QUARTERLY;
                 expirationDate = purchasedDate.plusMonths(3).minusDays(1);
                 break;
             case Constants.SKU_SUBSCRIPTION_YEARLY:

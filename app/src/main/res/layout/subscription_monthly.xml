@@ -62,25 +62,25 @@
         <Button
             android:id="@+id/monthly_buy"
             style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="8dp"
+            android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="24dp"
             android:background="?attr/colorAccent"
             android:gravity="center"
             android:padding="8dp"
-            android:text="Start monthly plan now"
+            android:text="Go premium"
             android:textColor="@color/md_white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/monthly_price"
-            app:layout_constraintVertical_bias="1.0"
-            android:layout_marginLeft="16dp" />
+            app:layout_constraintVertical_bias="1.0" />
 
         <TextView
             android:id="@+id/monthly_price"
@@ -97,7 +97,7 @@
             app:layout_constraintHorizontal_bias="0.539"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/disadvantage3" />
+            app:layout_constraintTop_toBottomOf="@+id/disadvantage1" />
 
         <TextView
             android:id="@+id/benefit1"
@@ -113,7 +113,7 @@
             app:layout_constraintTop_toBottomOf="@+id/monthly_title" />
 
         <TextView
-            android:id="@+id/disadvantage3"
+            android:id="@+id/disadvantage1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="0dp"

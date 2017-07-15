@@ -380,7 +380,9 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onFinishSignInActivity(FinishSignInActivityEvent e) {
         if (hasPlayer() && e.isNewPlayer) {
-            startNewActivity(MainActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(Constants.SHOW_TRIAL_MESSAGE_EXTRA_KEY, true);
+            startNewActivity(MainActivity.class, bundle);
         } else if (!hasPlayer()) {
             System.exit(0);
         }

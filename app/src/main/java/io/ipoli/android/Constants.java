@@ -51,6 +51,8 @@ public interface Constants {
 
     String DISPLAY_NAME_EXTRA_KEY = "display_name";
 
+    String SHOW_TRIAL_MESSAGE_EXTRA_KEY = "show_trial_message";
+
     int CALENDAR_EVENT_MIN_DURATION = 15;
 
     int CALENDAR_EVENT_MIN_SINGLE_LINE_DURATION = 20;
@@ -182,4 +184,5 @@ public interface Constants {
     String SKU_SUBSCRIPTION_MONTHLY = "test_subscription";
     String SKU_SUBSCRIPTION_QUARTERLY = "test_subscription_3_months";
     String SKU_SUBSCRIPTION_YEARLY = "test_subscription_yearly";
+
 }

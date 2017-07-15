@@ -6,5 +6,5 @@ package io.ipoli.android.player.data;
  */
 
 public enum MembershipType {
-    NONE, MONTHLY, THREE_MONTHS, YEARLY
+    NONE, MONTHLY, QUARTERLY, YEARLY
 }

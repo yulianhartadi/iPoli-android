@@ -18,6 +18,18 @@
         android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/benefit2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:drawablePadding="4dp"
+            android:drawableStart="@drawable/ic_done_accent_24dp"
+            android:gravity="center_vertical"
+            android:text="Get all future upgrades for FREE"
+            app:layout_constraintLeft_toLeftOf="@+id/quarterly_title"
+            app:layout_constraintTop_toBottomOf="@+id/benefit1" />
+
+        <TextView
             android:id="@+id/quarterly_title"
             style="@style/TextAppearance.AppCompat.Headline"
             android:layout_width="0dp"
@@ -33,22 +45,6 @@
             app:layout_constraintRight_toLeftOf="@+id/quarterly_image"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/quarterly_desc"
-            style="@style/TextAppearance.AppCompat.Body1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:text="@string/quarterly_plan_desc"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/quarterly_image"
-            app:layout_constraintTop_toBottomOf="@+id/quarterly_title" />
-
         <ImageView
             android:id="@+id/quarterly_image"
             android:layout_width="80dp"
@@ -59,16 +55,14 @@
             android:scaleType="fitXY"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/coins_jumbo_pack" />
+            app:srcCompat="@drawable/new_chores_quest" />
 
 
         <Button
             android:id="@+id/quarterly_buy"
-            style="@style/Widget.AppCompat.Button"
-            android:layout_width="96dp"
-            android:layout_height="32dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="8dp"
             android:layout_marginLeft="16dp"
@@ -77,30 +71,56 @@
             android:layout_marginTop="24dp"
             android:background="?attr/colorAccent"
             android:gravity="center"
-            android:text="BGN360"
+            android:padding="8dp"
+            android:text="Go premium"
             android:textColor="@color/md_white"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/quarterly_image"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/quarterly_price"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.0" />
 
         <TextView
             android:id="@+id/quarterly_price"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="8dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:text="+4000 life coins"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            app:layout_constraintHorizontal_bias="0.0"
+            android:layout_marginTop="24dp"
+            android:text="3.89BGN per month"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:visibility="visible"
+            app:layout_constraintHorizontal_bias="0.539"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/quarterly_image"
-            app:layout_constraintTop_toBottomOf="@+id/quarterly_desc" />
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/disadvantage1" />
+
+        <TextView
+            android:id="@+id/benefit1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:drawablePadding="4dp"
+            android:drawableStart="@drawable/ic_done_accent_24dp"
+            android:gravity="center_vertical"
+            android:text="Unlock all upgrades"
+            app:layout_constraintLeft_toLeftOf="@+id/quarterly_title"
+            app:layout_constraintTop_toBottomOf="@+id/quarterly_title" />
+
+        <TextView
+            android:id="@+id/disadvantage1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:drawablePadding="4dp"
+            android:drawableStart="@drawable/ic_remove_accent_24dp"
+            android:gravity="center_vertical"
+            android:text="Expensive option - billed every 3 months"
+            app:layout_constraintLeft_toLeftOf="@+id/quarterly_title"
+            app:layout_constraintTop_toBottomOf="@+id/benefit2" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.v7.widget.CardView>

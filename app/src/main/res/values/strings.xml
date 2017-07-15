@@ -738,12 +738,12 @@
     <string name="no_challenges">You have not challenged yourself</string>
     <string name="upgrades_migration_message">You are an awesome iPoli user and all current upgrades are free for you!</string>
     <string name="big_value_format">%sK</string>
-    <string name="monthly_plan">Starter Plan</string>
+    <string name="monthly_plan">Monthly Plan</string>
     <string name="monthly_plan_desc">Unlock all upgrades. Get all future upgrades for free.</string>
-    <string name="yearly_plan">Premium plan</string>
+    <string name="yearly_plan">For the Smart Ones</string>
     <string name="yearly_plan_desc">For the smart ones</string>
     <string name="most_popular">Most popular</string>
-    <string name="quarterly_plan">King Size plan</string>
+    <string name="quarterly_plan">Quarterly Plan</string>
     <string name="quarterly_plan_desc">For the wealthy and famous</string>
     <string name="avatar_name_ipoli_classic">Classic iPoli</string>
     <string name="avatar_name_ipoli_yellow_glasses">Fancy iPoli</string>
@@ -941,6 +941,8 @@
         <item quantity="one">You have %d upgrade expiring today</item>
         <item quantity="other">You have %d upgrades expiring today</item>
     </plurals>
+
+    <string name="trial_message">Surprise! All upgrades are FREE for you for %d days.</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

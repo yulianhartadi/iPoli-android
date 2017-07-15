@@ -195,7 +195,8 @@ public class MainActivity extends BaseActivity implements
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        startCalendar();
+        boolean showTrialMessage = getIntent() != null && getIntent().getBooleanExtra(Constants.SHOW_TRIAL_MESSAGE_EXTRA_KEY, false);
+        startCalendar(showTrialMessage);
 
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
 
@@ -519,8 +520,12 @@ public class MainActivity extends BaseActivity implements
         return (int) (currentXP.divide(xpForNextLevel, 2, RoundingMode.HALF_UP).doubleValue() * Constants.XP_BAR_MAX_VALUE);
     }
 
-    public void startCalendar() {
-        changeCurrentFragment(new CalendarFragment());
+    private void startCalendar() {
+        startCalendar(false);
+    }
+
+    private void startCalendar(boolean showTrialMessage) {
+        changeCurrentFragment(CalendarFragment.newInstance(showTrialMessage));
     }
 
     @Override

@@ -3,6 +3,7 @@ package io.ipoli.android.quest.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -88,6 +89,27 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
     private FragmentStatePagerAdapter adapter;
 
     private LocalDate currentMidDate;
+    private boolean showTrialMessage;
+
+    public static CalendarFragment newInstance() {
+        return newInstance(false);
+    }
+
+    public static CalendarFragment newInstance(boolean showTrialMessage) {
+        CalendarFragment fragment = new CalendarFragment();
+        Bundle args = new Bundle();
+        args.putBoolean(Constants.SHOW_TRIAL_MESSAGE_EXTRA_KEY, showTrialMessage);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            showTrialMessage = getArguments().getBoolean(Constants.SHOW_TRIAL_MESSAGE_EXTRA_KEY);
+        }
+    }
 
     @Nullable
     @Override
@@ -128,6 +150,22 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
 
         calendarPager.setAdapter(adapter);
         calendarPager.setCurrentItem(MID_POSITION);
+
+        if (showTrialMessage) {
+            Snackbar snackbar = Snackbar.make(rootContainer, getString(R.string.trial_message, Constants.UPGRADE_TRIAL_PERIOD_DAYS), Snackbar.LENGTH_INDEFINITE);
+            snackbar.getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View v) {
+
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+                    fabMenu.animate().translationY(0).setDuration(getResources().getInteger(android.R.integer.config_shortAnimTime)).start();
+                }
+            });
+            snackbar.show();
+        }
 
         return view;
     }
