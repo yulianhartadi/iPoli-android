@@ -927,6 +927,8 @@
     <string name="title_fragment_feed">Achievements by Heroes</string>
     <string name="dialog_delete_post_title">Delete post</string>
     <string name="dialog_delete_post_message">Sure you want to delete this amazing post?</string>
+    <string name="trial_expiring_message">To continue using all upgrades become premium member or buy them with coins</string>
+    <string name="trial_expiring_title">iPoli trial expires tomorrow</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

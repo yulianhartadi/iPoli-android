@@ -1,8 +1,13 @@
 package io.ipoli.android.player;
 
+import android.app.PendingIntent;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.NotificationCompat;
 
 import org.solovyev.android.checkout.Billing;
 import org.solovyev.android.checkout.Checkout;
@@ -20,7 +25,10 @@ import javax.inject.Inject;
 
 import io.ipoli.android.BillingConstants;
 import io.ipoli.android.Constants;
+import io.ipoli.android.MainActivity;
+import io.ipoli.android.R;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.data.MembershipType;
@@ -174,7 +182,25 @@ public class UpgradesJobService extends JobService {
     }
 
     private void showTrialExpiringNotification() {
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
 
+        Intent addIntent = new Intent(this, QuickAddActivity.class);
+        addIntent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, " " + getString(R.string.today).toLowerCase());
+
+        NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                .setContentTitle(getString(R.string.trial_expiring_title))
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(getString(R.string.trial_expiring_message)))
+                .setContentText(getString(R.string.trial_expiring_message))
+                .setContentIntent(contentIntent)
+                .setShowWhen(true)
+                .setSmallIcon(R.drawable.ic_crown_white_24dp)
+                .setOnlyAlertOnce(true)
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setColor(ContextCompat.getColor(this, R.color.md_yellow_700))
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+        notificationManagerCompat.notify(Constants.MEMBERSHIP_EXPIRATION_NOTIFICATION_ID, builder.build());
     }
 
     private boolean isOnLastDayOfTrial(LocalDate createdAt, LocalDate currentDate) {

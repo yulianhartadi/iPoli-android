@@ -88,6 +88,7 @@ import io.ipoli.android.player.PlayerCredentialsHandler;
 import io.ipoli.android.player.UpgradeDialog;
 import io.ipoli.android.player.UpgradeDialog.OnUnlockListener;
 import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.player.UpgradesJobService;
 import io.ipoli.android.player.activities.ProfileActivity;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.events.LevelDownEvent;
@@ -219,13 +220,13 @@ public class MainActivity extends BaseActivity implements
             EasyPermissions.requestPermissions(this, getString(R.string.allow_read_calendars_perm_reason_disable_option), RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
         }
 
-//        JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
-//        jobScheduler.cancel(UpgradesJobService.JOB_ID);
-//        JobInfo jobInfo = new JobInfo.Builder(UpgradesJobService.JOB_ID,
-//                new ComponentName(this, UpgradesJobService.class))
-//                .setOverrideDeadline(0)
-//                .build();
-//        jobScheduler.schedule(jobInfo);
+        JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
+        jobScheduler.cancel(UpgradesJobService.JOB_ID);
+        JobInfo jobInfo = new JobInfo.Builder(UpgradesJobService.JOB_ID,
+                new ComponentName(this, UpgradesJobService.class))
+                .setOverrideDeadline(0)
+                .build();
+        jobScheduler.schedule(jobInfo);
     }
 
     @Override
