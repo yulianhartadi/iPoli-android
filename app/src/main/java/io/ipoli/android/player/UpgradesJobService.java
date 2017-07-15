@@ -90,8 +90,9 @@ public class UpgradesJobService extends JobService {
         }
 
         List<String> skus = new ArrayList<>();
-        skus.add("test_subscription");
-        skus.add("test_subscription_yearly");
+        skus.add(Constants.SKU_SUBSCRIPTION_MONTHLY);
+        skus.add(Constants.SKU_SUBSCRIPTION_QUARTERLY);
+        skus.add(Constants.SKU_SUBSCRIPTION_YEARLY);
         checkout.loadInventory(Inventory.Request.create().loadAllPurchases()
                 .loadSkus(ProductTypes.SUBSCRIPTION, skus), products -> {
             Inventory.Product subscriptions = products.get(ProductTypes.SUBSCRIPTION);

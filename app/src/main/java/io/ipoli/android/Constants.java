@@ -177,4 +177,8 @@ public interface Constants {
 
     int UPGRADE_GRACE_PERIOD_DAYS = 7;
     int UPGRADE_TRIAL_PERIOD_DAYS = 15;
+
+    String SKU_SUBSCRIPTION_MONTHLY = "test_subscription";
+    String SKU_SUBSCRIPTION_QUARTERLY = "test_subscription_3_months";
+    String SKU_SUBSCRIPTION_YEARLY = "test_subscription_yearly";
 }

@@ -48,6 +48,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.ipoli.android.BillingConstants;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
@@ -68,10 +69,6 @@ import io.ipoli.android.store.events.CoinsPurchasedEvent;
  * on 5/23/17.
  */
 public class SubscriptionsFragment extends BaseFragment {
-    private static final String SKU_SUBSCRIPTION_MONTHLY = "test_subscription";
-    private static final String SKU_SUBSCRIPTION_THREE_MONTHS = "test_subscription_3_months";
-    private static final String SKU_SUBSCRIPTION_YEARLY = "test_subscription_yearly";
-
 
     @Inject
     PlayerPersistenceService playerPersistenceService;
@@ -137,9 +134,9 @@ public class SubscriptionsFragment extends BaseFragment {
         }
 
         skus = new ArrayList<>();
-        skus.add(SKU_SUBSCRIPTION_MONTHLY);
-        skus.add(SKU_SUBSCRIPTION_THREE_MONTHS);
-        skus.add(SKU_SUBSCRIPTION_YEARLY);
+        skus.add(Constants.SKU_SUBSCRIPTION_MONTHLY);
+        skus.add(Constants.SKU_SUBSCRIPTION_QUARTERLY);
+        skus.add(Constants.SKU_SUBSCRIPTION_YEARLY);
 
         postEvent(new ScreenShownEvent(getActivity(), EventSource.STORE_COINS));
         return view;
@@ -250,9 +247,9 @@ public class SubscriptionsFragment extends BaseFragment {
     }
 
     private void initItems(Inventory.Product subscriptions) {
-        Sku monthlySubscription = subscriptions.getSku(SKU_SUBSCRIPTION_MONTHLY);
-        Sku quarterlySubscription = subscriptions.getSku(SKU_SUBSCRIPTION_THREE_MONTHS);
-        Sku yearlySubscription = subscriptions.getSku(SKU_SUBSCRIPTION_YEARLY);
+        Sku monthlySubscription = subscriptions.getSku(Constants.SKU_SUBSCRIPTION_MONTHLY);
+        Sku quarterlySubscription = subscriptions.getSku(Constants.SKU_SUBSCRIPTION_QUARTERLY);
+        Sku yearlySubscription = subscriptions.getSku(Constants.SKU_SUBSCRIPTION_YEARLY);
 
         if (monthlySubscription == null || quarterlySubscription == null || yearlySubscription == null) {
             showFailureMessage(R.string.something_went_wrong);
@@ -284,17 +281,17 @@ public class SubscriptionsFragment extends BaseFragment {
 
     @OnClick(R.id.monthly_buy)
     public void onSubscribeMonthlyClick(View v) {
-        subscribe(SKU_SUBSCRIPTION_MONTHLY);
+        subscribe(Constants.SKU_SUBSCRIPTION_MONTHLY);
     }
 
     @OnClick(R.id.yearly_buy)
     public void onSubscribeYearlyClick(View v) {
-        subscribe(SKU_SUBSCRIPTION_YEARLY);
+        subscribe(Constants.SKU_SUBSCRIPTION_YEARLY);
     }
 
     @OnClick(R.id.quarterly_buy)
     public void onSubscribeQuarterlyClick(View v) {
-        subscribe(SKU_SUBSCRIPTION_THREE_MONTHS);
+        subscribe(Constants.SKU_SUBSCRIPTION_QUARTERLY);
     }
 
     private void hideLoaderContainer() {
@@ -394,15 +391,15 @@ public class SubscriptionsFragment extends BaseFragment {
         LocalDate purchasedDate = DateUtils.fromMillis(purchasedTime);
         LocalDate expirationDate;
         switch (sku) {
-            case SKU_SUBSCRIPTION_MONTHLY:
+            case Constants.SKU_SUBSCRIPTION_MONTHLY:
                 membershipType = MembershipType.MONTHLY;
                 expirationDate = purchasedDate.plusMonths(1).minusDays(1);
                 break;
-            case SKU_SUBSCRIPTION_THREE_MONTHS:
+            case Constants.SKU_SUBSCRIPTION_QUARTERLY:
                 membershipType = MembershipType.THREE_MONTHS;
                 expirationDate = purchasedDate.plusMonths(3).minusDays(1);
                 break;
-            case SKU_SUBSCRIPTION_YEARLY:
+            case Constants.SKU_SUBSCRIPTION_YEARLY:
                 membershipType = MembershipType.YEARLY;
                 expirationDate = purchasedDate.plusYears(1).minusDays(1);
                 break;
