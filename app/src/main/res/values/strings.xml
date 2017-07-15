@@ -929,6 +929,18 @@
     <string name="dialog_delete_post_message">Sure you want to delete this amazing post?</string>
     <string name="trial_expiring_message">To continue using all upgrades become premium member or buy them with coins</string>
     <string name="trial_expiring_title">iPoli trial expires tomorrow</string>
+    <string name="membership_expiring_title">iPoli membership is expiring</string>
+    <string name="membership_no_payment_title">iPoli membership payment problem</string>
+    <string name="upgrades_expiring_title">iPoli upgrades are getting locked</string>
+    <plurals name="membership_no_payment_message">
+        <item quantity="one">There is a problem with your subscription payment. You have %d day left to renew your membership</item>
+        <item quantity="other">There is a problem with your subscription payment. You have %d days left to renew your membership</item>
+    </plurals>
+
+    <plurals name="upgrades_expiring_message">
+        <item quantity="one">You have %d upgrade expiring today</item>
+        <item quantity="other">You have %d upgrades expiring today</item>
+    </plurals>
 
     <string-array name="player_titles">
         <item>Novice</item>
