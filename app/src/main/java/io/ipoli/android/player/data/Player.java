@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.firebase.crash.FirebaseCrash;
 
 import org.threeten.bp.DayOfWeek;
+import org.threeten.bp.LocalDate;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.quest.data.Category;
+import io.ipoli.android.store.Upgrade;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -501,5 +503,15 @@ public class Player extends PersistedObject {
     @JsonIgnore
     public boolean hasNoUpgrades() {
         return getInventory().getUpgrades().isEmpty();
+    }
+
+    @JsonIgnore
+    public Map<Upgrade, LocalDate> getUpgrades() {
+        Map<Upgrade, LocalDate> result = new HashMap<>();
+        Map<Integer, Long> upgradesMap = getInventory().getUpgrades();
+        for(Map.Entry<Integer, Long> entry : upgradesMap.entrySet()) {
+            result.put(Upgrade.get(entry.getKey()), DateUtils.fromMillis(entry.getValue()));
+        }
+        return result;
     }
 }

@@ -10,6 +10,7 @@ import org.solovyev.android.checkout.Inventory;
 import org.solovyev.android.checkout.ProductTypes;
 import org.solovyev.android.checkout.Purchase;
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.temporal.ChronoUnit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.data.MembershipType;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.store.Upgrade;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -64,79 +66,118 @@ public class UpgradesJobService extends JobService {
         Player player = playerPersistenceService.get();
 
         if (player.hasNoUpgrades()) {
-            jobFinished(params, false);
-            return false;
+            return finishJobOnMainThread(params);
         }
 
+        LocalDate currentDate = LocalDate.now();
 
         if (player.getMembership() == MembershipType.NONE) {
-            UpgradeStatusValidator validator = new UpgradeStatusValidator(player, false);
-            ValidationStatus status = validator.validate();
-            if (!status.expiring.isEmpty()) {
-                //notification
+            LocalDate createdAt = player.getCreatedAtDate();
+            if (isOnLastDayOfTrial(createdAt, currentDate)) {
+                showTrialExpiringNotification();
+                return finishJobOnMainThread(params);
             }
-            jobFinished(params, false);
-            return false;
+
+            List<Upgrade> expiringUpgrades = new ArrayList<>();
+            for (Map.Entry<Upgrade, LocalDate> entry : player.getUpgrades().entrySet()) {
+                if (entry.getValue().equals(currentDate)) {
+                    expiringUpgrades.add(entry.getKey());
+                }
+            }
+
+            showUpgradesExpiringNotification(expiringUpgrades);
+            return finishJobOnMainThread(params);
         }
 
-        validateSubscription(params, player);
-        return true;
-    }
-
-    private void validateSubscription(JobParameters params, final Player player) {
         List<String> skus = new ArrayList<>();
         skus.add("test_subscription");
         skus.add("test_subscription_yearly");
-
         checkout.loadInventory(Inventory.Request.create().loadAllPurchases()
                 .loadSkus(ProductTypes.SUBSCRIPTION, skus), products -> {
             Inventory.Product subscriptions = products.get(ProductTypes.SUBSCRIPTION);
             Purchase purchase = getActivePurchase(subscriptions.getPurchases());
 
             if (purchase == null) {
-                //has no active subscriptions
                 player.setMembership(MembershipType.NONE);
+                player.getInventory().unlockAllUpgrades(currentDate.minusDays(1));
                 playerPersistenceService.save(player);
                 jobFinished(params, false);
                 return;
             }
 
-            api.getMembershipStatus(purchase.sku, purchase.token, new Api.MembershipStatusResponseListener() {
-                @Override
-                public void onSuccess(Long startTimeMillis, Long expiryTimeMillis, Boolean autoRenewing) {
-                    LocalDate membershipExpirationDate = DateUtils.fromMillis(expiryTimeMillis);
-                    if (shouldExtendGracePeriod(player, membershipExpirationDate, autoRenewing)) {
-                        addGracePeriodToUpgradesExpiration(player);
-                    }
-
-                    UpgradeStatusValidator validator = new UpgradeStatusValidator(player, LocalDate.now(), membershipExpirationDate, autoRenewing);
-                    ValidationStatus status = validator.validate();
-                    if (!status.expired.isEmpty()) {
-                        player.setMembership(MembershipType.NONE);
-                    } else if (!status.expiring.isEmpty()) {
-                        //notification
-                    } else if (!status.toBeRenewed.isEmpty()) {
-                        player.getInventory().unlockAllUpgrades(membershipExpirationDate);
-                    }
-                    playerPersistenceService.save(player);
-
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    //log error
-                }
-            });
-
-            jobFinished(params, false);
+            api.getMembershipStatus(purchase.sku, purchase.token, createMembershipStatusResponseListener(currentDate, player, params));
         });
+
+
+        return true;
     }
 
-    private void addGracePeriodToUpgradesExpiration(Player player) {
-        Map<Integer, Long> upgrades = player.getInventory().getUpgrades();
-        LocalDate currentExpirationDate = DateUtils.fromMillis((upgrades.values().iterator().next()));
-        LocalDate gracePeriodEnd = currentExpirationDate.plusDays(Constants.UPGRADE_GRACE_PERIOD_DAYS - 1);
-        player.getInventory().unlockAllUpgrades(gracePeriodEnd);
+    private Api.MembershipStatusResponseListener createMembershipStatusResponseListener(LocalDate currentDate, Player player, JobParameters params) {
+        return new Api.MembershipStatusResponseListener() {
+            @Override
+            public void onSuccess(Long startTimeMillis, Long expiryTimeMillis, Boolean autoRenewing) {
+                LocalDate membershipExpirationDate = DateUtils.fromMillis(expiryTimeMillis);
+
+                if (!autoRenewing && membershipExpirationDate.isEqual(currentDate)) {
+                    showMembershipExpiringTodayNotification();
+                    jobFinished(params, false);
+                    return;
+                }
+
+                if (autoRenewing) {
+                    LocalDate gracePeriodStart = membershipExpirationDate.minusDays(Constants.UPGRADE_GRACE_PERIOD_DAYS - 1);
+                    if (isInGracePeriod(membershipExpirationDate, gracePeriodStart, currentDate)) {
+                        player.getInventory().unlockAllUpgrades(membershipExpirationDate);
+                        playerPersistenceService.save(player);
+                        showMembershipExpiringAfterDays((int) ChronoUnit.DAYS.between(currentDate, membershipExpirationDate) + 1);
+                        jobFinished(params, false);
+                        return;
+                    }
+
+                    player.getInventory().unlockAllUpgrades(membershipExpirationDate.minusDays(Constants.UPGRADE_GRACE_PERIOD_DAYS));
+                    playerPersistenceService.save(player);
+                    jobFinished(params, false);
+
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+                //log error
+                jobFinished(params, true);
+            }
+        };
+    }
+
+    private boolean isInGracePeriod(LocalDate membershipExpirationDate, LocalDate gracePeriodStart, LocalDate currentDate) {
+        return DateUtils.isBetween(currentDate, gracePeriodStart, membershipExpirationDate);
+    }
+
+    private void showMembershipExpiringAfterDays(int days) {
+
+    }
+
+    private void showMembershipExpiringTodayNotification() {
+
+    }
+
+    protected boolean finishJobOnMainThread(JobParameters params) {
+        jobFinished(params, false);
+        return false;
+    }
+
+    private void showUpgradesExpiringNotification(List<Upgrade> expiringUpgrades) {
+        if (expiringUpgrades.isEmpty()) {
+            return;
+        }
+    }
+
+    private void showTrialExpiringNotification() {
+
+    }
+
+    private boolean isOnLastDayOfTrial(LocalDate createdAt, LocalDate currentDate) {
+        return createdAt.plusDays(Constants.UPGRADE_TRIAL_PERIOD_DAYS - 1).isEqual(currentDate);
     }
 
     private Purchase getActivePurchase(List<Purchase> purchases) {
@@ -146,27 +187,6 @@ public class UpgradesJobService extends JobService {
             }
         }
         return null;
-    }
-
-    private boolean shouldExtendGracePeriod(Player player, LocalDate membershipExpirationDate, Boolean autoRenewing) {
-        if (!autoRenewing) {
-            return false;
-        }
-
-        Map<Integer, Long> upgrades = player.getInventory().getUpgrades();
-        LocalDate currentExpirationDate = DateUtils.fromMillis((upgrades.values().iterator().next()));
-        LocalDate gracePeriodEnd = currentExpirationDate.plusDays(Constants.UPGRADE_GRACE_PERIOD_DAYS - 1);
-
-        if (gracePeriodEnd.isBefore(membershipExpirationDate)) {
-            return false;
-        }
-
-        LocalDate currentDate = LocalDate.now();
-        if (DateUtils.isBetween(currentDate, currentExpirationDate.plusDays(1), gracePeriodEnd)) {
-            return true;
-        }
-
-        return false;
     }
 
     @Override
