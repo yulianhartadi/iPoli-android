@@ -105,7 +105,7 @@ public class UpgradesJobService extends JobService {
                 @Override
                 public void onSuccess(Long startTimeMillis, Long expiryTimeMillis, Boolean autoRenewing) {
                     LocalDate membershipExpirationDate = DateUtils.fromMillis(expiryTimeMillis);
-                    if (isInGrace(player, membershipExpirationDate, autoRenewing)) {
+                    if (shouldExtendGracePeriod(player, membershipExpirationDate, autoRenewing)) {
                         addGracePeriodToUpgradesExpiration(player);
                     }
 
@@ -148,7 +148,7 @@ public class UpgradesJobService extends JobService {
         return null;
     }
 
-    private boolean isInGrace(Player player, LocalDate membershipExpirationDate, Boolean autoRenewing) {
+    private boolean shouldExtendGracePeriod(Player player, LocalDate membershipExpirationDate, Boolean autoRenewing) {
         if (!autoRenewing) {
             return false;
         }
