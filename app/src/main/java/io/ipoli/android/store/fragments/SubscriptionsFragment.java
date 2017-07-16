@@ -255,13 +255,13 @@ public class SubscriptionsFragment extends BaseFragment {
         }
 
         Sku.Price monthlyPrice = monthlySubscription.detailedPrice;
-        this.monthlyPrice.setText(calculatePricePerMonth(monthlyPrice.amount, 1) + monthlyPrice.currency + " per month");
+        this.monthlyPrice.setText(calculatePricePerMonth(monthlyPrice.amount, 1) + monthlyPrice.currency + "\nper mo.");
 
         Sku.Price yearlyPrice = yearlySubscription.detailedPrice;
-        this.yearlyPrice.setText(calculatePricePerMonth(yearlyPrice.amount, 1) + yearlyPrice.currency + " per month");
+        this.yearlyPrice.setText(calculatePricePerMonth(yearlyPrice.amount, 1) + yearlyPrice.currency + "\nper mo.");
 
         Sku.Price quarterlyPrice = quarterlySubscription.detailedPrice;
-        this.quarterlyPrice.setText(calculatePricePerMonth(quarterlyPrice.amount, 1) + quarterlyPrice.currency + " per month");
+        this.quarterlyPrice.setText(calculatePricePerMonth(quarterlyPrice.amount, 1) + quarterlyPrice.currency + "\nper mo.");
 
         hideLoaderContainer();
 

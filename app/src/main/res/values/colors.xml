@@ -6,6 +6,10 @@
     <color name="colorAccentDark">@color/md_red_A700</color>
     <color name="colorAccentAlternative">@color/md_green_A400</color>
 
+    <color name="colorYellow">#ffc107</color>
+    <color name="colorGreen">#367d38</color>
+    <color name="colorRed">#ff1744</color>
+
     <color name="md_white">#FFFFFF</color>
     <color name="md_black">#000000</color>
 
