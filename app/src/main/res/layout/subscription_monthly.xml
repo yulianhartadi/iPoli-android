@@ -65,7 +65,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginTop="24dp"
             android:gravity="center"
-            android:textColor="@color/colorYellow"
+            android:textColor="@color/md_dark_text_54"
             android:text="3.89BGN\nper month"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:visibility="visible"
@@ -75,7 +75,7 @@
 
         <TextView
             android:id="@+id/benefit1"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:drawablePadding="4dp"
@@ -91,7 +91,7 @@
 
         <TextView
             android:id="@+id/benefit2"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:drawablePadding="4dp"
@@ -100,14 +100,14 @@
             android:text="Get all future upgrades for FREE"
             app:layout_constraintLeft_toLeftOf="@+id/monthly_title"
             app:layout_constraintTop_toBottomOf="@+id/benefit1"
-            app:layout_constraintRight_toLeftOf="@+id/monthly_price"
             android:layout_marginLeft="0dp"
-            android:layout_marginRight="8dp"
-            app:layout_constraintHorizontal_bias="0.0" />
+            android:layout_marginRight="16dp"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintRight_toRightOf="parent" />
 
         <TextView
             android:id="@+id/disadvantage1"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:drawablePadding="4dp"
@@ -115,7 +115,11 @@
             android:gravity="center_vertical"
             android:text="Most expensive option - billed monthly"
             app:layout_constraintLeft_toLeftOf="@+id/monthly_title"
-            app:layout_constraintTop_toBottomOf="@+id/benefit2" />
+            app:layout_constraintTop_toBottomOf="@+id/benefit2"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="16dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintHorizontal_bias="0.0" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.v7.widget.CardView>
