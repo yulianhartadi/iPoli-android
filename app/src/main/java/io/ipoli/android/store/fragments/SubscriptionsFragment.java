@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -68,6 +69,7 @@ import io.ipoli.android.store.events.CoinsPurchasedEvent;
  */
 public class SubscriptionsFragment extends BaseFragment {
 
+    public static final int MICRO_UNIT = 1000000;
     @Inject
     PlayerPersistenceService playerPersistenceService;
 
@@ -101,11 +103,8 @@ public class SubscriptionsFragment extends BaseFragment {
     @BindView(R.id.quarterly_root_layout)
     ViewGroup quarterlyContainer;
 
-//    @BindView(R.id.yearly_ribbon)
-//    ImageView yearlyRibbon;
-//
-//    @BindView(R.id.yearly_most_popular)
-//    TextView yearlyMostPopular;
+    @BindView(R.id.yearly_image)
+    ImageView yearlyBadge;
 
     private Unbinder unbinder;
 
@@ -125,7 +124,7 @@ public class SubscriptionsFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         ((StoreActivity) getActivity()).populateTitle(R.string.fragment_coin_store_title);
 
-        loaderContainer.setVisibility(View.VISIBLE);
+//        loaderContainer.setVisibility(View.VISIBLE);
 
         if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
             showFailureMessage(R.string.no_internet_to_buy_coins);
@@ -211,8 +210,7 @@ public class SubscriptionsFragment extends BaseFragment {
 
             @Override
             public void onAnimationEnd(Animation animation) {
-//                yearlyRibbon.setVisibility(View.VISIBLE);
-//                yearlyMostPopular.setVisibility(View.VISIBLE);
+                yearlyBadge.setVisibility(View.VISIBLE);
                 animateMostPopular();
             }
 
@@ -270,13 +268,12 @@ public class SubscriptionsFragment extends BaseFragment {
 
     private double calculatePricePerMonth(long price, int months) {
         double pricePerMonth = price / (double) months;
-        int x = (int) (pricePerMonth / 10000);
+        int x = (int) (pricePerMonth / (MICRO_UNIT / 100));
         return x / 100.0;
     }
 
     private void animateMostPopular() {
-//        yearlyRibbon.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.scale_in_from_right_top));
-//        yearlyMostPopular.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.scale_in_from_right_top));
+        yearlyBadge.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.scale_in_zoomed));
     }
 
     @OnClick(R.id.monthly_buy)
