@@ -12,10 +12,7 @@ import io.ipoli.android.R;
 public enum PowerUp {
     REMINDERS(1, 300, R.string.reminders, R.string.power_up_reminders_sub_title,
             R.string.power_up_reminders_short_desc, R.string.power_up_reminders_long_desc, R.drawable.ic_reminders_white_24dp),
-
-    REPEATING_QUESTS(2, 500, R.string.repeating_quests, R.string.power_up_rq_sub_title,
-            R.string.power_up_rq_short_desc, R.string.power_up_rq_long_desc, R.drawable.ic_repeat_white_24dp),
-
+    
     CHALLENGES(3, 500, R.string.challenges, R.string.power_up_challenges_sub_title,
             R.string.power_up_challenges_short_desc, R.string.power_up_challenges_long_desc, R.drawable.ic_sword_white_24dp),
 

@@ -17,7 +17,7 @@ import static io.ipoli.android.app.utils.DateUtils.toMillis;
  */
 
 public class Inventory {
-    private Map<Integer, Long> upgrades;
+    private Map<Integer, Long> powerUps;
     private Map<Integer, Long> pets;
     private Map<Integer, Long> avatars;
 
@@ -26,8 +26,8 @@ public class Inventory {
     }
 
     @JsonIgnore
-    public void addUpgrade(PowerUp powerUp, LocalDate expirationDate) {
-        getUpgrades().put(powerUp.code, toMillis(expirationDate));
+    public void addPowerUp(PowerUp powerUp, LocalDate expirationDate) {
+        getPowerUps().put(powerUp.code, toMillis(expirationDate));
     }
 
     @JsonIgnore
@@ -40,15 +40,15 @@ public class Inventory {
         getAvatars().put(avatar.code, toMillis(localDate));
     }
 
-    public Map<Integer, Long> getUpgrades() {
-        if (upgrades == null) {
-            upgrades = new HashMap<>();
+    public Map<Integer, Long> getPowerUps() {
+        if (powerUps == null) {
+            powerUps = new HashMap<>();
         }
-        return upgrades;
+        return powerUps;
     }
 
-    public void setUpgrades(Map<Integer, Long> upgrades) {
-        this.upgrades = upgrades;
+    public void setPowerUps(Map<Integer, Long> powerUps) {
+        this.powerUps = powerUps;
     }
 
     public Map<Integer, Long> getPets() {
@@ -74,15 +74,9 @@ public class Inventory {
     }
 
     @JsonIgnore
-    public void unlockAllUpgrades(LocalDate expirationDate) {
-        for(PowerUp powerUp : PowerUp.values()) {
-            addUpgrade(powerUp, expirationDate);
+    public void unlockAllPowerUps(LocalDate expirationDate) {
+        for (PowerUp powerUp : PowerUp.values()) {
+            addPowerUp(powerUp, expirationDate);
         }
     }
-
-    @JsonIgnore
-    public void lockAllUpgrades() {
-        upgrades.clear();
-    }
-
 }

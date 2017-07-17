@@ -50,12 +50,12 @@ public class PowerUpManager implements OnDataChangedListener<Player> {
         if (player.getInventory() == null) {
             return false;
         }
-        Map<Integer, Long> upgrades = player.getInventory().getUpgrades();
-        if(!upgrades.containsKey(powerUp.code)) {
+        Map<Integer, Long> powerUps = player.getInventory().getPowerUps();
+        if(!powerUps.containsKey(powerUp.code)) {
             return false;
         }
 
-        LocalDate expirationDate = DateUtils.fromMillis(upgrades.get(powerUp.code));
+        LocalDate expirationDate = DateUtils.fromMillis(powerUps.get(powerUp.code));
         return !expirationDate.isBefore(LocalDate.now(DateUtils.ZONE_UTC));
     }
 
@@ -73,7 +73,7 @@ public class PowerUpManager implements OnDataChangedListener<Player> {
         if (player.getInventory() == null) {
             player.setInventory(new Inventory());
         }
-        player.getInventory().addUpgrade(powerUp, expirationDate);
+        player.getInventory().addPowerUp(powerUp, expirationDate);
         playerPersistenceService.save(player);
     }
 
@@ -82,15 +82,15 @@ public class PowerUpManager implements OnDataChangedListener<Player> {
         if (player.getInventory() == null) {
             return null;
         }
-        if (!player.getInventory().getUpgrades().containsKey(powerUp.code)) {
+        if (!player.getInventory().getPowerUps().containsKey(powerUp.code)) {
             return null;
         }
-        return player.getInventory().getUpgrades().get(powerUp.code);
+        return player.getInventory().getPowerUps().get(powerUp.code);
     }
 
     public Set<Integer> getUnlockedCodes() {
         Player player = getPlayer();
-        return player.getInventory().getUpgrades().keySet();
+        return player.getInventory().getPowerUps().keySet();
     }
 
     @Override

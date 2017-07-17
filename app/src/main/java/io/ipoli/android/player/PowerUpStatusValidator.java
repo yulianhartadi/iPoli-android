@@ -73,7 +73,7 @@ public class PowerUpStatusValidator {
             statusType = ValidationStatus.StatusType.MEMBER;
         }
 
-        Map<Integer, Long> upgrades = player.getInventory().getUpgrades();
+        Map<Integer, Long> upgrades = player.getInventory().getPowerUps();
         if (membershipExpirationDate != null) {
             long membershipExpirationMillis = DateUtils.toMillis(membershipExpirationDate);
             for (Map.Entry<Integer, Long> entry : upgrades.entrySet()) {

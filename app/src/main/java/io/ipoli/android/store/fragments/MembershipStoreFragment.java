@@ -367,7 +367,7 @@ public class MembershipStoreFragment extends BaseFragment {
 
 
     private Map<Integer, Long> getActiveUpgrades(Player player) {
-        Map<Integer, Long> upgrades = player.getInventory().getUpgrades();
+        Map<Integer, Long> upgrades = player.getInventory().getPowerUps();
         if (upgrades.isEmpty()) {
             return new HashMap<>();
         }
@@ -406,7 +406,7 @@ public class MembershipStoreFragment extends BaseFragment {
                 expirationDate = LocalDate.now();
         }
 
-        player.getInventory().unlockAllUpgrades(expirationDate);
+        player.getInventory().unlockAllPowerUps(expirationDate);
         player.setMembership(membershipType);
         playerPersistenceService.save(player);
     }

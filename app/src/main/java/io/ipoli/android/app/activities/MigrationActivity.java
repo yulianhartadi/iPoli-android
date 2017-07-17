@@ -186,6 +186,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
         public Boolean loadInBackground() {
             updateAvatars();
             migrateRewardPoints();
+            removeRepeatingQuestForPowerUps();
 
             if (schemaVersion < Constants.PROFILES_FIRST_SCHEMA_VERSION) {
                 migrateUsername();
@@ -194,6 +195,11 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
                 return migrateAndroidCalendars();
             }
             return true;
+        }
+
+        private void removeRepeatingQuestForPowerUps() {
+            int repeatingQuestCode = 2;
+
         }
 
         @Override
@@ -248,7 +254,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
             LocalDate unlockedDate = DateUtils.fromMillis(player.getCreatedAt());
             if (schemaVersion == 3 || schemaVersion == 4) {
                 for (PowerUp powerUp : PowerUp.values()) {
-                    player.getInventory().addUpgrade(powerUp, unlockedDate);
+                    player.getInventory().addPowerUp(powerUp, unlockedDate);
                 }
             }
 

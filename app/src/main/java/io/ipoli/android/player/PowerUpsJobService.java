@@ -72,7 +72,7 @@ public class PowerUpsJobService extends JobService {
 
         Player player = playerPersistenceService.get();
 
-        if (player.hasNoUpgrades()) {
+        if (player.hasNoPowerUps()) {
             return finishJobOnMainThread(params);
         }
 
@@ -86,7 +86,7 @@ public class PowerUpsJobService extends JobService {
             }
 
             List<PowerUp> expiringPowerUps = new ArrayList<>();
-            for (Map.Entry<PowerUp, LocalDate> entry : player.getUpgrades().entrySet()) {
+            for (Map.Entry<PowerUp, LocalDate> entry : player.getPowerUps().entrySet()) {
                 if (entry.getValue().equals(currentDate)) {
                     expiringPowerUps.add(entry.getKey());
                 }
@@ -107,7 +107,7 @@ public class PowerUpsJobService extends JobService {
 
             if (purchase == null) {
                 player.setMembership(MembershipType.NONE);
-                player.getInventory().unlockAllUpgrades(currentDate.minusDays(1));
+                player.getInventory().unlockAllPowerUps(currentDate.minusDays(1));
                 playerPersistenceService.save(player);
                 jobFinished(params, false);
                 return;
@@ -135,14 +135,14 @@ public class PowerUpsJobService extends JobService {
                 if (autoRenewing) {
                     LocalDate gracePeriodStart = membershipExpirationDate.minusDays(Constants.POWER_UP_GRACE_PERIOD_DAYS - 1);
                     if (isInGracePeriod(membershipExpirationDate, gracePeriodStart, currentDate)) {
-                        player.getInventory().unlockAllUpgrades(membershipExpirationDate);
+                        player.getInventory().unlockAllPowerUps(membershipExpirationDate);
                         playerPersistenceService.save(player);
                         showMembershipExpiringAfterDays((int) ChronoUnit.DAYS.between(currentDate, membershipExpirationDate) + 1);
                         jobFinished(params, false);
                         return;
                     }
 
-                    player.getInventory().unlockAllUpgrades(membershipExpirationDate.minusDays(Constants.POWER_UP_GRACE_PERIOD_DAYS));
+                    player.getInventory().unlockAllPowerUps(membershipExpirationDate.minusDays(Constants.POWER_UP_GRACE_PERIOD_DAYS));
                     playerPersistenceService.save(player);
                     jobFinished(params, false);
 

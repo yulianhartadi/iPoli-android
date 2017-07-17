@@ -477,15 +477,15 @@ public class Player extends PersistedObject {
     }
 
     @JsonIgnore
-    public boolean hasNoUpgrades() {
-        return getInventory().getUpgrades().isEmpty();
+    public boolean hasNoPowerUps() {
+        return getInventory().getPowerUps().isEmpty();
     }
 
     @JsonIgnore
-    public Map<PowerUp, LocalDate> getUpgrades() {
+    public Map<PowerUp, LocalDate> getPowerUps() {
         Map<PowerUp, LocalDate> result = new HashMap<>();
-        Map<Integer, Long> upgradesMap = getInventory().getUpgrades();
-        for(Map.Entry<Integer, Long> entry : upgradesMap.entrySet()) {
+        Map<Integer, Long> powerUpsMap = getInventory().getPowerUps();
+        for(Map.Entry<Integer, Long> entry : powerUpsMap.entrySet()) {
             result.put(PowerUp.get(entry.getKey()), DateUtils.fromMillis(entry.getValue()));
         }
         return result;
