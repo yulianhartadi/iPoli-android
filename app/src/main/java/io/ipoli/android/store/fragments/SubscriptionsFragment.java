@@ -124,7 +124,7 @@ public class SubscriptionsFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         ((StoreActivity) getActivity()).populateTitle(R.string.fragment_coin_store_title);
 
-        loaderContainer.setVisibility(View.VISIBLE);
+//        loaderContainer.setVisibility(View.VISIBLE);
 
         if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
             showFailureMessage(R.string.no_internet_to_buy_coins);
@@ -175,7 +175,8 @@ public class SubscriptionsFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        queryInventory();
+//        queryInventory();
+        animatePacks();
     }
 
 
