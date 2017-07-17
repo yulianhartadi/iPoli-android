@@ -254,13 +254,13 @@ public class MembershipStoreFragment extends BaseFragment {
         }
 
         Sku.Price monthlyPrice = monthlySubscription.detailedPrice;
-        this.monthlyPrice.setText(calculatePricePerMonth(monthlyPrice.amount, 1) + monthlyPrice.currency + "\nper mo.");
+        this.monthlyPrice.setText(getString(R.string.subscription_price_per_month, calculatePricePerMonth(monthlyPrice.amount, 1) + monthlyPrice.currency));
 
         Sku.Price yearlyPrice = yearlySubscription.detailedPrice;
-        this.yearlyPrice.setText(calculatePricePerMonth(yearlyPrice.amount, 1) + yearlyPrice.currency + "\nper mo.");
+        this.yearlyPrice.setText(getString(R.string.subscription_price_per_month, calculatePricePerMonth(yearlyPrice.amount, 1) + yearlyPrice.currency));
 
         Sku.Price quarterlyPrice = quarterlySubscription.detailedPrice;
-        this.quarterlyPrice.setText(calculatePricePerMonth(quarterlyPrice.amount, 1) + quarterlyPrice.currency + "\nper mo.");
+        this.quarterlyPrice.setText(getString(R.string.subscription_price_per_month, calculatePricePerMonth(quarterlyPrice.amount, 1) + quarterlyPrice.currency));
 
         hideLoaderContainer();
 

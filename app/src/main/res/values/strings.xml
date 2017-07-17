@@ -937,6 +937,7 @@
 
     <string name="trial_message">Surprise! All power-ups are FREE for you for %d days.</string>
     <string name="membership">Membership</string>
+    <string name="subscription_price_per_month">%s per month</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
