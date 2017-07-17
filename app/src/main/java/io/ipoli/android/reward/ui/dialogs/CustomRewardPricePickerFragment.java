@@ -29,12 +29,12 @@ import static io.ipoli.android.Constants.REWARD_MIN_PRICE;
  */
 public class CustomRewardPricePickerFragment extends DialogFragment {
     private static final String TAG = "custom-reward-price-picker-dialog";
-    private static final String POINTS = "points";
+    private static final String COINS = "coins";
 
-    @BindView(R.id.reward_points)
+    @BindView(R.id.reward_coins)
     TextInputEditText pointsView;
 
-    private Integer points;
+    private Integer coins;
     private OnPricePickedListener pricePickedListener;
     private Unbinder unbinder;
 
@@ -42,11 +42,11 @@ public class CustomRewardPricePickerFragment extends DialogFragment {
         return newInstance(null, pricePickedListener);
     }
 
-    public static CustomRewardPricePickerFragment newInstance(Integer points, OnPricePickedListener pricePickedListener) {
+    public static CustomRewardPricePickerFragment newInstance(Integer coins, OnPricePickedListener pricePickedListener) {
         CustomRewardPricePickerFragment fragment = new CustomRewardPricePickerFragment();
-        if (points != null) {
+        if (coins != null) {
             Bundle args = new Bundle();
-            args.putInt(POINTS, points);
+            args.putInt(COINS, coins);
             fragment.setArguments(args);
         }
         fragment.pricePickedListener = pricePickedListener;
@@ -57,7 +57,7 @@ public class CustomRewardPricePickerFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            points = getArguments().getInt(POINTS);
+            coins = getArguments().getInt(COINS);
         }
     }
 
@@ -68,8 +68,8 @@ public class CustomRewardPricePickerFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_price_picker, null);
         unbinder = ButterKnife.bind(this, view);
 
-        if (points != null) {
-            pointsView.setText(String.valueOf(points));
+        if (coins != null) {
+            pointsView.setText(String.valueOf(coins));
             pointsView.setSelection(pointsView.getText().length());
         }
 
@@ -93,8 +93,8 @@ public class CustomRewardPricePickerFragment extends DialogFragment {
         positiveButton.setOnClickListener(v -> {
             String text = pointsView.getText().toString();
             if (StringUtils.isEmpty(text)) {
-                pointsView.setError(getString(R.string.min_reward_points, REWARD_MIN_PRICE));
-                Toast.makeText(getContext(), R.string.empty_reward_points_message, Toast.LENGTH_SHORT).show();
+                pointsView.setError(getString(R.string.min_reward_price, REWARD_MIN_PRICE));
+                Toast.makeText(getContext(), R.string.empty_reward_price_message, Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -105,8 +105,8 @@ public class CustomRewardPricePickerFragment extends DialogFragment {
             }
 
             if (selectedPoints > REWARD_MAX_PRICE) {
-                pointsView.setError(getString(R.string.max_reward_points, REWARD_MAX_PRICE));
-                Toast.makeText(getContext(), R.string.too_expensive_reward_points_message, Toast.LENGTH_SHORT).show();
+                pointsView.setError(getString(R.string.max_reward_price, REWARD_MAX_PRICE));
+                Toast.makeText(getContext(), R.string.too_expensive_reward_price_message, Toast.LENGTH_SHORT).show();
                 return;
             }
 

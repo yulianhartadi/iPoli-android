@@ -20,7 +20,6 @@ public class Pet {
     private Integer healthPointsPercentage;
     private Integer experienceBonusPercentage;
     private Integer coinsBonusPercentage;
-    private Integer rewardPointsBonusPercentage;
     private Integer avatarCode;
     private String backgroundPicture;
 
@@ -72,7 +71,6 @@ public class Pet {
         this.healthPointsPercentage = Math.max(0, Math.min(100, healthPointsPercentage));
         updateExperienceBonusPercentage();
         updateCoinsBonusPercentage();
-        updateRewardPointsBonusPercentage();
     }
 
     public Integer getExperienceBonusPercentage() {
@@ -91,14 +89,6 @@ public class Pet {
         this.coinsBonusPercentage = Math.max(0, Math.min(Constants.MAX_PET_COIN_BONUS, coinsBonusPercentage));
     }
 
-    public Integer getRewardPointsBonusPercentage() {
-        return rewardPointsBonusPercentage;
-    }
-
-    public void setRewardPointsBonusPercentage(Integer rewardPointsBonusPercentage) {
-        this.rewardPointsBonusPercentage = Math.max(0, Math.min(Constants.MAX_PET_REWARD_POINTS_BONUS, rewardPointsBonusPercentage));
-    }
-
     @JsonIgnore
     public void addHealthPoints(int healthPoints) {
         setHealthPointsPercentage(getHealthPointsPercentage() + healthPoints);
@@ -107,11 +97,6 @@ public class Pet {
     @JsonIgnore
     private void updateCoinsBonusPercentage() {
         setCoinsBonusPercentage((int) Math.floor(getHealthPointsPercentage() * Constants.COINS_BONUS_PERCENTAGE_OF_HP / 100.0));
-    }
-
-    @JsonIgnore
-    private void updateRewardPointsBonusPercentage() {
-        setRewardPointsBonusPercentage((int) Math.floor(getHealthPointsPercentage() * Constants.REWARD_POINTS_BONUS_PERCENTAGE_OF_HP / 100.0));
     }
 
     @JsonIgnore

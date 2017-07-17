@@ -97,7 +97,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
         Player player = getPlayer();
         schemaVersion = player.getSchemaVersion();
 
-        if (schemaVersion >= VERSION_BEFORE_UPGRADES) {//leave only == when null pointers for rewardPoints and avatars are fixed
+        if (schemaVersion >= VERSION_BEFORE_UPGRADES) {
             getSupportLoaderManager().initLoader(1, null, this);
         } else {
             onFinish();
@@ -183,6 +183,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
         @Override
         public Boolean loadInBackground() {
             unlockUpgrades();
+
             if(schemaVersion < Constants.PROFILES_FIRST_SCHEMA_VERSION) {
                 migrateUsername();
             }
@@ -219,10 +220,6 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
                 for (Upgrade upgrade : Upgrade.values()) {
                     player.getInventory().addUpgrade(upgrade, unlockedDate);
                 }
-            }
-
-            if (player.getRewardPoints() == player.getCoins()) {
-                player.setRewardPoints(player.getCoins());
             }
 
             if (playerPicture != null) {

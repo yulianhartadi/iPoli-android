@@ -64,18 +64,6 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/player_reward_points"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:drawablePadding="2dp"
-                    android:drawableStart="@drawable/ic_reward_candy_white_24dp"
-                    android:gravity="center_vertical"
-                    android:text="20"
-                    android:textColor="@color/md_white"
-                    android:textSize="14sp" />
-
-                <TextView
                     android:id="@+id/player_current_xp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

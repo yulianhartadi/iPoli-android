@@ -88,7 +88,6 @@ public interface Constants {
     int DEFAULT_PLAYER_XP = 20;
     int DEFAULT_PLAYER_LEVEL = 1;
     long DEFAULT_PLAYER_COINS = 10;
-    long DEFAULT_PLAYER_REWARD_POINTS = 10;
     Avatar DEFAULT_PLAYER_AVATAR = Avatar.IPOLI_CLASSIC;
     Set<TimeOfDay> DEFAULT_PLAYER_PRODUCTIVE_TIMES = new HashSet<>(Collections.singletonList(TimeOfDay.MORNING));
     int DEFAULT_PLAYER_WORK_START_MINUTE = 10 * 60;
@@ -107,7 +106,7 @@ public interface Constants {
 
     Integer[] DURATIONS = {10, 15, 25, 30, 45, 60, 90, 120};
 
-    Integer[] REWARD_POINTS = {10, 20, 50, 100, 200, 500, 1000};
+    Integer[] REWARD_COINS = {10, 20, 50, 100, 200, 500, 1000};
 
     int DEFAULT_REWARD_PRICE = 10;
 

@@ -39,7 +39,6 @@ public class Player extends PersistedObject {
     private Integer level;
     private String experience;
     private Long coins;
-    private Long rewardPoints;
     private Integer avatarCode;
     private List<Pet> pets;
     private Set<String> mostProductiveTimesOfDay;
@@ -61,7 +60,7 @@ public class Player extends PersistedObject {
         super(TYPE);
     }
 
-    public Player(String username, String displayName, String experience, int level, long coins, long rewardPoints, Integer avatarCode, boolean use24HourFormat, Pet pet) {
+    public Player(String username, String displayName, String experience, int level, long coins, Integer avatarCode, boolean use24HourFormat, Pet pet) {
         super(TYPE);
         setUsername(username);
         setDisplayName(displayName);
@@ -74,7 +73,6 @@ public class Player extends PersistedObject {
         this.experience = experience;
         this.level = level;
         this.coins = coins;
-        this.rewardPoints = rewardPoints;
         this.avatarCode = avatarCode;
         setMostProductiveTimesOfDaySet(Constants.DEFAULT_PLAYER_PRODUCTIVE_TIMES);
         setWorkDays(Constants.DEFAULT_PLAYER_WORK_DAYS);
@@ -143,16 +141,6 @@ public class Player extends PersistedObject {
     @JsonIgnore
     public void removeCoins(long coins) {
         this.coins = Math.max(0, this.coins - coins);
-    }
-
-    @JsonIgnore
-    public void addRewardPoints(long points) {
-        this.rewardPoints = getRewardPoints() + points;
-    }
-
-    @JsonIgnore
-    public void removeRewardPoints(long points) {
-        this.rewardPoints = Math.max(0, getRewardPoints() - points);
     }
 
     public String getExperience() {
@@ -409,18 +397,6 @@ public class Player extends PersistedObject {
 
     public void setInventory(Inventory inventory) {
         this.inventory = inventory;
-    }
-
-    public Long getRewardPoints() {
-        if (rewardPoints == null) {
-            FirebaseCrash.report(new RuntimeException("Player with id " + getId() + " has no rewardPoints set"));
-            return coins;
-        }
-        return rewardPoints;
-    }
-
-    public void setRewardPoints(Long rewardPoints) {
-        this.rewardPoints = rewardPoints;
     }
 
     @JsonIgnore

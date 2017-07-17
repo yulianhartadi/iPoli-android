@@ -439,7 +439,6 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                 String.valueOf(Constants.DEFAULT_PLAYER_XP),
                 Constants.DEFAULT_PLAYER_LEVEL,
                 Constants.DEFAULT_PLAYER_COINS,
-                Constants.DEFAULT_PLAYER_REWARD_POINTS,
                 Constants.DEFAULT_PLAYER_AVATAR.code,
                 DateFormat.is24HourFormat(this), pet);
 

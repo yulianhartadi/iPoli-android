@@ -20,7 +20,7 @@ import io.ipoli.android.R;
  */
 public class RewardPricePickerFragment extends DialogFragment {
     private static final String TAG = "reward-price-picker-dialog";
-    private static final String POINTS = "points";
+    private static final String COINS = "coins";
 
     private Integer points;
     private OnPricePickedListener pricePickedListener;
@@ -30,11 +30,11 @@ public class RewardPricePickerFragment extends DialogFragment {
         return newInstance(null, pricePickedListener);
     }
 
-    public static RewardPricePickerFragment newInstance(Integer points, OnPricePickedListener pricePickedListener) {
+    public static RewardPricePickerFragment newInstance(Integer coins, OnPricePickedListener pricePickedListener) {
         RewardPricePickerFragment fragment = new RewardPricePickerFragment();
-        if (points != null) {
+        if (coins != null) {
             Bundle args = new Bundle();
-            args.putInt(POINTS, points);
+            args.putInt(COINS, coins);
             fragment.setArguments(args);
         }
         fragment.pricePickedListener = pricePickedListener;
@@ -45,18 +45,18 @@ public class RewardPricePickerFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            points = getArguments().getInt(POINTS);
+            points = getArguments().getInt(COINS);
         }
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        List<Integer> availablePrices = Arrays.asList(Constants.REWARD_POINTS);
+        List<Integer> availablePrices = Arrays.asList(Constants.REWARD_COINS);
         String[] prices = new String[availablePrices.size()];
         selectedPriceIndex = 0;
         for (int i = 0; i < availablePrices.size(); i++) {
-            prices[i] = getString(R.string.reward_price_points, availablePrices.get(i));
+            prices[i] = getString(R.string.reward_price_coins, availablePrices.get(i));
             if (availablePrices.get(i).equals(points)) {
                 selectedPriceIndex = i;
             }

@@ -21,7 +21,6 @@ public class ChallengeCompleteActivity extends BaseActivity {
     public static final String TITLE = "title";
     public static final String EXPERIENCE = "experience";
     public static final String COINS = "coins";
-    public static final String REWARD_POINTS = "reward_points";
 
     @BindView(R.id.dialog_title)
     TextView title;
@@ -31,9 +30,6 @@ public class ChallengeCompleteActivity extends BaseActivity {
 
     @BindView(R.id.coins_text)
     TextView coinsText;
-
-    @BindView(R.id.reward_points_text)
-    TextView rewardPointsText;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,7 +41,6 @@ public class ChallengeCompleteActivity extends BaseActivity {
         title.setText(getIntent().getStringExtra(TITLE));
         experienceText.setText(String.valueOf(getIntent().getLongExtra(EXPERIENCE, 0)));
         coinsText.setText(String.valueOf(getIntent().getLongExtra(COINS, 0)));
-        rewardPointsText.setText(String.valueOf(getIntent().getLongExtra(REWARD_POINTS, 0)));
     }
 
     @OnClick(R.id.done)

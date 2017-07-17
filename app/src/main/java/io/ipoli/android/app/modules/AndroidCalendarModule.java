@@ -12,7 +12,6 @@ import io.ipoli.android.app.sync.AndroidCalendarEventParser;
 import io.ipoli.android.app.sync.SyncAndroidCalendarProvider;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
-import io.ipoli.android.quest.generators.RewardPointsRewardGenerator;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -26,9 +25,8 @@ public class AndroidCalendarModule {
     @Singleton
     public AndroidCalendarEventParser providedAndroidCalendarEventParser(SyncAndroidCalendarProvider syncAndroidCalendarProvider, Bus eventBus,
                                                                          CoinsRewardGenerator coinsRewardGenerator,
-                                                                         ExperienceRewardGenerator experienceRewardGenerator,
-                                                                         RewardPointsRewardGenerator rewardPointsRewardGenerator) {
-        return new AndroidCalendarEventParser(syncAndroidCalendarProvider, eventBus, coinsRewardGenerator, experienceRewardGenerator, rewardPointsRewardGenerator);
+                                                                         ExperienceRewardGenerator experienceRewardGenerator) {
+        return new AndroidCalendarEventParser(syncAndroidCalendarProvider, eventBus, coinsRewardGenerator, experienceRewardGenerator);
     }
 
     @Provides

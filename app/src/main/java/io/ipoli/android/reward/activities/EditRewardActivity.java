@@ -171,7 +171,7 @@ public class EditRewardActivity extends BaseActivity implements OnPricePickedLis
     @OnClick(R.id.reward_price_container)
     public void onPriceClick(View view) {
         Integer price = (Integer) priceText.getTag();
-        List<Integer> prices = Arrays.asList(Constants.REWARD_POINTS);
+        List<Integer> prices = Arrays.asList(Constants.REWARD_COINS);
         if (prices.contains(price)) {
             RewardPricePickerFragment.newInstance(price, this).show(getSupportFragmentManager());
         } else {
@@ -199,7 +199,7 @@ public class EditRewardActivity extends BaseActivity implements OnPricePickedLis
     }
 
     private void setPriceText(int price) {
-        priceText.setText(getString(R.string.reward_price_points, price));
+        priceText.setText(getString(R.string.reward_price_coins, price));
         priceText.setTag(price);
     }
 

@@ -429,7 +429,6 @@ public class MainActivity extends BaseActivity implements
         level.setText(String.format(getString(R.string.player_level), playerLevel, title));
 
         populateHeaderCoins(player, header);
-        populateHeaderPoints(player, header);
         populateHeaderXP(player, header);
 
         ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
@@ -472,13 +471,6 @@ public class MainActivity extends BaseActivity implements
             startActivity(intent);
             eventBus.post(new AvatarCoinsTappedEvent());
         });
-    }
-
-    private void populateHeaderPoints(Player player, View header) {
-        TextView rewardPoints = (TextView) header.findViewById(R.id.player_reward_points);
-        rewardPoints.setText(formatValue(player.getRewardPoints()));
-        rewardPoints.setOnClickListener(v ->
-                Toast.makeText(MainActivity.this, R.string.reward_points_description, Toast.LENGTH_LONG).show());
     }
 
     private void populateHeaderXP(Player player, View header) {

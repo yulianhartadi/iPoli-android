@@ -50,9 +50,6 @@ public class PostViewHolder extends RecyclerView.ViewHolder {
     @BindView(R.id.quest_coins)
     public TextView questCoins;
 
-    @BindView(R.id.quest_reward_points)
-    public TextView questRewardPoints;
-
     @BindView(R.id.quest_experience)
     public TextView questExperience;
 

@@ -701,7 +701,7 @@
     <string name="upgrades">Melhorias</string>
     <string name="avatars">Avatares</string>
     <string name="pets">Animais</string>
-    <string name="reward_price_points">%d pontos</string>
+    <string name="reward_price_coins">%d pontos</string>
     <string name="reward_points_description">Compre recompensas com esses pontos</string>
     <string name="help_dialog_rewards_buy">Clique no botão para comprar sua recompensa. Se ele estiver cinza, esforce-se um pouco mais para ganhar essas moedas!</string>
     <string name="help_dialog_rewards_text1">Defina suas próprias recompensas e compre-as assim que você ganhar moedas suficientes ao completar suas missões.</string>
@@ -826,10 +826,10 @@ Se você precisar de um valor maior, divida a sua missão em missões menores.</
     <string name="donation_pack_desc">Para os generosos e altruístas</string>
     <string name="coins_pack_single_value">+ %d moeda da vida</string>
     <string name="reward_points_hint">Pontos de recompensa</string>
-    <string name="empty_reward_points_message">Não pode haver recompensas grátis</string>
-    <string name="too_expensive_reward_points_message">Caro demais! Seja mais realista.</string>
-    <string name="max_reward_points">máx %d</string>
-    <string name="min_reward_points">min %d</string>
+    <string name="empty_reward_price_message">Não pode haver recompensas grátis</string>
+    <string name="too_expensive_reward_price_message">Caro demais! Seja mais realista.</string>
+    <string name="max_reward_price">máx %d</string>
+    <string name="min_reward_price">min %d</string>
     <string name="ready_for_upgrade">Pronto(a) para uma melhoria?</string>
     <string-array name="player_titles">
         <item>Novato(a)</item>
