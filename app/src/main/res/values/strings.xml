@@ -715,7 +715,7 @@
     <string name="fragment_avatar_store_title">Buy avatar</string>
     <string name="fragment_pet_store_title">Buy pet</string>
     <string name="fragment_power_up_store_title">Enable power-up</string>
-    <string name="power_up_successfully_bought">You can now enjoy %s</string>
+    <string name="power_up_successfully_bought">You can now enjoy %s for a month</string>
     <string name="power_up_too_expensive">Not enough coins to buy %s</string>
     <string name="power_up_dialog_title">You\'ve discovered %s</string>
     <string name="buy">Buy</string>

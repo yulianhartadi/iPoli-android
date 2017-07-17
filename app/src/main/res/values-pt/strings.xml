@@ -660,7 +660,6 @@
     <string name="challenge8_rq4_raw_text">Sair com os amigos duas vezes por semana</string>
     <string name="challenge8_rq4_name">Sair com os amigos</string>
     <string name="fragment_store_title">Loja</string>
-    <string name="power_up_dialog_not_enough_coins">Essa melhoria custa %d moedas. Infelizmente, você não coletou moedas suficientes. Deseja comprar algumas?</string>
     <string name="pet_seal">Cauda fofa</string>
     <string name="pet_donkey">Orelhas chiques</string>
     <string name="pet_elephant">Orelhas voadoras</string>
@@ -685,15 +684,12 @@
     <string name="not_urgent">Adiável</string>
     <string name="coins_pack_value">+ %d moedas da vida</string>
     <string name="power_up_price">%d moedas da vida</string>
-    <string name="power_up_expires_on">Desbloqueado em %s</string>
     <string name="fragment_avatar_store_title">Comprar avatar</string>
     <string name="fragment_pet_store_title">Comprar animal</string>
-    <string name="fragment_power_up_store_title">Desbloquear melhoria</string>
     <string name="power_up_successfully_bought">Agora você pode aproveitar %s</string>
     <string name="power_up_too_expensive">Sem moedas suficientes para comprar %s</string>
     <string name="power_up_dialog_title">Você descobriu %s</string>
     <string name="buy">Comprar</string>
-    <string name="go_premium">Comprar moedas da vida</string>
     <string name="not_now">Agora não</string>
     <string name="go_to_store">Ir para a Loja</string>
     <string name="fragment_membership_store_title">Loja</string>
@@ -701,8 +697,7 @@
     <string name="power_ups">Melhorias</string>
     <string name="avatars">Avatares</string>
     <string name="pets">Animais</string>
-    <string name="reward_price_coins">%d pontos</string>
-    <string name="reward_points_description">Compre recompensas com esses pontos</string>
+    <string name="reward_price_coins">%d moedas</string>
     <string name="help_dialog_rewards_buy">Clique no botão para comprar sua recompensa. Se ele estiver cinza, esforce-se um pouco mais para ganhar essas moedas!</string>
     <string name="help_dialog_rewards_text1">Defina suas próprias recompensas e compre-as assim que você ganhar moedas suficientes ao completar suas missões.</string>
     <string name="get_it">Obter</string>
@@ -715,7 +710,6 @@
     <string name="monthly_plan">Pacote iniciante</string>
     <string name="monthly_plan_desc">A sua jornada começa aqui</string>
     <string name="yearly_plan">Pacote premium</string>
-    <string name="yearly_plan_desc">Para os espertos</string>
     <string name="most_popular">Mais popular</string>
     <string name="quarterly_plan">Pacote Gigante</string>
     <string name="quarterly_plan_desc">Para os ricos e famosos</string>
@@ -775,13 +769,10 @@ Foque na missão atual e o iPoli te notificará quando a próxima missão começ
 Se você precisar de um valor maior, divida a sua missão em missões menores.</string>
     <string name="power_up_dialog_name">Você descobriu %s!</string>
     <string name="power_up_dialog_price_message">Você quer desbloquear isso agora por %d de moedas da vida?</string>
-    <string name="enable">Desbloquear</string>
-    <string name="enable_power_up">Desbloquear melhoria</string>
     <string name="requires_power_up_message">Precisa de %s</string>
-    <string name="reward_points_won">Pontos de recompensa ganhos</string>
     <string name="reward_last_used_date">Última vez usado: %s</string>
     <string name="used_rewards_count">%d usado(s)</string>
-    <string name="reward_price">%d pontos</string>
+    <string name="reward_price">%d moedas</string>
     <string name="why_are_you_here">Psiu, por que você está aqui?</string>
     <string name="improve_myself">Melhorar a mim mesmo(a)</string>
     <string name="no_idea">Não tenho ideia</string>
@@ -825,7 +816,6 @@ Se você precisar de um valor maior, divida a sua missão em missões menores.</
     <string name="donation_pack">Pacote doação</string>
     <string name="donation_pack_desc">Para os generosos e altruístas</string>
     <string name="coins_pack_single_value">+ %d moeda da vida</string>
-    <string name="reward_points_hint">Pontos de recompensa</string>
     <string name="empty_reward_price_message">Não pode haver recompensas grátis</string>
     <string name="too_expensive_reward_price_message">Caro demais! Seja mais realista.</string>
     <string name="max_reward_price">máx %d</string>
