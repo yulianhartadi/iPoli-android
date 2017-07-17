@@ -126,7 +126,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
 
     @Override
     public Loader<Boolean> onCreateLoader(int id, Bundle args) {
-        return new MigrationLoader(this, schemaVersion, playerPersistenceService,
+        return new MigrationLoader(this, schemaVersion, getPlayerId(), playerPersistenceService,
                 database, eventBus, questPersistenceService, repeatingQuestPersistenceService);
     }
 
@@ -157,17 +157,19 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
     private static class MigrationLoader extends AsyncTaskLoader<Boolean> {
 
         private int schemaVersion;
+        private final String playerId;
         private PlayerPersistenceService playerPersistenceService;
         private Database database;
         private Bus eventBus;
         private QuestPersistenceService questPersistenceService;
         private RepeatingQuestPersistenceService repeatingQuestPersistenceService;
 
-        public MigrationLoader(Context context, int schemaVersion, PlayerPersistenceService playerPersistenceService,
+        public MigrationLoader(Context context, int schemaVersion, String playerId, PlayerPersistenceService playerPersistenceService,
                                Database database, Bus eventBus, QuestPersistenceService questPersistenceService,
                                RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
             super(context);
             this.schemaVersion = schemaVersion;
+            this.playerId = playerId;
             this.playerPersistenceService = playerPersistenceService;
             this.database = database;
             this.eventBus = eventBus;
@@ -182,9 +184,9 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
 
         @Override
         public Boolean loadInBackground() {
-            unlockUpgrades();
-
-            if(schemaVersion < Constants.PROFILES_FIRST_SCHEMA_VERSION) {
+            updateAvatars();
+            migrateRewardPoints();
+            if (schemaVersion < Constants.PROFILES_FIRST_SCHEMA_VERSION) {
                 migrateUsername();
             }
             if (schemaVersion < NEW_CALENDAR_IMPORT_VERSION) {
@@ -206,15 +208,42 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
         }
 
 
-        private void unlockUpgrades() {
+        private void migrateRewardPoints() {
+            Long rewardPoints = deleteRewardPoints();
+            if (rewardPoints == null) {
+                return;
+            }
             Player player = playerPersistenceService.get();
+            player.addCoins(Math.min(500, rewardPoints));
+            playerPersistenceService.save(player);
+        }
 
-            Pair<String, String> pics = updatePictures(player.getId());
+        private Long deleteRewardPoints() {
+            Long rewardPoints = null;
+            
+            UnsavedRevision revision = database.getExistingDocument(playerId).createRevision();
+            Map<String, Object> properties = revision.getProperties();
+            if (properties.containsKey("rewardPoints")) {
+                rewardPoints = (Long) properties.get("rewardPoints");
+                properties.remove("rewardPoints");
+            }
+            revision.setProperties(properties);
+            try {
+                revision.save();
+            } catch (CouchbaseLiteException e) {
+                eventBus.post(new AppErrorEvent(e));
+            }
+
+            return rewardPoints;
+        }
+
+        private void updateAvatars() {
+            Pair<String, String> pics = updatePictures();
 
             String playerPicture = pics.first;
             String petPicture = pics.second;
 
-            player = playerPersistenceService.get();
+            Player player = playerPersistenceService.get();
             LocalDate unlockedDate = DateUtils.fromMillis(player.getCreatedAt());
             if (schemaVersion == 3 || schemaVersion == 4) {
                 for (Upgrade upgrade : Upgrade.values()) {
@@ -257,7 +286,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
             playerPersistenceService.save(player);
         }
 
-        private Pair<String, String> updatePictures(String playerId) {
+        private Pair<String, String> updatePictures() {
             String playerPicture = null;
             String petPicture = null;
 
