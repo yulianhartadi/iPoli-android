@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">iPoli</string>
     <string name="title_fragment_inbox">Caixa de entrada</string>
-    <string name="title_activity_pick_avatar">Escolher um avatar</string>
     <string name="title_edit_quest">Editar missão</string>
     <string name="quest_deleted">Missão deletada</string>
     <string name="repeating_quest_deleted">Missão recorrente deletada</string>
@@ -53,12 +52,6 @@
     </string-array>
     <string name="title_activity_main">iPoli</string>
     <string name="save">SALVAR</string>
-    <string name="tutorial_welcome_title">3 Simples Passos para Melhorar a sua Vida</string>
-    <string name="tutorial_hero_desc">As suas tarefas diárias e hábitos agora são chamados de missões. Ganhe moedas e experiência completando-as!</string>
-    <string name="tutorial_challenges_title">Continue se desafiando</string>
-    <string name="tutorial_challenges_desc">Mantenha-se motivado e atinja suas metas de vida com os desafios do iPoli. Ganhe recompensas bônus ao completá-los.</string>
-    <string name="title_pick_initial_repeating_quests">Escolha poucos hábitos para começar</string>
-    <string name="title_pick_initial_quests">Para começar, escolha poucas missões</string>
     <string name="title_fragment_repeating_quests">Missões Recorrentes</string>
     <string name="share">Compartilhe</string>
     <string name="facebook_app_id">1609232436065758</string>
@@ -130,15 +123,9 @@
     <string name="empty_repeating_quests_text">Sem missões recorrentes? Adicionar uma tarefa ou um hábito?</string>
     <string name="nav_drawer_player_xp">EXP: %s</string>
     <string name="help_dialog_growth_title">O que é esse Crescimento?</string>
-    <string name="chart_time_spent_description">Tempo usado por categoria</string>
-    <string name="chart_time_spent_center_text">EXP: %1$d\nMoedas: %2$d</string>
-    <string name="chart_experience_description">Experiência ganha por dia</string>
     <string name="help_dialog_growth_daily_progress">Monitore o seu progresso diário</string>
     <string name="help_dialog_growth_time_spent_chart">O gráfico mostra as categorias de cada missão que você investe mais o seu tempo</string>
     <string name="help_dialog_growth_experience_chart">O gráfico mostra o quanto de experiência (EXP) você ganha por dia</string>
-    <string name="chart_no_data_to_display">Sem dados para mostrar. Vá fazer algumas missões!</string>
-    <string name="summary_stats_hours_spent">Horas gastas: %.1f</string>
-    <string name="summary_stats_quests_done">Missões feitas: %d</string>
     <string name="title_activity_add_challenge">Desafie-se</string>
     <string name="reward_name_validation">Você tem que colocar um nome para a sua recompensa</string>
     <string name="end_of_time">Indeterminado</string>
@@ -230,7 +217,6 @@
     <string name="pick_date">Escolha um dia</string>
     <string name="quest_snoozed">Missão adiada</string>
     <string name="quest_moved_to_inbox">Missão movida para a caixa de entrada</string>
-    <string name="migration_no_internet">iPoli precisa de internet, mas é só dessa vez!</string>
     <string name="help_dialog_calendar_quick_add">Dê um clique longo em qualquer intervalo vazio para usar o adicionar rápido</string>
     <string name="ongoing_notification_no_quests_text">Comece o seu dia com um sorriso</string>
     <string name="ongoing_notification_no_quests_title">Pronto(a) para uma missão?</string>
@@ -238,23 +224,16 @@
     <string name="ongoing_notification_progress_text">Progresso diário: %1$d/%2$d</string>
     <string name="quest_sub_quests_question">Tem uma lista de tarefas?</string>
     <string name="rename_your_pet">Renomear seu animal</string>
-    <string name="tutorial_pet_title">Divirta-se com o seu Companheiro Fiel</string>
-    <string name="tutorial_pet_desc">Flopsy é seu 1º animal de estimação! Ele te ajudará a ganhar mais EXP e moedas quando ele estiver saudável.</string>
-    <string name="title_activity_shop">Pet shop</string>
     <string name="not_enough_coins_to_buy_pet">Sem moedas suficientes para comprar esse animal</string>
-    <string name="buy_pet_confirm_title">Comprar novo animal</string>
-    <string name="buy_pet_confirm_message">Tem certeza que deseja substituir o seu animal atual por esse?</string>
     <string name="help_dialog_pet_title">Divirta-se com o seu amigo fiel!</string>
     <string name="help_dialog_pet_text1">Este é o seu animalzinho de estimação e ele te ajudará na sua jornada!</string>
     <string name="help_dialog_pet_text2">Mantenha-o saudável adicionando e completando missões e desafios. Quanto mais saudável o seu animal, mais bônus você ganha.</string>
     <string name="help_dialog_pet_shop">Vá ao pet shop se quiser comprar e substituir o seu animal de estimação. Você pode ter só um por vez.</string>
     <string name="edit_menu">Editar</string>
-    <string name="brag">Se gabar</string>
     <string name="title_activity_pick_challenge">Escolha um Desafio</string>
     <string name="personalize">Personalizar</string>
     <string name="title_activity_personalize_challenge">Aceitar o Desafio</string>
     <string name="mark_done">MARCAR COMO FEITO</string>
-    <string name="pick_challenge_to_start">Para começar, escolha um desafio</string>
     <string name="pick_challenge">ESCOLHER DESAFIO</string>
     <string name="challenge_accepted">Desafio aceito!</string>
     <string name="widget_agenda_empty">O iPoli quer uma missão!</string>
@@ -262,19 +241,13 @@
     <string name="quest_started">Missão iniciada</string>
     <string name="quest_stopped">Missão parada</string>
     <string name="reward_earned">Ganhou %s! Aproveite!</string>
-    <string name="coins_bought">+ %d moedas em seu estoque</string>
     <string name="store">Loja</string>
     <string name="no_internet_to_buy_coins">Se você quiser algumas moedas, tem que ativar a sua internet!</string>
     <string name="something_went_wrong">Algo deu errado, por favor, tente depois!</string>
-    <string name="help_dialog_store_title">O que você pode comprar?</string>
-    <string name="help_dialog_store_text1">Por enquanto, você pode comprar moedas. Ajude a si mesmo e a nós - os desenvolvedores ;)</string>
-    <string name="help_dialog_store_text2">Use as moedas para obter um novo animalzinho ou para ganhar uma recompensa. Espere novidades em um futuro próximo :)</string>
     <string name="work_days_picker_title">Quais dias você trabalha?</string>
     <string name="work_hours_dialog_title">Quando você trabalha?</string>
     <string name="sleep_hours_dialog_title">Quando você dorme?</string>
     <string name="time_of_day_picker_title">Quando você é mais produtivo?</string>
-    <string name="tutorial_schedule_title">Organize o seu dia \"automagicamente\"</string>
-    <string name="tutorial_schedule_desc">O iPoli automaticamente agenda o seu dia da forma mais inteligente possível. Suas missões importantes nunca mais ficarão sem terminar!</string>
     <string name="quest_times_a_day_question">Quantas vezes por dia?</string>
     <string name="title_activity_agenda">Seu calendário</string>
     <string name="migration_text">Ah não, você tem que esperar!\niPoli está comendo um biscoito e melhorando a sua experiência com o app.</string>
@@ -373,11 +346,9 @@
     <string name="settings_sync_calendars">Sinc. do Calendário</string>
     <string name="settings_select_sync_calendars">Calendários para sincronizar</string>
     <string name="settings_sync_google_calendars">Sinc. calendários Google</string>
-    <string name="empty_calendars_text">Sem calendários</string>
     <string name="empty_eisenhower_matrix_text">Nenhuma missão para essa data. Por que não adicionar uma?</string>
     <string name="allow_read_calendars_perm_reason">O iPoli precisa ler os seus calendários para importar os eventos como missões</string>
     <string name="sync_calendars_delete_loading_dialog_title">Deletando missões</string>
-    <string name="empty_store_items">Sem itens disponíveis</string>
     <string name="challenge_deadline_question">Quando é o prazo?</string>
     <string name="add_reminder_button">+ Adicionar lembrete</string>
     <string name="settings_general_title">Geral</string>
@@ -429,13 +400,6 @@
     <string name="category_fun">Diversão</string>
     <string name="category_chores">Afazeres</string>
     <string name="any_time">Qualquer horário</string>
-    <string name="monday">Segunda</string>
-    <string name="tuesday">Terça</string>
-    <string name="wednesday">Quarta</string>
-    <string name="thursday">Quinta</string>
-    <string name="friday">Sexta</string>
-    <string name="saturday">Sábado</string>
-    <string name="sunday">Domingo</string>
     <string name="pet_state_awesome">Incrível</string>
     <string name="pet_state_happy">Feliz</string>
     <string name="pet_state_good">Bem</string>
@@ -682,14 +646,12 @@
     <string name="important">Importante</string>
     <string name="urgent">Urgente</string>
     <string name="not_urgent">Adiável</string>
-    <string name="coins_pack_value">+ %d moedas da vida</string>
     <string name="power_up_price">%d moedas da vida</string>
     <string name="fragment_avatar_store_title">Comprar avatar</string>
     <string name="fragment_pet_store_title">Comprar animal</string>
     <string name="power_up_successfully_bought">Agora você pode aproveitar %s</string>
     <string name="power_up_too_expensive">Sem moedas suficientes para comprar %s</string>
     <string name="power_up_dialog_title">Você descobriu %s</string>
-    <string name="buy">Comprar</string>
     <string name="not_now">Agora não</string>
     <string name="go_to_store">Ir para a Loja</string>
     <string name="fragment_membership_store_title">Loja</string>
@@ -705,14 +667,10 @@
     <string name="timer">Temporizador</string>
     <string name="programmed_challenges">Desafios programados</string>
     <string name="no_challenges">Você não se desafiou ainda</string>
-    <string name="upgrades_migration_message">Você é um usuário incrível do iPoli e todos as melhorias atuais são grátis para você!</string>
     <string name="big_value_format">%s mil</string>
     <string name="monthly_plan">Pacote iniciante</string>
-    <string name="monthly_plan_desc">A sua jornada começa aqui</string>
     <string name="yearly_plan">Pacote premium</string>
-    <string name="most_popular">Mais popular</string>
     <string name="quarterly_plan">Pacote Gigante</string>
-    <string name="quarterly_plan_desc">Para os ricos e famosos</string>
     <string name="avatar_name_ipoli_classic">iPoli Clássico</string>
     <string name="avatar_name_ipoli_yellow_glasses">iPoli Chique</string>
     <string name="avatar_name_macarena">Dama Sorte</string>
@@ -725,10 +683,6 @@
     <string name="avatar_name_dwight">Homem Musculoso</string>
     <string name="avatar_name_michael">Cara mau</string>
     <string name="avatar_name_tobby">Cerebroso</string>
-    <string name="power_up_rq_sub_title">Criar tarefas recorrentes</string>
-    <string name="power_up_rq_short_desc">Missões recorrentes são todas as suas tarefas recorrentes - fixo ou flexível.</string>
-    <string name="power_up_rq_long_desc">Adicione suas tarefas que se repetem diariamente, semanalmente, mensalmente ou até anualmente. Podem ser dias fixos ou flexíveis.
-iPoli automaticamente agendará elas para você.</string>
     <string name="power_up_challenges_sub_title">Defina e alcance suas metas</string>
     <string name="power_up_challenges_short_desc">Planeje e atinja suas metas a curto e a longo prazo</string>
     <string name="power_up_challenges_long_desc">Desafios te ajudam a planejar e atingir as metas de sua vida. Crie desafio para todas as suas metas de curto e longo prazo.
@@ -813,9 +767,6 @@ Se você precisar de um valor maior, divida a sua missão em missões menores.</
     <string name="no_skip_tutorial">Não, pular tutorial</string>
     <string name="quest_max_duration_value_message">As missões não podem durar mais do que 4 horas</string>
     <string name="quest_min_duration_value_message">As missões não podem durar menos do que 10 minutos</string>
-    <string name="donation_pack">Pacote doação</string>
-    <string name="donation_pack_desc">Para os generosos e altruístas</string>
-    <string name="coins_pack_single_value">+ %d moeda da vida</string>
     <string name="empty_reward_price_message">Não pode haver recompensas grátis</string>
     <string name="too_expensive_reward_price_message">Caro demais! Seja mais realista.</string>
     <string name="max_reward_price">máx %d</string>
@@ -842,12 +793,5 @@ Se você precisar de um valor maior, divida a sua missão em missões menores.</
     <string-array name="repeating_quest_flexible_frequencies">
         <item>Semanal</item>
         <item>Mensal</item>
-    </string-array>
-    <string-array name="pet_names">
-        <item>Orelhas chiques</item>
-        <item>Orelhas voadoras</item>
-        <item>Cauda fofa</item>
-        <item>Dente maluco</item>
-        <item>Galinho Invasor</item>
     </string-array>
 </resources>
