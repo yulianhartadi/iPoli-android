@@ -167,7 +167,7 @@ public class UpgradeDialog extends DialogFragment {
                 .setCustomTitle(titleView)
                 .setPositiveButton(getString(R.string.buy_life_coins), (dialog, which) -> {
                     Intent intent = new Intent(getContext(), StoreActivity.class);
-                    intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.COINS.name());
+                    intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.MEMBERSHIP.name());
                     getContext().startActivity(intent);
                 })
                 .setNegativeButton(R.string.not_now, (dialog, which) -> {

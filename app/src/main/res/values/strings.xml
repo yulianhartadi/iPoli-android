@@ -722,7 +722,7 @@
     <string name="buy_life_coins">Buy life coins</string>
     <string name="not_now">Not now</string>
     <string name="go_to_store">Go to Store</string>
-    <string name="fragment_coin_store_title">Buy coins</string>
+    <string name="fragment_membership_store_title">Premium membership</string>
     <string name="life_coins">Life coins</string>
     <string name="upgrades">Upgrades</string>
     <string name="avatars">Avatars</string>
@@ -943,6 +943,7 @@
     </plurals>
 
     <string name="trial_message">Surprise! All upgrades are FREE for you for %d days.</string>
+    <string name="membership">Membership</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

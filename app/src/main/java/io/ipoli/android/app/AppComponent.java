@@ -94,7 +94,7 @@ import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.fragments.AvatarStoreFragment;
-import io.ipoli.android.store.fragments.SubscriptionsFragment;
+import io.ipoli.android.store.fragments.MembershipStoreFragment;
 import io.ipoli.android.store.fragments.PetStoreFragment;
 import io.ipoli.android.store.fragments.StoreFragment;
 import io.ipoli.android.store.fragments.UpgradeStoreFragment;
@@ -245,7 +245,7 @@ public interface AppComponent {
 
     void inject(StoreActivity storeActivity);
 
-    void inject(SubscriptionsFragment subscriptionsFragment);
+    void inject(MembershipStoreFragment membershipStoreFragment);
 
     void inject(StoreFragment storeFragment);
 

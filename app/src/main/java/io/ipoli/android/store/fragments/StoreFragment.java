@@ -79,7 +79,7 @@ public class StoreFragment extends BaseFragment {
 
     @OnClick(R.id.store_coins_container)
     public void onCoinsClicked(View v) {
-        changeCurrentItem(StoreItemType.COINS);
+        changeCurrentItem(StoreItemType.MEMBERSHIP);
     }
 
     @OnClick(R.id.store_upgrades_container)
@@ -99,8 +99,8 @@ public class StoreFragment extends BaseFragment {
 
     private void changeCurrentItem(StoreItemType type) {
         switch (type) {
-            case COINS:
-                changeCurrentFragment(new SubscriptionsFragment());
+            case MEMBERSHIP:
+                changeCurrentFragment(new MembershipStoreFragment());
                 break;
             case UPGRADES:
                 changeCurrentFragment(new UpgradeStoreFragment());

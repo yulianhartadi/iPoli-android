@@ -67,7 +67,7 @@ import io.ipoli.android.store.events.CoinsPurchasedEvent;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 5/23/17.
  */
-public class SubscriptionsFragment extends BaseFragment {
+public class MembershipStoreFragment extends BaseFragment {
 
     public static final int MICRO_UNIT = 1000000;
     @Inject
@@ -122,7 +122,7 @@ public class SubscriptionsFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_subscriptions, container, false);
         App.getAppComponent(getContext()).inject(this);
         unbinder = ButterKnife.bind(this, view);
-        ((StoreActivity) getActivity()).populateTitle(R.string.fragment_coin_store_title);
+        ((StoreActivity) getActivity()).populateTitle(R.string.fragment_membership_store_title);
 
 //        loaderContainer.setVisibility(View.VISIBLE);
 

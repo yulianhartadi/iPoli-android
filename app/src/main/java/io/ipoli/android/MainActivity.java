@@ -468,7 +468,7 @@ public class MainActivity extends BaseActivity implements
         coins.setText(formatValue(player.getCoins()));
         coins.setOnClickListener(view -> {
             Intent intent = new Intent(this, StoreActivity.class);
-            intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.COINS.name());
+            intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.MEMBERSHIP.name());
             startActivity(intent);
             eventBus.post(new AvatarCoinsTappedEvent());
         });

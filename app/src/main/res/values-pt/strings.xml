@@ -696,7 +696,7 @@
     <string name="buy_life_coins">Comprar moedas da vida</string>
     <string name="not_now">Agora não</string>
     <string name="go_to_store">Ir para a Loja</string>
-    <string name="fragment_coin_store_title">Loja</string>
+    <string name="fragment_membership_store_title">Loja</string>
     <string name="life_coins">Moedas da vida</string>
     <string name="upgrades">Melhorias</string>
     <string name="avatars">Avatares</string>

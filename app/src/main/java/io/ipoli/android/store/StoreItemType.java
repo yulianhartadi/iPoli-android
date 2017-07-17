@@ -5,5 +5,5 @@ package io.ipoli.android.store;
  * on 5/23/17.
  */
 public enum StoreItemType {
-    COINS, UPGRADES, AVATARS, PETS
+    MEMBERSHIP, UPGRADES, AVATARS, PETS
 }
