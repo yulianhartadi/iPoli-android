@@ -88,7 +88,6 @@ import io.ipoli.android.player.PlayerCredentialsHandler;
 import io.ipoli.android.player.PowerUpDialog;
 import io.ipoli.android.player.PowerUpDialog.OnEnableListener;
 import io.ipoli.android.player.PowerUpManager;
-import io.ipoli.android.player.PowerUpsJobService;
 import io.ipoli.android.player.activities.ProfileActivity;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.events.LevelDownEvent;
@@ -116,8 +115,8 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reminder.data.Reminder;
 import io.ipoli.android.reward.fragments.RewardListFragment;
-import io.ipoli.android.store.StoreItemType;
 import io.ipoli.android.store.PowerUp;
+import io.ipoli.android.store.StoreItemType;
 import io.ipoli.android.store.activities.StoreActivity;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -220,14 +219,6 @@ public class MainActivity extends BaseActivity implements
                 !EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
             EasyPermissions.requestPermissions(this, getString(R.string.allow_read_calendars_perm_reason_disable_option), RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
         }
-
-        JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        jobScheduler.cancel(PowerUpsJobService.JOB_ID);
-        JobInfo jobInfo = new JobInfo.Builder(PowerUpsJobService.JOB_ID,
-                new ComponentName(this, PowerUpsJobService.class))
-                .setOverrideDeadline(0)
-                .build();
-        jobScheduler.schedule(jobInfo);
     }
 
     @Override

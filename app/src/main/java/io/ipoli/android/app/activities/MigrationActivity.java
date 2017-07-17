@@ -44,6 +44,7 @@ import io.ipoli.android.player.data.MembershipType;
 import io.ipoli.android.player.data.PetAvatar;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.player.scheduling.PowerUpScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -125,7 +126,8 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
         Player player = playerPersistenceService.get();
         player.setSchemaVersion(Constants.SCHEMA_VERSION);
         playerPersistenceService.save(player);
-        startActivity(new Intent(MigrationActivity.this, MainActivity.class));
+        PowerUpScheduler.scheduleExpirationCheckJob(getApplicationContext());
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 
