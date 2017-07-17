@@ -307,10 +307,6 @@ public class MainActivity extends BaseActivity implements
                 break;
 
             case R.id.repeating_quests:
-                if (powerUpManager.isLocked(PowerUp.REPEATING_QUESTS)) {
-                    showPowerUpDialog(PowerUp.REPEATING_QUESTS, new RepeatingQuestListFragment());
-                    return;
-                }
                 source = EventSource.REPEATING_QUESTS;
                 changeCurrentFragment(new RepeatingQuestListFragment());
                 break;
@@ -763,10 +759,6 @@ public class MainActivity extends BaseActivity implements
     public void onStartFabMenuIntent(StartFabMenuIntentEvent e) {
         switch (e.fabName) {
             case REPEATING_QUEST:
-                if (powerUpManager.isLocked(PowerUp.REPEATING_QUESTS)) {
-                    showPowerUpDialogForFabItem(PowerUp.REPEATING_QUESTS, e.intent);
-                    return;
-                }
                 startActivity(e.intent);
                 return;
             case CHALLENGE:
