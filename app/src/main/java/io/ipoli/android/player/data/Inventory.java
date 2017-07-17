@@ -79,4 +79,9 @@ public class Inventory {
             addPowerUp(powerUp, expirationDate);
         }
     }
+
+    @JsonIgnore
+    public void removePowerUp(int code) {
+        getPowerUps().remove(code);
+    }
 }

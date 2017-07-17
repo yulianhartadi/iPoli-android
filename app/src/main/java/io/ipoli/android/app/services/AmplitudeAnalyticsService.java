@@ -901,8 +901,8 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onUpgradeUnlocked(PowerUpUnlockedEvent e) {
-        log("upgrade_unlocked", EventParams.of("upgrade", e.powerUp.name()));
+    public void onPowerUpUnlocked(PowerUpUnlockedEvent e) {
+        log("power_up_unlocked", EventParams.of("power_up", e.powerUp.name()));
     }
 
     @Subscribe
@@ -932,8 +932,8 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onPlayerMigrated(PlayerMigratedEvent e) {
         log("player_migrated", EventParams.create()
-                .add("firebase_id", e.firebasePlayerId)
-                .add("couchbase_id", e.playerId));
+                .add("previous_schema", e.previousSchemaVersion)
+                .add("current_schema", e.currentSchemaVersion));
     }
 
     @Subscribe

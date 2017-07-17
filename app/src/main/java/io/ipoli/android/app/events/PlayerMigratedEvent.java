@@ -6,11 +6,11 @@ package io.ipoli.android.app.events;
  */
 
 public class PlayerMigratedEvent {
-    public final String firebasePlayerId;
-    public final String playerId;
+    public final int previousSchemaVersion;
+    public final int currentSchemaVersion;
 
-    public PlayerMigratedEvent(String firebasePlayerId, String playerId) {
-        this.firebasePlayerId = firebasePlayerId;
-        this.playerId = playerId;
+    public PlayerMigratedEvent(int previousSchemaVersion, int currentSchemaVersion) {
+        this.previousSchemaVersion = previousSchemaVersion;
+        this.currentSchemaVersion = currentSchemaVersion;
     }
 }

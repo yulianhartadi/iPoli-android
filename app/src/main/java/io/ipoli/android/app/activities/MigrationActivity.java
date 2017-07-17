@@ -22,6 +22,7 @@ import com.squareup.otto.Bus;
 import org.threeten.bp.LocalDate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,10 +35,12 @@ import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.events.AppErrorEvent;
+import io.ipoli.android.app.events.PlayerMigratedEvent;
 import io.ipoli.android.app.sync.AndroidCalendarSyncJobService;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.player.data.Avatar;
+import io.ipoli.android.player.data.MembershipType;
 import io.ipoli.android.player.data.PetAvatar;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
@@ -55,6 +58,7 @@ import io.ipoli.android.store.PowerUp;
 public class MigrationActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Boolean> {
     private static final int VERSION_BEFORE_UPGRADES = 3;
     private static final int NEW_CALENDAR_IMPORT_VERSION = 6;
+    private static final int SUBSCRIPTIONS_FIRST_VERSION = 8;
 
     @Inject
     Api api;
@@ -117,6 +121,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
     }
 
     private void onFinish() {
+        eventBus.post(new PlayerMigratedEvent(schemaVersion, Constants.SCHEMA_VERSION));
         Player player = playerPersistenceService.get();
         player.setSchemaVersion(Constants.SCHEMA_VERSION);
         playerPersistenceService.save(player);
@@ -142,10 +147,6 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
     @Override
     public void onLoaderReset(Loader<Boolean> loader) {
         //intentional
-    }
-
-    private interface OnMigrationFinishListener {
-        void onMigrationFinish();
     }
 
     private static class MigrationException extends Exception {
@@ -185,8 +186,12 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
         @Override
         public Boolean loadInBackground() {
             updateAvatars();
-            migrateRewardPoints();
-            removeRepeatingQuestForPowerUps();
+
+            if (schemaVersion < SUBSCRIPTIONS_FIRST_VERSION) {
+                migrateRewardPoints();
+                migrateUpgradesToPowerUps();
+                removeRepeatingQuestAndUpdatePowerUps();
+            }
 
             if (schemaVersion < Constants.PROFILES_FIRST_SCHEMA_VERSION) {
                 migrateUsername();
@@ -197,32 +202,68 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
             return true;
         }
 
-        private void removeRepeatingQuestForPowerUps() {
-            int repeatingQuestCode = 2;
-
-        }
-
         @Override
         protected void onStopLoading() {
             cancelLoad();
         }
 
-        private void migrateUsername() {
+        private void removeRepeatingQuestAndUpdatePowerUps() {
+            int repeatingQuestCode = 2;
             Player player = playerPersistenceService.get();
-            player.setDisplayName(player.getUsername());
-            player.setUsername("");
+            player.getInventory().removePowerUp(repeatingQuestCode);
+
+            Map<PowerUp, LocalDate> currentPowerUps = new HashMap<>(player.getPowerUps());
+
+            LocalDate after3Years = LocalDate.now().plusYears(3).minusDays(1);
+            LocalDate yesterday = LocalDate.now().minusDays(1);
+
+            for (PowerUp powerUp : PowerUp.values()) {
+                if (currentPowerUps.containsKey(powerUp)) {
+                    player.getInventory().addPowerUp(powerUp, after3Years);
+                } else {
+                    player.getInventory().addPowerUp(powerUp, yesterday);
+                }
+            }
+            player.setMembership(MembershipType.NONE);
+            playerPersistenceService.save(player);
+        }
+
+        private void migrateUpgradesToPowerUps() {
+            Map<Integer, Long> powerUps = deleteUpgrades();
+            if (powerUps.isEmpty()) {
+                return;
+            }
+            Player player = playerPersistenceService.get();
+            player.getInventory().setPowerUps(powerUps);
             playerPersistenceService.save(player);
         }
 
 
-        private void migrateRewardPoints() {
-            Long rewardPoints = deleteRewardPoints();
-            if (rewardPoints == null) {
-                return;
+        private Map<Integer, Long> deleteUpgrades() {
+            Map<Integer, Long> powerUps;
+
+            UnsavedRevision revision = database.getExistingDocument(playerId).createRevision();
+            Map<String, Object> properties = revision.getProperties();
+            if (!properties.containsKey("inventory")) {
+                return new HashMap<>();
             }
-            Player player = playerPersistenceService.get();
-            player.addCoins(Math.min(500, rewardPoints));
-            playerPersistenceService.save(player);
+
+            Map<String, Object> inventory = (Map<String, Object>) properties.get("inventory");
+            if (!inventory.containsKey("upgrades")) {
+                return new HashMap<>();
+            }
+
+            powerUps = new HashMap<>((Map<Integer, Long>) inventory.get("upgrades"));
+            inventory.remove("upgrades");
+
+            revision.setProperties(properties);
+            try {
+                revision.save();
+            } catch (CouchbaseLiteException e) {
+                eventBus.post(new AppErrorEvent(e));
+            }
+
+            return powerUps;
         }
 
         private Long deleteRewardPoints() {
@@ -321,6 +362,23 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
             }
 
             return new Pair<>(playerPicture, petPicture);
+        }
+
+        private void migrateRewardPoints() {
+            Long rewardPoints = deleteRewardPoints();
+            if (rewardPoints == null) {
+                return;
+            }
+            Player player = playerPersistenceService.get();
+            player.addCoins(Math.min(500, rewardPoints));
+            playerPersistenceService.save(player);
+        }
+
+        private void migrateUsername() {
+            Player player = playerPersistenceService.get();
+            player.setDisplayName(player.getUsername());
+            player.setUsername("");
+            playerPersistenceService.save(player);
         }
 
         private boolean migrateAndroidCalendars() {
