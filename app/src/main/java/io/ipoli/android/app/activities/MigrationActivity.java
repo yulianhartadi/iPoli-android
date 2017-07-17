@@ -187,15 +187,26 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
         public Boolean loadInBackground() {
             updateAvatars();
 
+            UnsavedRevision revision = database.getExistingDocument(playerId).createRevision();
+            Map<String, Object> playerProperties = revision.getProperties();
+
             if (schemaVersion < SUBSCRIPTIONS_FIRST_VERSION) {
-                migrateRewardPoints();
-                migrateUpgradesToPowerUps();
-                removeRepeatingQuestAndUpdatePowerUps();
+                migrateRewardPoints(playerProperties);
+                migrateUpgradesToPowerUps(playerProperties);
+                removeRepeatingQuestAndUpdatePowerUps(playerProperties);
             }
 
             if (schemaVersion < Constants.PROFILES_FIRST_SCHEMA_VERSION) {
-                migrateUsername();
+                migrateUsername(playerProperties);
             }
+
+            revision.setProperties(playerProperties);
+            try {
+                revision.save();
+            } catch (CouchbaseLiteException e) {
+                eventBus.post(new AppErrorEvent(e));
+            }
+
             if (schemaVersion < NEW_CALENDAR_IMPORT_VERSION) {
                 return migrateAndroidCalendars();
             }
@@ -207,82 +218,55 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
             cancelLoad();
         }
 
-        private void removeRepeatingQuestAndUpdatePowerUps() {
-            int repeatingQuestCode = 2;
-            Player player = playerPersistenceService.get();
-            player.getInventory().removePowerUp(repeatingQuestCode);
+        private void removeRepeatingQuestAndUpdatePowerUps(Map<String, Object> playerProperties) {
+            playerProperties.put("membershipType", MembershipType.NONE.name());
 
-            Map<PowerUp, LocalDate> currentPowerUps = new HashMap<>(player.getPowerUps());
-
-            LocalDate after3Years = LocalDate.now().plusYears(3).minusDays(1);
-            LocalDate yesterday = LocalDate.now().minusDays(1);
-
-            for (PowerUp powerUp : PowerUp.values()) {
-                if (currentPowerUps.containsKey(powerUp)) {
-                    player.getInventory().addPowerUp(powerUp, after3Years);
-                } else {
-                    player.getInventory().addPowerUp(powerUp, yesterday);
-                }
-            }
-            player.setMembership(MembershipType.NONE);
-            playerPersistenceService.save(player);
-        }
-
-        private void migrateUpgradesToPowerUps() {
-            Map<Integer, Long> powerUps = deleteUpgrades();
-            if (powerUps.isEmpty()) {
+            if (!playerProperties.containsKey("inventory")) {
                 return;
             }
-            Player player = playerPersistenceService.get();
-            player.getInventory().setPowerUps(powerUps);
-            playerPersistenceService.save(player);
+
+            Map<String, Object> inventory = (Map<String, Object>) playerProperties.get("inventory");
+            if (!inventory.containsKey("powerUps")) {
+                inventory.put("powerUps", new HashMap<>());
+            }
+
+            Map<Integer, Long> powerUps = (Map<Integer, Long>) inventory.get("powerUps");
+            if (schemaVersion == 3 || schemaVersion == 4) {
+
+                for (PowerUp powerUp : PowerUp.values()) {
+                    powerUps.put(powerUp.code, 0L);
+                }
+            }
+
+            int repeatingQuestCode = 2;
+            powerUps.remove(repeatingQuestCode);
+
+            long after3Years = DateUtils.toMillis(LocalDate.now().plusYears(3).minusDays(1));
+            long yesterday = DateUtils.toMillis(LocalDate.now().minusDays(1));
+
+            for (PowerUp powerUp : PowerUp.values()) {
+                if (powerUps.containsKey(powerUp.code)) {
+                    powerUps.put(powerUp.code, after3Years);
+                } else {
+                    powerUps.put(powerUp.code, yesterday);
+                }
+            }
         }
 
-
-        private Map<Integer, Long> deleteUpgrades() {
-            Map<Integer, Long> powerUps;
-
-            UnsavedRevision revision = database.getExistingDocument(playerId).createRevision();
-            Map<String, Object> properties = revision.getProperties();
-            if (!properties.containsKey("inventory")) {
-                return new HashMap<>();
+        private void migrateUpgradesToPowerUps(Map<String, Object> playerProperties) {
+            if (!playerProperties.containsKey("inventory")) {
+                return;
             }
 
-            Map<String, Object> inventory = (Map<String, Object>) properties.get("inventory");
+            Map<String, Object> inventory = (Map<String, Object>) playerProperties.get("inventory");
             if (!inventory.containsKey("upgrades")) {
-                return new HashMap<>();
+                return;
             }
 
-            powerUps = new HashMap<>((Map<Integer, Long>) inventory.get("upgrades"));
+            HashMap<Integer, Long> powerUps = new HashMap<>((Map<Integer, Long>) inventory.get("upgrades"));
             inventory.remove("upgrades");
 
-            revision.setProperties(properties);
-            try {
-                revision.save();
-            } catch (CouchbaseLiteException e) {
-                eventBus.post(new AppErrorEvent(e));
-            }
-
-            return powerUps;
-        }
-
-        private Long deleteRewardPoints() {
-            Long rewardPoints = null;
-
-            UnsavedRevision revision = database.getExistingDocument(playerId).createRevision();
-            Map<String, Object> properties = revision.getProperties();
-            if (properties.containsKey("rewardPoints")) {
-                rewardPoints = (Long) properties.get("rewardPoints");
-                properties.remove("rewardPoints");
-            }
-            revision.setProperties(properties);
-            try {
-                revision.save();
-            } catch (CouchbaseLiteException e) {
-                eventBus.post(new AppErrorEvent(e));
-            }
-
-            return rewardPoints;
+            inventory.put("powerUps", powerUps);
         }
 
         private void updateAvatars() {
@@ -293,11 +277,6 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
 
             Player player = playerPersistenceService.get();
             LocalDate unlockedDate = DateUtils.fromMillis(player.getCreatedAt());
-            if (schemaVersion == 3 || schemaVersion == 4) {
-                for (PowerUp powerUp : PowerUp.values()) {
-                    player.getInventory().addPowerUp(powerUp, unlockedDate);
-                }
-            }
 
             if (playerPicture != null) {
                 Avatar playerAvatar = Constants.DEFAULT_PLAYER_AVATAR;
@@ -364,17 +343,18 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
             return new Pair<>(playerPicture, petPicture);
         }
 
-        private void migrateRewardPoints() {
-            Long rewardPoints = deleteRewardPoints();
-            if (rewardPoints == null) {
-                return;
+        private void migrateRewardPoints(Map<String, Object> playerProperties) {
+
+            if (playerProperties.containsKey("rewardPoints")) {
+                Long rewardPoints = (Long) playerProperties.get("rewardPoints");
+                playerProperties.remove("rewardPoints");
+
+                long currentCoins = (long) playerProperties.get("coins");
+                playerProperties.put("coins", currentCoins + Math.min(500, rewardPoints));
             }
-            Player player = playerPersistenceService.get();
-            player.addCoins(Math.min(500, rewardPoints));
-            playerPersistenceService.save(player);
         }
 
-        private void migrateUsername() {
+        private void migrateUsername(Map<String, Object> playerProperties) {
             Player player = playerPersistenceService.get();
             player.setDisplayName(player.getUsername());
             player.setUsername("");
