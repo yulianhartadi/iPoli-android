@@ -74,7 +74,7 @@ public class Inventory {
     }
 
     @JsonIgnore
-    public void unlockAllPowerUps(LocalDate expirationDate) {
+    public void enableAllPowerUps(LocalDate expirationDate) {
         for (PowerUp powerUp : PowerUp.values()) {
             addPowerUp(powerUp, expirationDate);
         }

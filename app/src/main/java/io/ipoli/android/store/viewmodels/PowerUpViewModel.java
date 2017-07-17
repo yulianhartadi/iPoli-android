@@ -58,7 +58,7 @@ public class PowerUpViewModel {
         return powerUp;
     }
 
-    public boolean isUnlocked() {
+    public boolean isEnabled() {
         return expirationDate != null;
     }
 

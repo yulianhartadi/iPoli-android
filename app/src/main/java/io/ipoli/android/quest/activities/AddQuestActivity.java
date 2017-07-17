@@ -160,7 +160,7 @@ public class AddQuestActivity extends BaseActivity implements ViewPager.OnPageCh
     public void onNameAndCategoryPicked(NameAndCategoryPickedEvent e) {
         quest = new Quest(e.name);
         quest.setDuration(Constants.QUEST_MIN_DURATION);
-        if (powerUpManager.isUnlocked(PowerUp.REMINDERS)) {
+        if (powerUpManager.isEnabled(PowerUp.REMINDERS)) {
             quest.addReminder(new Reminder(0));
         }
         quest.setCategoryType(e.category);

@@ -181,7 +181,7 @@ public class AddQuestSummaryFragment extends BaseFragment implements OnDurationP
 
     @OnClick(R.id.add_quest_summary_reminders)
     public void onRemindersClicked(View view) {
-        if (powerUpManager.isLocked(PowerUp.REMINDERS)) {
+        if (powerUpManager.isDisabled(PowerUp.REMINDERS)) {
             PowerUpDialog.newInstance(PowerUp.REMINDERS).show(getFragmentManager());
             return;
         }
@@ -287,9 +287,9 @@ public class AddQuestSummaryFragment extends BaseFragment implements OnDurationP
     public void onDurationClicked(View v) {
         Integer duration = (Integer) durationText.getTag();
         List<Integer> durations = Arrays.asList(Constants.DURATIONS);
-        if (durations.contains(duration) || powerUpManager.isLocked(PowerUp.CUSTOM_DURATION)) {
+        if (durations.contains(duration) || powerUpManager.isDisabled(PowerUp.CUSTOM_DURATION)) {
             DurationPickerFragment.newInstance(duration, this).show(getFragmentManager());
-        } else if (powerUpManager.isUnlocked(PowerUp.CUSTOM_DURATION)) {
+        } else if (powerUpManager.isEnabled(PowerUp.CUSTOM_DURATION)) {
             CustomDurationPickerFragment.newInstance(duration, this).show(getFragmentManager());
         }
     }
@@ -329,7 +329,7 @@ public class AddQuestSummaryFragment extends BaseFragment implements OnDurationP
 
     @OnClick(R.id.add_quest_summary_note_container)
     public void onNoteClicked(View v) {
-        if (powerUpManager.isLocked(PowerUp.NOTES)) {
+        if (powerUpManager.isDisabled(PowerUp.NOTES)) {
             PowerUpDialog.newInstance(PowerUp.NOTES).show(getFragmentManager());
             return;
         }
@@ -348,7 +348,7 @@ public class AddQuestSummaryFragment extends BaseFragment implements OnDurationP
 
     @OnClick(R.id.sub_quests_container)
     public void onAddSubQuestClicked(View v) {
-        if (powerUpManager.isLocked(PowerUp.SUB_QUESTS)) {
+        if (powerUpManager.isDisabled(PowerUp.SUB_QUESTS)) {
             PowerUpDialog.newInstance(PowerUp.SUB_QUESTS).show(getFragmentManager());
             return;
         }

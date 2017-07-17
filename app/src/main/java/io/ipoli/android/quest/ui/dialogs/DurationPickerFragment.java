@@ -105,10 +105,10 @@ public class DurationPickerFragment extends DialogFragment {
     private void onShowDialog(AlertDialog dialog) {
         Button custom = dialog.getButton(DialogInterface.BUTTON_NEUTRAL);
         custom.setOnClickListener(v -> {
-            if (powerUpManager.isLocked(PowerUp.CUSTOM_DURATION)) {
-                PowerUpDialog.newInstance(PowerUp.CUSTOM_DURATION, new PowerUpDialog.OnUnlockListener() {
+            if (powerUpManager.isDisabled(PowerUp.CUSTOM_DURATION)) {
+                PowerUpDialog.newInstance(PowerUp.CUSTOM_DURATION, new PowerUpDialog.OnEnableListener() {
                     @Override
-                    public void onUnlock() {
+                    public void onEnabled() {
                         CustomDurationPickerFragment.newInstance(durationPickedListener).show(getFragmentManager());
                         dismiss();
                     }

@@ -121,7 +121,7 @@ public class ChallengeListFragment extends BaseFragment implements OnDataChanged
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_pick_challenge:
-                if (powerUpManager.isLocked(PowerUp.PREDEFINED_CHALLENGES)) {
+                if (powerUpManager.isDisabled(PowerUp.PREDEFINED_CHALLENGES)) {
                     PowerUpDialog.newInstance(PowerUp.PREDEFINED_CHALLENGES).show(getFragmentManager());
                     return true;
                 }

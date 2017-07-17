@@ -98,7 +98,7 @@ import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
 import io.ipoli.android.store.PowerUp;
-import io.ipoli.android.store.events.PowerUpUnlockedEvent;
+import io.ipoli.android.store.events.PowerUpEnabledEvent;
 
 import static io.ipoli.android.app.events.EventSource.EDIT_QUEST;
 
@@ -248,7 +248,7 @@ public class EditQuestActivity extends BaseActivity implements
 
         hideUnderline(addSubQuest);
 
-        if (powerUpManager.isUnlocked(PowerUp.SUB_QUESTS)) {
+        if (powerUpManager.isEnabled(PowerUp.SUB_QUESTS)) {
             addSubQuest.setOnFocusChangeListener(onAddSubQuestsFocusChangeListener);
         } else {
             addSubQuest.setFocusable(false);
@@ -258,7 +258,7 @@ public class EditQuestActivity extends BaseActivity implements
     }
 
     @Subscribe
-    public void onUpgradeBought(PowerUpUnlockedEvent e) {
+    public void onPowerUpEnabled(PowerUpEnabledEvent e) {
         if (e.powerUp == PowerUp.SUB_QUESTS) {
             addSubQuest.setOnClickListener(null);
             addSubQuest.setFocusable(true);
@@ -590,9 +590,9 @@ public class EditQuestActivity extends BaseActivity implements
     public void onDurationClick(View view) {
         Integer duration = (Integer) durationText.getTag();
         List<Integer> durations = Arrays.asList(Constants.DURATIONS);
-        if (durations.contains(duration) || powerUpManager.isLocked(PowerUp.CUSTOM_DURATION)) {
+        if (durations.contains(duration) || powerUpManager.isDisabled(PowerUp.CUSTOM_DURATION)) {
             DurationPickerFragment.newInstance(duration, this).show(getSupportFragmentManager());
-        } else if (powerUpManager.isUnlocked(PowerUp.CUSTOM_DURATION)) {
+        } else if (powerUpManager.isEnabled(PowerUp.CUSTOM_DURATION)) {
             CustomDurationPickerFragment.newInstance(duration, this).show(getSupportFragmentManager());
         }
     }
@@ -611,7 +611,7 @@ public class EditQuestActivity extends BaseActivity implements
 
     @OnClick(R.id.quest_add_reminder_container)
     public void onRemindersClicked(View view) {
-        if (powerUpManager.isLocked(PowerUp.REMINDERS)) {
+        if (powerUpManager.isDisabled(PowerUp.REMINDERS)) {
             PowerUpDialog.newInstance(PowerUp.REMINDERS).show(getSupportFragmentManager());
             return;
         }
@@ -643,7 +643,7 @@ public class EditQuestActivity extends BaseActivity implements
 
     @OnClick(R.id.quest_note_container)
     public void onNoteClick(View view) {
-        if (powerUpManager.isLocked(PowerUp.NOTES)) {
+        if (powerUpManager.isDisabled(PowerUp.NOTES)) {
             PowerUpDialog.newInstance(PowerUp.NOTES).show(getSupportFragmentManager());
             return;
         }

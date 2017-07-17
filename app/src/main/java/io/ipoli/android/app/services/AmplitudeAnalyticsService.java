@@ -151,7 +151,7 @@ import io.ipoli.android.reward.events.NewRewardSavedEvent;
 import io.ipoli.android.store.events.BuyCoinsTappedEvent;
 import io.ipoli.android.store.events.CoinsPurchasedEvent;
 import io.ipoli.android.store.events.PetBoughtEvent;
-import io.ipoli.android.store.events.PowerUpUnlockedEvent;
+import io.ipoli.android.store.events.PowerUpEnabledEvent;
 import io.ipoli.android.store.events.UseAvatarEvent;
 import io.ipoli.android.store.events.UsePetEvent;
 
@@ -901,8 +901,8 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onPowerUpUnlocked(PowerUpUnlockedEvent e) {
-        log("power_up_unlocked", EventParams.of("power_up", e.powerUp.name()));
+    public void onPowerUpEnabled(PowerUpEnabledEvent e) {
+        log("power_up_enabled", EventParams.of("power_up", e.powerUp.name()));
     }
 
     @Subscribe

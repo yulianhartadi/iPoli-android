@@ -184,7 +184,7 @@ public class SettingsActivity extends BaseActivity implements
 
     private CompoundButton.OnCheckedChangeListener onCheckSyncCalendarChangeListener = (buttonView, isChecked) -> {
         if (isChecked) {
-            if (powerUpManager.isLocked(PowerUp.CALENDAR_SYNC)) {
+            if (powerUpManager.isDisabled(PowerUp.CALENDAR_SYNC)) {
                 turnSyncCalendarsOff();
                 PowerUpDialog.newInstance(PowerUp.CALENDAR_SYNC).show(getSupportFragmentManager());
                 return;

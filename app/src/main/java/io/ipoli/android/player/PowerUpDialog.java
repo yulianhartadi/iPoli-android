@@ -29,7 +29,7 @@ import io.ipoli.android.app.App;
 import io.ipoli.android.store.StoreItemType;
 import io.ipoli.android.store.PowerUp;
 import io.ipoli.android.store.activities.StoreActivity;
-import io.ipoli.android.store.events.PowerUpUnlockedEvent;
+import io.ipoli.android.store.events.PowerUpEnabledEvent;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -60,7 +60,7 @@ public class PowerUpDialog extends DialogFragment {
 
     private OnDismissListener dismissListener;
 
-    private OnUnlockListener unlockListener;
+    private OnEnableListener enableListener;
 
     private PowerUp powerUp;
 
@@ -70,21 +70,21 @@ public class PowerUpDialog extends DialogFragment {
         return newInstance(powerUp, null, null);
     }
 
-    public static PowerUpDialog newInstance(PowerUp powerUp, OnUnlockListener unlockListener) {
-        return newInstance(powerUp, unlockListener, null);
+    public static PowerUpDialog newInstance(PowerUp powerUp, OnEnableListener enableListener) {
+        return newInstance(powerUp, enableListener, null);
     }
 
     public static PowerUpDialog newInstance(PowerUp powerUp, OnDismissListener dismissListener) {
         return newInstance(powerUp, null, dismissListener);
     }
 
-    public static PowerUpDialog newInstance(PowerUp powerUp, OnUnlockListener unlockListener, OnDismissListener dismissListener) {
+    public static PowerUpDialog newInstance(PowerUp powerUp, OnEnableListener enableListener, OnDismissListener dismissListener) {
         PowerUpDialog fragment = new PowerUpDialog();
         Bundle args = new Bundle();
         args.putInt(POWER_UP_CODE, powerUp.code);
         fragment.setArguments(args);
-        if (unlockListener != null) {
-            fragment.unlockListener = unlockListener;
+        if (enableListener != null) {
+            fragment.enableListener = enableListener;
         }
         if (dismissListener != null) {
             fragment.dismissListener = dismissListener;
@@ -127,7 +127,7 @@ public class PowerUpDialog extends DialogFragment {
 
         title.setText(getString(R.string.power_up_dialog_title, getString(powerUp.title)));
         description.setText(powerUp.shortDesc);
-        notEnoughCoins.setText(getString(R.string.power_up_dialog_not_enough_coins, powerUp.price));
+        notEnoughCoins.setText(getString(R.string.power_up_dialog_not_enough_coins));
         price.setText(getString(R.string.power_up_dialog_price_message, powerUp.price));
 
         boolean hasEnoughCoins = powerUpManager.hasEnoughCoinsForPowerUp(powerUp);
@@ -143,29 +143,26 @@ public class PowerUpDialog extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         return builder.setView(view)
                 .setCustomTitle(titleView)
-                .setPositiveButton(R.string.unlock, (dialog, which) -> {
-                    powerUpManager.unlock(powerUp);
+                .setPositiveButton(R.string.enable, (dialog, which) -> {
+                    powerUpManager.enable(powerUp);
                     String message = getString(R.string.power_up_successfully_bought, getString(powerUp.title));
                     Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-                    eventBus.post(new PowerUpUnlockedEvent(powerUp));
-                    if (unlockListener != null) {
-                        unlockListener.onUnlock();
+                    eventBus.post(new PowerUpEnabledEvent(powerUp));
+                    if (enableListener != null) {
+                        enableListener.onEnabled();
                     }
                 })
                 .setNegativeButton(R.string.not_now, (dialog, which) -> {
                 })
-                .setNeutralButton(R.string.go_to_store, (dialog, which) -> {
-                    Intent intent = new Intent(getContext(), StoreActivity.class);
-                    intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.POWER_UPS.name());
-                    startActivity(intent);
-                });
+                .setNeutralButton(R.string.go_to_store, (dialog, which) ->
+                        startActivity(new Intent(getContext(), StoreActivity.class)));
     }
 
     private AlertDialog.Builder buildTooExpensive(View view, View titleView) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         return builder.setView(view)
                 .setCustomTitle(titleView)
-                .setPositiveButton(getString(R.string.buy_life_coins), (dialog, which) -> {
+                .setPositiveButton(getString(R.string.go_premium), (dialog, which) -> {
                     Intent intent = new Intent(getContext(), StoreActivity.class);
                     intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.MEMBERSHIP.name());
                     getContext().startActivity(intent);
@@ -199,8 +196,8 @@ public class PowerUpDialog extends DialogFragment {
         }
     }
 
-    public interface OnUnlockListener {
-        void onUnlock();
+    public interface OnEnableListener {
+        void onEnabled();
     }
 
     public interface OnDismissListener {

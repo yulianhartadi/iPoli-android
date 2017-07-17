@@ -154,7 +154,7 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
     public void onNewQuestNameAndCategoryPicked(NameAndCategoryPickedEvent e) {
         repeatingQuest = new RepeatingQuest(e.name);
         repeatingQuest.setName(e.name);
-        if (powerUpManager.isUnlocked(PowerUp.REMINDERS)) {
+        if (powerUpManager.isEnabled(PowerUp.REMINDERS)) {
             repeatingQuest.addReminder(new Reminder(0));
         }
         repeatingQuest.setCategoryType(e.category);

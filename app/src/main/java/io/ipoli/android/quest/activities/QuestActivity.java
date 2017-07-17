@@ -224,7 +224,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @OnClick(R.id.quest_details_timer)
     public void onTimerTap(View v) {
-        if (powerUpManager.isLocked(PowerUp.TIMER)) {
+        if (powerUpManager.isDisabled(PowerUp.TIMER)) {
             PowerUpDialog.newInstance(PowerUp.TIMER).show(getSupportFragmentManager());
             return;
         }
@@ -279,7 +279,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @Subscribe
     public void onEditNoteRequest(EditNoteRequestEvent e) {
-        if (powerUpManager.isLocked(PowerUp.NOTES)) {
+        if (powerUpManager.isDisabled(PowerUp.NOTES)) {
             PowerUpDialog.newInstance(PowerUp.NOTES).show(getSupportFragmentManager());
             return;
         }
@@ -443,7 +443,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @Override
     public boolean isLocked() {
-        return powerUpManager.isLocked(PowerUp.SUB_QUESTS);
+        return powerUpManager.isDisabled(PowerUp.SUB_QUESTS);
     }
 
     @Override

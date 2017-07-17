@@ -693,7 +693,7 @@
     <string name="power_up_too_expensive">Sem moedas suficientes para comprar %s</string>
     <string name="power_up_dialog_title">Você descobriu %s</string>
     <string name="buy">Comprar</string>
-    <string name="buy_life_coins">Comprar moedas da vida</string>
+    <string name="go_premium">Comprar moedas da vida</string>
     <string name="not_now">Agora não</string>
     <string name="go_to_store">Ir para a Loja</string>
     <string name="fragment_membership_store_title">Loja</string>
@@ -775,8 +775,8 @@ Foque na missão atual e o iPoli te notificará quando a próxima missão começ
 Se você precisar de um valor maior, divida a sua missão em missões menores.</string>
     <string name="power_up_dialog_name">Você descobriu %s!</string>
     <string name="power_up_dialog_price_message">Você quer desbloquear isso agora por %d de moedas da vida?</string>
-    <string name="unlock">Desbloquear</string>
-    <string name="unlock_power_up">Desbloquear melhoria</string>
+    <string name="enable">Desbloquear</string>
+    <string name="enable_power_up">Desbloquear melhoria</string>
     <string name="requires_power_up_message">Precisa de %s</string>
     <string name="reward_points_won">Pontos de recompensa ganhos</string>
     <string name="reward_last_used_date">Última vez usado: %s</string>

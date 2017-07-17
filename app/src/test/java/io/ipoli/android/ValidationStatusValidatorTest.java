@@ -88,7 +88,7 @@ public class ValidationStatusValidatorTest {
     @Test
     public void validate_PlayerInLastDayOfTrial_FindsExpiringUpgrades() {
         player.setCreatedAt(DateUtils.toMillis(LocalDate.now().minusDays(Constants.POWER_UPS_TRIAL_PERIOD_DAYS - 1)));
-        player.getInventory().unlockAllPowerUps(LocalDate.now());
+        player.getInventory().enableAllPowerUps(LocalDate.now());
         PowerUpStatusValidator validator = new PowerUpStatusValidator(player, LocalDate.now(), false);
         ValidationStatus status = validator.validate();
         assertThat(status.type, is(ValidationStatus.StatusType.NOT_MEMBER));
@@ -100,7 +100,7 @@ public class ValidationStatusValidatorTest {
     @Test
     public void validate_PlayerAfterTrial_FindsExpiredUpgradesWithNonMemberStatus() {
         player.setCreatedAt(DateUtils.toMillis(LocalDate.now().minusDays(Constants.POWER_UPS_TRIAL_PERIOD_DAYS)));
-        player.getInventory().unlockAllPowerUps(LocalDate.now().minusDays(1));
+        player.getInventory().enableAllPowerUps(LocalDate.now().minusDays(1));
         PowerUpStatusValidator validator = new PowerUpStatusValidator(player, LocalDate.now());
         ValidationStatus status = validator.validate();
         assertThat(status.type, is(ValidationStatus.StatusType.NOT_MEMBER));
@@ -111,7 +111,7 @@ public class ValidationStatusValidatorTest {
     public void validate_PlayerMemberWithValidUpgrades_EmptyListsAndMemberStatus() {
         player.setMembership(MembershipType.MONTHLY);
         player.setCreatedAtDate(LocalDate.now().minusDays(Constants.POWER_UPS_TRIAL_PERIOD_DAYS));
-        player.getInventory().unlockAllPowerUps(LocalDate.now().plusMonths(1));
+        player.getInventory().enableAllPowerUps(LocalDate.now().plusMonths(1));
         PowerUpStatusValidator validator = new PowerUpStatusValidator(player, LocalDate.now());
         ValidationStatus status = validator.validate();
         assertThat(status.expired.size(), is(0));
@@ -124,7 +124,7 @@ public class ValidationStatusValidatorTest {
     public void validate_PlayerMemberWithinGracePeriodIsRenewed_RenewUpgrades() {
         player.setMembership(MembershipType.MONTHLY);
         player.setCreatedAtDate(LocalDate.now().minusMonths(2));
-        player.getInventory().unlockAllPowerUps(LocalDate.now().plusDays(1));
+        player.getInventory().enableAllPowerUps(LocalDate.now().plusDays(1));
 
         PowerUpStatusValidator validator = new PowerUpStatusValidator(player, LocalDate.now(), LocalDate.now().plusMonths(1));
         ValidationStatus status = validator.validate();
@@ -139,7 +139,7 @@ public class ValidationStatusValidatorTest {
     public void validate_PlayerMemberAtLastDay_FindsExpiring() {
         player.setMembership(MembershipType.MONTHLY);
         player.setCreatedAtDate(LocalDate.now().minusMonths(2));
-        player.getInventory().unlockAllPowerUps(LocalDate.now());
+        player.getInventory().enableAllPowerUps(LocalDate.now());
 
         PowerUpStatusValidator validator = new PowerUpStatusValidator(player, LocalDate.now(), false);
         ValidationStatus status = validator.validate();
@@ -154,7 +154,7 @@ public class ValidationStatusValidatorTest {
     public void validate_PlayerMember_FindsExpired() {
         player.setMembership(MembershipType.MONTHLY);
         player.setCreatedAtDate(LocalDate.now().minusMonths(2));
-        player.getInventory().unlockAllPowerUps(LocalDate.now().minusDays(1));
+        player.getInventory().enableAllPowerUps(LocalDate.now().minusDays(1));
 
         PowerUpStatusValidator validator = new PowerUpStatusValidator(player, LocalDate.now(), false);
         ValidationStatus status = validator.validate();

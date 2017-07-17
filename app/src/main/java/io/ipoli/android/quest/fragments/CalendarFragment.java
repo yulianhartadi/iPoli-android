@@ -177,10 +177,10 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
                 eventBus.post(new CalendarDayChangedEvent(LocalDate.now(), CalendarDayChangedEvent.Source.MENU));
                 return true;
             case R.id.action_eisenhower_matrix:
-                if (powerUpManager.isLocked(PowerUp.EISENHOWER_MATRIX)) {
-                    PowerUpDialog.newInstance(PowerUp.EISENHOWER_MATRIX, new PowerUpDialog.OnUnlockListener() {
+                if (powerUpManager.isDisabled(PowerUp.EISENHOWER_MATRIX)) {
+                    PowerUpDialog.newInstance(PowerUp.EISENHOWER_MATRIX, new PowerUpDialog.OnEnableListener() {
                         @Override
-                        public void onUnlock() {
+                        public void onEnabled() {
                             showEisenhowerMatrix();
                         }
                     }).show(getFragmentManager());

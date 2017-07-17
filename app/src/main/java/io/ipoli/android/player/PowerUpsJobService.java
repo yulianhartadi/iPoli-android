@@ -107,7 +107,7 @@ public class PowerUpsJobService extends JobService {
 
             if (purchase == null) {
                 player.setMembership(MembershipType.NONE);
-                player.getInventory().unlockAllPowerUps(currentDate.minusDays(1));
+                player.getInventory().enableAllPowerUps(currentDate.minusDays(1));
                 playerPersistenceService.save(player);
                 jobFinished(params, false);
                 return;
@@ -135,14 +135,14 @@ public class PowerUpsJobService extends JobService {
                 if (autoRenewing) {
                     LocalDate gracePeriodStart = membershipExpirationDate.minusDays(Constants.POWER_UP_GRACE_PERIOD_DAYS - 1);
                     if (isInGracePeriod(membershipExpirationDate, gracePeriodStart, currentDate)) {
-                        player.getInventory().unlockAllPowerUps(membershipExpirationDate);
+                        player.getInventory().enableAllPowerUps(membershipExpirationDate);
                         playerPersistenceService.save(player);
                         showMembershipExpiringAfterDays((int) ChronoUnit.DAYS.between(currentDate, membershipExpirationDate) + 1);
                         jobFinished(params, false);
                         return;
                     }
 
-                    player.getInventory().unlockAllPowerUps(membershipExpirationDate.minusDays(Constants.POWER_UP_GRACE_PERIOD_DAYS));
+                    player.getInventory().enableAllPowerUps(membershipExpirationDate.minusDays(Constants.POWER_UP_GRACE_PERIOD_DAYS));
                     playerPersistenceService.save(player);
                     jobFinished(params, false);
 

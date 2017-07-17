@@ -521,7 +521,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         Quest q = new Quest(name, endDate);
         q.setPriority(Quest.PRIORITY_IMPORTANT_NOT_URGENT);
         q.setCategory(category.name());
-        if (powerUpManager.isUnlocked(PowerUp.REMINDERS)) {
+        if (powerUpManager.isEnabled(PowerUp.REMINDERS)) {
             q.addReminder(new Reminder(0));
         }
         return q;
@@ -533,7 +533,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         rq.setDuration(duration);
         rq.setCategory(category.name());
         rq.setPriority(Quest.PRIORITY_IMPORTANT_NOT_URGENT);
-        if (powerUpManager.isUnlocked(PowerUp.REMINDERS)) {
+        if (powerUpManager.isEnabled(PowerUp.REMINDERS)) {
             rq.addReminder(new Reminder(0));
         }
         return rq;

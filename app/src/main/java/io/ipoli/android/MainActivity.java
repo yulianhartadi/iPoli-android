@@ -86,7 +86,7 @@ import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.PlayerCredentialChecker;
 import io.ipoli.android.player.PlayerCredentialsHandler;
 import io.ipoli.android.player.PowerUpDialog;
-import io.ipoli.android.player.PowerUpDialog.OnUnlockListener;
+import io.ipoli.android.player.PowerUpDialog.OnEnableListener;
 import io.ipoli.android.player.PowerUpManager;
 import io.ipoli.android.player.PowerUpsJobService;
 import io.ipoli.android.player.activities.ProfileActivity;
@@ -312,7 +312,7 @@ public class MainActivity extends BaseActivity implements
                 break;
 
             case R.id.challenges:
-                if (powerUpManager.isLocked(PowerUp.CHALLENGES)) {
+                if (powerUpManager.isDisabled(PowerUp.CHALLENGES)) {
                     showPowerUpDialog(PowerUp.CHALLENGES, new ChallengeListFragment());
                     return;
                 }
@@ -321,7 +321,7 @@ public class MainActivity extends BaseActivity implements
                 break;
 
             case R.id.growth:
-                if (powerUpManager.isLocked(PowerUp.GROWTH)) {
+                if (powerUpManager.isDisabled(PowerUp.GROWTH)) {
                     showPowerUpDialog(PowerUp.GROWTH, new GrowthFragment());
                     return;
                 }
@@ -374,9 +374,9 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void showPowerUpDialog(PowerUp powerUp, Fragment fragment) {
-        PowerUpDialog.newInstance(powerUp, new OnUnlockListener() {
+        PowerUpDialog.newInstance(powerUp, new OnEnableListener() {
             @Override
-            public void onUnlock() {
+            public void onEnabled() {
                 changeCurrentFragment(fragment);
                 navigationView.setCheckedItem(navigationItemSelected.getItemId());
             }
@@ -742,7 +742,7 @@ public class MainActivity extends BaseActivity implements
 
     @Subscribe
     public void onStartQuestRequest(StartQuestRequestEvent e) {
-        if (powerUpManager.isLocked(PowerUp.TIMER)) {
+        if (powerUpManager.isDisabled(PowerUp.TIMER)) {
             PowerUpDialog.newInstance(PowerUp.TIMER).show(getSupportFragmentManager());
             return;
         }
@@ -762,7 +762,7 @@ public class MainActivity extends BaseActivity implements
                 startActivity(e.intent);
                 return;
             case CHALLENGE:
-                if (powerUpManager.isLocked(PowerUp.CHALLENGES)) {
+                if (powerUpManager.isDisabled(PowerUp.CHALLENGES)) {
                     showPowerUpDialogForFabItem(PowerUp.CHALLENGES, e.intent);
                     return;
                 }
@@ -774,9 +774,9 @@ public class MainActivity extends BaseActivity implements
     }
 
     private void showPowerUpDialogForFabItem(PowerUp powerUp, Intent intent) {
-        PowerUpDialog.newInstance(powerUp, new OnUnlockListener() {
+        PowerUpDialog.newInstance(powerUp, new OnEnableListener() {
             @Override
-            public void onUnlock() {
+            public void onEnabled() {
                 startActivity(intent);
             }
         }).show(getSupportFragmentManager());

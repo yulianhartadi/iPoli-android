@@ -406,7 +406,7 @@ public class MembershipStoreFragment extends BaseFragment {
                 expirationDate = LocalDate.now();
         }
 
-        player.getInventory().unlockAllPowerUps(expirationDate);
+        player.getInventory().enableAllPowerUps(expirationDate);
         player.setMembership(membershipType);
         playerPersistenceService.save(player);
     }

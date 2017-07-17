@@ -49,7 +49,7 @@ import io.ipoli.android.store.PowerUp;
 import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.adapters.PowerUpStoreAdapter;
 import io.ipoli.android.store.events.BuyPowerUpEvent;
-import io.ipoli.android.store.events.PowerUpUnlockedEvent;
+import io.ipoli.android.store.events.PowerUpEnabledEvent;
 import io.ipoli.android.store.viewmodels.PowerUpViewModel;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -105,7 +105,7 @@ public class PowerUpStoreFragment extends BaseFragment implements LoaderManager.
 
         List<PowerUpViewModel> upgrades = createUpgradeViewModels();
 
-        adapter = new PowerUpStoreAdapter(getContext(), eventBus, upgrades, powerUpManager.getUnlockedCodes());
+        adapter = new PowerUpStoreAdapter(getContext(), eventBus, upgrades, powerUpManager.getEnabledCodes());
         powerUpList.setAdapter(adapter);
 
         eventBus.post(new ScreenShownEvent(getActivity(), EventSource.STORE_UPGRADES));
@@ -116,38 +116,38 @@ public class PowerUpStoreFragment extends BaseFragment implements LoaderManager.
     @NonNull
     private List<PowerUpViewModel> createUpgradeViewModels() {
         List<PowerUpViewModel> upgrades = new ArrayList<>();
-        List<PowerUp> lockedPowerUps = new ArrayList<>();
-        List<PowerUp> unlockedPowerUps = new ArrayList<>();
+        List<PowerUp> disabledPowerUps = new ArrayList<>();
+        List<PowerUp> enabledPowerUps = new ArrayList<>();
 
         for (PowerUp powerUp : PowerUp.values()) {
-            if (powerUpManager.isUnlocked(powerUp)) {
-                unlockedPowerUps.add(powerUp);
+            if (powerUpManager.isEnabled(powerUp)) {
+                enabledPowerUps.add(powerUp);
             } else {
-                lockedPowerUps.add(powerUp);
+                disabledPowerUps.add(powerUp);
             }
         }
 
-        Collections.sort(unlockedPowerUps, ((u1, u2) ->
+        Collections.sort(enabledPowerUps, ((u1, u2) ->
                 -Long.compare(powerUpManager.getExpirationDate(u1), powerUpManager.getExpirationDate(u2))));
 
-        for (PowerUp powerUp : lockedPowerUps) {
+        for (PowerUp powerUp : disabledPowerUps) {
             upgrades.add(new PowerUpViewModel(getContext(), powerUp));
         }
 
-        for (PowerUp powerUp : unlockedPowerUps) {
+        for (PowerUp powerUp : enabledPowerUps) {
             upgrades.add(new PowerUpViewModel(getContext(), powerUp, DateUtils.fromMillis(powerUpManager.getExpirationDate(powerUp))));
         }
         return upgrades;
     }
 
     @Subscribe
-    public void buyUpgradeEvent(BuyPowerUpEvent e) {
+    public void buyPowerUpEvent(BuyPowerUpEvent e) {
         PowerUp powerUp = e.powerUp;
         String title = getString(powerUp.title);
         if (powerUpManager.hasEnoughCoinsForPowerUp(powerUp)) {
-            powerUpManager.unlock(powerUp);
+            powerUpManager.enable(powerUp);
 
-            eventBus.post(new PowerUpUnlockedEvent(powerUp));
+            eventBus.post(new PowerUpEnabledEvent(powerUp));
             if (powerUp == PowerUp.CALENDAR_SYNC) {
                 pickCalendarsToSync();
             } else {

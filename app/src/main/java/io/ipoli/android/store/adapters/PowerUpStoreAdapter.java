@@ -35,7 +35,7 @@ public class PowerUpStoreAdapter extends EnterAnimationAdapter<PowerUpStoreAdapt
     private final Context context;
     private final Bus eventBus;
     private List<PowerUpViewModel> viewModels;
-    private final Set<Integer> unlockedUpgrades;
+    private final Set<Integer> enabledPowerUps;
 
     private int[] colors = new int[]{
             R.color.md_green_300,
@@ -48,11 +48,11 @@ public class PowerUpStoreAdapter extends EnterAnimationAdapter<PowerUpStoreAdapt
             R.color.md_pink_300,
     };
 
-    public PowerUpStoreAdapter(Context context, Bus eventBus, List<PowerUpViewModel> viewModels, Set<Integer> unlockedUpgrades) {
+    public PowerUpStoreAdapter(Context context, Bus eventBus, List<PowerUpViewModel> viewModels, Set<Integer> enabledPowerUps) {
         this.context = context;
         this.eventBus = eventBus;
         this.viewModels = viewModels;
-        this.unlockedUpgrades = unlockedUpgrades;
+        this.enabledPowerUps = enabledPowerUps;
     }
 
     @Override
@@ -83,21 +83,21 @@ public class PowerUpStoreAdapter extends EnterAnimationAdapter<PowerUpStoreAdapt
             }
         });
 
-        if (vm.isUnlocked()) {
-            holder.unlock.setVisibility(View.INVISIBLE);
+        if (vm.isEnabled()) {
+            holder.enable.setVisibility(View.INVISIBLE);
             holder.expirationDate.setVisibility(View.VISIBLE);
             holder.expirationDate.setText(context.getString(R.string.power_up_expires_on, DateFormatter.format(context, vm.getExpirationDate())));
-        } else if (vm.requiresUpgrade() && !unlockedUpgrades.contains(vm.getRequiredUpgrade().code)) {
-            holder.unlock.setVisibility(View.INVISIBLE);
+        } else if (vm.requiresUpgrade() && !enabledPowerUps.contains(vm.getRequiredUpgrade().code)) {
+            holder.enable.setVisibility(View.INVISIBLE);
             holder.expirationDate.setVisibility(View.VISIBLE);
             String requiredTitle = context.getString(vm.getRequiredUpgrade().title);
             holder.expirationDate.setText(context.getString(R.string.requires_power_up_message, requiredTitle));
         } else {
-            holder.unlock.setVisibility(View.VISIBLE);
+            holder.enable.setVisibility(View.VISIBLE);
             holder.expirationDate.setVisibility(View.GONE);
         }
 
-        holder.unlock.setOnClickListener(v -> eventBus.post(new BuyPowerUpEvent(vm.getPowerUp())));
+        holder.enable.setOnClickListener(v -> eventBus.post(new BuyPowerUpEvent(vm.getPowerUp())));
 
         GradientDrawable drawable = (GradientDrawable) holder.imageContainer.getBackground();
         drawable.setColor(ContextCompat.getColor(context, colors[position % colors.length]));
@@ -138,8 +138,8 @@ public class PowerUpStoreAdapter extends EnterAnimationAdapter<PowerUpStoreAdapt
         @BindView(R.id.power_up_image_background)
         ImageView imageContainer;
 
-        @BindView(R.id.power_up_unlock)
-        Button unlock;
+        @BindView(R.id.power_up_enable)
+        Button enable;
 
         @BindView(R.id.power_up_expand)
         ImageButton expand;

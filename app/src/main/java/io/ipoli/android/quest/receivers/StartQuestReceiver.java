@@ -41,7 +41,7 @@ public class StartQuestReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         App.getAppComponent(context).inject(this);
 
-        if (powerUpManager.isLocked(PowerUp.TIMER)) {
+        if (powerUpManager.isDisabled(PowerUp.TIMER)) {
             eventBus.post(new StartPowerUpDialogRequestEvent(PowerUp.TIMER));
             return;
         }

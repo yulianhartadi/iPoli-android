@@ -2,6 +2,7 @@ package io.ipoli.android.player;
 
 import org.threeten.bp.LocalDate;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,21 +42,25 @@ public class PowerUpManager implements OnDataChangedListener<Player> {
         return player;
     }
 
-    public boolean isLocked(PowerUp powerUp) {
-        return !isUnlocked(powerUp);
+    public boolean isDisabled(PowerUp powerUp) {
+        return !isEnabled(powerUp);
     }
 
-    public boolean isUnlocked(PowerUp powerUp) {
+    public boolean isEnabled(PowerUp powerUp) {
         Player player = getPlayer();
         if (player.getInventory() == null) {
             return false;
         }
         Map<Integer, Long> powerUps = player.getInventory().getPowerUps();
-        if(!powerUps.containsKey(powerUp.code)) {
+        if (!powerUps.containsKey(powerUp.code)) {
             return false;
         }
 
         LocalDate expirationDate = DateUtils.fromMillis(powerUps.get(powerUp.code));
+        return isEnabledToday(expirationDate);
+    }
+
+    private boolean isEnabledToday(LocalDate expirationDate) {
         return !expirationDate.isBefore(LocalDate.now(DateUtils.ZONE_UTC));
     }
 
@@ -63,11 +68,11 @@ public class PowerUpManager implements OnDataChangedListener<Player> {
         return playerPersistenceService.get().getCoins() >= powerUp.price;
     }
 
-    public void unlock(PowerUp powerUp) {
-        unlock(powerUp, LocalDate.now().plusMonths(DEFAULT_EXPIRATION_MONTHS).minusDays(1));
+    public void enable(PowerUp powerUp) {
+        enable(powerUp, LocalDate.now().plusMonths(DEFAULT_EXPIRATION_MONTHS).minusDays(1));
     }
 
-    public void unlock(PowerUp powerUp, LocalDate expirationDate) {
+    public void enable(PowerUp powerUp, LocalDate expirationDate) {
         Player player = getPlayer();
         player.removeCoins(powerUp.price);
         if (player.getInventory() == null) {
@@ -88,9 +93,15 @@ public class PowerUpManager implements OnDataChangedListener<Player> {
         return player.getInventory().getPowerUps().get(powerUp.code);
     }
 
-    public Set<Integer> getUnlockedCodes() {
+    public Set<Integer> getEnabledCodes() {
         Player player = getPlayer();
-        return player.getInventory().getPowerUps().keySet();
+        Set<Integer> enabledCodes = new HashSet<>();
+        for (Map.Entry<PowerUp, LocalDate> entry : player.getPowerUps().entrySet()) {
+            if (isEnabledToday(entry.getValue())) {
+                enabledCodes.add(entry.getKey().code);
+            }
+        }
+        return enabledCodes;
     }
 
     @Override

@@ -173,7 +173,7 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
             return;
         }
         quest.setCategory(categoryView.getSelectedCategory().name());
-        if (powerUpManager.isUnlocked(PowerUp.REMINDERS)) {
+        if (powerUpManager.isEnabled(PowerUp.REMINDERS)) {
             quest.addReminder(new Reminder(0));
         }
         eventBus.post(new NewQuestEvent(quest, EventSource.QUICK_ADD));

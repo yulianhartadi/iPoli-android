@@ -7,10 +7,10 @@ import io.ipoli.android.store.PowerUp;
  * on 5/30/17.
  */
 
-public class PowerUpUnlockedEvent {
+public class PowerUpEnabledEvent {
     public final PowerUp powerUp;
 
-    public PowerUpUnlockedEvent(PowerUp powerUp) {
+    public PowerUpEnabledEvent(PowerUp powerUp) {
         this.powerUp = powerUp;
     }
 }

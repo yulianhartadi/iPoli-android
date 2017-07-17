@@ -683,7 +683,7 @@
     <string name="challenge8_rq4_name">Go out with friends</string>
 
     <string name="fragment_store_title">Store</string>
-    <string name="power_up_dialog_not_enough_coins">This power-up costs %d coins. Unfortunately, you have not collected enough. Do you want to buy some?</string>
+    <string name="power_up_dialog_not_enough_coins">Unfortunately, you don\'t have enough coins to enable this power-up. Become premium member to enable all power-ups at once!</string>
 
     <string name="pet_seal">Cute tail</string>
     <string name="pet_donkey">Fancy ears</string>
@@ -711,15 +711,15 @@
 
     <string name="coins_pack_value">+ %d life coins</string>
     <string name="power_up_price">%d life coins</string>
-    <string name="power_up_expires_on">Unlocked until %s</string>
+    <string name="power_up_expires_on">Enabled until %s</string>
     <string name="fragment_avatar_store_title">Buy avatar</string>
     <string name="fragment_pet_store_title">Buy pet</string>
-    <string name="fragment_power_up_store_title">Unlock power-up</string>
+    <string name="fragment_power_up_store_title">Enable power-up</string>
     <string name="power_up_successfully_bought">You can now enjoy %s</string>
     <string name="power_up_too_expensive">Not enough coins to buy %s</string>
     <string name="power_up_dialog_title">You\'ve discovered %s</string>
     <string name="buy">Buy</string>
-    <string name="buy_life_coins">Buy life coins</string>
+    <string name="go_premium">Go premium</string>
     <string name="not_now">Not now</string>
     <string name="go_to_store">Go to Store</string>
     <string name="fragment_membership_store_title">Premium membership</string>
@@ -737,12 +737,9 @@
     <string name="no_challenges">You have not challenged yourself</string>
     <string name="big_value_format">%sK</string>
     <string name="monthly_plan">Monthly Plan</string>
-    <string name="monthly_plan_desc">Unlock all power-ups. Get all future power-ups for free.</string>
     <string name="yearly_plan">For the Smart Ones</string>
-    <string name="yearly_plan_desc">For the smart ones</string>
     <string name="most_popular">Most popular</string>
     <string name="quarterly_plan">Quarterly Plan</string>
-    <string name="quarterly_plan_desc">For the wealthy and famous</string>
     <string name="avatar_name_ipoli_classic">Classic iPoli</string>
     <string name="avatar_name_ipoli_yellow_glasses">Fancy iPoli</string>
     <string name="avatar_name_macarena">Lady Luck</string>
@@ -832,9 +829,9 @@
     </string>
 
     <string name="power_up_dialog_name">You\'ve discovered %s!</string>
-    <string name="power_up_dialog_price_message">Do you want to unlock it now for %d of your life coins?</string>
-    <string name="unlock">Unlock</string>
-    <string name="unlock_power_up">Unlock power-up</string>
+    <string name="power_up_dialog_price_message">Do you want to enable it now for %d of your life coins for a month?</string>
+    <string name="enable">Enable</string>
+    <string name="enable_power_up">Enable power-up</string>
     <string name="requires_power_up_message">Requires %s</string>
     <string name="reward_last_used_date">Last used: %s</string>
     <string name="used_rewards_count">%d used</string>
@@ -865,9 +862,9 @@
     <string name="accept_challenge">Accept Challenge</string>
     <string name="outro_text">%s, let\'s achieve your life goals by fighting procrastination, laziness and clutter together!</string>
     <string name="tutorial_calendar_quest_hint">Your quest has been added to your calendar. Complete it by tapping on the checkbox.</string>
-    <string name="tutorial_quest_complete">Every time you complete a quest you get a reward! Experience allows you to level up and with life coins you can unlock power-ups, buy new avatars ot pets.</string>
+    <string name="tutorial_quest_complete">Every time you complete a quest you get a reward! Experience allows you to level up and with life coins you can enable power-ups, buy new avatars ot pets.</string>
     <string name="tutorial_follow_progress">You can follow your progress here. These are your avatar and pet. Keep your pet happy by completing your quests regularly to achieve maximum coins and XP bonus!</string>
-    <string name="tutorial_store">Use your hard earned coins to unlock powerful power-ups (Challenges, Calendar sync, Notes etc) or buy new avatars and cute pets!</string>
+    <string name="tutorial_store">Use your hard earned coins to enable powerful power-ups (Challenges, Calendar sync, Notes etc) or buy new avatars and cute pets!</string>
     <string name="choose_category">Choose Category</string>
     <string name="tutorial_quest_name">Quest name</string>
     <string name="tutorial_quest_button">Do you see the button below? Will you do me the honor?</string>
@@ -887,7 +884,7 @@
     <string name="too_expensive_reward_price_message">Too expensive, be more realistic</string>
     <string name="max_reward_price">max %d</string>
     <string name="min_reward_price">min %d</string>
-    <string name="ready_for_power_up">Ready for power-up?</string>
+    <string name="ready_for_power_up">Ready for a power-up?</string>
     <string name="invite_request_update_facebook">Please install/update the Facebook app</string>
     <string name="activity_feed_title">Activity feed</string>
     <string name="no_more_suggestions">No more suggestions</string>
