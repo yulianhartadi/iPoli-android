@@ -44,7 +44,7 @@
             android:visibility="invisible"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/subscription_badge" />
+            app:srcCompat="@mipmap/subscriptions_badge" />
 
 
         <Button
