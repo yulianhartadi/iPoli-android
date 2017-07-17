@@ -7,7 +7,7 @@ import org.threeten.bp.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 
 import static io.ipoli.android.app.utils.DateUtils.toMillis;
 
@@ -26,8 +26,8 @@ public class Inventory {
     }
 
     @JsonIgnore
-    public void addUpgrade(Upgrade upgrade, LocalDate expirationDate) {
-        getUpgrades().put(upgrade.code, toMillis(expirationDate));
+    public void addUpgrade(PowerUp powerUp, LocalDate expirationDate) {
+        getUpgrades().put(powerUp.code, toMillis(expirationDate));
     }
 
     @JsonIgnore
@@ -75,8 +75,8 @@ public class Inventory {
 
     @JsonIgnore
     public void unlockAllUpgrades(LocalDate expirationDate) {
-        for(Upgrade upgrade : Upgrade.values()) {
-            addUpgrade(upgrade, expirationDate);
+        for(PowerUp powerUp : PowerUp.values()) {
+            addUpgrade(powerUp, expirationDate);
         }
     }
 

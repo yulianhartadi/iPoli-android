@@ -12,12 +12,12 @@ import javax.inject.Inject;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
-import io.ipoli.android.app.events.StartUpgradeDialogRequestEvent;
-import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.app.events.StartPowerUpDialogRequestEvent;
+import io.ipoli.android.player.PowerUpManager;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -32,7 +32,7 @@ public class StartQuestReceiver extends BroadcastReceiver {
     QuestPersistenceService questPersistenceService;
 
     @Inject
-    UpgradeManager upgradeManager;
+    PowerUpManager powerUpManager;
 
     @Inject
     Bus eventBus;
@@ -41,8 +41,8 @@ public class StartQuestReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         App.getAppComponent(context).inject(this);
 
-        if (upgradeManager.isLocked(Upgrade.TIMER)) {
-            eventBus.post(new StartUpgradeDialogRequestEvent(Upgrade.TIMER));
+        if (powerUpManager.isLocked(PowerUp.TIMER)) {
+            eventBus.post(new StartPowerUpDialogRequestEvent(PowerUp.TIMER));
             return;
         }
 

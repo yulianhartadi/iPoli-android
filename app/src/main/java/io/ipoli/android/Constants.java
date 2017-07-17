@@ -177,8 +177,8 @@ public interface Constants {
     int SYNC_CALENDAR_JOB_ID = 1;
     int PROFILES_FIRST_SCHEMA_VERSION = 7;
 
-    int UPGRADE_GRACE_PERIOD_DAYS = 7;
-    int UPGRADE_TRIAL_PERIOD_DAYS = 15;
+    int POWER_UP_GRACE_PERIOD_DAYS = 7;
+    int POWER_UPS_TRIAL_PERIOD_DAYS = 15;
 
     String SKU_SUBSCRIPTION_MONTHLY = "test_subscription";
     String SKU_SUBSCRIPTION_QUARTERLY = "test_subscription_3_months";

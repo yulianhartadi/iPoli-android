@@ -4,33 +4,33 @@ import android.content.Context;
 
 import org.threeten.bp.LocalDate;
 
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 5/23/17.
  */
 
-public class UpgradeViewModel {
+public class PowerUpViewModel {
     private final String title;
     private final String shortDescription;
     private final String longDescription;
     private final int price;
     private final int image;
-    private final Upgrade upgrade;
+    private final PowerUp powerUp;
     private final LocalDate expirationDate;
 
-    public UpgradeViewModel(Context context, Upgrade upgrade) {
-        this(context, upgrade, null);
+    public PowerUpViewModel(Context context, PowerUp powerUp) {
+        this(context, powerUp, null);
     }
 
-    public UpgradeViewModel(Context context, Upgrade upgrade, LocalDate expirationDate) {
-        this.title = context.getString(upgrade.title);
-        this.shortDescription = context.getString(upgrade.subTitle);
-        this.longDescription = context.getString(upgrade.longDesc);
-        this.price = upgrade.price;
-        this.image = upgrade.picture;
-        this.upgrade = upgrade;
+    public PowerUpViewModel(Context context, PowerUp powerUp, LocalDate expirationDate) {
+        this.title = context.getString(powerUp.title);
+        this.shortDescription = context.getString(powerUp.subTitle);
+        this.longDescription = context.getString(powerUp.longDesc);
+        this.price = powerUp.price;
+        this.image = powerUp.picture;
+        this.powerUp = powerUp;
         this.expirationDate = expirationDate;
     }
 
@@ -54,8 +54,8 @@ public class UpgradeViewModel {
         return image;
     }
 
-    public Upgrade getUpgrade() {
-        return upgrade;
+    public PowerUp getPowerUp() {
+        return powerUp;
     }
 
     public boolean isUnlocked() {
@@ -67,10 +67,10 @@ public class UpgradeViewModel {
     }
 
     public boolean requiresUpgrade() {
-        return upgrade.requiredUpgrade != null;
+        return powerUp.requiredPowerUp != null;
     }
 
-    public Upgrade getRequiredUpgrade() {
-        return upgrade.requiredUpgrade;
+    public PowerUp getRequiredUpgrade() {
+        return powerUp.requiredPowerUp;
     }
 }

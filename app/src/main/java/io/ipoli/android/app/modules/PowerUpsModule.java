@@ -4,7 +4,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.player.PowerUpManager;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 
 /**
@@ -13,11 +13,11 @@ import io.ipoli.android.player.persistence.PlayerPersistenceService;
  */
 
 @Module
-public class UpgradesModule {
+public class PowerUpsModule {
 
     @Provides
     @Singleton
-    public UpgradeManager provideUrlProvider(PlayerPersistenceService playerPersistenceService) {
-        return new UpgradeManager(playerPersistenceService);
+    public PowerUpManager provideUrlProvider(PlayerPersistenceService playerPersistenceService) {
+        return new PowerUpManager(playerPersistenceService);
     }
 }

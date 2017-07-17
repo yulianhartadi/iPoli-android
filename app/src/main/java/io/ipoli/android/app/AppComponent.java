@@ -19,10 +19,10 @@ import io.ipoli.android.app.modules.LocalStorageModule;
 import io.ipoli.android.app.modules.ObjectMapperModule;
 import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.PlayerCredentialsModule;
+import io.ipoli.android.app.modules.PowerUpsModule;
 import io.ipoli.android.app.modules.RewardGeneratorModule;
 import io.ipoli.android.app.modules.SchedulerModule;
 import io.ipoli.android.app.modules.TimeParserModule;
-import io.ipoli.android.app.modules.UpgradesModule;
 import io.ipoli.android.app.modules.UrlProviderModule;
 import io.ipoli.android.app.rate.RateDialog;
 import io.ipoli.android.app.receivers.BootCompleteReceiver;
@@ -54,8 +54,8 @@ import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiv
 import io.ipoli.android.feed.activities.AddPostActivity;
 import io.ipoli.android.feed.fragments.FeedFragment;
 import io.ipoli.android.pet.PetActivity;
-import io.ipoli.android.player.UpgradesJobService;
-import io.ipoli.android.player.UpgradeDialog;
+import io.ipoli.android.player.PowerUpDialog;
+import io.ipoli.android.player.PowerUpsJobService;
 import io.ipoli.android.player.activities.ProfileActivity;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.ui.dialogs.UsernamePickerFragment;
@@ -96,8 +96,8 @@ import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.fragments.AvatarStoreFragment;
 import io.ipoli.android.store.fragments.MembershipStoreFragment;
 import io.ipoli.android.store.fragments.PetStoreFragment;
+import io.ipoli.android.store.fragments.PowerUpStoreFragment;
 import io.ipoli.android.store.fragments.StoreFragment;
-import io.ipoli.android.store.fragments.UpgradeStoreFragment;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -119,7 +119,7 @@ import io.ipoli.android.store.fragments.UpgradeStoreFragment;
                 ApiModule.class,
                 UrlProviderModule.class,
                 AndroidCalendarModule.class,
-                UpgradesModule.class,
+                PowerUpsModule.class,
                 PlayerCredentialsModule.class
         }
 )
@@ -241,7 +241,7 @@ public interface AppComponent {
 
     void inject(SettingsActivity settingsActivity);
 
-    void inject(UpgradeDialog upgradeDialog);
+    void inject(PowerUpDialog powerUpDialog);
 
     void inject(StoreActivity storeActivity);
 
@@ -249,7 +249,7 @@ public interface AppComponent {
 
     void inject(StoreFragment storeFragment);
 
-    void inject(UpgradeStoreFragment upgradeStoreFragment);
+    void inject(PowerUpStoreFragment powerUpStoreFragment);
 
     void inject(PetStoreFragment petStoreFragment);
 
@@ -287,5 +287,5 @@ public interface AppComponent {
 
     void inject(DateTimePickerFragment dateTimePickerFragment);
 
-    void inject(UpgradesJobService upgradesJobService);
+    void inject(PowerUpsJobService powerUpsJobService);
 }

@@ -10,21 +10,21 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.data.Inventory;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 5/22/17.
  */
 
-public class UpgradeManager implements OnDataChangedListener<Player> {
+public class PowerUpManager implements OnDataChangedListener<Player> {
     private static final int DEFAULT_EXPIRATION_MONTHS = 1;
 
     private Player player;
 
     private final PlayerPersistenceService playerPersistenceService;
 
-    public UpgradeManager(PlayerPersistenceService playerPersistenceService) {
+    public PowerUpManager(PlayerPersistenceService playerPersistenceService) {
         this.playerPersistenceService = playerPersistenceService;
         if (playerPersistenceService.get() != null) {
             playerPersistenceService.listen(this);
@@ -41,51 +41,51 @@ public class UpgradeManager implements OnDataChangedListener<Player> {
         return player;
     }
 
-    public boolean isLocked(Upgrade upgrade) {
-        return !isUnlocked(upgrade);
+    public boolean isLocked(PowerUp powerUp) {
+        return !isUnlocked(powerUp);
     }
 
-    public boolean isUnlocked(Upgrade upgrade) {
+    public boolean isUnlocked(PowerUp powerUp) {
         Player player = getPlayer();
         if (player.getInventory() == null) {
             return false;
         }
         Map<Integer, Long> upgrades = player.getInventory().getUpgrades();
-        if(!upgrades.containsKey(upgrade.code)) {
+        if(!upgrades.containsKey(powerUp.code)) {
             return false;
         }
 
-        LocalDate expirationDate = DateUtils.fromMillis(upgrades.get(upgrade.code));
+        LocalDate expirationDate = DateUtils.fromMillis(upgrades.get(powerUp.code));
         return !expirationDate.isBefore(LocalDate.now(DateUtils.ZONE_UTC));
     }
 
-    public boolean hasEnoughCoinsForUpgrade(Upgrade upgrade) {
-        return playerPersistenceService.get().getCoins() >= upgrade.price;
+    public boolean hasEnoughCoinsForPowerUp(PowerUp powerUp) {
+        return playerPersistenceService.get().getCoins() >= powerUp.price;
     }
 
-    public void unlock(Upgrade upgrade) {
-        unlock(upgrade, LocalDate.now().plusMonths(DEFAULT_EXPIRATION_MONTHS).minusDays(1));
+    public void unlock(PowerUp powerUp) {
+        unlock(powerUp, LocalDate.now().plusMonths(DEFAULT_EXPIRATION_MONTHS).minusDays(1));
     }
 
-    public void unlock(Upgrade upgrade, LocalDate expirationDate) {
+    public void unlock(PowerUp powerUp, LocalDate expirationDate) {
         Player player = getPlayer();
-        player.removeCoins(upgrade.price);
+        player.removeCoins(powerUp.price);
         if (player.getInventory() == null) {
             player.setInventory(new Inventory());
         }
-        player.getInventory().addUpgrade(upgrade, expirationDate);
+        player.getInventory().addUpgrade(powerUp, expirationDate);
         playerPersistenceService.save(player);
     }
 
-    public Long getExpirationDate(Upgrade upgrade) {
+    public Long getExpirationDate(PowerUp powerUp) {
         Player player = getPlayer();
         if (player.getInventory() == null) {
             return null;
         }
-        if (!player.getInventory().getUpgrades().containsKey(upgrade.code)) {
+        if (!player.getInventory().getUpgrades().containsKey(powerUp.code)) {
             return null;
         }
-        return player.getInventory().getUpgrades().get(upgrade.code);
+        return player.getInventory().getUpgrades().get(powerUp.code);
     }
 
     public Set<Integer> getUnlockedCodes() {

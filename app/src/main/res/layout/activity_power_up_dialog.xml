@@ -4,6 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:visibility="gone"
-    tools:context="io.ipoli.android.app.activities.UpgradeDialogActivity">
+    tools:context="io.ipoli.android.app.activities.PowerUpDialogActivity">
 
 </android.support.constraint.ConstraintLayout>

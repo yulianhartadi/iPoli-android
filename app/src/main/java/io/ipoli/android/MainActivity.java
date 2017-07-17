@@ -85,10 +85,10 @@ import io.ipoli.android.player.CredentialStatus;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.PlayerCredentialChecker;
 import io.ipoli.android.player.PlayerCredentialsHandler;
-import io.ipoli.android.player.UpgradeDialog;
-import io.ipoli.android.player.UpgradeDialog.OnUnlockListener;
-import io.ipoli.android.player.UpgradeManager;
-import io.ipoli.android.player.UpgradesJobService;
+import io.ipoli.android.player.PowerUpDialog;
+import io.ipoli.android.player.PowerUpDialog.OnUnlockListener;
+import io.ipoli.android.player.PowerUpManager;
+import io.ipoli.android.player.PowerUpsJobService;
 import io.ipoli.android.player.activities.ProfileActivity;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.events.LevelDownEvent;
@@ -117,7 +117,7 @@ import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reminder.data.Reminder;
 import io.ipoli.android.reward.fragments.RewardListFragment;
 import io.ipoli.android.store.StoreItemType;
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 import io.ipoli.android.store.activities.StoreActivity;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -161,7 +161,7 @@ public class MainActivity extends BaseActivity implements
     FeedPersistenceService feedPersistenceService;
 
     @Inject
-    UpgradeManager upgradeManager;
+    PowerUpManager powerUpManager;
 
     @Inject
     PlayerCredentialsHandler playerCredentialsHandler;
@@ -222,9 +222,9 @@ public class MainActivity extends BaseActivity implements
         }
 
         JobScheduler jobScheduler = (JobScheduler) getSystemService(Context.JOB_SCHEDULER_SERVICE);
-        jobScheduler.cancel(UpgradesJobService.JOB_ID);
-        JobInfo jobInfo = new JobInfo.Builder(UpgradesJobService.JOB_ID,
-                new ComponentName(this, UpgradesJobService.class))
+        jobScheduler.cancel(PowerUpsJobService.JOB_ID);
+        JobInfo jobInfo = new JobInfo.Builder(PowerUpsJobService.JOB_ID,
+                new ComponentName(this, PowerUpsJobService.class))
                 .setOverrideDeadline(0)
                 .build();
         jobScheduler.schedule(jobInfo);
@@ -307,8 +307,8 @@ public class MainActivity extends BaseActivity implements
                 break;
 
             case R.id.repeating_quests:
-                if (upgradeManager.isLocked(Upgrade.REPEATING_QUESTS)) {
-                    showUpgradeDialog(Upgrade.REPEATING_QUESTS, new RepeatingQuestListFragment());
+                if (powerUpManager.isLocked(PowerUp.REPEATING_QUESTS)) {
+                    showPowerUpDialog(PowerUp.REPEATING_QUESTS, new RepeatingQuestListFragment());
                     return;
                 }
                 source = EventSource.REPEATING_QUESTS;
@@ -316,8 +316,8 @@ public class MainActivity extends BaseActivity implements
                 break;
 
             case R.id.challenges:
-                if (upgradeManager.isLocked(Upgrade.CHALLENGES)) {
-                    showUpgradeDialog(Upgrade.CHALLENGES, new ChallengeListFragment());
+                if (powerUpManager.isLocked(PowerUp.CHALLENGES)) {
+                    showPowerUpDialog(PowerUp.CHALLENGES, new ChallengeListFragment());
                     return;
                 }
                 source = EventSource.CHALLENGES;
@@ -325,8 +325,8 @@ public class MainActivity extends BaseActivity implements
                 break;
 
             case R.id.growth:
-                if (upgradeManager.isLocked(Upgrade.GROWTH)) {
-                    showUpgradeDialog(Upgrade.GROWTH, new GrowthFragment());
+                if (powerUpManager.isLocked(PowerUp.GROWTH)) {
+                    showPowerUpDialog(PowerUp.GROWTH, new GrowthFragment());
                     return;
                 }
                 source = EventSource.GROWTH;
@@ -377,8 +377,8 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    private void showUpgradeDialog(Upgrade upgrade, Fragment fragment) {
-        UpgradeDialog.newInstance(upgrade, new OnUnlockListener() {
+    private void showPowerUpDialog(PowerUp powerUp, Fragment fragment) {
+        PowerUpDialog.newInstance(powerUp, new OnUnlockListener() {
             @Override
             public void onUnlock() {
                 changeCurrentFragment(fragment);
@@ -746,8 +746,8 @@ public class MainActivity extends BaseActivity implements
 
     @Subscribe
     public void onStartQuestRequest(StartQuestRequestEvent e) {
-        if (upgradeManager.isLocked(Upgrade.TIMER)) {
-            UpgradeDialog.newInstance(Upgrade.TIMER).show(getSupportFragmentManager());
+        if (powerUpManager.isLocked(PowerUp.TIMER)) {
+            PowerUpDialog.newInstance(PowerUp.TIMER).show(getSupportFragmentManager());
             return;
         }
 
@@ -763,15 +763,15 @@ public class MainActivity extends BaseActivity implements
     public void onStartFabMenuIntent(StartFabMenuIntentEvent e) {
         switch (e.fabName) {
             case REPEATING_QUEST:
-                if (upgradeManager.isLocked(Upgrade.REPEATING_QUESTS)) {
-                    showUpgradeDialogForFabItem(Upgrade.REPEATING_QUESTS, e.intent);
+                if (powerUpManager.isLocked(PowerUp.REPEATING_QUESTS)) {
+                    showPowerUpDialogForFabItem(PowerUp.REPEATING_QUESTS, e.intent);
                     return;
                 }
                 startActivity(e.intent);
                 return;
             case CHALLENGE:
-                if (upgradeManager.isLocked(Upgrade.CHALLENGES)) {
-                    showUpgradeDialogForFabItem(Upgrade.CHALLENGES, e.intent);
+                if (powerUpManager.isLocked(PowerUp.CHALLENGES)) {
+                    showPowerUpDialogForFabItem(PowerUp.CHALLENGES, e.intent);
                     return;
                 }
                 startActivity(e.intent);
@@ -781,8 +781,8 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    private void showUpgradeDialogForFabItem(Upgrade upgrade, Intent intent) {
-        UpgradeDialog.newInstance(upgrade, new OnUnlockListener() {
+    private void showPowerUpDialogForFabItem(PowerUp powerUp, Intent intent) {
+        PowerUpDialog.newInstance(powerUp, new OnUnlockListener() {
             @Override
             public void onUnlock() {
                 startActivity(intent);

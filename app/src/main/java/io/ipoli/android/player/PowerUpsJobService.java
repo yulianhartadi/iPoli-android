@@ -33,14 +33,14 @@ import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.data.MembershipType;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/3/17.
  */
 
-public class UpgradesJobService extends JobService {
+public class PowerUpsJobService extends JobService {
     public static final int JOB_ID = 2;
 
     @Inject
@@ -85,14 +85,14 @@ public class UpgradesJobService extends JobService {
                 return finishJobOnMainThread(params);
             }
 
-            List<Upgrade> expiringUpgrades = new ArrayList<>();
-            for (Map.Entry<Upgrade, LocalDate> entry : player.getUpgrades().entrySet()) {
+            List<PowerUp> expiringPowerUps = new ArrayList<>();
+            for (Map.Entry<PowerUp, LocalDate> entry : player.getUpgrades().entrySet()) {
                 if (entry.getValue().equals(currentDate)) {
-                    expiringUpgrades.add(entry.getKey());
+                    expiringPowerUps.add(entry.getKey());
                 }
             }
 
-            showUpgradesExpiringNotification(expiringUpgrades);
+            showUpgradesExpiringNotification(expiringPowerUps);
             return finishJobOnMainThread(params);
         }
 
@@ -133,7 +133,7 @@ public class UpgradesJobService extends JobService {
                 }
 
                 if (autoRenewing) {
-                    LocalDate gracePeriodStart = membershipExpirationDate.minusDays(Constants.UPGRADE_GRACE_PERIOD_DAYS - 1);
+                    LocalDate gracePeriodStart = membershipExpirationDate.minusDays(Constants.POWER_UP_GRACE_PERIOD_DAYS - 1);
                     if (isInGracePeriod(membershipExpirationDate, gracePeriodStart, currentDate)) {
                         player.getInventory().unlockAllUpgrades(membershipExpirationDate);
                         playerPersistenceService.save(player);
@@ -142,7 +142,7 @@ public class UpgradesJobService extends JobService {
                         return;
                     }
 
-                    player.getInventory().unlockAllUpgrades(membershipExpirationDate.minusDays(Constants.UPGRADE_GRACE_PERIOD_DAYS));
+                    player.getInventory().unlockAllUpgrades(membershipExpirationDate.minusDays(Constants.POWER_UP_GRACE_PERIOD_DAYS));
                     playerPersistenceService.save(player);
                     jobFinished(params, false);
 
@@ -169,13 +169,13 @@ public class UpgradesJobService extends JobService {
         showNotification(getString(R.string.membership_expiring_title), getString(R.string.trial_expiring_message));
     }
 
-    private void showUpgradesExpiringNotification(List<Upgrade> expiringUpgrades) {
-        if (expiringUpgrades.isEmpty()) {
+    private void showUpgradesExpiringNotification(List<PowerUp> expiringPowerUps) {
+        if (expiringPowerUps.isEmpty()) {
             return;
         }
-        String title = getString(R.string.upgrades_expiring_title);
-        int size = expiringUpgrades.size();
-        String text = getResources().getQuantityString(R.plurals.upgrades_expiring_message, size, size);
+        String title = getString(R.string.power_ups_expiring_title);
+        int size = expiringPowerUps.size();
+        String text = getResources().getQuantityString(R.plurals.power_ups_expiring_message, size, size);
         showNotification(title, text);
     }
 
@@ -212,7 +212,7 @@ public class UpgradesJobService extends JobService {
     }
 
     private boolean isOnLastDayOfTrial(LocalDate createdAt, LocalDate currentDate) {
-        return createdAt.plusDays(Constants.UPGRADE_TRIAL_PERIOD_DAYS - 1).isEqual(currentDate);
+        return createdAt.plusDays(Constants.POWER_UPS_TRIAL_PERIOD_DAYS - 1).isEqual(currentDate);
     }
 
     private Purchase getActivePurchase(List<Purchase> purchases) {

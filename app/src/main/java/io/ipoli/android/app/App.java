@@ -51,7 +51,7 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.activities.SignInActivity;
-import io.ipoli.android.app.activities.UpgradeDialogActivity;
+import io.ipoli.android.app.activities.PowerUpDialogActivity;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.api.UrlProvider;
 import io.ipoli.android.app.api.events.NewSessionCreatedEvent;
@@ -68,7 +68,7 @@ import io.ipoli.android.app.events.InitAppEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.StartQuickAddEvent;
-import io.ipoli.android.app.events.StartUpgradeDialogRequestEvent;
+import io.ipoli.android.app.events.StartPowerUpDialogRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
@@ -1021,10 +1021,10 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onStartUpgradeDialogRequest(StartUpgradeDialogRequestEvent e) {
+    public void onStartPowerUpDialogRequest(StartPowerUpDialogRequestEvent e) {
         Bundle bundle = new Bundle();
-        bundle.putString(UpgradeDialogActivity.UPGRADE, e.upgrade.name());
-        startNewActivity(UpgradeDialogActivity.class, bundle);
+        bundle.putString(PowerUpDialogActivity.POWER_UP, e.powerUp.name());
+        startNewActivity(PowerUpDialogActivity.class, bundle);
     }
 
     @Subscribe

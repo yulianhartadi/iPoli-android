@@ -43,14 +43,14 @@ import io.ipoli.android.app.ui.dialogs.LoadingDialog;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.player.data.Player;
-import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.player.PowerUpManager;
 import io.ipoli.android.quest.data.Category;
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 import io.ipoli.android.store.activities.StoreActivity;
-import io.ipoli.android.store.adapters.UpgradeStoreAdapter;
-import io.ipoli.android.store.events.BuyUpgradeEvent;
-import io.ipoli.android.store.events.UpgradeUnlockedEvent;
-import io.ipoli.android.store.viewmodels.UpgradeViewModel;
+import io.ipoli.android.store.adapters.PowerUpStoreAdapter;
+import io.ipoli.android.store.events.BuyPowerUpEvent;
+import io.ipoli.android.store.events.PowerUpUnlockedEvent;
+import io.ipoli.android.store.viewmodels.PowerUpViewModel;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -61,13 +61,13 @@ import static io.ipoli.android.Constants.RC_CALENDAR_PERM;
  * on 5/23/17.
  */
 
-public class UpgradeStoreFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Void> {
+public class PowerUpStoreFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Void> {
 
     @Inject
     Bus eventBus;
 
     @Inject
-    UpgradeManager upgradeManager;
+    PowerUpManager powerUpManager;
 
     @Inject
     LocalStorage localStorage;
@@ -83,9 +83,9 @@ public class UpgradeStoreFragment extends BaseFragment implements LoaderManager.
 
     private Unbinder unbinder;
 
-    @BindView(R.id.upgrade_list)
-    RecyclerView upgradeList;
-    private UpgradeStoreAdapter adapter;
+    @BindView(R.id.power_up_list)
+    RecyclerView powerUpList;
+    private PowerUpStoreAdapter adapter;
     private LoadingDialog loadingDialog;
     private Map<Long, Category> selectedCalendars;
 
@@ -94,19 +94,19 @@ public class UpgradeStoreFragment extends BaseFragment implements LoaderManager.
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.fragement_upgrade_store, container, false);
+        View view = inflater.inflate(R.layout.fragement_power_up_store, container, false);
         unbinder = ButterKnife.bind(this, view);
         App.getAppComponent(getContext()).inject(this);
-        ((StoreActivity) getActivity()).populateTitle(R.string.fragment_upgrade_store_title);
+        ((StoreActivity) getActivity()).populateTitle(R.string.fragment_power_up_store_title);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        upgradeList.setLayoutManager(layoutManager);
+        powerUpList.setLayoutManager(layoutManager);
 
-        List<UpgradeViewModel> upgrades = createUpgradeViewModels();
+        List<PowerUpViewModel> upgrades = createUpgradeViewModels();
 
-        adapter = new UpgradeStoreAdapter(getContext(), eventBus, upgrades, upgradeManager.getUnlockedCodes());
-        upgradeList.setAdapter(adapter);
+        adapter = new PowerUpStoreAdapter(getContext(), eventBus, upgrades, powerUpManager.getUnlockedCodes());
+        powerUpList.setAdapter(adapter);
 
         eventBus.post(new ScreenShownEvent(getActivity(), EventSource.STORE_UPGRADES));
 
@@ -114,49 +114,49 @@ public class UpgradeStoreFragment extends BaseFragment implements LoaderManager.
     }
 
     @NonNull
-    private List<UpgradeViewModel> createUpgradeViewModels() {
-        List<UpgradeViewModel> upgrades = new ArrayList<>();
-        List<Upgrade> lockedUpgrades = new ArrayList<>();
-        List<Upgrade> unlockedUpgrades = new ArrayList<>();
+    private List<PowerUpViewModel> createUpgradeViewModels() {
+        List<PowerUpViewModel> upgrades = new ArrayList<>();
+        List<PowerUp> lockedPowerUps = new ArrayList<>();
+        List<PowerUp> unlockedPowerUps = new ArrayList<>();
 
-        for (Upgrade upgrade : Upgrade.values()) {
-            if (upgradeManager.isUnlocked(upgrade)) {
-                unlockedUpgrades.add(upgrade);
+        for (PowerUp powerUp : PowerUp.values()) {
+            if (powerUpManager.isUnlocked(powerUp)) {
+                unlockedPowerUps.add(powerUp);
             } else {
-                lockedUpgrades.add(upgrade);
+                lockedPowerUps.add(powerUp);
             }
         }
 
-        Collections.sort(unlockedUpgrades, ((u1, u2) ->
-                -Long.compare(upgradeManager.getExpirationDate(u1), upgradeManager.getExpirationDate(u2))));
+        Collections.sort(unlockedPowerUps, ((u1, u2) ->
+                -Long.compare(powerUpManager.getExpirationDate(u1), powerUpManager.getExpirationDate(u2))));
 
-        for (Upgrade upgrade : lockedUpgrades) {
-            upgrades.add(new UpgradeViewModel(getContext(), upgrade));
+        for (PowerUp powerUp : lockedPowerUps) {
+            upgrades.add(new PowerUpViewModel(getContext(), powerUp));
         }
 
-        for (Upgrade upgrade : unlockedUpgrades) {
-            upgrades.add(new UpgradeViewModel(getContext(), upgrade, DateUtils.fromMillis(upgradeManager.getExpirationDate(upgrade))));
+        for (PowerUp powerUp : unlockedPowerUps) {
+            upgrades.add(new PowerUpViewModel(getContext(), powerUp, DateUtils.fromMillis(powerUpManager.getExpirationDate(powerUp))));
         }
         return upgrades;
     }
 
     @Subscribe
-    public void buyUpgradeEvent(BuyUpgradeEvent e) {
-        Upgrade upgrade = e.upgrade;
-        String title = getString(upgrade.title);
-        if (upgradeManager.hasEnoughCoinsForUpgrade(upgrade)) {
-            upgradeManager.unlock(upgrade);
+    public void buyUpgradeEvent(BuyPowerUpEvent e) {
+        PowerUp powerUp = e.powerUp;
+        String title = getString(powerUp.title);
+        if (powerUpManager.hasEnoughCoinsForPowerUp(powerUp)) {
+            powerUpManager.unlock(powerUp);
 
-            eventBus.post(new UpgradeUnlockedEvent(upgrade));
-            if (upgrade == Upgrade.CALENDAR_SYNC) {
+            eventBus.post(new PowerUpUnlockedEvent(powerUp));
+            if (powerUp == PowerUp.CALENDAR_SYNC) {
                 pickCalendarsToSync();
             } else {
-                String message = getString(R.string.upgrade_successfully_bought, title);
+                String message = getString(R.string.power_up_successfully_bought, title);
                 Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
             }
             adapter.setViewModels(createUpgradeViewModels());
         } else {
-            Toast.makeText(getContext(), getString(R.string.upgrade_too_expensive, title), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.power_up_too_expensive, title), Toast.LENGTH_SHORT).show();
         }
     }
 

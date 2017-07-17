@@ -42,12 +42,12 @@ import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.player.UpgradeDialog;
-import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.player.PowerUpDialog;
+import io.ipoli.android.player.PowerUpManager;
 import io.ipoli.android.quest.activities.AgendaActivity;
 import io.ipoli.android.quest.activities.EisenhowerMatrixActivity;
 import io.ipoli.android.quest.events.ScrollToTimeEvent;
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -65,7 +65,7 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
     Bus eventBus;
 
     @Inject
-    UpgradeManager upgradeManager;
+    PowerUpManager powerUpManager;
 
     @BindView(R.id.root_container)
     ViewGroup rootContainer;
@@ -152,7 +152,7 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
         calendarPager.setCurrentItem(MID_POSITION);
 
         if (showTrialMessage) {
-            Snackbar snackbar = Snackbar.make(rootContainer, getString(R.string.trial_message, Constants.UPGRADE_TRIAL_PERIOD_DAYS), Snackbar.LENGTH_INDEFINITE);
+            Snackbar snackbar = Snackbar.make(rootContainer, getString(R.string.trial_message, Constants.POWER_UPS_TRIAL_PERIOD_DAYS), Snackbar.LENGTH_INDEFINITE);
             snackbar.getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
                 @Override
                 public void onViewAttachedToWindow(View v) {
@@ -177,8 +177,8 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
                 eventBus.post(new CalendarDayChangedEvent(LocalDate.now(), CalendarDayChangedEvent.Source.MENU));
                 return true;
             case R.id.action_eisenhower_matrix:
-                if (upgradeManager.isLocked(Upgrade.EISENHOWER_MATRIX)) {
-                    UpgradeDialog.newInstance(Upgrade.EISENHOWER_MATRIX, new UpgradeDialog.OnUnlockListener() {
+                if (powerUpManager.isLocked(PowerUp.EISENHOWER_MATRIX)) {
+                    PowerUpDialog.newInstance(PowerUp.EISENHOWER_MATRIX, new PowerUpDialog.OnUnlockListener() {
                         @Override
                         public void onUnlock() {
                             showEisenhowerMatrix();

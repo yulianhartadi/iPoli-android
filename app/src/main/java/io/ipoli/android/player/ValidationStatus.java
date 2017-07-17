@@ -3,7 +3,7 @@ package io.ipoli.android.player;
 import java.util.List;
 import java.util.Map;
 
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -14,12 +14,12 @@ public class ValidationStatus {
         TRIAL, MEMBER, NOT_MEMBER
     }
 
-    public final List<Upgrade> expired;
-    public final List<Upgrade> expiring;
-    public final Map<Upgrade, Long> toBeRenewed;
+    public final List<PowerUp> expired;
+    public final List<PowerUp> expiring;
+    public final Map<PowerUp, Long> toBeRenewed;
     public final StatusType type;
 
-    public ValidationStatus(List<Upgrade> expired, List<Upgrade> expiring, Map<Upgrade, Long> toBeRenewed, StatusType type) {
+    public ValidationStatus(List<PowerUp> expired, List<PowerUp> expiring, Map<PowerUp, Long> toBeRenewed, StatusType type) {
         this.expired = expired;
         this.expiring = expiring;
         this.toBeRenewed = toBeRenewed;

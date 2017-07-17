@@ -47,8 +47,8 @@ import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.app.utils.TimePreference;
-import io.ipoli.android.player.UpgradeDialog;
-import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.player.PowerUpDialog;
+import io.ipoli.android.player.PowerUpManager;
 import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
@@ -74,7 +74,7 @@ import io.ipoli.android.quest.ui.dialogs.TimesADayPickerFragment;
 import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 
 import static org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth;
 
@@ -88,7 +88,7 @@ public class AddQuestSummaryFragment extends BaseFragment implements OnDurationP
     Bus eventBus;
 
     @Inject
-    UpgradeManager upgradeManager;
+    PowerUpManager powerUpManager;
 
     private Unbinder unbinder;
 
@@ -181,8 +181,8 @@ public class AddQuestSummaryFragment extends BaseFragment implements OnDurationP
 
     @OnClick(R.id.add_quest_summary_reminders)
     public void onRemindersClicked(View view) {
-        if (upgradeManager.isLocked(Upgrade.REMINDERS)) {
-            UpgradeDialog.newInstance(Upgrade.REMINDERS).show(getFragmentManager());
+        if (powerUpManager.isLocked(PowerUp.REMINDERS)) {
+            PowerUpDialog.newInstance(PowerUp.REMINDERS).show(getFragmentManager());
             return;
         }
         EditReminderFragment f = EditReminderFragment.newInstance((reminder, editMode) -> {
@@ -287,9 +287,9 @@ public class AddQuestSummaryFragment extends BaseFragment implements OnDurationP
     public void onDurationClicked(View v) {
         Integer duration = (Integer) durationText.getTag();
         List<Integer> durations = Arrays.asList(Constants.DURATIONS);
-        if (durations.contains(duration) || upgradeManager.isLocked(Upgrade.CUSTOM_DURATION)) {
+        if (durations.contains(duration) || powerUpManager.isLocked(PowerUp.CUSTOM_DURATION)) {
             DurationPickerFragment.newInstance(duration, this).show(getFragmentManager());
-        } else if (upgradeManager.isUnlocked(Upgrade.CUSTOM_DURATION)) {
+        } else if (powerUpManager.isUnlocked(PowerUp.CUSTOM_DURATION)) {
             CustomDurationPickerFragment.newInstance(duration, this).show(getFragmentManager());
         }
     }
@@ -329,8 +329,8 @@ public class AddQuestSummaryFragment extends BaseFragment implements OnDurationP
 
     @OnClick(R.id.add_quest_summary_note_container)
     public void onNoteClicked(View v) {
-        if (upgradeManager.isLocked(Upgrade.NOTES)) {
-            UpgradeDialog.newInstance(Upgrade.NOTES).show(getFragmentManager());
+        if (powerUpManager.isLocked(PowerUp.NOTES)) {
+            PowerUpDialog.newInstance(PowerUp.NOTES).show(getFragmentManager());
             return;
         }
 
@@ -348,8 +348,8 @@ public class AddQuestSummaryFragment extends BaseFragment implements OnDurationP
 
     @OnClick(R.id.sub_quests_container)
     public void onAddSubQuestClicked(View v) {
-        if (upgradeManager.isLocked(Upgrade.SUB_QUESTS)) {
-            UpgradeDialog.newInstance(Upgrade.SUB_QUESTS).show(getFragmentManager());
+        if (powerUpManager.isLocked(PowerUp.SUB_QUESTS)) {
+            PowerUpDialog.newInstance(PowerUp.SUB_QUESTS).show(getFragmentManager());
             return;
         }
         addSubQuestView.setVisibility(View.VISIBLE);

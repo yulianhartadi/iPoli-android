@@ -2,7 +2,7 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/tools"
-    android:id="@+id/upgrade_container"
+    android:id="@+id/power_up_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="8dp"
@@ -17,7 +17,7 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/upgrade_title"
+            android:id="@+id/power_up_title"
             style="@style/TextAppearance.AppCompat.Headline"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -25,15 +25,14 @@
             android:layout_marginRight="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="24dp"
-            android:text="TextView"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/upgrade_image_container"
+            app:layout_constraintRight_toLeftOf="@+id/power_up_image_container"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginEnd="8dp" />
 
         <TextView
-            android:id="@+id/upgrade_short_desc"
+            android:id="@+id/power_up_short_desc"
             style="@style/TextAppearance.AppCompat.Body1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -41,15 +40,14 @@
             android:layout_marginRight="8dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:text="TextView"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/upgrade_image_container"
-            app:layout_constraintTop_toBottomOf="@+id/upgrade_title"
+            app:layout_constraintRight_toLeftOf="@+id/power_up_image_container"
+            app:layout_constraintTop_toBottomOf="@+id/power_up_title"
             android:layout_marginEnd="8dp" />
 
         <android.support.constraint.ConstraintLayout
-            android:id="@+id/upgrade_image_container"
+            android:id="@+id/power_up_image_container"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginEnd="16dp"
@@ -59,7 +57,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:id="@+id/upgrade_image_background"
+                android:id="@+id/power_up_image_background"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:background="@drawable/ic_context_indicator"
@@ -75,24 +73,24 @@
                 app:layout_constraintHorizontal_bias="1.0" />
 
             <ImageView
-                android:id="@+id/upgrade_image"
+                android:id="@+id/power_up_image"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:scaleType="fitXY"
                 app:srcCompat="@drawable/ic_repeat_black_24dp"
                 android:layout_marginRight="0dp"
-                app:layout_constraintRight_toRightOf="@+id/upgrade_image_background"
-                app:layout_constraintBottom_toBottomOf="@+id/upgrade_image_background"
+                app:layout_constraintRight_toRightOf="@+id/power_up_image_background"
+                app:layout_constraintBottom_toBottomOf="@+id/power_up_image_background"
                 android:layout_marginBottom="0dp"
                 android:layout_marginLeft="0dp"
-                app:layout_constraintLeft_toLeftOf="@+id/upgrade_image_background"
-                app:layout_constraintTop_toTopOf="@+id/upgrade_image_background"
+                app:layout_constraintLeft_toLeftOf="@+id/power_up_image_background"
+                app:layout_constraintTop_toTopOf="@+id/power_up_image_background"
                 android:layout_marginTop="0dp" />
         </android.support.constraint.ConstraintLayout>
 
 
         <Button
-            android:id="@+id/upgrade_unlock"
+            android:id="@+id/power_up_unlock"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
@@ -102,46 +100,45 @@
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="24dp"
-            android:text="@string/unlock_upgrade"
+            android:text="@string/unlock_power_up"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/upgrade_expand"
-            app:layout_constraintTop_toBottomOf="@+id/upgrade_price"
+            app:layout_constraintRight_toLeftOf="@+id/power_up_expand"
+            app:layout_constraintTop_toBottomOf="@+id/power_up_price"
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView
-            android:id="@+id/upgrade_long_desc"
+            android:id="@+id/power_up_long_desc"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginTop="8dp"
-            android:text="Text"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/upgrade_unlock"
+            app:layout_constraintTop_toBottomOf="@+id/power_up_unlock"
             app:layout_constraintVertical_bias="0.5" />
 
         <ImageButton
-            android:id="@+id/upgrade_expand"
+            android:id="@+id/power_up_expand"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:background="@null"
-            app:layout_constraintBottom_toBottomOf="@+id/upgrade_unlock"
+            app:layout_constraintBottom_toBottomOf="@+id/power_up_unlock"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/upgrade_unlock"
+            app:layout_constraintTop_toTopOf="@+id/power_up_unlock"
             app:srcCompat="@drawable/ic_expand_more_black_24dp" />
 
         <TextView
-            android:id="@+id/upgrade_price"
+            android:id="@+id/power_up_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
@@ -150,13 +147,13 @@
             android:text="400 life coins"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/upgrade_short_desc"
-            app:layout_constraintRight_toLeftOf="@+id/upgrade_image_container"
+            app:layout_constraintTop_toBottomOf="@+id/power_up_short_desc"
+            app:layout_constraintRight_toLeftOf="@+id/power_up_image_container"
             android:layout_marginRight="8dp"
             app:layout_constraintHorizontal_bias="0.0" />
 
         <TextView
-            android:id="@+id/upgrade_unlock_date"
+            android:id="@+id/power_up_valid_until_date"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -169,12 +166,12 @@
             android:visibility="visible"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/upgrade_expand"
+            app:layout_constraintRight_toLeftOf="@+id/power_up_expand"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
             app:layout_constraintVertical_bias="0.526"
-            app:layout_constraintTop_toTopOf="@+id/upgrade_unlock"
-            app:layout_constraintBottom_toBottomOf="@+id/upgrade_unlock" />
+            app:layout_constraintTop_toTopOf="@+id/power_up_unlock"
+            app:layout_constraintBottom_toBottomOf="@+id/power_up_unlock" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.v7.widget.CardView>

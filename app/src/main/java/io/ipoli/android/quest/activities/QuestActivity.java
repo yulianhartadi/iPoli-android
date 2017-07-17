@@ -45,8 +45,8 @@ import io.ipoli.android.app.utils.IntentUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.note.data.Note;
 import io.ipoli.android.note.events.OpenNoteEvent;
-import io.ipoli.android.player.UpgradeDialog;
-import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.player.PowerUpDialog;
+import io.ipoli.android.player.PowerUpManager;
 import io.ipoli.android.quest.adapters.QuestDetailsAdapter;
 import io.ipoli.android.quest.commands.StartQuestCommand;
 import io.ipoli.android.quest.commands.StopQuestCommand;
@@ -65,7 +65,7 @@ import io.ipoli.android.quest.events.subquests.UpdateSubQuestNameEvent;
 import io.ipoli.android.quest.exceptions.QuestNotFoundException;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.schedulers.QuestNotificationScheduler;
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -77,7 +77,7 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
     public static final int EDIT_QUEST_REQUEST_CODE = 101;
 
     @Inject
-    UpgradeManager upgradeManager;
+    PowerUpManager powerUpManager;
 
     @BindView(R.id.root_container)
     ViewGroup rootLayout;
@@ -224,8 +224,8 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @OnClick(R.id.quest_details_timer)
     public void onTimerTap(View v) {
-        if (upgradeManager.isLocked(Upgrade.TIMER)) {
-            UpgradeDialog.newInstance(Upgrade.TIMER).show(getSupportFragmentManager());
+        if (powerUpManager.isLocked(PowerUp.TIMER)) {
+            PowerUpDialog.newInstance(PowerUp.TIMER).show(getSupportFragmentManager());
             return;
         }
 
@@ -279,8 +279,8 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @Subscribe
     public void onEditNoteRequest(EditNoteRequestEvent e) {
-        if (upgradeManager.isLocked(Upgrade.NOTES)) {
-            UpgradeDialog.newInstance(Upgrade.NOTES).show(getSupportFragmentManager());
+        if (powerUpManager.isLocked(PowerUp.NOTES)) {
+            PowerUpDialog.newInstance(PowerUp.NOTES).show(getSupportFragmentManager());
             return;
         }
         TextPickerFragment.newInstance(e.text, R.string.pick_note_title, this).show(getSupportFragmentManager());
@@ -443,11 +443,11 @@ public class QuestActivity extends BaseActivity implements Chronometer.OnChronom
 
     @Override
     public boolean isLocked() {
-        return upgradeManager.isLocked(Upgrade.SUB_QUESTS);
+        return powerUpManager.isLocked(PowerUp.SUB_QUESTS);
     }
 
     @Override
     public void onLockedAction() {
-        UpgradeDialog.newInstance(Upgrade.SUB_QUESTS).show(getSupportFragmentManager());
+        PowerUpDialog.newInstance(PowerUp.SUB_QUESTS).show(getSupportFragmentManager());
     }
 }

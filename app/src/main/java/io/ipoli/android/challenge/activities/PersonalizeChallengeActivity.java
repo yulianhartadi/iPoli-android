@@ -41,7 +41,7 @@ import io.ipoli.android.challenge.events.ShowPersonalizeChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.viewmodels.PredefinedChallengeQuestViewModel;
 import io.ipoli.android.note.data.Note;
-import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.player.PowerUpManager;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
@@ -51,7 +51,7 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.reminder.data.Reminder;
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -59,7 +59,7 @@ import io.ipoli.android.store.Upgrade;
  */
 public class PersonalizeChallengeActivity extends BaseActivity {
     @Inject
-    UpgradeManager upgradeManager;
+    PowerUpManager powerUpManager;
 
     @BindView(R.id.root_container)
     ViewGroup rootContainer;
@@ -521,7 +521,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         Quest q = new Quest(name, endDate);
         q.setPriority(Quest.PRIORITY_IMPORTANT_NOT_URGENT);
         q.setCategory(category.name());
-        if (upgradeManager.isUnlocked(Upgrade.REMINDERS)) {
+        if (powerUpManager.isUnlocked(PowerUp.REMINDERS)) {
             q.addReminder(new Reminder(0));
         }
         return q;
@@ -533,7 +533,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         rq.setDuration(duration);
         rq.setCategory(category.name());
         rq.setPriority(Quest.PRIORITY_IMPORTANT_NOT_URGENT);
-        if (upgradeManager.isUnlocked(Upgrade.REMINDERS)) {
+        if (powerUpManager.isUnlocked(PowerUp.REMINDERS)) {
             rq.addReminder(new Reminder(0));
         }
         return rq;

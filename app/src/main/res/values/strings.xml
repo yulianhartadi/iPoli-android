@@ -683,7 +683,7 @@
     <string name="challenge8_rq4_name">Go out with friends</string>
 
     <string name="fragment_store_title">Store</string>
-    <string name="upgrade_dialog_not_enough_coins">This upgrade costs %d coins. Unfortunately, you have not collected enough. Do you want to buy some?</string>
+    <string name="power_up_dialog_not_enough_coins">This power-up costs %d coins. Unfortunately, you have not collected enough. Do you want to buy some?</string>
 
     <string name="pet_seal">Cute tail</string>
     <string name="pet_donkey">Fancy ears</string>
@@ -710,21 +710,21 @@
     <string name="not_urgent">Not Urgent</string>
 
     <string name="coins_pack_value">+ %d life coins</string>
-    <string name="upgrade_price">%d life coins</string>
-    <string name="upgrade_expires_on">Unlocked until %s</string>
+    <string name="power_up_price">%d life coins</string>
+    <string name="power_up_expires_on">Unlocked until %s</string>
     <string name="fragment_avatar_store_title">Buy avatar</string>
     <string name="fragment_pet_store_title">Buy pet</string>
-    <string name="fragment_upgrade_store_title">Unlock upgrade</string>
-    <string name="upgrade_successfully_bought">You can now enjoy %s</string>
-    <string name="upgrade_too_expensive">Not enough coins to buy %s</string>
-    <string name="upgrade_dialog_title">You\'ve discovered %s</string>
+    <string name="fragment_power_up_store_title">Unlock power-up</string>
+    <string name="power_up_successfully_bought">You can now enjoy %s</string>
+    <string name="power_up_too_expensive">Not enough coins to buy %s</string>
+    <string name="power_up_dialog_title">You\'ve discovered %s</string>
     <string name="buy">Buy</string>
     <string name="buy_life_coins">Buy life coins</string>
     <string name="not_now">Not now</string>
     <string name="go_to_store">Go to Store</string>
     <string name="fragment_membership_store_title">Premium membership</string>
     <string name="life_coins">Life coins</string>
-    <string name="upgrades">Upgrades</string>
+    <string name="power_ups">Power-Ups</string>
     <string name="avatars">Avatars</string>
     <string name="pets">Pets</string>
     <string name="reward_price_coins">%d coins</string>
@@ -735,10 +735,9 @@
     <string name="timer">Timer</string>
     <string name="programmed_challenges">Programmed challenges</string>
     <string name="no_challenges">You have not challenged yourself</string>
-    <string name="upgrades_migration_message">You are an awesome iPoli user and all current upgrades are free for you!</string>
     <string name="big_value_format">%sK</string>
     <string name="monthly_plan">Monthly Plan</string>
-    <string name="monthly_plan_desc">Unlock all upgrades. Get all future upgrades for free.</string>
+    <string name="monthly_plan_desc">Unlock all power-ups. Get all future power-ups for free.</string>
     <string name="yearly_plan">For the Smart Ones</string>
     <string name="yearly_plan_desc">For the smart ones</string>
     <string name="most_popular">Most popular</string>
@@ -757,86 +756,86 @@
     <string name="avatar_name_michael">Bad boy</string>
     <string name="avatar_name_tobby">Brainiac</string>
 
-    <string name="upgrade_rq_sub_title">Create repeating tasks</string>
-    <string name="upgrade_rq_short_desc">Repeating quests are called all your repeating tasks - fixed or flexible.</string>
-    <string name="upgrade_rq_long_desc">
+    <string name="power_up_rq_sub_title">Create repeating tasks</string>
+    <string name="power_up_rq_short_desc">Repeating quests are called all your repeating tasks - fixed or flexible.</string>
+    <string name="power_up_rq_long_desc">
         Add your tasks which repeat daily, weekly, monthly, or even annually. They can be on fixed or flexible days.
         iPoli will automatically schedule them for you.
     </string>
 
-    <string name="upgrade_challenges_sub_title">Set and achieve your goals</string>
-    <string name="upgrade_challenges_short_desc">Plan and achieve your short and long-term goals</string>
-    <string name="upgrade_challenges_long_desc">
+    <string name="power_up_challenges_sub_title">Set and achieve your goals</string>
+    <string name="power_up_challenges_short_desc">Plan and achieve your short and long-term goals</string>
+    <string name="power_up_challenges_long_desc">
         Challenges help you plan and achieve your life goals. Create challenges for all your short and long-term goals.
         Then you can track your progress and stay motivated.
       </string>
 
-    <string name="upgrade_growth_sub_title">Track your progress and score</string>
-    <string name="upgrade_growth_short_desc">Track and compare your progress and productivity during different time spans.</string>
-    <string name="upgrade_growth_long_desc">
+    <string name="power_up_growth_sub_title">Track your progress and score</string>
+    <string name="power_up_growth_short_desc">Track and compare your progress and productivity during different time spans.</string>
+    <string name="power_up_growth_long_desc">
         Monitor home much time do you spend for quests in each category,
         how many do you complete, what is your Awesomeness score and more facts to help your productivity.
     </string>
 
-    <string name="upgrade_matrix_sub_title">Separate important from urgent</string>
-    <string name="upgrade_matrix_short_desc">Prioritize your tasks and focus on important ones</string>
-    <string name="upgrade_matrix_long_desc">
+    <string name="power_up_matrix_sub_title">Separate important from urgent</string>
+    <string name="power_up_matrix_short_desc">Prioritize your tasks and focus on important ones</string>
+    <string name="power_up_matrix_long_desc">
         The Eisenhower matrix divides your quests into 4 groups depending on their priority.
         It helps you focus on the most important tasks.
     </string>
 
-    <string name="upgrade_sync_calendars_sub_title">Import all your events</string>
-    <string name="upgrade_sync_calendars_short_desc">Import and sync events and tasks from your other calendars</string>
-    <string name="upgrade_sync_calendars_long_desc">
+    <string name="power_up_sync_calendars_sub_title">Import all your events</string>
+    <string name="power_up_sync_calendars_short_desc">Import and sync events and tasks from your other calendars</string>
+    <string name="power_up_sync_calendars_long_desc">
         Keep iPoli up to date by syncing events and tasks from your calendars.
         Assign different category for each calendar (work, personal, …)
     </string>
 
-    <string name="upgrade_predefined_challenges_sub_title">Easy to follow helpful formulas</string>
-    <string name="upgrade_predefined_challenges_short_desc">Challenge yourself with special programs to be more healthy, skillful and happy</string>
-    <string name="upgrade_predefined_challenges_long_desc">
+    <string name="power_up_predefined_challenges_sub_title">Easy to follow helpful formulas</string>
+    <string name="power_up_predefined_challenges_short_desc">Challenge yourself with special programs to be more healthy, skillful and happy</string>
+    <string name="power_up_predefined_challenges_long_desc">
         We\'ve prepared special challenges for you to be healthy, fit, to learn new skills and spend more time with your family.
         The programs are easy to follow but you can always adjust them according to your needs.
     </string>
 
-    <string name="upgrade_notes_sub_title">Stay organized and clear your mind</string>
-    <string name="upgrade_notes_short_desc">Stay organized by adding notes to your quests</string>
-    <string name="upgrade_notes_long_desc">Add simple notes to your quests to help you remember important information. </string>
+    <string name="power_up_notes_sub_title">Stay organized and clear your mind</string>
+    <string name="power_up_notes_short_desc">Stay organized by adding notes to your quests</string>
+    <string name="power_up_notes_long_desc">Add simple notes to your quests to help you remember important information. </string>
 
-    <string name="upgrade_timer_sub_title">Keep track of your time</string>
-    <string name="upgrade_timer_short_desc">Manage and track your time even more effectively</string>
-    <string name="upgrade_timer_long_desc">
+    <string name="power_up_timer_sub_title">Keep track of your time</string>
+    <string name="power_up_timer_short_desc">Manage and track your time even more effectively</string>
+    <string name="power_up_timer_long_desc">
         Don\'t know where your time flies? Monitor it by tracking your quests duration
         or use it as a timer for your Pomodoros, fitness activities or cooking recipes.
     </string>
 
-    <string name="upgrade_sub_quests_sub_title">Create checklists for your quests</string>
-    <string name="upgrade_sub_quests_short_desc">Create checklists for your quests</string>
-    <string name="upgrade_sub_quests_long_desc">
+    <string name="power_up_sub_quests_sub_title">Create checklists for your quests</string>
+    <string name="power_up_sub_quests_short_desc">Create checklists for your quests</string>
+    <string name="power_up_sub_quests_long_desc">
         Be more productive by dividing your tasks into smaller pieces.
         Define steps, subtasks or even create shopping lists.
     </string>
 
-    <string name="upgrade_reminders_sub_title">Never forget anything</string>
-    <string name="upgrade_reminders_short_desc">Let iPoli remind you when it\'s time for the next quest</string>
-    <string name="upgrade_reminders_long_desc">
+    <string name="power_up_reminders_sub_title">Never forget anything</string>
+    <string name="power_up_reminders_short_desc">Let iPoli remind you when it\'s time for the next quest</string>
+    <string name="power_up_reminders_long_desc">
         Add reminders to your quests. No need to look at your phone or watch all the time,
         focus on the current task and iPoli will notify you when the next one comes.
     </string>
 
     <string name="custom_duration">Custom duration</string>
-    <string name="upgrade_custom_duration_sub_title">Choose the best duration for your quests</string>
-    <string name="upgrade_custom_duration_short_desc">Not satisfied with provided options for quests duration? You can now define your own duration spans.</string>
-    <string name="upgrade_custom_duration_long_desc">
+    <string name="power_up_custom_duration_sub_title">Choose the best duration for your quests</string>
+    <string name="power_up_custom_duration_short_desc">Not satisfied with provided options for quests duration? You can now define your own duration spans.</string>
+    <string name="power_up_custom_duration_long_desc">
         Choose your own time intervals for quests. The minimum value is 10 minutes.
         The maximum is still 4 hours. If you need longer value, then try to divide your quest into shorter quests.
     </string>
 
-    <string name="upgrade_dialog_name">You\'ve discovered %s!</string>
-    <string name="upgrade_dialog_price_message">Do you want to unlock it now for %d of your life coins?</string>
+    <string name="power_up_dialog_name">You\'ve discovered %s!</string>
+    <string name="power_up_dialog_price_message">Do you want to unlock it now for %d of your life coins?</string>
     <string name="unlock">Unlock</string>
-    <string name="unlock_upgrade">Unlock upgrade</string>
-    <string name="requires_upgrade_message">Requires %s</string>
+    <string name="unlock_power_up">Unlock power-up</string>
+    <string name="requires_power_up_message">Requires %s</string>
     <string name="reward_last_used_date">Last used: %s</string>
     <string name="used_rewards_count">%d used</string>
     <string name="reward_price">%d coins</string>
@@ -866,9 +865,9 @@
     <string name="accept_challenge">Accept Challenge</string>
     <string name="outro_text">%s, let\'s achieve your life goals by fighting procrastination, laziness and clutter together!</string>
     <string name="tutorial_calendar_quest_hint">Your quest has been added to your calendar. Complete it by tapping on the checkbox.</string>
-    <string name="tutorial_quest_complete">Every time you complete a quest you get a reward! Experience allows you to level up and with life coins you can unlock upgrades, buy new avatars ot pets.</string>
+    <string name="tutorial_quest_complete">Every time you complete a quest you get a reward! Experience allows you to level up and with life coins you can unlock power-ups, buy new avatars ot pets.</string>
     <string name="tutorial_follow_progress">You can follow your progress here. These are your avatar and pet. Keep your pet happy by completing your quests regularly to achieve maximum coins and XP bonus!</string>
-    <string name="tutorial_store">Use your hard earned coins to unlock powerful upgrades (Challenges, Calendar sync, Notes etc) or buy new avatars and cute pets!</string>
+    <string name="tutorial_store">Use your hard earned coins to unlock powerful power-ups (Challenges, Calendar sync, Notes etc) or buy new avatars and cute pets!</string>
     <string name="choose_category">Choose Category</string>
     <string name="tutorial_quest_name">Quest name</string>
     <string name="tutorial_quest_button">Do you see the button below? Will you do me the honor?</string>
@@ -888,7 +887,7 @@
     <string name="too_expensive_reward_price_message">Too expensive, be more realistic</string>
     <string name="max_reward_price">max %d</string>
     <string name="min_reward_price">min %d</string>
-    <string name="ready_for_upgrade">Ready for upgrade?</string>
+    <string name="ready_for_power_up">Ready for power-up?</string>
     <string name="invite_request_update_facebook">Please install/update the Facebook app</string>
     <string name="activity_feed_title">Activity feed</string>
     <string name="no_more_suggestions">No more suggestions</string>
@@ -924,22 +923,22 @@
     <string name="title_fragment_feed">Achievements by Heroes</string>
     <string name="dialog_delete_post_title">Delete post</string>
     <string name="dialog_delete_post_message">Sure you want to delete this amazing post?</string>
-    <string name="trial_expiring_message">To continue using all upgrades become premium member or buy them with coins</string>
+    <string name="trial_expiring_message">To continue using all power-ups become premium member or buy them with coins</string>
     <string name="trial_expiring_title">iPoli trial expires tomorrow</string>
     <string name="membership_expiring_title">iPoli membership is expiring</string>
     <string name="membership_no_payment_title">iPoli membership payment problem</string>
-    <string name="upgrades_expiring_title">iPoli upgrades are getting locked</string>
+    <string name="power_ups_expiring_title">iPoli power-ups are getting locked</string>
     <plurals name="membership_no_payment_message">
         <item quantity="one">There is a problem with your subscription payment. You have %d day left to renew your membership</item>
         <item quantity="other">There is a problem with your subscription payment. You have %d days left to renew your membership</item>
     </plurals>
 
-    <plurals name="upgrades_expiring_message">
-        <item quantity="one">You have %d upgrade expiring today</item>
-        <item quantity="other">You have %d upgrades expiring today</item>
+    <plurals name="power_ups_expiring_message">
+        <item quantity="one">You have %d power-up expiring today</item>
+        <item quantity="other">You have %d power-ups expiring today</item>
     </plurals>
 
-    <string name="trial_message">Surprise! All upgrades are FREE for you for %d days.</string>
+    <string name="trial_message">Surprise! All power-ups are FREE for you for %d days.</string>
     <string name="membership">Membership</string>
 
     <string-array name="player_titles">

@@ -45,7 +45,7 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -186,6 +186,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
         public Boolean loadInBackground() {
             updateAvatars();
             migrateRewardPoints();
+
             if (schemaVersion < Constants.PROFILES_FIRST_SCHEMA_VERSION) {
                 migrateUsername();
             }
@@ -220,7 +221,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
 
         private Long deleteRewardPoints() {
             Long rewardPoints = null;
-            
+
             UnsavedRevision revision = database.getExistingDocument(playerId).createRevision();
             Map<String, Object> properties = revision.getProperties();
             if (properties.containsKey("rewardPoints")) {
@@ -246,8 +247,8 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
             Player player = playerPersistenceService.get();
             LocalDate unlockedDate = DateUtils.fromMillis(player.getCreatedAt());
             if (schemaVersion == 3 || schemaVersion == 4) {
-                for (Upgrade upgrade : Upgrade.values()) {
-                    player.getInventory().addUpgrade(upgrade, unlockedDate);
+                for (PowerUp powerUp : PowerUp.values()) {
+                    player.getInventory().addUpgrade(powerUp, unlockedDate);
                 }
             }
 

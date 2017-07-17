@@ -660,7 +660,7 @@
     <string name="challenge8_rq4_raw_text">Sair com os amigos duas vezes por semana</string>
     <string name="challenge8_rq4_name">Sair com os amigos</string>
     <string name="fragment_store_title">Loja</string>
-    <string name="upgrade_dialog_not_enough_coins">Essa melhoria custa %d moedas. Infelizmente, você não coletou moedas suficientes. Deseja comprar algumas?</string>
+    <string name="power_up_dialog_not_enough_coins">Essa melhoria custa %d moedas. Infelizmente, você não coletou moedas suficientes. Deseja comprar algumas?</string>
     <string name="pet_seal">Cauda fofa</string>
     <string name="pet_donkey">Orelhas chiques</string>
     <string name="pet_elephant">Orelhas voadoras</string>
@@ -684,21 +684,21 @@
     <string name="urgent">Urgente</string>
     <string name="not_urgent">Adiável</string>
     <string name="coins_pack_value">+ %d moedas da vida</string>
-    <string name="upgrade_price">%d moedas da vida</string>
-    <string name="upgrade_expires_on">Desbloqueado em %s</string>
+    <string name="power_up_price">%d moedas da vida</string>
+    <string name="power_up_expires_on">Desbloqueado em %s</string>
     <string name="fragment_avatar_store_title">Comprar avatar</string>
     <string name="fragment_pet_store_title">Comprar animal</string>
-    <string name="fragment_upgrade_store_title">Desbloquear melhoria</string>
-    <string name="upgrade_successfully_bought">Agora você pode aproveitar %s</string>
-    <string name="upgrade_too_expensive">Sem moedas suficientes para comprar %s</string>
-    <string name="upgrade_dialog_title">Você descobriu %s</string>
+    <string name="fragment_power_up_store_title">Desbloquear melhoria</string>
+    <string name="power_up_successfully_bought">Agora você pode aproveitar %s</string>
+    <string name="power_up_too_expensive">Sem moedas suficientes para comprar %s</string>
+    <string name="power_up_dialog_title">Você descobriu %s</string>
     <string name="buy">Comprar</string>
     <string name="buy_life_coins">Comprar moedas da vida</string>
     <string name="not_now">Agora não</string>
     <string name="go_to_store">Ir para a Loja</string>
     <string name="fragment_membership_store_title">Loja</string>
     <string name="life_coins">Moedas da vida</string>
-    <string name="upgrades">Melhorias</string>
+    <string name="power_ups">Melhorias</string>
     <string name="avatars">Avatares</string>
     <string name="pets">Animais</string>
     <string name="reward_price_coins">%d pontos</string>
@@ -731,53 +731,53 @@
     <string name="avatar_name_dwight">Homem Musculoso</string>
     <string name="avatar_name_michael">Cara mau</string>
     <string name="avatar_name_tobby">Cerebroso</string>
-    <string name="upgrade_rq_sub_title">Criar tarefas recorrentes</string>
-    <string name="upgrade_rq_short_desc">Missões recorrentes são todas as suas tarefas recorrentes - fixo ou flexível.</string>
-    <string name="upgrade_rq_long_desc">Adicione suas tarefas que se repetem diariamente, semanalmente, mensalmente ou até anualmente. Podem ser dias fixos ou flexíveis.
+    <string name="power_up_rq_sub_title">Criar tarefas recorrentes</string>
+    <string name="power_up_rq_short_desc">Missões recorrentes são todas as suas tarefas recorrentes - fixo ou flexível.</string>
+    <string name="power_up_rq_long_desc">Adicione suas tarefas que se repetem diariamente, semanalmente, mensalmente ou até anualmente. Podem ser dias fixos ou flexíveis.
 iPoli automaticamente agendará elas para você.</string>
-    <string name="upgrade_challenges_sub_title">Defina e alcance suas metas</string>
-    <string name="upgrade_challenges_short_desc">Planeje e atinja suas metas a curto e a longo prazo</string>
-    <string name="upgrade_challenges_long_desc">Desafios te ajudam a planejar e atingir as metas de sua vida. Crie desafio para todas as suas metas de curto e longo prazo.
+    <string name="power_up_challenges_sub_title">Defina e alcance suas metas</string>
+    <string name="power_up_challenges_short_desc">Planeje e atinja suas metas a curto e a longo prazo</string>
+    <string name="power_up_challenges_long_desc">Desafios te ajudam a planejar e atingir as metas de sua vida. Crie desafio para todas as suas metas de curto e longo prazo.
 Assim você pode acompanhar o seu progresso e ficar motivado.</string>
-    <string name="upgrade_growth_sub_title">Acompanhe o seu progresso e sua pontuação</string>
-    <string name="upgrade_growth_short_desc">Acompanhe e compare o seu progresso e sua produtividade durante diferentes períodos de tempo.</string>
-    <string name="upgrade_growth_long_desc">Monitore o quanto de tempo você gasta com cada categoria, quantas tarefas você completa, qual é sua pontuação de Excelência e mais fatos para te ajudar com sua produtividade.</string>
-    <string name="upgrade_matrix_sub_title">Separe o importante do urgente</string>
-    <string name="upgrade_matrix_short_desc">Priorize suas tarefas e foque nas importantes</string>
-    <string name="upgrade_matrix_long_desc">A matriz de Eisenhower divide suas missões em 4 grupos, dependendo da prioridade de cada uma.
+    <string name="power_up_growth_sub_title">Acompanhe o seu progresso e sua pontuação</string>
+    <string name="power_up_growth_short_desc">Acompanhe e compare o seu progresso e sua produtividade durante diferentes períodos de tempo.</string>
+    <string name="power_up_growth_long_desc">Monitore o quanto de tempo você gasta com cada categoria, quantas tarefas você completa, qual é sua pontuação de Excelência e mais fatos para te ajudar com sua produtividade.</string>
+    <string name="power_up_matrix_sub_title">Separe o importante do urgente</string>
+    <string name="power_up_matrix_short_desc">Priorize suas tarefas e foque nas importantes</string>
+    <string name="power_up_matrix_long_desc">A matriz de Eisenhower divide suas missões em 4 grupos, dependendo da prioridade de cada uma.
 Isso te ajuda a focar nas tarefas mais importantes.</string>
-    <string name="upgrade_sync_calendars_sub_title">Importe todos os seus eventos</string>
-    <string name="upgrade_sync_calendars_short_desc">Importe e sincronize eventos e tarefas de outros calendários</string>
-    <string name="upgrade_sync_calendars_long_desc">Deixe o iPoli atualizado sincronizando eventos e tarefas dos seus calendários.
+    <string name="power_up_sync_calendars_sub_title">Importe todos os seus eventos</string>
+    <string name="power_up_sync_calendars_short_desc">Importe e sincronize eventos e tarefas de outros calendários</string>
+    <string name="power_up_sync_calendars_long_desc">Deixe o iPoli atualizado sincronizando eventos e tarefas dos seus calendários.
 Dê uma categoria para cada calendário (trabalho, pessoal, ...)</string>
-    <string name="upgrade_predefined_challenges_sub_title">Fácil usar fórmulas úteis</string>
-    <string name="upgrade_predefined_challenges_short_desc">Desafie-se com programas especiais para ser mais saudável, habilidoso e feliz</string>
-    <string name="upgrade_predefined_challenges_long_desc">Nós preparamos desafios especiais para você ser saudável, ficar em forma, aprender novas habilidades e passar mais tempo com a família.
+    <string name="power_up_predefined_challenges_sub_title">Fácil usar fórmulas úteis</string>
+    <string name="power_up_predefined_challenges_short_desc">Desafie-se com programas especiais para ser mais saudável, habilidoso e feliz</string>
+    <string name="power_up_predefined_challenges_long_desc">Nós preparamos desafios especiais para você ser saudável, ficar em forma, aprender novas habilidades e passar mais tempo com a família.
 Os programas são fáceis de seguir, mas você pode ajustá-los de acordo com as suas necessidades.</string>
-    <string name="upgrade_notes_sub_title">Fique organizado e limpe a sua mente</string>
-    <string name="upgrade_notes_short_desc">Organize-se adicionando anotações em suas missões</string>
-    <string name="upgrade_notes_long_desc">Adicione notas simples em suas missões para te ajudar a lembrar de informações importantes.</string>
-    <string name="upgrade_timer_sub_title">Acompanhe o seu tempo</string>
-    <string name="upgrade_timer_short_desc">Gerencie e acompanhe o seu tempo mais efetivamente</string>
-    <string name="upgrade_timer_long_desc">Não sabe quando que o seu tempo voa? Monitore-o acompanhando a duração de suas missões ou use isso como temporizador para os seus Pomodoros, atividades físicas ou receitas de culinária.</string>
-    <string name="upgrade_sub_quests_sub_title">Crie lista de tarefas para as suas missões</string>
-    <string name="upgrade_sub_quests_short_desc">Crie lista de tarefas para as suas missões</string>
-    <string name="upgrade_sub_quests_long_desc">Seja mais produtivo dividindo suas tarefas em tamanho menores.
+    <string name="power_up_notes_sub_title">Fique organizado e limpe a sua mente</string>
+    <string name="power_up_notes_short_desc">Organize-se adicionando anotações em suas missões</string>
+    <string name="power_up_notes_long_desc">Adicione notas simples em suas missões para te ajudar a lembrar de informações importantes.</string>
+    <string name="power_up_timer_sub_title">Acompanhe o seu tempo</string>
+    <string name="power_up_timer_short_desc">Gerencie e acompanhe o seu tempo mais efetivamente</string>
+    <string name="power_up_timer_long_desc">Não sabe quando que o seu tempo voa? Monitore-o acompanhando a duração de suas missões ou use isso como temporizador para os seus Pomodoros, atividades físicas ou receitas de culinária.</string>
+    <string name="power_up_sub_quests_sub_title">Crie lista de tarefas para as suas missões</string>
+    <string name="power_up_sub_quests_short_desc">Crie lista de tarefas para as suas missões</string>
+    <string name="power_up_sub_quests_long_desc">Seja mais produtivo dividindo suas tarefas em tamanho menores.
 Define os passos, subtarefas ou até crie uma lista de compras.</string>
-    <string name="upgrade_reminders_sub_title">Nunca esqueça as coisas</string>
-    <string name="upgrade_reminders_short_desc">Deixe o iPoli te lembrar quando der a hora da próxima missão</string>
-    <string name="upgrade_reminders_long_desc">Adicione lembretes para suas missões. Você não precisará ficar olhando nem verificando o seu celular.
+    <string name="power_up_reminders_sub_title">Nunca esqueça as coisas</string>
+    <string name="power_up_reminders_short_desc">Deixe o iPoli te lembrar quando der a hora da próxima missão</string>
+    <string name="power_up_reminders_long_desc">Adicione lembretes para suas missões. Você não precisará ficar olhando nem verificando o seu celular.
 Foque na missão atual e o iPoli te notificará quando a próxima missão começar.</string>
     <string name="custom_duration">Duração personalizada</string>
-    <string name="upgrade_custom_duration_sub_title">Escolha a melhor duração para as suas missões</string>
-    <string name="upgrade_custom_duration_short_desc">Não está satisfeito com as opções de duração das missões? Agora você pode personalizá-la.</string>
-    <string name="upgrade_custom_duration_long_desc">Escolha a duração das suas missões. O valor mínimo é 10 minutos, o máximo continua sendo 4 horas.
+    <string name="power_up_custom_duration_sub_title">Escolha a melhor duração para as suas missões</string>
+    <string name="power_up_custom_duration_short_desc">Não está satisfeito com as opções de duração das missões? Agora você pode personalizá-la.</string>
+    <string name="power_up_custom_duration_long_desc">Escolha a duração das suas missões. O valor mínimo é 10 minutos, o máximo continua sendo 4 horas.
 Se você precisar de um valor maior, divida a sua missão em missões menores.</string>
-    <string name="upgrade_dialog_name">Você descobriu %s!</string>
-    <string name="upgrade_dialog_price_message">Você quer desbloquear isso agora por %d de moedas da vida?</string>
+    <string name="power_up_dialog_name">Você descobriu %s!</string>
+    <string name="power_up_dialog_price_message">Você quer desbloquear isso agora por %d de moedas da vida?</string>
     <string name="unlock">Desbloquear</string>
-    <string name="unlock_upgrade">Desbloquear melhoria</string>
-    <string name="requires_upgrade_message">Precisa de %s</string>
+    <string name="unlock_power_up">Desbloquear melhoria</string>
+    <string name="requires_power_up_message">Precisa de %s</string>
     <string name="reward_points_won">Pontos de recompensa ganhos</string>
     <string name="reward_last_used_date">Última vez usado: %s</string>
     <string name="used_rewards_count">%d usado(s)</string>
@@ -830,7 +830,7 @@ Se você precisar de um valor maior, divida a sua missão em missões menores.</
     <string name="too_expensive_reward_price_message">Caro demais! Seja mais realista.</string>
     <string name="max_reward_price">máx %d</string>
     <string name="min_reward_price">min %d</string>
-    <string name="ready_for_upgrade">Pronto(a) para uma melhoria?</string>
+    <string name="ready_for_power_up">Pronto(a) para uma melhoria?</string>
     <string-array name="player_titles">
         <item>Novato(a)</item>
         <item>Profissional</item>

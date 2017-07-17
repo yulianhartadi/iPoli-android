@@ -192,7 +192,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.iPoli.DialogActivity" />
         <activity
-            android:name=".app.activities.UpgradeDialogActivity"
+            android:name=".app.activities.PowerUpDialogActivity"
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.iPoli.DialogActivity" />
@@ -349,7 +349,7 @@
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 
-        <service android:name=".player.UpgradesJobService"
+        <service android:name=".player.PowerUpsJobService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
 

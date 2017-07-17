@@ -36,15 +36,15 @@ import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.events.NewChallengeQuestsPickedEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.viewmodels.PickQuestViewModel;
-import io.ipoli.android.player.UpgradeDialog;
-import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.player.PowerUpDialog;
+import io.ipoli.android.player.PowerUpManager;
 import io.ipoli.android.quest.adapters.SelectableQuestPickerAdapter;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -55,7 +55,7 @@ public class AddChallengeQuestsFragment extends BaseFragment {
     public static final int MIN_FILTER_QUERY_LEN = 2;
 
     @Inject
-    UpgradeManager upgradeManager;
+    PowerUpManager powerUpManager;
 
     @Inject
     Bus eventBus;
@@ -148,8 +148,8 @@ public class AddChallengeQuestsFragment extends BaseFragment {
     public void onStartFabMenuIntent(StartFabMenuIntentEvent e) {
         switch (e.fabName) {
             case REPEATING_QUEST:
-                if (upgradeManager.isLocked(Upgrade.REPEATING_QUESTS)) {
-                    UpgradeDialog.newInstance(Upgrade.REPEATING_QUESTS, new UpgradeDialog.OnUnlockListener() {
+                if (powerUpManager.isLocked(PowerUp.REPEATING_QUESTS)) {
+                    PowerUpDialog.newInstance(PowerUp.REPEATING_QUESTS, new PowerUpDialog.OnUnlockListener() {
                         @Override
                         public void onUnlock() {
                             startActivity(e.intent);

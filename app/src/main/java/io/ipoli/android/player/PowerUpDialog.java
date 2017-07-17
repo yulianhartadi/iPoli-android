@@ -27,61 +27,61 @@ import butterknife.Unbinder;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.store.StoreItemType;
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 import io.ipoli.android.store.activities.StoreActivity;
-import io.ipoli.android.store.events.UpgradeUnlockedEvent;
+import io.ipoli.android.store.events.PowerUpUnlockedEvent;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 5/22/17.
  */
 
-public class UpgradeDialog extends DialogFragment {
-    private static final String TAG = "store_upgrade-dialog";
-    private static final String UPGRADE_CODE = "upgrade_code";
+public class PowerUpDialog extends DialogFragment {
+    private static final String TAG = "store-power-up-dialog";
+    private static final String POWER_UP_CODE = "power_up_code";
 
     @Inject
     Bus eventBus;
 
     @Inject
-    UpgradeManager upgradeManager;
+    PowerUpManager powerUpManager;
 
-    @BindView(R.id.upgrade_dialog_title)
+    @BindView(R.id.power_up_dialog_title)
     TextView title;
 
-    @BindView(R.id.upgrade_dialog_desc)
+    @BindView(R.id.power_up_dialog_desc)
     TextView description;
 
-    @BindView(R.id.upgrade_dialog_price)
+    @BindView(R.id.power_up_dialog_price)
     TextView price;
 
-    @BindView(R.id.upgrade_price_not_enough_coins)
+    @BindView(R.id.power_up_price_not_enough_coins)
     TextView notEnoughCoins;
 
     private OnDismissListener dismissListener;
 
     private OnUnlockListener unlockListener;
 
-    private Upgrade upgrade;
+    private PowerUp powerUp;
 
     private Unbinder unbinder;
 
-    public static UpgradeDialog newInstance(Upgrade upgrade) {
-        return newInstance(upgrade, null, null);
+    public static PowerUpDialog newInstance(PowerUp powerUp) {
+        return newInstance(powerUp, null, null);
     }
 
-    public static UpgradeDialog newInstance(Upgrade upgrade, OnUnlockListener unlockListener) {
-        return newInstance(upgrade, unlockListener, null);
+    public static PowerUpDialog newInstance(PowerUp powerUp, OnUnlockListener unlockListener) {
+        return newInstance(powerUp, unlockListener, null);
     }
 
-    public static UpgradeDialog newInstance(Upgrade upgrade, OnDismissListener dismissListener) {
-        return newInstance(upgrade, null, dismissListener);
+    public static PowerUpDialog newInstance(PowerUp powerUp, OnDismissListener dismissListener) {
+        return newInstance(powerUp, null, dismissListener);
     }
 
-    public static UpgradeDialog newInstance(Upgrade upgrade, OnUnlockListener unlockListener, OnDismissListener dismissListener) {
-        UpgradeDialog fragment = new UpgradeDialog();
+    public static PowerUpDialog newInstance(PowerUp powerUp, OnUnlockListener unlockListener, OnDismissListener dismissListener) {
+        PowerUpDialog fragment = new PowerUpDialog();
         Bundle args = new Bundle();
-        args.putInt(UPGRADE_CODE, upgrade.code);
+        args.putInt(POWER_UP_CODE, powerUp.code);
         fragment.setArguments(args);
         if (unlockListener != null) {
             fragment.unlockListener = unlockListener;
@@ -101,10 +101,10 @@ public class UpgradeDialog extends DialogFragment {
             dismiss();
         }
 
-        int code = getArguments().getInt(UPGRADE_CODE);
-        upgrade = Upgrade.get(code);
-        if (upgrade == null) {
-            throw new NoSuchElementException("There is no upgrade with code: " + code);
+        int code = getArguments().getInt(POWER_UP_CODE);
+        powerUp = PowerUp.get(code);
+        if (powerUp == null) {
+            throw new NoSuchElementException("There is no power-up with code: " + code);
         }
 
     }
@@ -114,23 +114,23 @@ public class UpgradeDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
 
-        View v = inflater.inflate(R.layout.fragment_upgrade_dialog, null);
+        View v = inflater.inflate(R.layout.fragment_power_up_dialog, null);
         View headerView = inflater.inflate(R.layout.fancy_dialog_header, null);
 
         TextView dialogTitle = (TextView) headerView.findViewById(R.id.fancy_dialog_title);
-        dialogTitle.setText(R.string.ready_for_upgrade);
+        dialogTitle.setText(R.string.ready_for_power_up);
 
         ImageView image = (ImageView) headerView.findViewById(R.id.fancy_dialog_image);
-        image.setImageResource(upgrade.picture);
+        image.setImageResource(powerUp.picture);
 
         unbinder = ButterKnife.bind(this, v);
 
-        title.setText(getString(R.string.upgrade_dialog_title, getString(upgrade.title)));
-        description.setText(upgrade.shortDesc);
-        notEnoughCoins.setText(getString(R.string.upgrade_dialog_not_enough_coins, upgrade.price));
-        price.setText(getString(R.string.upgrade_dialog_price_message, upgrade.price));
+        title.setText(getString(R.string.power_up_dialog_title, getString(powerUp.title)));
+        description.setText(powerUp.shortDesc);
+        notEnoughCoins.setText(getString(R.string.power_up_dialog_not_enough_coins, powerUp.price));
+        price.setText(getString(R.string.power_up_dialog_price_message, powerUp.price));
 
-        boolean hasEnoughCoins = upgradeManager.hasEnoughCoinsForUpgrade(upgrade);
+        boolean hasEnoughCoins = powerUpManager.hasEnoughCoinsForPowerUp(powerUp);
 
         price.setVisibility(hasEnoughCoins ? View.VISIBLE : View.GONE);
         notEnoughCoins.setVisibility(hasEnoughCoins ? View.GONE : View.VISIBLE);
@@ -144,10 +144,10 @@ public class UpgradeDialog extends DialogFragment {
         return builder.setView(view)
                 .setCustomTitle(titleView)
                 .setPositiveButton(R.string.unlock, (dialog, which) -> {
-                    upgradeManager.unlock(upgrade);
-                    String message = getString(R.string.upgrade_successfully_bought, getString(upgrade.title));
+                    powerUpManager.unlock(powerUp);
+                    String message = getString(R.string.power_up_successfully_bought, getString(powerUp.title));
                     Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-                    eventBus.post(new UpgradeUnlockedEvent(upgrade));
+                    eventBus.post(new PowerUpUnlockedEvent(powerUp));
                     if (unlockListener != null) {
                         unlockListener.onUnlock();
                     }
@@ -156,7 +156,7 @@ public class UpgradeDialog extends DialogFragment {
                 })
                 .setNeutralButton(R.string.go_to_store, (dialog, which) -> {
                     Intent intent = new Intent(getContext(), StoreActivity.class);
-                    intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.UPGRADES.name());
+                    intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.POWER_UPS.name());
                     startActivity(intent);
                 });
     }

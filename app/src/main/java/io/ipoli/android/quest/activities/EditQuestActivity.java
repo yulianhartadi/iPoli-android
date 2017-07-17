@@ -62,8 +62,8 @@ import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.note.data.Note;
-import io.ipoli.android.player.UpgradeDialog;
-import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.player.PowerUpDialog;
+import io.ipoli.android.player.PowerUpManager;
 import io.ipoli.android.quest.adapters.EditQuestSubQuestListAdapter;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Recurrence;
@@ -97,8 +97,8 @@ import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.reminder.ReminderMinutesParser;
 import io.ipoli.android.reminder.TimeOffsetType;
 import io.ipoli.android.reminder.data.Reminder;
-import io.ipoli.android.store.Upgrade;
-import io.ipoli.android.store.events.UpgradeUnlockedEvent;
+import io.ipoli.android.store.PowerUp;
+import io.ipoli.android.store.events.PowerUpUnlockedEvent;
 
 import static io.ipoli.android.app.events.EventSource.EDIT_QUEST;
 
@@ -119,7 +119,7 @@ public class EditQuestActivity extends BaseActivity implements
     Bus eventBus;
 
     @Inject
-    UpgradeManager upgradeManager;
+    PowerUpManager powerUpManager;
 
     @Inject
     LocalStorage localStorage;
@@ -248,18 +248,18 @@ public class EditQuestActivity extends BaseActivity implements
 
         hideUnderline(addSubQuest);
 
-        if (upgradeManager.isUnlocked(Upgrade.SUB_QUESTS)) {
+        if (powerUpManager.isUnlocked(PowerUp.SUB_QUESTS)) {
             addSubQuest.setOnFocusChangeListener(onAddSubQuestsFocusChangeListener);
         } else {
             addSubQuest.setFocusable(false);
             addSubQuest.setFocusableInTouchMode(false);
-            addSubQuest.setOnClickListener(v -> UpgradeDialog.newInstance(Upgrade.SUB_QUESTS).show(getSupportFragmentManager()));
+            addSubQuest.setOnClickListener(v -> PowerUpDialog.newInstance(PowerUp.SUB_QUESTS).show(getSupportFragmentManager()));
         }
     }
 
     @Subscribe
-    public void onUpgradeBought(UpgradeUnlockedEvent e) {
-        if (e.upgrade == Upgrade.SUB_QUESTS) {
+    public void onUpgradeBought(PowerUpUnlockedEvent e) {
+        if (e.powerUp == PowerUp.SUB_QUESTS) {
             addSubQuest.setOnClickListener(null);
             addSubQuest.setFocusable(true);
             addSubQuest.setFocusableInTouchMode(true);
@@ -590,9 +590,9 @@ public class EditQuestActivity extends BaseActivity implements
     public void onDurationClick(View view) {
         Integer duration = (Integer) durationText.getTag();
         List<Integer> durations = Arrays.asList(Constants.DURATIONS);
-        if (durations.contains(duration) || upgradeManager.isLocked(Upgrade.CUSTOM_DURATION)) {
+        if (durations.contains(duration) || powerUpManager.isLocked(PowerUp.CUSTOM_DURATION)) {
             DurationPickerFragment.newInstance(duration, this).show(getSupportFragmentManager());
-        } else if (upgradeManager.isUnlocked(Upgrade.CUSTOM_DURATION)) {
+        } else if (powerUpManager.isUnlocked(PowerUp.CUSTOM_DURATION)) {
             CustomDurationPickerFragment.newInstance(duration, this).show(getSupportFragmentManager());
         }
     }
@@ -611,8 +611,8 @@ public class EditQuestActivity extends BaseActivity implements
 
     @OnClick(R.id.quest_add_reminder_container)
     public void onRemindersClicked(View view) {
-        if (upgradeManager.isLocked(Upgrade.REMINDERS)) {
-            UpgradeDialog.newInstance(Upgrade.REMINDERS).show(getSupportFragmentManager());
+        if (powerUpManager.isLocked(PowerUp.REMINDERS)) {
+            PowerUpDialog.newInstance(PowerUp.REMINDERS).show(getSupportFragmentManager());
             return;
         }
 
@@ -643,8 +643,8 @@ public class EditQuestActivity extends BaseActivity implements
 
     @OnClick(R.id.quest_note_container)
     public void onNoteClick(View view) {
-        if (upgradeManager.isLocked(Upgrade.NOTES)) {
-            UpgradeDialog.newInstance(Upgrade.NOTES).show(getSupportFragmentManager());
+        if (powerUpManager.isLocked(PowerUp.NOTES)) {
+            PowerUpDialog.newInstance(PowerUp.NOTES).show(getSupportFragmentManager());
             return;
         }
         TextPickerFragment.newInstance((String) noteText.getTag(), R.string.pick_note_title, this).show(getSupportFragmentManager());

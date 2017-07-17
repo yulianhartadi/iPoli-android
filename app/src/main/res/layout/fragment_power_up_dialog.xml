@@ -6,16 +6,16 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/upgrade_dialog_title"
+        android:id="@+id/power_up_dialog_title"
         style="@style/TextAppearance.AppCompat.Subhead"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-medium"
-        android:text="@string/upgrade_dialog_name" />
+        android:text="@string/power_up_dialog_name" />
 
 
     <TextView
-        android:id="@+id/upgrade_dialog_desc"
+        android:id="@+id/power_up_dialog_desc"
         style="@style/TextAppearance.AppCompat.Body1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,21 +23,21 @@
         android:textColor="@color/md_dark_text_54" />
 
     <TextView
-        android:id="@+id/upgrade_dialog_price"
+        android:id="@+id/power_up_dialog_price"
         style="@style/TextAppearance.AppCompat.Body1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/upgrade_dialog_price_message"
+        android:text="@string/power_up_dialog_price_message"
         android:textColor="@color/md_dark_text_54" />
 
     <TextView
-        android:id="@+id/upgrade_price_not_enough_coins"
+        android:id="@+id/power_up_price_not_enough_coins"
         style="@style/TextAppearance.AppCompat.Body1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="@string/upgrade_dialog_not_enough_coins"
+        android:text="@string/power_up_dialog_not_enough_coins"
         android:textColor="@color/md_dark_text_54"
         android:visibility="gone" />
 

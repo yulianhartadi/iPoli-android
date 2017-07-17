@@ -58,7 +58,7 @@ import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.player.data.MembershipType;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.events.BuyCoinsTappedEvent;
 import io.ipoli.android.store.events.CoinsPurchasedEvent;
@@ -360,7 +360,7 @@ public class MembershipStoreFragment extends BaseFragment {
         for (Map.Entry<Integer, Long> entry : activeUpgrades.entrySet()) {
             LocalDate expiration = DateUtils.fromMillis(entry.getValue());
             int days = (int) ChronoUnit.DAYS.between(today, expiration) + 1;
-            coinsToReturn += (Upgrade.get(entry.getKey()).price / 30f) * days;
+            coinsToReturn += (PowerUp.get(entry.getKey()).price / 30f) * days;
         }
         return coinsToReturn;
     }
