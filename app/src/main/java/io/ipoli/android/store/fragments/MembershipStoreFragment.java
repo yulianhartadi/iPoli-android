@@ -478,8 +478,8 @@ public class MembershipStoreFragment extends BaseFragment {
                 finalExpirationDate = LocalDate.now();
         }
         postEvent(new ChangeMembershipEvent(player.getMembership(), membershipType, purchasedDate, expirationDate, finalExpirationDate));
-        if(expirationDate != null) {
-            finalExpirationDate = expirationDate.isAfter(finalExpirationDate) ? expirationDate : finalExpirationDate;
+        if (expirationDate != null && expirationDate.isAfter(finalExpirationDate)) {
+            finalExpirationDate = expirationDate;
         }
 
         player.getInventory().enableAllPowerUps(finalExpirationDate);
