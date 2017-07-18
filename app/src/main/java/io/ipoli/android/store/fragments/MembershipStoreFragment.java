@@ -166,7 +166,7 @@ public class MembershipStoreFragment extends BaseFragment {
         skus.add(Constants.SKU_SUBSCRIPTION_QUARTERLY);
         skus.add(Constants.SKU_SUBSCRIPTION_YEARLY);
 
-        postEvent(new ScreenShownEvent(getActivity(), EventSource.STORE_COINS));
+        postEvent(new ScreenShownEvent(getActivity(), EventSource.MEMBERSHIP_STORE));
         return view;
     }
 
