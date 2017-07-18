@@ -51,6 +51,8 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.BaseFragment;
+import io.ipoli.android.app.api.Api;
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.utils.DateUtils;
@@ -70,6 +72,10 @@ import io.ipoli.android.store.events.CoinsPurchasedEvent;
 public class MembershipStoreFragment extends BaseFragment {
 
     public static final int MICRO_UNIT = 1000000;
+
+    @Inject
+    Api api;
+
     @Inject
     PlayerPersistenceService playerPersistenceService;
 
@@ -317,13 +323,24 @@ public class MembershipStoreFragment extends BaseFragment {
                 final PurchaseFlow flow = checkout.createOneShotPurchaseFlow(new RequestListener<Purchase>() {
                     @Override
                     public void onSuccess(@Nonnull Purchase purchase) {
-                        updatePlayer(getPlayer(), sku, purchase.time);
-                        queryInventory();
+                        api.getMembershipStatus(purchase.sku, purchase.token, new Api.MembershipStatusResponseListener() {
+                            @Override
+                            public void onSuccess(Long startTimeMillis, Long expiryTimeMillis, Boolean autoRenewing) {
+                                LocalDate expirationDate = DateUtils.fromMillis(expiryTimeMillis).minusDays(Constants.POWER_UP_GRACE_PERIOD_DAYS);
+                                updatePlayer(getPlayer(), sku, expirationDate);
+                                queryInventory();
+                            }
+
+                            @Override
+                            public void onError(Exception e) {
+                                postEvent(new AppErrorEvent(e));
+                            }
+                        });
                     }
 
                     @Override
                     public void onError(int i, @Nonnull Exception e) {
-                        //log error
+                        postEvent(new AppErrorEvent(e));
                     }
                 });
                 requests.changeSubscription(new ArrayList<>(activeSkus), sku, null, flow);
@@ -385,25 +402,38 @@ public class MembershipStoreFragment extends BaseFragment {
     }
 
     private void updatePlayer(Player player, String sku, Long purchasedTime) {
-        MembershipType membershipType;
         LocalDate purchasedDate = DateUtils.fromMillis(purchasedTime);
         LocalDate expirationDate;
         switch (sku) {
             case Constants.SKU_SUBSCRIPTION_MONTHLY:
-                membershipType = MembershipType.MONTHLY;
                 expirationDate = purchasedDate.plusMonths(1).minusDays(1);
                 break;
             case Constants.SKU_SUBSCRIPTION_QUARTERLY:
-                membershipType = MembershipType.QUARTERLY;
                 expirationDate = purchasedDate.plusMonths(3).minusDays(1);
                 break;
             case Constants.SKU_SUBSCRIPTION_YEARLY:
-                membershipType = MembershipType.YEARLY;
                 expirationDate = purchasedDate.plusYears(1).minusDays(1);
                 break;
             default:
-                membershipType = MembershipType.NONE;
                 expirationDate = LocalDate.now();
+        }
+        updatePlayer(player, sku, expirationDate);
+    }
+
+    private void updatePlayer(Player player, String sku, LocalDate expirationDate) {
+        MembershipType membershipType;
+        switch (sku) {
+            case Constants.SKU_SUBSCRIPTION_MONTHLY:
+                membershipType = MembershipType.MONTHLY;
+                break;
+            case Constants.SKU_SUBSCRIPTION_QUARTERLY:
+                membershipType = MembershipType.QUARTERLY;
+                break;
+            case Constants.SKU_SUBSCRIPTION_YEARLY:
+                membershipType = MembershipType.YEARLY;
+                break;
+            default:
+                membershipType = MembershipType.NONE;
         }
 
         player.getInventory().enableAllPowerUps(expirationDate);

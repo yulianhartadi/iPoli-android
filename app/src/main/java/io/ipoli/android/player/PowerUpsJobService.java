@@ -39,8 +39,8 @@ import io.ipoli.android.store.PowerUp;
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/3/17.
  */
-
 public class PowerUpsJobService extends JobService {
+
     public static final int JOB_ID = 2;
 
     @Inject
@@ -50,6 +50,7 @@ public class PowerUpsJobService extends JobService {
     Api api;
 
     private Billing billing;
+
     private Checkout checkout;
 
     @Override
