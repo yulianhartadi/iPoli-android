@@ -127,9 +127,9 @@ public class Api {
                     TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {
                     };
                     Map<String, Object> subs = objectMapper.readValue(response.body().charStream(), mapTypeReference);
-                    Long startTimeMillis = (Long) subs.get("startTimeMillis");
-                    Long expiryTimeMillis = (Long) subs.get("expiryTimeMillis");
-                    Boolean autoRenewing = (Boolean) subs.get("autoRenewing");
+                    Long startTimeMillis = Long.valueOf((String) subs.get("start_time"));
+                    Long expiryTimeMillis = Long.valueOf((String) subs.get("end_time"));
+                    Boolean autoRenewing = (Boolean) subs.get("autorenew");
                     responseListener.onSuccess(startTimeMillis, expiryTimeMillis, autoRenewing);
                 } else {
                     responseListener.onError(getApiResponseException(call, response));

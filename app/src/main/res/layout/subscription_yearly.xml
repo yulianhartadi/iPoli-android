@@ -70,6 +70,7 @@
             style="@style/subscription_plan_button"
             android:backgroundTint="@color/colorGreen"
             android:text="@string/go_premium"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintHorizontal_bias="0.504"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -78,15 +79,19 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView
-            android:id="@+id/currentPlan"
+            android:id="@+id/yearly_current_plan"
             style="@style/subscription_curent_plan"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
             android:background="@color/colorGreen"
             android:text="@string/current_plan"
-            android:visibility="gone"
-            app:layout_constraintHorizontal_bias="0.502"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.51"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/yearly_price" />
+            app:layout_constraintTop_toBottomOf="@+id/yearly_price"
+            app:layout_constraintVertical_bias="0.5" />
 
     </android.support.constraint.ConstraintLayout>
 

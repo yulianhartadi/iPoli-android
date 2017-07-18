@@ -70,12 +70,15 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView
-            android:id="@+id/currentPlan"
+            android:id="@+id/monthly_current_plan"
             style="@style/subscription_curent_plan"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
             android:background="@color/colorYellow"
             android:text="@string/current_plan"
-            android:visibility="gone"
-            app:layout_constraintHorizontal_bias="0.502"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/monthly_price" />

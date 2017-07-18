@@ -4,14 +4,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -112,6 +119,24 @@ public class MembershipStoreFragment extends BaseFragment {
     @BindView(R.id.yearly_image)
     ImageView yearlyBadge;
 
+    @BindView(R.id.monthly_current_plan)
+    TextView monthlyCurrentPlan;
+
+    @BindView(R.id.yearly_current_plan)
+    TextView yearlyCurrentPlan;
+
+    @BindView(R.id.quarterly_current_plan)
+    TextView quarterlyCurrentPlan;
+
+    @BindView(R.id.monthly_buy)
+    Button monthlyBuy;
+
+    @BindView(R.id.yearly_buy)
+    Button yearlyBuy;
+
+    @BindView(R.id.quarterly_buy)
+    Button quarterlyBuy;
+
     private Unbinder unbinder;
 
     private Billing billing;
@@ -130,7 +155,7 @@ public class MembershipStoreFragment extends BaseFragment {
         unbinder = ButterKnife.bind(this, view);
         ((StoreActivity) getActivity()).populateTitle(R.string.fragment_membership_store_title);
 
-//        loaderContainer.setVisibility(View.VISIBLE);
+        loaderContainer.setVisibility(View.VISIBLE);
 
         if (!NetworkConnectivityUtils.isConnectedToInternet(getContext())) {
             showFailureMessage(R.string.no_internet_to_buy_coins);
@@ -181,8 +206,8 @@ public class MembershipStoreFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        queryInventory();
-        animatePacks();
+        queryInventory();
+//        animatePacks();
     }
 
 
@@ -260,17 +285,45 @@ public class MembershipStoreFragment extends BaseFragment {
         }
 
         Sku.Price monthlyPrice = monthlySubscription.detailedPrice;
-        this.monthlyPrice.setText(getString(R.string.subscription_price_per_month, calculatePricePerMonth(monthlyPrice.amount, 1) + monthlyPrice.currency));
+        String monthlyPriceWithCurrency = calculatePricePerMonth(monthlyPrice.amount, 1) + monthlyPrice.currency;
+        Spannable monthlyColoredPrice = getColoredPricePerMonth(monthlyPriceWithCurrency, R.color.colorYellow);
+        this.monthlyPrice.setText(monthlyColoredPrice);
 
         Sku.Price yearlyPrice = yearlySubscription.detailedPrice;
-        this.yearlyPrice.setText(getString(R.string.subscription_price_per_month, calculatePricePerMonth(yearlyPrice.amount, 1) + yearlyPrice.currency));
+        String yearlyPriceWithCurrency = calculatePricePerMonth(yearlyPrice.amount, 12) + yearlyPrice.currency;
+        Spannable yearlyColoredPrice = getColoredPricePerMonth(yearlyPriceWithCurrency, R.color.colorGreen);
+        this.yearlyPrice.setText(yearlyColoredPrice);
 
         Sku.Price quarterlyPrice = quarterlySubscription.detailedPrice;
-        this.quarterlyPrice.setText(getString(R.string.subscription_price_per_month, calculatePricePerMonth(quarterlyPrice.amount, 1) + quarterlyPrice.currency));
+        String quarterlyPriceWithCurrency = calculatePricePerMonth(quarterlyPrice.amount, 3) + quarterlyPrice.currency;
+        Spannable quarterlyColoredPrice = getColoredPricePerMonth(quarterlyPriceWithCurrency, R.color.colorRed);
+        this.quarterlyPrice.setText(quarterlyColoredPrice);
+
+        Player player = getPlayer();
+        MembershipType membership = player.getMembership();
+        monthlyCurrentPlan.setVisibility(membership == MembershipType.MONTHLY ? View.VISIBLE : View.INVISIBLE);
+        monthlyBuy.setVisibility(membership == MembershipType.MONTHLY ? View.INVISIBLE : View.VISIBLE);
+
+        yearlyCurrentPlan.setVisibility(membership == MembershipType.YEARLY ? View.VISIBLE : View.INVISIBLE);
+        yearlyBuy.setVisibility(membership == MembershipType.YEARLY ? View.INVISIBLE : View.VISIBLE);
+
+        quarterlyCurrentPlan.setVisibility(membership == MembershipType.QUARTERLY ? View.VISIBLE : View.INVISIBLE);
+        quarterlyBuy.setVisibility(membership == MembershipType.QUARTERLY ? View.INVISIBLE : View.VISIBLE);
 
         hideLoaderContainer();
 
         animatePacks();
+    }
+
+    private Spannable getColoredPricePerMonth(String priceWithCurrency, @ColorRes int color) {
+        String fullPricePerMonth = getString(R.string.subscription_price_per_month, priceWithCurrency);
+        Spannable spannable = new SpannableString(fullPricePerMonth);
+        int spanEnd = priceWithCurrency.length();
+        spannable.setSpan(new ForegroundColorSpan(ContextCompat.getColor(getContext(), color)),
+                0, spanEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+
+        spannable.setSpan(new RelativeSizeSpan(1.3f), 0, spanEnd, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        return spannable;
     }
 
     private double calculatePricePerMonth(long price, int months) {
@@ -327,8 +380,9 @@ public class MembershipStoreFragment extends BaseFragment {
                             @Override
                             public void onSuccess(Long startTimeMillis, Long expiryTimeMillis, Boolean autoRenewing) {
                                 LocalDate expirationDate = DateUtils.fromMillis(expiryTimeMillis).minusDays(Constants.POWER_UP_GRACE_PERIOD_DAYS);
-                                updatePlayer(getPlayer(), sku, expirationDate);
-                                queryInventory();
+                                updatePlayer(getPlayer(), sku, LocalDate.now(), expirationDate);
+                                getActivity().runOnUiThread(() ->
+                                        queryInventory());
                             }
 
                             @Override
@@ -360,7 +414,7 @@ public class MembershipStoreFragment extends BaseFragment {
                 int coinsToReturn = findCoinsToReturn(activeUpgrades);
                 player.addCoins(coinsToReturn);
 
-                updatePlayer(player, sku, purchase.time);
+                updatePlayer(player, sku, DateUtils.fromMillis(purchase.time));
                 queryInventory();
             }
 
@@ -401,42 +455,35 @@ public class MembershipStoreFragment extends BaseFragment {
         return activeUpgrades;
     }
 
-    private void updatePlayer(Player player, String sku, Long purchasedTime) {
-        LocalDate purchasedDate = DateUtils.fromMillis(purchasedTime);
-        LocalDate expirationDate;
-        switch (sku) {
-            case Constants.SKU_SUBSCRIPTION_MONTHLY:
-                expirationDate = purchasedDate.plusMonths(1).minusDays(1);
-                break;
-            case Constants.SKU_SUBSCRIPTION_QUARTERLY:
-                expirationDate = purchasedDate.plusMonths(3).minusDays(1);
-                break;
-            case Constants.SKU_SUBSCRIPTION_YEARLY:
-                expirationDate = purchasedDate.plusYears(1).minusDays(1);
-                break;
-            default:
-                expirationDate = LocalDate.now();
-        }
-        updatePlayer(player, sku, expirationDate);
+    private void updatePlayer(Player player, String sku, LocalDate purchasedDate) {
+        updatePlayer(player, sku, purchasedDate, null);
     }
 
-    private void updatePlayer(Player player, String sku, LocalDate expirationDate) {
+    private void updatePlayer(Player player, String sku, LocalDate purchasedDate, LocalDate expirationDate) {
         MembershipType membershipType;
+        LocalDate finalExpirationDate;
         switch (sku) {
             case Constants.SKU_SUBSCRIPTION_MONTHLY:
                 membershipType = MembershipType.MONTHLY;
+                finalExpirationDate = purchasedDate.plusMonths(1).minusDays(1);
                 break;
             case Constants.SKU_SUBSCRIPTION_QUARTERLY:
                 membershipType = MembershipType.QUARTERLY;
+                finalExpirationDate = purchasedDate.plusMonths(3).minusDays(1);
                 break;
             case Constants.SKU_SUBSCRIPTION_YEARLY:
                 membershipType = MembershipType.YEARLY;
+                finalExpirationDate = purchasedDate.plusYears(1).minusDays(1);
                 break;
             default:
                 membershipType = MembershipType.NONE;
+                finalExpirationDate = LocalDate.now();
+        }
+        if(expirationDate != null) {
+            finalExpirationDate = expirationDate.isAfter(finalExpirationDate) ? expirationDate : finalExpirationDate;
         }
 
-        player.getInventory().enableAllPowerUps(expirationDate);
+        player.getInventory().enableAllPowerUps(finalExpirationDate);
         player.setMembership(membershipType);
         playerPersistenceService.save(player);
     }
