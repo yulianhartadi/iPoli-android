@@ -943,6 +943,7 @@
     <string name="quarterly_plan_disadvantage1">Expensive option - billed every 3 months</string>
     <string name="monthly_plan_disadvantage1">Most expensive option - billed monthly</string>
     <string name="yearly_plan_benefit3">Smartest plan - billed yearly</string>
+    <string name="current_plan">Current plan</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

@@ -3,100 +3,34 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/tools"
     android:id="@+id/yearly_root_layout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="4dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="4dp"
-    android:background="@color/md_white"
-    card_view:cardCornerRadius="8dp"
-    card_view:cardUseCompatPadding="true">
+    style="@style/subscription_plan_card">
 
     <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        style="@style/match_parent">
 
         <TextView
             android:id="@+id/yearly_title"
-            style="@style/TextAppearance.AppCompat.Headline"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
+            style="@style/subscription_plan_heading"
             android:text="@string/yearly_plan"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/yearly_image"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/yearly_image"
-            android:layout_width="80dp"
-            android:layout_height="120dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="24dp"
-            android:scaleType="fitCenter"
+            style="@style/subscription_plan_recommended"
             android:visibility="invisible"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@mipmap/subscriptions_badge"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="8dp"
             app:layout_constraintVertical_bias="0.0" />
-
-
-        <Button
-            android:id="@+id/yearly_buy"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
-            android:background="@color/colorGreen"
-            android:gravity="center"
-            android:paddingBottom="8dp"
-            android:paddingEnd="32dp"
-            android:paddingStart="32dp"
-            android:paddingTop="8dp"
-            android:text="@string/go_premium"
-            android:textColor="@color/md_white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.504"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/yearly_price"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <TextView
-            android:id="@+id/yearly_price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="0dp"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="0dp"
-            android:layout_marginTop="24dp"
-            android:text="3.89BGN per month"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            app:layout_constraintHorizontal_bias="0.502"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/benefit3" />
 
         <TextView
             android:id="@+id/benefit1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="16dp"
-            android:drawablePadding="4dp"
+            style="@style/subscription_price_list_item"
             android:drawableStart="@drawable/ic_done_green_24dp"
-            android:gravity="center_vertical"
             android:text="@string/enable_all_power_ups"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="@+id/yearly_title"
@@ -105,13 +39,8 @@
 
         <TextView
             android:id="@+id/benefit2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
-            android:drawablePadding="4dp"
+            style="@style/subscription_price_list_item"
             android:drawableStart="@drawable/ic_done_green_24dp"
-            android:gravity="center_vertical"
             android:text="@string/get_all_future_power_ups_for_free"
             app:layout_constraintHorizontal_bias="0.49"
             app:layout_constraintLeft_toLeftOf="@+id/yearly_title"
@@ -120,18 +49,45 @@
 
         <TextView
             android:id="@+id/benefit3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
-            android:drawablePadding="4dp"
+            style="@style/subscription_price_list_item"
             android:drawableStart="@drawable/ic_done_green_24dp"
-            android:gravity="center_vertical"
             android:text="@string/yearly_plan_benefit3"
             app:layout_constraintLeft_toLeftOf="@+id/yearly_title"
             app:layout_constraintRight_toLeftOf="@+id/yearly_image"
             app:layout_constraintTop_toBottomOf="@+id/benefit2" />
+
+        <TextView
+            android:id="@+id/yearly_price"
+            style="@style/subscription_plan_price"
+            android:text="@string/subscription_price_per_month"
+            app:layout_constraintHorizontal_bias="0.502"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/benefit3" />
+
+        <Button
+            android:id="@+id/yearly_buy"
+            style="@style/subscription_plan_button"
+            android:backgroundTint="@color/colorGreen"
+            android:text="@string/go_premium"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.504"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/yearly_price"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/currentPlan"
+            style="@style/subscription_curent_plan"
+            android:background="@color/colorGreen"
+            android:text="@string/current_plan"
+            android:visibility="gone"
+            app:layout_constraintHorizontal_bias="0.502"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/yearly_price" />
+
     </android.support.constraint.ConstraintLayout>
 
 </android.support.v7.widget.CardView>
