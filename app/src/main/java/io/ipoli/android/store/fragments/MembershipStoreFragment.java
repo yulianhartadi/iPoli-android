@@ -69,8 +69,8 @@ import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.store.PowerUp;
 import io.ipoli.android.store.activities.StoreActivity;
-import io.ipoli.android.store.events.BuyCoinsTappedEvent;
-import io.ipoli.android.store.events.CoinsPurchasedEvent;
+import io.ipoli.android.store.events.ChangeMembershipEvent;
+import io.ipoli.android.store.events.GoPremiumTappedEvent;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -361,7 +361,7 @@ public class MembershipStoreFragment extends BaseFragment {
     }
 
     public void subscribe(String sku) {
-        postEvent(new BuyCoinsTappedEvent(sku));
+        postEvent(new GoPremiumTappedEvent(sku));
         if (activeSkus.isEmpty()) {
             doSubscribe(sku);
         } else {
@@ -407,8 +407,6 @@ public class MembershipStoreFragment extends BaseFragment {
         checkout.startPurchaseFlow(ProductTypes.SUBSCRIPTION, sku, payload, new EmptyRequestListener<Purchase>() {
             @Override
             public void onSuccess(@Nonnull Purchase purchase) {
-                postEvent(new CoinsPurchasedEvent(sku));
-
                 Player player = getPlayer();
                 Map<Integer, Long> activeUpgrades = getActiveUpgrades(player);
                 int coinsToReturn = findCoinsToReturn(activeUpgrades);
@@ -479,6 +477,7 @@ public class MembershipStoreFragment extends BaseFragment {
                 membershipType = MembershipType.NONE;
                 finalExpirationDate = LocalDate.now();
         }
+        postEvent(new ChangeMembershipEvent(player.getMembership(), membershipType, purchasedDate, expirationDate, finalExpirationDate));
         if(expirationDate != null) {
             finalExpirationDate = expirationDate.isAfter(finalExpirationDate) ? expirationDate : finalExpirationDate;
         }

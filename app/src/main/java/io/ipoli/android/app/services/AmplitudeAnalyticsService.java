@@ -148,8 +148,8 @@ import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
 import io.ipoli.android.reward.events.EditRewardRequestEvent;
 import io.ipoli.android.reward.events.NewRewardSavedEvent;
-import io.ipoli.android.store.events.BuyCoinsTappedEvent;
-import io.ipoli.android.store.events.CoinsPurchasedEvent;
+import io.ipoli.android.store.events.ChangeMembershipEvent;
+import io.ipoli.android.store.events.GoPremiumTappedEvent;
 import io.ipoli.android.store.events.PetBoughtEvent;
 import io.ipoli.android.store.events.PowerUpEnabledEvent;
 import io.ipoli.android.store.events.UseAvatarEvent;
@@ -886,18 +886,23 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onBuyCoinsTapped(BuyCoinsTappedEvent e) {
-        log("buy_coins_tapped", EventParams.of("sku", e.sku));
+    public void onGoPremiumTapped(GoPremiumTappedEvent e) {
+        log("go_premium_tapped", EventParams.of("sku", e.sku));
+    }
+
+    @Subscribe
+    public void onChangeMembership(ChangeMembershipEvent e) {
+        log("change_membership", EventParams.create()
+                .add("previousMembership", e.previousMembership.name())
+                .add("newMembership", e.newMembership.name())
+                .add("purchasedDate", e.purchasedDate.toString())
+                .add("serverExpirationDate", e.serverExpirationDate != null ? e.serverExpirationDate.toString() : "")
+                .add("calculatedExpirationDate", e.calculatedExpirationDate.toString()));
     }
 
     @Subscribe
     public void onAvatarCoinsTapped(AvatarCoinsTappedEvent e) {
         log("avatar_coins_taped");
-    }
-
-    @Subscribe
-    public void onCoinsPurchased(CoinsPurchasedEvent e) {
-        log("coins_purchased", EventParams.of("sku", e.sku));
     }
 
     @Subscribe
