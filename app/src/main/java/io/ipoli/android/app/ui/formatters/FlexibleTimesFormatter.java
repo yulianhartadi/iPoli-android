@@ -28,7 +28,7 @@ public class FlexibleTimesFormatter {
     }
 
     public static int parse(String flexibleTimes) {
-        Pattern pattern = Pattern.compile("(\\d{1,2})\\stime(s)?", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("^.*(\\d{1,2}).*$", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(flexibleTimes);
         if (matcher.find()) {
             return Integer.valueOf(matcher.group(1));
