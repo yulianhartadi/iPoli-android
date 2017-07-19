@@ -180,8 +180,8 @@ public interface Constants {
     int POWER_UP_GRACE_PERIOD_DAYS = 7;
     int POWER_UPS_TRIAL_PERIOD_DAYS = 15;
 
-    String SKU_SUBSCRIPTION_MONTHLY = "test_subscription";
-    String SKU_SUBSCRIPTION_QUARTERLY = "test_subscription_3_months";
-    String SKU_SUBSCRIPTION_YEARLY = "test_subscription_yearly";
+    String SKU_SUBSCRIPTION_MONTHLY = "monthly_plan";
+    String SKU_SUBSCRIPTION_QUARTERLY = "quarterly_plan";
+    String SKU_SUBSCRIPTION_YEARLY = "yearly_plan";
 
 }

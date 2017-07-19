@@ -869,7 +869,7 @@
     <string name="dialog_delete_post_title">Delete post</string>
     <string name="dialog_delete_post_message">Sure you want to delete this amazing post?</string>
     <string name="trial_expiring_message">To continue using all power-ups become premium member or buy them with coins</string>
-    <string name="trial_expiring_title">iPoli trial expires tomorrow</string>
+    <string name="trial_expiring_title">iPoli trial expires today</string>
     <string name="membership_expiring_title">iPoli membership is expiring</string>
     <string name="membership_no_payment_title">iPoli membership payment problem</string>
     <string name="power_ups_expiring_title">iPoli power-ups are getting locked</string>
