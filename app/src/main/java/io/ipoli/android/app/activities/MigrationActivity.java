@@ -232,25 +232,26 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
                 inventory.put("powerUps", new HashMap<>());
             }
 
-            Map<Integer, Long> powerUps = (Map<Integer, Long>) inventory.get("powerUps");
+            Map<String, String> powerUps = (Map<String, String>) inventory.get("powerUps");
             if (schemaVersion == 3 || schemaVersion == 4) {
 
                 for (PowerUp powerUp : PowerUp.values()) {
-                    powerUps.put(powerUp.code, 0L);
+                    powerUps.put(String.valueOf(powerUp.code), "0");
                 }
             }
 
-            int repeatingQuestCode = 2;
+            String repeatingQuestCode = "2";
             powerUps.remove(repeatingQuestCode);
 
-            long after3Years = DateUtils.toMillis(LocalDate.now().plusYears(3).minusDays(1));
-            long yesterday = DateUtils.toMillis(LocalDate.now().minusDays(1));
+            String after3Years = String.valueOf(DateUtils.toMillis(LocalDate.now().plusYears(3).minusDays(1)));
+            String yesterday = String.valueOf(DateUtils.toMillis(LocalDate.now().minusDays(1)));
 
             for (PowerUp powerUp : PowerUp.values()) {
-                if (powerUps.containsKey(powerUp.code)) {
-                    powerUps.put(powerUp.code, after3Years);
+                String powerUpCode = String.valueOf(powerUp.code);
+                if (powerUps.containsKey(powerUpCode)) {
+                    powerUps.put(powerUpCode, after3Years);
                 } else {
-                    powerUps.put(powerUp.code, yesterday);
+                    powerUps.put(powerUpCode, yesterday);
                 }
             }
         }
@@ -265,7 +266,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
                 return;
             }
 
-            HashMap<Integer, Long> powerUps = new HashMap<>((Map<Integer, Long>) inventory.get("upgrades"));
+            Map<String, String> powerUps = new HashMap<>((Map<String, String>) inventory.get("upgrades"));
             inventory.remove("upgrades");
 
             inventory.put("powerUps", powerUps);
@@ -286,12 +287,12 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
             }
 
 
-            if(!playerProperties.containsKey("inventory")) {
+            if (!playerProperties.containsKey("inventory")) {
                 playerProperties.put("inventory", new HashMap<>());
             }
 
             Map<String, Object> inventory = (Map<String, Object>) playerProperties.get("inventory");
-            Long unlockedDate = (Long) playerProperties.get("createdAt");
+            String unlockedDate = (String) playerProperties.get("createdAt");
 
             if (playerPicture != null) {
                 Avatar playerAvatar = Constants.DEFAULT_PLAYER_AVATAR;
@@ -303,15 +304,15 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
                     }
                 }
 
-                Map<Integer, Long> avatars = new HashMap<>();
-                avatars.put(playerAvatar.code, unlockedDate);
+                Map<String, String> avatars = new HashMap<>();
+                avatars.put(String.valueOf(playerAvatar.code), unlockedDate);
                 inventory.put("avatars", avatars);
                 playerProperties.put("avatarCode", playerAvatar.code);
             } else if (!playerProperties.containsKey("avatarCode")) {
-                Map<Integer, Long> avatars = new HashMap<>();
-                avatars.put(Constants.DEFAULT_PLAYER_AVATAR.code, unlockedDate);
+                Map<String, String> avatars = new HashMap<>();
+                avatars.put(String.valueOf(Constants.DEFAULT_PLAYER_AVATAR.code), unlockedDate);
                 inventory.put("avatars", avatars);
-                playerProperties.put("avatarCode", Constants.DEFAULT_PLAYER_AVATAR.code);
+                playerProperties.put("avatarCode", String.valueOf(Constants.DEFAULT_PLAYER_AVATAR.code));
             }
 
             if (petPicture != null) {
@@ -323,26 +324,26 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
                         break;
                     }
                 }
-                Map<Integer, Long> pets = new HashMap<>();
-                pets.put(playerPetAvatar.code, unlockedDate);
+                Map<String, String> pets = new HashMap<>();
+                pets.put(String.valueOf(playerPetAvatar.code), unlockedDate);
                 inventory.put("pets", pets);
-                pet.put("avatarCode", playerPetAvatar.code);
+                pet.put("avatarCode", String.valueOf(playerPetAvatar.code));
             } else if (!pet.containsKey("avatarCode")) {
-                Map<Integer, Long> pets = new HashMap<>();
-                pets.put(Constants.DEFAULT_PET_AVATAR.code, unlockedDate);
+                Map<String, String> pets = new HashMap<>();
+                pets.put(String.valueOf(Constants.DEFAULT_PET_AVATAR.code), unlockedDate);
                 inventory.put("pets", pets);
-                pet.put("avatarCode", Constants.DEFAULT_PET_AVATAR.code);
+                pet.put("avatarCode", String.valueOf(Constants.DEFAULT_PET_AVATAR.code));
             }
         }
 
         private void migrateRewardPoints(Map<String, Object> playerProperties) {
 
             if (playerProperties.containsKey("rewardPoints")) {
-                Long rewardPoints = (Long) playerProperties.get("rewardPoints");
+                Long rewardPoints = Long.valueOf((String) playerProperties.get("rewardPoints"));
                 playerProperties.remove("rewardPoints");
 
-                long currentCoins = (long) playerProperties.get("coins");
-                playerProperties.put("coins", currentCoins + Math.min(500, rewardPoints));
+                Long currentCoins = Long.valueOf((String) playerProperties.get("coins"));
+                playerProperties.put("coins", String.valueOf(currentCoins + Math.min(500, rewardPoints)));
             }
         }
 
