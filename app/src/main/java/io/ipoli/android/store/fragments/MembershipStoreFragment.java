@@ -304,14 +304,24 @@ public class MembershipStoreFragment extends BaseFragment {
     private void initStatuses() {
         Player player = getPlayer();
         MembershipType membership = player.getMembership();
-        monthlyCurrentPlan.setVisibility(membership == MembershipType.MONTHLY ? View.VISIBLE : View.INVISIBLE);
-        monthlyBuy.setVisibility(membership == MembershipType.MONTHLY ? View.INVISIBLE : View.VISIBLE);
+        initMonthlyStatus(membership);
+        initYearlyStatus(membership);
+        initQuarterlyStatus(membership);
+    }
 
-        yearlyCurrentPlan.setVisibility(membership == MembershipType.YEARLY ? View.VISIBLE : View.INVISIBLE);
-        yearlyBuy.setVisibility(membership == MembershipType.YEARLY ? View.INVISIBLE : View.VISIBLE);
-
+    private void initQuarterlyStatus(MembershipType membership) {
         quarterlyCurrentPlan.setVisibility(membership == MembershipType.QUARTERLY ? View.VISIBLE : View.INVISIBLE);
         quarterlyBuy.setVisibility(membership == MembershipType.QUARTERLY ? View.INVISIBLE : View.VISIBLE);
+    }
+
+    private void initYearlyStatus(MembershipType membership) {
+        yearlyCurrentPlan.setVisibility(membership == MembershipType.YEARLY ? View.VISIBLE : View.INVISIBLE);
+        yearlyBuy.setVisibility(membership == MembershipType.YEARLY ? View.INVISIBLE : View.VISIBLE);
+    }
+
+    private void initMonthlyStatus(MembershipType membership) {
+        monthlyCurrentPlan.setVisibility(membership == MembershipType.MONTHLY ? View.VISIBLE : View.INVISIBLE);
+        monthlyBuy.setVisibility(membership == MembershipType.MONTHLY ? View.INVISIBLE : View.VISIBLE);
     }
 
     private Spannable getColoredPricePerMonth(String priceWithCurrency, @ColorRes int color) {
