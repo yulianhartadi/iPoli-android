@@ -148,10 +148,10 @@ import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
 import io.ipoli.android.reward.events.EditRewardRequestEvent;
 import io.ipoli.android.reward.events.NewRewardSavedEvent;
-import io.ipoli.android.store.events.BuyCoinsTappedEvent;
-import io.ipoli.android.store.events.CoinsPurchasedEvent;
+import io.ipoli.android.store.events.ChangeMembershipEvent;
+import io.ipoli.android.store.events.GoPremiumTappedEvent;
 import io.ipoli.android.store.events.PetBoughtEvent;
-import io.ipoli.android.store.events.UpgradeUnlockedEvent;
+import io.ipoli.android.store.events.PowerUpEnabledEvent;
 import io.ipoli.android.store.events.UseAvatarEvent;
 import io.ipoli.android.store.events.UsePetEvent;
 
@@ -886,8 +886,18 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onBuyCoinsTapped(BuyCoinsTappedEvent e) {
-        log("buy_coins_tapped", EventParams.of("sku", e.sku));
+    public void onGoPremiumTapped(GoPremiumTappedEvent e) {
+        log("go_premium_tapped", EventParams.of("sku", e.sku));
+    }
+
+    @Subscribe
+    public void onChangeMembership(ChangeMembershipEvent e) {
+        log("change_membership", EventParams.create()
+                .add("previousMembership", e.previousMembership.name())
+                .add("newMembership", e.newMembership.name())
+                .add("purchasedDate", e.purchasedDate.toString())
+                .add("serverExpirationDate", e.serverExpirationDate != null ? e.serverExpirationDate.toString() : "")
+                .add("calculatedExpirationDate", e.calculatedExpirationDate.toString()));
     }
 
     @Subscribe
@@ -896,13 +906,8 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     }
 
     @Subscribe
-    public void onCoinsPurchased(CoinsPurchasedEvent e) {
-        log("coins_purchased", EventParams.of("sku", e.sku));
-    }
-
-    @Subscribe
-    public void onUpgradeUnlocked(UpgradeUnlockedEvent e) {
-        log("upgrade_unlocked", EventParams.of("upgrade", e.upgrade.name()));
+    public void onPowerUpEnabled(PowerUpEnabledEvent e) {
+        log("power_up_enabled", EventParams.of("power_up", e.powerUp.name()));
     }
 
     @Subscribe
@@ -932,8 +937,8 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     @Subscribe
     public void onPlayerMigrated(PlayerMigratedEvent e) {
         log("player_migrated", EventParams.create()
-                .add("firebase_id", e.firebasePlayerId)
-                .add("couchbase_id", e.playerId));
+                .add("previous_schema", e.previousSchemaVersion)
+                .add("current_schema", e.currentSchemaVersion));
     }
 
     @Subscribe

@@ -1,6 +1,6 @@
 package io.ipoli.android.store.events;
 
-import io.ipoli.android.player.PetAvatar;
+import io.ipoli.android.player.data.PetAvatar;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

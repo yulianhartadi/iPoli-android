@@ -27,8 +27,8 @@ public class DevUrlProvider implements UrlProvider {
     }
 
     @Override
-    public URL migrateUser(String firebasePlayerId) {
-        return getURL(ApiConstants.DEV_API_URL + "migrations/" + firebasePlayerId);
+    public URL getMembershipStatus() {
+        return getURL(ApiConstants.DEV_API_URL + "subscriptions/");
     }
 
     private static URL getURL(String path) {

@@ -37,7 +37,7 @@ import io.ipoli.android.app.ui.EmptyStateRecyclerView;
 import io.ipoli.android.app.ui.FabMenuView;
 import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.player.Player;
+import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.reward.activities.EditRewardActivity;
 import io.ipoli.android.reward.adapters.RewardListAdapter;
@@ -135,11 +135,11 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
     public void onBuyReward(BuyRewardEvent e) {
         Reward r = e.reward;
         Player player = getPlayer();
-        if (player.getRewardPoints() - r.getPrice() < 0) {
+        if (player.getCoins() - r.getPrice() < 0) {
             showTooExpensiveMessage();
             return;
         }
-        player.removeRewardPoints(r.getPrice());
+        player.removeCoins(r.getPrice());
         playerPersistenceService.save(player);
 
         r.addPurchase(LocalDate.now(), Time.now().toMinuteOfDay());
@@ -175,7 +175,7 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
     private void updateRewards(List<Reward> rewards) {
         List<RewardViewModel> rewardViewModels = new ArrayList<>();
         for (Reward r : rewards) {
-            rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= getPlayer().getRewardPoints())));
+            rewardViewModels.add(new RewardViewModel(r, (r.getPrice() <= getPlayer().getCoins())));
         }
         RewardListAdapter rewardListAdapter = new RewardListAdapter(getContext(), rewardViewModels, eventBus);
         rewardList.setAdapter(rewardListAdapter);

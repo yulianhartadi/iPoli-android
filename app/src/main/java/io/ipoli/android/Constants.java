@@ -8,8 +8,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import io.ipoli.android.app.TimeOfDay;
-import io.ipoli.android.player.Avatar;
-import io.ipoli.android.player.PetAvatar;
+import io.ipoli.android.player.data.Avatar;
+import io.ipoli.android.player.data.PetAvatar;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -25,6 +25,7 @@ public interface Constants {
 
     int REMIND_DAILY_CHALLENGE_NOTIFICATION_ID = 101;
     int ONGOING_NOTIFICATION_ID = 102;
+    int MEMBERSHIP_EXPIRATION_NOTIFICATION_ID = 103;
 
     int QUEST_TIMER_NOTIFICATION_ID = 201;
     int QUEST_COMPLETE_NOTIFICATION_ID = 202;
@@ -49,6 +50,8 @@ public interface Constants {
     String CURRENT_SELECTED_DAY_EXTRA_KEY = "CURRENT_SELECTED_DAY";
 
     String DISPLAY_NAME_EXTRA_KEY = "display_name";
+
+    String SHOW_TRIAL_MESSAGE_EXTRA_KEY = "show_trial_message";
 
     int CALENDAR_EVENT_MIN_DURATION = 15;
 
@@ -85,7 +88,6 @@ public interface Constants {
     int DEFAULT_PLAYER_XP = 20;
     int DEFAULT_PLAYER_LEVEL = 1;
     long DEFAULT_PLAYER_COINS = 10;
-    long DEFAULT_PLAYER_REWARD_POINTS = 10;
     Avatar DEFAULT_PLAYER_AVATAR = Avatar.IPOLI_CLASSIC;
     Set<TimeOfDay> DEFAULT_PLAYER_PRODUCTIVE_TIMES = new HashSet<>(Collections.singletonList(TimeOfDay.MORNING));
     int DEFAULT_PLAYER_WORK_START_MINUTE = 10 * 60;
@@ -104,7 +106,7 @@ public interface Constants {
 
     Integer[] DURATIONS = {10, 15, 25, 30, 45, 60, 90, 120};
 
-    Integer[] REWARD_POINTS = {10, 20, 50, 100, 200, 500, 1000};
+    Integer[] REWARD_COINS = {10, 20, 50, 100, 200, 500, 1000};
 
     int DEFAULT_REWARD_PRICE = 10;
 
@@ -156,7 +158,7 @@ public interface Constants {
     String PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index";
     int RANDOM_SEED = 42; // duh!
     int MAX_TIMES_A_DAY_COUNT = 8;
-    int SCHEMA_VERSION = 7;
+    int SCHEMA_VERSION = 8;
 
     double MAX_PENALTY_COEFFICIENT = 0.5;
     double NO_QUESTS_PENALTY_COEFFICIENT = 0.3;
@@ -174,4 +176,12 @@ public interface Constants {
     String TWITTER_PACKAGE = "com.twitter.android";
     int SYNC_CALENDAR_JOB_ID = 1;
     int PROFILES_FIRST_SCHEMA_VERSION = 7;
+
+    int POWER_UP_GRACE_PERIOD_DAYS = 7;
+    int POWER_UPS_TRIAL_PERIOD_DAYS = 15;
+
+    String SKU_SUBSCRIPTION_MONTHLY = "monthly_plan";
+    String SKU_SUBSCRIPTION_QUARTERLY = "quarterly_plan";
+    String SKU_SUBSCRIPTION_YEARLY = "yearly_plan";
+
 }

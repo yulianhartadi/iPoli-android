@@ -45,9 +45,9 @@ import io.ipoli.android.challenge.events.ChallengeCompletedEvent;
 import io.ipoli.android.challenge.events.ShowChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.ui.events.EditChallengeRequestEvent;
-import io.ipoli.android.player.UpgradeDialog;
-import io.ipoli.android.player.UpgradeManager;
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.player.PowerUpDialog;
+import io.ipoli.android.player.PowerUpManager;
+import io.ipoli.android.store.PowerUp;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -61,7 +61,7 @@ public class ChallengeListFragment extends BaseFragment implements OnDataChanged
     Bus eventBus;
 
     @Inject
-    UpgradeManager upgradeManager;
+    PowerUpManager powerUpManager;
 
     @BindView(R.id.challenge_list)
     EmptyStateRecyclerView challengeList;
@@ -121,8 +121,8 @@ public class ChallengeListFragment extends BaseFragment implements OnDataChanged
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_pick_challenge:
-                if (upgradeManager.isLocked(Upgrade.PREDEFINED_CHALLENGES)) {
-                    UpgradeDialog.newInstance(Upgrade.PREDEFINED_CHALLENGES).show(getFragmentManager());
+                if (powerUpManager.isDisabled(PowerUp.PREDEFINED_CHALLENGES)) {
+                    PowerUpDialog.newInstance(PowerUp.PREDEFINED_CHALLENGES).show(getFragmentManager());
                     return true;
                 }
                 startActivity(new Intent(getContext(), PickChallengeActivity.class));

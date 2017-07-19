@@ -83,13 +83,13 @@ import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.CredentialStatus;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
-import io.ipoli.android.player.Player;
 import io.ipoli.android.player.PlayerCredentialChecker;
 import io.ipoli.android.player.PlayerCredentialsHandler;
-import io.ipoli.android.player.UpgradeDialog;
-import io.ipoli.android.player.UpgradeDialog.OnUnlockListener;
-import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.player.PowerUpDialog;
+import io.ipoli.android.player.PowerUpDialog.OnEnableListener;
+import io.ipoli.android.player.PowerUpManager;
 import io.ipoli.android.player.activities.ProfileActivity;
+import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
@@ -115,8 +115,8 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.ui.events.EditRepeatingQuestRequestEvent;
 import io.ipoli.android.reminder.data.Reminder;
 import io.ipoli.android.reward.fragments.RewardListFragment;
+import io.ipoli.android.store.PowerUp;
 import io.ipoli.android.store.StoreItemType;
-import io.ipoli.android.store.Upgrade;
 import io.ipoli.android.store.activities.StoreActivity;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -160,7 +160,7 @@ public class MainActivity extends BaseActivity implements
     FeedPersistenceService feedPersistenceService;
 
     @Inject
-    UpgradeManager upgradeManager;
+    PowerUpManager powerUpManager;
 
     @Inject
     PlayerCredentialsHandler playerCredentialsHandler;
@@ -194,7 +194,8 @@ public class MainActivity extends BaseActivity implements
 
         navigationView.setNavigationItemSelectedListener(this);
 
-        startCalendar();
+        boolean showTrialMessage = getIntent() != null && getIntent().getBooleanExtra(Constants.SHOW_TRIAL_MESSAGE_EXTRA_KEY, false);
+        startCalendar(showTrialMessage);
 
         actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
 
@@ -297,17 +298,13 @@ public class MainActivity extends BaseActivity implements
                 break;
 
             case R.id.repeating_quests:
-                if (upgradeManager.isLocked(Upgrade.REPEATING_QUESTS)) {
-                    showUpgradeDialog(Upgrade.REPEATING_QUESTS, new RepeatingQuestListFragment());
-                    return;
-                }
                 source = EventSource.REPEATING_QUESTS;
                 changeCurrentFragment(new RepeatingQuestListFragment());
                 break;
 
             case R.id.challenges:
-                if (upgradeManager.isLocked(Upgrade.CHALLENGES)) {
-                    showUpgradeDialog(Upgrade.CHALLENGES, new ChallengeListFragment());
+                if (powerUpManager.isDisabled(PowerUp.CHALLENGES)) {
+                    showPowerUpDialog(PowerUp.CHALLENGES, new ChallengeListFragment());
                     return;
                 }
                 source = EventSource.CHALLENGES;
@@ -315,8 +312,8 @@ public class MainActivity extends BaseActivity implements
                 break;
 
             case R.id.growth:
-                if (upgradeManager.isLocked(Upgrade.GROWTH)) {
-                    showUpgradeDialog(Upgrade.GROWTH, new GrowthFragment());
+                if (powerUpManager.isDisabled(PowerUp.GROWTH)) {
+                    showPowerUpDialog(PowerUp.GROWTH, new GrowthFragment());
                     return;
                 }
                 source = EventSource.GROWTH;
@@ -367,10 +364,10 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    private void showUpgradeDialog(Upgrade upgrade, Fragment fragment) {
-        UpgradeDialog.newInstance(upgrade, new OnUnlockListener() {
+    private void showPowerUpDialog(PowerUp powerUp, Fragment fragment) {
+        PowerUpDialog.newInstance(powerUp, new OnEnableListener() {
             @Override
-            public void onUnlock() {
+            public void onEnabled() {
                 changeCurrentFragment(fragment);
                 navigationView.setCheckedItem(navigationItemSelected.getItemId());
             }
@@ -419,7 +416,6 @@ public class MainActivity extends BaseActivity implements
         level.setText(String.format(getString(R.string.player_level), playerLevel, title));
 
         populateHeaderCoins(player, header);
-        populateHeaderPoints(player, header);
         populateHeaderXP(player, header);
 
         ProgressBar experienceBar = (ProgressBar) header.findViewById(R.id.player_experience);
@@ -458,17 +454,10 @@ public class MainActivity extends BaseActivity implements
         coins.setText(formatValue(player.getCoins()));
         coins.setOnClickListener(view -> {
             Intent intent = new Intent(this, StoreActivity.class);
-            intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.COINS.name());
+            intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.MEMBERSHIP.name());
             startActivity(intent);
             eventBus.post(new AvatarCoinsTappedEvent());
         });
-    }
-
-    private void populateHeaderPoints(Player player, View header) {
-        TextView rewardPoints = (TextView) header.findViewById(R.id.player_reward_points);
-        rewardPoints.setText(formatValue(player.getRewardPoints()));
-        rewardPoints.setOnClickListener(v ->
-                Toast.makeText(MainActivity.this, R.string.reward_points_description, Toast.LENGTH_LONG).show());
     }
 
     private void populateHeaderXP(Player player, View header) {
@@ -510,8 +499,12 @@ public class MainActivity extends BaseActivity implements
         return (int) (currentXP.divide(xpForNextLevel, 2, RoundingMode.HALF_UP).doubleValue() * Constants.XP_BAR_MAX_VALUE);
     }
 
-    public void startCalendar() {
-        changeCurrentFragment(new CalendarFragment());
+    private void startCalendar() {
+        startCalendar(false);
+    }
+
+    private void startCalendar(boolean showTrialMessage) {
+        changeCurrentFragment(CalendarFragment.newInstance(showTrialMessage));
     }
 
     @Override
@@ -740,8 +733,8 @@ public class MainActivity extends BaseActivity implements
 
     @Subscribe
     public void onStartQuestRequest(StartQuestRequestEvent e) {
-        if (upgradeManager.isLocked(Upgrade.TIMER)) {
-            UpgradeDialog.newInstance(Upgrade.TIMER).show(getSupportFragmentManager());
+        if (powerUpManager.isDisabled(PowerUp.TIMER)) {
+            PowerUpDialog.newInstance(PowerUp.TIMER).show(getSupportFragmentManager());
             return;
         }
 
@@ -757,15 +750,11 @@ public class MainActivity extends BaseActivity implements
     public void onStartFabMenuIntent(StartFabMenuIntentEvent e) {
         switch (e.fabName) {
             case REPEATING_QUEST:
-                if (upgradeManager.isLocked(Upgrade.REPEATING_QUESTS)) {
-                    showUpgradeDialogForFabItem(Upgrade.REPEATING_QUESTS, e.intent);
-                    return;
-                }
                 startActivity(e.intent);
                 return;
             case CHALLENGE:
-                if (upgradeManager.isLocked(Upgrade.CHALLENGES)) {
-                    showUpgradeDialogForFabItem(Upgrade.CHALLENGES, e.intent);
+                if (powerUpManager.isDisabled(PowerUp.CHALLENGES)) {
+                    showPowerUpDialogForFabItem(PowerUp.CHALLENGES, e.intent);
                     return;
                 }
                 startActivity(e.intent);
@@ -775,10 +764,10 @@ public class MainActivity extends BaseActivity implements
         }
     }
 
-    private void showUpgradeDialogForFabItem(Upgrade upgrade, Intent intent) {
-        UpgradeDialog.newInstance(upgrade, new OnUnlockListener() {
+    private void showPowerUpDialogForFabItem(PowerUp powerUp, Intent intent) {
+        PowerUpDialog.newInstance(powerUp, new OnEnableListener() {
             @Override
-            public void onUnlock() {
+            public void onEnabled() {
                 startActivity(intent);
             }
         }).show(getSupportFragmentManager());

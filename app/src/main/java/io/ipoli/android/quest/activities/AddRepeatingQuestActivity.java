@@ -27,7 +27,7 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.note.data.Note;
-import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.player.PowerUpManager;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.events.CategoryChangedEvent;
@@ -52,7 +52,7 @@ import io.ipoli.android.quest.fragments.AddQuestSummaryFragment;
 import io.ipoli.android.quest.fragments.AddQuestTimeFragment;
 import io.ipoli.android.quest.fragments.AddRepeatingQuestRecurrenceFragment;
 import io.ipoli.android.reminder.data.Reminder;
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -68,7 +68,7 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
     private static final int REPEATING_QUEST_SUMMARY_FRAGMENT_INDEX = 4;
 
     @Inject
-    UpgradeManager upgradeManager;
+    PowerUpManager powerUpManager;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -154,7 +154,7 @@ public class AddRepeatingQuestActivity extends BaseActivity implements ViewPager
     public void onNewQuestNameAndCategoryPicked(NameAndCategoryPickedEvent e) {
         repeatingQuest = new RepeatingQuest(e.name);
         repeatingQuest.setName(e.name);
-        if (upgradeManager.isUnlocked(Upgrade.REMINDERS)) {
+        if (powerUpManager.isEnabled(PowerUp.REMINDERS)) {
             repeatingQuest.addReminder(new Reminder(0));
         }
         repeatingQuest.setCategoryType(e.category);

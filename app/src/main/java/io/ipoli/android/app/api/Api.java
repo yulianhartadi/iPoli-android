@@ -101,13 +101,20 @@ public class Api {
         return new ApiResponseException(call.request().url().toString(), response.code(), message);
     }
 
-    public void migratePlayer(String firebasePlayerId, PlayerMigratedListener responseListener) {
-        Request request = new Request.Builder()
-                .url(urlProvider.migrateUser(firebasePlayerId))
-                .get()
-                .build();
+    public void getMembershipStatus(String subscriptionId, String token, MembershipStatusResponseListener responseListener) {
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-        httpClient.newCall(request).enqueue(new Callback() {
+        Map<String, String> params = new HashMap<>();
+        params.put("subscription_id", subscriptionId);
+        params.put("token", token);
+
+        JSONObject jsonObject = new JSONObject(params);
+        RequestBody body = RequestBody.create(JSON, jsonObject.toString());
+
+        Request.Builder builder = new Request.Builder();
+        builder.url(urlProvider.getMembershipStatus()).post(body);
+
+        httpClient.newCall(builder.build()).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 responseListener.onError(e);
@@ -116,10 +123,14 @@ public class Api {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    TypeReference<Map<String, List<Map<String, Object>>>> mapTypeReference = new TypeReference<Map<String, List<Map<String, Object>>>>() {
+
+                    TypeReference<Map<String, Object>> mapTypeReference = new TypeReference<Map<String, Object>>() {
                     };
-                    Map<String, List<Map<String, Object>>> documents = objectMapper.readValue(response.body().charStream(), mapTypeReference);
-                    responseListener.onSuccess(documents);
+                    Map<String, Object> subs = objectMapper.readValue(response.body().charStream(), mapTypeReference);
+                    Long startTimeMillis = Long.valueOf((String) subs.get("start_time"));
+                    Long expiryTimeMillis = Long.valueOf((String) subs.get("end_time"));
+                    Boolean autoRenewing = (Boolean) subs.get("autorenew");
+                    responseListener.onSuccess(startTimeMillis, expiryTimeMillis, autoRenewing);
                 } else {
                     responseListener.onError(getApiResponseException(call, response));
                 }
@@ -127,14 +138,14 @@ public class Api {
         });
     }
 
-    public interface PlayerMigratedListener {
-        void onSuccess(Map<String, List<Map<String, Object>>> documents);
+    public interface SessionResponseListener {
+        void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer);
 
         void onError(Exception e);
     }
 
-    public interface SessionResponseListener {
-        void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer);
+    public interface MembershipStatusResponseListener {
+        void onSuccess(Long startTimeMillis, Long expiryTimeMillis, Boolean autoRenewing);
 
         void onError(Exception e);
     }

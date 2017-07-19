@@ -63,12 +63,11 @@ import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
-import io.ipoli.android.player.Player;
+import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.events.PlayerSignedInEvent;
 import io.ipoli.android.player.events.PlayerSyncedEvent;
 import io.ipoli.android.player.events.StartReplicationEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.store.Upgrade;
 import mehdi.sakout.fancybuttons.FancyButton;
 import okhttp3.Cookie;
 
@@ -440,13 +439,12 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
                 String.valueOf(Constants.DEFAULT_PLAYER_XP),
                 Constants.DEFAULT_PLAYER_LEVEL,
                 Constants.DEFAULT_PLAYER_COINS,
-                Constants.DEFAULT_PLAYER_REWARD_POINTS,
                 Constants.DEFAULT_PLAYER_AVATAR.code,
                 DateFormat.is24HourFormat(this), pet);
 
         player.getInventory().addAvatar(Constants.DEFAULT_PLAYER_AVATAR, LocalDate.now());
         player.getInventory().addPet(Constants.DEFAULT_PET_AVATAR, LocalDate.now());
-        player.getInventory().addUpgrade(Upgrade.REPEATING_QUESTS, LocalDate.now());
+        player.getInventory().enableAllPowerUps(LocalDate.now().plusDays(Constants.POWER_UPS_TRIAL_PERIOD_DAYS - 1));
 
         if (authProvider != null) {
             player.setCurrentAuthProvider(authProvider);

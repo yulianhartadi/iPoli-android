@@ -26,7 +26,6 @@ import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.SourceMapping;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
-import io.ipoli.android.quest.generators.RewardPointsRewardGenerator;
 import me.everything.providers.android.calendar.Event;
 import me.everything.providers.android.calendar.Reminder;
 
@@ -39,16 +38,14 @@ public class AndroidCalendarEventParser {
 
     private final ExperienceRewardGenerator experienceRewardGenerator;
     private final CoinsRewardGenerator coinsRewardGenerator;
-    private final RewardPointsRewardGenerator rewardPointsRewardGenerator;
     private final SyncAndroidCalendarProvider syncAndroidCalendarProvider;
     private final Bus eventBus;
 
-    public AndroidCalendarEventParser(SyncAndroidCalendarProvider syncAndroidCalendarProvider, Bus eventBus, CoinsRewardGenerator coinsRewardGenerator, ExperienceRewardGenerator experienceRewardGenerator, RewardPointsRewardGenerator rewardPointsRewardGenerator) {
+    public AndroidCalendarEventParser(SyncAndroidCalendarProvider syncAndroidCalendarProvider, Bus eventBus, CoinsRewardGenerator coinsRewardGenerator, ExperienceRewardGenerator experienceRewardGenerator) {
         this.syncAndroidCalendarProvider = syncAndroidCalendarProvider;
         this.eventBus = eventBus;
         this.coinsRewardGenerator = coinsRewardGenerator;
         this.experienceRewardGenerator = experienceRewardGenerator;
-        this.rewardPointsRewardGenerator = rewardPointsRewardGenerator;
     }
 
     public List<Quest> parse(Map<Event, List<InstanceData>> eventToInstances, Category category) {
@@ -137,7 +134,6 @@ public class AndroidCalendarEventParser {
         q.increaseCompletedCount();
         q.setExperience(experienceRewardGenerator.generate(q));
         q.setCoins(coinsRewardGenerator.generate(q));
-        q.setRewardPoints(rewardPointsRewardGenerator.generate(q));
     }
 
     private void addReminders(Event event, Quest quest) {

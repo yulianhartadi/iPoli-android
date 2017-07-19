@@ -10,6 +10,7 @@ import io.ipoli.android.app.activities.SignInActivity;
 import io.ipoli.android.app.ui.ThemedSnackbar;
 import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
+import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.player.ui.dialogs.UsernamePickerFragment;
 

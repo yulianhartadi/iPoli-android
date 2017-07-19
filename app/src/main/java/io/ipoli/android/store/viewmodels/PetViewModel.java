@@ -5,7 +5,7 @@ import android.support.annotation.DrawableRes;
 
 import org.threeten.bp.LocalDate;
 
-import io.ipoli.android.player.PetAvatar;
+import io.ipoli.android.player.data.PetAvatar;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

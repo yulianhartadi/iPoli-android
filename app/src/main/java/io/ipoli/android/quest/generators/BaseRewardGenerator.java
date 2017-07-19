@@ -23,9 +23,4 @@ public abstract class BaseRewardGenerator implements RewardGenerator {
         int coinsBonusPercentage = playerPersistenceService.get().getPet().getCoinsBonusPercentage();
         return (coinsBonusPercentage + 100) / 100.0;
     }
-
-    protected double getRewardPointsBonusMultiplier() {
-        int pointsBonusPercentage = playerPersistenceService.get().getPet().getRewardPointsBonusPercentage();
-        return (pointsBonusPercentage + 100) / 100.0;
-    }
 }

@@ -34,7 +34,6 @@ public class PostBinder {
         holder.postKudosCount.setText(String.valueOf(post.getKudos().size()));
         holder.postAddedCount.setText(String.valueOf(post.getAddedBy().size()));
         holder.questCoins.setText(post.getCoins().toString());
-        holder.questRewardPoints.setText(post.getRewardPoints().toString());
         holder.questExperience.setText(post.getExperience().toString() + " XP");
         holder.postCreatedAt.setText(DateUtils.getRelativeTimeSpanString(post.getCreatedAt(), System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS));
         if (post.isGivenKudosByPlayer(playerId)) {

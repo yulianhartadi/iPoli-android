@@ -3,7 +3,7 @@ package io.ipoli.android.feed.persistence;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.data.Profile;
-import io.ipoli.android.player.Player;
+import io.ipoli.android.player.data.Player;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

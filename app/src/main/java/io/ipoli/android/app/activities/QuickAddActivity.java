@@ -36,7 +36,7 @@ import io.ipoli.android.app.ui.CategoryView;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.ViewUtils;
-import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.player.PowerUpManager;
 import io.ipoli.android.quest.QuestParser;
 import io.ipoli.android.quest.adapters.SuggestionsAdapter;
 import io.ipoli.android.quest.data.Quest;
@@ -49,7 +49,7 @@ import io.ipoli.android.quest.suggestions.SuggestionDropDownItem;
 import io.ipoli.android.quest.suggestions.SuggestionsManager;
 import io.ipoli.android.quest.ui.AddQuestAutocompleteTextView;
 import io.ipoli.android.reminder.data.Reminder;
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -61,7 +61,7 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
     private static final int MAX_VISIBLE_SUGGESTION_ITEMS = 4;
 
     @Inject
-    UpgradeManager upgradeManager;
+    PowerUpManager powerUpManager;
 
     @Inject
     LocalStorage localStorage;
@@ -173,7 +173,7 @@ public class QuickAddActivity extends BaseActivity implements TextWatcher, OnSug
             return;
         }
         quest.setCategory(categoryView.getSelectedCategory().name());
-        if (upgradeManager.isUnlocked(Upgrade.REMINDERS)) {
+        if (powerUpManager.isEnabled(PowerUp.REMINDERS)) {
             quest.addReminder(new Reminder(0));
         }
         eventBus.post(new NewQuestEvent(quest, EventSource.QUICK_ADD));

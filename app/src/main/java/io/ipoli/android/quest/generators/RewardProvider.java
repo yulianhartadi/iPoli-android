@@ -9,6 +9,4 @@ public interface RewardProvider {
     Long getExperience();
 
     Long getCoins();
-
-    Long getRewardPoints();
 }

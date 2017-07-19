@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.ipoli.android.app.utils.DateUtils;
-import io.ipoli.android.player.Avatar;
-import io.ipoli.android.player.Player;
+import io.ipoli.android.player.data.Avatar;
+import io.ipoli.android.player.data.Player;
 import io.ipoli.android.quest.data.Category;
 import io.ipoli.android.quest.data.Quest;
 
@@ -26,7 +26,6 @@ public class Post {
     private Long completedAt;
     private Integer coins;
     private Integer experience;
-    private Integer rewardPoints;
     private Integer duration;
     private String questId;
     private String playerId;
@@ -51,7 +50,6 @@ public class Post {
         setCompletedAt(quest.getCompletedAt());
         setCoins(quest.getCoins().intValue());
         setExperience(quest.getExperience().intValue());
-        setRewardPoints(quest.getRewardPoints().intValue());
         setPlayerId(player.getId());
         setPlayerUsername(player.getUsername());
         setPlayerDisplayName(player.getFullDisplayName());
@@ -121,14 +119,6 @@ public class Post {
 
     public void setExperience(Integer experience) {
         this.experience = experience;
-    }
-
-    public Integer getRewardPoints() {
-        return rewardPoints;
-    }
-
-    public void setRewardPoints(Integer rewardPoints) {
-        this.rewardPoints = rewardPoints;
     }
 
     public String getPlayerId() {

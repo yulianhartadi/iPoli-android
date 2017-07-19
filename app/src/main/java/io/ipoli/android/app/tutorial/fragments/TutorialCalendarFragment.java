@@ -168,9 +168,6 @@ public class TutorialCalendarFragment extends Fragment {
         TextView coins = (TextView) headerView.findViewById(R.id.player_coins);
         coins.setText(String.valueOf(Constants.DEFAULT_PLAYER_COINS));
 
-        TextView rewardPoints = (TextView) headerView.findViewById(R.id.player_reward_points);
-        rewardPoints.setText(String.valueOf(Constants.DEFAULT_PLAYER_REWARD_POINTS));
-
         TextView xpPoints = (TextView) headerView.findViewById(R.id.player_current_xp);
         xpPoints.setText(getString(R.string.nav_drawer_player_xp, String.valueOf(Constants.DEFAULT_PLAYER_XP)));
 

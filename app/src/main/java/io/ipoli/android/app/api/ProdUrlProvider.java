@@ -27,8 +27,8 @@ public class ProdUrlProvider implements UrlProvider {
     }
 
     @Override
-    public URL migrateUser(String firebasePlayerId) {
-        return getURL(ApiConstants.PROD_API_URL + "migrations/" + firebasePlayerId);
+    public URL getMembershipStatus() {
+        return getURL(ApiConstants.PROD_API_URL + "subscriptions/");
     }
 
     private static URL getURL(String path) {

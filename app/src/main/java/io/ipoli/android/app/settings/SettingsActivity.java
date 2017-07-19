@@ -70,9 +70,9 @@ import io.ipoli.android.app.ui.dialogs.TimePickerFragment;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.app.utils.LocalStorage;
 import io.ipoli.android.app.utils.Time;
-import io.ipoli.android.player.Player;
-import io.ipoli.android.player.UpgradeDialog;
-import io.ipoli.android.player.UpgradeManager;
+import io.ipoli.android.player.data.Player;
+import io.ipoli.android.player.PowerUpDialog;
+import io.ipoli.android.player.PowerUpManager;
 import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Category;
@@ -80,7 +80,7 @@ import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.store.StoreItemType;
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.store.PowerUp;
 import io.ipoli.android.store.activities.StoreActivity;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -99,7 +99,7 @@ public class SettingsActivity extends BaseActivity implements
     Bus eventBus;
 
     @Inject
-    UpgradeManager upgradeManager;
+    PowerUpManager powerUpManager;
 
     @Inject
     LocalStorage localStorage;
@@ -184,9 +184,9 @@ public class SettingsActivity extends BaseActivity implements
 
     private CompoundButton.OnCheckedChangeListener onCheckSyncCalendarChangeListener = (buttonView, isChecked) -> {
         if (isChecked) {
-            if (upgradeManager.isLocked(Upgrade.CALENDAR_SYNC)) {
+            if (powerUpManager.isDisabled(PowerUp.CALENDAR_SYNC)) {
                 turnSyncCalendarsOff();
-                UpgradeDialog.newInstance(Upgrade.CALENDAR_SYNC).show(getSupportFragmentManager());
+                PowerUpDialog.newInstance(PowerUp.CALENDAR_SYNC).show(getSupportFragmentManager());
                 return;
             }
             eventBus.post(new EnableSynCalendarsEvent(true));

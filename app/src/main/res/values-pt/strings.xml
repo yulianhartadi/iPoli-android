@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">iPoli</string>
     <string name="title_fragment_inbox">Caixa de entrada</string>
-    <string name="title_activity_pick_avatar">Escolher um avatar</string>
     <string name="title_edit_quest">Editar missão</string>
     <string name="quest_deleted">Missão deletada</string>
     <string name="repeating_quest_deleted">Missão recorrente deletada</string>
@@ -53,12 +52,6 @@
     </string-array>
     <string name="title_activity_main">iPoli</string>
     <string name="save">SALVAR</string>
-    <string name="tutorial_welcome_title">3 Simples Passos para Melhorar a sua Vida</string>
-    <string name="tutorial_hero_desc">As suas tarefas diárias e hábitos agora são chamados de missões. Ganhe moedas e experiência completando-as!</string>
-    <string name="tutorial_challenges_title">Continue se desafiando</string>
-    <string name="tutorial_challenges_desc">Mantenha-se motivado e atinja suas metas de vida com os desafios do iPoli. Ganhe recompensas bônus ao completá-los.</string>
-    <string name="title_pick_initial_repeating_quests">Escolha poucos hábitos para começar</string>
-    <string name="title_pick_initial_quests">Para começar, escolha poucas missões</string>
     <string name="title_fragment_repeating_quests">Missões Recorrentes</string>
     <string name="share">Compartilhe</string>
     <string name="facebook_app_id">1609232436065758</string>
@@ -130,15 +123,9 @@
     <string name="empty_repeating_quests_text">Sem missões recorrentes? Adicionar uma tarefa ou um hábito?</string>
     <string name="nav_drawer_player_xp">EXP: %s</string>
     <string name="help_dialog_growth_title">O que é esse Crescimento?</string>
-    <string name="chart_time_spent_description">Tempo usado por categoria</string>
-    <string name="chart_time_spent_center_text">EXP: %1$d\nMoedas: %2$d</string>
-    <string name="chart_experience_description">Experiência ganha por dia</string>
     <string name="help_dialog_growth_daily_progress">Monitore o seu progresso diário</string>
     <string name="help_dialog_growth_time_spent_chart">O gráfico mostra as categorias de cada missão que você investe mais o seu tempo</string>
     <string name="help_dialog_growth_experience_chart">O gráfico mostra o quanto de experiência (EXP) você ganha por dia</string>
-    <string name="chart_no_data_to_display">Sem dados para mostrar. Vá fazer algumas missões!</string>
-    <string name="summary_stats_hours_spent">Horas gastas: %.1f</string>
-    <string name="summary_stats_quests_done">Missões feitas: %d</string>
     <string name="title_activity_add_challenge">Desafie-se</string>
     <string name="reward_name_validation">Você tem que colocar um nome para a sua recompensa</string>
     <string name="end_of_time">Indeterminado</string>
@@ -230,7 +217,6 @@
     <string name="pick_date">Escolha um dia</string>
     <string name="quest_snoozed">Missão adiada</string>
     <string name="quest_moved_to_inbox">Missão movida para a caixa de entrada</string>
-    <string name="migration_no_internet">iPoli precisa de internet, mas é só dessa vez!</string>
     <string name="help_dialog_calendar_quick_add">Dê um clique longo em qualquer intervalo vazio para usar o adicionar rápido</string>
     <string name="ongoing_notification_no_quests_text">Comece o seu dia com um sorriso</string>
     <string name="ongoing_notification_no_quests_title">Pronto(a) para uma missão?</string>
@@ -238,23 +224,16 @@
     <string name="ongoing_notification_progress_text">Progresso diário: %1$d/%2$d</string>
     <string name="quest_sub_quests_question">Tem uma lista de tarefas?</string>
     <string name="rename_your_pet">Renomear seu animal</string>
-    <string name="tutorial_pet_title">Divirta-se com o seu Companheiro Fiel</string>
-    <string name="tutorial_pet_desc">Flopsy é seu 1º animal de estimação! Ele te ajudará a ganhar mais EXP e moedas quando ele estiver saudável.</string>
-    <string name="title_activity_shop">Pet shop</string>
     <string name="not_enough_coins_to_buy_pet">Sem moedas suficientes para comprar esse animal</string>
-    <string name="buy_pet_confirm_title">Comprar novo animal</string>
-    <string name="buy_pet_confirm_message">Tem certeza que deseja substituir o seu animal atual por esse?</string>
     <string name="help_dialog_pet_title">Divirta-se com o seu amigo fiel!</string>
     <string name="help_dialog_pet_text1">Este é o seu animalzinho de estimação e ele te ajudará na sua jornada!</string>
     <string name="help_dialog_pet_text2">Mantenha-o saudável adicionando e completando missões e desafios. Quanto mais saudável o seu animal, mais bônus você ganha.</string>
     <string name="help_dialog_pet_shop">Vá ao pet shop se quiser comprar e substituir o seu animal de estimação. Você pode ter só um por vez.</string>
     <string name="edit_menu">Editar</string>
-    <string name="brag">Se gabar</string>
     <string name="title_activity_pick_challenge">Escolha um Desafio</string>
     <string name="personalize">Personalizar</string>
     <string name="title_activity_personalize_challenge">Aceitar o Desafio</string>
     <string name="mark_done">MARCAR COMO FEITO</string>
-    <string name="pick_challenge_to_start">Para começar, escolha um desafio</string>
     <string name="pick_challenge">ESCOLHER DESAFIO</string>
     <string name="challenge_accepted">Desafio aceito!</string>
     <string name="widget_agenda_empty">O iPoli quer uma missão!</string>
@@ -262,19 +241,13 @@
     <string name="quest_started">Missão iniciada</string>
     <string name="quest_stopped">Missão parada</string>
     <string name="reward_earned">Ganhou %s! Aproveite!</string>
-    <string name="coins_bought">+ %d moedas em seu estoque</string>
     <string name="store">Loja</string>
     <string name="no_internet_to_buy_coins">Se você quiser algumas moedas, tem que ativar a sua internet!</string>
     <string name="something_went_wrong">Algo deu errado, por favor, tente depois!</string>
-    <string name="help_dialog_store_title">O que você pode comprar?</string>
-    <string name="help_dialog_store_text1">Por enquanto, você pode comprar moedas. Ajude a si mesmo e a nós - os desenvolvedores ;)</string>
-    <string name="help_dialog_store_text2">Use as moedas para obter um novo animalzinho ou para ganhar uma recompensa. Espere novidades em um futuro próximo :)</string>
     <string name="work_days_picker_title">Quais dias você trabalha?</string>
     <string name="work_hours_dialog_title">Quando você trabalha?</string>
     <string name="sleep_hours_dialog_title">Quando você dorme?</string>
     <string name="time_of_day_picker_title">Quando você é mais produtivo?</string>
-    <string name="tutorial_schedule_title">Organize o seu dia \"automagicamente\"</string>
-    <string name="tutorial_schedule_desc">O iPoli automaticamente agenda o seu dia da forma mais inteligente possível. Suas missões importantes nunca mais ficarão sem terminar!</string>
     <string name="quest_times_a_day_question">Quantas vezes por dia?</string>
     <string name="title_activity_agenda">Seu calendário</string>
     <string name="migration_text">Ah não, você tem que esperar!\niPoli está comendo um biscoito e melhorando a sua experiência com o app.</string>
@@ -373,11 +346,9 @@
     <string name="settings_sync_calendars">Sinc. do Calendário</string>
     <string name="settings_select_sync_calendars">Calendários para sincronizar</string>
     <string name="settings_sync_google_calendars">Sinc. calendários Google</string>
-    <string name="empty_calendars_text">Sem calendários</string>
     <string name="empty_eisenhower_matrix_text">Nenhuma missão para essa data. Por que não adicionar uma?</string>
     <string name="allow_read_calendars_perm_reason">O iPoli precisa ler os seus calendários para importar os eventos como missões</string>
     <string name="sync_calendars_delete_loading_dialog_title">Deletando missões</string>
-    <string name="empty_store_items">Sem itens disponíveis</string>
     <string name="challenge_deadline_question">Quando é o prazo?</string>
     <string name="add_reminder_button">+ Adicionar lembrete</string>
     <string name="settings_general_title">Geral</string>
@@ -429,13 +400,6 @@
     <string name="category_fun">Diversão</string>
     <string name="category_chores">Afazeres</string>
     <string name="any_time">Qualquer horário</string>
-    <string name="monday">Segunda</string>
-    <string name="tuesday">Terça</string>
-    <string name="wednesday">Quarta</string>
-    <string name="thursday">Quinta</string>
-    <string name="friday">Sexta</string>
-    <string name="saturday">Sábado</string>
-    <string name="sunday">Domingo</string>
     <string name="pet_state_awesome">Incrível</string>
     <string name="pet_state_happy">Feliz</string>
     <string name="pet_state_good">Bem</string>
@@ -660,7 +624,6 @@
     <string name="challenge8_rq4_raw_text">Sair com os amigos duas vezes por semana</string>
     <string name="challenge8_rq4_name">Sair com os amigos</string>
     <string name="fragment_store_title">Loja</string>
-    <string name="upgrade_dialog_not_enough_coins">Essa melhoria custa %d moedas. Infelizmente, você não coletou moedas suficientes. Deseja comprar algumas?</string>
     <string name="pet_seal">Cauda fofa</string>
     <string name="pet_donkey">Orelhas chiques</string>
     <string name="pet_elephant">Orelhas voadoras</string>
@@ -683,26 +646,20 @@
     <string name="important">Importante</string>
     <string name="urgent">Urgente</string>
     <string name="not_urgent">Adiável</string>
-    <string name="coins_pack_value">+ %d moedas da vida</string>
-    <string name="upgrade_price">%d moedas da vida</string>
-    <string name="upgrade_unloked_on">Desbloqueado em %s</string>
+    <string name="power_up_price">%d moedas da vida</string>
     <string name="fragment_avatar_store_title">Comprar avatar</string>
     <string name="fragment_pet_store_title">Comprar animal</string>
-    <string name="fragment_upgrade_store_title">Desbloquear melhoria</string>
-    <string name="upgrade_successfully_bought">Agora você pode aproveitar %s</string>
-    <string name="upgrade_too_expensive">Sem moedas suficientes para comprar %s</string>
-    <string name="upgrade_dialog_title">Você descobriu %s</string>
-    <string name="buy">Comprar</string>
-    <string name="buy_life_coins">Comprar moedas da vida</string>
+    <string name="power_up_successfully_bought">Agora você pode aproveitar %s</string>
+    <string name="power_up_too_expensive">Sem moedas suficientes para comprar %s</string>
+    <string name="power_up_dialog_title">Você descobriu %s</string>
     <string name="not_now">Agora não</string>
     <string name="go_to_store">Ir para a Loja</string>
-    <string name="fragment_coin_store_title">Loja</string>
+    <string name="fragment_membership_store_title">Loja</string>
     <string name="life_coins">Moedas da vida</string>
-    <string name="upgrades">Melhorias</string>
+    <string name="power_ups">Melhorias</string>
     <string name="avatars">Avatares</string>
     <string name="pets">Animais</string>
-    <string name="reward_price_points">%d pontos</string>
-    <string name="reward_points_description">Compre recompensas com esses pontos</string>
+    <string name="reward_price_coins">%d moedas</string>
     <string name="help_dialog_rewards_buy">Clique no botão para comprar sua recompensa. Se ele estiver cinza, esforce-se um pouco mais para ganhar essas moedas!</string>
     <string name="help_dialog_rewards_text1">Defina suas próprias recompensas e compre-as assim que você ganhar moedas suficientes ao completar suas missões.</string>
     <string name="get_it">Obter</string>
@@ -710,15 +667,10 @@
     <string name="timer">Temporizador</string>
     <string name="programmed_challenges">Desafios programados</string>
     <string name="no_challenges">Você não se desafiou ainda</string>
-    <string name="upgrades_migration_message">Você é um usuário incrível do iPoli e todos as melhorias atuais são grátis para você!</string>
     <string name="big_value_format">%s mil</string>
-    <string name="starters_pack">Pacote iniciante</string>
-    <string name="starter_pack_desc">A sua jornada começa aqui</string>
-    <string name="premium_pack">Pacote premium</string>
-    <string name="premium_pack_desc">Para os espertos</string>
-    <string name="most_popular">Mais popular</string>
-    <string name="jumbo_pack">Pacote Gigante</string>
-    <string name="jumbo_pack_desc">Para os ricos e famosos</string>
+    <string name="monthly_plan">Pacote iniciante</string>
+    <string name="yearly_plan">Pacote premium</string>
+    <string name="quarterly_plan">Pacote Gigante</string>
     <string name="avatar_name_ipoli_classic">iPoli Clássico</string>
     <string name="avatar_name_ipoli_yellow_glasses">iPoli Chique</string>
     <string name="avatar_name_macarena">Dama Sorte</string>
@@ -731,57 +683,50 @@
     <string name="avatar_name_dwight">Homem Musculoso</string>
     <string name="avatar_name_michael">Cara mau</string>
     <string name="avatar_name_tobby">Cerebroso</string>
-    <string name="upgrade_rq_sub_title">Criar tarefas recorrentes</string>
-    <string name="upgrade_rq_short_desc">Missões recorrentes são todas as suas tarefas recorrentes - fixo ou flexível.</string>
-    <string name="upgrade_rq_long_desc">Adicione suas tarefas que se repetem diariamente, semanalmente, mensalmente ou até anualmente. Podem ser dias fixos ou flexíveis.
-iPoli automaticamente agendará elas para você.</string>
-    <string name="upgrade_challenges_sub_title">Defina e alcance suas metas</string>
-    <string name="upgrade_challenges_short_desc">Planeje e atinja suas metas a curto e a longo prazo</string>
-    <string name="upgrade_challenges_long_desc">Desafios te ajudam a planejar e atingir as metas de sua vida. Crie desafio para todas as suas metas de curto e longo prazo.
+    <string name="power_up_challenges_sub_title">Defina e alcance suas metas</string>
+    <string name="power_up_challenges_short_desc">Planeje e atinja suas metas a curto e a longo prazo</string>
+    <string name="power_up_challenges_long_desc">Desafios te ajudam a planejar e atingir as metas de sua vida. Crie desafio para todas as suas metas de curto e longo prazo.
 Assim você pode acompanhar o seu progresso e ficar motivado.</string>
-    <string name="upgrade_growth_sub_title">Acompanhe o seu progresso e sua pontuação</string>
-    <string name="upgrade_growth_short_desc">Acompanhe e compare o seu progresso e sua produtividade durante diferentes períodos de tempo.</string>
-    <string name="upgrade_growth_long_desc">Monitore o quanto de tempo você gasta com cada categoria, quantas tarefas você completa, qual é sua pontuação de Excelência e mais fatos para te ajudar com sua produtividade.</string>
-    <string name="upgrade_matrix_sub_title">Separe o importante do urgente</string>
-    <string name="upgrade_matrix_short_desc">Priorize suas tarefas e foque nas importantes</string>
-    <string name="upgrade_matrix_long_desc">A matriz de Eisenhower divide suas missões em 4 grupos, dependendo da prioridade de cada uma.
+    <string name="power_up_growth_sub_title">Acompanhe o seu progresso e sua pontuação</string>
+    <string name="power_up_growth_short_desc">Acompanhe e compare o seu progresso e sua produtividade durante diferentes períodos de tempo.</string>
+    <string name="power_up_growth_long_desc">Monitore o quanto de tempo você gasta com cada categoria, quantas tarefas você completa, qual é sua pontuação de Excelência e mais fatos para te ajudar com sua produtividade.</string>
+    <string name="power_up_matrix_sub_title">Separe o importante do urgente</string>
+    <string name="power_up_matrix_short_desc">Priorize suas tarefas e foque nas importantes</string>
+    <string name="power_up_matrix_long_desc">A matriz de Eisenhower divide suas missões em 4 grupos, dependendo da prioridade de cada uma.
 Isso te ajuda a focar nas tarefas mais importantes.</string>
-    <string name="upgrade_sync_calendars_sub_title">Importe todos os seus eventos</string>
-    <string name="upgrade_sync_calendars_short_desc">Importe e sincronize eventos e tarefas de outros calendários</string>
-    <string name="upgrade_sync_calendars_long_desc">Deixe o iPoli atualizado sincronizando eventos e tarefas dos seus calendários.
+    <string name="power_up_sync_calendars_sub_title">Importe todos os seus eventos</string>
+    <string name="power_up_sync_calendars_short_desc">Importe e sincronize eventos e tarefas de outros calendários</string>
+    <string name="power_up_sync_calendars_long_desc">Deixe o iPoli atualizado sincronizando eventos e tarefas dos seus calendários.
 Dê uma categoria para cada calendário (trabalho, pessoal, ...)</string>
-    <string name="upgrade_predefined_challenges_sub_title">Fácil usar fórmulas úteis</string>
-    <string name="upgrade_predefined_challenges_short_desc">Desafie-se com programas especiais para ser mais saudável, habilidoso e feliz</string>
-    <string name="upgrade_predefined_challenges_long_desc">Nós preparamos desafios especiais para você ser saudável, ficar em forma, aprender novas habilidades e passar mais tempo com a família.
+    <string name="power_up_predefined_challenges_sub_title">Fácil usar fórmulas úteis</string>
+    <string name="power_up_predefined_challenges_short_desc">Desafie-se com programas especiais para ser mais saudável, habilidoso e feliz</string>
+    <string name="power_up_predefined_challenges_long_desc">Nós preparamos desafios especiais para você ser saudável, ficar em forma, aprender novas habilidades e passar mais tempo com a família.
 Os programas são fáceis de seguir, mas você pode ajustá-los de acordo com as suas necessidades.</string>
-    <string name="upgrade_notes_sub_title">Fique organizado e limpe a sua mente</string>
-    <string name="upgrade_notes_short_desc">Organize-se adicionando anotações em suas missões</string>
-    <string name="upgrade_notes_long_desc">Adicione notas simples em suas missões para te ajudar a lembrar de informações importantes.</string>
-    <string name="upgrade_timer_sub_title">Acompanhe o seu tempo</string>
-    <string name="upgrade_timer_short_desc">Gerencie e acompanhe o seu tempo mais efetivamente</string>
-    <string name="upgrade_timer_long_desc">Não sabe quando que o seu tempo voa? Monitore-o acompanhando a duração de suas missões ou use isso como temporizador para os seus Pomodoros, atividades físicas ou receitas de culinária.</string>
-    <string name="upgrade_sub_quests_sub_title">Crie lista de tarefas para as suas missões</string>
-    <string name="upgrade_sub_quests_short_desc">Crie lista de tarefas para as suas missões</string>
-    <string name="upgrade_sub_quests_long_desc">Seja mais produtivo dividindo suas tarefas em tamanho menores.
+    <string name="power_up_notes_sub_title">Fique organizado e limpe a sua mente</string>
+    <string name="power_up_notes_short_desc">Organize-se adicionando anotações em suas missões</string>
+    <string name="power_up_notes_long_desc">Adicione notas simples em suas missões para te ajudar a lembrar de informações importantes.</string>
+    <string name="power_up_timer_sub_title">Acompanhe o seu tempo</string>
+    <string name="power_up_timer_short_desc">Gerencie e acompanhe o seu tempo mais efetivamente</string>
+    <string name="power_up_timer_long_desc">Não sabe quando que o seu tempo voa? Monitore-o acompanhando a duração de suas missões ou use isso como temporizador para os seus Pomodoros, atividades físicas ou receitas de culinária.</string>
+    <string name="power_up_sub_quests_sub_title">Crie lista de tarefas para as suas missões</string>
+    <string name="power_up_sub_quests_short_desc">Crie lista de tarefas para as suas missões</string>
+    <string name="power_up_sub_quests_long_desc">Seja mais produtivo dividindo suas tarefas em tamanho menores.
 Define os passos, subtarefas ou até crie uma lista de compras.</string>
-    <string name="upgrade_reminders_sub_title">Nunca esqueça as coisas</string>
-    <string name="upgrade_reminders_short_desc">Deixe o iPoli te lembrar quando der a hora da próxima missão</string>
-    <string name="upgrade_reminders_long_desc">Adicione lembretes para suas missões. Você não precisará ficar olhando nem verificando o seu celular.
+    <string name="power_up_reminders_sub_title">Nunca esqueça as coisas</string>
+    <string name="power_up_reminders_short_desc">Deixe o iPoli te lembrar quando der a hora da próxima missão</string>
+    <string name="power_up_reminders_long_desc">Adicione lembretes para suas missões. Você não precisará ficar olhando nem verificando o seu celular.
 Foque na missão atual e o iPoli te notificará quando a próxima missão começar.</string>
     <string name="custom_duration">Duração personalizada</string>
-    <string name="upgrade_custom_duration_sub_title">Escolha a melhor duração para as suas missões</string>
-    <string name="upgrade_custom_duration_short_desc">Não está satisfeito com as opções de duração das missões? Agora você pode personalizá-la.</string>
-    <string name="upgrade_custom_duration_long_desc">Escolha a duração das suas missões. O valor mínimo é 10 minutos, o máximo continua sendo 4 horas.
+    <string name="power_up_custom_duration_sub_title">Escolha a melhor duração para as suas missões</string>
+    <string name="power_up_custom_duration_short_desc">Não está satisfeito com as opções de duração das missões? Agora você pode personalizá-la.</string>
+    <string name="power_up_custom_duration_long_desc">Escolha a duração das suas missões. O valor mínimo é 10 minutos, o máximo continua sendo 4 horas.
 Se você precisar de um valor maior, divida a sua missão em missões menores.</string>
-    <string name="upgrade_dialog_name">Você descobriu %s!</string>
-    <string name="upgrade_dialog_price_message">Você quer desbloquear isso agora por %d de moedas da vida?</string>
-    <string name="unlock">Desbloquear</string>
-    <string name="unlock_upgrade">Desbloquear melhoria</string>
-    <string name="requires_upgrade_message">Precisa de %s</string>
-    <string name="reward_points_won">Pontos de recompensa ganhos</string>
+    <string name="power_up_dialog_name">Você descobriu %s!</string>
+    <string name="power_up_dialog_price_message">Você quer desbloquear isso agora por %d de moedas da vida?</string>
+    <string name="requires_power_up_message">Precisa de %s</string>
     <string name="reward_last_used_date">Última vez usado: %s</string>
     <string name="used_rewards_count">%d usado(s)</string>
-    <string name="reward_price">%d pontos</string>
+    <string name="reward_price">%d moedas</string>
     <string name="why_are_you_here">Psiu, por que você está aqui?</string>
     <string name="improve_myself">Melhorar a mim mesmo(a)</string>
     <string name="no_idea">Não tenho ideia</string>
@@ -822,15 +767,11 @@ Se você precisar de um valor maior, divida a sua missão em missões menores.</
     <string name="no_skip_tutorial">Não, pular tutorial</string>
     <string name="quest_max_duration_value_message">As missões não podem durar mais do que 4 horas</string>
     <string name="quest_min_duration_value_message">As missões não podem durar menos do que 10 minutos</string>
-    <string name="donation_pack">Pacote doação</string>
-    <string name="donation_pack_desc">Para os generosos e altruístas</string>
-    <string name="coins_pack_single_value">+ %d moeda da vida</string>
-    <string name="reward_points_hint">Pontos de recompensa</string>
-    <string name="empty_reward_points_message">Não pode haver recompensas grátis</string>
-    <string name="too_expensive_reward_points_message">Caro demais! Seja mais realista.</string>
-    <string name="max_reward_points">máx %d</string>
-    <string name="min_reward_points">min %d</string>
-    <string name="ready_for_upgrade">Pronto(a) para uma melhoria?</string>
+    <string name="empty_reward_price_message">Não pode haver recompensas grátis</string>
+    <string name="too_expensive_reward_price_message">Caro demais! Seja mais realista.</string>
+    <string name="max_reward_price">máx %d</string>
+    <string name="min_reward_price">min %d</string>
+    <string name="ready_for_power_up">Pronto(a) para uma melhoria?</string>
     <string-array name="player_titles">
         <item>Novato(a)</item>
         <item>Profissional</item>
@@ -852,12 +793,5 @@ Se você precisar de um valor maior, divida a sua missão em missões menores.</
     <string-array name="repeating_quest_flexible_frequencies">
         <item>Semanal</item>
         <item>Mensal</item>
-    </string-array>
-    <string-array name="pet_names">
-        <item>Orelhas chiques</item>
-        <item>Orelhas voadoras</item>
-        <item>Cauda fofa</item>
-        <item>Dente maluco</item>
-        <item>Galinho Invasor</item>
     </string-array>
 </resources>

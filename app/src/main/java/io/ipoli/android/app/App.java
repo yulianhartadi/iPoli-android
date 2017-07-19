@@ -49,9 +49,9 @@ import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
+import io.ipoli.android.app.activities.PowerUpDialogActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.activities.SignInActivity;
-import io.ipoli.android.app.activities.UpgradeDialogActivity;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.api.UrlProvider;
 import io.ipoli.android.app.api.events.NewSessionCreatedEvent;
@@ -67,8 +67,8 @@ import io.ipoli.android.app.events.FinishTutorialActivityEvent;
 import io.ipoli.android.app.events.InitAppEvent;
 import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
+import io.ipoli.android.app.events.StartPowerUpDialogRequestEvent;
 import io.ipoli.android.app.events.StartQuickAddEvent;
-import io.ipoli.android.app.events.StartUpgradeDialogRequestEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
@@ -102,14 +102,15 @@ import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
-import io.ipoli.android.player.Player;
 import io.ipoli.android.player.activities.LevelUpActivity;
+import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
 import io.ipoli.android.player.events.PlayerSyncedEvent;
 import io.ipoli.android.player.events.ProfileCreatedEvent;
 import io.ipoli.android.player.events.StartReplicationEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
+import io.ipoli.android.player.scheduling.PowerUpScheduler;
 import io.ipoli.android.quest.activities.QuestActivity;
 import io.ipoli.android.quest.data.BaseQuest;
 import io.ipoli.android.quest.data.Category;
@@ -127,7 +128,6 @@ import io.ipoli.android.quest.events.UndoCompletedQuestRequestEvent;
 import io.ipoli.android.quest.events.UpdateQuestEvent;
 import io.ipoli.android.quest.generators.CoinsRewardGenerator;
 import io.ipoli.android.quest.generators.ExperienceRewardGenerator;
-import io.ipoli.android.quest.generators.RewardPointsRewardGenerator;
 import io.ipoli.android.quest.generators.RewardProvider;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
 import io.ipoli.android.quest.persistence.RepeatingQuestPersistenceService;
@@ -195,9 +195,6 @@ public class App extends MultiDexApplication {
 
     @Inject
     CoinsRewardGenerator coinsRewardGenerator;
-
-    @Inject
-    RewardPointsRewardGenerator rewardPointsRewardGenerator;
 
     @Inject
     UrlProvider urlProvider;
@@ -380,7 +377,9 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onFinishSignInActivity(FinishSignInActivityEvent e) {
         if (hasPlayer() && e.isNewPlayer) {
-            startNewActivity(MainActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(Constants.SHOW_TRIAL_MESSAGE_EXTRA_KEY, true);
+            startNewActivity(MainActivity.class, bundle);
         } else if (!hasPlayer()) {
             System.exit(0);
         }
@@ -631,6 +630,7 @@ public class App extends MultiDexApplication {
         localStorage.saveString(Constants.KEY_PLAYER_ID, e.playerId);
         playerId = e.playerId;
         initAppStart();
+        PowerUpScheduler.scheduleExpirationCheckJob(getApplicationContext());
     }
 
     @Subscribe
@@ -638,7 +638,7 @@ public class App extends MultiDexApplication {
         localStorage.saveString(Constants.KEY_PLAYER_ID, e.playerId);
         playerId = e.playerId;
         Player player = getPlayer();
-        if(player.hasUsername() && player.getSchemaVersion() >= Constants.PROFILES_FIRST_SCHEMA_VERSION) {
+        if (player.hasUsername() && player.getSchemaVersion() >= Constants.PROFILES_FIRST_SCHEMA_VERSION) {
             listenForPlayerChanges();
         }
     }
@@ -667,7 +667,6 @@ public class App extends MultiDexApplication {
             q.setCompletedAtMinute(Time.now().toMinuteOfDay());
             q.setExperience(experienceRewardGenerator.generate(q));
             q.setCoins(coinsRewardGenerator.generate(q));
-            q.setRewardPoints(rewardPointsRewardGenerator.generate(q));
             questPersistenceService.save(q);
             onQuestComplete(q, e.source);
         } else {
@@ -704,10 +703,8 @@ public class App extends MultiDexApplication {
         quest.setCompletedCount(0);
         Long xp = quest.getExperience();
         Long coins = quest.getCoins();
-        Long rewardPoints = quest.getRewardPoints();
         quest.setExperience(null);
         quest.setCoins(null);
-        quest.setRewardPoints(null);
         questPersistenceService.save(quest);
 
         Player player = getPlayer();
@@ -720,13 +717,6 @@ public class App extends MultiDexApplication {
             eventBus.post(new LevelDownEvent(player.getLevel()));
         }
         player.removeCoins(coins);
-        // @TODO remove this when all players have rewardPoints
-        if (rewardPoints != null) {
-            player.removeRewardPoints(rewardPoints);
-        } else {
-            player.removeRewardPoints(coins);
-        }
-
         updatePet(player.getPet(), (int) -Math.floor(xp / Constants.XP_TO_PET_HP_RATIO));
         playerPersistenceService.save(player);
         eventBus.post(new UndoCompletedQuestEvent(quest, xp, coins));
@@ -766,7 +756,6 @@ public class App extends MultiDexApplication {
         if (quest.isCompleted()) {
             quest.setExperience(experienceRewardGenerator.generate(quest));
             quest.setCoins(coinsRewardGenerator.generate(quest));
-            quest.setRewardPoints(rewardPointsRewardGenerator.generate(quest));
         }
         questPersistenceService.save(quest);
         if (quest.isCompleted()) {
@@ -783,7 +772,6 @@ public class App extends MultiDexApplication {
         if (quest.isCompleted()) {
             quest.setExperience(experienceRewardGenerator.generate(quest));
             quest.setCoins(coinsRewardGenerator.generate(quest));
-            quest.setRewardPoints(rewardPointsRewardGenerator.generate(quest));
         }
         questPersistenceService.save(quest);
         if (quest.isCompleted()) {
@@ -885,23 +873,20 @@ public class App extends MultiDexApplication {
 
             long xp = experienceRewardGenerator.generateForDailyChallenge();
             long coins = coinsRewardGenerator.generateForDailyChallenge();
-            long rewardPoints = rewardPointsRewardGenerator.generateForDailyChallenge();
             Challenge dailyChallenge = new Challenge();
             dailyChallenge.setExperience(xp);
             dailyChallenge.setCoins(coins);
-            dailyChallenge.setRewardPoints(rewardPoints);
             updateAvatar(dailyChallenge);
-            showChallengeCompleteDialog(getString(R.string.daily_challenge_complete_dialog_title), xp, coins, rewardPoints);
+            showChallengeCompleteDialog(getString(R.string.daily_challenge_complete_dialog_title), xp, coins);
             eventBus.post(new DailyChallengeCompleteEvent());
         });
     }
 
-    private void showChallengeCompleteDialog(String title, long xp, long coins, long rewardPoints) {
+    private void showChallengeCompleteDialog(String title, long xp, long coins) {
         Intent intent = new Intent(this, ChallengeCompleteActivity.class);
         intent.putExtra(ChallengeCompleteActivity.TITLE, title);
         intent.putExtra(ChallengeCompleteActivity.EXPERIENCE, xp);
         intent.putExtra(ChallengeCompleteActivity.COINS, coins);
-        intent.putExtra(ChallengeCompleteActivity.REWARD_POINTS, rewardPoints);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
@@ -912,7 +897,6 @@ public class App extends MultiDexApplication {
         player.addExperience(experience);
         increasePlayerLevelIfNeeded(player);
         player.addCoins(rewardProvider.getCoins());
-        player.addRewardPoints(rewardProvider.getRewardPoints());
         playerPersistenceService.save(player);
     }
 
@@ -968,7 +952,6 @@ public class App extends MultiDexApplication {
         challenge.setCompletedAtDate(new Date());
         challenge.setExperience(experienceRewardGenerator.generate(challenge));
         challenge.setCoins(coinsRewardGenerator.generate(challenge));
-        challenge.setRewardPoints(rewardPointsRewardGenerator.generate(challenge));
         challengePersistenceService.save(challenge);
         onChallengeComplete(challenge, e.source);
     }
@@ -976,7 +959,7 @@ public class App extends MultiDexApplication {
     private void onChallengeComplete(Challenge challenge, EventSource source) {
         updateAvatar(challenge);
         savePet((int) (Math.floor(challenge.getExperience() / Constants.XP_TO_PET_HP_RATIO)));
-        showChallengeCompleteDialog(getString(R.string.challenge_complete, challenge.getName()), challenge.getExperience(), challenge.getCoins(), challenge.getRewardPoints());
+        showChallengeCompleteDialog(getString(R.string.challenge_complete, challenge.getName()), challenge.getExperience(), challenge.getCoins());
         eventBus.post(new ChallengeCompletedEvent(challenge, source));
     }
 
@@ -1040,10 +1023,10 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onStartUpgradeDialogRequest(StartUpgradeDialogRequestEvent e) {
+    public void onStartPowerUpDialogRequest(StartPowerUpDialogRequestEvent e) {
         Bundle bundle = new Bundle();
-        bundle.putString(UpgradeDialogActivity.UPGRADE, e.upgrade.name());
-        startNewActivity(UpgradeDialogActivity.class, bundle);
+        bundle.putString(PowerUpDialogActivity.POWER_UP, e.powerUp.name());
+        startNewActivity(PowerUpDialogActivity.class, bundle);
     }
 
     @Subscribe

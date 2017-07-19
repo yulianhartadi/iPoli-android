@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:id="@+id/monthly_root_layout"
+    style="@style/subscription_plan_card">
+
+    <android.support.constraint.ConstraintLayout
+        style="@style/match_parent">
+
+        <TextView
+            android:id="@+id/monthly_title"
+            style="@style/subscription_plan_heading"
+            android:text="@string/monthly_plan"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
+
+        <TextView
+            android:id="@+id/benefit1"
+            style="@style/subscription_price_list_item"
+            android:drawableStart="@drawable/ic_done_yellow_24dp"
+            android:text="@string/enable_all_power_ups"
+            app:layout_constraintLeft_toLeftOf="@+id/monthly_title"
+            app:layout_constraintTop_toBottomOf="@+id/monthly_title"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintHorizontal_bias="0.0" />
+
+        <TextView
+            android:id="@+id/benefit2"
+            style="@style/subscription_price_list_item"
+            android:drawableStart="@drawable/ic_done_yellow_24dp"
+            android:text="@string/get_all_future_power_ups_for_free"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="@+id/monthly_title"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/benefit1" />
+
+        <TextView
+            android:id="@+id/disadvantage1"
+            style="@style/subscription_price_list_item"
+            android:drawableStart="@drawable/ic_remove_yellow_24dp"
+            android:text="@string/monthly_plan_disadvantage1"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toLeftOf="@+id/monthly_title"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/benefit2" />
+
+        <TextView
+            android:id="@+id/monthly_price"
+            style="@style/subscription_plan_price"
+            android:text="@string/subscription_price_per_month"
+            app:layout_constraintHorizontal_bias="0.502"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/disadvantage1" />
+
+        <Button
+            android:id="@+id/monthly_buy"
+            style="@style/subscription_plan_button"
+            android:backgroundTint="@color/colorYellow"
+            android:text="@string/go_premium"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/monthly_price"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/monthly_current_plan"
+            style="@style/subscription_curent_plan"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/colorYellow"
+            android:text="@string/current_plan"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/monthly_price" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.v7.widget.CardView>

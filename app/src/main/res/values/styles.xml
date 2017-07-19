@@ -134,4 +134,87 @@
         <item name="android:paddingStart">16dp</item>
         <item name="android:textSize">18sp</item>
     </style>
+
+    <!-- New Styles -->
+
+    <style name="wrap_content">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="match_parent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="match_wrap">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+
+    <style name="subscription_plan_card" parent="match_wrap">
+        <item name="android:layout_marginBottom">@dimen/spacing_1</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_2</item>
+        <item name="android:layout_marginStart">@dimen/spacing_2</item>
+        <item name="android:layout_marginTop">@dimen/spacing_1</item>
+    </style>
+
+    <style name="subscription_plan_heading" parent="wrap_content">
+        <item name="android:textSize">@dimen/subscription_plan_heading</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_2</item>
+        <item name="android:layout_marginLeft">@dimen/spacing_4</item>
+        <item name="android:layout_marginRight">@dimen/spacing_4</item>
+        <item name="android:layout_marginStart">@dimen/spacing_4</item>
+        <item name="android:layout_marginTop">@dimen/spacing_6</item>
+        <item name="android:paddingBottom">@dimen/spacing_2</item>
+    </style>
+
+    <style name="subscription_plan_price" parent="wrap_content">
+        <item name="android:layout_marginTop">@dimen/spacing_6</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:textSize">@dimen/subscription_plan_price</item>
+    </style>
+
+    <style name="subscription_price_list_item" parent="wrap_content">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_marginRight">@dimen/spacing_4</item>
+        <item name="android:layout_marginTop">@dimen/spacing_2</item>
+        <item name="android:drawablePadding">@dimen/spacing_1</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="subscription_plan_button" parent="wrap_content">
+        <item name="android:layout_marginBottom">@dimen/spacing_4</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_2</item>
+        <item name="android:layout_marginLeft">@dimen/spacing_2</item>
+        <item name="android:layout_marginRight">@dimen/spacing_2</item>
+        <item name="android:layout_marginStart">@dimen/spacing_2</item>
+        <item name="android:layout_marginTop">@dimen/spacing_6</item>
+        <item name="android:paddingBottom">@dimen/spacing_5</item>
+        <item name="android:paddingEnd">@dimen/subscription_plan_button_padding</item>
+        <item name="android:paddingStart">@dimen/subscription_plan_button_padding</item>
+        <item name="android:paddingTop">@dimen/spacing_5</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:drawable">@drawable/round_corners</item>
+    </style>
+
+    <style name="subscription_plan_recommended" parent="wrap_content">
+        <item name="android:layout_margin">@dimen/spacing_4</item>
+        <item name="android:layout_marginTop">@dimen/spacing_6</item>
+    </style>
+
+    <style name="subscription_curent_plan" parent="match_wrap">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/subscription_current_plan</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_marginTop">@dimen/spacing_3</item>
+        <item name="android:padding">@dimen/spacing_4</item>
+    </style>
+
 </resources>

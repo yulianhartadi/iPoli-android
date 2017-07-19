@@ -1,6 +1,9 @@
 package io.ipoli.android.app.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import org.threeten.bp.LocalDate;
 
 import io.ipoli.android.app.utils.DateUtils;
 
@@ -63,5 +66,15 @@ public abstract class PersistedObject {
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    @JsonIgnore
+    public LocalDate getCreatedAtDate() {
+        return DateUtils.fromMillis(createdAt);
+    }
+
+    @JsonIgnore
+    public void setCreatedAtDate(LocalDate date) {
+        setCreatedAt(DateUtils.toMillis(date));
     }
 }

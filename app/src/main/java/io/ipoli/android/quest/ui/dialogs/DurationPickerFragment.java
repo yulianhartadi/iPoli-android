@@ -20,9 +20,9 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
-import io.ipoli.android.player.UpgradeDialog;
-import io.ipoli.android.player.UpgradeManager;
-import io.ipoli.android.store.Upgrade;
+import io.ipoli.android.player.PowerUpDialog;
+import io.ipoli.android.player.PowerUpManager;
+import io.ipoli.android.store.PowerUp;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -33,7 +33,7 @@ public class DurationPickerFragment extends DialogFragment {
     private static final String DURATION = "duration";
 
     @Inject
-    UpgradeManager upgradeManager;
+    PowerUpManager powerUpManager;
 
     private Integer duration;
     private int selectedDurationIndex;
@@ -105,10 +105,10 @@ public class DurationPickerFragment extends DialogFragment {
     private void onShowDialog(AlertDialog dialog) {
         Button custom = dialog.getButton(DialogInterface.BUTTON_NEUTRAL);
         custom.setOnClickListener(v -> {
-            if (upgradeManager.isLocked(Upgrade.CUSTOM_DURATION)) {
-                UpgradeDialog.newInstance(Upgrade.CUSTOM_DURATION, new UpgradeDialog.OnUnlockListener() {
+            if (powerUpManager.isDisabled(PowerUp.CUSTOM_DURATION)) {
+                PowerUpDialog.newInstance(PowerUp.CUSTOM_DURATION, new PowerUpDialog.OnEnableListener() {
                     @Override
-                    public void onUnlock() {
+                    public void onEnabled() {
                         CustomDurationPickerFragment.newInstance(durationPickedListener).show(getFragmentManager());
                         dismiss();
                     }

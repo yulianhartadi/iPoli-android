@@ -7,4 +7,20 @@
     <dimen name="sub_quest_item_text_size">16sp</dimen>
     <dimen name="extended_touch_width">64dp</dimen>
     <dimen name="extended_touch_height">48dp</dimen>
+
+    <!-- New Dimens -->
+    <dimen name="spacing_1">4dp</dimen>
+    <dimen name="spacing_2">8dp</dimen>
+    <dimen name="spacing_3">12dp</dimen>
+    <dimen name="spacing_4">16dp</dimen>
+    <dimen name="spacing_5">20dp</dimen>
+    <dimen name="spacing_6">24dp</dimen>
+    <dimen name="spacing_7">28dp</dimen>
+    <dimen name="spacing_8">32dp</dimen>
+
+
+    <dimen name="subscription_plan_heading">24sp</dimen>
+    <dimen name="subscription_plan_price">16sp</dimen>
+    <dimen name="subscription_current_plan">20sp</dimen>
+    <dimen name="subscription_plan_button_padding">50dp</dimen>
 </resources>
