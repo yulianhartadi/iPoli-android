@@ -123,9 +123,6 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
 
     private void onFinish() {
         eventBus.post(new PlayerMigratedEvent(schemaVersion, Constants.SCHEMA_VERSION));
-        Player player = playerPersistenceService.get();
-        player.setSchemaVersion(Constants.SCHEMA_VERSION);
-        playerPersistenceService.save(player);
         PowerUpScheduler.scheduleExpirationCheckJob(getApplicationContext());
         startActivity(new Intent(this, MainActivity.class));
         finish();
