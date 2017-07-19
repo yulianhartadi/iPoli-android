@@ -55,15 +55,13 @@ public class PowerUpsJobService extends JobService {
     @Inject
     Api api;
 
-    private Billing billing;
-
     private Checkout checkout;
 
     @Override
     public void onCreate() {
         super.onCreate();
         App.getAppComponent(this).inject(this);
-        billing = new Billing(getApplicationContext(), new Billing.DefaultConfiguration() {
+        Billing billing = new Billing(getApplicationContext(), new Billing.DefaultConfiguration() {
             @Override
             @NonNull
             public String getPublicKey() {
@@ -203,7 +201,7 @@ public class PowerUpsJobService extends JobService {
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setColor(ContextCompat.getColor(this, R.color.md_yellow_700))
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setStyle(new android.support.v4.app.NotificationCompat.BigTextStyle().bigText(text));
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(text));
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
         notificationManagerCompat.notify(Constants.MEMBERSHIP_EXPIRATION_NOTIFICATION_ID, builder.build());
