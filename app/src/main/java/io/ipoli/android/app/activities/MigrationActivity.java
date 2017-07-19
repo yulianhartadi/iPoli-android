@@ -273,20 +273,6 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
         }
 
         private void updateAvatars(Map<String, Object> playerProperties) {
-            String playerPicture = null;
-            String petPicture = null;
-
-            if (playerProperties.containsKey("picture")) {
-                playerPicture = (String) playerProperties.get("picture");
-                playerProperties.remove("picture");
-            }
-            List<Map<String, Object>> currentPlayerPets = (List<Map<String, Object>>) playerProperties.get("pets");
-            Map<String, Object> pet = currentPlayerPets.get(0);
-            if (pet.containsKey("picture")) {
-                petPicture = (String) pet.remove("picture");
-            }
-
-
             if (!playerProperties.containsKey("inventory")) {
                 playerProperties.put("inventory", new HashMap<>());
             }
@@ -294,25 +280,16 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
             Map<String, Object> inventory = (Map<String, Object>) playerProperties.get("inventory");
             String unlockedDate = (String) playerProperties.get("createdAt");
 
-            if (playerPicture != null) {
-                Avatar playerAvatar = Constants.DEFAULT_PLAYER_AVATAR;
-                for (Avatar avatar : Avatar.values()) {
-                    String avatarPicture = getContext().getResources().getResourceEntryName(avatar.picture);
-                    if (avatarPicture.equals(playerPicture)) {
-                        playerAvatar = avatar;
-                        break;
-                    }
-                }
+            updatePlayerAvatar(playerProperties, inventory, unlockedDate);
+            updatePetAvatar(playerProperties, inventory, unlockedDate);
+        }
 
-                Map<String, String> avatars = new HashMap<>();
-                avatars.put(String.valueOf(playerAvatar.code), unlockedDate);
-                inventory.put("avatars", avatars);
-                playerProperties.put("avatarCode", playerAvatar.code);
-            } else if (!playerProperties.containsKey("avatarCode")) {
-                Map<String, String> avatars = new HashMap<>();
-                avatars.put(String.valueOf(Constants.DEFAULT_PLAYER_AVATAR.code), unlockedDate);
-                inventory.put("avatars", avatars);
-                playerProperties.put("avatarCode", String.valueOf(Constants.DEFAULT_PLAYER_AVATAR.code));
+        private void updatePetAvatar(Map<String, Object> playerProperties, Map<String, Object> inventory, String unlockedDate) {
+            String petPicture = null;
+            List<Map<String, Object>> currentPlayerPets = (List<Map<String, Object>>) playerProperties.get("pets");
+            Map<String, Object> pet = currentPlayerPets.get(0);
+            if (pet.containsKey("picture")) {
+                petPicture = (String) pet.remove("picture");
             }
 
             if (petPicture != null) {
@@ -333,6 +310,35 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
                 pets.put(String.valueOf(Constants.DEFAULT_PET_AVATAR.code), unlockedDate);
                 inventory.put("pets", pets);
                 pet.put("avatarCode", String.valueOf(Constants.DEFAULT_PET_AVATAR.code));
+            }
+        }
+
+        private void updatePlayerAvatar(Map<String, Object> playerProperties, Map<String, Object> inventory, String unlockedDate) {
+            String playerPicture = null;
+            if (playerProperties.containsKey("picture")) {
+                playerPicture = (String) playerProperties.get("picture");
+                playerProperties.remove("picture");
+            }
+
+            if (playerPicture != null) {
+                Avatar playerAvatar = Constants.DEFAULT_PLAYER_AVATAR;
+                for (Avatar avatar : Avatar.values()) {
+                    String avatarPicture = getContext().getResources().getResourceEntryName(avatar.picture);
+                    if (avatarPicture.equals(playerPicture)) {
+                        playerAvatar = avatar;
+                        break;
+                    }
+                }
+
+                Map<String, String> avatars = new HashMap<>();
+                avatars.put(String.valueOf(playerAvatar.code), unlockedDate);
+                inventory.put("avatars", avatars);
+                playerProperties.put("avatarCode", playerAvatar.code);
+            } else if (!playerProperties.containsKey("avatarCode")) {
+                Map<String, String> avatars = new HashMap<>();
+                avatars.put(String.valueOf(Constants.DEFAULT_PLAYER_AVATAR.code), unlockedDate);
+                inventory.put("avatars", avatars);
+                playerProperties.put("avatarCode", String.valueOf(Constants.DEFAULT_PLAYER_AVATAR.code));
             }
         }
 

@@ -9,6 +9,8 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 
+import com.squareup.otto.Bus;
+
 import org.solovyev.android.checkout.Billing;
 import org.solovyev.android.checkout.Checkout;
 import org.solovyev.android.checkout.Inventory;
@@ -29,6 +31,7 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.api.Api;
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.data.MembershipType;
 import io.ipoli.android.player.data.Player;
@@ -44,12 +47,13 @@ public class PowerUpsJobService extends JobService {
     public static final int JOB_ID = 2;
 
     @Inject
+    Bus eventBus;
+
+    @Inject
     PlayerPersistenceService playerPersistenceService;
 
     @Inject
     Api api;
-
-    private Billing billing;
 
     private Checkout checkout;
 
@@ -57,7 +61,7 @@ public class PowerUpsJobService extends JobService {
     public void onCreate() {
         super.onCreate();
         App.getAppComponent(this).inject(this);
-        billing = new Billing(getApplicationContext(), new Billing.DefaultConfiguration() {
+        Billing billing = new Billing(getApplicationContext(), new Billing.DefaultConfiguration() {
             @Override
             @NonNull
             public String getPublicKey() {
@@ -152,7 +156,7 @@ public class PowerUpsJobService extends JobService {
 
             @Override
             public void onError(Exception e) {
-                //log error
+                eventBus.post(new AppErrorEvent(e));
                 jobFinished(params, true);
             }
         };
@@ -197,7 +201,7 @@ public class PowerUpsJobService extends JobService {
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setColor(ContextCompat.getColor(this, R.color.md_yellow_700))
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setStyle(new android.support.v4.app.NotificationCompat.BigTextStyle().bigText(text));
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(text));
 
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
         notificationManagerCompat.notify(Constants.MEMBERSHIP_EXPIRATION_NOTIFICATION_ID, builder.build());

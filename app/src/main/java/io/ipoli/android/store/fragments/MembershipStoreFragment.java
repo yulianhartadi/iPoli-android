@@ -139,7 +139,6 @@ public class MembershipStoreFragment extends BaseFragment {
 
     private Unbinder unbinder;
 
-    private Billing billing;
     private UiCheckout checkout;
 
     private Set<String> activeSkus;
@@ -166,14 +165,14 @@ public class MembershipStoreFragment extends BaseFragment {
         skus.add(Constants.SKU_SUBSCRIPTION_QUARTERLY);
         skus.add(Constants.SKU_SUBSCRIPTION_YEARLY);
 
-        postEvent(new ScreenShownEvent(getActivity(), EventSource.MEMBERSHIP_STORE));
+        postEvent(new ScreenShownEvent(getActivity(), EventSource.STORE_MEMBERSHIP));
         return view;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        billing = new Billing(getActivity(), new Billing.DefaultConfiguration() {
+        Billing billing = new Billing(getActivity(), new Billing.DefaultConfiguration() {
             @Override
             @NonNull
             public String getPublicKey() {
@@ -207,7 +206,6 @@ public class MembershipStoreFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         queryInventory();
-//        animatePacks();
     }
 
 
@@ -284,35 +282,46 @@ public class MembershipStoreFragment extends BaseFragment {
             return;
         }
 
-        Sku.Price monthlyPrice = monthlySubscription.detailedPrice;
-        String monthlyPriceWithCurrency = calculatePricePerMonth(monthlyPrice.amount, 1) + monthlyPrice.currency;
-        Spannable monthlyColoredPrice = getColoredPricePerMonth(monthlyPriceWithCurrency, R.color.colorYellow);
-        this.monthlyPrice.setText(monthlyColoredPrice);
+        showPrice(monthlySubscription, 1, R.color.colorYellow, monthlyPrice);
+        showPrice(yearlySubscription, 12, R.color.colorGreen, yearlyPrice);
+        showPrice(quarterlySubscription, 3, R.color.colorRed, quarterlyPrice);
 
-        Sku.Price yearlyPrice = yearlySubscription.detailedPrice;
-        String yearlyPriceWithCurrency = calculatePricePerMonth(yearlyPrice.amount, 12) + yearlyPrice.currency;
-        Spannable yearlyColoredPrice = getColoredPricePerMonth(yearlyPriceWithCurrency, R.color.colorGreen);
-        this.yearlyPrice.setText(yearlyColoredPrice);
-
-        Sku.Price quarterlyPrice = quarterlySubscription.detailedPrice;
-        String quarterlyPriceWithCurrency = calculatePricePerMonth(quarterlyPrice.amount, 3) + quarterlyPrice.currency;
-        Spannable quarterlyColoredPrice = getColoredPricePerMonth(quarterlyPriceWithCurrency, R.color.colorRed);
-        this.quarterlyPrice.setText(quarterlyColoredPrice);
-
-        Player player = getPlayer();
-        MembershipType membership = player.getMembership();
-        monthlyCurrentPlan.setVisibility(membership == MembershipType.MONTHLY ? View.VISIBLE : View.INVISIBLE);
-        monthlyBuy.setVisibility(membership == MembershipType.MONTHLY ? View.INVISIBLE : View.VISIBLE);
-
-        yearlyCurrentPlan.setVisibility(membership == MembershipType.YEARLY ? View.VISIBLE : View.INVISIBLE);
-        yearlyBuy.setVisibility(membership == MembershipType.YEARLY ? View.INVISIBLE : View.VISIBLE);
-
-        quarterlyCurrentPlan.setVisibility(membership == MembershipType.QUARTERLY ? View.VISIBLE : View.INVISIBLE);
-        quarterlyBuy.setVisibility(membership == MembershipType.QUARTERLY ? View.INVISIBLE : View.VISIBLE);
+        initStatuses();
 
         hideLoaderContainer();
 
         animatePacks();
+    }
+
+    private void showPrice(Sku sku, int months, @ColorRes int color, TextView priceView) {
+        Sku.Price price = sku.detailedPrice;
+        String priceWithCurrency = calculatePricePerMonth(price.amount, months) + price.currency;
+        Spannable coloredPrice = getColoredPricePerMonth(priceWithCurrency, color);
+        priceView.setText(coloredPrice);
+    }
+
+
+    private void initStatuses() {
+        Player player = getPlayer();
+        MembershipType membership = player.getMembership();
+        initMonthlyStatus(membership);
+        initYearlyStatus(membership);
+        initQuarterlyStatus(membership);
+    }
+
+    private void initQuarterlyStatus(MembershipType membership) {
+        quarterlyCurrentPlan.setVisibility(membership == MembershipType.QUARTERLY ? View.VISIBLE : View.INVISIBLE);
+        quarterlyBuy.setVisibility(membership == MembershipType.QUARTERLY ? View.INVISIBLE : View.VISIBLE);
+    }
+
+    private void initYearlyStatus(MembershipType membership) {
+        yearlyCurrentPlan.setVisibility(membership == MembershipType.YEARLY ? View.VISIBLE : View.INVISIBLE);
+        yearlyBuy.setVisibility(membership == MembershipType.YEARLY ? View.INVISIBLE : View.VISIBLE);
+    }
+
+    private void initMonthlyStatus(MembershipType membership) {
+        monthlyCurrentPlan.setVisibility(membership == MembershipType.MONTHLY ? View.VISIBLE : View.INVISIBLE);
+        monthlyBuy.setVisibility(membership == MembershipType.MONTHLY ? View.INVISIBLE : View.VISIBLE);
     }
 
     private Spannable getColoredPricePerMonth(String priceWithCurrency, @ColorRes int color) {
@@ -418,7 +427,7 @@ public class MembershipStoreFragment extends BaseFragment {
 
             @Override
             public void onError(int i, @Nonnull Exception e) {
-
+                postEvent(new AppErrorEvent(e));
             }
         });
     }

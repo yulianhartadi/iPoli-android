@@ -156,7 +156,7 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
             snackbar.getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
                 @Override
                 public void onViewAttachedToWindow(View v) {
-
+                    //intentional
                 }
 
                 @Override
