@@ -104,7 +104,8 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
         if (schemaVersion >= VERSION_BEFORE_UPGRADES) {
             getSupportLoaderManager().initLoader(1, null, this);
         } else {
-            onFinish();
+            Toast.makeText(this, "Sorry, you're coming from too old version of iPoli. Please, reinstall the app to continue.", Toast.LENGTH_LONG).show();
+            finish();
         }
     }
 
@@ -202,17 +203,22 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
                 migrateUsername(playerProperties);
             }
 
+            boolean migrationSuccessful = true;
+            if (schemaVersion < NEW_CALENDAR_IMPORT_VERSION) {
+                migrationSuccessful = migrateAndroidCalendars();
+            }
+
+            playerProperties.put("schemaVersion", String.valueOf(Constants.SCHEMA_VERSION));
+
             revision.setProperties(playerProperties);
             try {
                 revision.save();
             } catch (CouchbaseLiteException e) {
                 eventBus.post(new AppErrorEvent(e));
+                migrationSuccessful = false;
             }
 
-            if (schemaVersion < NEW_CALENDAR_IMPORT_VERSION) {
-                return migrateAndroidCalendars();
-            }
-            return true;
+            return migrationSuccessful;
         }
 
         @Override
