@@ -19,7 +19,7 @@ import io.ipoli.android.app.modules.LocalStorageModule;
 import io.ipoli.android.app.modules.ObjectMapperModule;
 import io.ipoli.android.app.modules.PersistenceModule;
 import io.ipoli.android.app.modules.PlayerCredentialsModule;
-import io.ipoli.android.app.modules.PowerUpsModule;
+import io.ipoli.android.app.modules.PowerUpModule;
 import io.ipoli.android.app.modules.RewardGeneratorModule;
 import io.ipoli.android.app.modules.SchedulerModule;
 import io.ipoli.android.app.modules.TimeParserModule;
@@ -119,7 +119,7 @@ import io.ipoli.android.store.fragments.StoreFragment;
                 ApiModule.class,
                 UrlProviderModule.class,
                 AndroidCalendarModule.class,
-                PowerUpsModule.class,
+                PowerUpModule.class,
                 PlayerCredentialsModule.class
         }
 )

@@ -13,11 +13,11 @@ import io.ipoli.android.player.persistence.PlayerPersistenceService;
  */
 
 @Module
-public class PowerUpsModule {
+public class PowerUpModule {
 
     @Provides
     @Singleton
-    public PowerUpManager provideUrlProvider(PlayerPersistenceService playerPersistenceService) {
+    public PowerUpManager providePowerUpManager(PlayerPersistenceService playerPersistenceService) {
         return new PowerUpManager(playerPersistenceService);
     }
 }
