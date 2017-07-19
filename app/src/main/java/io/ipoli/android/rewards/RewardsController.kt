@@ -21,7 +21,6 @@ import io.ipoli.android.RewardsInitialLoadingState
 import io.ipoli.android.RewardsLoadedState
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import io.realm.RealmResults
 import kotlinx.android.synthetic.main.controller_rewards.view.*
 import kotlinx.android.synthetic.main.item_reward.view.*
 
@@ -57,7 +56,7 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
 //        })
 
 
-        val delegatesManager = AdapterDelegatesManager<RealmResults<Reward>>()
+        val delegatesManager = AdapterDelegatesManager<List<Reward>>()
                 .addDelegate(RewardAdapterDelegate(LayoutInflater.from(activity), useRewardSubject, deleteRewardSubject, {
                     val pushHandler = HorizontalChangeHandler()
                     val popHandler = HorizontalChangeHandler()
@@ -113,7 +112,7 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
         }
     }
 
-    class RewardsAdapter(manager: AdapterDelegatesManager<RealmResults<Reward>>) : ListDelegationAdapter<RealmResults<Reward>>(
+    class RewardsAdapter(manager: AdapterDelegatesManager<List<Reward>>) : ListDelegationAdapter<List<Reward>>(
             manager) {
 
 //        init {
@@ -127,15 +126,15 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
     class RewardAdapterDelegate(private val inflater: LayoutInflater,
                                 private val clickSubject: PublishSubject<Reward>,
                                 private val deleteSubject: PublishSubject<Reward>,
-                                private val clickListener: (Reward) -> Unit) : AdapterDelegate<RealmResults<Reward>>() {
+                                private val clickListener: (Reward) -> Unit) : AdapterDelegate<List<Reward>>() {
 
-        override fun onBindViewHolder(items: RealmResults<Reward>, position: Int, holder: RecyclerView.ViewHolder, payloads: MutableList<Any>) {
+        override fun onBindViewHolder(items: List<Reward>, position: Int, holder: RecyclerView.ViewHolder, payloads: MutableList<Any>) {
             val vh = holder as RewardViewHolder
             val reward = items[position] as Reward
             vh.bindReward(reward)
         }
 
-        override fun isForViewType(items: RealmResults<Reward>, position: Int): Boolean = true
+        override fun isForViewType(items: List<Reward>, position: Int): Boolean = true
 
         override fun onCreateViewHolder(parent: ViewGroup?): RecyclerView.ViewHolder =
                 RewardViewHolder(inflater.inflate(R.layout.item_reward, parent, false))

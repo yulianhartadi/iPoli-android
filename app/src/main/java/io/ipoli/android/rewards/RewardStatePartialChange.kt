@@ -1,10 +1,6 @@
 package io.ipoli.android.rewards
 
-import io.ipoli.android.RewardDeleteState
-import io.ipoli.android.RewardViewState
-import io.ipoli.android.RewardsInitialLoadingState
-import io.ipoli.android.RewardsLoadedState
-import io.realm.RealmResults
+import io.ipoli.android.*
 
 
 /**
@@ -20,11 +16,19 @@ class RewardsLoadingPartialChange : RewardStatePartialChange {
     }
 }
 
-class RewardsLoadedPartialChange(val data: RealmResults<Reward>) : RewardStatePartialChange {
+class RewardsLoadedPartialChange(val data: List<Reward>) : RewardStatePartialChange {
 
     override fun computeNewState(prevStateReward: RewardViewState): RewardViewState {
         return RewardsLoadedState(data)
     }
+}
+
+class RewardUsedPartialChange : RewardStatePartialChange {
+
+    override fun computeNewState(prevStateReward: RewardViewState): RewardViewState {
+        return RewardUsedState(prevStateReward.rewards!!)
+    }
+
 }
 
 class RewardDeletedPartialChange : RewardStatePartialChange {

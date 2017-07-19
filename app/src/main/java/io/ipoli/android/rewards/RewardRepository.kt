@@ -2,7 +2,6 @@ package io.ipoli.android.rewards
 
 import io.reactivex.Observable
 import io.realm.Realm
-import io.realm.RealmResults
 import java.util.*
 
 /**
@@ -11,7 +10,7 @@ import java.util.*
 class RewardRepository {
     val realm: Realm = Realm.getDefaultInstance()
 
-    fun loadRewards(): Observable<RealmResults<Reward>> {
+    fun loadRewards(): Observable<List<Reward>> {
 
         return RxRealm.loadRewards()
 //        return RxRealm.getRealm(realm).map { r ->

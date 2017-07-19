@@ -2,6 +2,8 @@ package io.ipoli.android.rewards;
 
 import android.util.Log;
 
+import java.util.List;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -43,10 +45,10 @@ public class RxRealm {
 //        }, BackpressureStrategy.LATEST);
 //    }
 
-    public static Observable<RealmResults<Reward>> loadRewards() {
-        return Observable.create(new ObservableOnSubscribe<RealmResults<Reward>>() {
+    public static Observable<List<Reward>> loadRewards() {
+        return Observable.create(new ObservableOnSubscribe<List<Reward>>() {
             @Override
-            public void subscribe(final ObservableEmitter<RealmResults<Reward>> emitter)
+            public void subscribe(final ObservableEmitter<List<Reward>> emitter)
                     throws Exception {
                 final Realm realm = Realm.getDefaultInstance();
                 final RealmResults<Reward> results = realm.where(Reward.class).findAll();
@@ -61,7 +63,7 @@ public class RxRealm {
                     @Override
                     public void onChange(RealmResults<Reward> rewards) {
                         if (!emitter.isDisposed()) {
-                            emitter.onNext(rewards);
+                            emitter.onNext(realm.copyFromRealm(rewards));
                         }
                     }
 
@@ -86,7 +88,7 @@ public class RxRealm {
                 }));
 
                 results.addChangeListener(listener);
-                emitter.onNext(results);
+                emitter.onNext(realm.copyFromRealm(results));
             }
         })
                 .subscribeOn(AndroidSchedulers.mainThread())

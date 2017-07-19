@@ -1,7 +1,6 @@
 package io.ipoli.android.rewards
 
 import io.reactivex.Observable
-import io.realm.RealmResults
 
 
 /**
@@ -9,11 +8,11 @@ import io.realm.RealmResults
  */
 class RewardListInteractor {
 
-    fun useReward(reward: Reward): Observable<Unit> {
-        return Observable.just(Unit)
+    fun useReward(reward: Reward): Observable<Reward> {
+        return Observable.just(reward)
     }
 
-    fun loadRewards(): Observable<RealmResults<Reward>> {
+    fun loadRewards(): Observable<List<Reward>> {
         val rewardRepository = RewardRepository()
         return rewardRepository.loadRewards()
     }

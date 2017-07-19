@@ -6,22 +6,14 @@ import io.ipoli.android.RewardViewState
 import io.ipoli.android.RewardsInitialLoadingState
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 
 
 /**
  * Created by vini on 7/7/17.
  */
 class RewardsPresenter(private val interactor: RewardListInteractor) : MviBasePresenter<RewardsController, RewardViewState>() {
-
-//    lateinit var loadRewardsObs: Observable<RewardStatePartialChange>
-
-//    lateinit var disp: Disposable
-
-//    lateinit var disposable:
-
-    lateinit var disp: Disposable
 
     override fun bindIntents() {
 
@@ -39,19 +31,32 @@ class RewardsPresenter(private val interactor: RewardListInteractor) : MviBasePr
 //
 //        subscribeViewState(loadDataState, RewardsController::render)
 
+//        val r = Reward(name = "Welcome", description = "Hello sir!", price = 123)
+//
+//        val rewardRepository = RewardRepository()
+//        rewardRepository.save(r)
+
         val observables = ArrayList<Observable<RewardStatePartialChange>>()
 
-        val obs = interactor.loadRewards()
-                .doOnNext { rewards -> Log.d("Loading rewards", "Loading all " + rewards.size) }
-                .map { data -> RewardsLoadedPartialChange(data) as RewardStatePartialChange }
-                .startWith(RewardsLoadingPartialChange()).subscribeOn(Schedulers.io())
-
-        disp = obs.subscribe()
 
         observables.add(
                 intent { it.loadRewardsIntent() }.switchMap { ignored ->
-                    obs
+                    interactor.loadRewards()
+                            .doOnNext { rewards -> Log.d("Loading rewards", "Loading all " + rewards.size) }
+                            .map { data -> RewardsLoadedPartialChange(data) as RewardStatePartialChange }
+                            .startWith(RewardsLoadingPartialChange())
+                            .subscribeOn(Schedulers.io())
                 })
+
+        observables.add(
+                intent { it.useRewardIntent() }
+                        .switchMap { reward ->
+                            interactor.useReward(reward)
+                                    .doOnNext { r -> Timber.d("RewardUsed", "Reward used " + r.name) }
+                                    .map { ignored -> RewardUsedPartialChange() as RewardStatePartialChange }
+                                    .subscribeOn(Schedulers.io())
+                        }
+        )
 
         observables.add(
                 intent { it.deleteRewardIntent() }
@@ -65,18 +70,6 @@ class RewardsPresenter(private val interactor: RewardListInteractor) : MviBasePr
                 .observeOn(AndroidSchedulers.mainThread())
 
         subscribeViewState(stateObservable, RewardsController::render)
-    }
-
-    override fun unbindIntents() {
-        Log.d("Unbind", "Presenter")
-        disp.dispose()
-        super.unbindIntents()
-    }
-
-    override fun detachView(retainInstance: Boolean) {
-        Log.d("Unbind", retainInstance.toString())
-
-        super.detachView(retainInstance)
     }
 
     private fun viewStateReducer(previousStateReward: RewardViewState, statePartialChange: RewardStatePartialChange): RewardViewState {
