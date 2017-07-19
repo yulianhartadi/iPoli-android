@@ -166,7 +166,7 @@ public class MembershipStoreFragment extends BaseFragment {
         skus.add(Constants.SKU_SUBSCRIPTION_QUARTERLY);
         skus.add(Constants.SKU_SUBSCRIPTION_YEARLY);
 
-        postEvent(new ScreenShownEvent(getActivity(), EventSource.MEMBERSHIP_STORE));
+        postEvent(new ScreenShownEvent(getActivity(), EventSource.STORE_MEMBERSHIP));
         return view;
     }
 
@@ -207,7 +207,6 @@ public class MembershipStoreFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         queryInventory();
-//        animatePacks();
     }
 
 
@@ -418,7 +417,7 @@ public class MembershipStoreFragment extends BaseFragment {
 
             @Override
             public void onError(int i, @Nonnull Exception e) {
-
+                postEvent(new AppErrorEvent(e));
             }
         });
     }

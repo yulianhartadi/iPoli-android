@@ -9,6 +9,8 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 
+import com.squareup.otto.Bus;
+
 import org.solovyev.android.checkout.Billing;
 import org.solovyev.android.checkout.Checkout;
 import org.solovyev.android.checkout.Inventory;
@@ -29,6 +31,7 @@ import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.api.Api;
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.utils.DateUtils;
 import io.ipoli.android.player.data.MembershipType;
 import io.ipoli.android.player.data.Player;
@@ -42,6 +45,9 @@ import io.ipoli.android.store.PowerUp;
 public class PowerUpsJobService extends JobService {
 
     public static final int JOB_ID = 2;
+
+    @Inject
+    Bus eventBus;
 
     @Inject
     PlayerPersistenceService playerPersistenceService;
@@ -152,7 +158,7 @@ public class PowerUpsJobService extends JobService {
 
             @Override
             public void onError(Exception e) {
-                //log error
+                eventBus.post(new AppErrorEvent(e));
                 jobFinished(params, true);
             }
         };
