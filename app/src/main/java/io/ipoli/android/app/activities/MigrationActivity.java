@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.util.Pair;
 import android.view.View;
 import android.widget.Toast;
 
@@ -187,10 +186,11 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
 
         @Override
         public Boolean loadInBackground() {
-            updateAvatars();
 
             UnsavedRevision revision = database.getExistingDocument(playerId).createRevision();
             Map<String, Object> playerProperties = revision.getProperties();
+
+            updateAvatars(playerProperties);
 
             if (schemaVersion < SUBSCRIPTIONS_FIRST_VERSION) {
                 migrateRewardPoints(playerProperties);
@@ -271,14 +271,27 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
             inventory.put("powerUps", powerUps);
         }
 
-        private void updateAvatars() {
-            Pair<String, String> pics = updatePictures();
+        private void updateAvatars(Map<String, Object> playerProperties) {
+            String playerPicture = null;
+            String petPicture = null;
 
-            String playerPicture = pics.first;
-            String petPicture = pics.second;
+            if (playerProperties.containsKey("picture")) {
+                playerPicture = (String) playerProperties.get("picture");
+                playerProperties.remove("picture");
+            }
+            List<Map<String, Object>> currentPlayerPets = (List<Map<String, Object>>) playerProperties.get("pets");
+            Map<String, Object> pet = currentPlayerPets.get(0);
+            if (pet.containsKey("picture")) {
+                petPicture = (String) pet.remove("picture");
+            }
 
-            Player player = playerPersistenceService.get();
-            LocalDate unlockedDate = DateUtils.fromMillis(player.getCreatedAt());
+
+            if(!playerProperties.containsKey("inventory")) {
+                playerProperties.put("inventory", new HashMap<>());
+            }
+
+            Map<String, Object> inventory = (Map<String, Object>) playerProperties.get("inventory");
+            Long unlockedDate = (Long) playerProperties.get("createdAt");
 
             if (playerPicture != null) {
                 Avatar playerAvatar = Constants.DEFAULT_PLAYER_AVATAR;
@@ -289,11 +302,16 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
                         break;
                     }
                 }
-                player.getInventory().addAvatar(playerAvatar, unlockedDate);
-                player.setAvatar(playerAvatar);
-            } else if (player.getAvatarCode() == null) {
-                player.setAvatar(Constants.DEFAULT_PLAYER_AVATAR);
-                player.getInventory().addAvatar(Constants.DEFAULT_PLAYER_AVATAR, unlockedDate);
+
+                Map<Integer, Long> avatars = new HashMap<>();
+                avatars.put(playerAvatar.code, unlockedDate);
+                inventory.put("avatars", avatars);
+                playerProperties.put("avatarCode", playerAvatar.code);
+            } else if (!playerProperties.containsKey("avatarCode")) {
+                Map<Integer, Long> avatars = new HashMap<>();
+                avatars.put(Constants.DEFAULT_PLAYER_AVATAR.code, unlockedDate);
+                inventory.put("avatars", avatars);
+                playerProperties.put("avatarCode", Constants.DEFAULT_PLAYER_AVATAR.code);
             }
 
             if (petPicture != null) {
@@ -305,44 +323,16 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
                         break;
                     }
                 }
-                player.getInventory().addPet(playerPetAvatar, unlockedDate);
-                player.getPet().setPetAvatar(playerPetAvatar);
-            } else if (player.getPet().getAvatarCode() == null) {
-                player.getInventory().addPet(Constants.DEFAULT_PET_AVATAR, unlockedDate);
-                player.getPet().setPetAvatar(Constants.DEFAULT_PET_AVATAR);
+                Map<Integer, Long> pets = new HashMap<>();
+                pets.put(playerPetAvatar.code, unlockedDate);
+                inventory.put("pets", pets);
+                pet.put("avatarCode", playerPetAvatar.code);
+            } else if (!pet.containsKey("avatarCode")) {
+                Map<Integer, Long> pets = new HashMap<>();
+                pets.put(Constants.DEFAULT_PET_AVATAR.code, unlockedDate);
+                inventory.put("pets", pets);
+                pet.put("avatarCode", Constants.DEFAULT_PET_AVATAR.code);
             }
-
-            playerPersistenceService.save(player);
-        }
-
-        private Pair<String, String> updatePictures() {
-            String playerPicture = null;
-            String petPicture = null;
-
-            UnsavedRevision revision = database.getExistingDocument(playerId).createRevision();
-            Map<String, Object> properties = revision.getProperties();
-            if (properties.containsKey("picture")) {
-                playerPicture = (String) properties.get("picture");
-                properties.remove("picture");
-            }
-            List<Map<String, Object>> pets = (List<Map<String, Object>>) properties.get("pets");
-            Map<String, Object> pet = pets.get(0);
-            if (pet.containsKey("picture")) {
-                petPicture = (String) pet.remove("picture");
-            }
-
-            if (playerPicture == null && petPicture == null) {
-                return new Pair<>(null, null);
-            }
-
-            revision.setProperties(properties);
-            try {
-                revision.save();
-            } catch (CouchbaseLiteException e) {
-                eventBus.post(new AppErrorEvent(e));
-            }
-
-            return new Pair<>(playerPicture, petPicture);
         }
 
         private void migrateRewardPoints(Map<String, Object> playerProperties) {
@@ -357,10 +347,8 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
         }
 
         private void migrateUsername(Map<String, Object> playerProperties) {
-            Player player = playerPersistenceService.get();
-            player.setDisplayName(player.getUsername());
-            player.setUsername("");
-            playerPersistenceService.save(player);
+            playerProperties.put("displayName", playerProperties.get("username"));
+            playerProperties.put("username", "");
         }
 
         private boolean migrateAndroidCalendars() {
