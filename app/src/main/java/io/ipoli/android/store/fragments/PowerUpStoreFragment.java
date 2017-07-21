@@ -108,7 +108,7 @@ public class PowerUpStoreFragment extends BaseFragment implements LoaderManager.
         adapter = new PowerUpStoreAdapter(getContext(), eventBus, upgrades, powerUpManager.getEnabledCodes());
         powerUpList.setAdapter(adapter);
 
-        eventBus.post(new ScreenShownEvent(getActivity(), EventSource.STORE_UPGRADES));
+        eventBus.post(new ScreenShownEvent(getActivity(), EventSource.STORE_POWER_UPS));
 
         return view;
     }
@@ -182,7 +182,7 @@ public class PowerUpStoreFragment extends BaseFragment implements LoaderManager.
         loadingDialog = LoadingDialog.show(getContext(), getString(R.string.sync_calendars_loading_dialog_title), getString(R.string.sync_calendars_loading_dialog_message));
         this.selectedCalendars = selectedCalendars;
         if (!selectedCalendars.isEmpty()) {
-            eventBus.post(new SyncCalendarRequestEvent(selectedCalendars, EventSource.STORE_UPGRADES));
+            eventBus.post(new SyncCalendarRequestEvent(selectedCalendars, EventSource.STORE_POWER_UPS));
         }
         getLoaderManager().initLoader(1, null, this);
     }

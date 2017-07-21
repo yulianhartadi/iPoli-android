@@ -71,6 +71,7 @@ import io.ipoli.android.store.PowerUp;
 import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.events.ChangeMembershipEvent;
 import io.ipoli.android.store.events.GoPremiumTappedEvent;
+import io.ipoli.android.store.exceptions.MembershipException;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -79,6 +80,7 @@ import io.ipoli.android.store.events.GoPremiumTappedEvent;
 public class MembershipStoreFragment extends BaseFragment {
 
     public static final int MICRO_UNIT = 1000000;
+    public static final int MAX_COINS_TO_RETURN = 2000;
 
     @Inject
     Api api;
@@ -402,8 +404,8 @@ public class MembershipStoreFragment extends BaseFragment {
                     }
 
                     @Override
-                    public void onError(int i, @Nonnull Exception e) {
-                        postEvent(new AppErrorEvent(e));
+                    public void onError(int responseCode, @Nonnull Exception e) {
+                        postEvent(new AppErrorEvent(new MembershipException("change membership", responseCode, e)));
                     }
                 });
                 requests.changeSubscription(new ArrayList<>(activeSkus), sku, null, flow);
@@ -419,15 +421,15 @@ public class MembershipStoreFragment extends BaseFragment {
                 Player player = getPlayer();
                 Map<Integer, Long> activeUpgrades = getActiveUpgrades(player);
                 int coinsToReturn = findCoinsToReturn(activeUpgrades);
-                player.addCoins(coinsToReturn);
+                player.addCoins(Math.min(coinsToReturn, MAX_COINS_TO_RETURN));
 
                 updatePlayer(player, sku, DateUtils.fromMillis(purchase.time));
                 queryInventory();
             }
 
             @Override
-            public void onError(int i, @Nonnull Exception e) {
-                postEvent(new AppErrorEvent(e));
+            public void onError(int responseCode, @Nonnull Exception e) {
+                postEvent(new AppErrorEvent(new MembershipException("subscribe", responseCode, e)));
             }
         });
     }
