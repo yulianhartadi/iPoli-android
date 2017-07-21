@@ -207,11 +207,6 @@ public class MainActivity extends BaseActivity implements
         };
 
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
-
-        if (!getPlayer().getAndroidCalendars().isEmpty() &&
-                !EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
-            EasyPermissions.requestPermissions(this, getString(R.string.allow_read_calendars_perm_reason_disable_option), RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
-        }
     }
 
     @Override
@@ -268,6 +263,10 @@ public class MainActivity extends BaseActivity implements
     public void onResume() {
         super.onResume();
         eventBus.register(this);
+        if (!getPlayer().getAndroidCalendars().isEmpty() &&
+                !EasyPermissions.hasPermissions(this, Manifest.permission.READ_CALENDAR)) {
+            EasyPermissions.requestPermissions(this, getString(R.string.allow_read_calendars_perm_reason_disable_option), RC_CALENDAR_PERM, Manifest.permission.READ_CALENDAR);
+        }
     }
 
     private void onItemSelectedFromDrawer() {

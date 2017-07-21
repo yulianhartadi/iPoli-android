@@ -9,6 +9,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.otto.Bus;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import io.ipoli.android.app.persistence.BaseCouchbasePersistenceService;
@@ -38,16 +40,18 @@ public class CouchbasePlayerPersistenceService extends BaseCouchbasePersistenceS
     }
 
     @Override
-    public void deleteAllPlayerData() {
+    public List<Document> findAllPlayerData() {
         Query query = database.createAllDocumentsQuery();
+        List<Document> documents = new ArrayList<>();
         try {
             QueryEnumerator enumerator = query.run();
             while (enumerator.hasNext()) {
-                enumerator.next().getDocument().purge();
+                documents.add(enumerator.next().getDocument());
             }
         } catch (CouchbaseLiteException e) {
             postError(e);
         }
+        return documents;
     }
 
     @Override
@@ -66,6 +70,17 @@ public class CouchbasePlayerPersistenceService extends BaseCouchbasePersistenceS
             postError(e);
         }
 
+    }
+
+    @Override
+    public void deletePlayerData(List<Document> playerData) {
+        try {
+            for (Document d : playerData) {
+                d.purge();
+            }
+        } catch (CouchbaseLiteException e) {
+            postError(e);
+        }
     }
 
     @Override

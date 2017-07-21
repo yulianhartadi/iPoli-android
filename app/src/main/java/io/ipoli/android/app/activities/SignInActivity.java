@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.couchbase.lite.Database;
+import com.couchbase.lite.Document;
 import com.couchbase.lite.replicator.Replication;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -112,6 +113,9 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
     @BindView(R.id.divider_or)
     TextView dividerOr;
 
+    @BindView(R.id.guest_explanation)
+    TextView guestExplanation;
+
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
@@ -168,6 +172,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             guestButton.setVisibility(View.GONE);
             divider.setVisibility(View.GONE);
             dividerOr.setVisibility(View.GONE);
+            guestExplanation.setVisibility(View.GONE);
         }
     }
 
@@ -400,7 +405,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             replication.clearAuthenticationStores();
         }
         //clean DB
-        playerPersistenceService.deleteAllPlayerData();
+        List<Document> playerData = playerPersistenceService.findAllPlayerData();
 
         // single pull for shouldPullPlayerData
         Replication pull = database.createPullReplication(urlProvider.sync());
@@ -415,6 +420,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         pull.addChangeListener(event -> {
             if (event.getStatus() == Replication.ReplicationStatus.REPLICATION_STOPPED) {
                 eventBus.post(new PlayerSignedInEvent(authProvider.getProvider(), playerAuthenticationStatus, playerId, cookies));
+                playerPersistenceService.deletePlayerData(playerData);
                 onFinish();
             }
         });

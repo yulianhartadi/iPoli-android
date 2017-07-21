@@ -1,5 +1,9 @@
 package io.ipoli.android.player.persistence;
 
+import com.couchbase.lite.Document;
+
+import java.util.List;
+
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.persistence.PersistenceService;
 import io.ipoli.android.player.data.Player;
@@ -14,7 +18,9 @@ public interface PlayerPersistenceService extends PersistenceService<Player> {
 
     void listen(OnDataChangedListener<Player> listener);
 
-    void deleteAllPlayerData();
+    List<Document> findAllPlayerData();
 
     void save(Player player, String playerId);
+
+    void deletePlayerData(List<Document> playerData);
 }
