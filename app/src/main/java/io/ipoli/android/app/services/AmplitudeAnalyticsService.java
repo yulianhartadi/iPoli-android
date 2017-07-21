@@ -22,7 +22,6 @@ import io.ipoli.android.app.events.FirebaseInviteSentEvent;
 import io.ipoli.android.app.events.InviteFriendsEvent;
 import io.ipoli.android.app.events.ItemActionsShownEvent;
 import io.ipoli.android.app.events.OpenProfileFromDrawerEvent;
-import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.PlayerMigratedEvent;
 import io.ipoli.android.app.events.QuestShareProviderPickedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
@@ -156,12 +155,6 @@ import io.ipoli.android.store.events.UseAvatarEvent;
 import io.ipoli.android.store.events.UsePetEvent;
 
 public class AmplitudeAnalyticsService implements AnalyticsService {
-
-    @Subscribe
-    public void onPlayerCreated(PlayerCreatedEvent e) {
-        Amplitude.getInstance().setUserId(e.playerId);
-        log("player_created");
-    }
 
     @Subscribe
     public void onScreenShown(ScreenShownEvent e) {
@@ -945,7 +938,7 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     public void onPlayerSignedIn(PlayerSignedInEvent e) {
         log("player_signed_in", EventParams.create()
                 .add("provider", e.provider)
-                .add("is_new", String.valueOf(e.isNew)));
+                .add("status", e.playerAuthenticationStatus.name()));
     }
 
     @Subscribe

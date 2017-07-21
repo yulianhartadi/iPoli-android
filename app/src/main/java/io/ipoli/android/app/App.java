@@ -49,6 +49,7 @@ import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
+import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.PowerUpDialogActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.activities.SignInActivity;
@@ -62,10 +63,8 @@ import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.DateChangedEvent;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.FinishSignInActivityEvent;
 import io.ipoli.android.app.events.FinishTutorialActivityEvent;
-import io.ipoli.android.app.events.InitAppEvent;
-import io.ipoli.android.app.events.PlayerCreatedEvent;
+import io.ipoli.android.app.events.PlayerMigratedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.events.StartPowerUpDialogRequestEvent;
 import io.ipoli.android.app.events.StartQuickAddEvent;
@@ -102,13 +101,13 @@ import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
+import io.ipoli.android.player.PlayerAuthenticationStatus;
 import io.ipoli.android.player.activities.LevelUpActivity;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
-import io.ipoli.android.player.events.PlayerSyncedEvent;
+import io.ipoli.android.player.events.PlayerSignedInEvent;
 import io.ipoli.android.player.events.ProfileCreatedEvent;
-import io.ipoli.android.player.events.StartReplicationEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.player.scheduling.PowerUpScheduler;
 import io.ipoli.android.quest.activities.QuestActivity;
@@ -201,6 +200,9 @@ public class App extends MultiDexApplication {
 
     @Inject
     FeedPersistenceService feedPersistenceService;
+
+    private PlayerAuthenticationStatus playerAuthenticationStatus;
+    private List<Cookie> cookies;
 
     private void listenForChanges() {
         questPersistenceService.removeAllListeners();
@@ -340,15 +342,11 @@ public class App extends MultiDexApplication {
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
 
         if (hasPlayer()) {
-            Player player = playerPersistenceService.get();
-            if (player == null) {
+            if (shouldMigratePlayer()) {
+                startNewActivity(MigrationActivity.class);
                 return;
             }
-            if (player.getSchemaVersion() != Constants.SCHEMA_VERSION) {
-                return;
-            }
-        }
-        if (!hasPlayer()) {
+        } else {
             if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
                 startNewActivity(TutorialActivity.class);
             } else {
@@ -361,6 +359,17 @@ public class App extends MultiDexApplication {
         initAppStart();
     }
 
+    private boolean shouldMigratePlayer() {
+        Player player = getPlayer();
+        if (player == null) {
+            return false;
+        }
+        if (player.getSchemaVersion() != Constants.SCHEMA_VERSION) {
+            return true;
+        }
+        return false;
+    }
+
     @Subscribe
     public void onFinishTutorialActivity(FinishTutorialActivityEvent e) {
         if (!hasPlayer()) {
@@ -371,17 +380,6 @@ public class App extends MultiDexApplication {
             Player player = getPlayer();
             player.setDisplayName(e.playerName);
             playerPersistenceService.save(player);
-        }
-    }
-
-    @Subscribe
-    public void onFinishSignInActivity(FinishSignInActivityEvent e) {
-        if (hasPlayer() && e.isNewPlayer) {
-            Bundle bundle = new Bundle();
-            bundle.putBoolean(Constants.SHOW_TRIAL_MESSAGE_EXTRA_KEY, true);
-            startNewActivity(MainActivity.class, bundle);
-        } else if (!hasPlayer()) {
-            System.exit(0);
         }
     }
 
@@ -515,11 +513,6 @@ public class App extends MultiDexApplication {
         syncData(new ArrayList<>());
     }
 
-    @Subscribe
-    public void onStartReplication(StartReplicationEvent e) {
-        syncData(e.cookies);
-    }
-
     private void syncData(List<Cookie> cookies) {
         try {
             Replication pull = database.createPullReplication(urlProvider.sync());
@@ -626,26 +619,60 @@ public class App extends MultiDexApplication {
     }
 
     @Subscribe
-    public void onPlayerCreated(PlayerCreatedEvent e) {
+    public void onPlayerSignedIn(PlayerSignedInEvent e) {
         localStorage.saveString(Constants.KEY_PLAYER_ID, e.playerId);
         playerId = e.playerId;
-        initAppStart();
-        PowerUpScheduler.scheduleExpirationCheckJob(getApplicationContext());
+
+        playerAuthenticationStatus = e.playerAuthenticationStatus;
+        if ((playerAuthenticationStatus == PlayerAuthenticationStatus.EXISTING
+                || playerAuthenticationStatus == PlayerAuthenticationStatus.EXISTING_FROM_GUEST)
+                && shouldMigratePlayer()) {
+            startNewActivity(MigrationActivity.class);
+            return;
+        }
+
+        cookies = e.cookies;
+        initAppForPlayer(playerAuthenticationStatus, cookies);
+
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(Constants.SHOW_TRIAL_MESSAGE_EXTRA_KEY,
+                playerAuthenticationStatus == PlayerAuthenticationStatus.NEW
+                        || playerAuthenticationStatus == PlayerAuthenticationStatus.GUEST);
+        startNewActivity(MainActivity.class, bundle);
     }
 
-    @Subscribe
-    public void onPlayerSynced(PlayerSyncedEvent e) {
-        localStorage.saveString(Constants.KEY_PLAYER_ID, e.playerId);
-        playerId = e.playerId;
-        Player player = getPlayer();
-        if (player.hasUsername() && player.getSchemaVersion() >= Constants.PROFILES_FIRST_SCHEMA_VERSION) {
-            listenForPlayerChanges();
+    private void initAppForPlayer(PlayerAuthenticationStatus playerAuthenticationStatus, List<Cookie> cookies) {
+        if(playerAuthenticationStatus == null) {
+            initAppStart();
+            initReplication();
+            PowerUpScheduler.scheduleExpirationCheckJob(getApplicationContext());
+            return;
+        }
+
+        if (playerAuthenticationStatus == PlayerAuthenticationStatus.NEW ||
+                playerAuthenticationStatus == PlayerAuthenticationStatus.EXISTING ||
+                playerAuthenticationStatus == PlayerAuthenticationStatus.GUEST) {
+            initAppStart();
+            PowerUpScheduler.scheduleExpirationCheckJob(getApplicationContext());
+        }
+
+        if (playerAuthenticationStatus != PlayerAuthenticationStatus.GUEST) {
+            syncData(cookies);
+        }
+
+        if (playerAuthenticationStatus == PlayerAuthenticationStatus.NEW_FROM_GUEST ||
+                playerAuthenticationStatus == PlayerAuthenticationStatus.EXISTING_FROM_GUEST) {
+            Player player = getPlayer();
+            if (player.hasUsername()) {
+                listenForPlayerChanges();
+            }
         }
     }
 
     @Subscribe
-    public void onInitApp(InitAppEvent e) {
-        initAppStart();
+    public void onPlayerMigrated(PlayerMigratedEvent e) {
+        initAppForPlayer(playerAuthenticationStatus, cookies);
+        startNewActivity(MainActivity.class);
     }
 
     @Subscribe

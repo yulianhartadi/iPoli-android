@@ -47,7 +47,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.ipoli.android.app.activities.BaseActivity;
-import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.SignInActivity;
 import io.ipoli.android.app.events.AvatarCoinsTappedEvent;
 import io.ipoli.android.app.events.CalendarDayChangedEvent;
@@ -174,13 +173,7 @@ public class MainActivity extends BaseActivity implements
         super.onCreate(savedInstanceState);
         appComponent().inject(this);
 
-        if (!hasPlayer()) {
-            finish();
-            return;
-        }
-
-        if (shouldMigratePlayer()) {
-            startActivity(new Intent(this, MigrationActivity.class));
+        if (!hasPlayer() || shouldMigratePlayer()) {
             finish();
             return;
         }

@@ -4,7 +4,6 @@ import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -29,7 +28,6 @@ import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
-import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.api.Api;
@@ -43,7 +41,6 @@ import io.ipoli.android.player.data.MembershipType;
 import io.ipoli.android.player.data.PetAvatar;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
-import io.ipoli.android.player.scheduling.PowerUpScheduler;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.data.RepeatingQuest;
 import io.ipoli.android.quest.persistence.QuestPersistenceService;
@@ -123,8 +120,6 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
 
     private void onFinish() {
         eventBus.post(new PlayerMigratedEvent(schemaVersion, Constants.SCHEMA_VERSION));
-        PowerUpScheduler.scheduleExpirationCheckJob(getApplicationContext());
-        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 

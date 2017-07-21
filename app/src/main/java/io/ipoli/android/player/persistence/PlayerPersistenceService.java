@@ -14,7 +14,7 @@ public interface PlayerPersistenceService extends PersistenceService<Player> {
 
     void listen(OnDataChangedListener<Player> listener);
 
-    void deletePlayer();
+    void deleteAllPlayerData();
 
     void save(Player player, String playerId);
 }

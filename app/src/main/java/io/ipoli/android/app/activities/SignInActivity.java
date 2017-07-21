@@ -51,8 +51,6 @@ import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.api.UrlProvider;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.events.EventSource;
-import io.ipoli.android.app.events.FinishSignInActivityEvent;
-import io.ipoli.android.app.events.PlayerCreatedEvent;
 import io.ipoli.android.app.events.ScreenShownEvent;
 import io.ipoli.android.app.exceptions.SignInException;
 import io.ipoli.android.app.ui.UsernameValidator;
@@ -63,10 +61,9 @@ import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.AuthProvider;
+import io.ipoli.android.player.PlayerAuthenticationStatus;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.events.PlayerSignedInEvent;
-import io.ipoli.android.player.events.PlayerSyncedEvent;
-import io.ipoli.android.player.events.StartReplicationEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import mehdi.sakout.fancybuttons.FancyButton;
 import okhttp3.Cookie;
@@ -122,11 +119,11 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     private GoogleApiClient googleApiClient;
 
-    private boolean isNewPlayer;
-
     private LoadingDialog dialog;
 
     private String displayName;
+
+    private PlayerAuthenticationStatus playerAuthenticationStatus;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -142,8 +139,6 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         if (ab != null) {
             ab.setDisplayHomeAsUpEnabled(false);
         }
-
-        isNewPlayer = playerPersistenceService.get() == null;
 
         initGoogleSingIn();
         initFBLogin();
@@ -357,24 +352,35 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             @Override
             public void onSuccess(String username, String email, List<Cookie> cookies, String playerId, boolean isNew, boolean shouldCreatePlayer) {
                 authProvider.setEmail(email);
-                eventBus.post(new PlayerSignedInEvent(authProvider.getProvider(), isNew));
+
+                if (isNew && shouldCreatePlayer) {
+                    playerAuthenticationStatus = PlayerAuthenticationStatus.NEW;
+                } else if (isNew) {
+                    playerAuthenticationStatus = PlayerAuthenticationStatus.NEW_FROM_GUEST;
+                } else if (shouldCreatePlayer) {
+                    playerAuthenticationStatus = PlayerAuthenticationStatus.EXISTING;
+                } else {
+                    playerAuthenticationStatus = PlayerAuthenticationStatus.EXISTING_FROM_GUEST;
+                }
+
                 String usernameText = usernameView.getText().toString();
                 Player existingPlayer = null;
-                if (shouldCreatePlayer) {
+
+                if (playerAuthenticationStatus == PlayerAuthenticationStatus.NEW) {
                     existingPlayer = createPlayer(playerId, usernameText, SignInActivity.this.displayName, authProvider);
-                } else if (isNew) {
+                } else if (playerAuthenticationStatus == PlayerAuthenticationStatus.NEW_FROM_GUEST) {
                     existingPlayer = updatePlayerWithAuthProviderAndUsername(authProvider, usernameText);
                 }
-                if (!existingPlayerView.isChecked() && isNew) {
-                    if (existingPlayer == null) {
-                        existingPlayer = getPlayer();
-                    }
+
+                if (!existingPlayerView.isChecked() && (playerAuthenticationStatus == PlayerAuthenticationStatus.NEW
+                        || playerAuthenticationStatus == PlayerAuthenticationStatus.NEW_FROM_GUEST)) {
                     feedPersistenceService.createProfile(new Profile(existingPlayer));
                 }
-                if (!isNew) {
-                    pullPlayerDocs(cookies, playerId);
+
+                if (playerAuthenticationStatus == PlayerAuthenticationStatus.EXISTING || playerAuthenticationStatus == PlayerAuthenticationStatus.EXISTING_FROM_GUEST) {
+                    pullPlayerDocs(cookies, playerId, authProvider);
                 } else {
-                    eventBus.post(new StartReplicationEvent(cookies));
+                    eventBus.post(new PlayerSignedInEvent(authProvider.getProvider(), playerAuthenticationStatus, playerId, cookies));
                     onFinish();
                 }
             }
@@ -386,7 +392,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         });
     }
 
-    private void pullPlayerDocs(List<Cookie> cookies, String playerId) {
+    private void pullPlayerDocs(List<Cookie> cookies, String playerId, AuthProvider authProvider) {
         //stop replication
         List<Replication> replications = database.getAllReplications();
         for (Replication replication : replications) {
@@ -394,7 +400,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
             replication.clearAuthenticationStores();
         }
         //clean DB
-        playerPersistenceService.deletePlayer();
+        playerPersistenceService.deleteAllPlayerData();
 
         // single pull for shouldPullPlayerData
         Replication pull = database.createPullReplication(urlProvider.sync());
@@ -408,8 +414,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         pull.setChannels(channels);
         pull.addChangeListener(event -> {
             if (event.getStatus() == Replication.ReplicationStatus.REPLICATION_STOPPED) {
-                eventBus.post(new PlayerSyncedEvent(playerId));
-                eventBus.post(new StartReplicationEvent(cookies));
+                eventBus.post(new PlayerSignedInEvent(authProvider.getProvider(), playerAuthenticationStatus, playerId, cookies));
                 onFinish();
             }
         });
@@ -427,8 +432,8 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         return player;
     }
 
-    private void createPlayer() {
-        createPlayer("", "", "", null);
+    private Player createPlayer() {
+        return createPlayer("", "", "", null);
     }
 
     private Player createPlayer(String playerId, String username, String displayName, AuthProvider authProvider) {
@@ -452,7 +457,6 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         }
 
         playerPersistenceService.save(player, playerId);
-        eventBus.post(new PlayerCreatedEvent(player.getId()));
         return player;
     }
 
@@ -497,15 +501,15 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     private void signUpAsGuest() {
         createLoadingDialog();
-        createPlayer();
-        eventBus.post(new PlayerSignedInEvent("GUEST", true));
+        Player player = createPlayer();
+        playerAuthenticationStatus = PlayerAuthenticationStatus.GUEST;
+        eventBus.post(new PlayerSignedInEvent("GUEST", playerAuthenticationStatus, player.getId()));
         Toast.makeText(this, R.string.using_as_guest, Toast.LENGTH_SHORT).show();
         onFinish();
     }
 
     private void onFinish() {
         closeLoadingDialog();
-        eventBus.post(new FinishSignInActivityEvent(isNewPlayer));
         finish();
     }
 

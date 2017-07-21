@@ -38,7 +38,7 @@ public class CouchbasePlayerPersistenceService extends BaseCouchbasePersistenceS
     }
 
     @Override
-    public void deletePlayer() {
+    public void deleteAllPlayerData() {
         Query query = database.createAllDocumentsQuery();
         try {
             QueryEnumerator enumerator = query.run();
