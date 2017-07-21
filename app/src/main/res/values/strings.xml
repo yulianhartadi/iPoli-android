@@ -892,6 +892,9 @@
     <string name="monthly_plan_disadvantage1">Most expensive option - billed monthly</string>
     <string name="yearly_plan_benefit3">Smartest plan - billed yearly</string>
     <string name="current_plan">Current plan</string>
+    <string name="or">OR</string>
+    <string name="already_have_an_account">I already have an account</string>
+    <string name="username">Username</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
