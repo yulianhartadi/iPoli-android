@@ -228,7 +228,8 @@ public abstract class BaseCouchbasePersistenceService<T extends PersistedObject>
             if (change.isDeletion()) {
                 listener.onDataChanged(null);
             } else {
-                listener.onDataChanged(toObject(change.getAddedRevision().getProperties()));
+                Map<String, Object> objMap = change.getAddedRevision().getProperties();
+                listener.onDataChanged(toObject(objMap));
             }
         };
         Document doc = database.getExistingDocument(id);

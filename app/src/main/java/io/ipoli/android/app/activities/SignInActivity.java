@@ -419,8 +419,8 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         pull.setChannels(channels);
         pull.addChangeListener(event -> {
             if (event.getStatus() == Replication.ReplicationStatus.REPLICATION_STOPPED) {
-                eventBus.post(new PlayerSignedInEvent(authProvider.getProvider(), playerAuthenticationStatus, playerId, cookies));
                 playerPersistenceService.deletePlayerData(playerData);
+                eventBus.post(new PlayerSignedInEvent(authProvider.getProvider(), playerAuthenticationStatus, playerId, cookies));
                 onFinish();
             }
         });
