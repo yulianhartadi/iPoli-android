@@ -1,5 +1,7 @@
 package io.ipoli.android.app.modules;
 
+import com.squareup.otto.Bus;
+
 import dagger.Module;
 import dagger.Provides;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
@@ -14,7 +16,7 @@ import io.ipoli.android.player.persistence.PlayerPersistenceService;
 public class PlayerCredentialsModule {
 
     @Provides
-    public PlayerCredentialsHandler providePlayerCredentialHandler(PlayerPersistenceService playerPersistenceService, FeedPersistenceService feedPersistenceService) {
-        return new PlayerCredentialsHandler(playerPersistenceService, feedPersistenceService);
+    public PlayerCredentialsHandler providePlayerCredentialHandler(PlayerPersistenceService playerPersistenceService, FeedPersistenceService feedPersistenceService, Bus eventBus) {
+        return new PlayerCredentialsHandler(playerPersistenceService, feedPersistenceService, eventBus);
     }
 }
