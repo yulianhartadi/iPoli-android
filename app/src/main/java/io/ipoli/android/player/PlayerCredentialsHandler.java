@@ -5,12 +5,15 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.squareup.otto.Bus;
+
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.SignInActivity;
 import io.ipoli.android.app.ui.ThemedSnackbar;
 import io.ipoli.android.feed.data.Profile;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.player.data.Player;
+import io.ipoli.android.player.events.ProfileCreatedEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.player.ui.dialogs.UsernamePickerFragment;
 
@@ -23,14 +26,16 @@ public class PlayerCredentialsHandler {
     private final PlayerPersistenceService playerPersistenceService;
 
     private final FeedPersistenceService feedPersistenceService;
+    private final Bus eventBus;
 
     public enum Action {
         SHARE_QUEST, GIVE_KUDOS, ADD_QUEST, FOLLOW_PLAYER
     }
 
-    public PlayerCredentialsHandler(PlayerPersistenceService playerPersistenceService, FeedPersistenceService feedPersistenceService) {
+    public PlayerCredentialsHandler(PlayerPersistenceService playerPersistenceService, FeedPersistenceService feedPersistenceService, Bus eventBus) {
         this.playerPersistenceService = playerPersistenceService;
         this.feedPersistenceService = feedPersistenceService;
+        this.eventBus = eventBus;
     }
 
     public void authorizeAccess(Player player, CredentialStatus credentialStatus, Action action, AppCompatActivity context,
@@ -68,6 +73,7 @@ public class PlayerCredentialsHandler {
                 player.setUsername(username);
                 playerPersistenceService.save(player);
                 feedPersistenceService.createProfile(new Profile(player));
+                eventBus.post(new ProfileCreatedEvent());
             }).show(context.getSupportFragmentManager());
         }
     }

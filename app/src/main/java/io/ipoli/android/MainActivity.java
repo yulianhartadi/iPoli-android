@@ -91,6 +91,7 @@ import io.ipoli.android.player.activities.ProfileActivity;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
+import io.ipoli.android.player.events.ProfileCreatedEvent;
 import io.ipoli.android.player.fragments.GrowthFragment;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.player.ui.dialogs.UsernamePickerFragment;
@@ -398,6 +399,7 @@ public class MainActivity extends BaseActivity implements
                     player.setUsername(username);
                     playerPersistenceService.save(player);
                     feedPersistenceService.createProfile(new Profile(player));
+                    eventBus.post(new ProfileCreatedEvent());
                     startProfileActivity(player);
                 }).show(getSupportFragmentManager());
             }
