@@ -624,6 +624,7 @@ public class App extends MultiDexApplication {
         playerId = e.playerId;
 
         playerAuthenticationStatus = e.playerAuthenticationStatus;
+        cookies = e.cookies;
         if ((playerAuthenticationStatus == PlayerAuthenticationStatus.EXISTING
                 || playerAuthenticationStatus == PlayerAuthenticationStatus.EXISTING_FROM_GUEST)
                 && shouldMigratePlayer()) {
@@ -631,7 +632,6 @@ public class App extends MultiDexApplication {
             return;
         }
 
-        cookies = e.cookies;
         initAppForPlayer(playerAuthenticationStatus, cookies);
 
         Bundle bundle = new Bundle();
@@ -642,7 +642,7 @@ public class App extends MultiDexApplication {
     }
 
     private void initAppForPlayer(PlayerAuthenticationStatus playerAuthenticationStatus, List<Cookie> cookies) {
-        if(playerAuthenticationStatus == null) {
+        if (playerAuthenticationStatus == null) {
             initAppStart();
             initReplication();
             PowerUpScheduler.scheduleExpirationCheckJob(getApplicationContext());
