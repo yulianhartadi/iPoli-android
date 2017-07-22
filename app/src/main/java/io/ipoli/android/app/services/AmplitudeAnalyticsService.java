@@ -936,6 +936,7 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
 
     @Subscribe
     public void onPlayerSignedIn(PlayerSignedInEvent e) {
+        Amplitude.getInstance().setUserId(e.playerId);
         log("player_signed_in", EventParams.create()
                 .add("provider", e.provider)
                 .add("status", e.playerAuthenticationStatus.name()));
