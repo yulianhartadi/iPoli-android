@@ -341,16 +341,15 @@ public class App extends MultiDexApplication {
         registerServices();
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
 
-        if (getPlayer() == null) {
-            if(StringUtils.isNotEmpty(playerId)) {
-                eventBus.post(new AppErrorEvent(new IllegalStateException("Player with id " + playerId + " has no player")));
-            }
-
+        if (getPlayer() != null) {
             if (shouldMigratePlayer()) {
                 startNewActivity(MigrationActivity.class);
                 return;
             }
         } else {
+            if(StringUtils.isNotEmpty(playerId)) {
+                eventBus.post(new AppErrorEvent(new IllegalStateException("Player with id " + playerId + " has no player")));
+            }
             if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
                 startNewActivity(TutorialActivity.class);
             } else {
