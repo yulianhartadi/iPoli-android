@@ -420,6 +420,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         pull.addChangeListener(event -> {
             if (event.getStatus() == Replication.ReplicationStatus.REPLICATION_STOPPED) {
                 playerPersistenceService.deletePlayerData(playerData);
+                localStorage.saveString(Constants.KEY_PLAYER_ID, "");
                 eventBus.post(new PlayerSignedInEvent(authProvider.getProvider(), playerAuthenticationStatus, playerId, cookies));
                 onFinish();
             }

@@ -341,7 +341,11 @@ public class App extends MultiDexApplication {
         registerServices();
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
 
-        if (hasPlayer()) {
+        if (getPlayer() == null) {
+            if(StringUtils.isNotEmpty(playerId)) {
+                eventBus.post(new AppErrorEvent(new IllegalStateException("Player with id " + playerId + " has no player")));
+            }
+
             if (shouldMigratePlayer()) {
                 startNewActivity(MigrationActivity.class);
                 return;
