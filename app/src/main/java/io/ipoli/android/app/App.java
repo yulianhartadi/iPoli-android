@@ -49,6 +49,7 @@ import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
+import io.ipoli.android.achievement.AchievementUnlocker;
 import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.PowerUpDialogActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
@@ -199,9 +200,13 @@ public class App extends MultiDexApplication {
     UrlProvider urlProvider;
 
     @Inject
+    private AchievementUnlocker achievementUnlocker;
+
+    @Inject
     FeedPersistenceService feedPersistenceService;
 
     private PlayerAuthenticationStatus playerAuthenticationStatus;
+
     private List<Cookie> cookies;
 
     private void listenForChanges() {
@@ -347,7 +352,7 @@ public class App extends MultiDexApplication {
                 return;
             }
         } else {
-            if(StringUtils.isNotEmpty(playerId)) {
+            if (StringUtils.isNotEmpty(playerId)) {
                 eventBus.post(new AppErrorEvent(new IllegalStateException("Player with id " + playerId + " has no player")));
             }
             if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
@@ -874,6 +879,7 @@ public class App extends MultiDexApplication {
     }
 
     private void onQuestComplete(Quest quest, EventSource source) {
+        achievementUnlocker.checkForNewAchievement(AchievementUnlocker.ACTION_COMPLETE_QUEST);
         checkForDailyChallengeCompletion(quest);
         updateAvatar(quest);
         savePet((int) (Math.ceil(quest.getExperience() / Constants.XP_TO_PET_HP_RATIO)));
