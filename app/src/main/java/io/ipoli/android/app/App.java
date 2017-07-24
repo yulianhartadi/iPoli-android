@@ -941,7 +941,7 @@ public class App extends MultiDexApplication {
         Player player = getPlayer();
         AchievementsProgress progress = achievementProgressPersistenceService.get();
         AchievementsProgressUpdater.update(action, progress);
-        List<Achievement> achievementsToUnlock = achievementUnlocker.checkForNewAchievement(
+        List<Achievement> achievementsToUnlock = achievementUnlocker.findUnlocked(
                 player.getAchievements().keySet(),
                 progress);
         achievementProgressPersistenceService.save(progress);

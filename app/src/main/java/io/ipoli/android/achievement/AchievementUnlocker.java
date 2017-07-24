@@ -21,7 +21,7 @@ public class AchievementUnlocker {
     }
 
     @NonNull
-    public List<Achievement> checkForNewAchievement(Set<Integer> unlockedAchievementCodes, AchievementsProgress progress) {
+    public List<Achievement> findUnlocked(Set<Integer> unlockedAchievementCodes, AchievementsProgress progress) {
         List<Achievement> achievementsToUnlock = new ArrayList<>();
         for (Achievement achievement : Achievement.values()) {
             if (unlockedAchievementCodes.contains(achievement.code)) {
@@ -32,7 +32,7 @@ public class AchievementUnlocker {
         return achievementsToUnlock;
     }
 
-    protected void addAchievementIfUnlocked(AchievementsProgress progress, List<Achievement> achievementsToUnlock, Achievement achievement) {
+    private void addAchievementIfUnlocked(AchievementsProgress progress, List<Achievement> achievementsToUnlock, Achievement achievement) {
         if (achievementToChecker.get(achievement).shouldUnlock(progress)) {
             achievementsToUnlock.add(achievement);
         }
