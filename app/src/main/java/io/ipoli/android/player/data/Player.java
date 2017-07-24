@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import io.ipoli.android.Constants;
+import io.ipoli.android.achievement.Achievement;
 import io.ipoli.android.app.TimeOfDay;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
@@ -55,6 +56,7 @@ public class Player extends PersistedObject {
     private Map<Long, Category> androidCalendars;
     private Inventory inventory;
     private String membershipType;
+    private Map<Integer, Long> achievements;
 
     public Player() {
         super(TYPE);
@@ -84,6 +86,7 @@ public class Player extends PersistedObject {
         setUse24HourFormat(use24HourFormat);
         setAndroidCalendars(new HashMap<>());
         setMembership(MembershipType.NONE);
+        setAchievements(new HashMap<>());
     }
 
     public String getUsername() {
@@ -456,6 +459,17 @@ public class Player extends PersistedObject {
         this.membershipType = membershipType;
     }
 
+    public Map<Integer, Long> getAchievements() {
+        if(achievements == null) {
+            achievements = new HashMap<>();
+        }
+        return achievements;
+    }
+
+    public void setAchievements(Map<Integer, Long> achievements) {
+        this.achievements = achievements;
+    }
+
     @JsonIgnore
     public MembershipType getMembership() {
         return MembershipType.valueOf(getMembershipType());
@@ -489,5 +503,13 @@ public class Player extends PersistedObject {
             result.put(PowerUp.get(entry.getKey()), DateUtils.fromMillis(entry.getValue()));
         }
         return result;
+    }
+
+    @JsonIgnore
+    public void unlockAchievements(List<Achievement> achievementsToUnlock) {
+        long today = DateUtils.toMillis(LocalDate.now());
+        for(Achievement achievement : achievementsToUnlock) {
+            achievements.put(achievement.code, today);
+        }
     }
 }

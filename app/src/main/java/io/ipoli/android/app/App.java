@@ -49,7 +49,10 @@ import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
+import io.ipoli.android.achievement.Achievement;
 import io.ipoli.android.achievement.AchievementUnlocker;
+import io.ipoli.android.achievement.AchievementsProgress;
+import io.ipoli.android.achievement.persistence.AchievementProgressPersistenceService;
 import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.PowerUpDialogActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
@@ -189,6 +192,9 @@ public class App extends MultiDexApplication {
 
     @Inject
     PlayerPersistenceService playerPersistenceService;
+
+    @Inject
+    AchievementProgressPersistenceService achievementProgressPersistenceService;
 
     @Inject
     ExperienceRewardGenerator experienceRewardGenerator;
@@ -879,9 +885,8 @@ public class App extends MultiDexApplication {
     }
 
     private void onQuestComplete(Quest quest, EventSource source) {
-        achievementUnlocker.checkForNewAchievement(AchievementUnlocker.ACTION_COMPLETE_QUEST);
         checkForDailyChallengeCompletion(quest);
-        updateAvatar(quest);
+        givePlayerRewardForAction(quest, AchievementUnlocker.ACTION_COMPLETE_QUEST);
         savePet((int) (Math.ceil(quest.getExperience() / Constants.XP_TO_PET_HP_RATIO)));
         eventBus.post(new QuestCompletedEvent(quest, source));
     }
@@ -912,7 +917,7 @@ public class App extends MultiDexApplication {
             Challenge dailyChallenge = new Challenge();
             dailyChallenge.setExperience(xp);
             dailyChallenge.setCoins(coins);
-            updateAvatar(dailyChallenge);
+            givePlayerRewardForAction(dailyChallenge, AchievementUnlocker.ACTION_COMPLETE_DAILY_CHALLENGE);
             showChallengeCompleteDialog(getString(R.string.daily_challenge_complete_dialog_title), xp, coins);
             eventBus.post(new DailyChallengeCompleteEvent());
         });
@@ -927,8 +932,19 @@ public class App extends MultiDexApplication {
         startActivity(intent);
     }
 
-    private void updateAvatar(RewardProvider rewardProvider) {
+    private void givePlayerRewardForAction(RewardProvider rewardProvider, int action) {
         Player player = getPlayer();
+        AchievementsProgress progress = achievementProgressPersistenceService.get();
+
+        List<Achievement> achievementsToUnlock = achievementUnlocker.checkForNewAchievement(action,
+                player.getAchievements().keySet(), progress);
+        achievementProgressPersistenceService.save(progress);
+
+        player.unlockAchievements(achievementsToUnlock);
+        for (Achievement achievement : achievementsToUnlock) {
+            player.addExperience(achievement.experience);
+            player.addCoins(achievement.coins);
+        }
         Long experience = rewardProvider.getExperience();
         player.addExperience(experience);
         increasePlayerLevelIfNeeded(player);
@@ -993,7 +1009,7 @@ public class App extends MultiDexApplication {
     }
 
     private void onChallengeComplete(Challenge challenge, EventSource source) {
-        updateAvatar(challenge);
+        givePlayerRewardForAction(challenge, AchievementUnlocker.ACTION_COMPLETE_CHALLENGE);
         savePet((int) (Math.floor(challenge.getExperience() / Constants.XP_TO_PET_HP_RATIO)));
         showChallengeCompleteDialog(getString(R.string.challenge_complete, challenge.getName()), challenge.getExperience(), challenge.getCoins());
         eventBus.post(new ChallengeCompletedEvent(challenge, source));

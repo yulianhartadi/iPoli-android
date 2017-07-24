@@ -9,6 +9,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.ipoli.android.achievement.persistence.AchievementProgressPersistenceService;
+import io.ipoli.android.achievement.persistence.CouchbaseAchievementProgressPersistenceService;
 import io.ipoli.android.app.persistence.AndroidCalendarPersistenceService;
 import io.ipoli.android.app.persistence.CalendarPersistenceService;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
@@ -65,6 +67,12 @@ public class PersistenceModule {
     @Singleton
     public FeedPersistenceService provideFeedPersistenceService(Bus eventBus) {
         return new FirebaseFeedPersistenceService(FirebaseDatabase.getInstance(), eventBus);
+    }
+
+    @Provides
+    @Singleton
+    public AchievementProgressPersistenceService provideAchievementProgressPersistenceService(Database database, ObjectMapper objectMapper, Bus eventBus) {
+        return new CouchbaseAchievementProgressPersistenceService(database, objectMapper, eventBus);
     }
 
 }

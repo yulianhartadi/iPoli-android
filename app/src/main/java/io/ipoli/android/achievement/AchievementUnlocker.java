@@ -15,6 +15,8 @@ import java.util.Set;
 public class AchievementUnlocker {
 
     public static final int ACTION_COMPLETE_QUEST = 1;
+    public static final int ACTION_COMPLETE_DAILY_CHALLENGE = 2;
+    public static final int ACTION_COMPLETE_CHALLENGE = 3;
 
     private final Map<Achievement, AchievementChecker> achievementToChecker = new HashMap<>();
 
