@@ -20,13 +20,8 @@ public class AchievementUnlocker {
         achievementToChecker.put(Achievement.FIRST_QUEST_COMPLETED, new FirstQuestCompletedChecker());
     }
 
-    public List<Achievement> checkForNewAchievement(AchievementAction action, Set<Integer> unlockedAchievementCodes, AchievementsProgress progress) {
-        AchievementsProgressUpdater.update(action, progress);
-        return findAchievementsToUnlock(unlockedAchievementCodes, progress);
-    }
-
     @NonNull
-    protected List<Achievement> findAchievementsToUnlock(Set<Integer> unlockedAchievementCodes, AchievementsProgress progress) {
+    public List<Achievement> checkForNewAchievement(Set<Integer> unlockedAchievementCodes, AchievementsProgress progress) {
         List<Achievement> achievementsToUnlock = new ArrayList<>();
         for (Achievement achievement : Achievement.values()) {
             if (unlockedAchievementCodes.contains(achievement.code)) {

@@ -54,6 +54,7 @@ import io.ipoli.android.achievement.Achievement;
 import io.ipoli.android.achievement.AchievementAction;
 import io.ipoli.android.achievement.AchievementUnlocker;
 import io.ipoli.android.achievement.AchievementsProgress;
+import io.ipoli.android.achievement.AchievementsProgressUpdater;
 import io.ipoli.android.achievement.persistence.AchievementProgressPersistenceService;
 import io.ipoli.android.achievement.ui.AchievementData;
 import io.ipoli.android.achievement.ui.AchievementUnlocked;
@@ -939,9 +940,10 @@ public class App extends MultiDexApplication {
     private void givePlayerRewardForAction(RewardProvider rewardProvider, AchievementAction action) {
         Player player = getPlayer();
         AchievementsProgress progress = achievementProgressPersistenceService.get();
-
-        List<Achievement> achievementsToUnlock = achievementUnlocker.checkForNewAchievement(action,
-                player.getAchievements().keySet(), progress);
+        AchievementsProgressUpdater.update(action, progress);
+        List<Achievement> achievementsToUnlock = achievementUnlocker.checkForNewAchievement(
+                player.getAchievements().keySet(),
+                progress);
         achievementProgressPersistenceService.save(progress);
 
         player.unlockAchievements(achievementsToUnlock);
