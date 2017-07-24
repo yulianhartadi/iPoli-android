@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
@@ -50,14 +49,10 @@ import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
-import io.ipoli.android.achievement.Achievement;
 import io.ipoli.android.achievement.AchievementAction;
 import io.ipoli.android.achievement.AchievementUnlocker;
-import io.ipoli.android.achievement.AchievementsProgress;
-import io.ipoli.android.achievement.AchievementsProgressUpdater;
+import io.ipoli.android.achievement.UnlockAchievementScheduler;
 import io.ipoli.android.achievement.persistence.AchievementProgressPersistenceService;
-import io.ipoli.android.achievement.ui.AchievementData;
-import io.ipoli.android.achievement.ui.AchievementUnlocked;
 import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.PowerUpDialogActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
@@ -939,35 +934,12 @@ public class App extends MultiDexApplication {
 
     private void givePlayerRewardForAction(RewardProvider rewardProvider, AchievementAction action) {
         Player player = getPlayer();
-        AchievementsProgress progress = achievementProgressPersistenceService.get();
-        AchievementsProgressUpdater.update(action, progress);
-        List<Achievement> achievementsToUnlock = achievementUnlocker.findUnlocked(
-                player.getAchievements().keySet(),
-                progress);
-        achievementProgressPersistenceService.save(progress);
-
-        player.unlockAchievements(achievementsToUnlock);
-        for (Achievement achievement : achievementsToUnlock) {
-            player.addExperience(achievement.experience);
-            player.addCoins(achievement.coins);
-        }
         Long experience = rewardProvider.getExperience();
         player.addExperience(experience);
         increasePlayerLevelIfNeeded(player);
         player.addCoins(rewardProvider.getCoins());
         playerPersistenceService.save(player);
-
-        AchievementUnlocked achievementUnlocked = new AchievementUnlocked(getApplicationContext());
-        achievementUnlocked.setRounded(true).setLarge(true).setTopAligned(true).setDismissible(true);
-
-        AchievementData data = new AchievementData();
-        data.setTitle("Journey Begins");
-        data.setSubtitle("First Quest completed");
-        data.setTextColor(Color.WHITE);
-        data.setBackgroundColor(Color.BLACK);
-        data.setIcon(getDrawable(R.mipmap.ic_launcher));
-        achievementUnlocked.show(data);
-
+        UnlockAchievementScheduler.scheduleFindUnlocked(getApplicationContext(), action);
     }
 
     private void increasePlayerLevelIfNeeded(Player player) {
@@ -976,12 +948,16 @@ public class App extends MultiDexApplication {
             while (shouldIncreaseLevel(player)) {
                 player.setLevel(player.getLevel() + 1);
             }
-            Intent intent = new Intent(this, LevelUpActivity.class);
-            intent.putExtra(LevelUpActivity.LEVEL, player.getLevel());
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
             eventBus.post(new LevelUpEvent(player.getLevel()));
         }
+    }
+
+    @Subscribe
+    public void onLevelUp(LevelUpEvent e) {
+        Intent intent = new Intent(this, LevelUpActivity.class);
+        intent.putExtra(LevelUpActivity.LEVEL, e.newLevel);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     @Subscribe

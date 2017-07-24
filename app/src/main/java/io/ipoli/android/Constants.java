@@ -183,4 +183,6 @@ public interface Constants {
     String SKU_SUBSCRIPTION_MONTHLY = "monthly_plan";
     String SKU_SUBSCRIPTION_QUARTERLY = "quarterly_plan";
     String SKU_SUBSCRIPTION_YEARLY = "yearly_plan";
+
+    String KEY_ACHIEVEMENT_ACTION = "achievement_action";
 }
