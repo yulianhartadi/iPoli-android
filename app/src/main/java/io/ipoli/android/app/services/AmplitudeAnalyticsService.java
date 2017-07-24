@@ -52,6 +52,7 @@ import io.ipoli.android.app.tutorial.events.PredefinedQuestDeselectedEvent;
 import io.ipoli.android.app.tutorial.events.PredefinedQuestSelectedEvent;
 import io.ipoli.android.app.tutorial.events.PredefinedRepeatingQuestDeselectedEvent;
 import io.ipoli.android.app.tutorial.events.PredefinedRepeatingQuestSelectedEvent;
+import io.ipoli.android.app.tutorial.events.RequestOverlayPermissionEvent;
 import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
 import io.ipoli.android.app.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.app.tutorial.events.TutorialSkippedEvent;
@@ -1017,6 +1018,11 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
         log("player_unfollowed", EventParams.create()
                 .add("follower", e.follower)
                 .add("following", e.following));
+    }
+
+    @Subscribe
+    public void onRequestOverlayPermission(RequestOverlayPermissionEvent e) {
+        log("request_overlay_permission", EventParams.of("version", e.versionNumber));
     }
 
     @Subscribe
