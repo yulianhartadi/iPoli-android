@@ -14,27 +14,15 @@ import java.util.Set;
  */
 public class AchievementUnlocker {
 
-    public static final int ACTION_COMPLETE_QUEST = 1;
-    public static final int ACTION_COMPLETE_DAILY_CHALLENGE = 2;
-    public static final int ACTION_COMPLETE_CHALLENGE = 3;
-
     private final Map<Achievement, AchievementChecker> achievementToChecker = new HashMap<>();
 
     public AchievementUnlocker() {
         achievementToChecker.put(Achievement.FIRST_QUEST_COMPLETED, new FirstQuestCompletedChecker());
     }
 
-    public List<Achievement> checkForNewAchievement(int action, Set<Integer> unlockedAchievementCodes, AchievementsProgress progress) {
-        updateProgress(action, progress);
+    public List<Achievement> checkForNewAchievement(AchievementAction action, Set<Integer> unlockedAchievementCodes, AchievementsProgress progress) {
+        AchievementsProgressUpdater.update(action, progress);
         return findAchievementsToUnlock(unlockedAchievementCodes, progress);
-    }
-
-    protected void updateProgress(int action, AchievementsProgress progress) {
-        switch (action) {
-            case ACTION_COMPLETE_QUEST:
-                progress.incrementQuestCompleteCount();
-                break;
-        }
     }
 
     @NonNull
