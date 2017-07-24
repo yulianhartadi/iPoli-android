@@ -9,6 +9,7 @@ import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.activities.SignInActivity;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.modules.AchievementUnlockerModule;
 import io.ipoli.android.app.modules.AnalyticsModule;
 import io.ipoli.android.app.modules.AndroidCalendarModule;
 import io.ipoli.android.app.modules.ApiModule;
@@ -120,7 +121,8 @@ import io.ipoli.android.store.fragments.StoreFragment;
                 UrlProviderModule.class,
                 AndroidCalendarModule.class,
                 PowerUpModule.class,
-                PlayerCredentialsModule.class
+                PlayerCredentialsModule.class,
+                AchievementUnlockerModule.class
         }
 )
 public interface AppComponent {

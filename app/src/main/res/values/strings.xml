@@ -897,6 +897,7 @@
     <string name="username">Username</string>
     <string name="achievemet_first_quest_completed_name">Journey Started</string>
     <string name="achievemet_first_quest_completed_desc">First Quest completed</string>
+    <string name="overlay_permission_reason">Please, allow this permission to see your achievements and reminders</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

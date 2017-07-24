@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
@@ -53,6 +54,8 @@ import io.ipoli.android.achievement.Achievement;
 import io.ipoli.android.achievement.AchievementUnlocker;
 import io.ipoli.android.achievement.AchievementsProgress;
 import io.ipoli.android.achievement.persistence.AchievementProgressPersistenceService;
+import io.ipoli.android.achievement.ui.AchievementData;
+import io.ipoli.android.achievement.ui.AchievementUnlocked;
 import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.PowerUpDialogActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
@@ -206,7 +209,7 @@ public class App extends MultiDexApplication {
     UrlProvider urlProvider;
 
     @Inject
-    private AchievementUnlocker achievementUnlocker;
+    AchievementUnlocker achievementUnlocker;
 
     @Inject
     FeedPersistenceService feedPersistenceService;
@@ -950,6 +953,18 @@ public class App extends MultiDexApplication {
         increasePlayerLevelIfNeeded(player);
         player.addCoins(rewardProvider.getCoins());
         playerPersistenceService.save(player);
+
+        AchievementUnlocked achievementUnlocked = new AchievementUnlocked(getApplicationContext());
+        achievementUnlocked.setRounded(true).setLarge(true).setTopAligned(true).setDismissible(true);
+
+        AchievementData data = new AchievementData();
+        data.setTitle("Journey Begins");
+        data.setSubtitle("First Quest completed");
+        data.setTextColor(Color.WHITE);
+        data.setBackgroundColor(Color.BLACK);
+        data.setIcon(getDrawable(R.mipmap.ic_launcher));
+        achievementUnlocked.show(data);
+
     }
 
     private void increasePlayerLevelIfNeeded(Player player) {
