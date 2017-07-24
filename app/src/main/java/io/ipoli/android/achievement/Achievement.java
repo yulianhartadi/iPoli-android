@@ -42,4 +42,13 @@ public enum Achievement {
         this.coins = coins;
         this.experience = experience;
     }
+
+    public static Achievement get(int code) {
+        for (Achievement achievement : values()) {
+            if (achievement.code == code) {
+                return achievement;
+            }
+        }
+        return null;
+    }
 }
