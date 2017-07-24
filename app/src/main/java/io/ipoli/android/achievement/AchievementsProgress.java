@@ -10,10 +10,12 @@ import io.ipoli.android.app.persistence.PersistedObject;
  */
 public class AchievementsProgress extends PersistedObject {
 
+    public static final String TYPE = "achievementProgress";
+
     private int completeQuestCount;
 
-    public AchievementsProgress(String type) {
-        super(type);
+    public AchievementsProgress() {
+        super(TYPE);
     }
 
     public int getCompleteQuestCount() {
