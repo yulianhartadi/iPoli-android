@@ -50,23 +50,28 @@ public enum Achievement {
     FIRST_REPEATING_QUEST_CREATED(8,
             Category.BRONZE,
             achievemet_first_quest_completed_name,
-            achievemet_first_quest_completed_name, 0, 0),
+            achievemet_first_quest_completed_name,
+            0, 0),
     FIRST_CHALLENGE_ACCEPTED(9,
             Category.BRONZE,
             achievemet_first_quest_completed_name,
-            achievemet_first_quest_completed_name, 0, 0),
+            achievemet_first_quest_completed_name,
+            0, 0),
     FIRST_DAILY_CHALLENGE_COMPLETED(10,
             Category.BRONZE,
             achievemet_first_quest_completed_name,
-            achievemet_first_quest_completed_name, 0, 0),
+            achievemet_first_quest_completed_name,
+            0, 0),
     FIRST_POST_ADDED(11,
             Category.BRONZE,
             achievemet_first_quest_completed_name,
-            achievemet_first_quest_completed_name, 0, 0),
+            achievemet_first_quest_completed_name,
+            0, 0),
     FIRST_AVATAR_CHANGED(12,
             Category.BRONZE,
             achievemet_first_quest_completed_name,
-            achievemet_first_quest_completed_name, 0, 0);
+            achievemet_first_quest_completed_name,
+            0, 0);
 
     public final int code;
 
