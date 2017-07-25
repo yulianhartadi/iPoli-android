@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.ipoli.android.achievement.actions.CompleteQuestAction;
+import io.ipoli.android.achievement.actions.LevelUpAction;
 import io.ipoli.android.quest.data.Quest;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -36,5 +37,11 @@ public class AchievementProgressCoordinatorTest {
         quest.setExperience(20L);
         AchievementsProgressCoordinator.update(new CompleteQuestAction(quest), progress);
         assertThat(progress.getCompletedQuestsInADay().getCount(), is(1));
+    }
+
+    @Test
+    public void update_levelUp_playerLevelIs15th() {
+        AchievementsProgressCoordinator.update(new LevelUpAction(15), progress);
+        assertThat(progress.getPlayerLevel(), is(15));
     }
 }

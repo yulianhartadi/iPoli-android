@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import org.threeten.bp.LocalDate;
 
+import io.ipoli.android.Constants;
 import io.ipoli.android.app.persistence.PersistedObject;
 import io.ipoli.android.app.utils.DateUtils;
 
@@ -19,6 +20,7 @@ public class AchievementsProgress extends PersistedObject {
     private ActionCountPerDay completedQuestsInADay;
     private ActionCountPerDay experienceInADay;
     private ActionCountPerDay completedQuestsInARow;
+    private int playerLevel;
 
     public AchievementsProgress() {
         super(TYPE);
@@ -30,6 +32,7 @@ public class AchievementsProgress extends PersistedObject {
         progress.setExperienceInADay(new ActionCountPerDay(0, LocalDate.now()));
         progress.setCompletedQuestsInARow(new ActionCountPerDay(0, LocalDate.now()));
         progress.setCompletedQuestCount(0);
+        progress.setPlayerLevel(Constants.DEFAULT_PLAYER_LEVEL);
         return progress;
     }
 
@@ -103,5 +106,13 @@ public class AchievementsProgress extends PersistedObject {
 
     public ActionCountPerDay getCompletedQuestsInARow() {
         return completedQuestsInARow;
+    }
+
+    public void setPlayerLevel(int playerLevel) {
+        this.playerLevel = playerLevel;
+    }
+
+    public int getPlayerLevel() {
+        return playerLevel;
     }
 }

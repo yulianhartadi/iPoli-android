@@ -89,4 +89,13 @@ public class AchievementUnlockerTest {
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
         assertThat(unlockedAchievements.size(), is(0));
     }
+
+    @Test
+    public void findUnlocked_levelUpTo15th_unlock15thLevelAchievement() {
+        AchievementsProgress progress = AchievementsProgress.create();
+        progress.setPlayerLevel(15);
+        List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
+        assertThat(unlockedAchievements.size(), is(1));
+        assertTrue(unlockedAchievements.contains(Achievement.LEVEL_15TH));
+    }
 }

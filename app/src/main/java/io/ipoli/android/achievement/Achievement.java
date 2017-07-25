@@ -21,7 +21,7 @@ public enum Achievement {
             Category.SILVER,
             achievemet_first_quest_completed_name,
             achievemet_first_quest_completed_name,
-            15, 15),
+            15, 100),
     GAIN_100_XP_IN_A_DAY(3,
             Category.GOLD,
             achievemet_first_quest_completed_name,
@@ -31,7 +31,12 @@ public enum Achievement {
             Category.GOLD,
             achievemet_first_quest_completed_name,
             achievemet_first_quest_completed_name,
-            100, 500);
+            100, 500),
+    LEVEL_15TH(5,
+            Category.SILVER,
+            achievemet_first_quest_completed_name,
+            achievemet_first_quest_completed_name,
+            15, 100);
 
     public final int code;
 

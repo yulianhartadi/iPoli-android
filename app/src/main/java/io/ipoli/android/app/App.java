@@ -53,6 +53,7 @@ import io.ipoli.android.achievement.AchievementUnlocker;
 import io.ipoli.android.achievement.UnlockAchievementScheduler;
 import io.ipoli.android.achievement.actions.AchievementAction;
 import io.ipoli.android.achievement.actions.CompleteQuestAction;
+import io.ipoli.android.achievement.actions.LevelUpAction;
 import io.ipoli.android.achievement.actions.SimpleAchievementAction;
 import io.ipoli.android.achievement.persistence.AchievementProgressPersistenceService;
 import io.ipoli.android.app.activities.MigrationActivity;
@@ -956,6 +957,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onLevelUp(LevelUpEvent e) {
+        UnlockAchievementScheduler.scheduleFindUnlocked(getApplicationContext(), new LevelUpAction(e.newLevel));
         Intent intent = new Intent(this, LevelUpActivity.class);
         intent.putExtra(LevelUpActivity.LEVEL, e.newLevel);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

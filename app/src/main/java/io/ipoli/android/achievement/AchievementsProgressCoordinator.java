@@ -2,6 +2,7 @@ package io.ipoli.android.achievement;
 
 import io.ipoli.android.achievement.actions.AchievementAction;
 import io.ipoli.android.achievement.actions.CompleteQuestAction;
+import io.ipoli.android.achievement.actions.LevelUpAction;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -15,8 +16,12 @@ public class AchievementsProgressCoordinator {
                 CompleteQuestAction completeQuestAction = (CompleteQuestAction) action;
                 progress.incrementCompletedQuestCount();
                 progress.incrementCompletedQuestsInADay();
-                progress.incrementExperienceInADay(completeQuestAction.getQuest().getExperience().intValue());
+                progress.incrementExperienceInADay(completeQuestAction.quest.getExperience().intValue());
                 progress.incrementCompletedQuestsInARow();
+                break;
+            case LEVEL_UP:
+                int newPlayerLevel = ((LevelUpAction) action).level;
+                progress.setPlayerLevel(newPlayerLevel);
                 break;
         }
     }

@@ -14,6 +14,9 @@ public class ActionCountPerDay {
     private Integer count;
     private Long date;
 
+    public ActionCountPerDay() {
+    }
+
     public ActionCountPerDay(int count, LocalDate date) {
         this.count = count;
         this.date = DateUtils.toMillis(date);
