@@ -36,7 +36,12 @@ public enum Achievement {
             Category.SILVER,
             achievemet_first_quest_completed_name,
             achievemet_first_quest_completed_name,
-            15, 100);
+            15, 100),
+    LEVEL_20TH(6,
+            Category.GOLD,
+            achievemet_first_quest_completed_name,
+            achievemet_first_quest_completed_name,
+            100, 500);
 
     public final int code;
 

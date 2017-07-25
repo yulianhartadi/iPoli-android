@@ -22,6 +22,7 @@ public class AchievementUnlocker {
         achievementToChecker.put(Achievement.GAIN_100_XP_IN_A_DAY, new Gain100XPInADayChecker());
         achievementToChecker.put(Achievement.COMPLETE_QUEST_FOR_100_DAYS_IN_A_ROW, new CompleteAQuestFor100DaysChecker());
         achievementToChecker.put(Achievement.LEVEL_15TH, new Level15thChecker());
+        achievementToChecker.put(Achievement.LEVEL_20TH, new Level20thChecker());
     }
 
     @NonNull
@@ -75,10 +76,31 @@ public class AchievementUnlocker {
         }
     }
 
-    private class Level15thChecker implements AchievementChecker {
+    private abstract class LevelChecker implements AchievementChecker {
+
+        private final int requiredLevel;
+
+        LevelChecker(int requiredLevel) {
+            this.requiredLevel = requiredLevel;
+        }
+
         @Override
         public boolean shouldUnlock(AchievementsProgress progress) {
-            return progress.getPlayerLevel() >= 15;
+            return progress.getPlayerLevel() >= requiredLevel;
+        }
+    }
+
+    private class Level15thChecker extends LevelChecker {
+
+        Level15thChecker() {
+            super(15);
+        }
+    }
+
+    private class Level20thChecker extends LevelChecker {
+
+        Level20thChecker() {
+            super(20);
         }
     }
 }
