@@ -185,4 +185,5 @@ public interface Constants {
     String SKU_SUBSCRIPTION_YEARLY = "yearly_plan";
 
     String KEY_ACHIEVEMENT_ACTION = "achievement_action";
+    String KEY_ACHIEVEMENT_ACTION_CLASS = "achievement_action_class";
 }

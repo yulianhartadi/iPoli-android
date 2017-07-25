@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.otto.Bus;
 
 import java.math.BigInteger;
@@ -15,6 +16,7 @@ import javax.inject.Inject;
 
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.achievement.actions.AchievementAction;
 import io.ipoli.android.achievement.persistence.AchievementProgressPersistenceService;
 import io.ipoli.android.achievement.ui.AchievementData;
 import io.ipoli.android.achievement.ui.AchievementUnlocked;
@@ -44,6 +46,9 @@ public class AchievementUnlockJobService extends JobService {
     @Inject
     Bus eventBus;
 
+    @Inject
+    ObjectMapper objectMapper;
+
     @Override
     public void onCreate() {
         App.getAppComponent(this).inject(this);
@@ -52,7 +57,15 @@ public class AchievementUnlockJobService extends JobService {
 
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
-        AchievementAction action = AchievementAction.valueOf(jobParameters.getExtras().getString(Constants.KEY_ACHIEVEMENT_ACTION));
+        Class<? extends AchievementAction> actionClass;
+        try {
+            actionClass = (Class<? extends AchievementAction>) Class.forName(jobParameters.getExtras().getString(Constants.KEY_ACHIEVEMENT_ACTION_CLASS));
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            jobFinished(jobParameters, false);
+            return false;
+        }
+        AchievementAction action = objectMapper.convertValue(jobParameters.getExtras().getString(Constants.KEY_ACHIEVEMENT_ACTION), actionClass);
         new AsyncTask<Void, Void, List<Achievement>>() {
             @Override
             protected List<Achievement> doInBackground(Void... voids) {
@@ -98,6 +111,7 @@ public class AchievementUnlockJobService extends JobService {
                     achievementsData[i] = data;
                 }
                 achievementUnlocked.show(achievementsData);
+                jobFinished(jobParameters, false);
             }
         }.execute();
 

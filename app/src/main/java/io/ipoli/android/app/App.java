@@ -49,9 +49,11 @@ import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
-import io.ipoli.android.achievement.AchievementAction;
 import io.ipoli.android.achievement.AchievementUnlocker;
 import io.ipoli.android.achievement.UnlockAchievementScheduler;
+import io.ipoli.android.achievement.actions.AchievementAction;
+import io.ipoli.android.achievement.actions.CompleteQuestAction;
+import io.ipoli.android.achievement.actions.SimpleAchievementAction;
 import io.ipoli.android.achievement.persistence.AchievementProgressPersistenceService;
 import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.PowerUpDialogActivity;
@@ -886,7 +888,7 @@ public class App extends MultiDexApplication {
 
     private void onQuestComplete(Quest quest, EventSource source) {
         checkForDailyChallengeCompletion(quest);
-        givePlayerRewardForAction(quest, AchievementAction.COMPLETE_QUEST);
+        givePlayerRewardForAction(quest, new CompleteQuestAction(quest));
         savePet((int) (Math.ceil(quest.getExperience() / Constants.XP_TO_PET_HP_RATIO)));
         eventBus.post(new QuestCompletedEvent(quest, source));
     }
@@ -917,7 +919,7 @@ public class App extends MultiDexApplication {
             Challenge dailyChallenge = new Challenge();
             dailyChallenge.setExperience(xp);
             dailyChallenge.setCoins(coins);
-            givePlayerRewardForAction(dailyChallenge, AchievementAction.COMPLETE_DAILY_CHALLENGE);
+            givePlayerRewardForAction(dailyChallenge, new SimpleAchievementAction(AchievementAction.Action.COMPLETE_DAILY_CHALLENGE));
             showChallengeCompleteDialog(getString(R.string.daily_challenge_complete_dialog_title), xp, coins);
             eventBus.post(new DailyChallengeCompleteEvent());
         });
@@ -1003,7 +1005,7 @@ public class App extends MultiDexApplication {
     }
 
     private void onChallengeComplete(Challenge challenge, EventSource source) {
-        givePlayerRewardForAction(challenge, AchievementAction.COMPLETE_CHALLENGE);
+        givePlayerRewardForAction(challenge, new SimpleAchievementAction(AchievementAction.Action.COMPLETE_CHALLENGE));
         savePet((int) (Math.floor(challenge.getExperience() / Constants.XP_TO_PET_HP_RATIO)));
         showChallengeCompleteDialog(getString(R.string.challenge_complete, challenge.getName()), challenge.getExperience(), challenge.getCoins());
         eventBus.post(new ChallengeCompletedEvent(challenge, source));
