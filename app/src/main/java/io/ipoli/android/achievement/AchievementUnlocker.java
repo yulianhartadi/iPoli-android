@@ -29,6 +29,13 @@ public class AchievementUnlocker {
         achievementToConstraint.put(Achievement.LEVEL_15TH, new PlayerLevelConstraint(15));
         achievementToConstraint.put(Achievement.LEVEL_20TH, new PlayerLevelConstraint(20));
         achievementToConstraint.put(Achievement.COMPLETE_DAILY_CHALLENGE_FOR_5_DAYS_IN_A_ROW, new CompleteDailyChallengeFor5DaysConstraint());
+        achievementToConstraint.put(Achievement.FIVE_POSTS_ADDED, progress -> progress.getPostAddedCount() >= 5);
+        achievementToConstraint.put(Achievement.HAVE_1K_COINS, progress -> progress.getLifeCoinCount() >= 1000);
+        achievementToConstraint.put(Achievement.INVITE_FRIEND, progress -> progress.getInvitedFriendCount() >= 1);
+        achievementToConstraint.put(Achievement.CHANGE_PET, progress -> progress.getPetChangeCount() >= 1);
+        achievementToConstraint.put(Achievement.PET_DIED, progress -> progress.getPetDiedCount() >= 1);
+        achievementToConstraint.put(Achievement.FIRST_FOLLOW, progress -> progress.getFollowCount() >= 1);
+        achievementToConstraint.put(Achievement.FIRST_FOLLOWER, progress -> progress.getFollowerCount() >= 1);
     }
 
     @NonNull

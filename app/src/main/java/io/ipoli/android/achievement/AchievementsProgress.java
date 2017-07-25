@@ -28,6 +28,12 @@ public class AchievementsProgress extends PersistedObject {
     private Integer postAddedCount;
     private Integer createdRepeatedQuestCount;
     private Integer rewardUsedCount;
+    private Long lifeCoinCount;
+    private Integer invitedFriendCount;
+    private Integer petChangeCount;
+    private Integer petDiedCount;
+    private Integer followCount;
+    private Integer followerCount;
 
     public AchievementsProgress() {
         super(TYPE);
@@ -46,6 +52,7 @@ public class AchievementsProgress extends PersistedObject {
         progress.setPostAddedCount(0);
         progress.setCreatedRepeatedQuestCount(0);
         progress.setRewardUsedCount(0);
+        progress.setLifeCoinCount(Constants.DEFAULT_PLAYER_COINS);
         progress.setPlayerLevel(Constants.DEFAULT_PLAYER_LEVEL);
         return progress;
     }
@@ -227,5 +234,49 @@ public class AchievementsProgress extends PersistedObject {
 
     public void setRewardUsedCount(Integer rewardUsedCount) {
         this.rewardUsedCount = rewardUsedCount;
+    }
+
+    public void setLifeCoinCount(Long lifeCoinCount) {
+        this.lifeCoinCount = lifeCoinCount;
+    }
+
+    public long getLifeCoinCount() {
+        return lifeCoinCount;
+    }
+
+    public int getInvitedFriendCount() {
+        return invitedFriendCount;
+    }
+
+    public void setInvitedFriendCount(Integer invitedFriendCount) {
+        this.invitedFriendCount = invitedFriendCount;
+    }
+
+    public int getPetChangeCount() {
+        return petChangeCount;
+    }
+
+    public void setPetChangeCount(Integer petChangeCount) {
+        this.petChangeCount = petChangeCount;
+    }
+
+    public int getPetDiedCount() {
+        return petDiedCount;
+    }
+
+    public void setPetDiedCount(Integer petDiedCount) {
+        this.petDiedCount = petDiedCount;
+    }
+
+    public int getFollowCount() {
+        return followCount;
+    }
+
+    public void setFollowCount(Integer followCount) {
+        this.followCount = followCount;
+    }
+
+    public int getFollowerCount() {
+        return followerCount;
     }
 }
