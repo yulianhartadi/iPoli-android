@@ -19,6 +19,7 @@ public class AchievementUnlocker {
     public AchievementUnlocker() {
         achievementToChecker.put(Achievement.FIRST_QUEST_COMPLETED, new FirstQuestCompletedChecker());
         achievementToChecker.put(Achievement.COMPLETE_10_QUESTS_IN_A_DAY, new Complete10QuestInADayChecker());
+        achievementToChecker.put(Achievement.GAIN_100_XP_IN_A_DAY, new Gain100XPInADayChecker());
     }
 
     @NonNull
@@ -43,7 +44,7 @@ public class AchievementUnlocker {
         boolean shouldUnlock(AchievementsProgress progress);
     }
 
-    class FirstQuestCompletedChecker implements AchievementChecker {
+    private class FirstQuestCompletedChecker implements AchievementChecker {
 
         @Override
         public boolean shouldUnlock(AchievementsProgress progress) {
@@ -55,6 +56,13 @@ public class AchievementUnlocker {
         @Override
         public boolean shouldUnlock(AchievementsProgress progress) {
             return progress.getCompletedQuestsInADay().getCount() == 10;
+        }
+    }
+
+    private class Gain100XPInADayChecker implements AchievementChecker {
+        @Override
+        public boolean shouldUnlock(AchievementsProgress progress) {
+            return progress.getExperienceInADay().getCount() >= 100;
         }
     }
 }

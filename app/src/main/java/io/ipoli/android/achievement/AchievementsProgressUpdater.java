@@ -10,6 +10,7 @@ public class AchievementsProgressUpdater {
         switch (action) {
             case COMPLETE_QUEST:
                 progress.incrementCompletedQuestCount();
+                progress.incrementCompletedQuestsInADay();
                 break;
         }
     }

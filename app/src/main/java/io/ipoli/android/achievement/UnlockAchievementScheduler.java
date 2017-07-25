@@ -21,9 +21,8 @@ public class UnlockAchievementScheduler {
         JobInfo job = new JobInfo.Builder(AchievementUnlockJobService.JOB_ID,
                 new ComponentName(context, AchievementUnlockJobService.class))
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_NONE)
-                .setMinimumLatency(2000)
-                .setOverrideDeadline(3000)
-                .setPersisted(true)
+                .setMinimumLatency(1000)
+                .setOverrideDeadline(2000)
                 .setExtras(data)
                 .build();
         jobScheduler.schedule(job);

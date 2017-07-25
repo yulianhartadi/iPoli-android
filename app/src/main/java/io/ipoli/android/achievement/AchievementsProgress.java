@@ -17,15 +17,45 @@ public class AchievementsProgress extends PersistedObject {
 
     private Integer completedQuestCount;
     private ActionCountPerDay completedQuestsInADay;
+    private ActionCountPerDay experienceInADay;
 
     public AchievementsProgress() {
         super(TYPE);
     }
 
-    public AchievementsProgress(ActionCountPerDay completedQuestsInADay) {
-        this();
-        setCompletedQuestCount(0);
-        setCompletedQuestsInADay(completedQuestsInADay);
+    public static AchievementsProgress create() {
+        AchievementsProgress progress = new AchievementsProgress();
+        progress.setCompletedQuestsInADay(new ActionCountPerDay(0, LocalDate.now()));
+        progress.setExperienceInADay(new ActionCountPerDay(0, LocalDate.now()));
+        progress.setCompletedQuestCount(0);
+        return progress;
+    }
+
+    @JsonIgnore
+    public void incrementCompletedQuestCount() {
+        completedQuestCount++;
+    }
+
+    @JsonIgnore
+    public void incrementCompletedQuestsInADay() {
+        long today = DateUtils.toMillis(LocalDate.now());
+        if (completedQuestsInADay.getDate() == today) {
+            completedQuestsInADay.increment();
+        } else {
+            completedQuestsInADay.setDate(today);
+            completedQuestsInADay.setCount(1);
+        }
+    }
+
+    @JsonIgnore
+    public void incrementExperienceInADay(int experience) {
+        long today = DateUtils.toMillis(LocalDate.now());
+        if (experienceInADay.getDate() == today) {
+            experienceInADay.increment(experience);
+        } else {
+            experienceInADay.setDate(today);
+            experienceInADay.setCount(experience);
+        }
     }
 
     public int getCompletedQuestCount() {
@@ -44,19 +74,11 @@ public class AchievementsProgress extends PersistedObject {
         this.completedQuestsInADay = completedQuestsInADay;
     }
 
-    @JsonIgnore
-    public void incrementCompletedQuestCount() {
-        completedQuestCount++;
+    public void setExperienceInADay(ActionCountPerDay experienceInADay) {
+        this.experienceInADay = experienceInADay;
     }
 
-    @JsonIgnore
-    public void incrementCompletedQuestsInADay() {
-        long today = DateUtils.toMillis(LocalDate.now());
-        if(completedQuestsInADay.getDate() == today) {
-            completedQuestsInADay.increment();
-        } else {
-            completedQuestsInADay.setDate(today);
-            completedQuestsInADay.setCount(1);
-        }
+    public ActionCountPerDay getExperienceInADay() {
+        return experienceInADay;
     }
 }

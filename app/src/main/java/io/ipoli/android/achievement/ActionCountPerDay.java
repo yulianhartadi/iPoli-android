@@ -39,4 +39,9 @@ public class ActionCountPerDay {
     public void increment() {
         count++;
     }
+
+    @JsonIgnore
+    public void increment(int count) {
+        this.count += count;
+    }
 }
