@@ -8,10 +8,22 @@ import io.ipoli.android.quest.data.Quest;
  */
 public class CompleteQuestAction extends SimpleAchievementAction {
 
-    public final Quest quest;
+    private Quest quest;
+
+    public CompleteQuestAction() {
+        super(Action.COMPLETE_QUEST);
+    }
 
     public CompleteQuestAction(Quest quest) {
         super(Action.COMPLETE_QUEST);
+        this.quest = quest;
+    }
+
+    public Quest getQuest() {
+        return quest;
+    }
+
+    public void setQuest(Quest quest) {
         this.quest = quest;
     }
 }

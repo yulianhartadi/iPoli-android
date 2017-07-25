@@ -4,6 +4,7 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +22,7 @@ import io.ipoli.android.achievement.persistence.AchievementProgressPersistenceSe
 import io.ipoli.android.achievement.ui.AchievementData;
 import io.ipoli.android.achievement.ui.AchievementUnlocked;
 import io.ipoli.android.app.App;
+import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.events.LevelUpEvent;
@@ -44,10 +46,10 @@ public class AchievementUnlockJobService extends JobService {
     AchievementUnlocker achievementUnlocker;
 
     @Inject
-    Bus eventBus;
+    ObjectMapper objectMapper;
 
     @Inject
-    ObjectMapper objectMapper;
+    Bus eventBus;
 
     @Override
     public void onCreate() {
@@ -58,15 +60,23 @@ public class AchievementUnlockJobService extends JobService {
     @Override
     public boolean onStartJob(JobParameters jobParameters) {
         Class<? extends AchievementAction> actionClass;
+        AchievementAction action;
         try {
             actionClass = (Class<? extends AchievementAction>) Class.forName(jobParameters.getExtras().getString(Constants.KEY_ACHIEVEMENT_ACTION_CLASS));
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            action = objectMapper.readValue(jobParameters.getExtras().getString(Constants.KEY_ACHIEVEMENT_ACTION), actionClass);
+        } catch (Exception e) {
+            eventBus.post(new AppErrorEvent(e));
             jobFinished(jobParameters, false);
             return false;
         }
-        AchievementAction action = objectMapper.convertValue(jobParameters.getExtras().getString(Constants.KEY_ACHIEVEMENT_ACTION), actionClass);
-        new AsyncTask<Void, Void, List<Achievement>>() {
+
+        createAsyncTask(jobParameters, action).execute();
+        return true;
+    }
+
+    @NonNull
+    private AsyncTask<Void, Void, List<Achievement>> createAsyncTask(final JobParameters jobParameters, final AchievementAction action) {
+        return new AsyncTask<Void, Void, List<Achievement>>() {
             @Override
             protected List<Achievement> doInBackground(Void... voids) {
                 Player player = playerPersistenceService.get();
@@ -113,9 +123,7 @@ public class AchievementUnlockJobService extends JobService {
                 achievementUnlocked.show(achievementsData);
                 jobFinished(jobParameters, false);
             }
-        }.execute();
-
-        return true;
+        };
     }
 
     private void increasePlayerLevelIfNeeded(Player player) {
