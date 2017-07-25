@@ -18,6 +18,7 @@ public class AchievementUnlocker {
 
     public AchievementUnlocker() {
         achievementToChecker.put(Achievement.FIRST_QUEST_COMPLETED, new FirstQuestCompletedChecker());
+        achievementToChecker.put(Achievement.COMPLETE_10_QUESTS_IN_A_DAY, new Complete10QuestInADayChecker());
     }
 
     @NonNull
@@ -46,7 +47,14 @@ public class AchievementUnlocker {
 
         @Override
         public boolean shouldUnlock(AchievementsProgress progress) {
-            return progress.getCompleteQuestCount() == 1;
+            return progress.getCompletedQuestCount() == 1;
+        }
+    }
+
+    private class Complete10QuestInADayChecker implements AchievementChecker {
+        @Override
+        public boolean shouldUnlock(AchievementsProgress progress) {
+            return progress.getCompletedQuestsInADay().getCount() == 10;
         }
     }
 }

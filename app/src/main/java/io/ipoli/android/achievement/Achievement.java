@@ -4,6 +4,8 @@ import android.support.annotation.StringRes;
 
 import io.ipoli.android.R;
 
+import static io.ipoli.android.R.string.achievemet_first_quest_completed_name;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 7/24/17.
@@ -12,9 +14,14 @@ public enum Achievement {
 
     FIRST_QUEST_COMPLETED(1,
             Category.BRONZE,
-            R.string.achievemet_first_quest_completed_name,
+            achievemet_first_quest_completed_name,
             R.string.achievemet_first_quest_completed_desc,
-            0, 0);
+            0, 0),
+    COMPLETE_10_QUESTS_IN_A_DAY(2,
+            Category.SILVER,
+            achievemet_first_quest_completed_name,
+            achievemet_first_quest_completed_name,
+            15, 15);
 
     public final int code;
 

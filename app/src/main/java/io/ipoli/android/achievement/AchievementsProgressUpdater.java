@@ -9,7 +9,7 @@ public class AchievementsProgressUpdater {
     public static void update(AchievementAction action, AchievementsProgress progress) {
         switch (action) {
             case COMPLETE_QUEST:
-                progress.incrementQuestCompleteCount();
+                progress.incrementCompletedQuestCount();
                 break;
         }
     }
