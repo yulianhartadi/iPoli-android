@@ -81,7 +81,7 @@ public class AchievementUnlockJobService extends JobService {
             protected List<Achievement> doInBackground(Void... voids) {
                 Player player = playerPersistenceService.get();
                 AchievementsProgress progress = achievementProgressPersistenceService.get();
-                AchievementsProgressUpdater.update(action, progress);
+                AchievementsProgressCoordinator.update(action, progress);
 
                 List<Achievement> achievementsToUnlock = achievementUnlocker.findUnlocked(
                         player.getAchievements().keySet(),

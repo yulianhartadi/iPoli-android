@@ -7,7 +7,7 @@ import io.ipoli.android.achievement.actions.CompleteQuestAction;
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 7/24/17.
  */
-public class AchievementsProgressUpdater {
+public class AchievementsProgressCoordinator {
 
     public static void update(AchievementAction action, AchievementsProgress progress) {
         switch (action.getAction()) {
