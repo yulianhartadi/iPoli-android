@@ -17,12 +17,17 @@ public class AchievementUnlocker {
     private final Map<Achievement, AchievementConstraint> achievementToConstraint = new HashMap<>();
 
     public AchievementUnlocker() {
-        achievementToConstraint.put(Achievement.FIRST_QUEST_COMPLETED, new FirstQuestCompletedConstraint());
+        achievementToConstraint.put(Achievement.FIRST_QUEST_COMPLETED, progress -> progress.getCompletedQuestCount() >= 1);
+        achievementToConstraint.put(Achievement.FIRST_CHALLENGE_ACCEPTED, progress -> progress.getChallengeAcceptedCount() >= 1);
+        achievementToConstraint.put(Achievement.FIRST_AVATAR_CHANGED, progress -> progress.getAvatarChangedCount() >= 1);
+        achievementToConstraint.put(Achievement.FIRST_DAILY_CHALLENGE_COMPLETED, progress -> progress.getCompletedDailyChallengeCount() >= 1);
+        achievementToConstraint.put(Achievement.FIRST_POST_ADDED, progress -> progress.getPostAddedCount() >= 1);
+        achievementToConstraint.put(Achievement.FIRST_REPEATING_QUEST_CREATED, progress -> progress.getRepeatedQuestAddedCount() >= 1);
         achievementToConstraint.put(Achievement.COMPLETE_10_QUESTS_IN_A_DAY, new Complete10QuestInADayConstraint());
         achievementToConstraint.put(Achievement.GAIN_100_XP_IN_A_DAY, new Gain100XPInADayConstraint());
         achievementToConstraint.put(Achievement.COMPLETE_QUEST_FOR_100_DAYS_IN_A_ROW, new CompleteAQuestFor100DaysConstraint());
-        achievementToConstraint.put(Achievement.LEVEL_15TH, new Level15ThConstraint());
-        achievementToConstraint.put(Achievement.LEVEL_20TH, new Level20ThConstraint());
+        achievementToConstraint.put(Achievement.LEVEL_15TH, new PlayerLevelConstraint(15));
+        achievementToConstraint.put(Achievement.LEVEL_20TH, new PlayerLevelConstraint(20));
         achievementToConstraint.put(Achievement.COMPLETE_DAILY_CHALLENGE_FOR_5_DAYS_IN_A_ROW, new CompleteDailyChallengeFor5DaysConstraint());
     }
 
@@ -48,14 +53,6 @@ public class AchievementUnlocker {
         boolean shouldUnlock(AchievementsProgress progress);
     }
 
-    private class FirstQuestCompletedConstraint implements AchievementConstraint {
-
-        @Override
-        public boolean shouldUnlock(AchievementsProgress progress) {
-            return progress.getCompletedQuestCount() == 1;
-        }
-    }
-
     private class Complete10QuestInADayConstraint implements AchievementConstraint {
         @Override
         public boolean shouldUnlock(AchievementsProgress progress) {
@@ -73,35 +70,21 @@ public class AchievementUnlocker {
     private class CompleteAQuestFor100DaysConstraint implements AchievementConstraint {
         @Override
         public boolean shouldUnlock(AchievementsProgress progress) {
-            return progress.getCompletedQuestsInARow().getCount() == 100;
+            return progress.getCompletedQuestsInARow().getCount() >= 100;
         }
     }
 
-    private abstract class LevelConstraint implements AchievementConstraint {
+    private class PlayerLevelConstraint implements AchievementConstraint {
 
         private final int requiredLevel;
 
-        LevelConstraint(int requiredLevel) {
+        PlayerLevelConstraint(int requiredLevel) {
             this.requiredLevel = requiredLevel;
         }
 
         @Override
         public boolean shouldUnlock(AchievementsProgress progress) {
             return progress.getPlayerLevel() >= requiredLevel;
-        }
-    }
-
-    private class Level15ThConstraint extends LevelConstraint {
-
-        Level15ThConstraint() {
-            super(15);
-        }
-    }
-
-    private class Level20ThConstraint extends LevelConstraint {
-
-        Level20ThConstraint() {
-            super(20);
         }
     }
 

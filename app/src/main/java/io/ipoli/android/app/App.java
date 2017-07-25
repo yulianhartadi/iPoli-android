@@ -942,7 +942,7 @@ public class App extends MultiDexApplication {
         increasePlayerLevelIfNeeded(player);
         player.addCoins(rewardProvider.getCoins());
         playerPersistenceService.save(player);
-        UnlockAchievementScheduler.scheduleFindUnlocked(getApplicationContext(), action);
+        checkForUnlockedAchievement(action);
     }
 
     private void increasePlayerLevelIfNeeded(Player player) {
@@ -957,7 +957,7 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onLevelUp(LevelUpEvent e) {
-        UnlockAchievementScheduler.scheduleFindUnlocked(getApplicationContext(), new LevelUpAction(e.newLevel));
+        checkForUnlockedAchievement(new LevelUpAction(e.newLevel));
         Intent intent = new Intent(this, LevelUpActivity.class);
         intent.putExtra(LevelUpActivity.LEVEL, e.newLevel);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -970,6 +970,15 @@ public class App extends MultiDexApplication {
         repeatingQuest.setDuration(Math.max(repeatingQuest.getDuration(), Constants.QUEST_MIN_DURATION));
         List<Quest> quests = repeatingQuestScheduler.schedule(repeatingQuest, LocalDate.now());
         repeatingQuestPersistenceService.saveWithQuests(repeatingQuest, quests);
+        checkForUnlockedAchievement(AchievementAction.Action.CREATE_REPEATING_QUEST);
+    }
+
+    private void checkForUnlockedAchievement(AchievementAction.Action action) {
+        UnlockAchievementScheduler.scheduleFindUnlocked(getApplicationContext(), new SimpleAchievementAction(action));
+    }
+
+    private void checkForUnlockedAchievement(AchievementAction action) {
+        UnlockAchievementScheduler.scheduleFindUnlocked(getApplicationContext(), action);
     }
 
     @Subscribe

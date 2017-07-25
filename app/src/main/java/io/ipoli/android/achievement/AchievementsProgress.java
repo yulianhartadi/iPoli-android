@@ -21,7 +21,12 @@ public class AchievementsProgress extends PersistedObject {
     private ActionCountPerDay experienceInADay;
     private ActionCountPerDay completedQuestsInARow;
     private ActionCountPerDay completedDailyChallengesInARow;
-    private int playerLevel;
+    private Integer playerLevel;
+    private Integer challengeAcceptedCount;
+    private Integer avatarChangedCount;
+    private Integer completedDailyChallengeCount;
+    private Integer postAddedCount;
+    private Integer repeatedQuestAddedCount;
 
     public AchievementsProgress() {
         super(TYPE);
@@ -34,6 +39,11 @@ public class AchievementsProgress extends PersistedObject {
         progress.setCompletedQuestsInARow(new ActionCountPerDay(0, LocalDate.now()));
         progress.setCompletedDailyChallengesInARow(new ActionCountPerDay(0, LocalDate.now()));
         progress.setCompletedQuestCount(0);
+        progress.setAvatarChangedCount(0);
+        progress.setChallengeAcceptedCount(0);
+        progress.setCompletedDailyChallengeCount(0);
+        progress.setPostAddedCount(0);
+        progress.setRepeatedQuestAddedCount(0);
         progress.setPlayerLevel(Constants.DEFAULT_PLAYER_LEVEL);
         return progress;
     }
@@ -41,6 +51,31 @@ public class AchievementsProgress extends PersistedObject {
     @JsonIgnore
     public void incrementCompletedQuestCount() {
         completedQuestCount++;
+    }
+
+    @JsonIgnore
+    public void incrementCompletedDailyChallengeCount() {
+        completedDailyChallengeCount++;
+    }
+
+    @JsonIgnore
+    public void incrementChallengeAcceptedCount() {
+        challengeAcceptedCount++;
+    }
+
+    @JsonIgnore
+    public void incrementAvatarChangedCount() {
+        avatarChangedCount++;
+    }
+
+    @JsonIgnore
+    public void incrementPostAddedCount() {
+        postAddedCount++;
+    }
+
+    @JsonIgnore
+    public void incrementRepeatingQuestAddedCount() {
+        repeatedQuestAddedCount++;
     }
 
     @JsonIgnore
@@ -137,5 +172,45 @@ public class AchievementsProgress extends PersistedObject {
 
     public int getPlayerLevel() {
         return playerLevel;
+    }
+
+    public int getChallengeAcceptedCount() {
+        return challengeAcceptedCount;
+    }
+
+    public int getAvatarChangedCount() {
+        return avatarChangedCount;
+    }
+
+    public int getCompletedDailyChallengeCount() {
+        return completedDailyChallengeCount;
+    }
+
+    public int getPostAddedCount() {
+        return postAddedCount;
+    }
+
+    public int getRepeatedQuestAddedCount() {
+        return repeatedQuestAddedCount;
+    }
+
+    public void setChallengeAcceptedCount(int challengeAcceptedCount) {
+        this.challengeAcceptedCount = challengeAcceptedCount;
+    }
+
+    public void setAvatarChangedCount(int avatarChangedCount) {
+        this.avatarChangedCount = avatarChangedCount;
+    }
+
+    public void setCompletedDailyChallengeCount(int completedDailyChallengeCount) {
+        this.completedDailyChallengeCount = completedDailyChallengeCount;
+    }
+
+    public void setPostAddedCount(int postAddedCount) {
+        this.postAddedCount = postAddedCount;
+    }
+
+    public void setRepeatedQuestAddedCount(int repeatedQuestAddedCount) {
+        this.repeatedQuestAddedCount = repeatedQuestAddedCount;
     }
 }

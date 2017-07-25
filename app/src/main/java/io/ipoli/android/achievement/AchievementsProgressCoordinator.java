@@ -25,6 +25,19 @@ public class AchievementsProgressCoordinator {
                 break;
             case COMPLETE_DAILY_CHALLENGE:
                 progress.incrementCompletedDailyChallengesInARow();
+                progress.incrementCompletedDailyChallengeCount();
+                break;
+            case COMPLETE_REPEATING_QUEST:
+                progress.incrementRepeatingQuestAddedCount();
+                break;
+            case ACCEPT_CHALLENGE:
+                progress.incrementChallengeAcceptedCount();
+                break;
+            case SHARE_QUEST:
+                progress.incrementPostAddedCount();
+                break;
+            case CHANGE_AVATAR:
+                progress.incrementAvatarChangedCount();
                 break;
         }
     }
