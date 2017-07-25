@@ -1,6 +1,7 @@
 package io.ipoli.android.achievement;
 
 import io.ipoli.android.achievement.actions.AchievementAction;
+import io.ipoli.android.achievement.actions.CompleteQuestAction;
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -13,6 +14,8 @@ public class AchievementsProgressUpdater {
             case COMPLETE_QUEST:
                 progress.incrementCompletedQuestCount();
                 progress.incrementCompletedQuestsInADay();
+                CompleteQuestAction completeQuestAction = (CompleteQuestAction) action;
+                progress.incrementExperienceInADay(completeQuestAction.getQuest().getExperience().intValue());
                 break;
         }
     }
