@@ -69,7 +69,7 @@ public class AchievementsProgress extends PersistedObject {
     public void incrementCompletedQuestsInARow() {
         long today = DateUtils.toMillis(LocalDate.now());
         long yesterday = DateUtils.toMillis(LocalDate.now().minusDays(1));
-        if (completedQuestsInARow.getDate() == yesterday) {
+        if (completedQuestsInARow.getCount() == 0 || completedQuestsInARow.getDate() == yesterday) {
             completedQuestsInARow.increment();
             completedQuestsInARow.setDate(today);
         } else if (completedQuestsInARow.getDate() < yesterday) {
@@ -82,7 +82,7 @@ public class AchievementsProgress extends PersistedObject {
     public void incrementCompletedDailyChallengesInARow() {
         long today = DateUtils.toMillis(LocalDate.now());
         long yesterday = DateUtils.toMillis(LocalDate.now().minusDays(1));
-        if (completedDailyChallengesInARow.getDate() == yesterday) {
+        if (completedDailyChallengesInARow.getCount() == 0 || completedDailyChallengesInARow.getDate() == yesterday) {
             completedDailyChallengesInARow.increment();
             completedDailyChallengesInARow.setDate(today);
         } else if (completedDailyChallengesInARow.getDate() < yesterday) {

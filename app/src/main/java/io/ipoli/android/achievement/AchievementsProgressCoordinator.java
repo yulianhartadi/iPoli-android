@@ -23,6 +23,9 @@ public class AchievementsProgressCoordinator {
                 int newPlayerLevel = ((LevelUpAction) action).level;
                 progress.setPlayerLevel(newPlayerLevel);
                 break;
+            case COMPLETE_DAILY_CHALLENGE:
+                progress.incrementCompletedDailyChallengesInARow();
+                break;
         }
     }
 }

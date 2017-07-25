@@ -3,8 +3,10 @@ package io.ipoli.android.achievement;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.ipoli.android.achievement.actions.AchievementAction;
 import io.ipoli.android.achievement.actions.CompleteQuestAction;
 import io.ipoli.android.achievement.actions.LevelUpAction;
+import io.ipoli.android.achievement.actions.SimpleAchievementAction;
 import io.ipoli.android.quest.data.Quest;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -43,5 +45,11 @@ public class AchievementProgressCoordinatorTest {
     public void update_levelUp_playerLevelIs15th() {
         AchievementsProgressCoordinator.update(new LevelUpAction(15), progress);
         assertThat(progress.getPlayerLevel(), is(15));
+    }
+
+    @Test
+    public void update_completeDailyChallenge_completeDailyChallengeInARowCountIs5() {
+        AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.COMPLETE_DAILY_CHALLENGE), progress);
+        assertThat(progress.getCompletedDailyChallengesInARow().getCount(), is(1));
     }
 }
