@@ -16,6 +16,7 @@ public class AchievementsProgressUpdater {
                 progress.incrementCompletedQuestCount();
                 progress.incrementCompletedQuestsInADay();
                 progress.incrementExperienceInADay(completeQuestAction.getQuest().getExperience().intValue());
+                progress.incrementCompletedQuestsInARow();
                 break;
         }
     }
