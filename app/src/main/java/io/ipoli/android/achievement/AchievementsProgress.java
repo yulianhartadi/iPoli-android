@@ -18,6 +18,7 @@ public class AchievementsProgress extends PersistedObject {
     private Integer completedQuestCount;
     private ActionCountPerDay completedQuestsInADay;
     private ActionCountPerDay experienceInADay;
+    private ActionCountPerDay completedQuestsInARow;
 
     public AchievementsProgress() {
         super(TYPE);
@@ -27,6 +28,7 @@ public class AchievementsProgress extends PersistedObject {
         AchievementsProgress progress = new AchievementsProgress();
         progress.setCompletedQuestsInADay(new ActionCountPerDay(0, LocalDate.now()));
         progress.setExperienceInADay(new ActionCountPerDay(0, LocalDate.now()));
+        progress.setCompletedQuestsInARow(new ActionCountPerDay(0, LocalDate.now()));
         progress.setCompletedQuestCount(0);
         return progress;
     }
@@ -58,6 +60,19 @@ public class AchievementsProgress extends PersistedObject {
         }
     }
 
+    @JsonIgnore
+    public void incrementCompletedQuestsInARow() {
+        long today = DateUtils.toMillis(LocalDate.now());
+        long yesterday = DateUtils.toMillis(LocalDate.now().minusDays(1));
+        if (completedQuestsInARow.getDate() == yesterday) {
+            completedQuestsInARow.increment();
+            completedQuestsInARow.setDate(today);
+        } else if (completedQuestsInARow.getDate() < yesterday) {
+            completedQuestsInARow.setDate(today);
+            completedQuestsInARow.setCount(1);
+        }
+    }
+
     public int getCompletedQuestCount() {
         return completedQuestCount;
     }
@@ -80,5 +95,13 @@ public class AchievementsProgress extends PersistedObject {
 
     public ActionCountPerDay getExperienceInADay() {
         return experienceInADay;
+    }
+
+    public void setCompletedQuestsInARow(ActionCountPerDay completedQuestsInARow) {
+        this.completedQuestsInARow = completedQuestsInARow;
+    }
+
+    public ActionCountPerDay getCompletedQuestsInARow() {
+        return completedQuestsInARow;
     }
 }

@@ -26,6 +26,11 @@ public enum Achievement {
             Category.GOLD,
             achievemet_first_quest_completed_name,
             achievemet_first_quest_completed_name,
+            100, 500),
+    COMPLETE_QUEST_FOR_100_DAYS_IN_A_ROW(4,
+            Category.GOLD,
+            achievemet_first_quest_completed_name,
+            achievemet_first_quest_completed_name,
             100, 500);
 
     public final int code;

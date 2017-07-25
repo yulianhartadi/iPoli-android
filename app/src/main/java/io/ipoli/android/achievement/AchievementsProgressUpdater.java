@@ -12,9 +12,9 @@ public class AchievementsProgressUpdater {
     public static void update(AchievementAction action, AchievementsProgress progress) {
         switch (action.getAction()) {
             case COMPLETE_QUEST:
+                CompleteQuestAction completeQuestAction = (CompleteQuestAction) action;
                 progress.incrementCompletedQuestCount();
                 progress.incrementCompletedQuestsInADay();
-                CompleteQuestAction completeQuestAction = (CompleteQuestAction) action;
                 progress.incrementExperienceInADay(completeQuestAction.getQuest().getExperience().intValue());
                 break;
         }

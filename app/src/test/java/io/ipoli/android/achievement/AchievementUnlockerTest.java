@@ -70,4 +70,23 @@ public class AchievementUnlockerTest {
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
         assertThat(unlockedAchievements.size(), is(0));
     }
+
+    @Test
+    public void findUnlocked_100CompletedAQuestsInARow_unlockCompleteAQuest100DaysInARow() {
+        AchievementsProgress progress = AchievementsProgress.create();
+        progress.setCompletedQuestsInARow(new ActionCountPerDay(99, LocalDate.now().minusDays(1)));
+        progress.incrementCompletedQuestsInARow();
+        List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
+        assertThat(unlockedAchievements.size(), is(1));
+        assertTrue(unlockedAchievements.contains(Achievement.COMPLETE_QUEST_FOR_100_DAYS_IN_A_ROW));
+    }
+
+    @Test
+    public void findUnlocked_lessThanCompletedAQuestsInARow_doNotUnlockCompleteAQuest100DaysInARow() {
+        AchievementsProgress progress = AchievementsProgress.create();
+        progress.setCompletedQuestsInARow(new ActionCountPerDay(90, LocalDate.now().minusDays(2)));
+        progress.incrementCompletedQuestsInARow();
+        List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
+        assertThat(unlockedAchievements.size(), is(0));
+    }
 }
