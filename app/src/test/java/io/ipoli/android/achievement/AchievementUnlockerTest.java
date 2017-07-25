@@ -72,7 +72,7 @@ public class AchievementUnlockerTest {
     }
 
     @Test
-    public void findUnlocked_100CompletedAQuestsInARow_unlockCompleteAQuest100DaysInARow() {
+    public void findUnlocked_100CompletedQuestsInARow_unlockCompleteAQuest100DaysInARow() {
         AchievementsProgress progress = AchievementsProgress.create();
         progress.setCompletedQuestsInARow(new ActionCountPerDay(99, LocalDate.now().minusDays(1)));
         progress.incrementCompletedQuestsInARow();
@@ -82,7 +82,7 @@ public class AchievementUnlockerTest {
     }
 
     @Test
-    public void findUnlocked_lessThanCompletedAQuestsInARow_doNotUnlockCompleteAQuest100DaysInARow() {
+    public void findUnlocked_lessThanCompletedQuestsInARow_doNotUnlockCompleteAQuest100DaysInARow() {
         AchievementsProgress progress = AchievementsProgress.create();
         progress.setCompletedQuestsInARow(new ActionCountPerDay(90, LocalDate.now().minusDays(2)));
         progress.incrementCompletedQuestsInARow();
@@ -97,5 +97,24 @@ public class AchievementUnlockerTest {
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
         assertThat(unlockedAchievements.size(), is(1));
         assertTrue(unlockedAchievements.contains(Achievement.LEVEL_15TH));
+    }
+
+    @Test
+    public void findUnlocked_5CompletedDailyChallengesInARow_unlockCompleteDailyChallenges5DaysInARow() {
+        AchievementsProgress progress = AchievementsProgress.create();
+        progress.setCompletedDailyChallengesInARow(new ActionCountPerDay(4, LocalDate.now().minusDays(1)));
+        progress.incrementCompletedDailyChallengesInARow();
+        List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
+        assertThat(unlockedAchievements.size(), is(1));
+        assertTrue(unlockedAchievements.contains(Achievement.COMPLETE_DAILY_CHALLENGE_FOR_5_DAYS_IN_A_ROW));
+    }
+
+    @Test
+    public void findUnlocked_lessThan5CompletedDailyChallengesInARow_doNotUnlockCompleteDailyChallenges5DaysInARow() {
+        AchievementsProgress progress = AchievementsProgress.create();
+        progress.setCompletedQuestsInARow(new ActionCountPerDay(4, LocalDate.now().minusDays(2)));
+        progress.incrementCompletedDailyChallengesInARow();
+        List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
+        assertThat(unlockedAchievements.size(), is(0));
     }
 }

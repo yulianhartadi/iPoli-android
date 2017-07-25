@@ -14,15 +14,16 @@ import java.util.Set;
  */
 public class AchievementUnlocker {
 
-    private final Map<Achievement, AchievementChecker> achievementToChecker = new HashMap<>();
+    private final Map<Achievement, AchievementConstraint> achievementToConstraint = new HashMap<>();
 
     public AchievementUnlocker() {
-        achievementToChecker.put(Achievement.FIRST_QUEST_COMPLETED, new FirstQuestCompletedChecker());
-        achievementToChecker.put(Achievement.COMPLETE_10_QUESTS_IN_A_DAY, new Complete10QuestInADayChecker());
-        achievementToChecker.put(Achievement.GAIN_100_XP_IN_A_DAY, new Gain100XPInADayChecker());
-        achievementToChecker.put(Achievement.COMPLETE_QUEST_FOR_100_DAYS_IN_A_ROW, new CompleteAQuestFor100DaysChecker());
-        achievementToChecker.put(Achievement.LEVEL_15TH, new Level15thChecker());
-        achievementToChecker.put(Achievement.LEVEL_20TH, new Level20thChecker());
+        achievementToConstraint.put(Achievement.FIRST_QUEST_COMPLETED, new FirstQuestCompletedConstraint());
+        achievementToConstraint.put(Achievement.COMPLETE_10_QUESTS_IN_A_DAY, new Complete10QuestInADayConstraint());
+        achievementToConstraint.put(Achievement.GAIN_100_XP_IN_A_DAY, new Gain100XPInADayConstraint());
+        achievementToConstraint.put(Achievement.COMPLETE_QUEST_FOR_100_DAYS_IN_A_ROW, new CompleteAQuestFor100DaysConstraint());
+        achievementToConstraint.put(Achievement.LEVEL_15TH, new Level15ThConstraint());
+        achievementToConstraint.put(Achievement.LEVEL_20TH, new Level20ThConstraint());
+        achievementToConstraint.put(Achievement.COMPLETE_DAILY_CHALLENGE_FOR_5_DAYS_IN_A_ROW, new CompleteDailyChallengeFor5DaysConstraint());
     }
 
     @NonNull
@@ -38,16 +39,16 @@ public class AchievementUnlocker {
     }
 
     private void addAchievementIfUnlocked(AchievementsProgress progress, List<Achievement> achievementsToUnlock, Achievement achievement) {
-        if (achievementToChecker.get(achievement).shouldUnlock(progress)) {
+        if (achievementToConstraint.get(achievement).shouldUnlock(progress)) {
             achievementsToUnlock.add(achievement);
         }
     }
 
-    interface AchievementChecker {
+    interface AchievementConstraint {
         boolean shouldUnlock(AchievementsProgress progress);
     }
 
-    private class FirstQuestCompletedChecker implements AchievementChecker {
+    private class FirstQuestCompletedConstraint implements AchievementConstraint {
 
         @Override
         public boolean shouldUnlock(AchievementsProgress progress) {
@@ -55,32 +56,32 @@ public class AchievementUnlocker {
         }
     }
 
-    private class Complete10QuestInADayChecker implements AchievementChecker {
+    private class Complete10QuestInADayConstraint implements AchievementConstraint {
         @Override
         public boolean shouldUnlock(AchievementsProgress progress) {
             return progress.getCompletedQuestsInADay().getCount() == 10;
         }
     }
 
-    private class Gain100XPInADayChecker implements AchievementChecker {
+    private class Gain100XPInADayConstraint implements AchievementConstraint {
         @Override
         public boolean shouldUnlock(AchievementsProgress progress) {
             return progress.getExperienceInADay().getCount() >= 100;
         }
     }
 
-    private class CompleteAQuestFor100DaysChecker implements AchievementChecker {
+    private class CompleteAQuestFor100DaysConstraint implements AchievementConstraint {
         @Override
         public boolean shouldUnlock(AchievementsProgress progress) {
             return progress.getCompletedQuestsInARow().getCount() == 100;
         }
     }
 
-    private abstract class LevelChecker implements AchievementChecker {
+    private abstract class LevelConstraint implements AchievementConstraint {
 
         private final int requiredLevel;
 
-        LevelChecker(int requiredLevel) {
+        LevelConstraint(int requiredLevel) {
             this.requiredLevel = requiredLevel;
         }
 
@@ -90,17 +91,24 @@ public class AchievementUnlocker {
         }
     }
 
-    private class Level15thChecker extends LevelChecker {
+    private class Level15ThConstraint extends LevelConstraint {
 
-        Level15thChecker() {
+        Level15ThConstraint() {
             super(15);
         }
     }
 
-    private class Level20thChecker extends LevelChecker {
+    private class Level20ThConstraint extends LevelConstraint {
 
-        Level20thChecker() {
+        Level20ThConstraint() {
             super(20);
+        }
+    }
+
+    private class CompleteDailyChallengeFor5DaysConstraint implements AchievementConstraint {
+        @Override
+        public boolean shouldUnlock(AchievementsProgress progress) {
+            return progress.getCompletedDailyChallengesInARow().getCount() >= 5;
         }
     }
 }

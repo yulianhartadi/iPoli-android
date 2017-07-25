@@ -20,6 +20,7 @@ public class AchievementsProgress extends PersistedObject {
     private ActionCountPerDay completedQuestsInADay;
     private ActionCountPerDay experienceInADay;
     private ActionCountPerDay completedQuestsInARow;
+    private ActionCountPerDay completedDailyChallengesInARow;
     private int playerLevel;
 
     public AchievementsProgress() {
@@ -31,6 +32,7 @@ public class AchievementsProgress extends PersistedObject {
         progress.setCompletedQuestsInADay(new ActionCountPerDay(0, LocalDate.now()));
         progress.setExperienceInADay(new ActionCountPerDay(0, LocalDate.now()));
         progress.setCompletedQuestsInARow(new ActionCountPerDay(0, LocalDate.now()));
+        progress.setCompletedDailyChallengesInARow(new ActionCountPerDay(0, LocalDate.now()));
         progress.setCompletedQuestCount(0);
         progress.setPlayerLevel(Constants.DEFAULT_PLAYER_LEVEL);
         return progress;
@@ -76,12 +78,33 @@ public class AchievementsProgress extends PersistedObject {
         }
     }
 
-    public int getCompletedQuestCount() {
-        return completedQuestCount;
+    @JsonIgnore
+    public void incrementCompletedDailyChallengesInARow() {
+        long today = DateUtils.toMillis(LocalDate.now());
+        long yesterday = DateUtils.toMillis(LocalDate.now().minusDays(1));
+        if (completedDailyChallengesInARow.getDate() == yesterday) {
+            completedDailyChallengesInARow.increment();
+            completedDailyChallengesInARow.setDate(today);
+        } else if (completedDailyChallengesInARow.getDate() < yesterday) {
+            completedDailyChallengesInARow.setDate(today);
+            completedDailyChallengesInARow.setCount(1);
+        }
     }
 
-    public void setCompletedQuestCount(int completedQuestCount) {
+    public ActionCountPerDay getCompletedDailyChallengesInARow() {
+        return completedDailyChallengesInARow;
+    }
+
+    public void setCompletedDailyChallengesInARow(ActionCountPerDay completedDailyChallengesInARow) {
+        this.completedDailyChallengesInARow = completedDailyChallengesInARow;
+    }
+
+    public void setCompletedQuestCount(Integer completedQuestCount) {
         this.completedQuestCount = completedQuestCount;
+    }
+
+    public int getCompletedQuestCount() {
+        return completedQuestCount;
     }
 
     public ActionCountPerDay getCompletedQuestsInADay() {
