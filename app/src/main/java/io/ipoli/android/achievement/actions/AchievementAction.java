@@ -4,13 +4,12 @@ public interface AchievementAction {
 
     enum Action {
         COMPLETE_QUEST,
-        SHARE_QUEST,
+        ADD_POST,
         COMPLETE_REPEATING_QUEST,
         CREATE_CHALLENGE,
         CREATE_REPEATING_QUEST,
         COMPLETE_DAILY_CHALLENGE,
         COMPLETE_CHALLENGE,
-        ACCEPT_CHALLENGE,
         USE_REWARD,
         CHANGE_AVATAR,
         CHANGE_PET,

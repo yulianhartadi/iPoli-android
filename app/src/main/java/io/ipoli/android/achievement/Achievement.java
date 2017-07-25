@@ -71,6 +71,11 @@ public enum Achievement {
             Category.BRONZE,
             achievemet_first_quest_completed_name,
             achievemet_first_quest_completed_name,
+            0, 0),
+    FIRST_REWARD_USED(13,
+            Category.BRONZE,
+            achievemet_first_quest_completed_name,
+            achievemet_first_quest_completed_name,
             0, 0);
 
     public final int code;

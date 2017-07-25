@@ -18,11 +18,11 @@ public class AchievementUnlocker {
 
     public AchievementUnlocker() {
         achievementToConstraint.put(Achievement.FIRST_QUEST_COMPLETED, progress -> progress.getCompletedQuestCount() >= 1);
-        achievementToConstraint.put(Achievement.FIRST_CHALLENGE_ACCEPTED, progress -> progress.getChallengeAcceptedCount() >= 1);
+        achievementToConstraint.put(Achievement.FIRST_CHALLENGE_ACCEPTED, progress -> progress.getCreatedChallengeCount() >= 1);
         achievementToConstraint.put(Achievement.FIRST_AVATAR_CHANGED, progress -> progress.getAvatarChangedCount() >= 1);
         achievementToConstraint.put(Achievement.FIRST_DAILY_CHALLENGE_COMPLETED, progress -> progress.getCompletedDailyChallengeCount() >= 1);
         achievementToConstraint.put(Achievement.FIRST_POST_ADDED, progress -> progress.getPostAddedCount() >= 1);
-        achievementToConstraint.put(Achievement.FIRST_REPEATING_QUEST_CREATED, progress -> progress.getRepeatedQuestAddedCount() >= 1);
+        achievementToConstraint.put(Achievement.FIRST_REPEATING_QUEST_CREATED, progress -> progress.getCreatedRepeatedQuestCount() >= 1);
         achievementToConstraint.put(Achievement.COMPLETE_10_QUESTS_IN_A_DAY, new Complete10QuestInADayConstraint());
         achievementToConstraint.put(Achievement.GAIN_100_XP_IN_A_DAY, new Gain100XPInADayConstraint());
         achievementToConstraint.put(Achievement.COMPLETE_QUEST_FOR_100_DAYS_IN_A_ROW, new CompleteAQuestFor100DaysConstraint());

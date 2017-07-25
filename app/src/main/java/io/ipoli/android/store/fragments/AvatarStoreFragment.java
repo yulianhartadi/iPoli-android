@@ -36,6 +36,7 @@ import io.ipoli.android.player.events.AvatarBoughtEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.adapters.AvatarStoreAdapter;
+import io.ipoli.android.store.events.AvatarChangedEvent;
 import io.ipoli.android.store.events.BuyAvatarRequestEvent;
 import io.ipoli.android.store.events.UseAvatarEvent;
 import io.ipoli.android.store.viewmodels.AvatarViewModel;
@@ -127,6 +128,7 @@ public class AvatarStoreFragment extends BaseFragment {
         playerPersistenceService.save(player);
         Toast.makeText(getContext(), R.string.avatar_selected_message, Toast.LENGTH_SHORT).show();
         adapter.setViewModels(createAvatarViewModels());
+        eventBus.post(new AvatarChangedEvent(e.avatar));
     }
 
     @Override

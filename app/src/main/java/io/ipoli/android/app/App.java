@@ -103,6 +103,7 @@ import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiv
 import io.ipoli.android.challenge.ui.events.CompleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
+import io.ipoli.android.feed.events.PostAddedEvent;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
@@ -146,6 +147,8 @@ import io.ipoli.android.quest.schedulers.QuestScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
+import io.ipoli.android.reward.events.RewardUsedEvent;
+import io.ipoli.android.store.events.AvatarChangedEvent;
 import okhttp3.Cookie;
 
 import static io.ipoli.android.feed.persistence.FirebaseFeedPersistenceService.profilePath;
@@ -1032,11 +1035,17 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onNewChallenge(NewChallengeEvent e) {
         challengePersistenceService.save(e.challenge);
+        checkForUnlockedAchievement(AchievementAction.Action.CREATE_CHALLENGE);
     }
 
     @Subscribe
     public void onUpdateChallenge(UpdateChallengeEvent e) {
         challengePersistenceService.save(e.challenge);
+    }
+
+    @Subscribe
+    public void onRewardUsed(RewardUsedEvent e) {
+        checkForUnlockedAchievement(AchievementAction.Action.USE_REWARD);
     }
 
     private void scheduleDateChanged() {
@@ -1079,6 +1088,16 @@ public class App extends MultiDexApplication {
             }
             questPersistenceService.save(quests);
         });
+    }
+
+    @Subscribe
+    public void onPostAdded(PostAddedEvent e) {
+        checkForUnlockedAchievement(AchievementAction.Action.ADD_POST);
+    }
+
+    @Subscribe
+    public void onAvatarChanged(AvatarChangedEvent e) {
+        checkForUnlockedAchievement(AchievementAction.Action.CHANGE_AVATAR);
     }
 
     @Subscribe

@@ -30,10 +30,13 @@ public class AchievementsProgressCoordinator {
             case COMPLETE_REPEATING_QUEST:
                 progress.incrementRepeatingQuestAddedCount();
                 break;
-            case ACCEPT_CHALLENGE:
+            case CREATE_CHALLENGE:
                 progress.incrementChallengeAcceptedCount();
                 break;
-            case SHARE_QUEST:
+            case USE_REWARD:
+                progress.incrementRewardUsedCount();
+                break;
+            case ADD_POST:
                 progress.incrementPostAddedCount();
                 break;
             case CHANGE_AVATAR:

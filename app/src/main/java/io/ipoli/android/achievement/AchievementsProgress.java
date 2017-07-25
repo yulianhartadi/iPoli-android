@@ -22,11 +22,12 @@ public class AchievementsProgress extends PersistedObject {
     private ActionCountPerDay completedQuestsInARow;
     private ActionCountPerDay completedDailyChallengesInARow;
     private Integer playerLevel;
-    private Integer challengeAcceptedCount;
+    private Integer createdChallengeCount;
     private Integer avatarChangedCount;
     private Integer completedDailyChallengeCount;
     private Integer postAddedCount;
-    private Integer repeatedQuestAddedCount;
+    private Integer createdRepeatedQuestCount;
+    private Integer rewardUsedCount;
 
     public AchievementsProgress() {
         super(TYPE);
@@ -40,10 +41,11 @@ public class AchievementsProgress extends PersistedObject {
         progress.setCompletedDailyChallengesInARow(new ActionCountPerDay(0, LocalDate.now()));
         progress.setCompletedQuestCount(0);
         progress.setAvatarChangedCount(0);
-        progress.setChallengeAcceptedCount(0);
+        progress.setCreatedChallengeCount(0);
         progress.setCompletedDailyChallengeCount(0);
         progress.setPostAddedCount(0);
-        progress.setRepeatedQuestAddedCount(0);
+        progress.setCreatedRepeatedQuestCount(0);
+        progress.setRewardUsedCount(0);
         progress.setPlayerLevel(Constants.DEFAULT_PLAYER_LEVEL);
         return progress;
     }
@@ -60,7 +62,7 @@ public class AchievementsProgress extends PersistedObject {
 
     @JsonIgnore
     public void incrementChallengeAcceptedCount() {
-        challengeAcceptedCount++;
+        createdChallengeCount++;
     }
 
     @JsonIgnore
@@ -75,7 +77,12 @@ public class AchievementsProgress extends PersistedObject {
 
     @JsonIgnore
     public void incrementRepeatingQuestAddedCount() {
-        repeatedQuestAddedCount++;
+        createdRepeatedQuestCount++;
+    }
+
+    @JsonIgnore
+    public void incrementRewardUsedCount() {
+        rewardUsedCount++;
     }
 
     @JsonIgnore
@@ -126,20 +133,12 @@ public class AchievementsProgress extends PersistedObject {
         }
     }
 
-    public ActionCountPerDay getCompletedDailyChallengesInARow() {
-        return completedDailyChallengesInARow;
-    }
-
-    public void setCompletedDailyChallengesInARow(ActionCountPerDay completedDailyChallengesInARow) {
-        this.completedDailyChallengesInARow = completedDailyChallengesInARow;
+    public Integer getCompletedQuestCount() {
+        return completedQuestCount;
     }
 
     public void setCompletedQuestCount(Integer completedQuestCount) {
         this.completedQuestCount = completedQuestCount;
-    }
-
-    public int getCompletedQuestCount() {
-        return completedQuestCount;
     }
 
     public ActionCountPerDay getCompletedQuestsInADay() {
@@ -150,67 +149,83 @@ public class AchievementsProgress extends PersistedObject {
         this.completedQuestsInADay = completedQuestsInADay;
     }
 
-    public void setExperienceInADay(ActionCountPerDay experienceInADay) {
-        this.experienceInADay = experienceInADay;
-    }
-
     public ActionCountPerDay getExperienceInADay() {
         return experienceInADay;
     }
 
-    public void setCompletedQuestsInARow(ActionCountPerDay completedQuestsInARow) {
-        this.completedQuestsInARow = completedQuestsInARow;
+    public void setExperienceInADay(ActionCountPerDay experienceInADay) {
+        this.experienceInADay = experienceInADay;
     }
 
     public ActionCountPerDay getCompletedQuestsInARow() {
         return completedQuestsInARow;
     }
 
-    public void setPlayerLevel(int playerLevel) {
-        this.playerLevel = playerLevel;
+    public void setCompletedQuestsInARow(ActionCountPerDay completedQuestsInARow) {
+        this.completedQuestsInARow = completedQuestsInARow;
     }
 
-    public int getPlayerLevel() {
+    public ActionCountPerDay getCompletedDailyChallengesInARow() {
+        return completedDailyChallengesInARow;
+    }
+
+    public void setCompletedDailyChallengesInARow(ActionCountPerDay completedDailyChallengesInARow) {
+        this.completedDailyChallengesInARow = completedDailyChallengesInARow;
+    }
+
+    public Integer getPlayerLevel() {
         return playerLevel;
     }
 
-    public int getChallengeAcceptedCount() {
-        return challengeAcceptedCount;
+    public void setPlayerLevel(Integer playerLevel) {
+        this.playerLevel = playerLevel;
     }
 
-    public int getAvatarChangedCount() {
+    public Integer getCreatedChallengeCount() {
+        return createdChallengeCount;
+    }
+
+    public void setCreatedChallengeCount(Integer createdChallengeCount) {
+        this.createdChallengeCount = createdChallengeCount;
+    }
+
+    public Integer getAvatarChangedCount() {
         return avatarChangedCount;
     }
 
-    public int getCompletedDailyChallengeCount() {
-        return completedDailyChallengeCount;
-    }
-
-    public int getPostAddedCount() {
-        return postAddedCount;
-    }
-
-    public int getRepeatedQuestAddedCount() {
-        return repeatedQuestAddedCount;
-    }
-
-    public void setChallengeAcceptedCount(int challengeAcceptedCount) {
-        this.challengeAcceptedCount = challengeAcceptedCount;
-    }
-
-    public void setAvatarChangedCount(int avatarChangedCount) {
+    public void setAvatarChangedCount(Integer avatarChangedCount) {
         this.avatarChangedCount = avatarChangedCount;
     }
 
-    public void setCompletedDailyChallengeCount(int completedDailyChallengeCount) {
+    public Integer getCompletedDailyChallengeCount() {
+        return completedDailyChallengeCount;
+    }
+
+    public void setCompletedDailyChallengeCount(Integer completedDailyChallengeCount) {
         this.completedDailyChallengeCount = completedDailyChallengeCount;
     }
 
-    public void setPostAddedCount(int postAddedCount) {
+    public Integer getPostAddedCount() {
+        return postAddedCount;
+    }
+
+    public void setPostAddedCount(Integer postAddedCount) {
         this.postAddedCount = postAddedCount;
     }
 
-    public void setRepeatedQuestAddedCount(int repeatedQuestAddedCount) {
-        this.repeatedQuestAddedCount = repeatedQuestAddedCount;
+    public Integer getCreatedRepeatedQuestCount() {
+        return createdRepeatedQuestCount;
+    }
+
+    public void setCreatedRepeatedQuestCount(Integer createdRepeatedQuestCount) {
+        this.createdRepeatedQuestCount = createdRepeatedQuestCount;
+    }
+
+    public Integer getRewardUsedCount() {
+        return rewardUsedCount;
+    }
+
+    public void setRewardUsedCount(Integer rewardUsedCount) {
+        this.rewardUsedCount = rewardUsedCount;
     }
 }

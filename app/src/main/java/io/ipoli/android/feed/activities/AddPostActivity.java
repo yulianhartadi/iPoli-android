@@ -20,6 +20,7 @@ import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.feed.data.Post;
+import io.ipoli.android.feed.events.PostAddedEvent;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.quest.data.Quest;
@@ -101,6 +102,7 @@ public class AddPostActivity extends BaseActivity implements OnDataChangedListen
         Player player = getPlayer();
         Post post = new Post(postTitle.getText().toString(), postMessage.getText().toString(), player, quest);
         feedPersistenceService.addPost(post);
+        eventBus.post(new PostAddedEvent(post));
         finish();
     }
 
