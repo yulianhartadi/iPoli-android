@@ -520,7 +520,7 @@ public class MainActivity extends BaseActivity implements
         long coins = q.getCoins();
 
         Snackbar snackbar = ThemedSnackbar.make(findViewById(R.id.root_container),
-                getString(R.string.quest_complete_with_bounty, experience, coins),
+                getString(R.string.quest_complete_with_reward, experience, coins),
                 Snackbar.LENGTH_LONG);
 
         snackbar.setAction(R.string.share, view ->

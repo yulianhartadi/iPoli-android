@@ -14,7 +14,7 @@ public enum Achievement {
             Category.BRONZE,
             R.string.achievemet_first_quest_completed_name,
             R.string.achievemet_first_quest_completed_desc,
-            10, 15);
+            0, 0);
 
     public final int code;
 

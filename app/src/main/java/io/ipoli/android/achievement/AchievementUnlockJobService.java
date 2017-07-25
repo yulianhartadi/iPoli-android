@@ -85,11 +85,15 @@ public class AchievementUnlockJobService extends JobService {
                 for (int i = 0; i < achievements.size(); i++) {
                     Achievement achievement = achievements.get(i);
                     AchievementData data = new AchievementData();
-                    data.setTitle("Achievement Unlocked");
-                    data.setSubtitle(getString(achievement.description));
+                    data.setTitle(getString(R.string.achievement_unlocked));
+                    String subtitle = getString(achievement.name);
+                    if (achievement.coins > 0 && achievement.experience > 0) {
+                        subtitle = getString(R.string.achievement_with_reward, subtitle, achievement.experience, achievement.coins);
+                    }
+                    data.setSubtitle(subtitle);
                     data.setTextColor(Color.WHITE);
                     data.setBackgroundColor(Color.BLACK);
-                    data.setIcon(ContextCompat.getDrawable(getApplicationContext(), R.mipmap.subscriptions_badge));
+                    data.setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_context_fun_white));
                     data.setIconBackgroundColor(Color.GREEN);
                     achievementsData[i] = data;
                 }

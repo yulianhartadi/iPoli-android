@@ -129,7 +129,7 @@ public class TutorialCalendarFragment extends Fragment {
 
     private void onQuestComplete(View v, CheckBox checkBox) {
         checkBox.setChecked(true);
-        Snackbar snackBar = Snackbar.make(v, getString(R.string.quest_complete_with_bounty, 10, 10), Snackbar.LENGTH_INDEFINITE);
+        Snackbar snackBar = Snackbar.make(v, getString(R.string.quest_complete_with_reward, 10, 10), Snackbar.LENGTH_INDEFINITE);
         snackBar.show();
 
         snackBar.getView().postDelayed(() ->
