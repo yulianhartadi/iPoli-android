@@ -134,6 +134,11 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     @JsonIgnore
+    public void incrementPowerUpBoughtCount() {
+        setPowerUpCount(getPowerUpCount() + 1);
+    }
+
+    @JsonIgnore
     private ActionCountPerDay getDefaultActionCountPerDay() {
         return new ActionCountPerDay(0, LocalDate.now());
     }
@@ -358,6 +363,4 @@ public class AchievementsProgress extends PersistedObject {
     public void setPowerUpCount(Integer powerUpCount) {
         this.powerUpCount = powerUpCount;
     }
-
-
 }

@@ -164,4 +164,31 @@ public class AchievementUnlockerTest {
         assertTrue(unlockedAchievements.contains(Achievement.FIRST_POST_ADDED));
         assertTrue(unlockedAchievements.contains(Achievement.FIVE_POSTS_ADDED));
     }
+
+    @Test
+    public void findUnlocked_changeAvatar_unlockFirstAvatarChanged() {
+        AchievementsProgress progress = new AchievementsProgress();
+        progress.incrementAvatarChangedCount();
+        List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
+        assertThat(unlockedAchievements.size(), is(1));
+        assertTrue(unlockedAchievements.contains(Achievement.FIRST_AVATAR_CHANGED));
+    }
+
+    @Test
+    public void findUnlocked_useReward_unlockFirstRewardUsed() {
+        AchievementsProgress progress = new AchievementsProgress();
+        progress.incrementRewardUsedCount();
+        List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
+        assertThat(unlockedAchievements.size(), is(1));
+        assertTrue(unlockedAchievements.contains(Achievement.FIRST_REWARD_USED));
+    }
+
+    @Test
+    public void findUnlocked_enablePowerUp_unlockFirsPowerUpEnabled() {
+        AchievementsProgress progress = new AchievementsProgress();
+        progress.incrementPowerUpBoughtCount();
+        List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
+        assertThat(unlockedAchievements.size(), is(1));
+        assertTrue(unlockedAchievements.contains(Achievement.FIRST_POWER_UP));
+    }
 }

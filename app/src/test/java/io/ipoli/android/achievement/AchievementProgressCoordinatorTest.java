@@ -104,4 +104,22 @@ public class AchievementProgressCoordinatorTest {
         AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.ADD_POST), progress);
         assertThat(progress.getPostAddedCount(), is(1));
     }
+
+    @Test
+    public void update_changeAvatar_avatarChangedCountIs1() {
+        AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.CHANGE_AVATAR), progress);
+        assertThat(progress.getAvatarChangedCount(), is(1));
+    }
+
+    @Test
+    public void update_useReward_usedRewardCountIs1() {
+        AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.USE_REWARD), progress);
+        assertThat(progress.getRewardUsedCount(), is(1));
+    }
+
+    @Test
+    public void update_buyPowerUp_powerUpCountIs1() {
+        AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.BUY_POWER_UP), progress);
+        assertThat(progress.getPowerUpCount(), is(1));
+    }
 }

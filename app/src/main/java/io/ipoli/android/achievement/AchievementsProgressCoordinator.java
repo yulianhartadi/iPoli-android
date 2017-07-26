@@ -50,6 +50,9 @@ public class AchievementsProgressCoordinator {
             case SEND_FEEDBACK:
                 progress.incrementFeedbackSent();
                 break;
+            case BUY_POWER_UP:
+                progress.incrementPowerUpBoughtCount();
+                break;
         }
     }
 }
