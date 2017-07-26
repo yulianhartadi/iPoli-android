@@ -36,6 +36,9 @@ public class AchievementUnlocker {
         achievementToConstraint.put(Achievement.PET_DIED, progress -> progress.getPetDiedCount() >= 1);
         achievementToConstraint.put(Achievement.FIRST_FOLLOW, progress -> progress.getFollowCount() >= 1);
         achievementToConstraint.put(Achievement.FIRST_FOLLOWER, progress -> progress.getFollowerCount() >= 1);
+        achievementToConstraint.put(Achievement.FEEDBACK_SENT, progress -> progress.getFeedbackSentCount() >= 1);
+        achievementToConstraint.put(Achievement.FIRST_REWARD_USED, progress -> progress.getRewardUsedCount() >= 1);
+        achievementToConstraint.put(Achievement.FIRST_POWER_UP, progress -> progress.getPowerUpCount() >= 1);
     }
 
     @NonNull
@@ -51,6 +54,9 @@ public class AchievementUnlocker {
     }
 
     private void addAchievementIfUnlocked(AchievementsProgress progress, List<Achievement> achievementsToUnlock, Achievement achievement) {
+        if(!achievementToConstraint.containsKey(achievement)) {
+            System.err.println(achievement.name());
+        }
         if (achievementToConstraint.get(achievement).shouldUnlock(progress)) {
             achievementsToUnlock.add(achievement);
         }

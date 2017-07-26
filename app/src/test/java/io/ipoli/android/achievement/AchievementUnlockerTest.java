@@ -117,4 +117,13 @@ public class AchievementUnlockerTest {
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
         assertThat(unlockedAchievements.size(), is(0));
     }
+
+    @Test
+    public void findUnlocked_sentFeedback_unlockFeedbackSent() {
+        AchievementsProgress progress = AchievementsProgress.create();
+        progress.incrementFeedbackSent();
+        List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
+        assertThat(unlockedAchievements.size(), is(1));
+        assertTrue(unlockedAchievements.contains(Achievement.FEEDBACK_SENT));
+    }
 }

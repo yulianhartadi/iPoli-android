@@ -52,4 +52,11 @@ public class AchievementProgressCoordinatorTest {
         AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.COMPLETE_DAILY_CHALLENGE), progress);
         assertThat(progress.getCompletedDailyChallengesInARow().getCount(), is(1));
     }
+
+    @Test
+    public void update_sentFeedback_feedbackSentCountIs1() {
+        AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.SEND_FEEDBACK), progress);
+        assertThat(progress.getFeedbackSentCount(), is(1));
+    }
+
 }

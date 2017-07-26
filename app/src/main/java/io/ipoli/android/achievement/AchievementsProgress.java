@@ -34,6 +34,8 @@ public class AchievementsProgress extends PersistedObject {
     private Integer petDiedCount;
     private Integer followCount;
     private Integer followerCount;
+    private Integer feedbackSentCount;
+    private Integer powerUpCount;
 
     public AchievementsProgress() {
         super(TYPE);
@@ -138,6 +140,11 @@ public class AchievementsProgress extends PersistedObject {
             completedDailyChallengesInARow.setDate(today);
             completedDailyChallengesInARow.setCount(1);
         }
+    }
+
+    @JsonIgnore
+    public void incrementFeedbackSent() {
+        setFeedbackSentCount(getFeedbackSentCount() + 1);
     }
 
     public Integer getCompletedQuestCount() {
@@ -245,6 +252,9 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public int getInvitedFriendCount() {
+        if(invitedFriendCount == null) {
+            invitedFriendCount = 0;
+        }
         return invitedFriendCount;
     }
 
@@ -253,6 +263,9 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public int getPetChangeCount() {
+        if(petChangeCount == null) {
+            petChangeCount = 0;
+        }
         return petChangeCount;
     }
 
@@ -261,6 +274,9 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public int getPetDiedCount() {
+        if(petDiedCount == null) {
+            petDiedCount = 0;
+        }
         return petDiedCount;
     }
 
@@ -269,6 +285,9 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public int getFollowCount() {
+        if(followCount == null) {
+            followCount = 0;
+        }
         return followCount;
     }
 
@@ -277,6 +296,35 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public int getFollowerCount() {
+        if(followerCount == null) {
+            followerCount = 0;
+        }
         return followerCount;
+    }
+
+    public void setFollowerCount(Integer followerCount) {
+        this.followerCount = followerCount;
+    }
+
+    public Integer getFeedbackSentCount() {
+        if(feedbackSentCount == null) {
+            feedbackSentCount = 0;
+        }
+        return feedbackSentCount;
+    }
+
+    public void setFeedbackSentCount(Integer feedbackSentCount) {
+        this.feedbackSentCount = feedbackSentCount;
+    }
+
+    public Integer getPowerUpCount() {
+        if(powerUpCount == null) {
+            powerUpCount = 0;
+        }
+        return powerUpCount;
+    }
+
+    public void setPowerUpCount(Integer powerUpCount) {
+        this.powerUpCount = powerUpCount;
     }
 }

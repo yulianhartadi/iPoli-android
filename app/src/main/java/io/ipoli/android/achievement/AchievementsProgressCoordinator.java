@@ -42,6 +42,9 @@ public class AchievementsProgressCoordinator {
             case CHANGE_AVATAR:
                 progress.incrementAvatarChangedCount();
                 break;
+            case SEND_FEEDBACK:
+                progress.incrementFeedbackSent();
+                break;
         }
     }
 }
