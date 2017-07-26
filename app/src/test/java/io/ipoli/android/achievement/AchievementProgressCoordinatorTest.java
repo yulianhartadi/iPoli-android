@@ -79,4 +79,10 @@ public class AchievementProgressCoordinatorTest {
         assertThat(progress.getFeedbackSentCount(), is(1));
     }
 
+    @Test
+    public void update_createRepeatingQuest_createRepeatingQuestCountIs1() {
+        AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.COMPLETE_REPEATING_QUEST), progress);
+        assertThat(progress.getCreatedRepeatedQuestCount(), is(1));
+    }
+
 }

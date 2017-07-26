@@ -33,7 +33,7 @@ public class AchievementsProgressCoordinator {
                 progress.incrementExperienceInADay(challenge.getExperience().intValue());
                 break;
             case COMPLETE_REPEATING_QUEST:
-                progress.incrementRepeatingQuestAddedCount();
+                progress.incrementRepeatingQuestCreatedCount();
                 break;
             case CREATE_CHALLENGE:
                 progress.incrementChallengeAcceptedCount();

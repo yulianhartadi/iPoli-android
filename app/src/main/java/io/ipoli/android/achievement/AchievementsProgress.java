@@ -67,7 +67,7 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     @JsonIgnore
-    public void incrementRepeatingQuestAddedCount() {
+    public void incrementRepeatingQuestCreatedCount() {
         setCreatedRepeatedQuestCount(getCreatedRepeatedQuestCount() + 1);
     }
 

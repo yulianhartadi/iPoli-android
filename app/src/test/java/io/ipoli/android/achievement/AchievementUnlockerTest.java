@@ -126,4 +126,13 @@ public class AchievementUnlockerTest {
         assertThat(unlockedAchievements.size(), is(1));
         assertTrue(unlockedAchievements.contains(Achievement.FEEDBACK_SENT));
     }
+
+    @Test
+    public void findUnlocked_createRepeatingQuest_unlockFirstRepeatingQuestCreated() {
+        AchievementsProgress progress = new AchievementsProgress();
+        progress.incrementRepeatingQuestCreatedCount();
+        List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
+        assertThat(unlockedAchievements.size(), is(1));
+        assertTrue(unlockedAchievements.contains(Achievement.FIRST_REPEATING_QUEST_CREATED));
+    }
 }
