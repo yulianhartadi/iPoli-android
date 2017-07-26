@@ -4,6 +4,7 @@ import io.ipoli.android.achievement.actions.AchievementAction;
 import io.ipoli.android.achievement.actions.CompleteDailyChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteQuestAction;
 import io.ipoli.android.achievement.actions.LevelUpAction;
+import io.ipoli.android.achievement.actions.WinCoinsAction;
 import io.ipoli.android.challenge.data.Challenge;
 
 /**
@@ -52,6 +53,16 @@ public class AchievementsProgressCoordinator {
                 break;
             case BUY_POWER_UP:
                 progress.incrementPowerUpBoughtCount();
+                break;
+            case WIN_COINS:
+                WinCoinsAction winCoinsAction = (WinCoinsAction) action;
+                progress.setLifeCoinCount(winCoinsAction.coins);
+                break;
+            case INVITE_FRIEND:
+                progress.incrementInvitedFriendCount();
+                break;
+            case CHANGE_PET:
+                progress.incrementPetChangedCount();
                 break;
         }
     }

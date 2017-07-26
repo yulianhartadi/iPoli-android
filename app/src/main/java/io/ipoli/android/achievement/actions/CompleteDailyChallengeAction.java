@@ -15,7 +15,7 @@ public class CompleteDailyChallengeAction extends SimpleAchievementAction {
     }
 
     public CompleteDailyChallengeAction(Challenge challenge) {
-        super(Action.COMPLETE_DAILY_CHALLENGE);
+        this();
         this.challenge = challenge;
     }
 }

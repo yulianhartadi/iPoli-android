@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.ipoli.android.achievement.actions.AchievementAction;
+import io.ipoli.android.achievement.actions.WinCoinsAction;
 import io.ipoli.android.achievement.actions.CompleteDailyChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteQuestAction;
 import io.ipoli.android.achievement.actions.LevelUpAction;
@@ -121,5 +122,23 @@ public class AchievementProgressCoordinatorTest {
     public void update_buyPowerUp_powerUpCountIs1() {
         AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.BUY_POWER_UP), progress);
         assertThat(progress.getPowerUpCount(), is(1));
+    }
+
+    @Test
+    public void update_collect1KCoins_lifeCoinCountIs1K() {
+        AchievementsProgressCoordinator.update(new WinCoinsAction(1000), progress);
+        assertThat(progress.getLifeCoinCount(), is(1000L));
+    }
+
+    @Test
+    public void update_inviteFriend_invitedFriendCountIs1() {
+        AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.INVITE_FRIEND), progress);
+        assertThat(progress.getInvitedFriendCount(), is(1));
+    }
+
+    @Test
+    public void update_changePet_petChangeCountIs1() {
+        AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.CHANGE_PET), progress);
+        assertThat(progress.getPetChangeCount(), is(1));
     }
 }

@@ -191,4 +191,39 @@ public class AchievementUnlockerTest {
         assertThat(unlockedAchievements.size(), is(1));
         assertTrue(unlockedAchievements.contains(Achievement.FIRST_POWER_UP));
     }
+
+    @Test
+    public void findUnlocked_collect1KCoins_unlockHave1KCoins() {
+        AchievementsProgress progress = new AchievementsProgress();
+        progress.setLifeCoinCount(1000L);
+        List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
+        assertThat(unlockedAchievements.size(), is(1));
+        assertTrue(unlockedAchievements.contains(Achievement.HAVE_1K_COINS));
+    }
+
+    @Test
+    public void findUnlocked_collectLessThan1KCoins_doNotUnlockHave1KCoins() {
+        AchievementsProgress progress = new AchievementsProgress();
+        progress.setLifeCoinCount(900L);
+        List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
+        assertThat(unlockedAchievements.size(), is(0));
+    }
+
+    @Test
+    public void findUnlocked_inviteFriend_unlockFirstFriendInvited() {
+        AchievementsProgress progress = new AchievementsProgress();
+        progress.incrementInvitedFriendCount();
+        List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
+        assertThat(unlockedAchievements.size(), is(1));
+        assertTrue(unlockedAchievements.contains(Achievement.INVITE_FRIEND));
+    }
+
+    @Test
+    public void findUnlocked_changePet_unlockFirstPetChanged() {
+        AchievementsProgress progress = new AchievementsProgress();
+        progress.incrementPetChangedCount();
+        List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
+        assertThat(unlockedAchievements.size(), is(1));
+        assertTrue(unlockedAchievements.contains(Achievement.CHANGE_PET));
+    }
 }

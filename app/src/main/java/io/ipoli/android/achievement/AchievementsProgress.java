@@ -139,6 +139,16 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     @JsonIgnore
+    public void incrementInvitedFriendCount() {
+        setInvitedFriendCount(getInvitedFriendCount() + 1);
+    }
+
+    @JsonIgnore
+    public void incrementPetChangedCount() {
+        setPetChangeCount(getPetChangeCount() + 1);
+    }
+
+    @JsonIgnore
     private ActionCountPerDay getDefaultActionCountPerDay() {
         return new ActionCountPerDay(0, LocalDate.now());
     }
@@ -281,7 +291,7 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public long getLifeCoinCount() {
-        if(lifeCoinCount == null) {
+        if (lifeCoinCount == null) {
             lifeCoinCount = Constants.DEFAULT_PLAYER_COINS;
         }
         return lifeCoinCount;
