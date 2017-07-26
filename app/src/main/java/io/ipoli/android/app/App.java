@@ -52,6 +52,7 @@ import io.ipoli.android.R;
 import io.ipoli.android.achievement.AchievementUnlocker;
 import io.ipoli.android.achievement.UnlockAchievementScheduler;
 import io.ipoli.android.achievement.actions.AchievementAction;
+import io.ipoli.android.achievement.actions.CompleteDailyChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteQuestAction;
 import io.ipoli.android.achievement.actions.LevelUpAction;
 import io.ipoli.android.achievement.actions.SimpleAchievementAction;
@@ -923,7 +924,7 @@ public class App extends MultiDexApplication {
             Challenge dailyChallenge = new Challenge();
             dailyChallenge.setExperience(xp);
             dailyChallenge.setCoins(coins);
-            givePlayerRewardForAction(dailyChallenge, new SimpleAchievementAction(AchievementAction.Action.COMPLETE_DAILY_CHALLENGE));
+            givePlayerRewardForAction(dailyChallenge, new CompleteDailyChallengeAction(dailyChallenge));
             showChallengeCompleteDialog(getString(R.string.daily_challenge_complete_dialog_title), xp, coins);
             eventBus.post(new DailyChallengeCompleteEvent());
         });

@@ -4,9 +4,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.ipoli.android.achievement.actions.AchievementAction;
+import io.ipoli.android.achievement.actions.CompleteDailyChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteQuestAction;
 import io.ipoli.android.achievement.actions.LevelUpAction;
 import io.ipoli.android.achievement.actions.SimpleAchievementAction;
+import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -42,6 +44,22 @@ public class AchievementProgressCoordinatorTest {
     }
 
     @Test
+    public void update_gain10XPFromCompletingQuest_gainedXPInADayIsIncreasedWith10() {
+        Quest quest = new Quest("Welcome");
+        quest.setExperience(10L);
+        AchievementsProgressCoordinator.update(new CompleteQuestAction(quest), progress);
+        assertThat(progress.getExperienceInADay().getCount(), is(10));
+    }
+
+    @Test
+    public void update_gain10XPFromCompletingDailyChallenge_gainedXPInADayIsIncreasedWith10() {
+        Challenge challenge = new Challenge();
+        challenge.setExperience(10L);
+        AchievementsProgressCoordinator.update(new CompleteDailyChallengeAction(challenge), progress);
+        assertThat(progress.getExperienceInADay().getCount(), is(10));
+    }
+
+    @Test
     public void update_levelUp_playerLevelIs15th() {
         AchievementsProgressCoordinator.update(new LevelUpAction(15), progress);
         assertThat(progress.getPlayerLevel(), is(15));
@@ -49,7 +67,9 @@ public class AchievementProgressCoordinatorTest {
 
     @Test
     public void update_completeDailyChallenge_completeDailyChallengeInARowCountIs5() {
-        AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.COMPLETE_DAILY_CHALLENGE), progress);
+        Challenge challenge = new Challenge();
+        challenge.setExperience(10L);
+        AchievementsProgressCoordinator.update(new CompleteDailyChallengeAction(challenge), progress);
         assertThat(progress.getCompletedDailyChallengesInARow().getCount(), is(1));
     }
 
