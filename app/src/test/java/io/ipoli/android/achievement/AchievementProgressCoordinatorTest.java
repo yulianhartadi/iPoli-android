@@ -91,4 +91,17 @@ public class AchievementProgressCoordinatorTest {
         assertThat(progress.getCreatedChallengeCount(), is(1));
     }
 
+    @Test
+    public void update_completeDailyChallenge_completedDailyChallengesCountIs1() {
+        Challenge challenge = new Challenge();
+        challenge.setExperience(10L);
+        AchievementsProgressCoordinator.update(new CompleteDailyChallengeAction(challenge), progress);
+        assertThat(progress.getCompletedDailyChallengeCount(), is(1));
+    }
+
+    @Test
+    public void update_createPost_createdPostCountIs1() {
+        AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.ADD_POST), progress);
+        assertThat(progress.getPostAddedCount(), is(1));
+    }
 }

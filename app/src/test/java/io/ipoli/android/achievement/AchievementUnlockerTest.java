@@ -144,4 +144,24 @@ public class AchievementUnlockerTest {
         assertThat(unlockedAchievements.size(), is(1));
         assertTrue(unlockedAchievements.contains(Achievement.FIRST_CHALLENGE_ACCEPTED));
     }
+
+    @Test
+    public void findUnlocked_completeDailyChallenge_unlockFirstDailyChallengeCompleted() {
+        AchievementsProgress progress = new AchievementsProgress();
+        progress.incrementCompletedDailyChallengeCount();
+        List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
+        assertThat(unlockedAchievements.size(), is(1));
+        assertTrue(unlockedAchievements.contains(Achievement.FIRST_DAILY_CHALLENGE_COMPLETED));
+    }
+
+    @Test
+    public void findUnlocked_create5Posts_unlockFirstPostAnd5PostsCreated() {
+        AchievementsProgress progress = new AchievementsProgress();
+        progress.setPostAddedCount(4);
+        progress.incrementPostAddedCount();
+        List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
+        assertThat(unlockedAchievements.size(), is(2));
+        assertTrue(unlockedAchievements.contains(Achievement.FIRST_POST_ADDED));
+        assertTrue(unlockedAchievements.contains(Achievement.FIVE_POSTS_ADDED));
+    }
 }
