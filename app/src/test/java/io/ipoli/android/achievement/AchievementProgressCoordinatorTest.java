@@ -141,4 +141,22 @@ public class AchievementProgressCoordinatorTest {
         AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.CHANGE_PET), progress);
         assertThat(progress.getPetChangeCount(), is(1));
     }
+
+    @Test
+    public void update_petDied_petDiedCountIs1() {
+        AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.PET_DIED), progress);
+        assertThat(progress.getPetDiedCount(), is(1));
+    }
+
+    @Test
+    public void update_follow_followCountIs1() {
+        AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.FOLLOW), progress);
+        assertThat(progress.getFollowCount(), is(1));
+    }
+
+    @Test
+    public void update_beFollowed_followerCountIs1() {
+        AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.IS_FOLLOWED), progress);
+        assertThat(progress.getFollowerCount(), is(1));
+    }
 }

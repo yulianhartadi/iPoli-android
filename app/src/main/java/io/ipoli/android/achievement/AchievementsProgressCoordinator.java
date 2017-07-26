@@ -64,6 +64,15 @@ public class AchievementsProgressCoordinator {
             case CHANGE_PET:
                 progress.incrementPetChangedCount();
                 break;
+            case PET_DIED:
+                progress.incrementPetDiedCount();
+                break;
+            case FOLLOW:
+                progress.incrementFollowCount();
+                break;
+            case IS_FOLLOWED:
+                progress.incrementFollowerCount();
+                break;
         }
     }
 }
