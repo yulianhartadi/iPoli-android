@@ -22,7 +22,7 @@ public class AchievementProgressCoordinatorTest {
 
     @Before
     public void beforeEachTest() {
-        progress = AchievementsProgress.create();
+        progress = new AchievementsProgress();
     }
 
     @Test

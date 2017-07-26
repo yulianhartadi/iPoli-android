@@ -26,7 +26,7 @@ public class AchievementUnlockerTest {
 
     @Test
     public void findUnlocked_1CompletedQuest_unlockFirstQuestCompleted() {
-        AchievementsProgress progress = AchievementsProgress.create();
+        AchievementsProgress progress = new AchievementsProgress();
         progress.incrementCompletedQuestCount();
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
         assertThat(unlockedAchievements.size(), is(1));
@@ -35,7 +35,7 @@ public class AchievementUnlockerTest {
 
     @Test
     public void findUnlocked_10CompletedQuests_unlockComplete10QuestsInADay() {
-        AchievementsProgress progress = AchievementsProgress.create();
+        AchievementsProgress progress = new AchievementsProgress();
         progress.setCompletedQuestsInADay(new ActionCountPerDay(9, LocalDate.now()));
         progress.incrementCompletedQuestsInADay();
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
@@ -45,7 +45,7 @@ public class AchievementUnlockerTest {
 
     @Test
     public void findUnlocked_lessThan10CompletedQuests_doNotUnlockComplete10QuestsInADay() {
-        AchievementsProgress progress = AchievementsProgress.create();
+        AchievementsProgress progress = new AchievementsProgress();
         progress.setCompletedQuestsInADay(new ActionCountPerDay(9, LocalDate.now().minusDays(1)));
         progress.incrementCompletedQuestsInADay();
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
@@ -54,7 +54,7 @@ public class AchievementUnlockerTest {
 
     @Test
     public void findUnlocked_100ExperienceInADay_unlock100ExperienceInADay() {
-        AchievementsProgress progress = AchievementsProgress.create();
+        AchievementsProgress progress = new AchievementsProgress();
         progress.setExperienceInADay(new ActionCountPerDay(90, LocalDate.now()));
         progress.incrementExperienceInADay(10);
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
@@ -64,7 +64,7 @@ public class AchievementUnlockerTest {
 
     @Test
     public void findUnlocked_lessThan100ExperienceInADay_doNotUnlock100ExperienceInADay() {
-        AchievementsProgress progress = AchievementsProgress.create();
+        AchievementsProgress progress = new AchievementsProgress();
         progress.setExperienceInADay(new ActionCountPerDay(90, LocalDate.now().minusDays(1)));
         progress.incrementExperienceInADay(10);
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
@@ -73,7 +73,7 @@ public class AchievementUnlockerTest {
 
     @Test
     public void findUnlocked_100CompletedQuestsInARow_unlockCompleteAQuest100DaysInARow() {
-        AchievementsProgress progress = AchievementsProgress.create();
+        AchievementsProgress progress = new AchievementsProgress();
         progress.setCompletedQuestsInARow(new ActionCountPerDay(99, LocalDate.now().minusDays(1)));
         progress.incrementCompletedQuestsInARow();
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
@@ -83,7 +83,7 @@ public class AchievementUnlockerTest {
 
     @Test
     public void findUnlocked_lessThanCompletedQuestsInARow_doNotUnlockCompleteAQuest100DaysInARow() {
-        AchievementsProgress progress = AchievementsProgress.create();
+        AchievementsProgress progress = new AchievementsProgress();
         progress.setCompletedQuestsInARow(new ActionCountPerDay(90, LocalDate.now().minusDays(2)));
         progress.incrementCompletedQuestsInARow();
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
@@ -92,7 +92,7 @@ public class AchievementUnlockerTest {
 
     @Test
     public void findUnlocked_levelUpTo15th_unlock15thLevelAchievement() {
-        AchievementsProgress progress = AchievementsProgress.create();
+        AchievementsProgress progress = new AchievementsProgress();
         progress.setPlayerLevel(15);
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
         assertThat(unlockedAchievements.size(), is(1));
@@ -101,7 +101,7 @@ public class AchievementUnlockerTest {
 
     @Test
     public void findUnlocked_5CompletedDailyChallengesInARow_unlockCompleteDailyChallenges5DaysInARow() {
-        AchievementsProgress progress = AchievementsProgress.create();
+        AchievementsProgress progress = new AchievementsProgress();
         progress.setCompletedDailyChallengesInARow(new ActionCountPerDay(4, LocalDate.now().minusDays(1)));
         progress.incrementCompletedDailyChallengesInARow();
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
@@ -111,7 +111,7 @@ public class AchievementUnlockerTest {
 
     @Test
     public void findUnlocked_lessThan5CompletedDailyChallengesInARow_doNotUnlockCompleteDailyChallenges5DaysInARow() {
-        AchievementsProgress progress = AchievementsProgress.create();
+        AchievementsProgress progress = new AchievementsProgress();
         progress.setCompletedQuestsInARow(new ActionCountPerDay(4, LocalDate.now().minusDays(2)));
         progress.incrementCompletedDailyChallengesInARow();
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
@@ -120,7 +120,7 @@ public class AchievementUnlockerTest {
 
     @Test
     public void findUnlocked_sentFeedback_unlockFeedbackSent() {
-        AchievementsProgress progress = AchievementsProgress.create();
+        AchievementsProgress progress = new AchievementsProgress();
         progress.incrementFeedbackSent();
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
         assertThat(unlockedAchievements.size(), is(1));

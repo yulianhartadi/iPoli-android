@@ -41,61 +41,44 @@ public class AchievementsProgress extends PersistedObject {
         super(TYPE);
     }
 
-    public static AchievementsProgress create() {
-        AchievementsProgress progress = new AchievementsProgress();
-        progress.setCompletedQuestsInADay(new ActionCountPerDay(0, LocalDate.now()));
-        progress.setExperienceInADay(new ActionCountPerDay(0, LocalDate.now()));
-        progress.setCompletedQuestsInARow(new ActionCountPerDay(0, LocalDate.now()));
-        progress.setCompletedDailyChallengesInARow(new ActionCountPerDay(0, LocalDate.now()));
-        progress.setCompletedQuestCount(0);
-        progress.setAvatarChangedCount(0);
-        progress.setCreatedChallengeCount(0);
-        progress.setCompletedDailyChallengeCount(0);
-        progress.setPostAddedCount(0);
-        progress.setCreatedRepeatedQuestCount(0);
-        progress.setRewardUsedCount(0);
-        progress.setLifeCoinCount(Constants.DEFAULT_PLAYER_COINS);
-        progress.setPlayerLevel(Constants.DEFAULT_PLAYER_LEVEL);
-        return progress;
-    }
-
     @JsonIgnore
     public void incrementCompletedQuestCount() {
-        completedQuestCount++;
+        setCompletedQuestCount(getCompletedQuestCount() + 1);
     }
 
     @JsonIgnore
     public void incrementCompletedDailyChallengeCount() {
-        completedDailyChallengeCount++;
+        setCompletedDailyChallengeCount(getCompletedDailyChallengeCount() + 1);
     }
 
     @JsonIgnore
     public void incrementChallengeAcceptedCount() {
-        createdChallengeCount++;
+        setCreatedChallengeCount(getCreatedChallengeCount() + 1);
     }
 
     @JsonIgnore
     public void incrementAvatarChangedCount() {
-        avatarChangedCount++;
+        setAvatarChangedCount(getAvatarChangedCount() + 1);
     }
 
     @JsonIgnore
     public void incrementPostAddedCount() {
-        postAddedCount++;
+        setPostAddedCount(getPostAddedCount() + 1);
     }
 
     @JsonIgnore
     public void incrementRepeatingQuestAddedCount() {
-        createdRepeatedQuestCount++;
+        setCreatedRepeatedQuestCount(getCreatedRepeatedQuestCount() + 1);
     }
 
     @JsonIgnore
     public void incrementRewardUsedCount() {
-        rewardUsedCount++;
+        setRewardUsedCount(getRewardUsedCount() + 1);
     }
 
     @JsonIgnore
     public void incrementCompletedQuestsInADay() {
+        ActionCountPerDay completedQuestsInADay = getCompletedQuestsInADay();
         long today = DateUtils.toMillis(LocalDate.now());
         if (completedQuestsInADay.getDate() == today) {
             completedQuestsInADay.increment();
@@ -107,6 +90,7 @@ public class AchievementsProgress extends PersistedObject {
 
     @JsonIgnore
     public void incrementExperienceInADay(int experience) {
+        ActionCountPerDay experienceInADay = getExperienceInADay();
         long today = DateUtils.toMillis(LocalDate.now());
         if (experienceInADay.getDate() == today) {
             experienceInADay.increment(experience);
@@ -118,6 +102,7 @@ public class AchievementsProgress extends PersistedObject {
 
     @JsonIgnore
     public void incrementCompletedQuestsInARow() {
+        ActionCountPerDay completedQuestsInARow = getCompletedQuestsInARow();
         long today = DateUtils.toMillis(LocalDate.now());
         long yesterday = DateUtils.toMillis(LocalDate.now().minusDays(1));
         if (completedQuestsInARow.getCount() == 0 || completedQuestsInARow.getDate() == yesterday) {
@@ -131,6 +116,7 @@ public class AchievementsProgress extends PersistedObject {
 
     @JsonIgnore
     public void incrementCompletedDailyChallengesInARow() {
+        ActionCountPerDay completedDailyChallengesInARow = getCompletedDailyChallengesInARow();
         long today = DateUtils.toMillis(LocalDate.now());
         long yesterday = DateUtils.toMillis(LocalDate.now().minusDays(1));
         if (completedDailyChallengesInARow.getCount() == 0 || completedDailyChallengesInARow.getDate() == yesterday) {
@@ -147,7 +133,15 @@ public class AchievementsProgress extends PersistedObject {
         setFeedbackSentCount(getFeedbackSentCount() + 1);
     }
 
+    @JsonIgnore
+    private ActionCountPerDay getDefaultActionCountPerDay() {
+        return new ActionCountPerDay(0, LocalDate.now());
+    }
+
     public Integer getCompletedQuestCount() {
+        if (completedQuestCount == null) {
+            completedQuestCount = 0;
+        }
         return completedQuestCount;
     }
 
@@ -156,14 +150,21 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public ActionCountPerDay getCompletedQuestsInADay() {
+        if (completedQuestsInADay == null) {
+            completedQuestsInADay = getDefaultActionCountPerDay();
+        }
         return completedQuestsInADay;
     }
+
 
     public void setCompletedQuestsInADay(ActionCountPerDay completedQuestsInADay) {
         this.completedQuestsInADay = completedQuestsInADay;
     }
 
     public ActionCountPerDay getExperienceInADay() {
+        if (experienceInADay == null) {
+            experienceInADay = getDefaultActionCountPerDay();
+        }
         return experienceInADay;
     }
 
@@ -172,6 +173,9 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public ActionCountPerDay getCompletedQuestsInARow() {
+        if (completedQuestsInARow == null) {
+            completedQuestsInARow = getDefaultActionCountPerDay();
+        }
         return completedQuestsInARow;
     }
 
@@ -180,6 +184,9 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public ActionCountPerDay getCompletedDailyChallengesInARow() {
+        if (completedDailyChallengesInARow == null) {
+            completedDailyChallengesInARow = getDefaultActionCountPerDay();
+        }
         return completedDailyChallengesInARow;
     }
 
@@ -188,6 +195,9 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public Integer getPlayerLevel() {
+        if (playerLevel == null) {
+            playerLevel = Constants.DEFAULT_PLAYER_LEVEL;
+        }
         return playerLevel;
     }
 
@@ -196,6 +206,9 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public Integer getCreatedChallengeCount() {
+        if (createdChallengeCount == null) {
+            createdChallengeCount = 0;
+        }
         return createdChallengeCount;
     }
 
@@ -204,6 +217,9 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public Integer getAvatarChangedCount() {
+        if (avatarChangedCount == null) {
+            avatarChangedCount = 0;
+        }
         return avatarChangedCount;
     }
 
@@ -212,6 +228,9 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public Integer getCompletedDailyChallengeCount() {
+        if (completedDailyChallengeCount == null) {
+            completedDailyChallengeCount = 0;
+        }
         return completedDailyChallengeCount;
     }
 
@@ -220,6 +239,9 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public Integer getPostAddedCount() {
+        if (postAddedCount == null) {
+            postAddedCount = 0;
+        }
         return postAddedCount;
     }
 
@@ -228,6 +250,9 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public Integer getCreatedRepeatedQuestCount() {
+        if (createdRepeatedQuestCount == null) {
+            createdRepeatedQuestCount = 0;
+        }
         return createdRepeatedQuestCount;
     }
 
@@ -236,6 +261,9 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public Integer getRewardUsedCount() {
+        if (rewardUsedCount == null) {
+            rewardUsedCount = 0;
+        }
         return rewardUsedCount;
     }
 
@@ -248,11 +276,14 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public long getLifeCoinCount() {
+        if(lifeCoinCount == null) {
+            lifeCoinCount = Constants.DEFAULT_PLAYER_COINS;
+        }
         return lifeCoinCount;
     }
 
     public int getInvitedFriendCount() {
-        if(invitedFriendCount == null) {
+        if (invitedFriendCount == null) {
             invitedFriendCount = 0;
         }
         return invitedFriendCount;
@@ -263,7 +294,7 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public int getPetChangeCount() {
-        if(petChangeCount == null) {
+        if (petChangeCount == null) {
             petChangeCount = 0;
         }
         return petChangeCount;
@@ -274,7 +305,7 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public int getPetDiedCount() {
-        if(petDiedCount == null) {
+        if (petDiedCount == null) {
             petDiedCount = 0;
         }
         return petDiedCount;
@@ -285,7 +316,7 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public int getFollowCount() {
-        if(followCount == null) {
+        if (followCount == null) {
             followCount = 0;
         }
         return followCount;
@@ -296,7 +327,7 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public int getFollowerCount() {
-        if(followerCount == null) {
+        if (followerCount == null) {
             followerCount = 0;
         }
         return followerCount;
@@ -307,7 +338,7 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public Integer getFeedbackSentCount() {
-        if(feedbackSentCount == null) {
+        if (feedbackSentCount == null) {
             feedbackSentCount = 0;
         }
         return feedbackSentCount;
@@ -318,7 +349,7 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     public Integer getPowerUpCount() {
-        if(powerUpCount == null) {
+        if (powerUpCount == null) {
             powerUpCount = 0;
         }
         return powerUpCount;
@@ -327,4 +358,6 @@ public class AchievementsProgress extends PersistedObject {
     public void setPowerUpCount(Integer powerUpCount) {
         this.powerUpCount = powerUpCount;
     }
+
+
 }

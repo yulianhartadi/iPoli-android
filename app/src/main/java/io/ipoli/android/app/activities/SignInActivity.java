@@ -469,7 +469,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         }
 
         playerPersistenceService.save(player, playerId);
-        achievementProgressPersistenceService.save(AchievementsProgress.create());
+        achievementProgressPersistenceService.save(new AchievementsProgress());
         return player;
     }
 
