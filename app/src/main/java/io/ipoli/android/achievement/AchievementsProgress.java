@@ -149,6 +149,21 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     @JsonIgnore
+    public void incrementPetDiedCount() {
+        setPetDiedCount(getPetDiedCount() + 1);
+    }
+
+    @JsonIgnore
+    public void incrementFollowCount() {
+        setFollowCount(getFollowerCount() + 1);
+    }
+
+    @JsonIgnore
+    public void incrementFollowerCount() {
+        setFollowerCount(getFollowerCount() + 1);
+    }
+
+    @JsonIgnore
     private ActionCountPerDay getDefaultActionCountPerDay() {
         return new ActionCountPerDay(0, LocalDate.now());
     }
