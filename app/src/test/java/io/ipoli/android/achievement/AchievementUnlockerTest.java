@@ -142,7 +142,7 @@ public class AchievementUnlockerTest {
         progress.incrementChallengeAcceptedCount();
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
         assertThat(unlockedAchievements.size(), is(1));
-        assertTrue(unlockedAchievements.contains(Achievement.FIRST_CHALLENGE_ACCEPTED));
+        assertTrue(unlockedAchievements.contains(Achievement.FIRST_CHALLENGE_CREATED));
     }
 
     @Test
@@ -161,8 +161,8 @@ public class AchievementUnlockerTest {
         progress.incrementPostAddedCount();
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
         assertThat(unlockedAchievements.size(), is(2));
-        assertTrue(unlockedAchievements.contains(Achievement.FIRST_POST_ADDED));
-        assertTrue(unlockedAchievements.contains(Achievement.FIVE_POSTS_ADDED));
+        assertTrue(unlockedAchievements.contains(Achievement.FIRST_POST_CREATED));
+        assertTrue(unlockedAchievements.contains(Achievement.FIVE_POSTS_CREATED));
     }
 
     @Test
