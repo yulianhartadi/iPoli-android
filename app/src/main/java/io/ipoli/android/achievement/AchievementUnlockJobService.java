@@ -38,8 +38,6 @@ import io.ipoli.android.player.persistence.PlayerPersistenceService;
  */
 public class AchievementUnlockJobService extends JobService {
 
-    public static final int JOB_ID = 3;
-
     @Inject
     FeedPersistenceService feedPersistenceService;
 
