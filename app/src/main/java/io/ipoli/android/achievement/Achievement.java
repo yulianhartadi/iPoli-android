@@ -4,8 +4,6 @@ import android.support.annotation.StringRes;
 
 import io.ipoli.android.R;
 
-import static io.ipoli.android.R.string.achievement_first_quest_completed_name;
-
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 7/24/17.
@@ -111,23 +109,23 @@ public enum Achievement {
             15, 100),
     LEVEL_20TH(7,
             Category.GOLD,
-            achievement_first_quest_completed_name,
-            achievement_first_quest_completed_name,
+            R.string.achievement_reach_level_20th_name,
+            R.string.achievement_reach_level_20th_desc,
             100, 300),
     GAIN_500_XP_IN_A_DAY(3,
             Category.GOLD,
-            achievement_first_quest_completed_name,
-            achievement_first_quest_completed_name,
+            R.string.achievement_gain_xp_in_a_day_name,
+            R.string.achievement_gain_xp_in_a_day_desc,
             100, 300),
     COMPLETE_QUEST_FOR_100_DAYS_IN_A_ROW(4,
             Category.GOLD,
-            achievement_first_quest_completed_name,
-            achievement_first_quest_completed_name,
+            R.string.achievement_complete_quests_in_row_name,
+            R.string.achievement_complete_quests_in_row_desc,
             100, 300),
     FEEDBACK_SENT(22,
             Category.GOLD,
-            achievement_first_quest_completed_name,
-            achievement_first_quest_completed_name,
+            R.string.achievement_send_feedback_name,
+            R.string.achievement_send_feedback_desc,
             100, 300);
 
     public final int code;
