@@ -5,6 +5,7 @@ import javax.inject.Singleton;
 import dagger.Component;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.achievement.AchievementUnlockJobService;
+import io.ipoli.android.achievement.ui.AchievementListActivity;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
@@ -283,6 +284,8 @@ public interface AppComponent {
     void inject(QuestPickerActivity questPickerActivity);
 
     void inject(ProfileActivity profileActivity);
+
+    void inject(AchievementListActivity achievementListActivity);
 
     void inject(FeedFragment feedFragment);
 

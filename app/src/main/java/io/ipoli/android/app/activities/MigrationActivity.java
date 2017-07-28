@@ -29,6 +29,8 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.achievement.AchievementsProgress;
+import io.ipoli.android.achievement.persistence.AchievementProgressPersistenceService;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.events.AppErrorEvent;
@@ -53,9 +55,11 @@ import io.ipoli.android.store.PowerUp;
  */
 
 public class MigrationActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Boolean> {
+
     private static final int VERSION_BEFORE_UPGRADES = 3;
     private static final int NEW_CALENDAR_IMPORT_VERSION = 6;
     private static final int SUBSCRIPTIONS_FIRST_VERSION = 8;
+    private static final int ACHIEVEMENTS_FIRST_VERSION = 9;
 
     @Inject
     Api api;
@@ -77,6 +81,9 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
 
     @Inject
     RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+
+    @Inject
+    AchievementProgressPersistenceService achievementProgressPersistenceService;
 
     private int schemaVersion;
 
@@ -126,7 +133,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
     @Override
     public Loader<Boolean> onCreateLoader(int id, Bundle args) {
         return new MigrationLoader(this, schemaVersion, getPlayerId(), playerPersistenceService,
-                database, eventBus, questPersistenceService, repeatingQuestPersistenceService);
+                database, eventBus, questPersistenceService, repeatingQuestPersistenceService, achievementProgressPersistenceService);
     }
 
     @Override
@@ -158,10 +165,11 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
         private Bus eventBus;
         private QuestPersistenceService questPersistenceService;
         private RepeatingQuestPersistenceService repeatingQuestPersistenceService;
+        private final AchievementProgressPersistenceService achievementProgressPersistenceService;
 
         public MigrationLoader(Context context, int schemaVersion, String playerId, PlayerPersistenceService playerPersistenceService,
                                Database database, Bus eventBus, QuestPersistenceService questPersistenceService,
-                               RepeatingQuestPersistenceService repeatingQuestPersistenceService) {
+                               RepeatingQuestPersistenceService repeatingQuestPersistenceService, AchievementProgressPersistenceService achievementProgressPersistenceService) {
             super(context);
             this.schemaVersion = schemaVersion;
             this.playerId = playerId;
@@ -170,6 +178,7 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
             this.eventBus = eventBus;
             this.questPersistenceService = questPersistenceService;
             this.repeatingQuestPersistenceService = repeatingQuestPersistenceService;
+            this.achievementProgressPersistenceService = achievementProgressPersistenceService;
         }
 
         @Override
@@ -183,7 +192,11 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
             UnsavedRevision revision = database.getExistingDocument(playerId).createRevision();
             Map<String, Object> playerProperties = revision.getProperties();
 
-            updateAvatars(playerProperties);
+            migrateAchievementProgress();
+
+            if (schemaVersion < ACHIEVEMENTS_FIRST_VERSION) {
+                updateAvatars(playerProperties);
+            }
 
             if (schemaVersion < SUBSCRIPTIONS_FIRST_VERSION) {
                 migrateRewardPoints(playerProperties);
@@ -211,6 +224,10 @@ public class MigrationActivity extends BaseActivity implements LoaderManager.Loa
             }
 
             return migrationSuccessful;
+        }
+
+        private void migrateAchievementProgress() {
+            achievementProgressPersistenceService.save(new AchievementsProgress());
         }
 
         @Override
