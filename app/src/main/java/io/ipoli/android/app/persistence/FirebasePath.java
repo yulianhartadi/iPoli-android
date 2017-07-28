@@ -36,6 +36,10 @@ public class FirebasePath {
         return new FirebasePath(path + "/" + pathSegment);
     }
 
+    public FirebasePath add(Integer pathSegment) {
+        return new FirebasePath(path + "/" + pathSegment);
+    }
+
     @Override
     public String toString() {
         return path;

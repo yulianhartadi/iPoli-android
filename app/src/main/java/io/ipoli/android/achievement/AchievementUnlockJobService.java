@@ -4,6 +4,8 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 
@@ -24,6 +26,7 @@ import io.ipoli.android.achievement.ui.AchievementData;
 import io.ipoli.android.achievement.ui.AchievementUnlocked;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.AppErrorEvent;
+import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.events.LevelUpEvent;
@@ -36,6 +39,9 @@ import io.ipoli.android.player.persistence.PlayerPersistenceService;
 public class AchievementUnlockJobService extends JobService {
 
     public static final int JOB_ID = 3;
+
+    @Inject
+    FeedPersistenceService feedPersistenceService;
 
     @Inject
     PlayerPersistenceService playerPersistenceService;
@@ -96,14 +102,18 @@ public class AchievementUnlockJobService extends JobService {
                     player.addCoins(achievement.coins);
                 }
                 increasePlayerLevelIfNeeded(player);
-                playerPersistenceService.save(player);
 
+                new Handler(Looper.getMainLooper()).post(() -> playerPersistenceService.save(player));
+
+                if(!achievementsToUnlock.isEmpty()) {
+                    feedPersistenceService.incrementAchievements(achievementsToUnlock);
+                }
                 return achievementsToUnlock;
             }
 
             @Override
             protected void onPostExecute(List<Achievement> achievements) {
-                if(achievements.isEmpty()) {
+                if (achievements.isEmpty()) {
                     jobFinished(jobParameters, false);
                     return;
                 }
