@@ -502,8 +502,7 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     public void onRateDialogFeedbackSent(RateDialogFeedbackSentEvent e) {
         log("rate_dialog_feedback_sent", EventParams.create()
                 .add("feedback", e.feedback)
-                .add("app_run", String.valueOf(e.appRun))
-                .add("date_time", e.dateTime.toString()));
+                .add("app_run", String.valueOf(e.appRun)));
     }
 
     @Subscribe

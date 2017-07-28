@@ -83,6 +83,7 @@ import io.ipoli.android.app.events.StartQuickAddEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
+import io.ipoli.android.app.rate.events.RateDialogFeedbackSentEvent;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
@@ -1135,6 +1136,10 @@ public class App extends MultiDexApplication {
         checkForUnlockedAchievement(AchievementAction.Action.FOLLOW);
     }
 
+    @Subscribe
+    public void onFeedbackSent(RateDialogFeedbackSentEvent e) {
+        checkForUnlockedAchievement(AchievementAction.Action.SEND_FEEDBACK);
+    }
 
     @Subscribe
     public void onStartPowerUpDialogRequest(StartPowerUpDialogRequestEvent e) {
