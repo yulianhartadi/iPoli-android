@@ -10,6 +10,7 @@ import io.ipoli.android.achievement.actions.AchievementsUnlockedAction;
 import io.ipoli.android.achievement.actions.CompleteChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteDailyChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteQuestAction;
+import io.ipoli.android.achievement.actions.IsFollowedAction;
 import io.ipoli.android.achievement.actions.LevelUpAction;
 import io.ipoli.android.achievement.actions.SimpleAchievementAction;
 import io.ipoli.android.achievement.actions.WinCoinsAction;
@@ -163,9 +164,9 @@ public class AchievementProgressCoordinatorTest {
     }
 
     @Test
-    public void update_beFollowed_followerCountIs1() {
-        AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.IS_FOLLOWED), progress);
-        assertThat(progress.getFollowerCount(), is(1));
+    public void update_beFollowed_followerCountIs2() {
+        AchievementsProgressCoordinator.update(new IsFollowedAction(2), progress);
+        assertThat(progress.getFollowerCount(), is(2));
     }
 
     @Test

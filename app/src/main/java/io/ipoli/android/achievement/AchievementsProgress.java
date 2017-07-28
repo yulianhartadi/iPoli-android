@@ -165,11 +165,6 @@ public class AchievementsProgress extends PersistedObject {
     }
 
     @JsonIgnore
-    public void incrementFollowerCount() {
-        setFollowerCount(getFollowerCount() + 1);
-    }
-
-    @JsonIgnore
     private ActionCountPerDay getDefaultActionCountPerDay() {
         return new ActionCountPerDay(0, LocalDate.now());
     }

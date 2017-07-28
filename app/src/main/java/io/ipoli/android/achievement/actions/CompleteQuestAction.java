@@ -15,7 +15,7 @@ public class CompleteQuestAction extends SimpleAchievementAction {
     }
 
     public CompleteQuestAction(Quest quest) {
-        super(Action.COMPLETE_QUEST);
+        this();
         this.quest = quest;
     }
 }

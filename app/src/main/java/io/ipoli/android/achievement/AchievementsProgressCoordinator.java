@@ -5,6 +5,7 @@ import io.ipoli.android.achievement.actions.AchievementsUnlockedAction;
 import io.ipoli.android.achievement.actions.CompleteChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteDailyChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteQuestAction;
+import io.ipoli.android.achievement.actions.IsFollowedAction;
 import io.ipoli.android.achievement.actions.LevelUpAction;
 import io.ipoli.android.achievement.actions.WinCoinsAction;
 import io.ipoli.android.challenge.data.Challenge;
@@ -78,7 +79,8 @@ public class AchievementsProgressCoordinator {
                 progress.incrementFollowCount();
                 break;
             case IS_FOLLOWED:
-                progress.incrementFollowerCount();
+                IsFollowedAction isFollowedAction = (IsFollowedAction) action;
+                progress.setFollowerCount(isFollowedAction.followersCount);
                 break;
             case UNLOCK_ACHIEVEMENTS:
                 AchievementsUnlockedAction achievementsUnlockedAction = (AchievementsUnlockedAction) action;

@@ -20,7 +20,8 @@ public interface AchievementAction {
         PET_DIED,
         FOLLOW,
         IS_FOLLOWED,
-        UNLOCK_ACHIEVEMENTS, SEND_FEEDBACK
+        UNLOCK_ACHIEVEMENTS,
+        SEND_FEEDBACK
     }
 
     Action getAction();

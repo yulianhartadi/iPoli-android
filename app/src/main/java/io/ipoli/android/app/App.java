@@ -57,6 +57,7 @@ import io.ipoli.android.achievement.actions.AchievementsUnlockedAction;
 import io.ipoli.android.achievement.actions.CompleteChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteDailyChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteQuestAction;
+import io.ipoli.android.achievement.actions.IsFollowedAction;
 import io.ipoli.android.achievement.actions.LevelUpAction;
 import io.ipoli.android.achievement.actions.SimpleAchievementAction;
 import io.ipoli.android.achievement.events.AchievementsUnlockedEvent;
@@ -519,6 +520,11 @@ public class App extends MultiDexApplication {
         Player player = getPlayer();
         if (player.isAuthenticated() && player.hasUsername()) {
             listenForPlayerChanges();
+            feedPersistenceService.findProfile(playerId, profile -> {
+                if(!profile.getFollowers().isEmpty()) {
+                    checkForUnlockedAchievement(new IsFollowedAction(profile.getFollowers().size()));
+                }
+            });
         }
     }
 
