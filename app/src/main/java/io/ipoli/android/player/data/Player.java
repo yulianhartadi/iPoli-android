@@ -460,7 +460,7 @@ public class Player extends PersistedObject {
     }
 
     public Map<Integer, Long> getAchievements() {
-        if(achievements == null) {
+        if (achievements == null) {
             achievements = new HashMap<>();
         }
         return achievements;
@@ -499,7 +499,7 @@ public class Player extends PersistedObject {
     public Map<PowerUp, LocalDate> getPowerUps() {
         Map<PowerUp, LocalDate> result = new HashMap<>();
         Map<Integer, Long> powerUpsMap = getInventory().getPowerUps();
-        for(Map.Entry<Integer, Long> entry : powerUpsMap.entrySet()) {
+        for (Map.Entry<Integer, Long> entry : powerUpsMap.entrySet()) {
             result.put(PowerUp.get(entry.getKey()), DateUtils.fromMillis(entry.getValue()));
         }
         return result;
@@ -508,8 +508,8 @@ public class Player extends PersistedObject {
     @JsonIgnore
     public void unlockAchievements(List<Achievement> achievementsToUnlock) {
         long today = DateUtils.toMillis(LocalDate.now());
-        for(Achievement achievement : achievementsToUnlock) {
-            achievements.put(achievement.code, today);
+        for (Achievement achievement : achievementsToUnlock) {
+            getAchievements().put(achievement.code, today);
         }
     }
 }
