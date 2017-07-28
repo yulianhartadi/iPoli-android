@@ -153,9 +153,9 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
 
     private NumberFormat numberFormatter;
 
-    class TabPagerAdapter extends FragmentPagerAdapter {
+    private class TabPagerAdapter extends FragmentPagerAdapter {
 
-        public TabPagerAdapter(FragmentManager fragmentManager) {
+        TabPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
         }
 
