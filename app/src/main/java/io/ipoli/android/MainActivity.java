@@ -46,6 +46,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.ipoli.android.achievement.ui.AchievementListActivity;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.activities.SignInActivity;
 import io.ipoli.android.app.events.AvatarCoinsTappedEvent;
@@ -208,6 +209,8 @@ public class MainActivity extends BaseActivity implements
         };
 
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
+
+        startActivity(new Intent(this, AchievementListActivity.class));
     }
 
     @Override
