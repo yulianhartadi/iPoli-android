@@ -935,6 +935,8 @@
     <string name="achievement_first_follow_desc">Follow your first Player</string>
     <string name="achievement_first_follower_name">Acknowledged</string>
     <string name="achievement_first_follower_desc">Get your first follower</string>
+    <string name="achievement_first_challenge_completed_name">Gladiator</string>
+    <string name="achievement_first_challenge_completed_desc">First challenge completed</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

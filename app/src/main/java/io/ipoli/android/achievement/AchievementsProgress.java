@@ -36,6 +36,7 @@ public class AchievementsProgress extends PersistedObject {
     private Integer followerCount;
     private Integer feedbackSentCount;
     private Integer powerUpCount;
+    private Integer completedChallengesCount;
 
     public AchievementsProgress() {
         super(TYPE);
@@ -54,6 +55,11 @@ public class AchievementsProgress extends PersistedObject {
     @JsonIgnore
     public void incrementChallengeAcceptedCount() {
         setCreatedChallengeCount(getCreatedChallengeCount() + 1);
+    }
+
+    @JsonIgnore
+    public void incrementCompletedChallengesCount() {
+        setCompletedChallengesCount(getCompletedChallengesCount() + 1);
     }
 
     @JsonIgnore
@@ -387,5 +393,16 @@ public class AchievementsProgress extends PersistedObject {
 
     public void setPowerUpCount(Integer powerUpCount) {
         this.powerUpCount = powerUpCount;
+    }
+
+    public Integer getCompletedChallengesCount() {
+        if(completedChallengesCount == null) {
+            completedChallengesCount = 0;
+        }
+        return completedChallengesCount;
+    }
+
+    public void setCompletedChallengesCount(Integer completedChallengesCount) {
+        this.completedChallengesCount = completedChallengesCount;
     }
 }

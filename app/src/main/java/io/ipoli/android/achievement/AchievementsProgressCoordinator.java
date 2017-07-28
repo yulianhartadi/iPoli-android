@@ -1,6 +1,7 @@
 package io.ipoli.android.achievement;
 
 import io.ipoli.android.achievement.actions.AchievementAction;
+import io.ipoli.android.achievement.actions.CompleteChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteDailyChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteQuestAction;
 import io.ipoli.android.achievement.actions.LevelUpAction;
@@ -22,6 +23,11 @@ public class AchievementsProgressCoordinator {
                 progress.incrementExperienceInADay(completeQuestAction.quest.getExperience().intValue());
                 progress.incrementCompletedQuestsInARow();
                 break;
+            case COMPLETE_CHALLENGE:
+                CompleteChallengeAction completeChallengeAction = (CompleteChallengeAction) action;
+                progress.incrementCompletedChallengesCount();
+                progress.incrementExperienceInADay(completeChallengeAction.challenge.getExperience().intValue());
+                break;
             case LEVEL_UP:
                 int newPlayerLevel = ((LevelUpAction) action).level;
                 progress.setPlayerLevel(newPlayerLevel);
@@ -33,7 +39,7 @@ public class AchievementsProgressCoordinator {
                 Challenge challenge = completeDailyChallengeAction.challenge;
                 progress.incrementExperienceInADay(challenge.getExperience().intValue());
                 break;
-            case COMPLETE_REPEATING_QUEST:
+            case CREATE_REPEATING_QUEST:
                 progress.incrementRepeatingQuestCreatedCount();
                 break;
             case CREATE_CHALLENGE:

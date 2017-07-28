@@ -53,19 +53,19 @@ public class AchievementUnlockerTest {
     }
 
     @Test
-    public void findUnlocked_100ExperienceInADay_unlock100ExperienceInADay() {
+    public void findUnlocked_500ExperienceInADay_unlock500ExperienceInADay() {
         AchievementsProgress progress = new AchievementsProgress();
-        progress.setExperienceInADay(new ActionCountPerDay(90, LocalDate.now()));
+        progress.setExperienceInADay(new ActionCountPerDay(490, LocalDate.now()));
         progress.incrementExperienceInADay(10);
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
         assertThat(unlockedAchievements.size(), is(1));
-        assertTrue(unlockedAchievements.contains(Achievement.GAIN_100_XP_IN_A_DAY));
+        assertTrue(unlockedAchievements.contains(Achievement.GAIN_500_XP_IN_A_DAY));
     }
 
     @Test
-    public void findUnlocked_lessThan100ExperienceInADay_doNotUnlock100ExperienceInADay() {
+    public void findUnlocked_lessThan500ExperienceInADay_doNotUnlock500ExperienceInADay() {
         AchievementsProgress progress = new AchievementsProgress();
-        progress.setExperienceInADay(new ActionCountPerDay(90, LocalDate.now().minusDays(1)));
+        progress.setExperienceInADay(new ActionCountPerDay(490, LocalDate.now().minusDays(1)));
         progress.incrementExperienceInADay(10);
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
         assertThat(unlockedAchievements.size(), is(0));
@@ -225,5 +225,14 @@ public class AchievementUnlockerTest {
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
         assertThat(unlockedAchievements.size(), is(1));
         assertTrue(unlockedAchievements.contains(Achievement.CHANGE_PET));
+    }
+
+    @Test
+    public void findUnlocked_completeChallenge_unlockFirstChallengeCompleted() {
+        AchievementsProgress progress = new AchievementsProgress();
+        progress.incrementCompletedChallengesCount();
+        List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
+        assertThat(unlockedAchievements.size(), is(1));
+        assertTrue(unlockedAchievements.contains(Achievement.FIRST_CHALLENGE_COMPLETED));
     }
 }

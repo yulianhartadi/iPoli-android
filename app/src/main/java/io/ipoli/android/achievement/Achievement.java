@@ -47,6 +47,11 @@ public enum Achievement {
             R.string.achievement_first_avatar_changed_name,
             R.string.achievement_first_avatar_changed_desc,
             0, 0),
+    FIRST_CHALLENGE_COMPLETED(23,
+            Category.SILVER,
+            R.string.achievement_first_challenge_completed_name,
+            R.string.achievement_first_challenge_completed_desc,
+            15, 100),
     FIVE_POSTS_CREATED(14,
             Category.SILVER,
             R.string.achievement_five_posts_created_name,
@@ -72,11 +77,13 @@ public enum Achievement {
             R.string.achievement_first_power_up_name,
             R.string.achievement_first_power_up_desc,
             15, 100),
+    //? on app start
     HAVE_1K_COINS(16,
             Category.SILVER,
             R.string.achievement_have_1k_coins_name,
             R.string.achievement_have_1k_coins_desc,
             15, 100),
+    //?
     INVITE_FRIEND(17,
             Category.SILVER,
             R.string.achievement_invite_friend_name,
@@ -97,6 +104,7 @@ public enum Achievement {
             R.string.achievement_first_follow_name,
             R.string.achievement_first_follow_desc,
             15, 100),
+    // on app start ?
     FIRST_FOLLOWER(21,
             Category.SILVER,
             R.string.achievement_first_follower_name,
@@ -106,22 +114,22 @@ public enum Achievement {
             Category.GOLD,
             achievement_first_quest_completed_name,
             achievement_first_quest_completed_name,
-            100, 500),
-    GAIN_100_XP_IN_A_DAY(3,
+            100, 300),
+    GAIN_500_XP_IN_A_DAY(3,
             Category.GOLD,
             achievement_first_quest_completed_name,
             achievement_first_quest_completed_name,
-            100, 500),
+            100, 300),
     COMPLETE_QUEST_FOR_100_DAYS_IN_A_ROW(4,
             Category.GOLD,
             achievement_first_quest_completed_name,
             achievement_first_quest_completed_name,
-            100, 500),
+            100, 300),
     FEEDBACK_SENT(22,
             Category.GOLD,
             achievement_first_quest_completed_name,
             achievement_first_quest_completed_name,
-            100, 500);
+            100, 300);
 
     public final int code;
 

@@ -5,7 +5,6 @@ public interface AchievementAction {
     enum Action {
         COMPLETE_QUEST,
         ADD_POST,
-        COMPLETE_REPEATING_QUEST,
         CREATE_CHALLENGE,
         CREATE_REPEATING_QUEST,
         COMPLETE_DAILY_CHALLENGE,

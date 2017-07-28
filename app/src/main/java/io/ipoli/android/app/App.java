@@ -115,6 +115,7 @@ import io.ipoli.android.player.activities.LevelUpActivity;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
+import io.ipoli.android.player.events.PlayerFollowedEvent;
 import io.ipoli.android.player.events.PlayerSignedInEvent;
 import io.ipoli.android.player.events.ProfileCreatedEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
@@ -150,6 +151,8 @@ import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
 import io.ipoli.android.reward.events.RewardUsedEvent;
 import io.ipoli.android.store.events.AvatarChangedEvent;
+import io.ipoli.android.store.events.PetChangedEvent;
+import io.ipoli.android.store.events.PowerUpEnabledEvent;
 import okhttp3.Cookie;
 
 import static io.ipoli.android.feed.persistence.FirebaseFeedPersistenceService.profilePath;
@@ -239,6 +242,9 @@ public class App extends MultiDexApplication {
 
         if (healthPoints < 0 && initialState != currentState && (currentState == Pet.PetState.DEAD || currentState == Pet.PetState.SAD)) {
             notifyPetStateChanged(pet);
+            if(currentState == Pet.PetState.DEAD) {
+                checkForUnlockedAchievement(AchievementAction.Action.PET_DIED);
+            }
         }
     }
 
@@ -1100,6 +1106,22 @@ public class App extends MultiDexApplication {
     public void onAvatarChanged(AvatarChangedEvent e) {
         checkForUnlockedAchievement(AchievementAction.Action.CHANGE_AVATAR);
     }
+
+    @Subscribe
+    public void onPetChanged(PetChangedEvent e) {
+        checkForUnlockedAchievement(AchievementAction.Action.CHANGE_PET);
+    }
+
+    @Subscribe
+    public void onPowerUpEnabled(PowerUpEnabledEvent e) {
+        checkForUnlockedAchievement(AchievementAction.Action.BUY_POWER_UP);
+    }
+
+    @Subscribe
+    public void onPlayerFollowed(PlayerFollowedEvent e) {
+        checkForUnlockedAchievement(AchievementAction.Action.FOLLOW);
+    }
+
 
     @Subscribe
     public void onStartPowerUpDialogRequest(StartPowerUpDialogRequestEvent e) {

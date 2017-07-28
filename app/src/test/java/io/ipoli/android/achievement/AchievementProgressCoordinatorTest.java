@@ -1,9 +1,12 @@
 package io.ipoli.android.achievement;
 
+import android.support.annotation.NonNull;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import io.ipoli.android.achievement.actions.AchievementAction;
+import io.ipoli.android.achievement.actions.CompleteChallengeAction;
 import io.ipoli.android.achievement.actions.WinCoinsAction;
 import io.ipoli.android.achievement.actions.CompleteDailyChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteQuestAction;
@@ -54,8 +57,7 @@ public class AchievementProgressCoordinatorTest {
 
     @Test
     public void update_gain10XPFromCompletingDailyChallenge_gainedXPInADayIsIncreasedWith10() {
-        Challenge challenge = new Challenge();
-        challenge.setExperience(10L);
+        Challenge challenge = createChallenge();
         AchievementsProgressCoordinator.update(new CompleteDailyChallengeAction(challenge), progress);
         assertThat(progress.getExperienceInADay().getCount(), is(10));
     }
@@ -68,10 +70,16 @@ public class AchievementProgressCoordinatorTest {
 
     @Test
     public void update_completeDailyChallenge_completeDailyChallengeInARowCountIs5() {
-        Challenge challenge = new Challenge();
-        challenge.setExperience(10L);
+        Challenge challenge = createChallenge();
         AchievementsProgressCoordinator.update(new CompleteDailyChallengeAction(challenge), progress);
         assertThat(progress.getCompletedDailyChallengesInARow().getCount(), is(1));
+    }
+
+    @Test
+    public void update_gain500XP_experienceInADayIs500() {
+        Challenge challenge = createChallenge(500);
+        AchievementsProgressCoordinator.update(new CompleteDailyChallengeAction(challenge), progress);
+        assertThat(progress.getExperienceInADay().getCount(), is(500));
     }
 
     @Test
@@ -82,7 +90,7 @@ public class AchievementProgressCoordinatorTest {
 
     @Test
     public void update_createRepeatingQuest_createRepeatingQuestCountIs1() {
-        AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.COMPLETE_REPEATING_QUEST), progress);
+        AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.CREATE_REPEATING_QUEST), progress);
         assertThat(progress.getCreatedRepeatedQuestCount(), is(1));
     }
 
@@ -94,8 +102,7 @@ public class AchievementProgressCoordinatorTest {
 
     @Test
     public void update_completeDailyChallenge_completedDailyChallengesCountIs1() {
-        Challenge challenge = new Challenge();
-        challenge.setExperience(10L);
+        Challenge challenge = createChallenge();
         AchievementsProgressCoordinator.update(new CompleteDailyChallengeAction(challenge), progress);
         assertThat(progress.getCompletedDailyChallengeCount(), is(1));
     }
@@ -159,4 +166,24 @@ public class AchievementProgressCoordinatorTest {
         AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.IS_FOLLOWED), progress);
         assertThat(progress.getFollowerCount(), is(1));
     }
+
+    @Test
+    public void update_completeChallenge_completedChallengesCountIs1() {
+        Challenge challenge = createChallenge();
+        AchievementsProgressCoordinator.update(new CompleteChallengeAction(challenge), progress);
+        assertThat(progress.getCompletedChallengesCount(), is(1));
+    }
+
+    @NonNull
+    private Challenge createChallenge() {
+        return createChallenge(10L);
+    }
+
+    @NonNull
+    private Challenge createChallenge(long xp) {
+        Challenge challenge = new Challenge();
+        challenge.setExperience(xp);
+        return challenge;
+    }
+
 }
