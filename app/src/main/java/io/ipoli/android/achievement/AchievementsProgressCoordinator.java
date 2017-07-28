@@ -7,7 +7,6 @@ import io.ipoli.android.achievement.actions.CompleteDailyChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteQuestAction;
 import io.ipoli.android.achievement.actions.IsFollowedAction;
 import io.ipoli.android.achievement.actions.LevelUpAction;
-import io.ipoli.android.achievement.actions.WinCoinsAction;
 import io.ipoli.android.challenge.data.Challenge;
 
 /**
@@ -62,10 +61,6 @@ public class AchievementsProgressCoordinator {
             case BUY_POWER_UP:
                 progress.incrementPowerUpBoughtCount();
                 break;
-            case WIN_COINS:
-                WinCoinsAction winCoinsAction = (WinCoinsAction) action;
-                progress.setLifeCoinCount(winCoinsAction.coins);
-                break;
             case INVITE_FRIEND:
                 progress.incrementInvitedFriendCount();
                 break;
@@ -85,7 +80,7 @@ public class AchievementsProgressCoordinator {
             case UNLOCK_ACHIEVEMENTS:
                 AchievementsUnlockedAction achievementsUnlockedAction = (AchievementsUnlockedAction) action;
                 progress.incrementExperienceInADay(achievementsUnlockedAction.experience);
-                progress.setPlayerLevel(achievementsUnlockedAction.playerLevel);
+                progress.setLifeCoinCount((long) achievementsUnlockedAction.coins);
                 break;
         }
     }

@@ -14,7 +14,6 @@ public interface AchievementAction {
         CHANGE_PET,
         LEVEL_UP,
         BUY_POWER_UP,
-        WIN_COINS,
         WIN_XP,
         INVITE_FRIEND,
         PET_DIED,

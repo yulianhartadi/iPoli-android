@@ -7,15 +7,15 @@ package io.ipoli.android.achievement.actions;
 public class AchievementsUnlockedAction extends SimpleAchievementAction {
 
     public int experience;
-    public int playerLevel;
+    public long coins;
 
     public AchievementsUnlockedAction() {
         super(Action.UNLOCK_ACHIEVEMENTS);
     }
 
-    public AchievementsUnlockedAction(int experience, int playerLevel) {
+    public AchievementsUnlockedAction(int experience, long coins) {
         this();
         this.experience = experience;
-        this.playerLevel = playerLevel;
+        this.coins = coins;
     }
 }
