@@ -9,6 +9,8 @@ import android.os.PersistableBundle;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.Random;
+
 import io.ipoli.android.Constants;
 import io.ipoli.android.achievement.actions.AchievementAction;
 
@@ -27,7 +29,7 @@ public class UnlockAchievementScheduler {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        JobInfo job = new JobInfo.Builder(AchievementUnlockJobService.JOB_ID,
+        JobInfo job = new JobInfo.Builder(new Random().nextInt(),
                 new ComponentName(context, AchievementUnlockJobService.class))
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_NONE)
                 .setMinimumLatency(1000)
