@@ -83,7 +83,6 @@ public enum Achievement {
             R.string.achievement_have_1k_coins_name,
             R.string.achievement_have_1k_coins_desc,
             15, 100),
-    //?
     INVITE_FRIEND(17,
             Category.SILVER,
             R.string.achievement_invite_friend_name,

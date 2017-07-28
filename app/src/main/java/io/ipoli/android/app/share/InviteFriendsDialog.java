@@ -78,9 +78,8 @@ public class InviteFriendsDialog extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setCustomTitle(headerView);
-        builder.setAdapter(adapter, (dialog, item) -> {
-            onInviteProviderClicked(inviteIntent, adapter, item);
-        });
+        builder.setAdapter(adapter, (dialog, item) ->
+                onInviteProviderClicked(inviteIntent, adapter, item));
         return builder.create();
     }
 

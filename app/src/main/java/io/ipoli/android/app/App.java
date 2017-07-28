@@ -89,6 +89,7 @@ import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
+import io.ipoli.android.app.share.events.InviteFriendsProviderPickedEvent;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.DateUtils;
@@ -1140,6 +1141,11 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onPlayerFollowed(PlayerFollowedEvent e) {
         checkForUnlockedAchievement(AchievementAction.Action.FOLLOW);
+    }
+
+    @Subscribe
+    public void onInviteFriendProviderPicked(InviteFriendsProviderPickedEvent e) {
+        checkForUnlockedAchievement(AchievementAction.Action.INVITE_FRIEND);
     }
 
     @Subscribe

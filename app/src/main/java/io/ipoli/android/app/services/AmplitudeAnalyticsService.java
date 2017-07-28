@@ -8,6 +8,7 @@ import com.amplitude.api.Amplitude;
 import com.google.firebase.crash.FirebaseCrash;
 import com.squareup.otto.Subscribe;
 
+import io.ipoli.android.achievement.events.AchievementsUnlockedEvent;
 import io.ipoli.android.app.api.events.NewSessionCreatedEvent;
 import io.ipoli.android.app.api.events.SessionExpiredEvent;
 import io.ipoli.android.app.events.AppErrorEvent;
@@ -1023,6 +1024,13 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     public void onRequestOverlayPermission(RequestOverlayPermissionEvent e) {
         log("request_overlay_permission", EventParams.of("version", e.versionNumber));
     }
+
+    @Subscribe
+    public void onAchievementsUnlocked(AchievementsUnlockedEvent e) {
+        log("achievements_unlocked",
+                EventParams.of("achievements", TextUtils.join(",", e.achievements)));
+    }
+
 
     @Subscribe
     public void onAppError(AppErrorEvent e) {
