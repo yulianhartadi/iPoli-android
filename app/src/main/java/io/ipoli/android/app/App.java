@@ -49,13 +49,17 @@ import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
+import io.ipoli.android.achievement.Achievement;
 import io.ipoli.android.achievement.AchievementUnlocker;
 import io.ipoli.android.achievement.UnlockAchievementScheduler;
 import io.ipoli.android.achievement.actions.AchievementAction;
+import io.ipoli.android.achievement.actions.AchievementsUnlockedAction;
+import io.ipoli.android.achievement.actions.CompleteChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteDailyChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteQuestAction;
 import io.ipoli.android.achievement.actions.LevelUpAction;
 import io.ipoli.android.achievement.actions.SimpleAchievementAction;
+import io.ipoli.android.achievement.events.AchievementsUnlockedEvent;
 import io.ipoli.android.achievement.persistence.AchievementProgressPersistenceService;
 import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.PowerUpDialogActivity;
@@ -1026,7 +1030,7 @@ public class App extends MultiDexApplication {
     }
 
     private void onChallengeComplete(Challenge challenge, EventSource source) {
-        givePlayerRewardForAction(challenge, new SimpleAchievementAction(AchievementAction.Action.COMPLETE_CHALLENGE));
+        givePlayerRewardForAction(challenge, new CompleteChallengeAction(challenge));
         savePet((int) (Math.floor(challenge.getExperience() / Constants.XP_TO_PET_HP_RATIO)));
         showChallengeCompleteDialog(getString(R.string.challenge_complete, challenge.getName()), challenge.getExperience(), challenge.getCoins());
         eventBus.post(new ChallengeCompletedEvent(challenge, source));
@@ -1095,6 +1099,15 @@ public class App extends MultiDexApplication {
             }
             questPersistenceService.save(quests);
         });
+    }
+
+    @Subscribe
+    public void onAchievementsUnlocked(AchievementsUnlockedEvent e) {
+        int xp = 0;
+        for(Achievement achievement : e.achievements) {
+            xp += achievement.experience;
+        }
+        checkForUnlockedAchievement(new AchievementsUnlockedAction(xp, getPlayer().getLevel()));
     }
 
     @Subscribe

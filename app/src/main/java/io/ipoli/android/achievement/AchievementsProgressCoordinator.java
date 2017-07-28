@@ -1,6 +1,7 @@
 package io.ipoli.android.achievement;
 
 import io.ipoli.android.achievement.actions.AchievementAction;
+import io.ipoli.android.achievement.actions.AchievementsUnlockedAction;
 import io.ipoli.android.achievement.actions.CompleteChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteDailyChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteQuestAction;
@@ -78,6 +79,11 @@ public class AchievementsProgressCoordinator {
                 break;
             case IS_FOLLOWED:
                 progress.incrementFollowerCount();
+                break;
+            case UNLOCK_ACHIEVEMENTS:
+                AchievementsUnlockedAction achievementsUnlockedAction = (AchievementsUnlockedAction) action;
+                progress.incrementExperienceInADay(achievementsUnlockedAction.experience);
+                progress.setPlayerLevel(achievementsUnlockedAction.playerLevel);
                 break;
         }
     }

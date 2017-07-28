@@ -6,12 +6,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.ipoli.android.achievement.actions.AchievementAction;
+import io.ipoli.android.achievement.actions.AchievementsUnlockedAction;
 import io.ipoli.android.achievement.actions.CompleteChallengeAction;
-import io.ipoli.android.achievement.actions.WinCoinsAction;
 import io.ipoli.android.achievement.actions.CompleteDailyChallengeAction;
 import io.ipoli.android.achievement.actions.CompleteQuestAction;
 import io.ipoli.android.achievement.actions.LevelUpAction;
 import io.ipoli.android.achievement.actions.SimpleAchievementAction;
+import io.ipoli.android.achievement.actions.WinCoinsAction;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 
@@ -172,6 +173,13 @@ public class AchievementProgressCoordinatorTest {
         Challenge challenge = createChallenge();
         AchievementsProgressCoordinator.update(new CompleteChallengeAction(challenge), progress);
         assertThat(progress.getCompletedChallengesCount(), is(1));
+    }
+
+    @Test
+    public void update_unlockAchievements_experienceAndLevelAreChanged() {
+        AchievementsProgressCoordinator.update(new AchievementsUnlockedAction(100, 15), progress);
+        assertThat(progress.getExperienceInADay().getCount(), is(100));
+        assertThat(progress.getPlayerLevel(), is(15));
     }
 
     @NonNull

@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.achievement.actions.AchievementAction;
+import io.ipoli.android.achievement.events.AchievementsUnlockedEvent;
 import io.ipoli.android.achievement.persistence.AchievementProgressPersistenceService;
 import io.ipoli.android.achievement.ui.AchievementData;
 import io.ipoli.android.achievement.ui.AchievementUnlocked;
@@ -102,6 +103,10 @@ public class AchievementUnlockJobService extends JobService {
 
             @Override
             protected void onPostExecute(List<Achievement> achievements) {
+                if(achievements.isEmpty()) {
+                    jobFinished(jobParameters, false);
+                    return;
+                }
                 AchievementUnlocked achievementUnlocked = new AchievementUnlocked(getApplicationContext());
                 achievementUnlocked.setRounded(true).setLarge(true).setTopAligned(true).setDismissible(true);
                 AchievementData[] achievementsData = new AchievementData[achievements.size()];
@@ -121,6 +126,7 @@ public class AchievementUnlockJobService extends JobService {
                     achievementsData[i] = data;
                 }
                 achievementUnlocked.show(achievementsData);
+                eventBus.post(new AchievementsUnlockedEvent(achievements));
                 jobFinished(jobParameters, false);
             }
         };
