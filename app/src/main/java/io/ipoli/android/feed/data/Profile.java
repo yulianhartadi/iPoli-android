@@ -49,6 +49,7 @@ public class Profile {
         setPetAvatarCode(player.getPet().getAvatarCode());
         setPetState(player.getPet().getState().name());
         setCreatedAt(player.getCreatedAt());
+        initAchievements(player.getAchievements());
     }
 
     public String getId() {
@@ -191,6 +192,14 @@ public class Profile {
 
     public void setAchievements(Map<Integer, Boolean> achievements) {
         this.achievements = achievements;
+    }
+
+    @Exclude
+    private void initAchievements(Map<Integer, Long> unlockedAchievements) {
+        achievements = new HashMap<>();
+        for(Integer achievementCode : unlockedAchievements.keySet()) {
+            achievements.put(achievementCode, true);
+        }
     }
 
     @Exclude
