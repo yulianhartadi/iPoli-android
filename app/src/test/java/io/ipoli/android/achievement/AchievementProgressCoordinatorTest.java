@@ -13,7 +13,6 @@ import io.ipoli.android.achievement.actions.CompleteQuestAction;
 import io.ipoli.android.achievement.actions.IsFollowedAction;
 import io.ipoli.android.achievement.actions.LevelUpAction;
 import io.ipoli.android.achievement.actions.SimpleAchievementAction;
-import io.ipoli.android.achievement.actions.WinCoinsAction;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.quest.data.Quest;
 
@@ -134,12 +133,6 @@ public class AchievementProgressCoordinatorTest {
     }
 
     @Test
-    public void update_collect1KCoins_lifeCoinCountIs1K() {
-        AchievementsProgressCoordinator.update(new WinCoinsAction(1000), progress);
-        assertThat(progress.getLifeCoinCount(), is(1000L));
-    }
-
-    @Test
     public void update_inviteFriend_invitedFriendCountIs1() {
         AchievementsProgressCoordinator.update(new SimpleAchievementAction(AchievementAction.Action.INVITE_FRIEND), progress);
         assertThat(progress.getInvitedFriendCount(), is(1));
@@ -177,10 +170,10 @@ public class AchievementProgressCoordinatorTest {
     }
 
     @Test
-    public void update_unlockAchievements_experienceAndLevelAreChanged() {
+    public void update_unlockAchievements_experienceAndCoinsAreChanged() {
         AchievementsProgressCoordinator.update(new AchievementsUnlockedAction(100, 15), progress);
         assertThat(progress.getExperienceInADay().getCount(), is(100));
-        assertThat(progress.getPlayerLevel(), is(15));
+        assertThat(progress.getLifeCoinCount(), is(15L));
     }
 
     @NonNull

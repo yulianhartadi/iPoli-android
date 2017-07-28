@@ -75,7 +75,6 @@ public enum Achievement {
             R.string.achievement_first_power_up_name,
             R.string.achievement_first_power_up_desc,
             15, 100),
-    //? on app start
     HAVE_1K_COINS(16,
             Category.SILVER,
             R.string.achievement_have_1k_coins_name,
@@ -101,7 +100,6 @@ public enum Achievement {
             R.string.achievement_first_follow_name,
             R.string.achievement_first_follow_desc,
             15, 100),
-    // on app start ?
     FIRST_FOLLOWER(21,
             Category.SILVER,
             R.string.achievement_first_follower_name,

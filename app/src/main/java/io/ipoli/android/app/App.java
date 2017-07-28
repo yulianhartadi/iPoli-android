@@ -1115,7 +1115,7 @@ public class App extends MultiDexApplication {
         for(Achievement achievement : e.achievements) {
             xp += achievement.experience;
         }
-        checkForUnlockedAchievement(new AchievementsUnlockedAction(xp, getPlayer().getLevel()));
+        checkForUnlockedAchievement(new AchievementsUnlockedAction(xp, getPlayer().getCoins()));
     }
 
     @Subscribe
