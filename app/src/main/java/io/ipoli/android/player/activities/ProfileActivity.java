@@ -61,6 +61,8 @@ import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.CredentialStatus;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
+import io.ipoli.android.player.data.Avatar;
+import io.ipoli.android.player.data.PetAvatar;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.PlayerCredentialChecker;
 import io.ipoli.android.player.PlayerCredentialsHandler;
@@ -106,6 +108,9 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
 
     @BindView(R.id.pet_state)
     ImageView petState;
+
+    @BindView(R.id.player_achievements)
+    ImageView playerAchievements;
 
     @BindView(R.id.pet_name)
     TextView petName;
@@ -198,24 +203,29 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         collapsingToolbarLayout.setTitleEnabled(false);
         getSupportActionBar().setTitle(R.string.activity_player_profile_title);
 
-        tabContainer.setupWithViewPager(pagerContainer);
+        playerAvatar.setImageResource(Avatar.GREEN_EYES.picture);
+        petAvatar.setImageResource(PetAvatar.DONKEY.headPicture);
+        playerAchievements.setImageResource(R.drawable.ic_achievement_badge);
 
-        TabPagerAdapter fragmentPagerAdapter = new TabPagerAdapter(getSupportFragmentManager());
-        pagerContainer.setAdapter(fragmentPagerAdapter);
-
-        numberFormatter = NumberFormat.getNumberInstance();
-
-        tabContainer.getTabAt(0).setCustomView(getLayoutInflater().inflate(R.layout.view_profile_tab, null));
-        tabContainer.getTabAt(1).setCustomView(getLayoutInflater().inflate(R.layout.view_profile_tab, null));
-        tabContainer.getTabAt(2).setCustomView(getLayoutInflater().inflate(R.layout.view_profile_tab, null));
-
-        eventBus.post(new ScreenShownEvent(this, EventSource.PROFILE));
+//        tabContainer.setupWithViewPager(pagerContainer);
+//
+//        TabPagerAdapter fragmentPagerAdapter = new TabPagerAdapter(getSupportFragmentManager());
+//        pagerContainer.setAdapter(fragmentPagerAdapter);
+//
+//        numberFormatter = NumberFormat.getNumberInstance();
+//
+//        tabContainer.getTabAt(0).setCustomView(getLayoutInflater().inflate(R.layout.view_profile_tab, null));
+//        tabContainer.getTabAt(1).setCustomView(getLayoutInflater().inflate(R.layout.view_profile_tab, null));
+//        tabContainer.getTabAt(2).setCustomView(getLayoutInflater().inflate(R.layout.view_profile_tab, null));
+//
+//        eventBus.post(new ScreenShownEvent(this, EventSource.PROFILE));
     }
 
     @Override
     public void onDataChanged(Profile profile) {
         playerAvatar.setImageResource(profile.getPlayerAvatar().picture);
         petAvatar.setImageResource(profile.getPetAvatar().headPicture);
+        playerAchievements.setImageResource(R.drawable.ic_achievement_badge);
         petState.setVisibility(View.VISIBLE);
         GradientDrawable drawable = (GradientDrawable) petState.getBackground();
         drawable.setColor(ContextCompat.getColor(this, Pet.PetState.valueOf(profile.getPetState()).color));
@@ -402,14 +412,14 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     @Override
     public void onResume() {
         super.onResume();
-        feedPersistenceService.listenForProfile(profileId, this);
+//        feedPersistenceService.listenForProfile(profileId, this);
         eventBus.register(this);
     }
 
     @Override
     public void onPause() {
         eventBus.unregister(this);
-        feedPersistenceService.removeAllListeners();
+//        feedPersistenceService.removeAllListeners();
         super.onPause();
     }
 

@@ -28,7 +28,7 @@ public class AchievementAdapter extends RecyclerView.Adapter<AchievementAdapter.
     public void onBindViewHolder(AchievementViewHolder holder, int position) {
         Achievement achievement = Achievement.values()[holder.getAdapterPosition()];
 
-        holder.icon.setImageResource(R.mipmap.ic_launcher);
+        holder.icon.setImageResource(achievement.icon);
         holder.name.setText(achievement.name);
         holder.description.setText(achievement.description);
     }

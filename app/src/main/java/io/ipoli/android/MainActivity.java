@@ -124,6 +124,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 import static io.ipoli.android.Constants.RC_CALENDAR_PERM;
 import static io.ipoli.android.Constants.SYNC_CALENDAR_JOB_ID;
 import static io.ipoli.android.R.id.feed;
+import static io.ipoli.android.R.id.recurrence_flexibility;
 import static io.ipoli.android.app.App.hasPlayer;
 import static io.ipoli.android.player.CredentialStatus.AUTHORIZED;
 import static io.ipoli.android.player.CredentialStatus.GUEST;
@@ -383,29 +384,33 @@ public class MainActivity extends BaseActivity implements
 
         View header = navigationView.getHeaderView(0);
         header.setOnClickListener(v -> {
-            CredentialStatus credentialStatus = PlayerCredentialChecker.checkStatus(player);
-            if (credentialStatus == AUTHORIZED) {
-                eventBus.post(new OpenProfileFromDrawerEvent());
-                startProfileActivity(player);
-                return;
-            }
-            if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
-                Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
-                return;
-            }
-            if (credentialStatus == GUEST) {
-                Toast.makeText(this, R.string.sign_in_to_view_profile, Toast.LENGTH_LONG).show();
-                return;
-            }
-            if (credentialStatus == NO_USERNAME) {
-                UsernamePickerFragment.newInstance(username -> {
-                    player.setUsername(username);
-                    playerPersistenceService.save(player);
-                    feedPersistenceService.createProfile(new Profile(player));
-                    eventBus.post(new ProfileCreatedEvent());
-                    startProfileActivity(player);
-                }).show(getSupportFragmentManager());
-            }
+
+            startProfileActivity(player);
+            return;
+
+//            CredentialStatus credentialStatus = PlayerCredentialChecker.checkStatus(player);
+//            if (credentialStatus == AUTHORIZED) {
+//                eventBus.post(new OpenProfileFromDrawerEvent());
+//                startProfileActivity(player);
+//                return;
+//            }
+//            if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+//                Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
+//                return;
+//            }
+//            if (credentialStatus == GUEST) {
+//                Toast.makeText(this, R.string.sign_in_to_view_profile, Toast.LENGTH_LONG).show();
+//                return;
+//            }
+//            if (credentialStatus == NO_USERNAME) {
+//                UsernamePickerFragment.newInstance(username -> {
+//                    player.setUsername(username);
+//                    playerPersistenceService.save(player);
+//                    feedPersistenceService.createProfile(new Profile(player));
+//                    eventBus.post(new ProfileCreatedEvent());
+//                    startProfileActivity(player);
+//                }).show(getSupportFragmentManager());
+//            }
         });
         TextView level = (TextView) header.findViewById(R.id.player_level);
         int playerLevel = player.getLevel();

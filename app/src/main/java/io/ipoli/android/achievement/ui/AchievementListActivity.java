@@ -39,6 +39,7 @@ public class AchievementListActivity extends BaseActivity {
         }
 
         achievementList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        achievementList.setHasFixedSize(false);
         achievementList.setAdapter(new AchievementAdapter());
     }
 }
