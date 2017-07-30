@@ -162,6 +162,7 @@ import io.ipoli.android.store.events.PetChangedEvent;
 import io.ipoli.android.store.events.PowerUpEnabledEvent;
 import okhttp3.Cookie;
 
+import static io.ipoli.android.feed.persistence.FirebaseFeedPersistenceService.achievementsPath;
 import static io.ipoli.android.feed.persistence.FirebaseFeedPersistenceService.profilePath;
 
 /**
@@ -249,7 +250,7 @@ public class App extends MultiDexApplication {
 
         if (healthPoints < 0 && initialState != currentState && (currentState == Pet.PetState.DEAD || currentState == Pet.PetState.SAD)) {
             notifyPetStateChanged(pet);
-            if(currentState == Pet.PetState.DEAD) {
+            if (currentState == Pet.PetState.DEAD) {
                 checkForUnlockedAchievement(AchievementAction.Action.PET_DIED);
             }
         }
@@ -513,6 +514,7 @@ public class App extends MultiDexApplication {
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         db.getReference("/").keepSynced(false);
         profilePath(getPlayerId()).toReference(db).keepSynced(true);
+        achievementsPath().toReference(db).keepSynced(true);
 
         scheduleDateChanged();
         scheduleNextReminder();
@@ -522,7 +524,7 @@ public class App extends MultiDexApplication {
         if (player.isAuthenticated() && player.hasUsername()) {
             listenForPlayerChanges();
             feedPersistenceService.findProfile(playerId, profile -> {
-                if(!profile.getFollowers().isEmpty()) {
+                if (!profile.getFollowers().isEmpty()) {
                     checkForUnlockedAchievement(new IsFollowedAction(profile.getFollowers().size()));
                 }
             });
@@ -1112,7 +1114,7 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onAchievementsUnlocked(AchievementsUnlockedEvent e) {
         int xp = 0;
-        for(Achievement achievement : e.achievements) {
+        for (Achievement achievement : e.achievements) {
             xp += achievement.experience;
         }
         checkForUnlockedAchievement(new AchievementsUnlockedAction(xp, getPlayer().getCoins()));

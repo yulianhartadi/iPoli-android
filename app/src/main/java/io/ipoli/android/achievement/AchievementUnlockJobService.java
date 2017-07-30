@@ -103,7 +103,7 @@ public class AchievementUnlockJobService extends JobService {
 
                 new Handler(Looper.getMainLooper()).post(() -> playerPersistenceService.save(player));
 
-                if(!achievementsToUnlock.isEmpty()) {
+                if (!achievementsToUnlock.isEmpty()) {
                     feedPersistenceService.incrementAchievements(achievementsToUnlock);
                 }
                 return achievementsToUnlock;
@@ -128,9 +128,9 @@ public class AchievementUnlockJobService extends JobService {
                     }
                     data.setSubtitle(subtitle);
                     data.setTextColor(Color.WHITE);
-                    data.setBackgroundColor(Color.BLACK);
-                    data.setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_context_fun_white));
-                    data.setIconBackgroundColor(Color.GREEN);
+                    data.setBackgroundColor(ContextCompat.getColor(AchievementUnlockJobService.this, R.color.colorAccent));
+                    data.setIcon(ContextCompat.getDrawable(AchievementUnlockJobService.this, achievement.icon));
+                    data.setIconBackgroundColor(Color.WHITE);
                     achievementsData[i] = data;
                 }
                 achievementUnlocked.show(achievementsData);
