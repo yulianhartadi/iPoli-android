@@ -38,9 +38,16 @@ public class AchievementAdapter extends RecyclerView.Adapter<AchievementAdapter.
         holder.icon.setImageResource(achievement.icon);
         holder.name.setText(achievement.name);
         holder.description.setText(achievement.description);
-        if (!unlockedAchievementCodes.contains(achievement.code)) {
+        if (unlockedAchievementCodes.contains(achievement.code)) {
+            holder.itemView.setBackgroundResource(R.color.md_white);
+            holder.icon.setImageAlpha(100);
+            holder.name.setEnabled(true);
+            holder.description.setEnabled(true);
+        } else {
             holder.itemView.setBackgroundResource(R.color.md_grey_100);
-            holder.icon.setImageAlpha(70);
+            holder.icon.setImageAlpha(90);
+            holder.name.setEnabled(false);
+            holder.description.setEnabled(false);
         }
     }
 
