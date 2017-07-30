@@ -124,7 +124,6 @@ import pub.devrel.easypermissions.EasyPermissions;
 import static io.ipoli.android.Constants.RC_CALENDAR_PERM;
 import static io.ipoli.android.Constants.SYNC_CALENDAR_JOB_ID;
 import static io.ipoli.android.R.id.feed;
-import static io.ipoli.android.R.id.recurrence_flexibility;
 import static io.ipoli.android.app.App.hasPlayer;
 import static io.ipoli.android.player.CredentialStatus.AUTHORIZED;
 import static io.ipoli.android.player.CredentialStatus.GUEST;
@@ -383,35 +382,6 @@ public class MainActivity extends BaseActivity implements
     private void updatePlayerInDrawer(Player player) {
 
         View header = navigationView.getHeaderView(0);
-        header.setOnClickListener(v -> {
-
-            startProfileActivity(player);
-            return;
-
-//            CredentialStatus credentialStatus = PlayerCredentialChecker.checkStatus(player);
-//            if (credentialStatus == AUTHORIZED) {
-//                eventBus.post(new OpenProfileFromDrawerEvent());
-//                startProfileActivity(player);
-//                return;
-//            }
-//            if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
-//                Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
-//                return;
-//            }
-//            if (credentialStatus == GUEST) {
-//                Toast.makeText(this, R.string.sign_in_to_view_profile, Toast.LENGTH_LONG).show();
-//                return;
-//            }
-//            if (credentialStatus == NO_USERNAME) {
-//                UsernamePickerFragment.newInstance(username -> {
-//                    player.setUsername(username);
-//                    playerPersistenceService.save(player);
-//                    feedPersistenceService.createProfile(new Profile(player));
-//                    eventBus.post(new ProfileCreatedEvent());
-//                    startProfileActivity(player);
-//                }).show(getSupportFragmentManager());
-//            }
-        });
         TextView level = (TextView) header.findViewById(R.id.player_level);
         int playerLevel = player.getLevel();
         String title = player.getTitle(getResources().getStringArray(R.array.player_titles));
@@ -424,16 +394,11 @@ public class MainActivity extends BaseActivity implements
         experienceBar.setMax(Constants.XP_BAR_MAX_VALUE);
         experienceBar.setProgress(getCurrentProgress(player));
 
-        CircleImageView avatarPictureView = (CircleImageView) header.findViewById(R.id.player_avatar);
-        avatarPictureView.setImageResource(player.getCurrentAvatar().picture);
-        avatarPictureView.setOnClickListener(v -> {
-            eventBus.post(new OpenAvatarStoreRequestEvent(EventSource.NAVIGATION_DRAWER));
-            Intent intent = new Intent(this, StoreActivity.class);
-            intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.AVATARS.name());
-            startActivity(intent);
-        });
+        updatePlayerAvatarInDrawer(player, header);
+        updatePetInDrawer(player.getPet(), header);
 
-        updatePetInDrawer(player.getPet());
+        header.findViewById(R.id.player_achievements).setOnClickListener(view ->
+                startActivity(new Intent(this, AchievementListActivity.class)));
 
         Button signIn = (Button) header.findViewById(R.id.sign_in);
         if (player.isAuthenticated()) {
@@ -443,6 +408,41 @@ public class MainActivity extends BaseActivity implements
             signIn.setVisibility(View.VISIBLE);
             signIn.setOnClickListener(v -> startActivity(new Intent(this, SignInActivity.class)));
         }
+    }
+
+    private void updatePlayerAvatarInDrawer(Player player, View header) {
+        CircleImageView avatarPictureView = (CircleImageView) header.findViewById(R.id.player_avatar);
+        avatarPictureView.setImageResource(player.getCurrentAvatar().picture);
+        avatarPictureView.setOnClickListener(v -> {
+
+            CredentialStatus credentialStatus = PlayerCredentialChecker.checkStatus(player);
+            if (credentialStatus == AUTHORIZED) {
+                eventBus.post(new OpenProfileFromDrawerEvent());
+                startProfileActivity(player);
+                return;
+            }
+            if (credentialStatus == GUEST) {
+                eventBus.post(new OpenAvatarStoreRequestEvent(EventSource.NAVIGATION_DRAWER));
+                Intent intent = new Intent(this, StoreActivity.class);
+                intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.AVATARS.name());
+                startActivity(intent);
+                return;
+            }
+            if (!NetworkConnectivityUtils.isConnectedToInternet(this)) {
+                Toast.makeText(this, R.string.enable_internet_to_do_action, Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (credentialStatus == NO_USERNAME) {
+                UsernamePickerFragment.newInstance(username -> {
+                    player.setUsername(username);
+                    playerPersistenceService.save(player);
+                    feedPersistenceService.createProfile(new Profile(player));
+                    eventBus.post(new ProfileCreatedEvent());
+                    startProfileActivity(player);
+                }).show(getSupportFragmentManager());
+            }
+
+        });
     }
 
     private void startProfileActivity(Player player) {
@@ -481,9 +481,7 @@ public class MainActivity extends BaseActivity implements
         return getString(R.string.big_value_format, result);
     }
 
-    private void updatePetInDrawer(Pet pet) {
-        View header = navigationView.getHeaderView(0);
-
+    private void updatePetInDrawer(Pet pet, View header) {
         CircleImageView petPictureView = (CircleImageView) header.findViewById(R.id.pet_picture);
         petPictureView.setImageResource(pet.getCurrentAvatar().headPicture);
         petPictureView.setOnClickListener(v -> startActivity(new Intent(this, PetActivity.class)));
