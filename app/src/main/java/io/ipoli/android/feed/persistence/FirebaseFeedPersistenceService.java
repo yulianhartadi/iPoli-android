@@ -189,8 +189,8 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
             postPath(postId).add("playerDisplayName").update(update).withValue(player.getFullDisplayName());
             postPath(postId).add("playerAvatarCode").update(update).withValue(player.getAvatarCode());
         }
-        for (Integer achievementCode : player.getAchievements().keySet()) {
-            profilePath.add("achievements").add(achievementCode).update(update).withValue(true);
+        for (Map.Entry<Integer, Long> entry : player.getAchievements().entrySet()) {
+            profilePath.add("achievements").add(entry.getKey()).update(update).withValue(entry.getValue());
         }
         database.getReference().updateChildren(update);
     }

@@ -37,6 +37,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.achievement.ui.AchievementListActivity;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.events.EventSource;
@@ -58,6 +59,7 @@ import io.ipoli.android.feed.events.UnfollowPlayerEvent;
 import io.ipoli.android.feed.fragments.PostListFragment;
 import io.ipoli.android.feed.fragments.ProfileListFragment;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
+import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
 import io.ipoli.android.player.CredentialStatus;
 import io.ipoli.android.player.ExperienceForLevelGenerator;
@@ -67,12 +69,15 @@ import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.events.AddKudosEvent;
 import io.ipoli.android.player.events.CreateQuestFromPostEvent;
 import io.ipoli.android.player.events.EditProfileEvent;
+import io.ipoli.android.player.events.OpenAvatarStoreRequestEvent;
 import io.ipoli.android.player.events.PlayerFollowedEvent;
 import io.ipoli.android.player.events.PlayerUnfollowedEvent;
 import io.ipoli.android.player.events.RemoveKudosEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
 import io.ipoli.android.quest.data.Quest;
 import io.ipoli.android.quest.events.NewQuestEvent;
+import io.ipoli.android.store.StoreItemType;
+import io.ipoli.android.store.activities.StoreActivity;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -217,21 +222,10 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
 
     @Override
     public void onDataChanged(Profile profile) {
-        playerAvatar.setImageResource(profile.getPlayerAvatar().picture);
-        petAvatar.setImageResource(profile.getPetAvatar().headPicture);
-        playerAchievements.setVisibility(View.VISIBLE);
-        petState.setVisibility(View.VISIBLE);
-        GradientDrawable drawable = (GradientDrawable) petState.getBackground();
-        drawable.setColor(ContextCompat.getColor(this, Pet.PetState.valueOf(profile.getPetState()).color));
-        petName.setText(profile.getPetName());
-        playerDisplayName.setText(profile.getDisplayName());
-        playerUsername.setText("@" + profile.getUsername());
-        String description = StringUtils.isEmpty(profile.getBio()) ? getString(R.string.profile_default_bio) : profile.getBio();
-        playerBio.setText(description);
 
-        String[] playerTitles = getResources().getStringArray(R.array.player_titles);
-        String playerTitle = playerTitles[Math.min(profile.getLevel() / 10, playerTitles.length - 1)];
-        playerLevel.setText(getString(R.string.player_profile_level, profile.getLevel(), playerTitle));
+        displayAchievements(profile);
+        displayPlayer(profile);
+        displayPet(profile);
 
         View postsTabView = tabContainer.getTabAt(0).getCustomView();
         bindTabView(postsTabView, profile.getPosts().size(), R.string.posts);
@@ -246,6 +240,50 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
         updateFollow(profile);
     }
 
+    protected void displayPlayer(Profile profile) {
+        playerAvatar.setImageResource(profile.getPlayerAvatar().picture);
+        if (isCurrentPlayerProfile(profile.getId())) {
+            playerAvatar.setOnClickListener(view -> {
+                eventBus.post(new OpenAvatarStoreRequestEvent(EventSource.PROFILE));
+                Intent intent = new Intent(this, StoreActivity.class);
+                intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.AVATARS.name());
+                startActivity(intent);
+            });
+        }
+        playerDisplayName.setText(profile.getDisplayName());
+        playerUsername.setText("@" + profile.getUsername());
+        String description = StringUtils.isEmpty(profile.getBio()) ? getString(R.string.profile_default_bio) : profile.getBio();
+        playerBio.setText(description);
+
+        String[] playerTitles = getResources().getStringArray(R.array.player_titles);
+        String playerTitle = playerTitles[Math.min(profile.getLevel() / 10, playerTitles.length - 1)];
+        playerLevel.setText(getString(R.string.player_profile_level, profile.getLevel(), playerTitle));
+    }
+
+    private boolean isCurrentPlayerProfile(String profileId) {
+        return profileId.equals(getPlayerId());
+    }
+
+    protected void displayAchievements(Profile profile) {
+        playerAchievements.setVisibility(View.VISIBLE);
+        playerAchievements.setOnClickListener(view -> {
+            Bundle params = new Bundle();
+            params.putString(Constants.PROFILE_ID_EXTRA_KEY, profile.getId());
+            startActivity(new Intent(this, AchievementListActivity.class), params);
+        });
+    }
+
+    protected void displayPet(Profile profile) {
+        petAvatar.setImageResource(profile.getPetAvatar().headPicture);
+        if (isCurrentPlayerProfile(profile.getId())) {
+            petAvatar.setOnClickListener(v -> startActivity(new Intent(this, PetActivity.class)));
+        }
+        petState.setVisibility(View.VISIBLE);
+        GradientDrawable drawable = (GradientDrawable) petState.getBackground();
+        drawable.setColor(ContextCompat.getColor(this, Pet.PetState.valueOf(profile.getPetState()).color));
+        petName.setText(profile.getPetName());
+    }
+
     public void bindTabView(View tabView, int count, int labelRes) {
         TextView itemCount = (TextView) tabView.findViewById(R.id.item_count);
         TextView itemLabel = (TextView) tabView.findViewById(R.id.item_label);
@@ -255,7 +293,7 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
 
     private void updateFollow(Profile profile) {
         String playerId = getPlayerId();
-        if (profile.getId().equals(playerId)) {
+        if (isCurrentPlayerProfile(profile.getId())) {
             follow.setVisibility(View.GONE);
             return;
         }

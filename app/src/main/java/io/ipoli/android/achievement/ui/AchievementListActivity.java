@@ -8,18 +8,32 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.achievement.ui.adapters.AchievementAdapter;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.utils.StringUtils;
+import io.ipoli.android.feed.persistence.FeedPersistenceService;
+import io.ipoli.android.player.persistence.PlayerPersistenceService;
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 7/28/17.
  */
 public class AchievementListActivity extends BaseActivity {
+
+    private String profileId;
+
+    @Inject
+    PlayerPersistenceService playerPersistenceService;
+
+    @Inject
+    FeedPersistenceService feedPersistenceService;
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -39,9 +53,31 @@ public class AchievementListActivity extends BaseActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
 
+        if (getIntent() != null) {
+            profileId = getIntent().getStringExtra(Constants.PROFILE_ID_EXTRA_KEY);
+        }
+
         achievementList.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         achievementList.setHasFixedSize(false);
-        achievementList.setAdapter(new AchievementAdapter());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (StringUtils.isNotEmpty(profileId)) {
+            feedPersistenceService.listenForProfile(profileId, profile ->
+                    achievementList.setAdapter(new AchievementAdapter(profile.getAchievements().keySet())));
+        } else {
+            playerPersistenceService.listen(player ->
+                    achievementList.setAdapter(new AchievementAdapter(player.getAchievements().keySet())));
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        feedPersistenceService.removeAllListeners();
+        playerPersistenceService.removeAllListeners();
+        super.onStop();
     }
 
     @Override

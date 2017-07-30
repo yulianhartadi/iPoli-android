@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Set;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
@@ -18,6 +20,12 @@ import io.ipoli.android.achievement.Achievement;
  */
 public class AchievementAdapter extends RecyclerView.Adapter<AchievementAdapter.AchievementViewHolder> {
 
+    private final Set<Integer> unlockedAchievementCodes;
+
+    public AchievementAdapter(Set<Integer> unlockedAchievementCodes) {
+        this.unlockedAchievementCodes = unlockedAchievementCodes;
+    }
+
     @Override
     public AchievementViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.achievement_item, viewGroup, false);
@@ -27,10 +35,13 @@ public class AchievementAdapter extends RecyclerView.Adapter<AchievementAdapter.
     @Override
     public void onBindViewHolder(AchievementViewHolder holder, int position) {
         Achievement achievement = Achievement.values()[holder.getAdapterPosition()];
-
         holder.icon.setImageResource(achievement.icon);
         holder.name.setText(achievement.name);
         holder.description.setText(achievement.description);
+        if (!unlockedAchievementCodes.contains(achievement.code)) {
+            holder.itemView.setBackgroundResource(R.color.md_grey_100);
+            holder.icon.setImageAlpha(70);
+        }
     }
 
     @Override

@@ -2,12 +2,9 @@ package io.ipoli.android.feed.data;
 
 import com.google.firebase.database.Exclude;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import io.ipoli.android.achievement.Achievement;
 import io.ipoli.android.player.data.Avatar;
 import io.ipoli.android.player.data.PetAvatar;
 import io.ipoli.android.player.data.Player;
@@ -32,7 +29,7 @@ public class Profile {
     private Map<String, String> posts;
     private Map<String, Boolean> followers;
     private Map<String, Boolean> following;
-    private Map<Integer, Boolean> achievements;
+    private Map<Integer, Long> achievements;
 
     public Profile() {
     }
@@ -49,7 +46,7 @@ public class Profile {
         setPetAvatarCode(player.getPet().getAvatarCode());
         setPetState(player.getPet().getState().name());
         setCreatedAt(player.getCreatedAt());
-        initAchievements(player.getAchievements());
+        setAchievements(player.getAchievements());
     }
 
     public String getId() {
@@ -183,36 +180,19 @@ public class Profile {
         this.petState = petState;
     }
 
-    public Map<Integer, Boolean> getAchievements() {
-        if(achievements == null) {
+    public Map<Integer, Long> getAchievements() {
+        if (achievements == null) {
             achievements = new HashMap<>();
         }
         return achievements;
     }
 
-    public void setAchievements(Map<Integer, Boolean> achievements) {
+    public void setAchievements(Map<Integer, Long> achievements) {
         this.achievements = achievements;
-    }
-
-    @Exclude
-    private void initAchievements(Map<Integer, Long> unlockedAchievements) {
-        achievements = new HashMap<>();
-        for(Integer achievementCode : unlockedAchievements.keySet()) {
-            achievements.put(achievementCode, true);
-        }
     }
 
     @Exclude
     public boolean isFollowedBy(String playerId) {
         return getFollowers().containsKey(playerId);
-    }
-
-    @Exclude
-    public List<Achievement> getUnlockedAchievements() {
-        List<Achievement> unlockedAchievements = new ArrayList<>();
-        for(Integer code : achievements.keySet()) {
-            unlockedAchievements.add(Achievement.get(code));
-        }
-        return unlockedAchievements;
     }
 }

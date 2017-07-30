@@ -39,6 +39,8 @@ public interface Constants {
 
     String PLAYER_ID_EXTRA_KEY = "player_id";
 
+    String PROFILE_ID_EXTRA_KEY = "profile_id";
+
     String QUEST_ID_EXTRA_KEY = "quest_id";
 
     String REPEATING_QUEST_ID_EXTRA_KEY = "repeating_quest_id";
