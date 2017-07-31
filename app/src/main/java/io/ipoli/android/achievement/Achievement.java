@@ -131,7 +131,7 @@ public enum Achievement {
             R.string.achievement_reach_level_20th_desc,
             R.drawable.ic_achievement_leader,
             100, 300),
-    GAIN_500_XP_IN_A_DAY(3,
+    GAIN_999_XP_IN_A_DAY(3,
             Category.GOLD,
             R.string.achievement_gain_xp_in_a_day_name,
             R.string.achievement_gain_xp_in_a_day_desc,

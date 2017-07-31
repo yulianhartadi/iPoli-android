@@ -116,7 +116,7 @@ public class AchievementUnlockJobService extends JobService {
                     return;
                 }
                 AchievementUnlocked achievementUnlocked = new AchievementUnlocked(getApplicationContext());
-                achievementUnlocked.setRounded(true).setLarge(true).setTopAligned(true).setDismissible(true);
+                achievementUnlocked.setRounded(true).setLarge(true).setTopAligned(false).setDismissible(true);
                 AchievementData[] achievementsData = new AchievementData[achievements.size()];
                 for (int i = 0; i < achievements.size(); i++) {
                     Achievement achievement = achievements.get(i);
@@ -128,7 +128,17 @@ public class AchievementUnlockJobService extends JobService {
                     }
                     data.setSubtitle(subtitle);
                     data.setTextColor(Color.WHITE);
-                    data.setBackgroundColor(ContextCompat.getColor(AchievementUnlockJobService.this, R.color.colorAccent));
+
+                    int backgroundColor = R.color.colorAccent;
+                    Achievement.Category category = achievement.category;
+                    if (category == Achievement.Category.BRONZE) {
+                        backgroundColor = R.color.achievement_bronze;
+                    } else if (category == Achievement.Category.SILVER) {
+                        backgroundColor = R.color.achievement_silver;
+                    } else if (category == Achievement.Category.GOLD) {
+                        backgroundColor = R.color.achievement_gold;
+                    }
+                    data.setBackgroundColor(ContextCompat.getColor(AchievementUnlockJobService.this, backgroundColor));
                     data.setIcon(ContextCompat.getDrawable(AchievementUnlockJobService.this, achievement.icon));
                     data.setIconBackgroundColor(Color.WHITE);
                     achievementsData[i] = data;

@@ -59,7 +59,7 @@ public class AchievementUnlockerTest {
         progress.incrementExperienceInADay(10);
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
         assertThat(unlockedAchievements.size(), is(1));
-        assertTrue(unlockedAchievements.contains(Achievement.GAIN_500_XP_IN_A_DAY));
+        assertTrue(unlockedAchievements.contains(Achievement.GAIN_999_XP_IN_A_DAY));
     }
 
     @Test

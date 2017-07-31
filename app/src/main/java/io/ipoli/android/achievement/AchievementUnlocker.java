@@ -24,7 +24,7 @@ public class AchievementUnlocker {
         achievementToConstraint.put(Achievement.FIRST_POST_CREATED, progress -> progress.getPostAddedCount() >= 1);
         achievementToConstraint.put(Achievement.FIRST_REPEATING_QUEST_CREATED, progress -> progress.getCreatedRepeatedQuestCount() >= 1);
         achievementToConstraint.put(Achievement.COMPLETE_10_QUESTS_IN_A_DAY, new Complete10QuestInADayConstraint());
-        achievementToConstraint.put(Achievement.GAIN_500_XP_IN_A_DAY, new Gain500XPInADayConstraint());
+        achievementToConstraint.put(Achievement.GAIN_999_XP_IN_A_DAY, progress -> progress.getExperienceInADay().getCount() >= 999);
         achievementToConstraint.put(Achievement.COMPLETE_QUEST_FOR_100_DAYS_IN_A_ROW, new CompleteAQuestFor100DaysConstraint());
         achievementToConstraint.put(Achievement.LEVEL_15TH, new PlayerLevelConstraint(15));
         achievementToConstraint.put(Achievement.LEVEL_20TH, new PlayerLevelConstraint(20));
@@ -68,13 +68,6 @@ public class AchievementUnlocker {
         @Override
         public boolean shouldUnlock(AchievementsProgress progress) {
             return progress.getCompletedQuestsInADay().getCount() == 10;
-        }
-    }
-
-    private class Gain500XPInADayConstraint implements AchievementConstraint {
-        @Override
-        public boolean shouldUnlock(AchievementsProgress progress) {
-            return progress.getExperienceInADay().getCount() >= 500;
         }
     }
 

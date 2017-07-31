@@ -940,7 +940,7 @@
     <string name="achievement_reach_level_20th_name">Leader</string>
     <string name="achievement_reach_level_20th_desc">Reach 20th level</string>
     <string name="achievement_gain_xp_in_a_day_name">Triple digits</string>
-    <string name="achievement_gain_xp_in_a_day_desc">Earn 500 XP in a day</string>
+    <string name="achievement_gain_xp_in_a_day_desc">Earn 999 XP in a day</string>
     <string name="achievement_complete_quests_in_row_name">Grand master</string>
     <string name="achievement_complete_quests_in_row_desc">Complete at least 1 quest for 100 days in a row</string>
     <string name="achievement_send_feedback_name">Community Service</string>
