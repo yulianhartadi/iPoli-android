@@ -55,9 +55,6 @@ public class AchievementUnlocker {
     }
 
     private void addAchievementIfUnlocked(AchievementsProgress progress, List<Achievement> achievementsToUnlock, Achievement achievement) {
-        if(!achievementToConstraint.containsKey(achievement)) {
-            System.err.println(achievement.name());
-        }
         if (achievementToConstraint.get(achievement).shouldUnlock(progress)) {
             achievementsToUnlock.add(achievement);
         }
