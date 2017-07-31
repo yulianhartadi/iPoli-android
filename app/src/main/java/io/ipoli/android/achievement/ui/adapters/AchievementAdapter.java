@@ -45,7 +45,7 @@ public class AchievementAdapter extends RecyclerView.Adapter<AchievementAdapter.
             holder.description.setEnabled(true);
         } else {
             holder.itemView.setBackgroundResource(R.color.md_grey_100);
-            holder.icon.setImageAlpha(90);
+            holder.icon.setImageAlpha(120);
             holder.name.setEnabled(false);
             holder.description.setEnabled(false);
         }
