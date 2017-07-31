@@ -173,7 +173,7 @@ public class AchievementUnlocked {
             paddingLarge = convertDpToPixel(10);
             paddingSmall = convertDpToPixel(5);
             smallSize = convertDpToPixel(50);
-            largeSize = convertDpToPixel(65);
+            largeSize = convertDpToPixel(72);
             translationY = convertDpToPixel(20);
 
             achievementLayout = new RelativeLayout(context);

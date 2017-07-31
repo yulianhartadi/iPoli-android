@@ -209,8 +209,6 @@ public class MainActivity extends BaseActivity implements
         };
 
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
-
-        startActivity(new Intent(this, AchievementListActivity.class));
     }
 
     @Override
