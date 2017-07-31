@@ -1073,7 +1073,8 @@ public class AchievementUnlocked {
 
             if (data.getState() == AchievementIconView.AchievementIconViewStates.FADE_DRAWABLE)
                 icon.fadeDrawable(d);
-            else icon.setDrawable(d);
+//            else icon.setDrawable(d);
+            else icon.setImageDrawable(d);
 
         } else icon.setDrawable(null);
     }
