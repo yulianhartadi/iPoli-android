@@ -47,6 +47,8 @@ import butterknife.OnClick;
 import io.ipoli.android.ApiConstants;
 import io.ipoli.android.Constants;
 import io.ipoli.android.R;
+import io.ipoli.android.achievement.AchievementsProgress;
+import io.ipoli.android.achievement.persistence.AchievementProgressPersistenceService;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.api.Api;
 import io.ipoli.android.app.api.UrlProvider;
@@ -88,6 +90,9 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
 
     @Inject
     FeedPersistenceService feedPersistenceService;
+
+    @Inject
+    AchievementProgressPersistenceService achievementProgressPersistenceService;
 
     @Inject
     UrlProvider urlProvider;
@@ -464,6 +469,7 @@ public class SignInActivity extends BaseActivity implements GoogleApiClient.OnCo
         }
 
         playerPersistenceService.save(player, playerId);
+        achievementProgressPersistenceService.save(new AchievementsProgress());
         return player;
     }
 

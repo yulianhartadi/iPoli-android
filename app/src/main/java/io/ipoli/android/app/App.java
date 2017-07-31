@@ -49,6 +49,19 @@ import io.ipoli.android.BuildConfig;
 import io.ipoli.android.Constants;
 import io.ipoli.android.MainActivity;
 import io.ipoli.android.R;
+import io.ipoli.android.achievement.Achievement;
+import io.ipoli.android.achievement.AchievementUnlocker;
+import io.ipoli.android.achievement.UnlockAchievementScheduler;
+import io.ipoli.android.achievement.actions.AchievementAction;
+import io.ipoli.android.achievement.actions.AchievementsUnlockedAction;
+import io.ipoli.android.achievement.actions.CompleteChallengeAction;
+import io.ipoli.android.achievement.actions.CompleteDailyChallengeAction;
+import io.ipoli.android.achievement.actions.CompleteQuestAction;
+import io.ipoli.android.achievement.actions.IsFollowedAction;
+import io.ipoli.android.achievement.actions.LevelUpAction;
+import io.ipoli.android.achievement.actions.SimpleAchievementAction;
+import io.ipoli.android.achievement.events.AchievementsUnlockedEvent;
+import io.ipoli.android.achievement.persistence.AchievementProgressPersistenceService;
 import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.PowerUpDialogActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
@@ -71,10 +84,12 @@ import io.ipoli.android.app.events.StartQuickAddEvent;
 import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
+import io.ipoli.android.app.rate.events.RateDialogFeedbackSentEvent;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
 import io.ipoli.android.app.settings.events.OngoingNotificationChangeEvent;
+import io.ipoli.android.app.share.events.InviteFriendsProviderPickedEvent;
 import io.ipoli.android.app.tutorial.TutorialActivity;
 import io.ipoli.android.app.ui.formatters.DurationFormatter;
 import io.ipoli.android.app.utils.DateUtils;
@@ -96,6 +111,7 @@ import io.ipoli.android.challenge.receivers.ScheduleDailyChallengeReminderReceiv
 import io.ipoli.android.challenge.ui.events.CompleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.DeleteChallengeRequestEvent;
 import io.ipoli.android.challenge.ui.events.UpdateChallengeEvent;
+import io.ipoli.android.feed.events.PostAddedEvent;
 import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.pet.PetActivity;
 import io.ipoli.android.pet.data.Pet;
@@ -106,6 +122,7 @@ import io.ipoli.android.player.activities.LevelUpActivity;
 import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.events.LevelDownEvent;
 import io.ipoli.android.player.events.LevelUpEvent;
+import io.ipoli.android.player.events.PlayerFollowedEvent;
 import io.ipoli.android.player.events.PlayerSignedInEvent;
 import io.ipoli.android.player.events.ProfileCreatedEvent;
 import io.ipoli.android.player.persistence.PlayerPersistenceService;
@@ -139,8 +156,13 @@ import io.ipoli.android.quest.schedulers.QuestScheduler;
 import io.ipoli.android.quest.schedulers.RepeatingQuestScheduler;
 import io.ipoli.android.quest.ui.events.UpdateRepeatingQuestEvent;
 import io.ipoli.android.quest.widgets.AgendaWidgetProvider;
+import io.ipoli.android.reward.events.RewardUsedEvent;
+import io.ipoli.android.store.events.AvatarChangedEvent;
+import io.ipoli.android.store.events.PetChangedEvent;
+import io.ipoli.android.store.events.PowerUpEnabledEvent;
 import okhttp3.Cookie;
 
+import static io.ipoli.android.feed.persistence.FirebaseFeedPersistenceService.achievementsPath;
 import static io.ipoli.android.feed.persistence.FirebaseFeedPersistenceService.profilePath;
 
 /**
@@ -190,6 +212,9 @@ public class App extends MultiDexApplication {
     PlayerPersistenceService playerPersistenceService;
 
     @Inject
+    AchievementProgressPersistenceService achievementProgressPersistenceService;
+
+    @Inject
     ExperienceRewardGenerator experienceRewardGenerator;
 
     @Inject
@@ -199,9 +224,13 @@ public class App extends MultiDexApplication {
     UrlProvider urlProvider;
 
     @Inject
+    AchievementUnlocker achievementUnlocker;
+
+    @Inject
     FeedPersistenceService feedPersistenceService;
 
     private PlayerAuthenticationStatus playerAuthenticationStatus;
+
     private List<Cookie> cookies;
 
     private void listenForChanges() {
@@ -221,6 +250,9 @@ public class App extends MultiDexApplication {
 
         if (healthPoints < 0 && initialState != currentState && (currentState == Pet.PetState.DEAD || currentState == Pet.PetState.SAD)) {
             notifyPetStateChanged(pet);
+            if (currentState == Pet.PetState.DEAD) {
+                checkForUnlockedAchievement(AchievementAction.Action.PET_DIED);
+            }
         }
     }
 
@@ -347,7 +379,7 @@ public class App extends MultiDexApplication {
                 return;
             }
         } else {
-            if(StringUtils.isNotEmpty(playerId)) {
+            if (StringUtils.isNotEmpty(playerId)) {
                 eventBus.post(new AppErrorEvent(new IllegalStateException("Player with id " + playerId + " has no player")));
             }
             if (localStorage.readBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, true)) {
@@ -482,6 +514,7 @@ public class App extends MultiDexApplication {
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         db.getReference("/").keepSynced(false);
         profilePath(getPlayerId()).toReference(db).keepSynced(true);
+        achievementsPath().toReference(db).keepSynced(true);
 
         scheduleDateChanged();
         scheduleNextReminder();
@@ -490,6 +523,11 @@ public class App extends MultiDexApplication {
         Player player = getPlayer();
         if (player.isAuthenticated() && player.hasUsername()) {
             listenForPlayerChanges();
+            feedPersistenceService.findProfile(playerId, profile -> {
+                if (!profile.getFollowers().isEmpty()) {
+                    checkForUnlockedAchievement(new IsFollowedAction(profile.getFollowers().size()));
+                }
+            });
         }
     }
 
@@ -875,7 +913,7 @@ public class App extends MultiDexApplication {
 
     private void onQuestComplete(Quest quest, EventSource source) {
         checkForDailyChallengeCompletion(quest);
-        updateAvatar(quest);
+        givePlayerRewardForAction(quest, new CompleteQuestAction(quest));
         savePet((int) (Math.ceil(quest.getExperience() / Constants.XP_TO_PET_HP_RATIO)));
         eventBus.post(new QuestCompletedEvent(quest, source));
     }
@@ -906,7 +944,7 @@ public class App extends MultiDexApplication {
             Challenge dailyChallenge = new Challenge();
             dailyChallenge.setExperience(xp);
             dailyChallenge.setCoins(coins);
-            updateAvatar(dailyChallenge);
+            givePlayerRewardForAction(dailyChallenge, new CompleteDailyChallengeAction(dailyChallenge));
             showChallengeCompleteDialog(getString(R.string.daily_challenge_complete_dialog_title), xp, coins);
             eventBus.post(new DailyChallengeCompleteEvent());
         });
@@ -921,13 +959,14 @@ public class App extends MultiDexApplication {
         startActivity(intent);
     }
 
-    private void updateAvatar(RewardProvider rewardProvider) {
+    private void givePlayerRewardForAction(RewardProvider rewardProvider, AchievementAction action) {
         Player player = getPlayer();
         Long experience = rewardProvider.getExperience();
         player.addExperience(experience);
         increasePlayerLevelIfNeeded(player);
         player.addCoins(rewardProvider.getCoins());
         playerPersistenceService.save(player);
+        checkForUnlockedAchievement(action);
     }
 
     private void increasePlayerLevelIfNeeded(Player player) {
@@ -936,12 +975,17 @@ public class App extends MultiDexApplication {
             while (shouldIncreaseLevel(player)) {
                 player.setLevel(player.getLevel() + 1);
             }
-            Intent intent = new Intent(this, LevelUpActivity.class);
-            intent.putExtra(LevelUpActivity.LEVEL, player.getLevel());
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
             eventBus.post(new LevelUpEvent(player.getLevel()));
         }
+    }
+
+    @Subscribe
+    public void onLevelUp(LevelUpEvent e) {
+        checkForUnlockedAchievement(new LevelUpAction(e.newLevel));
+        Intent intent = new Intent(this, LevelUpActivity.class);
+        intent.putExtra(LevelUpActivity.LEVEL, e.newLevel);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     @Subscribe
@@ -950,6 +994,15 @@ public class App extends MultiDexApplication {
         repeatingQuest.setDuration(Math.max(repeatingQuest.getDuration(), Constants.QUEST_MIN_DURATION));
         List<Quest> quests = repeatingQuestScheduler.schedule(repeatingQuest, LocalDate.now());
         repeatingQuestPersistenceService.saveWithQuests(repeatingQuest, quests);
+        checkForUnlockedAchievement(AchievementAction.Action.CREATE_REPEATING_QUEST);
+    }
+
+    private void checkForUnlockedAchievement(AchievementAction.Action action) {
+        UnlockAchievementScheduler.scheduleFindUnlocked(getApplicationContext(), new SimpleAchievementAction(action));
+    }
+
+    private void checkForUnlockedAchievement(AchievementAction action) {
+        UnlockAchievementScheduler.scheduleFindUnlocked(getApplicationContext(), action);
     }
 
     @Subscribe
@@ -987,7 +1040,7 @@ public class App extends MultiDexApplication {
     }
 
     private void onChallengeComplete(Challenge challenge, EventSource source) {
-        updateAvatar(challenge);
+        givePlayerRewardForAction(challenge, new CompleteChallengeAction(challenge));
         savePet((int) (Math.floor(challenge.getExperience() / Constants.XP_TO_PET_HP_RATIO)));
         showChallengeCompleteDialog(getString(R.string.challenge_complete, challenge.getName()), challenge.getExperience(), challenge.getCoins());
         eventBus.post(new ChallengeCompletedEvent(challenge, source));
@@ -1003,11 +1056,17 @@ public class App extends MultiDexApplication {
     @Subscribe
     public void onNewChallenge(NewChallengeEvent e) {
         challengePersistenceService.save(e.challenge);
+        checkForUnlockedAchievement(AchievementAction.Action.CREATE_CHALLENGE);
     }
 
     @Subscribe
     public void onUpdateChallenge(UpdateChallengeEvent e) {
         challengePersistenceService.save(e.challenge);
+    }
+
+    @Subscribe
+    public void onRewardUsed(RewardUsedEvent e) {
+        checkForUnlockedAchievement(AchievementAction.Action.USE_REWARD);
     }
 
     private void scheduleDateChanged() {
@@ -1050,6 +1109,50 @@ public class App extends MultiDexApplication {
             }
             questPersistenceService.save(quests);
         });
+    }
+
+    @Subscribe
+    public void onAchievementsUnlocked(AchievementsUnlockedEvent e) {
+        int xp = 0;
+        for (Achievement achievement : e.achievements) {
+            xp += achievement.experience;
+        }
+        checkForUnlockedAchievement(new AchievementsUnlockedAction(xp, getPlayer().getCoins()));
+    }
+
+    @Subscribe
+    public void onPostAdded(PostAddedEvent e) {
+        checkForUnlockedAchievement(AchievementAction.Action.ADD_POST);
+    }
+
+    @Subscribe
+    public void onAvatarChanged(AvatarChangedEvent e) {
+        checkForUnlockedAchievement(AchievementAction.Action.CHANGE_AVATAR);
+    }
+
+    @Subscribe
+    public void onPetChanged(PetChangedEvent e) {
+        checkForUnlockedAchievement(AchievementAction.Action.CHANGE_PET);
+    }
+
+    @Subscribe
+    public void onPowerUpEnabled(PowerUpEnabledEvent e) {
+        checkForUnlockedAchievement(AchievementAction.Action.BUY_POWER_UP);
+    }
+
+    @Subscribe
+    public void onPlayerFollowed(PlayerFollowedEvent e) {
+        checkForUnlockedAchievement(AchievementAction.Action.FOLLOW);
+    }
+
+    @Subscribe
+    public void onInviteFriendProviderPicked(InviteFriendsProviderPickedEvent e) {
+        checkForUnlockedAchievement(AchievementAction.Action.INVITE_FRIEND);
+    }
+
+    @Subscribe
+    public void onFeedbackSent(RateDialogFeedbackSentEvent e) {
+        checkForUnlockedAchievement(AchievementAction.Action.SEND_FEEDBACK);
     }
 
     @Subscribe

@@ -8,6 +8,7 @@ import com.amplitude.api.Amplitude;
 import com.google.firebase.crash.FirebaseCrash;
 import com.squareup.otto.Subscribe;
 
+import io.ipoli.android.achievement.events.AchievementsUnlockedEvent;
 import io.ipoli.android.app.api.events.NewSessionCreatedEvent;
 import io.ipoli.android.app.api.events.SessionExpiredEvent;
 import io.ipoli.android.app.events.AppErrorEvent;
@@ -52,6 +53,7 @@ import io.ipoli.android.app.tutorial.events.PredefinedQuestDeselectedEvent;
 import io.ipoli.android.app.tutorial.events.PredefinedQuestSelectedEvent;
 import io.ipoli.android.app.tutorial.events.PredefinedRepeatingQuestDeselectedEvent;
 import io.ipoli.android.app.tutorial.events.PredefinedRepeatingQuestSelectedEvent;
+import io.ipoli.android.app.tutorial.events.RequestOverlayPermissionEvent;
 import io.ipoli.android.app.tutorial.events.ShowTutorialEvent;
 import io.ipoli.android.app.tutorial.events.TutorialDoneEvent;
 import io.ipoli.android.app.tutorial.events.TutorialSkippedEvent;
@@ -501,8 +503,7 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
     public void onRateDialogFeedbackSent(RateDialogFeedbackSentEvent e) {
         log("rate_dialog_feedback_sent", EventParams.create()
                 .add("feedback", e.feedback)
-                .add("app_run", String.valueOf(e.appRun))
-                .add("date_time", e.dateTime.toString()));
+                .add("app_run", String.valueOf(e.appRun)));
     }
 
     @Subscribe
@@ -1018,6 +1019,18 @@ public class AmplitudeAnalyticsService implements AnalyticsService {
                 .add("follower", e.follower)
                 .add("following", e.following));
     }
+
+    @Subscribe
+    public void onRequestOverlayPermission(RequestOverlayPermissionEvent e) {
+        log("request_overlay_permission", EventParams.of("version", e.versionNumber));
+    }
+
+    @Subscribe
+    public void onAchievementsUnlocked(AchievementsUnlockedEvent e) {
+        log("achievements_unlocked",
+                EventParams.of("achievements", TextUtils.join(",", e.achievements)));
+    }
+
 
     @Subscribe
     public void onAppError(AppErrorEvent e) {

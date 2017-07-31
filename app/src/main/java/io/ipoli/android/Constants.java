@@ -39,6 +39,8 @@ public interface Constants {
 
     String PLAYER_ID_EXTRA_KEY = "player_id";
 
+    String PROFILE_ID_EXTRA_KEY = "profile_id";
+
     String QUEST_ID_EXTRA_KEY = "quest_id";
 
     String REPEATING_QUEST_ID_EXTRA_KEY = "repeating_quest_id";
@@ -158,7 +160,7 @@ public interface Constants {
     String PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index";
     int RANDOM_SEED = 42; // duh!
     int MAX_TIMES_A_DAY_COUNT = 8;
-    int SCHEMA_VERSION = 8;
+    int SCHEMA_VERSION = 9;
 
     double MAX_PENALTY_COEFFICIENT = 0.5;
     double NO_QUESTS_PENALTY_COEFFICIENT = 0.3;
@@ -183,4 +185,7 @@ public interface Constants {
     String SKU_SUBSCRIPTION_MONTHLY = "monthly_plan";
     String SKU_SUBSCRIPTION_QUARTERLY = "quarterly_plan";
     String SKU_SUBSCRIPTION_YEARLY = "yearly_plan";
+
+    String KEY_ACHIEVEMENT_ACTION = "achievement_action";
+    String KEY_ACHIEVEMENT_ACTION_CLASS = "achievement_action_class";
 }

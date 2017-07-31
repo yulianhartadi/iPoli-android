@@ -1,10 +1,15 @@
 package io.ipoli.android.app.tutorial;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Toast;
 
 import com.squareup.otto.Bus;
 
@@ -14,6 +19,7 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.events.FinishTutorialActivityEvent;
+import io.ipoli.android.app.tutorial.events.RequestOverlayPermissionEvent;
 import io.ipoli.android.app.tutorial.fragments.TutorialAddQuestFragment;
 import io.ipoli.android.app.tutorial.fragments.TutorialCalendarFragment;
 import io.ipoli.android.app.tutorial.fragments.TutorialIntroFragment;
@@ -28,6 +34,7 @@ import io.ipoli.android.quest.data.Category;
  */
 public class TutorialActivity extends AppCompatActivity {
 
+    public static final int OVERLAY_PERMISSION_REQUEST_CODE = 42;
     @Inject
     LocalStorage localStorage;
 
@@ -106,14 +113,33 @@ public class TutorialActivity extends AppCompatActivity {
         // intentional
     }
 
+    public void onTutorialSkipped() {
+        playerName = "";
+        onTutorialDone();
+    }
+
     public void onTutorialDone() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            eventBus.post(new RequestOverlayPermissionEvent(Build.VERSION.SDK_INT));
+            Toast.makeText(getApplicationContext(), R.string.overlay_permission_reason, Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, OVERLAY_PERMISSION_REQUEST_CODE);
+            return;
+        }
+
+        finishTutorial();
+    }
+
+    protected void finishTutorial() {
         localStorage.saveBool(Constants.KEY_SHOULD_SHOW_TUTORIAL, false);
         eventBus.post(new FinishTutorialActivityEvent(playerName));
         finish();
     }
 
-    public void onTutorialSkipped() {
-        playerName = "";
-        onTutorialDone();
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == OVERLAY_PERMISSION_REQUEST_CODE) {
+            finishTutorial();
+        }
     }
 }

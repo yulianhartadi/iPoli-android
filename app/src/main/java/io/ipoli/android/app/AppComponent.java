@@ -4,11 +4,14 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import io.ipoli.android.MainActivity;
+import io.ipoli.android.achievement.AchievementUnlockJobService;
+import io.ipoli.android.achievement.ui.AchievementListActivity;
 import io.ipoli.android.app.activities.BaseActivity;
 import io.ipoli.android.app.activities.MigrationActivity;
 import io.ipoli.android.app.activities.QuickAddActivity;
 import io.ipoli.android.app.activities.SignInActivity;
 import io.ipoli.android.app.help.HelpDialog;
+import io.ipoli.android.app.modules.AchievementUnlockerModule;
 import io.ipoli.android.app.modules.AnalyticsModule;
 import io.ipoli.android.app.modules.AndroidCalendarModule;
 import io.ipoli.android.app.modules.ApiModule;
@@ -120,7 +123,8 @@ import io.ipoli.android.store.fragments.StoreFragment;
                 UrlProviderModule.class,
                 AndroidCalendarModule.class,
                 PowerUpModule.class,
-                PlayerCredentialsModule.class
+                PlayerCredentialsModule.class,
+                AchievementUnlockerModule.class
         }
 )
 public interface AppComponent {
@@ -281,6 +285,8 @@ public interface AppComponent {
 
     void inject(ProfileActivity profileActivity);
 
+    void inject(AchievementListActivity achievementListActivity);
+
     void inject(FeedFragment feedFragment);
 
     void inject(UsernamePickerFragment usernamePickerFragment);
@@ -288,4 +294,6 @@ public interface AppComponent {
     void inject(DateTimePickerFragment dateTimePickerFragment);
 
     void inject(PowerUpsJobService powerUpsJobService);
+
+    void inject(AchievementUnlockJobService achievementUnlockJobService);
 }

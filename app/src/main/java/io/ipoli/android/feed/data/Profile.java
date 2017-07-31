@@ -29,6 +29,7 @@ public class Profile {
     private Map<String, String> posts;
     private Map<String, Boolean> followers;
     private Map<String, Boolean> following;
+    private Map<Integer, Long> achievements;
 
     public Profile() {
     }
@@ -45,6 +46,7 @@ public class Profile {
         setPetAvatarCode(player.getPet().getAvatarCode());
         setPetState(player.getPet().getState().name());
         setCreatedAt(player.getCreatedAt());
+        setAchievements(player.getAchievements());
     }
 
     public String getId() {
@@ -176,6 +178,17 @@ public class Profile {
 
     public void setPetState(String petState) {
         this.petState = petState;
+    }
+
+    public Map<Integer, Long> getAchievements() {
+        if (achievements == null) {
+            achievements = new HashMap<>();
+        }
+        return achievements;
+    }
+
+    public void setAchievements(Map<Integer, Long> achievements) {
+        this.achievements = achievements;
     }
 
     @Exclude

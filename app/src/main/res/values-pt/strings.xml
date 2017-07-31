@@ -7,7 +7,7 @@
     <string name="repeating_quest_deleted">Missão recorrente deletada</string>
     <string name="done">Feito</string>
     <string name="quest_complete">Missão completa</string>
-    <string name="quest_complete_with_bounty">Missão completa! +%1$d EXP +%2$d moedas..</string>
+    <string name="quest_complete_with_reward">Missão completa! +%1$d EXP +%2$d moedas..</string>
     <string name="challenge_complete">Desafio %s completo</string>
     <string name="quest_undone">Missão desfeita. -%1$d EXP -%2$d moedas.</string>
     <string name="quest_undone_to_inbox">Missão movida para a Caixa de Entrada. -%1$d EXP -%2$d moedas.</string>

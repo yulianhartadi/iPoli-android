@@ -232,6 +232,6 @@ public class PowerUpsJobService extends JobService {
     @Override
     public boolean onStopJob(JobParameters params) {
         checkout.stop();
-        return true;
+        return false;
     }
 }

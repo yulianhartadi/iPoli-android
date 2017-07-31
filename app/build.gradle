@@ -9,7 +9,7 @@ jacoco {
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "26.0.0"
+    buildToolsVersion "26.0.1"
 
     dexOptions {
         preDexLibraries true

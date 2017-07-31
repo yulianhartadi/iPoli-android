@@ -9,8 +9,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.otto.Bus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import io.ipoli.android.achievement.Achievement;
 import io.ipoli.android.app.events.AppErrorEvent;
 import io.ipoli.android.app.persistence.FirebasePath;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
@@ -42,6 +44,10 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
         return rootPath().add("profiles");
     }
 
+    public static FirebasePath achievementsPath() {
+        return rootPath().add("achievements");
+    }
+
     public static FirebasePath postPath(String postId) {
         return postsPath().add(postId);
     }
@@ -52,6 +58,10 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
 
     public static FirebasePath usernamePath(String username) {
         return rootPath().add("usernames").add(username);
+    }
+
+    public static FirebasePath achievementPath(Integer code) {
+        return rootPath().add("achievements").add(code);
     }
 
     public FirebaseFeedPersistenceService(FirebaseDatabase database, Bus eventBus) {
@@ -183,6 +193,9 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
             postPath(postId).add("playerDisplayName").update(update).withValue(player.getFullDisplayName());
             postPath(postId).add("playerAvatarCode").update(update).withValue(player.getAvatarCode());
         }
+        for (Map.Entry<Integer, Long> entry : player.getAchievements().entrySet()) {
+            profilePath.add("achievements").add(entry.getKey()).update(update).withValue(entry.getValue());
+        }
         database.getReference().updateChildren(update);
     }
 
@@ -192,6 +205,21 @@ public class FirebaseFeedPersistenceService implements FeedPersistenceService {
         postPath(post.getId()).update(update).withValue(null);
         profilePath(post.getPlayerId()).add("posts").add(post.getId()).update(update).withValue(null);
         database.getReference().updateChildren(update);
+    }
+
+    @Override
+    public void incrementAchievements(List<Achievement> unlockedAchievements) {
+        for (Achievement achievement : unlockedAchievements) {
+            DatabaseReference ref = achievementPath(achievement.code).toReference(database);
+            ref.addListenerForSingleValueEvent(new FirebaseValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Long result = dataSnapshot.getValue(Long.class);
+                    long count = result != null ? result + 1 : 1;
+                    ref.setValue(count);
+                }
+            });
+        }
     }
 
     private abstract class FirebaseValueEventListener implements ValueEventListener {

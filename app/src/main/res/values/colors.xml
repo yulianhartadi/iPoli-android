@@ -10,6 +10,10 @@
     <color name="colorGreen">#367d38</color>
     <color name="colorRed">#ff1744</color>
 
+    <color name="achievement_bronze">#4aad4f</color>
+    <color name="achievement_silver">#0068c0</color>
+    <color name="achievement_gold">#ff0f45</color>
+
     <color name="md_white">#FFFFFF</color>
     <color name="md_black">#000000</color>
 

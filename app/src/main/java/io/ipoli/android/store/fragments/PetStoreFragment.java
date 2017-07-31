@@ -39,6 +39,7 @@ import io.ipoli.android.store.activities.StoreActivity;
 import io.ipoli.android.store.adapters.PetStoreAdapter;
 import io.ipoli.android.store.events.BuyPetRequestEvent;
 import io.ipoli.android.store.events.PetBoughtEvent;
+import io.ipoli.android.store.events.PetChangedEvent;
 import io.ipoli.android.store.events.UsePetEvent;
 import io.ipoli.android.store.viewmodels.PetViewModel;
 
@@ -143,6 +144,7 @@ public class PetStoreFragment extends BaseFragment {
         playerPersistenceService.save(player);
         Toast.makeText(getContext(), R.string.pet_selected_message, Toast.LENGTH_SHORT).show();
         adapter.setViewModels(createPetViewModels());
+        eventBus.post(new PetChangedEvent(e.petAvatar));
     }
 
     @Override

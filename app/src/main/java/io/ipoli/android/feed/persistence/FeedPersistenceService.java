@@ -1,5 +1,8 @@
 package io.ipoli.android.feed.persistence;
 
+import java.util.List;
+
+import io.ipoli.android.achievement.Achievement;
 import io.ipoli.android.app.persistence.OnDataChangedListener;
 import io.ipoli.android.feed.data.Post;
 import io.ipoli.android.feed.data.Profile;
@@ -36,4 +39,6 @@ public interface FeedPersistenceService {
     void updateProfile(Profile profile, Player player);
 
     void deletePost(Post post);
+
+    void incrementAchievements(List<Achievement> unlockedAchievements);
 }

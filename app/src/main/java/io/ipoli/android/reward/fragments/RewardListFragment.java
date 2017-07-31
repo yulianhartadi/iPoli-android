@@ -45,6 +45,7 @@ import io.ipoli.android.reward.data.Reward;
 import io.ipoli.android.reward.events.BuyRewardEvent;
 import io.ipoli.android.reward.events.DeleteRewardRequestEvent;
 import io.ipoli.android.reward.events.EditRewardRequestEvent;
+import io.ipoli.android.reward.events.RewardUsedEvent;
 import io.ipoli.android.reward.persistence.RewardPersistenceService;
 import io.ipoli.android.reward.viewmodels.RewardViewModel;
 
@@ -146,7 +147,7 @@ public class RewardListFragment extends BaseFragment implements OnDataChangedLis
         rewardPersistenceService.save(r);
         updateRewards(rewards);
         Snackbar.make(rootLayout, String.format(getString(R.string.reward_earned), e.reward.getName()), Snackbar.LENGTH_SHORT).show();
-
+        eventBus.post(new RewardUsedEvent(r));
     }
 
     private void showTooExpensiveMessage() {
