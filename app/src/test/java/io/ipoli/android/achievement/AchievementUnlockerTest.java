@@ -55,7 +55,7 @@ public class AchievementUnlockerTest {
     @Test
     public void findUnlocked_500ExperienceInADay_unlock500ExperienceInADay() {
         AchievementsProgress progress = new AchievementsProgress();
-        progress.setExperienceInADay(new ActionCountPerDay(490, LocalDate.now()));
+        progress.setExperienceInADay(new ActionCountPerDay(990, LocalDate.now()));
         progress.incrementExperienceInADay(10);
         List<Achievement> unlockedAchievements = unlocker.findUnlocked(new HashSet<>(), progress);
         assertThat(unlockedAchievements.size(), is(1));
