@@ -82,6 +82,9 @@ public class AchievementsProgressCoordinator {
                 progress.incrementExperienceInADay(achievementsUnlockedAction.experience);
                 progress.setLifeCoinCount((long) achievementsUnlockedAction.coins);
                 break;
+            default:
+                // intentional
+                break;
         }
     }
 }
