@@ -906,7 +906,7 @@
     <string name="achievement_first_challenge_created_name">Braveheart</string>
     <string name="achievement_first_challenge_created_desc">Accept your first Challenge</string>
     <string name="achievement_first_reward_used_name">Indulgence</string>
-    <string name="achievement_first_reward_used_desc">Use Reward for 1st time</string>
+    <string name="achievement_first_reward_used_desc">Use Reward for a first time</string>
     <string name="achievement_first_daily_challenge_completed_name">Getting serious</string>
     <string name="achievement_first_daily_challenge_completed_desc">Complete your first Daily Challenge</string>
     <string name="achievement_first_post_created_name">Enthusiast</string>
@@ -936,7 +936,7 @@
     <string name="achievement_first_follower_name">Acknowledged</string>
     <string name="achievement_first_follower_desc">Get your first follower</string>
     <string name="achievement_first_challenge_completed_name">Gladiator</string>
-    <string name="achievement_first_challenge_completed_desc">First challenge completed</string>
+    <string name="achievement_first_challenge_completed_desc">Complete your first Challenge</string>
     <string name="achievement_reach_level_20th_name">Leader</string>
     <string name="achievement_reach_level_20th_desc">Reach 20th level</string>
     <string name="achievement_gain_xp_in_a_day_name">Triple digits</string>
@@ -944,7 +944,7 @@
     <string name="achievement_complete_quests_in_row_name">Grand master</string>
     <string name="achievement_complete_quests_in_row_desc">Complete at least 1 quest for 100 days in a row</string>
     <string name="achievement_send_feedback_name">Community Service</string>
-    <string name="achievement_send_feedback_desc">Feedback sent</string>
+    <string name="achievement_send_feedback_desc">Send Feedback about iPoli</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
