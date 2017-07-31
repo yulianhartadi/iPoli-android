@@ -40,7 +40,7 @@ public class AchievementAdapter extends RecyclerView.Adapter<AchievementAdapter.
         holder.description.setText(achievement.description);
         if (unlockedAchievementCodes.contains(achievement.code)) {
             holder.itemView.setBackgroundResource(R.color.md_white);
-            holder.icon.setImageAlpha(100);
+            holder.icon.setImageAlpha(255);
             holder.name.setEnabled(true);
             holder.description.setEnabled(true);
         } else {
