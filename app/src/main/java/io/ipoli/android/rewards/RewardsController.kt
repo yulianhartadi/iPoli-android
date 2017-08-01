@@ -130,7 +130,7 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
 
         override fun onBindViewHolder(items: List<Reward>, position: Int, holder: RecyclerView.ViewHolder, payloads: MutableList<Any>) {
             val vh = holder as RewardViewHolder
-            val reward = items[position] as Reward
+            val reward = items[position]
             vh.bindReward(reward)
         }
 

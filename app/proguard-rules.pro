@@ -15,3 +15,60 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-dontoptimize
+-dontobfuscate
+
+-keep public class com.google.common.base.** {
+    public *;
+}
+
+-keep public class com.google.common.collect.Sets
+-keepclassmembers class com.google.common.collect.Sets** {
+ *;
+ }
+
+ -keep public class com.google.common.collect.Collections2
+ -keepclassmembers class com.google.common.collect.Collections2** {
+  *;
+  }
+
+-keep public final class com.google.common.collect.Lists
+-keepclassmembers class com.google.common.collect.Lists** {
+ *;
+ }
+
+-keep public final class com.google.common.collect.Iterables
+-keepclassmembers class com.google.common.collect.Iterables** {
+ *;
+ }
+
+-keep public class com.google.common.collect.ImmutableList.** {
+    public *;
+}
+
+-keep public class com.google.common.io.CharStreams {
+    public *;
+}
+
+-keep public class com.google.common.collect.HashMultiset
+-keepclassmembers class com.google.common.collect.HashMultiset** {
+ *;
+ }
+
+-keep public class com.google.common.collect.HashBiMap
+-keepclassmembers class com.google.common.collect.HashBiMap** {
+ *;
+ }
+
+-keep public class javax.annotation.Nullable.** {
+     public *;
+ }
+
+-keep public class com.google.common.util.** {
+    public *;
+}
+
+-keep public class com.google.common.primitives.** {
+    public *;
+}

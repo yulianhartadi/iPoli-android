@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'realm-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.getkeepsafe.dexcount'
 
 android {
     compileSdkVersion 26
@@ -19,16 +20,12 @@ android {
     }
 
     buildTypes {
+
         release {
-            minifyEnabled false
+            // @TODO Fix proguard rules
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-    }
-
-    packagingOptions {
-        exclude 'META-INF/ASL2.0'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/NOTICE'
     }
 }
 
