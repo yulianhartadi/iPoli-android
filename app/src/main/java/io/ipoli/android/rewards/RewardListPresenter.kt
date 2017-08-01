@@ -7,13 +7,15 @@ import io.ipoli.android.RewardViewState
 import io.ipoli.android.RewardsInitialLoadingState
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import javax.inject.Inject
 
 
 /**
  * Created by vini on 7/7/17.
  */
-class RewardListPresenter @Inject constructor(private val rewardRepository: RewardRepository) : MviBasePresenter<RewardListController, RewardViewState>() {
+class RewardListPresenter @Inject constructor(private val displayRewardsUseCase: DisplayRewardsUseCase) : MviBasePresenter<RewardListController, RewardViewState>() {
 
 //    @Inject lateinit var rewardRepository: RewardRepository
 //    @Inject lateinit var app: iPoliApp
@@ -41,10 +43,10 @@ class RewardListPresenter @Inject constructor(private val rewardRepository: Rewa
 
         val observables = ArrayList<Observable<RewardStatePartialChange>>()
 
-        val displayRewardsUseCase = DisplayRewardsUseCase(rewardRepository)
+//        val displayRewardsUseCase = DisplayRewardsUseCase(rewardRepository)
 
         observables.add(
-                intent { it.loadRewardsIntent() }.switchMap { ignored ->
+                intent { it.loadRewardsIntent() }.switchMap { _ ->
                     displayRewardsUseCase.execute(Unit)
                             .doOnNext { rewards ->
                                 Log.d("Loading rewards", "Loading all " + rewards.size + " " + Looper.getMainLooper().isCurrentThread

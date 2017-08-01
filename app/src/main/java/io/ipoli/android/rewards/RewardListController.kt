@@ -46,8 +46,7 @@ class RewardListController : RestoreViewOnCreateMviController<RewardListControll
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        rewardListComponent // will ensure that dagger component will be initilaized lazily.
-        // called before TaskBuilderLifecycleListener restores his state
+        rewardListComponent // will ensure that dagger component will be initialized lazily.
     }
 
 
