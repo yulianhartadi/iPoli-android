@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import io.ipoli.android.achievement.Achievement;
 import io.ipoli.android.player.data.Avatar;
 import io.ipoli.android.player.data.PetAvatar;
 import io.ipoli.android.player.data.Player;
@@ -197,7 +198,7 @@ public class Profile {
     private void setAchievementsFromPlayer(Map<Integer, Long> achievements) {
         Map<String, Long> achievementsMap = new HashMap<>();
         for (Map.Entry<Integer, Long> entry : achievements.entrySet()) {
-            achievementsMap.put(entry.getKey().toString(), entry.getValue());
+            achievementsMap.put(Achievement.get(entry.getKey()).name(), entry.getValue());
         }
         setAchievements(achievementsMap);
     }
@@ -205,8 +206,8 @@ public class Profile {
     @Exclude
     public Set<Integer> getUnlockedAchievementCodes() {
         Set<Integer> result = new HashSet<>();
-        for (String key : getAchievements().keySet()) {
-            result.add(Integer.valueOf(key));
+        for (String name : getAchievements().keySet()) {
+            result.add(Achievement.valueOf(name).code);
         }
         return result;
     }
