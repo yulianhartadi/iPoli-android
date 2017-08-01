@@ -1,10 +1,12 @@
 package io.ipoli.android
 
 import android.app.Application
+import com.codemonkeylabs.fpslibrary.TinyDancer
+import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
+import com.squareup.leakcanary.LeakCanary
 import io.realm.Realm
 import timber.log.Timber
-import com.orhanobut.logger.AndroidLogAdapter
 
 /**
  * Created by vini on 7/7/17.
@@ -12,6 +14,11 @@ import com.orhanobut.logger.AndroidLogAdapter
 class iPoliApp : Application() {
     override fun onCreate() {
         super.onCreate()
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return
+        }
         // Initialize Realm. Should only be done once when the application starts.
         Realm.init(this)
         Logger.addLogAdapter(AndroidLogAdapter())
@@ -20,5 +27,7 @@ class iPoliApp : Application() {
                 Logger.log(priority, tag, message, t)
             }
         })
+        LeakCanary.install(this)
+        TinyDancer.create().show(this)
     }
 }

@@ -18,10 +18,6 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
-    dataBinding {
-        enabled = true
-    }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -38,7 +34,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    kapt "com.android.databinding:compiler:3.0.0-alpha8"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:26.0.0'
     implementation 'com.android.support:design:26.0.0'
@@ -58,7 +53,19 @@ dependencies {
     implementation 'com.hannesdorfmann.mosby3:mvi-conductor:3.0.0', {
         exclude group: 'com.bluelinelabs'
     }
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+
+//    debugImplementation "com.github.brianPlummer:tinydancer:0.1.1"
+//    implementation "com.github.brianPlummer:tinydancer-noop:0.1.1"
+//    testImplementation "com.github.brianPlummer:tinydancer-noop:0.1.1"
+
+    debugCompile "com.github.brianPlummer:tinydancer:0.1.1"
+    releaseCompile "com.github.brianPlummer:tinydancer-noop:0.1.1"
+    testCompile "com.github.brianPlummer:tinydancer-noop:0.1.1"
+
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
 
     androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -70,4 +77,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
+apply from: 'quality.gradle'
 apply plugin: 'com.google.gms.google-services'
