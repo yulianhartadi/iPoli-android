@@ -1,13 +1,16 @@
 package io.ipoli.android.rewards
 
+import android.os.Looper
 import android.util.Log
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.ipoli.android.RewardViewState
 import io.ipoli.android.RewardsInitialLoadingState
+import io.ipoli.android.iPoliApp
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
+import javax.inject.Inject
 
 
 /**
@@ -15,7 +18,12 @@ import timber.log.Timber
  */
 class RewardsPresenter(private val interactor: RewardListInteractor) : MviBasePresenter<RewardsController, RewardViewState>() {
 
+    @Inject lateinit var rewardRepository: RewardRepository
+    @Inject lateinit var app: iPoliApp
+
     override fun bindIntents() {
+
+        iPoliApp.rewardsComponent.inject(this)
 
 //        val loadDataState: Observable<RewardViewState> = intent { it.loadRewardsIntent() }
 //                .switchMap { interactor.loadRewards() }
@@ -32,20 +40,22 @@ class RewardsPresenter(private val interactor: RewardListInteractor) : MviBasePr
 //        subscribeViewState(loadDataState, RewardsController::render)
 
 //        val r = Reward(name = "Welcome", description = "Hello sir!", price = 123)
-//
-//        val rewardRepository = RewardRepository()
 //        rewardRepository.save(r)
 
         val observables = ArrayList<Observable<RewardStatePartialChange>>()
 
+        val displayRewardsUseCase = DisplayRewardsUseCase(rewardRepository)
 
         observables.add(
                 intent { it.loadRewardsIntent() }.switchMap { ignored ->
-                    interactor.loadRewards()
-                            .doOnNext { rewards -> Log.d("Loading rewards", "Loading all " + rewards.size) }
+                    displayRewardsUseCase.execute(Unit)
+                            .doOnNext { rewards ->
+                                Log.d("Loading rewards", "Loading all " + rewards.size + " " + Looper.getMainLooper().isCurrentThread
+                                )
+                            }
                             .map { data -> RewardsLoadedPartialChange(data) as RewardStatePartialChange }
                             .startWith(RewardsLoadingPartialChange())
-                            .subscribeOn(Schedulers.io())
+//                            .subscribeOn(Schedulers.io())
                 })
 
         observables.add(

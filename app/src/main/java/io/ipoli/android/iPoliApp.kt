@@ -5,6 +5,9 @@ import com.codemonkeylabs.fpslibrary.TinyDancer
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.squareup.leakcanary.LeakCanary
+import io.ipoli.android.di.AppModule
+import io.ipoli.android.di.DaggerRewardsComponent
+import io.ipoli.android.di.RewardsComponent
 import io.realm.Realm
 import timber.log.Timber
 
@@ -12,6 +15,11 @@ import timber.log.Timber
  * Created by vini on 7/7/17.
  */
 class iPoliApp : Application() {
+
+    companion object {
+        lateinit var rewardsComponent: RewardsComponent
+    }
+
     override fun onCreate() {
         super.onCreate()
         if (LeakCanary.isInAnalyzerProcess(this)) {
@@ -29,5 +37,9 @@ class iPoliApp : Application() {
         })
         LeakCanary.install(this)
         TinyDancer.create().show(this)
+
+        rewardsComponent = DaggerRewardsComponent.builder()
+                .appModule(AppModule(this))
+                .build()
     }
 }

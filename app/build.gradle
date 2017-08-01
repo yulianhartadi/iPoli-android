@@ -52,6 +52,9 @@ dependencies {
     }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
+    implementation "com.google.dagger:dagger:2.11"
+    kapt "com.google.dagger:dagger-compiler:2.11"
+
 //    debugImplementation "com.github.brianPlummer:tinydancer:0.1.1"
 //    implementation "com.github.brianPlummer:tinydancer-noop:0.1.1"
 //    testImplementation "com.github.brianPlummer:tinydancer-noop:0.1.1"

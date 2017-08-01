@@ -1,0 +1,23 @@
+package io.ipoli.android.di
+
+import android.content.Context
+import dagger.Module
+import dagger.Provides
+import io.ipoli.android.iPoliApp
+import javax.inject.Singleton
+
+/**
+ * Created by vini on 8/1/17.
+ */
+@Module
+class AppModule(val app: iPoliApp) {
+
+    @Provides
+    @Singleton
+    fun provideContext(): Context = app
+
+    @Provides
+    @Singleton
+    fun provideApp(): iPoliApp = app
+
+}
