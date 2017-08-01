@@ -7,7 +7,7 @@ import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import io.ipoli.android.rewards.RewardsController
+import io.ipoli.android.rewards.RewardListController
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -32,7 +32,7 @@ class RewardListTest {
         val activity = testRule.getActivity()
         activity.runOnUiThread({
             router = testRule.getActivity().router
-            router.setRoot(RouterTransaction.with(RewardsController()))
+            router.setRoot(RouterTransaction.with(RewardListController()))
         })
     }
 

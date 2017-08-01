@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import io.ipoli.android.rewards.RewardsController
+import io.ipoli.android.rewards.RewardListController
 
 /**
  * Created by vini on 7/6/17.
@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         router = Conductor.attachRouter(this, findViewById<ViewGroup>(R.id.controller_container), savedInstanceState)
         if (!router.hasRootController()) {
-            router.setRoot(RouterTransaction.with(RewardsController()))
+            router.setRoot(RouterTransaction.with(RewardListController()))
         }
     }
 

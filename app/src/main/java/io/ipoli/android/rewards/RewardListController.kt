@@ -15,17 +15,16 @@ import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import com.hannesdorfmann.mosby3.RestoreViewOnCreateMviController
 import com.jakewharton.rxbinding2.view.RxView
-import io.ipoli.android.R
-import io.ipoli.android.RewardViewState
-import io.ipoli.android.RewardsInitialLoadingState
-import io.ipoli.android.RewardsLoadedState
+import io.ipoli.android.*
+import io.ipoli.android.di.DaggerRewardListComponent
+import io.ipoli.android.di.RewardListComponent
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.controller_rewards.view.*
 import kotlinx.android.synthetic.main.item_reward.view.*
 
 
-class RewardsController : RestoreViewOnCreateMviController<RewardsController, RewardsPresenter>() {
+class RewardListController : RestoreViewOnCreateMviController<RewardListController, RewardListPresenter>() {
 
     private var restoringState: Boolean = false
 
@@ -35,6 +34,22 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
 
     private val useRewardSubject = PublishSubject.create<Reward>()
     private val deleteRewardSubject = PublishSubject.create<Reward>()
+
+    val rewardListComponent: RewardListComponent by lazy {
+        val component = DaggerRewardListComponent
+                .builder()
+                .controllerComponent(daggerComponent)
+                .build()
+        component.inject(this@RewardListController)
+        component
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        rewardListComponent // will ensure that dagger component will be initilaized lazily.
+        // called before TaskBuilderLifecycleListener restores his state
+    }
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_rewards, container, false) as ViewGroup
@@ -76,8 +91,8 @@ class RewardsController : RestoreViewOnCreateMviController<RewardsController, Re
         this.restoringState = restoringViewState
     }
 
-    override fun createPresenter(): RewardsPresenter {
-        return RewardsPresenter(RewardListInteractor())
+    override fun createPresenter(): RewardListPresenter {
+        return rewardListComponent.createRewardListPresenter()
     }
 
     fun loadRewardsIntent(): Observable<Boolean> {

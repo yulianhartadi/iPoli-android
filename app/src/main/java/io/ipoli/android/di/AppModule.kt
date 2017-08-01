@@ -10,14 +10,10 @@ import javax.inject.Singleton
  * Created by vini on 8/1/17.
  */
 @Module
-class AppModule(val app: iPoliApp) {
+class AppModule(val context: Context) {
 
     @Provides
     @Singleton
-    fun provideContext(): Context = app
-
-    @Provides
-    @Singleton
-    fun provideApp(): iPoliApp = app
+    fun provideContext(): Context = context
 
 }

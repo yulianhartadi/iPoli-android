@@ -5,25 +5,22 @@ import android.util.Log
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.ipoli.android.RewardViewState
 import io.ipoli.android.RewardsInitialLoadingState
-import io.ipoli.android.iPoliApp
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
 import javax.inject.Inject
 
 
 /**
  * Created by vini on 7/7/17.
  */
-class RewardsPresenter(private val interactor: RewardListInteractor) : MviBasePresenter<RewardsController, RewardViewState>() {
+class RewardListPresenter @Inject constructor(private val rewardRepository: RewardRepository) : MviBasePresenter<RewardListController, RewardViewState>() {
 
-    @Inject lateinit var rewardRepository: RewardRepository
-    @Inject lateinit var app: iPoliApp
+//    @Inject lateinit var rewardRepository: RewardRepository
+//    @Inject lateinit var app: iPoliApp
 
     override fun bindIntents() {
 
-        iPoliApp.rewardsComponent.inject(this)
+//        iPoliApp.rewardListComponent.inject(this)
 
 //        val loadDataState: Observable<RewardViewState> = intent { it.loadRewardsIntent() }
 //                .switchMap { interactor.loadRewards() }
@@ -37,7 +34,7 @@ class RewardsPresenter(private val interactor: RewardListInteractor) : MviBasePr
 //                .switchMap { reward -> interactor.useReward(reward) }
 //                .subscribe()
 //
-//        subscribeViewState(loadDataState, RewardsController::render)
+//        subscribeViewState(loadDataState, RewardListController::render)
 
 //        val r = Reward(name = "Welcome", description = "Hello sir!", price = 123)
 //        rewardRepository.save(r)
@@ -58,28 +55,28 @@ class RewardsPresenter(private val interactor: RewardListInteractor) : MviBasePr
 //                            .subscribeOn(Schedulers.io())
                 })
 
-        observables.add(
-                intent { it.useRewardIntent() }
-                        .switchMap { reward ->
-                            interactor.useReward(reward)
-                                    .doOnNext { r -> Timber.d("RewardUsed", "Reward used " + r.name) }
-                                    .map { ignored -> RewardUsedPartialChange() as RewardStatePartialChange }
-                                    .subscribeOn(Schedulers.io())
-                        }
-        )
-
-        observables.add(
-                intent { it.deleteRewardIntent() }
-                        .doOnNext { reward -> Log.d("Deleting reward", reward.name) }
-                        .switchMap { reward -> interactor.deleteReward(reward) }
-                        .map { ignored -> RewardDeletedPartialChange() })
+//        observables.add(
+//                intent { it.useRewardIntent() }
+//                        .switchMap { reward ->
+//                            interactor.useReward(reward)
+//                                    .doOnNext { r -> Timber.d("RewardUsed", "Reward used " + r.name) }
+//                                    .map { ignored -> RewardUsedPartialChange() as RewardStatePartialChange }
+//                                    .subscribeOn(Schedulers.io())
+//                        }
+//        )
+//
+//        observables.add(
+//                intent { it.deleteRewardIntent() }
+//                        .doOnNext { reward -> Log.d("Deleting reward", reward.name) }
+//                        .switchMap { reward -> interactor.deleteReward(reward) }
+//                        .map { ignored -> RewardDeletedPartialChange() })
 
         val allIntents: Observable <RewardStatePartialChange> = Observable.merge(observables)
         val initialState: RewardViewState = RewardsInitialLoadingState()
         val stateObservable = allIntents.scan(initialState, this::viewStateReducer)
                 .observeOn(AndroidSchedulers.mainThread())
 
-        subscribeViewState(stateObservable, RewardsController::render)
+        subscribeViewState(stateObservable, RewardListController::render)
     }
 
     private fun viewStateReducer(previousStateReward: RewardViewState, statePartialChange: RewardStatePartialChange): RewardViewState {

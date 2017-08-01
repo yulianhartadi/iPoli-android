@@ -1,13 +1,14 @@
 package io.ipoli.android
 
 import android.app.Application
+import android.content.Context
 import com.codemonkeylabs.fpslibrary.TinyDancer
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.squareup.leakcanary.LeakCanary
+import io.ipoli.android.di.AppComponent
 import io.ipoli.android.di.AppModule
-import io.ipoli.android.di.DaggerRewardsComponent
-import io.ipoli.android.di.RewardsComponent
+import io.ipoli.android.di.DaggerAppComponent
 import io.realm.Realm
 import timber.log.Timber
 
@@ -17,7 +18,15 @@ import timber.log.Timber
 class iPoliApp : Application() {
 
     companion object {
-        lateinit var rewardsComponent: RewardsComponent
+        private var component: AppComponent? = null;
+        fun getComponent(c: Context): AppComponent {
+            if (component == null) {
+                component = DaggerAppComponent.builder()
+                        .appModule(AppModule(c.applicationContext))
+                        .build()
+            }
+            return component!!
+        }
     }
 
     override fun onCreate() {
@@ -38,8 +47,8 @@ class iPoliApp : Application() {
         LeakCanary.install(this)
         TinyDancer.create().show(this)
 
-        rewardsComponent = DaggerRewardsComponent.builder()
-                .appModule(AppModule(this))
-                .build()
+//        rewardsComponent = DaggerRewardsComponent.builder()
+//                .appModule(AppModule(this))
+//                .build()
     }
 }
