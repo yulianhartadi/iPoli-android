@@ -235,7 +235,8 @@ public class MainActivity extends BaseActivity implements
     }
 
     private boolean shouldMigratePlayer() {
-        if (getPlayer().getSchemaVersion() != Constants.SCHEMA_VERSION) {
+        Player player = getPlayer();
+        if (player == null || player.getSchemaVersion() != Constants.SCHEMA_VERSION) {
             return true;
         }
         return false;

@@ -66,7 +66,7 @@ public class AchievementListActivity extends BaseActivity {
         super.onStart();
         if (StringUtils.isNotEmpty(profileId)) {
             feedPersistenceService.listenForProfile(profileId, profile ->
-                    achievementList.setAdapter(new AchievementAdapter(profile.getAchievements().keySet())));
+                    achievementList.setAdapter(new AchievementAdapter(profile.getUnlockedAchievementCodes())));
         } else {
             playerPersistenceService.listen(player ->
                     achievementList.setAdapter(new AchievementAdapter(player.getAchievements().keySet())));

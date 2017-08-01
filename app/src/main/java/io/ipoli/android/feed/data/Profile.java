@@ -3,7 +3,9 @@ package io.ipoli.android.feed.data;
 import com.google.firebase.database.Exclude;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import io.ipoli.android.player.data.Avatar;
 import io.ipoli.android.player.data.PetAvatar;
@@ -29,7 +31,7 @@ public class Profile {
     private Map<String, String> posts;
     private Map<String, Boolean> followers;
     private Map<String, Boolean> following;
-    private Map<Integer, Long> achievements;
+    private Map<String, Long> achievements;
 
     public Profile() {
     }
@@ -46,7 +48,7 @@ public class Profile {
         setPetAvatarCode(player.getPet().getAvatarCode());
         setPetState(player.getPet().getState().name());
         setCreatedAt(player.getCreatedAt());
-        setAchievements(player.getAchievements());
+        setAchievementsFromPlayer(player.getAchievements());
     }
 
     public String getId() {
@@ -180,15 +182,33 @@ public class Profile {
         this.petState = petState;
     }
 
-    public Map<Integer, Long> getAchievements() {
+    public Map<String, Long> getAchievements() {
         if (achievements == null) {
             achievements = new HashMap<>();
         }
         return achievements;
     }
 
-    public void setAchievements(Map<Integer, Long> achievements) {
+    public void setAchievements(Map<String, Long> achievements) {
         this.achievements = achievements;
+    }
+
+    @Exclude
+    private void setAchievementsFromPlayer(Map<Integer, Long> achievements) {
+        Map<String, Long> achievementsMap = new HashMap<>();
+        for (Map.Entry<Integer, Long> entry : achievements.entrySet()) {
+            achievementsMap.put(entry.getKey().toString(), entry.getValue());
+        }
+        setAchievements(achievementsMap);
+    }
+
+    @Exclude
+    public Set<Integer> getUnlockedAchievementCodes() {
+        Set<Integer> result = new HashSet<>();
+        for (String key : getAchievements().keySet()) {
+            result.add(Integer.valueOf(key));
+        }
+        return result;
     }
 
     @Exclude
