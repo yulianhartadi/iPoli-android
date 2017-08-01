@@ -7,7 +7,7 @@ import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import io.ipoli.android.rewards.RewardListController
+import io.ipoli.android.reward.RewardListController
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

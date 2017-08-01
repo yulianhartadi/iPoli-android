@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import io.ipoli.android.rewards.RewardListController
+import io.ipoli.android.reward.RewardListController
 
 /**
  * Created by vini on 7/6/17.

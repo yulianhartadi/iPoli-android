@@ -1,4 +1,4 @@
-package io.ipoli.android.rewards
+package io.ipoli.android.reward
 
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.ipoli.android.RewardViewState

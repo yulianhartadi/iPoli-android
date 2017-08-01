@@ -1,4 +1,4 @@
-package io.ipoli.android.rewards
+package io.ipoli.android.reward
 
 import android.os.Looper
 import android.util.Log
@@ -7,8 +7,6 @@ import io.ipoli.android.RewardViewState
 import io.ipoli.android.RewardsInitialLoadingState
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -18,8 +16,6 @@ import javax.inject.Inject
 class RewardListPresenter @Inject constructor(private val displayRewardsUseCase: DisplayRewardsUseCase) : MviBasePresenter<RewardListController, RewardViewState>() {
 
     override fun bindIntents() {
-
-//        iPoliApp.rewardListComponent.inject(this)
 
 //        val loadDataState: Observable<RewardViewState> = intent { it.loadRewardsIntent() }
 //                .switchMap { interactor.loadRewards() }

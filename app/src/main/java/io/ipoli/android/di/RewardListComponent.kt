@@ -1,8 +1,8 @@
 package io.ipoli.android.di
 
 import dagger.Component
-import io.ipoli.android.rewards.RewardListPresenter
-import io.ipoli.android.rewards.RewardListController
+import io.ipoli.android.reward.RewardListPresenter
+import io.ipoli.android.reward.RewardListController
 import javax.inject.Scope
 
 /**

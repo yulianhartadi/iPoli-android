@@ -1,4 +1,4 @@
-package io.ipoli.android.rewards
+package io.ipoli.android.reward
 
 import android.os.Bundle
 import android.view.LayoutInflater

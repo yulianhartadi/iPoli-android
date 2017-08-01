@@ -1,6 +1,6 @@
 package io.ipoli.android
 
-import io.ipoli.android.rewards.Reward
+import io.ipoli.android.reward.Reward
 
 /**
  * Created by vini on 7/7/17.

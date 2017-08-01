@@ -2,7 +2,7 @@ package io.ipoli.android.di
 
 import dagger.Module
 import dagger.Provides
-import io.ipoli.android.rewards.RewardRepository
+import io.ipoli.android.reward.RewardRepository
 import javax.inject.Singleton
 
 /**
