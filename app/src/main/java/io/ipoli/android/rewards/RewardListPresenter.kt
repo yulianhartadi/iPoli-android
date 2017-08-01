@@ -17,9 +17,6 @@ import javax.inject.Inject
  */
 class RewardListPresenter @Inject constructor(private val displayRewardsUseCase: DisplayRewardsUseCase) : MviBasePresenter<RewardListController, RewardViewState>() {
 
-//    @Inject lateinit var rewardRepository: RewardRepository
-//    @Inject lateinit var app: iPoliApp
-
     override fun bindIntents() {
 
 //        iPoliApp.rewardListComponent.inject(this)

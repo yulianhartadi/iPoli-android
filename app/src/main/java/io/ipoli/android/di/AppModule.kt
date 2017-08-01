@@ -3,7 +3,6 @@ package io.ipoli.android.di
 import android.content.Context
 import dagger.Module
 import dagger.Provides
-import io.ipoli.android.iPoliApp
 import javax.inject.Singleton
 
 /**
@@ -15,5 +14,4 @@ class AppModule(val context: Context) {
     @Provides
     @Singleton
     fun provideContext(): Context = context
-
 }

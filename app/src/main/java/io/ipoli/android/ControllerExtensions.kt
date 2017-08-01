@@ -13,8 +13,7 @@ val Controller.daggerComponent: ControllerComponent
     get() = DaggerControllerComponent
             .builder()
             .appComponent(iPoliApp.getComponent(applicationContext!!))
-            .controllerModule(
-                    ControllerModule(Navigator(router)))
+            .controllerModule(ControllerModule(Navigator(router)))
             .build()
 
 
