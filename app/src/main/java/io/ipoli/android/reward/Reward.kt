@@ -11,4 +11,4 @@ open class Reward(
         var name: String = "",
         var description: String = "",
         var price: Int = 0
-) : RealmObject() {}
+) : RealmObject()

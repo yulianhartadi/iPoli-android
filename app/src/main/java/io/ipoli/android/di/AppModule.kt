@@ -3,6 +3,7 @@ package io.ipoli.android.di
 import android.content.Context
 import dagger.Module
 import dagger.Provides
+import io.ipoli.android.player.PlayerRepository
 import javax.inject.Singleton
 
 /**

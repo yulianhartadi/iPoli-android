@@ -9,9 +9,11 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposables;
+import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
+import timber.log.Timber;
 
 /**
  * Created by vini on 7/8/17.
@@ -52,6 +54,7 @@ public class RxRealm {
                     throws Exception {
                 final Realm realm = Realm.getDefaultInstance();
                 final RealmResults<Reward> results = realm.where(Reward.class).findAll();
+//                final RealmResults<Reward> results = realm.where(Reward.class).findAllAsync();
 
 //                final RealmChangeListener<RealmResults<Reward>> listener = _realm -> {
 //                    if (!emitter.isUnsubscribed()) {
@@ -61,9 +64,14 @@ public class RxRealm {
 
                 final RealmChangeListener<RealmResults<Reward>> listener = new RealmChangeListener<RealmResults<Reward>>() {
                     @Override
-                    public void onChange(RealmResults<Reward> rewards) {
+                    public void onChange(final RealmResults<Reward> rewards) {
                         if (!emitter.isDisposed()) {
+                            realm.executeTransaction(new Realm.Transaction() {
+                                @Override
+                                public void execute(Realm realm) {
                             emitter.onNext(realm.copyFromRealm(rewards));
+                                }
+                            });
                         }
                     }
 
@@ -72,11 +80,6 @@ public class RxRealm {
 //
 //                    }
                 };
-
-//                emitter.setDisposable(Disposables.fromRunnable(() -> {
-//                    results.removeChangeListener(listener);
-//                    realm.close();
-//                }));
 
                 emitter.setDisposable(Disposables.fromRunnable(new Runnable() {
                     @Override
@@ -88,10 +91,16 @@ public class RxRealm {
                 }));
 
                 results.addChangeListener(listener);
+//                realm.executeTransaction(new Realm.Transaction() {
+//                    @Override
+//                    public void execute(Realm realm) {
+                Timber.d("Emitting");
                 emitter.onNext(realm.copyFromRealm(results));
+//                    }
+//                });
             }
-        })
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .unsubscribeOn(AndroidSchedulers.mainThread());
+        });
+//                .subscribeOn(Schedulers.newThread())
+//                .unsubscribeOn(AndroidSchedulers.mainThread());
     }
 }

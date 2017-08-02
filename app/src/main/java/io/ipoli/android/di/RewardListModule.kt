@@ -2,6 +2,7 @@ package io.ipoli.android.di
 
 import dagger.Module
 import dagger.Provides
+import io.ipoli.android.player.PlayerRepository
 import io.ipoli.android.reward.DisplayRewardsUseCase
 import io.ipoli.android.reward.RewardRepository
 
@@ -17,5 +18,9 @@ class RewardListModule {
 
     @Provides
     @RewardListScope
-    fun provideRewardListUseCase(rewardRepository: RewardRepository) = DisplayRewardsUseCase(rewardRepository)
+    fun providePlayerRepository(): PlayerRepository = PlayerRepository()
+
+    @Provides
+    @RewardListScope
+    fun provideRewardListUseCase(rewardRepository: RewardRepository, playerRepository: PlayerRepository) = DisplayRewardsUseCase(rewardRepository, playerRepository)
 }
