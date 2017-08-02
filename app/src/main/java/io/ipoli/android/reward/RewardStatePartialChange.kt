@@ -16,7 +16,7 @@ class RewardsLoadingPartialChange : RewardStatePartialChange {
     }
 }
 
-class RewardsLoadedPartialChange(val data: List<Reward>) : RewardStatePartialChange {
+class RewardsLoadedPartialChange(val data: List<RewardModel>) : RewardStatePartialChange {
 
     override fun computeNewState(prevStateReward: RewardViewState): RewardViewState {
         return RewardsLoadedState(data)

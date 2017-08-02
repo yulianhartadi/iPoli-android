@@ -32,8 +32,8 @@ class RewardListController : RestoreViewOnCreateMviController<RewardListControll
 
     private lateinit var adapter: RewardsAdapter
 
-    private val useRewardSubject = PublishSubject.create<Reward>()
-    private val deleteRewardSubject = PublishSubject.create<Reward>()
+    private val useRewardSubject = PublishSubject.create<RewardModel>()
+    private val deleteRewardSubject = PublishSubject.create<RewardModel>()
 
     val rewardListComponent: RewardListComponent by lazy {
         val component = DaggerRewardListComponent
@@ -70,7 +70,7 @@ class RewardListController : RestoreViewOnCreateMviController<RewardListControll
 //        })
 
 
-        val delegatesManager = AdapterDelegatesManager<List<Reward>>()
+        val delegatesManager = AdapterDelegatesManager<List<RewardModel>>()
                 .addDelegate(RewardAdapterDelegate(LayoutInflater.from(activity), useRewardSubject, deleteRewardSubject, {
                     val pushHandler = HorizontalChangeHandler()
                     val popHandler = HorizontalChangeHandler()
@@ -98,11 +98,11 @@ class RewardListController : RestoreViewOnCreateMviController<RewardListControll
         return Observable.just(!restoringState).filter { _ -> true }.doOnComplete { Log.d("Chingy", "thingy") }
     }
 
-    fun useRewardIntent(): Observable<Reward> {
+    fun useRewardIntent(): Observable<RewardModel> {
         return useRewardSubject
     }
 
-    fun deleteRewardIntent(): Observable<Reward> {
+    fun deleteRewardIntent(): Observable<RewardModel> {
         return deleteRewardSubject;
     }
 
@@ -126,7 +126,7 @@ class RewardListController : RestoreViewOnCreateMviController<RewardListControll
         }
     }
 
-    class RewardsAdapter(manager: AdapterDelegatesManager<List<Reward>>) : ListDelegationAdapter<List<Reward>>(
+    class RewardsAdapter(manager: AdapterDelegatesManager<List<RewardModel>>) : ListDelegationAdapter<List<RewardModel>>(
             manager) {
 
 //        init {
@@ -138,17 +138,17 @@ class RewardListController : RestoreViewOnCreateMviController<RewardListControll
     }
 
     class RewardAdapterDelegate(private val inflater: LayoutInflater,
-                                private val clickSubject: PublishSubject<Reward>,
-                                private val deleteSubject: PublishSubject<Reward>,
-                                private val clickListener: (Reward) -> Unit) : AdapterDelegate<List<Reward>>() {
+                                private val clickSubject: PublishSubject<RewardModel>,
+                                private val deleteSubject: PublishSubject<RewardModel>,
+                                private val clickListener: (RewardModel) -> Unit) : AdapterDelegate<List<RewardModel>>() {
 
-        override fun onBindViewHolder(items: List<Reward>, position: Int, holder: RecyclerView.ViewHolder, payloads: MutableList<Any>) {
+        override fun onBindViewHolder(items: List<RewardModel>, position: Int, holder: RecyclerView.ViewHolder, payloads: MutableList<Any>) {
             val vh = holder as RewardViewHolder
             val reward = items[position]
             vh.bindReward(reward)
         }
 
-        override fun isForViewType(items: List<Reward>, position: Int): Boolean = true
+        override fun isForViewType(items: List<RewardModel>, position: Int): Boolean = true
 
         override fun onCreateViewHolder(parent: ViewGroup?): RecyclerView.ViewHolder =
                 RewardViewHolder(inflater.inflate(R.layout.item_reward, parent, false))
@@ -156,7 +156,7 @@ class RewardListController : RestoreViewOnCreateMviController<RewardListControll
 
         inner class RewardViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-            fun bindReward(reward: Reward) {
+            fun bindReward(reward: RewardModel) {
                 with(reward) {
                     RxView.clicks(itemView.buyReward).takeUntil(RxView.detaches(itemView)).map { reward }.subscribe(clickSubject)
                     RxView.clicks(itemView.delete).takeUntil(RxView.detaches(itemView)).map { reward }.subscribe(deleteSubject)

@@ -1,12 +1,8 @@
 package io.ipoli.android.player
 
-import io.ipoli.android.reward.Reward
 import io.reactivex.Completable
 import io.reactivex.Observable
-import io.reactivex.disposables.Disposables
 import io.realm.Realm
-import io.realm.RealmChangeListener
-import io.realm.RealmResults
 import java.util.*
 
 /**
@@ -16,32 +12,11 @@ class PlayerRepository {
 
     val realm: Realm = Realm.getDefaultInstance()
 
-fun getAllPlayers(): Observable<List<Player>> {
-    return Observable.create { emitter ->
-        val realm = Realm.getDefaultInstance()
-        val players = realm.where(Player::class.java).findAll()
-
-        val listener = RealmChangeListener<RealmResults<Player>> { players ->
-            if (!emitter.isDisposed) {
-                emitter.onNext(realm.copyFromRealm(players))
-            }
-        }
-
-        emitter.setDisposable(Disposables.fromRunnable(Runnable {
-            players.removeChangeListener(listener)
-            realm.close()
-        }))
-        emitter.onNext(realm.copyFromRealm(players))
-    }
-}
-
     fun get(): Observable<Player> {
         return Observable.create({ emitter ->
             val realm = Realm.getDefaultInstance()
-            realm.executeTransaction { r ->
-                emitter.onNext(r.copyFromRealm(r.where(Player::class.java).findFirst()))
-                emitter.onComplete()
-            }
+            emitter.onNext(realm.copyFromRealm(realm.where(Player::class.java).findFirst()))
+            emitter.onComplete()
             realm.close()
         })
 
