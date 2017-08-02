@@ -22,5 +22,7 @@ class RewardListModule {
 
     @Provides
     @RewardListScope
-    fun provideRewardListUseCase(rewardRepository: RewardRepository, playerRepository: PlayerRepository) = DisplayRewardsUseCase(rewardRepository, playerRepository)
+    fun provideRewardListUseCase(rewardRepository: RewardRepository, playerRepository: PlayerRepository): DisplayRewardsUseCase {
+        return DisplayRewardsUseCase(rewardRepository, playerRepository, null, null)
+    }
 }
