@@ -267,9 +267,9 @@ public class ProfileActivity extends BaseActivity implements OnDataChangedListen
     protected void displayAchievements(Profile profile) {
         playerAchievements.setVisibility(View.VISIBLE);
         playerAchievements.setOnClickListener(view -> {
-            Bundle params = new Bundle();
-            params.putString(Constants.PROFILE_ID_EXTRA_KEY, profile.getId());
-            startActivity(new Intent(this, AchievementListActivity.class), params);
+            Intent intent = new Intent(this, AchievementListActivity.class);
+            intent.putExtra(Constants.PROFILE_ID_EXTRA_KEY, profile.getId());
+            startActivity(intent);
         });
     }
 

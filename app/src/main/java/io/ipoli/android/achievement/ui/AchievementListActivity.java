@@ -88,4 +88,9 @@ public class AchievementListActivity extends BaseActivity {
         }
         return super.onOptionsItemSelected(menuItem);
     }
+
+    @Override
+    protected boolean useParentOptionsMenu() {
+        return false;
+    }
 }

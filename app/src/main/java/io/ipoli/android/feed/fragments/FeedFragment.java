@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -36,10 +37,10 @@ import io.ipoli.android.feed.persistence.FeedPersistenceService;
 import io.ipoli.android.feed.ui.PostBinder;
 import io.ipoli.android.feed.ui.PostViewHolder;
 import io.ipoli.android.player.CredentialStatus;
-import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.PlayerCredentialChecker;
 import io.ipoli.android.player.PlayerCredentialsHandler;
 import io.ipoli.android.player.activities.ProfileActivity;
+import io.ipoli.android.player.data.Player;
 import io.ipoli.android.player.events.AddKudosEvent;
 import io.ipoli.android.player.events.CreateQuestFromPostEvent;
 import io.ipoli.android.player.events.RemoveKudosEvent;
@@ -97,7 +98,8 @@ public class FeedFragment extends BaseFragment {
 
         loader.setVisibility(View.VISIBLE);
 
-        feedList.setLayoutManager(LayoutManagerFactory.createReverseLayoutManager(getContext()));
+        LinearLayoutManager reverseLayoutManager = LayoutManagerFactory.createReverseLayoutManager(getContext());
+        feedList.setLayoutManager(reverseLayoutManager);
 
         DatabaseReference postsReference = postsPath().toReference();
         adapter = new FirebaseRecyclerAdapter<Post, PostViewHolder>(Post.class,
@@ -131,8 +133,21 @@ public class FeedFragment extends BaseFragment {
             }
         };
 
-        feedList.setAdapter(adapter);
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
 
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                int lastVisiblePosition =
+                        reverseLayoutManager.findLastCompletelyVisibleItemPosition();
+                // If the recycler view is initially being loaded
+                if (lastVisiblePosition == -1) {
+                    feedList.scrollToPosition(adapter.getItemCount() - 1);
+                }
+            }
+        });
+
+        feedList.setAdapter(adapter);
         return view;
     }
 
