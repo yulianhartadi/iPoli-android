@@ -16,8 +16,6 @@ import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import com.hannesdorfmann.mosby3.RestoreViewOnCreateMviController
 import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.*
-import io.ipoli.android.di.DaggerRewardListComponent
-import io.ipoli.android.di.RewardListComponent
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.controller_rewards.view.*

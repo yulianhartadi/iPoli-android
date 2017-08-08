@@ -12,21 +12,21 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.hannesdorfmann.mosby3.RestoreViewOnCreateMviController
+import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.ApiConstants
 import io.ipoli.android.R
+import io.ipoli.android.daggerComponent
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
+import io.realm.SyncConfiguration
 import io.realm.SyncCredentials
 import io.realm.SyncUser
 import kotlinx.android.synthetic.main.controller_sign_in.view.*
 import timber.log.Timber
-import io.realm.SyncConfiguration
-
-
-
 
 /**
  * Created by vini on 8/8/17.
@@ -34,6 +34,22 @@ import io.realm.SyncConfiguration
 class SignInController : RestoreViewOnCreateMviController<SignInController, SignInPresenter>(), GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
     private val RC_GOOGLE_SIGN_IN = 9001
+
+
+    val signInComponent: SignInComponent by lazy {
+        val component = DaggerSignInComponent
+                .builder()
+                .controllerComponent(daggerComponent)
+                .build()
+        component.inject(this@SignInController)
+        component
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        signInComponent // will ensure that dagger component will be initialized lazily.
+    }
+
 
     override fun onConnected(p0: Bundle?) {
     }
@@ -49,7 +65,8 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
     override fun setRestoringViewState(restoringViewState: Boolean) {
     }
 
-    override fun createPresenter(): SignInPresenter = SignInPresenter()
+    override fun createPresenter(): SignInPresenter = signInComponent.createSignInPresenter()
+//    override fun createPresenter(): SignInPresenter = SignInPresenter()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_sign_in, container, false) as ViewGroup
@@ -71,6 +88,21 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
         })
 
         return view
+    }
+
+    fun signInWithGoogleIntent(): Observable<String> {
+        val containerView = view!!
+        return RxView.clicks(containerView.googleSignIn).takeUntil(RxView.detaches(containerView.googleSignIn)).map { containerView.username.text.toString() }
+    }
+
+    fun signInWithFacebookIntent(): Observable<String> {
+        val containerView = view!!
+        return RxView.clicks(containerView.facebookSignIn).takeUntil(RxView.detaches(containerView.facebookSignIn)).map { containerView.username.text.toString() }
+    }
+
+    fun signInAsGuestIntent(): Observable<Unit> {
+        val containerView = view!!
+        return RxView.clicks(containerView.guestSignIn).takeUntil(RxView.detaches(containerView.guestSignIn)).map { Unit }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -113,5 +145,4 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
             }
         }
     }
-
 }

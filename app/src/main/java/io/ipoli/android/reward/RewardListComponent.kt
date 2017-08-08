@@ -1,8 +1,7 @@
-package io.ipoli.android.di
+package io.ipoli.android.reward
 
 import dagger.Component
-import io.ipoli.android.reward.RewardListController
-import io.ipoli.android.reward.RewardListPresenter
+import io.ipoli.android.di.ControllerComponent
 import javax.inject.Scope
 
 /**
@@ -20,4 +19,3 @@ interface RewardListComponent {
 
 @Scope
 annotation class RewardListScope
-

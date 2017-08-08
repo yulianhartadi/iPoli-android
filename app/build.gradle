@@ -43,6 +43,7 @@ dependencies {
     implementation 'com.android.support:customtabs:26.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta1'
     implementation 'com.google.android.gms:play-services-auth:11.0.4'
+    implementation 'com.facebook.android:facebook-android-sdk:4.25.0'
     implementation 'com.hannesdorfmann.mosby3:mvi:3.0.4'
     implementation 'com.bluelinelabs:conductor:2.1.4'
     implementation 'com.bluelinelabs:conductor-support:2.1.4'
@@ -59,6 +60,8 @@ dependencies {
 
     implementation "com.google.dagger:dagger:2.11"
     kapt "com.google.dagger:dagger-compiler:2.11"
+
+    implementation 'com.github.medyo:fancybuttons:1.8.4'
 
 //    debugImplementation "com.github.brianPlummer:tinydancer:0.1.1"
 //    implementation "com.github.brianPlummer:tinydancer-noop:0.1.1"

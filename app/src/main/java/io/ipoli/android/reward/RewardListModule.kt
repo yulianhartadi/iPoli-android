@@ -1,10 +1,8 @@
-package io.ipoli.android.di
+package io.ipoli.android.reward
 
 import dagger.Module
 import dagger.Provides
 import io.ipoli.android.player.PlayerRepository
-import io.ipoli.android.reward.DisplayRewardsUseCase
-import io.ipoli.android.reward.RewardRepository
 
 /**
  * Created by vini on 8/2/17.
