@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import io.ipoli.android.player.SignInController
 import io.ipoli.android.reward.RewardListController
 
 /**
@@ -20,7 +21,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         router = Conductor.attachRouter(this, findViewById<ViewGroup>(R.id.controller_container), savedInstanceState)
         if (!router.hasRootController()) {
-            router.setRoot(RouterTransaction.with(RewardListController()))
+//            router.setRoot(RouterTransaction.with(RewardListController()))
+            router.setRoot(RouterTransaction.with(SignInController()))
         }
     }
 

@@ -11,14 +11,14 @@ import io.ipoli.android.reward.RewardsLoadedPartialChange
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import org.hamcrest.CoreMatchers
-import org.junit.Assert
+import org.hamcrest.CoreMatchers.`is`
+import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 
 
 /**
  * Created by vini on 7/10/17.
- * This test is not executing due to this: https://github.com/realm/realm-java/issues/4662 & https://github.com/realm/realm-java/pull/4883
  */
 class DisplayRewardUseCaseTest {
 
@@ -39,9 +39,9 @@ class DisplayRewardUseCaseTest {
         }
 
         val result = DisplayRewardsUseCase(rewardRepoMock, playerRepoMock, Schedulers.trampoline(), Schedulers.trampoline()).execute(Unit).blockingIterable()
-        Assert.assertThat(result.count(), CoreMatchers.`is`(2))
+        assertThat(result.count(), `is`(2))
 
         val loadedState = result.elementAt(1) as RewardsLoadedPartialChange
-        Assert.assertThat(loadedState.data.size, CoreMatchers.`is`(1))
+        assertThat(loadedState.data.size, `is`(1))
     }
 }

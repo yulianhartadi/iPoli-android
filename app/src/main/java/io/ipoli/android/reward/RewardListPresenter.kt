@@ -1,7 +1,5 @@
 package io.ipoli.android.reward
 
-import android.os.Looper
-import android.util.Log
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.ipoli.android.RewardViewState
 import io.ipoli.android.RewardsInitialLoadingState
@@ -31,6 +29,7 @@ class RewardListPresenter @Inject constructor(private val displayRewardsUseCase:
 //
 //        subscribeViewState(loadDataState, RewardListController::render)
 
+//        val rewardRepository = RewardRepository()
 //        val r = Reward(name = "Welcome", description = "Hello sir!", price = 123)
 //        rewardRepository.save(r)
 
@@ -38,14 +37,19 @@ class RewardListPresenter @Inject constructor(private val displayRewardsUseCase:
 
 //        val displayRewardsUseCase = DisplayRewardsUseCase(rewardRepository)
 
+//        observables.add(
+//                intent { it.loadRewardsIntent() }.switchMap { _ ->
+//                    displayRewardsUseCase.execute(Unit)
+////                            .doOnNext { rewards ->
+////                                Log.d("Loading rewards", "Loading all " + rewards.size + " " + Looper.getMainLooper().isCurrentThread
+////                                )
+////                            }
+////                            .subscribeOn(Schedulers.io())
+//                })
+
         observables.add(
-                intent { it.loadRewardsIntent() }.switchMap { _ ->
+                intent { it.loadRewardsIntent() }.switchMap {
                     displayRewardsUseCase.execute(Unit)
-//                            .doOnNext { rewards ->
-//                                Log.d("Loading rewards", "Loading all " + rewards.size + " " + Looper.getMainLooper().isCurrentThread
-//                                )
-//                            }
-//                            .subscribeOn(Schedulers.io())
                 })
 
 //        observables.add(

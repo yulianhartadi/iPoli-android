@@ -26,7 +26,6 @@ class RewardListTest {
 
     private lateinit var router: Router
 
-
     @Before
     fun setUp() {
         val activity = testRule.getActivity()

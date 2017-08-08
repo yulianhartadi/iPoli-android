@@ -18,7 +18,8 @@ import timber.log.Timber
 class iPoliApp : Application() {
 
     companion object {
-        private var component: AppComponent? = null;
+        private var component: AppComponent? = null
+
         fun getComponent(c: Context): AppComponent {
             if (component == null) {
                 component = DaggerAppComponent.builder()
