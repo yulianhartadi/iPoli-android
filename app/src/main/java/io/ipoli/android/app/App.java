@@ -1055,7 +1055,6 @@ public class App extends MultiDexApplication {
 
     @Subscribe
     public void onNewChallenge(NewChallengeEvent e) {
-        challengePersistenceService.save(e.challenge);
         checkForUnlockedAchievement(AchievementAction.Action.CREATE_CHALLENGE);
     }
 

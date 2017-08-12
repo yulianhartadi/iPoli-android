@@ -24,6 +24,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.ipoli.android.R;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.utils.KeyboardUtils;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.data.Difficulty;
@@ -34,6 +35,7 @@ import io.ipoli.android.challenge.events.ChangeChallengeQuestsRequestEvent;
 import io.ipoli.android.challenge.events.ChangeChallengeReasonsRequestEvent;
 import io.ipoli.android.challenge.events.NewChallengeDifficultyPickedEvent;
 import io.ipoli.android.challenge.events.NewChallengeEndDatePickedEvent;
+import io.ipoli.android.challenge.events.NewChallengeEvent;
 import io.ipoli.android.challenge.events.NewChallengeQuestsPickedEvent;
 import io.ipoli.android.challenge.events.NewChallengeReasonsPickedEvent;
 import io.ipoli.android.challenge.events.NewChallengeResultsPickedEvent;
@@ -154,6 +156,7 @@ public class AddChallengeActivity extends BaseActivity implements ViewPager.OnPa
         }
 
         Toast.makeText(this, R.string.challenge_saved, Toast.LENGTH_SHORT).show();
+        eventBus.post(new NewChallengeEvent(challenge, EventSource.ADD_CHALLENGE));
         finish();
     }
 

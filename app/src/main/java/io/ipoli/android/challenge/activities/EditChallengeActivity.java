@@ -9,7 +9,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,8 +42,6 @@ import io.ipoli.android.app.ui.formatters.DateFormatter;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.data.Difficulty;
-import io.ipoli.android.challenge.events.NewChallengeCategoryChangedEvent;
-import io.ipoli.android.challenge.events.NewChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.ui.dialogs.DifficultyPickerFragment;
 import io.ipoli.android.challenge.ui.dialogs.MultiTextPickerFragment;
@@ -90,8 +87,6 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
 
     List<TextView> reasonTextViews;
 
-    private EditMode editMode;
-
     @Inject
     ChallengePersistenceService challengePersistenceService;
 
@@ -110,12 +105,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         }
 
         initUI();
-
-        if (getIntent() != null && !TextUtils.isEmpty(getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY))) {
-            onEditChallenge();
-        } else {
-            onAddNewChallenge();
-        }
+        onEditChallenge();
     }
 
     @Override
@@ -144,19 +134,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         reasonTextViews.add((TextView) findViewById(R.id.challenge_reason_3_value));
     }
 
-    private void onAddNewChallenge() {
-        editMode = EditMode.ADD;
-        toolbarTitle.setText(R.string.title_activity_add_challenge);
-        nameText.requestFocus();
-        showKeyboard();
-        populateExpectedResults(new ArrayList<>());
-        populateReasons(new ArrayList<>());
-        populateEndDate(LocalDate.now().plusDays(Constants.DEFAULT_CHALLENGE_DEADLINE_DAY_DURATION));
-        populateDifficulty(Difficulty.NORMAL);
-    }
-
     private void onEditChallenge() {
-        editMode = EditMode.EDIT;
         toolbarTitle.setText(R.string.title_edit_challenge);
 
         String challengeId = getIntent().getStringExtra(Constants.CHALLENGE_ID_EXTRA_KEY);
@@ -183,12 +161,6 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.edit_challenge_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.findItem(R.id.action_delete).setVisible(editMode == EditMode.EDIT);
         return true;
     }
 
@@ -250,21 +222,9 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
         if (!isChallengeValid()) {
             return;
         }
-
-        if (editMode == EditMode.ADD) {
-            addNewChallenge(source);
-        } else {
-            updateChallenge(source);
-        }
-
+        updateChallenge(source);
         Toast.makeText(this, R.string.challenge_saved, Toast.LENGTH_SHORT).show();
         finish();
-    }
-
-    private void addNewChallenge(EventSource source) {
-        Challenge challenge = new Challenge(nameText.getText().toString().trim());
-        populateChallengeFromForm(challenge);
-        eventBus.post(new NewChallengeEvent(challenge, source));
     }
 
     private void updateChallenge(EventSource source) {
@@ -414,9 +374,6 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     @Override
     public void onCategoryChanged(Category category) {
         colorLayout(category);
-        if (editMode == EditMode.ADD) {
-            eventBus.post(new NewChallengeCategoryChangedEvent(category));
-        }
     }
 
     private void colorLayout(Category category) {

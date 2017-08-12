@@ -61,5 +61,5 @@ public enum EventSource {
     FEED,
     PROFILE,
     DATE_TIME_PICKER,
-    USERNAME_PICKER;
+    USERNAME_PICKER, ADD_CHALLENGE;
 }

@@ -33,10 +33,12 @@ import io.ipoli.android.Constants;
 import io.ipoli.android.R;
 import io.ipoli.android.app.App;
 import io.ipoli.android.app.activities.BaseActivity;
+import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.adapters.PredefinedChallengeQuestAdapter;
 import io.ipoli.android.challenge.data.PredefinedChallenge;
 import io.ipoli.android.challenge.events.AcceptChallengeEvent;
+import io.ipoli.android.challenge.events.NewChallengeEvent;
 import io.ipoli.android.challenge.events.ShowPersonalizeChallengeEvent;
 import io.ipoli.android.challenge.persistence.ChallengePersistenceService;
 import io.ipoli.android.challenge.viewmodels.PredefinedChallengeQuestViewModel;
@@ -569,6 +571,7 @@ public class PersonalizeChallengeActivity extends BaseActivity {
         }
 
         challengePersistenceService.acceptChallenge(predefinedChallenge.challenge, quests, repeatingQuestToScheduledQuests);
+        eventBus.post(new NewChallengeEvent(predefinedChallenge.challenge, EventSource.PERSONALIZE_CHALLENGE));
         finish();
     }
 }
