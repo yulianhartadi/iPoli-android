@@ -182,9 +182,9 @@ public interface Constants {
     int POWER_UP_GRACE_PERIOD_DAYS = 7;
     int POWER_UPS_TRIAL_PERIOD_DAYS = 15;
 
-    String SKU_SUBSCRIPTION_MONTHLY = "monthly_plan";
-    String SKU_SUBSCRIPTION_QUARTERLY = "quarterly_plan";
-    String SKU_SUBSCRIPTION_YEARLY = "yearly_plan";
+    String SKU_SUBSCRIPTION_MONTHLY = "monthly_plan_70_percent";
+    String SKU_SUBSCRIPTION_QUARTERLY = "quarterly_plan_70_percent";
+    String SKU_SUBSCRIPTION_YEARLY = "yearly_plan_70_percent";
 
     String KEY_ACHIEVEMENT_ACTION = "achievement_action";
     String KEY_ACHIEVEMENT_ACTION_CLASS = "achievement_action_class";
