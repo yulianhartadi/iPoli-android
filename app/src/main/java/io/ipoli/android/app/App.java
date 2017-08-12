@@ -99,6 +99,7 @@ import io.ipoli.android.app.utils.NetworkConnectivityUtils;
 import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.app.utils.Time;
 import io.ipoli.android.challenge.activities.ChallengeCompleteActivity;
+import io.ipoli.android.challenge.activities.PickChallengeActivity;
 import io.ipoli.android.challenge.data.Challenge;
 import io.ipoli.android.challenge.data.Difficulty;
 import io.ipoli.android.challenge.data.PredefinedChallenge;
@@ -676,10 +677,17 @@ public class App extends MultiDexApplication {
         initAppForPlayer(playerAuthenticationStatus, cookies);
 
         Bundle bundle = new Bundle();
+        boolean isNewPlayer = playerAuthenticationStatus == PlayerAuthenticationStatus.NEW
+                || playerAuthenticationStatus == PlayerAuthenticationStatus.GUEST;
         bundle.putBoolean(Constants.SHOW_TRIAL_MESSAGE_EXTRA_KEY,
-                playerAuthenticationStatus == PlayerAuthenticationStatus.NEW
-                        || playerAuthenticationStatus == PlayerAuthenticationStatus.GUEST);
+                isNewPlayer);
         startNewActivity(MainActivity.class, bundle);
+
+        if (isNewPlayer) {
+            Bundle params = new Bundle();
+            params.putString(PickChallengeActivity.TITLE, getString(R.string.pick_challenge_to_start));
+            startNewActivity(PickChallengeActivity.class, params);
+        }
     }
 
     private void initAppForPlayer(PlayerAuthenticationStatus playerAuthenticationStatus, List<Cookie> cookies) {

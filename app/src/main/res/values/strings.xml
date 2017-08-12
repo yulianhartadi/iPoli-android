@@ -946,6 +946,8 @@
     <string name="achievement_send_feedback_name">Community Service</string>
     <string name="achievement_send_feedback_desc">Send Feedback about iPoli</string>
 
+    <string name="pick_challenge_to_start">Pick a challenge to start with</string>
+
     <string-array name="player_titles">
         <item>Novice</item>
         <item>Apprentice</item>
