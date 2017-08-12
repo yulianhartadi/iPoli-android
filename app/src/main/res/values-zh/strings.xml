@@ -907,5 +907,4 @@
         <item>每周</item>
         <item>每月</item>
     </string-array>
-    <string name="quest_complete_with_bounty">任务完成！+%1$d XP +%2$d硬币。</string>
 </resources>
