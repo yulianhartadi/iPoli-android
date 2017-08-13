@@ -108,20 +108,22 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
                             .params(parameters)
                             .requestMe()
                             .subscribeOn(Schedulers.io())
+                }.map {
+                    graphResponse ->
+                        val response = graphResponse.jsonObject
+                        AuthProvider(
+                                response.getString("id"),
+                                ProviderType.FACEBOOK.name,
+                                response.getString("first_name"),
+                                response.getString("last_name"),
+                                response.getString("first_name"),
+                                if (response.has("email")) response.getString("email") else "",
+                                response.getJSONObject("picture").getJSONObject("data").getString("url")
+                        )
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { graphResponse ->
-                    val response = graphResponse.jsonObject
-                    val authProvider = AuthProvider(
-                            response.getString("id"),
-                            ProviderType.FACEBOOK.name,
-                            response.getString("first_name"),
-                            response.getString("last_name"),
-                            response.getString("first_name"),
-                            if (response.has("email")) response.getString("email") else "",
-                            response.getJSONObject("picture").getJSONObject("data").getString("url")
-                    )
+                .subscribe { authProvider ->
                     Timber.d(authProvider.toString())
                 }
 
