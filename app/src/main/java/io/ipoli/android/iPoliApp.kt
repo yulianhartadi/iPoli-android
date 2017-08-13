@@ -3,6 +3,7 @@ package io.ipoli.android
 import android.app.Application
 import android.content.Context
 import com.codemonkeylabs.fpslibrary.TinyDancer
+import com.facebook.FacebookSdk
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.squareup.leakcanary.LeakCanary

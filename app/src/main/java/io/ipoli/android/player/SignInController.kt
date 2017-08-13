@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.facebook.internal.CallbackManagerImpl
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.signin.GoogleSignInResult
@@ -14,7 +15,10 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.hannesdorfmann.mosby3.RestoreViewOnCreateMviController
 import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.ApiConstants
+import io.ipoli.android.MainActivity
 import io.ipoli.android.R
+import io.ipoli.android.auth.AuthProvider
+import io.ipoli.android.auth.RxFacebook
 import io.ipoli.android.daggerComponent
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
@@ -35,6 +39,9 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
 
     private val RC_GOOGLE_SIGN_IN = 9001
 
+    init {
+        registerForActivityResult(CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode())
+    }
 
     val signInComponent: SignInComponent by lazy {
         val component = DaggerSignInComponent
@@ -87,6 +94,40 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
             startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN)
         })
 
+        RxFacebook.create()
+                .loginWithReadPermissions(activity as MainActivity, listOf("email"))
+                .switchMap {
+                    loginInfo ->
+
+                    val parameters = Bundle()
+                    parameters.putString("fields", "email,id,first_name,last_name,picture")
+
+                    RxFacebook.create()
+                            .accessToken(loginInfo.accessToken)
+                            .params(parameters)
+                            .requestMe()
+                            .subscribeOn(Schedulers.io())
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { graphResponse ->
+                    val response = graphResponse.jsonObject
+                    val authProvider = AuthProvider(
+                            response.getString("id"),
+                            "Facebook",
+                            response.getString("first_name"),
+                            response.getString("last_name"),
+                            response.getString("first_name"),
+                            if (response.has("email")) response.getString("email") else "",
+                            response.getJSONObject("picture").getJSONObject("data").getString("url")
+                    )
+                    Timber.d(authProvider.toString())
+                }
+
+//        view.facebookSignIn.setOnClickListener({
+//
+//        })
+
         return view
     }
 
@@ -111,6 +152,8 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
             val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
             handleGoogleSignInResult(result)
         }
+        RxFacebook.postLoginActivityResult(requestCode, resultCode, data!!)
+
     }
 
     private fun handleGoogleSignInResult(result: GoogleSignInResult) {
