@@ -13,6 +13,6 @@ data class AuthProvider(
         val image: String
 )
 
-enum class Provider {
+enum class ProviderType {
     FACEBOOK, GOOGLE
 }

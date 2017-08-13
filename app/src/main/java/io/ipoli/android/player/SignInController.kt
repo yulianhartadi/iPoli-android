@@ -18,7 +18,7 @@ import io.ipoli.android.ApiConstants
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.auth.AuthProvider
-import io.ipoli.android.auth.Provider
+import io.ipoli.android.auth.ProviderType
 import io.ipoli.android.auth.RxFacebook
 import io.ipoli.android.daggerComponent
 import io.reactivex.BackpressureStrategy
@@ -115,7 +115,7 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
                     val response = graphResponse.jsonObject
                     val authProvider = AuthProvider(
                             response.getString("id"),
-                            Provider.FACEBOOK.name,
+                            ProviderType.FACEBOOK.name,
                             response.getString("first_name"),
                             response.getString("last_name"),
                             response.getString("first_name"),
