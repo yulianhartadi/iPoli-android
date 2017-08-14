@@ -2,17 +2,17 @@ package io.ipoli.android.player
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.FragmentActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.facebook.internal.CallbackManagerImpl
 import com.google.android.gms.auth.api.signin.GoogleSignInResult
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.api.GoogleApiClient
 import com.hannesdorfmann.mosby3.RestoreViewOnCreateMviController
 import com.jakewharton.rxbinding2.view.RxView
+import io.ipoli.android.ActivityStarter
 import io.ipoli.android.R
+import io.ipoli.android.auth.AuthProvider
+import io.ipoli.android.auth.ProviderType
 import io.ipoli.android.auth.RxFacebook
 import io.ipoli.android.auth.RxGoogleAuth
 import io.ipoli.android.daggerComponent
@@ -28,10 +28,11 @@ import io.realm.SyncUser
 import kotlinx.android.synthetic.main.controller_sign_in.view.*
 import timber.log.Timber
 
+
 /**
  * Created by vini on 8/8/17.
  */
-class SignInController : RestoreViewOnCreateMviController<SignInController, SignInPresenter>(), GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
+class SignInController : RestoreViewOnCreateMviController<SignInController, SignInPresenter>(), ActivityStarter {
 
     private val RC_GOOGLE_SIGN_IN = 9001
 
@@ -53,18 +54,6 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
         signInComponent // will ensure that dagger component will be initialized lazily.
     }
 
-
-    override fun onConnected(p0: Bundle?) {
-    }
-
-    override fun onConnectionSuspended(p0: Int) {
-    }
-
-    override fun onConnectionFailed(p0: ConnectionResult) {
-    }
-
-    private lateinit var googleApiClient: GoogleApiClient
-
     override fun setRestoringViewState(restoringViewState: Boolean) {
     }
 
@@ -75,24 +64,31 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
         val view = inflater.inflate(R.layout.controller_sign_in, container, false) as ViewGroup
 
 
-//        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//                .requestIdToken(ApiConstants.WEB_SERVER_GOOGLE_PLUS_CLIENT_ID)
-//                .requestEmail()
-//                .build()
-//
-//        googleApiClient = GoogleApiClient.Builder(applicationContext!!)
-//                .enableAutoManage(activity as FragmentActivity, this)
-////                .addConnectionCallbacks(this)
-//                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-//                .build()
 //
         view.googleSignIn.setOnClickListener({
+
             RxGoogleAuth.create()
-                    .login(activity as FragmentActivity)
+                    .login(applicationContext!!, this)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ signInResult ->
-                        Timber.d(signInResult.signInAccount.toString())
+                    .map { signInResult ->
+                        if (signInResult.isSuccess) {
+
+                            val account = signInResult.getSignInAccount()!!
+
+                            AuthProvider(account.idToken!!,
+                                    ProviderType.GOOGLE.name,
+                                    account.givenName.toString(),
+                                    account.familyName.toString(),
+                                    account.displayName.toString(),
+                                    account.email.toString(),
+                                    account.photoUrl.toString())
+                        } else {
+                            AuthProvider("", "", "", "", "", "", "")
+                        }
+                    }
+                    .subscribe({ authProvider ->
+                        Timber.d(authProvider.toString())
                     })
         })
 //

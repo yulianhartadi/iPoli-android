@@ -1,12 +1,13 @@
 package io.ipoli.android.auth
 
+import android.content.Context
 import android.content.Intent
-import android.support.v4.app.FragmentActivity
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.signin.GoogleSignInResult
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
+import io.ipoli.android.ActivityStarter
 import io.ipoli.android.ApiConstants
 import io.reactivex.Completable
 import io.reactivex.CompletableEmitter
@@ -20,25 +21,24 @@ import java.net.ConnectException
  */
 class RxGoogleAuth {
 
-
-    fun login(activity: FragmentActivity): Observable<GoogleSignInResult> {
+    fun login(context: Context, activityStarter: ActivityStarter): Observable<GoogleSignInResult> {
         val subject = PublishSubject.create<GoogleSignInResult>()
-        val loginHandler = LoginImpl(subject)
-        val googleApiClient = createApiClient(activity, loginHandler)
+        loginHandler = LoginHandler(subject)
+        val googleApiClient = createApiClient(context, loginHandler!!)
         subject.doOnComplete {
             if (googleApiClient.isConnected) {
                 googleApiClient.disconnect()
             }
         }
         return subject.doOnSubscribe {
-            startGoogleLogin(activity, googleApiClient)
+            startGoogleLogin(googleApiClient, activityStarter)
         }
     }
 
-    fun logout(activity: FragmentActivity): Completable {
+    fun logout(context: Context): Completable {
         return Completable.create {
             emitter ->
-            val googleApiClient = createApiClient(activity, emitter)
+            val googleApiClient = createApiClient(context, emitter)
             Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback {
                 emitter.onComplete()
                 if (googleApiClient.isConnected) {
@@ -48,32 +48,32 @@ class RxGoogleAuth {
         }
     }
 
-    private fun createApiClient(activity: FragmentActivity, listener: GoogleApiClient.OnConnectionFailedListener): GoogleApiClient {
+    private fun createApiClient(context: Context, listener: GoogleApiClient.OnConnectionFailedListener): GoogleApiClient {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(ApiConstants.WEB_SERVER_GOOGLE_PLUS_CLIENT_ID)
                 .requestEmail()
                 .build()
-        return GoogleApiClient.Builder(activity)
+        return GoogleApiClient.Builder(context)
                 .addOnConnectionFailedListener(listener)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build()
     }
 
-    private fun createApiClient(activity: FragmentActivity, emitter: CompletableEmitter): GoogleApiClient {
-        return createApiClient(activity, GoogleApiClient.OnConnectionFailedListener { connectionResult ->
+    private fun createApiClient(context: Context, emitter: CompletableEmitter): GoogleApiClient {
+        return createApiClient(context, GoogleApiClient.OnConnectionFailedListener { connectionResult ->
             emitter.onError(ConnectException(connectionResult.errorMessage))
         })
     }
 
-    private fun startGoogleLogin(activity: FragmentActivity, apiClient: GoogleApiClient) {
+    private fun startGoogleLogin(apiClient: GoogleApiClient, activityStarter: ActivityStarter) {
         val signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient)
-        activity.startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN)
+        activityStarter.startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN)
     }
 
     /**
      * Internal class to use as bridge for the facebook login
      */
-    private class LoginImpl internal constructor(private val subject: Subject<GoogleSignInResult>) : GoogleApiClient.OnConnectionFailedListener {
+    private class LoginHandler internal constructor(private val subject: Subject<GoogleSignInResult>) : GoogleApiClient.OnConnectionFailedListener {
 
         override fun onConnectionFailed(connectionResult: ConnectionResult) {
             subject.onError(ConnectException(connectionResult.errorMessage))
@@ -91,7 +91,7 @@ class RxGoogleAuth {
 
         private val RC_GOOGLE_SIGN_IN = 9001
 
-        private var loginImpl: RxGoogleAuth.LoginImpl? = null
+        private var loginHandler: RxGoogleAuth.LoginHandler? = null
 
         /**
          * Create an empty request builder
@@ -112,9 +112,9 @@ class RxGoogleAuth {
          * @return if the on activity result could be parsed or not (maybe it wasnt a facebook intent the one started?)
          */
         fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit {
-            if (loginImpl != null && requestCode == RC_GOOGLE_SIGN_IN) {
-                loginImpl!!.onActivityResult(data)
-                loginImpl = null
+            if (loginHandler != null && requestCode == RC_GOOGLE_SIGN_IN) {
+                loginHandler!!.onActivityResult(data)
+                loginHandler = null
             }
         }
     }
