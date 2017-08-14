@@ -13,7 +13,7 @@ import io.ipoli.android.ActivityStarter
 import io.ipoli.android.R
 import io.ipoli.android.auth.AuthProvider
 import io.ipoli.android.auth.ProviderType
-import io.ipoli.android.auth.RxFacebook
+import io.ipoli.android.auth.RxFacebookAuth
 import io.ipoli.android.auth.RxGoogleAuth
 import io.ipoli.android.daggerComponent
 import io.reactivex.BackpressureStrategy
@@ -92,7 +92,7 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
                     })
         })
 //
-//        RxFacebook.create()
+//        RxFacebookAuth.create()
 //                .loginWithReadPermissions(activity as MainActivity, listOf("email"))
 //                .switchMap {
 //                    loginInfo ->
@@ -100,7 +100,7 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
 //                    val parameters = Bundle()
 //                    parameters.putString("fields", "email,id,first_name,last_name,picture")
 //
-//                    RxFacebook.create()
+//                    RxFacebookAuth.create()
 //                            .accessToken(loginInfo.accessToken)
 //                            .params(parameters)
 //                            .requestMe()
@@ -151,7 +151,7 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
         if (requestCode == RC_GOOGLE_SIGN_IN) {
             RxGoogleAuth.onActivityResult(requestCode, resultCode, data!!)
         } else {
-            RxFacebook.postLoginActivityResult(requestCode, resultCode, data!!)
+            RxFacebookAuth.postLoginActivityResult(requestCode, resultCode, data!!)
         }
     }
 

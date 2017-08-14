@@ -15,7 +15,7 @@ import org.json.JSONObject
 /**
  * Created by vini on 8/13/17.
  */
-class RxFacebook private constructor() {
+class RxFacebookAuth private constructor() {
 
     private var accessToken: AccessToken? = null
 
@@ -34,7 +34,7 @@ class RxFacebook private constructor() {
      * *
      * @return builder instance
      */
-    fun tag(tag: Any): RxFacebook {
+    fun tag(tag: Any): RxFacebookAuth {
         this.tag = tag
         return this
     }
@@ -45,7 +45,7 @@ class RxFacebook private constructor() {
      * *
      * @return builder instance
      */
-    fun version(version: String): RxFacebook {
+    fun version(version: String): RxFacebookAuth {
         this.version = version
         return this
     }
@@ -56,7 +56,7 @@ class RxFacebook private constructor() {
      * *
      * @return builder instance
      */
-    fun httpMethod(httpMethod: HttpMethod): RxFacebook {
+    fun httpMethod(httpMethod: HttpMethod): RxFacebookAuth {
         this.httpMethod = httpMethod
         return this
     }
@@ -67,7 +67,7 @@ class RxFacebook private constructor() {
      * @return builder instance
      * * By default its false.
      */
-    fun skipClientToken(skipClientToken: Boolean): RxFacebook {
+    fun skipClientToken(skipClientToken: Boolean): RxFacebookAuth {
         this.skipClientToken = skipClientToken
         return this
     }
@@ -79,7 +79,7 @@ class RxFacebook private constructor() {
      * *
      * @return builder instance
      */
-    fun graphPath(graphPath: String): RxFacebook {
+    fun graphPath(graphPath: String): RxFacebookAuth {
         this.graphPath = graphPath
         return this
     }
@@ -89,7 +89,7 @@ class RxFacebook private constructor() {
      * *
      * @return builder instance
      */
-    fun graphObject(graphObject: JSONObject): RxFacebook {
+    fun graphObject(graphObject: JSONObject): RxFacebookAuth {
         this.graphObject = graphObject
         return this
     }
@@ -99,7 +99,7 @@ class RxFacebook private constructor() {
      * *
      * @return builder instance
      */
-    fun params(params: Bundle): RxFacebook {
+    fun params(params: Bundle): RxFacebookAuth {
         this.params = params
         return this
     }
@@ -109,7 +109,7 @@ class RxFacebook private constructor() {
      * *
      * @return builder instance
      */
-    fun accessToken(accessToken: AccessToken): RxFacebook {
+    fun accessToken(accessToken: AccessToken): RxFacebookAuth {
         this.accessToken = accessToken
         return this
     }
@@ -292,8 +292,8 @@ class RxFacebook private constructor() {
          * Create an empty request builder
          * @return
          */
-        fun create(): RxFacebook {
-            return RxFacebook()
+        fun create(): RxFacebookAuth {
+            return RxFacebookAuth()
         }
 
         /**
