@@ -124,44 +124,8 @@ class RxFacebook private constructor() {
     fun requestMe(): Observable<GraphResponse> {
         val request = GraphRequest.newMeRequest(accessToken, null)
         request.httpMethod = HttpMethod.GET
-//        val parameters = Bundle()
-//        parameters.putString("fields", "email,id,first_name,last_name,picture")
-//        request.parameters = parameters
         return request(request)
     }
-
-//    /**
-//     * Perform a POST request with this request builder attributes
-//     * **Note: If the request has errors, it wont be sent to the error stream. Error stream is used
-//     * for internal errors (of the stream) and NOT for request ones. You should validate that the graphResponse
-//     * has no error (graphResponse.getError == null)**
-//     * @return observable of a graph response
-//     */
-//    fun post(): Observable<GraphResponse> {
-//        return request(GraphRequest.newPostRequest(accessToken, graphPath, graphObject, null))
-//    }
-//
-//    /**
-//     * Perform a DELETE request with this request builder attributes
-//     * **Note: If the request has errors, it wont be sent to the error stream. Error stream is used
-//     * for internal errors (of the stream) and NOT for request ones. You should validate that the graphResponse
-//     * has no error (graphResponse.getError == null)**
-//     * @return observable of a graph response
-//     */
-//    fun delete(): Observable<GraphResponse> {
-//        return request(GraphRequest.newDeleteObjectRequest(accessToken, graphPath, null))
-//    }
-//
-//    /**
-//     * Perform a GET request with this request builder attributes
-//     * **Note: If the request has errors, it wont be sent to the error stream. Error stream is used
-//     * for internal errors (of the stream) and NOT for request ones. You should validate that the graphResponse
-//     * has no error (graphResponse.getError == null)**
-//     * @return observable of a graph response
-//     */
-//    fun get(): Observable<GraphResponse> {
-//        return request(GraphRequest(accessToken, graphPath, params, HttpMethod.GET))
-//    }
 
     /**
      * Should be ran on the UI thread
@@ -236,7 +200,6 @@ class RxFacebook private constructor() {
      * @return observable of a graph response
      */
     @JvmOverloads fun request(request: GraphRequest = GraphRequest()): Observable<GraphResponse> {
-//        val responseSubject = PublishSubject.create<GraphResponse>()
 
         if (httpMethod != null && request.httpMethod == HttpMethod.GET) { // It wont be null, default is GET
             request.httpMethod = httpMethod
@@ -265,19 +228,6 @@ class RxFacebook private constructor() {
             emitter.onNext(response)
             emitter.onComplete()
         }
-
-//        request.callback = GraphRequest.Callback { response ->
-//            // This is done only to get out of the subscribing msg
-//            Observable.just(response)
-//                    .observeOn(Schedulers.computation())
-//                    .subscribeOn(Schedulers.trampoline())
-//                    .subscribe { graphResponse ->
-//                        responseSubject.onNext(graphResponse)
-//                        responseSubject.onComplete()
-//                    }
-//        }
-//
-//        return responseSubject.doOnSubscribe { request.executeAndWait() }
     }
 
     /**
