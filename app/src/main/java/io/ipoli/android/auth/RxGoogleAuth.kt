@@ -14,30 +14,47 @@ import io.reactivex.CompletableEmitter
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
+import timber.log.Timber
 import java.net.ConnectException
 
 /**
  * Created by vini on 8/14/17.
  */
-class RxGoogleAuth {
+class RxGoogleAuth : RxSocialAuth {
 
-    fun login(context: Context, activityStarter: ActivityStarter): Observable<GoogleSignInResult> {
+    override fun login(context: Context, activityStarter: ActivityStarter): Observable<AuthResult> {
         val subject = PublishSubject.create<GoogleSignInResult>()
         loginHandler = LoginHandler(subject)
         val googleApiClient = createApiClient(context, loginHandler!!)
-        subject.doOnComplete {
+        return subject.doOnSubscribe {
+            startGoogleLogin(googleApiClient, activityStarter)
+        }.doOnComplete {
             if (googleApiClient.isConnected) {
                 googleApiClient.disconnect()
             }
-        }
-        return subject.doOnSubscribe {
-            startGoogleLogin(googleApiClient, activityStarter)
+        }.map { signInResult ->
+            Timber.d(signInResult.toString())
+            if (signInResult.isSuccess) {
+
+                val account = signInResult.signInAccount!!
+
+                AuthResult("",
+                        AuthProvider(account.idToken!!,
+                                ProviderType.GOOGLE.name,
+                                account.givenName.toString(),
+                                account.familyName.toString(),
+                                account.displayName.toString(),
+                                account.email.toString(),
+                                account.photoUrl.toString()))
+            } else {
+                AuthResult("",
+                        null)
+            }
         }
     }
 
-    fun logout(context: Context): Completable {
-        return Completable.create {
-            emitter ->
+    override fun logout(context: Context): Completable {
+        return Completable.create { emitter ->
             val googleApiClient = createApiClient(context, emitter)
             Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback {
                 emitter.onComplete()
@@ -79,7 +96,7 @@ class RxGoogleAuth {
             subject.onError(ConnectException(connectionResult.errorMessage))
         }
 
-        internal fun onActivityResult(data: Intent): Unit {
+        internal fun onActivityResult(data: Intent) {
             val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
             subject.onNext(result)
             subject.onComplete()

@@ -71,22 +71,22 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
                     .login(applicationContext!!, this)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .map { signInResult ->
-                        if (signInResult.isSuccess) {
-
-                            val account = signInResult.getSignInAccount()!!
-
-                            AuthProvider(account.idToken!!,
-                                    ProviderType.GOOGLE.name,
-                                    account.givenName.toString(),
-                                    account.familyName.toString(),
-                                    account.displayName.toString(),
-                                    account.email.toString(),
-                                    account.photoUrl.toString())
-                        } else {
-                            AuthProvider("", "", "", "", "", "", "")
-                        }
-                    }
+//                    .map { signInResult ->
+//                        if (signInResult.isSuccess) {
+//
+//                            val account = signInResult.getSignInAccount()!!
+//
+//                            AuthProvider(account.idToken!!,
+//                                    ProviderType.GOOGLE.name,
+//                                    account.givenName.toString(),
+//                                    account.familyName.toString(),
+//                                    account.displayName.toString(),
+//                                    account.email.toString(),
+//                                    account.photoUrl.toString())
+//                        } else {
+//                            AuthProvider("", "", "", "", "", "", "")
+//                        }
+//                    }
                     .subscribe({ authProvider ->
                         Timber.d(authProvider.toString())
                     })
