@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 
 /**
- * Created by vini on 7/7/17.
+ * Created by Venelin Valkov <venelin@curiousily.com> on 7/7/17.
  */
 class RewardListPresenter @Inject constructor(private val displayRewardsUseCase: DisplayRewardsUseCase) : MviBasePresenter<RewardListController, RewardViewState>() {
 

@@ -10,7 +10,7 @@ import com.bluelinelabs.conductor.RouterTransaction
 import io.ipoli.android.player.SignInController
 
 /**
- * Created by vini on 7/6/17.
+ * Created by Venelin Valkov <venelin@curiousily.com> on 7/6/17.
  */
 class MainActivity : AppCompatActivity() {
 

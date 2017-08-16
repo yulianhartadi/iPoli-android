@@ -6,7 +6,7 @@ import io.realm.Realm
 import java.util.*
 
 /**
- * Created by vini on 8/2/17.
+ * Created by Venelin Valkov <venelin@curiousily.com> on 8/2/17.
  */
 class PlayerRepository {
 
@@ -55,10 +55,8 @@ class PlayerRepository {
     fun save(player: Player): Completable {
         return Completable.create({ subscriber ->
             realm.executeTransaction {
-                val playerObject = realm.createObject(Player::class.java, UUID.randomUUID().toString())
-                playerObject.coins = player.coins
-                playerObject.experience = player.experience
-                player.id = playerObject.id
+                player.id = UUID.randomUUID().toString()
+                realm.copyToRealmOrUpdate(player)
                 subscriber.onComplete()
             }
         })

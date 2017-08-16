@@ -5,7 +5,7 @@ import io.realm.Realm
 import java.util.*
 
 /**
- * Created by vini on 7/7/17.
+ * Created by Venelin Valkov <venelin@curiousily.com> on 7/7/17.
  */
 class RewardRepository {
     val realm: Realm = Realm.getDefaultInstance()

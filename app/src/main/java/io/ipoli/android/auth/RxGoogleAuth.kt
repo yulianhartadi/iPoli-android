@@ -2,44 +2,41 @@ package io.ipoli.android.auth
 
 import android.content.Context
 import android.content.Intent
+import com.bluelinelabs.conductor.Controller
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.signin.GoogleSignInResult
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
-import io.ipoli.android.ActivityStarter
 import io.ipoli.android.ApiConstants
 import io.reactivex.Completable
 import io.reactivex.CompletableEmitter
-import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
-import timber.log.Timber
 import java.net.ConnectException
 
 /**
- * Created by vini on 8/14/17.
+ * Created by Venelin Valkov <venelin@curiousily.com>
+ * on 8/14/17.
  */
-class RxGoogleAuth : RxSocialAuth {
+class RxGoogleAuth private constructor() : RxSocialAuth {
 
-    override fun login(context: Context, activityStarter: ActivityStarter): Observable<AuthResult> {
+    override fun login(controller: Controller): Single<AuthResult> {
         val subject = PublishSubject.create<GoogleSignInResult>()
         loginHandler = LoginHandler(subject)
-        val googleApiClient = createApiClient(context, loginHandler!!)
+        val googleApiClient = createApiClient(controller.applicationContext!!, loginHandler!!)
         return subject.doOnSubscribe {
-            startGoogleLogin(googleApiClient, activityStarter)
+            startGoogleLogin(googleApiClient, controller)
         }.doOnComplete {
             if (googleApiClient.isConnected) {
                 googleApiClient.disconnect()
             }
         }.map { signInResult ->
-            Timber.d(signInResult.toString())
             if (signInResult.isSuccess) {
-
                 val account = signInResult.signInAccount!!
-
-                AuthResult("",
-                        AuthProvider(account.idToken!!,
+                AuthResult(account.idToken!!,
+                        AuthProvider(account.id!!,
                                 ProviderType.GOOGLE.name,
                                 account.givenName.toString(),
                                 account.familyName.toString(),
@@ -47,15 +44,14 @@ class RxGoogleAuth : RxSocialAuth {
                                 account.email.toString(),
                                 account.photoUrl.toString()))
             } else {
-                AuthResult("",
-                        null)
+                throw GoogleSignInError()
             }
-        }
+        }.singleOrError()
     }
 
-    override fun logout(context: Context): Completable {
+    override fun logout(controller: Controller): Completable {
         return Completable.create { emitter ->
-            val googleApiClient = createApiClient(context, emitter)
+            val googleApiClient = createApiClient(controller.applicationContext!!, emitter)
             Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback {
                 emitter.onComplete()
                 if (googleApiClient.isConnected) {
@@ -82,9 +78,9 @@ class RxGoogleAuth : RxSocialAuth {
         })
     }
 
-    private fun startGoogleLogin(apiClient: GoogleApiClient, activityStarter: ActivityStarter) {
+    private fun startGoogleLogin(apiClient: GoogleApiClient, controller: Controller) {
         val signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient)
-        activityStarter.startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN)
+        controller.startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN)
     }
 
     /**

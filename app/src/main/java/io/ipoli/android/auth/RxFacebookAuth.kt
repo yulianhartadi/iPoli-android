@@ -3,96 +3,55 @@ package io.ipoli.android.auth
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import com.bluelinelabs.conductor.Controller
 import com.facebook.*
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
-import io.reactivex.Observable
+import io.reactivex.Completable
+import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
-import org.json.JSONObject
 
 /**
- * Created by vini on 8/13/17.
+ * Created by Venelin Valkov <venelin@curiousily.com>
+ * on 8/13/17.
  */
-class RxFacebookAuth private constructor() {
+class RxFacebookAuth private constructor() : RxSocialAuth {
+
+    override fun login(controller: Controller): Single<AuthResult> {
+        return loginWithReadPermissions(controller.activity!!, permissions)
+                .flatMap { loginInfo ->
+                    val parameters = Bundle()
+                    parameters.putString("fields", "email,id,first_name,last_name,picture")
+                    RxFacebookAuth.create()
+                            .accessToken(loginInfo.accessToken)
+                            .params(parameters)
+                            .requestMe()
+                            .subscribeOn(Schedulers.io())
+                }.map { graphResponse ->
+            val response = graphResponse.jsonObject
+            AuthResult(AccessToken.getCurrentAccessToken().token,
+                    AuthProvider(
+                            response.getString("id"),
+                            ProviderType.FACEBOOK.name,
+                            response.getString("first_name"),
+                            response.getString("last_name"),
+                            response.getString("first_name"),
+                            if (response.has("email")) response.getString("email") else "",
+                            response.getJSONObject("picture").getJSONObject("data").getString("url")
+                    )
+            )
+        }
+    }
+
+    override fun logout(controller: Controller): Completable = logout()
 
     private var accessToken: AccessToken? = null
 
     private var params: Bundle? = null
 
-    private var tag: Any? = null
-    private var version: String? = null
-    private var httpMethod: HttpMethod? = null
-    private var skipClientToken: Boolean = false
-    private var graphPath: String? = null
-    private var graphObject: JSONObject? = null
-
-    /**
-     * Set the request tag
-     * @param tag for the request
-     * *
-     * @return builder instance
-     */
-    fun tag(tag: Any): RxFacebookAuth {
-        this.tag = tag
-        return this
-    }
-
-    /**
-     * Set the version to use of the graph
-     * @param version to use
-     * *
-     * @return builder instance
-     */
-    fun version(version: String): RxFacebookAuth {
-        this.version = version
-        return this
-    }
-
-    /**
-     * If you wont use a default mode or post/delete/get, this provides a particular HttpMethod
-     * @param httpMethod to use
-     * *
-     * @return builder instance
-     */
-    fun httpMethod(httpMethod: HttpMethod): RxFacebookAuth {
-        this.httpMethod = httpMethod
-        return this
-    }
-
-    /**
-     * @param skipClientToken if it should or not skip the client accessToken
-     * *
-     * @return builder instance
-     * * By default its false.
-     */
-    fun skipClientToken(skipClientToken: Boolean): RxFacebookAuth {
-        this.skipClientToken = skipClientToken
-        return this
-    }
-
-    /**
-     * Graph path to use.
-     * If using a specific domain method (eg requesting my user (ME)) this param is ignored
-     * @param graphPath to use as route of the endpoint
-     * *
-     * @return builder instance
-     */
-    fun graphPath(graphPath: String): RxFacebookAuth {
-        this.graphPath = graphPath
-        return this
-    }
-
-    /**
-     * @param graphObject to use as body of the endpoint in a POST
-     * *
-     * @return builder instance
-     */
-    fun graphObject(graphObject: JSONObject): RxFacebookAuth {
-        this.graphObject = graphObject
-        return this
-    }
+    private val permissions: Collection<String> = ArrayList()
 
     /**
      * @param params of the request
@@ -121,7 +80,7 @@ class RxFacebookAuth private constructor() {
      * has no error (graphResponse.getError == null)**
      * @return observable of a graph response
      */
-    fun requestMe(): Observable<GraphResponse> {
+    private fun requestMe(): Single<GraphResponse> {
         val request = GraphRequest.newMeRequest(accessToken, null)
         request.httpMethod = HttpMethod.GET
         return request(request)
@@ -134,41 +93,8 @@ class RxFacebookAuth private constructor() {
      * [.postLoginActivityResult], since we dont have control over the activity
      * If theres an error on the login phase it will be sent to the error stream
      */
-    fun loginWithReadPermissions(context: Activity, permissions: Collection<String>): Observable<LoginResult> {
+    private fun loginWithReadPermissions(context: Activity, permissions: Collection<String>): Single<LoginResult> {
         return login { LoginManager.getInstance().logInWithReadPermissions(context, permissions) }
-    }
-
-    /**
-     * Should be ran on the UI thread
-     * Performs a login with read permissions.
-     * Note that one should call in the onActivityResult of the {@param context}
-     * [.postLoginActivityResult], since we dont have control over the activity
-     * If theres an error on the login phase it will be sent to the error stream
-     */
-    fun loginWithReadPermissions(context: Fragment, permissions: Collection<String>): Observable<LoginResult> {
-        return login { LoginManager.getInstance().logInWithReadPermissions(context, permissions) }
-    }
-
-    /**
-     * Should be ran on the UI thread
-     * Performs a login with write permissions.
-     * Note that one should call in the onActivityResult of the {@param context}
-     * [.postLoginActivityResult], since we dont have control over the activity
-     * If theres an error on the login phase it will be sent to the error stream
-     */
-    fun loginWithPublishPermissions(context: Activity, permissions: Collection<String>): Observable<LoginResult> {
-        return login { LoginManager.getInstance().logInWithPublishPermissions(context, permissions) }
-    }
-
-    /**
-     * Should be ran on the UI thread
-     * Performs a login with write permissions.
-     * Note that one should call in the onActivityResult of the {@param context}
-     * [.postLoginActivityResult], since we dont have control over the activity
-     * If theres an error on the login phase it will be sent to the error stream
-     */
-    fun loginWithPublishPermissions(context: Fragment, permissions: Collection<String>): Observable<LoginResult> {
-        return login { LoginManager.getInstance().logInWithPublishPermissions(context, permissions) }
     }
 
     /**
@@ -177,20 +103,25 @@ class RxFacebookAuth private constructor() {
      * *
      * @return observable of a login result
      */
-    private fun login(action: () -> Unit): Observable<LoginResult> {
+    private fun login(action: () -> Unit): Single<LoginResult> {
         loginImpl?.shutdown()
 
         val subject = PublishSubject.create<LoginResult>()
         loginImpl = LoginImpl(subject)
-        return subject.doOnSubscribe { action() }
+        return subject
+                .doOnSubscribe { action() }
+                .doOnComplete { loginImpl?.shutdown() }
+                .singleOrError()
     }
 
-    fun logout(): Observable<Void> {
+    private fun logout(): Completable {
         loginImpl?.shutdown()
         loginImpl = null
 
-        return Observable.just<Void>(null)
-                .doOnSubscribe { LoginManager.getInstance().logOut() }
+        return Completable.create { emitter ->
+            LoginManager.getInstance().logOut()
+            emitter.onComplete()
+        }
     }
 
     /**
@@ -199,11 +130,7 @@ class RxFacebookAuth private constructor() {
      * *
      * @return observable of a graph response
      */
-    @JvmOverloads fun request(request: GraphRequest = GraphRequest()): Observable<GraphResponse> {
-
-        if (httpMethod != null && request.httpMethod == HttpMethod.GET) { // It wont be null, default is GET
-            request.httpMethod = httpMethod
-        }
+    private fun request(request: GraphRequest): Single<GraphResponse> {
 
         if (accessToken != null && request.accessToken == null) {
             request.accessToken = accessToken
@@ -213,20 +140,9 @@ class RxFacebookAuth private constructor() {
             request.parameters = params
         }
 
-        if (tag != null && request.tag == null) {
-            request.tag = tag
-        }
-
-        if (version != null && request.version == null) {
-            request.version = version
-        }
-
-        request.setSkipClientToken(skipClientToken)
-
-        return Observable.create { emitter ->
+        return Single.create { emitter ->
             val response = request.executeAndWait()
-            emitter.onNext(response)
-            emitter.onComplete()
+            emitter.onSuccess(response)
         }
     }
 
@@ -246,8 +162,8 @@ class RxFacebookAuth private constructor() {
          * Shutdown the impl
          */
         internal fun shutdown() {
+            LoginManager.getInstance().unregisterCallback(facebookCallback)
             facebookCallback = null
-            subject.onComplete()
         }
 
         /**
@@ -275,7 +191,7 @@ class RxFacebookAuth private constructor() {
         }
 
         override fun onCancel() {
-            subject.onComplete()
+//            subject.onComplete()
         }
 
         override fun onError(error: FacebookException) {

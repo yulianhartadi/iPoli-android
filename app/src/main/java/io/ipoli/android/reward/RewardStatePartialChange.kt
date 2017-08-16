@@ -4,7 +4,7 @@ import io.ipoli.android.*
 
 
 /**
- * Created by vini on 7/8/17.
+ * Created by Venelin Valkov <venelin@curiousily.com> on 7/8/17.
  */
 interface RewardStatePartialChange {
     fun computeNewState(prevStateReward: RewardViewState): RewardViewState

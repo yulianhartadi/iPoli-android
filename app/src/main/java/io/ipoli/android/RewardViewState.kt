@@ -4,7 +4,7 @@ import io.ipoli.android.reward.Reward
 import io.ipoli.android.reward.RewardModel
 
 /**
- * Created by vini on 7/7/17.
+ * Created by Venelin Valkov <venelin@curiousily.com> on 7/7/17.
  */
 open class RewardViewState(
         val rewards: List<RewardModel>?

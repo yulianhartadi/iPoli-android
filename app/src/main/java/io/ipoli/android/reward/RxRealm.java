@@ -16,7 +16,7 @@ import io.realm.RealmResults;
 import timber.log.Timber;
 
 /**
- * Created by vini on 7/8/17.
+ * Created by Venelin Valkov <venelin@curiousily.com> on 7/8/17.
  */
 public class RxRealm {
 //    public static Flowable<Realm> getRealm(final Realm realm) {

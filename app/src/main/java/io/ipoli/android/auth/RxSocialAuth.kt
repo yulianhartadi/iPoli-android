@@ -1,21 +1,21 @@
 package io.ipoli.android.auth
 
-import android.content.Context
-import io.ipoli.android.ActivityStarter
+import com.bluelinelabs.conductor.Controller
 import io.reactivex.Completable
-import io.reactivex.Observable
+import io.reactivex.Single
 
 /**
- * Created by vini on 8/15/17.
+ * Created by Venelin Valkov <venelin@curiousily.com>
+ * on 8/15/17.
  */
 interface RxSocialAuth {
 
-    fun login(context: Context, activityStarter: ActivityStarter): Observable<AuthResult>
+    fun login(controller: Controller): Single<AuthResult>
 
-    fun logout(context: Context): Completable
+    fun logout(controller: Controller): Completable
 }
 
 data class AuthResult(
         val token: String,
-        val authProvider: AuthProvider?
+        val authProvider: AuthProvider
 )

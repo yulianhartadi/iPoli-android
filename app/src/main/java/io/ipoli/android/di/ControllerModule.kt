@@ -5,7 +5,7 @@ import dagger.Provides
 import io.ipoli.android.Navigator
 
 /**
- * Created by vini on 8/1/17.
+ * Created by Venelin Valkov <venelin@curiousily.com> on 8/1/17.
  */
 @Module
 class ControllerModule(private val navigator: Navigator) {

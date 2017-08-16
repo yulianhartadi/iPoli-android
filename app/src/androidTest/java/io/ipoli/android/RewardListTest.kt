@@ -15,7 +15,7 @@ import org.junit.runner.RunWith
 
 
 /**
- * Created by vini on 7/10/17.
+ * Created by Venelin Valkov <venelin@curiousily.com> on 7/10/17.
  * This test is not executing due to this: https://github.com/realm/realm-java/issues/4662 & https://github.com/realm/realm-java/pull/4883
  */
 @RunWith(AndroidJUnit4::class)

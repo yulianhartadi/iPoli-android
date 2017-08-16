@@ -7,7 +7,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 
 
 /**
- * Created by vini on 8/1/17.
+ * Created by Venelin Valkov <venelin@curiousily.com> on 8/1/17.
  */
 interface RxUseCase<in Parameters, Result> {
 

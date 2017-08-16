@@ -4,7 +4,7 @@ import io.reactivex.Observable
 
 
 /**
- * Created by vini on 7/9/17.
+ * Created by Venelin Valkov <venelin@curiousily.com> on 7/9/17.
  */
 class RewardListInteractor {
 

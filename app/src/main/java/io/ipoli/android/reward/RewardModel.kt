@@ -1,7 +1,7 @@
 package io.ipoli.android.reward
 
 /**
- * Created by vini on 8/2/17.
+ * Created by Venelin Valkov <venelin@curiousily.com> on 8/2/17.
  */
 data class RewardModel(val id: String,
                        val name: String,

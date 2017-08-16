@@ -1,17 +1,20 @@
 package io.ipoli.android.auth
 
+import io.realm.RealmObject
+
 /**
- * Created by vini on 8/14/17.
+ * Created by Venelin Valkov <venelin@curiousily.com>
+ * on 8/14/17.
  */
-data class AuthProvider(
-        val id: String,
-        val provider: String,
-        val firstName: String,
-        val lastName: String,
-        val username: String,
-        val email: String,
-        val image: String
-)
+open class AuthProvider(
+        var id: String = "",
+        var provider: String = "",
+        var firstName: String = "",
+        var lastName: String = "",
+        var username: String = "",
+        var email: String = "",
+        var image: String = ""
+) : RealmObject()
 
 enum class ProviderType {
     FACEBOOK, GOOGLE

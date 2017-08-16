@@ -6,7 +6,7 @@ import io.ipoli.android.di.ControllerModule
 import io.ipoli.android.di.DaggerControllerComponent
 
 /**
- * Created by vini on 8/2/17.
+ * Created by Venelin Valkov <venelin@curiousily.com> on 8/2/17.
  */
 
 val Controller.daggerComponent: ControllerComponent

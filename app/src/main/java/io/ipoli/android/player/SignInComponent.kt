@@ -5,7 +5,7 @@ import io.ipoli.android.di.ControllerComponent
 import javax.inject.Scope
 
 /**
- * Created by vini on 8/8/17.
+ * Created by Venelin Valkov <venelin@curiousily.com> on 8/8/17.
  */
 @SignInScope
 @Component(modules = arrayOf(SignInModule::class),

@@ -14,7 +14,7 @@ import io.realm.Realm
 import timber.log.Timber
 
 /**
- * Created by vini on 7/7/17.
+ * Created by Venelin Valkov <venelin@curiousily.com> on 7/7/17.
  */
 class iPoliApp : Application() {
 

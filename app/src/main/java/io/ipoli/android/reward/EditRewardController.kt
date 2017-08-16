@@ -9,7 +9,7 @@ import io.ipoli.android.R
 import kotlinx.android.synthetic.main.controller_edit_reward.view.*
 
 /**
- * Created by vini on 7/7/17.
+ * Created by Venelin Valkov <venelin@curiousily.com> on 7/7/17.
  */
 class EditRewardController(val rewardId: String = "") : RestoreViewOnCreateMviController<EditRewardController, EditRewardPresenter>() {
 
