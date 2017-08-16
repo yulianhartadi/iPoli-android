@@ -173,7 +173,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:gravity="center_horizontal"
-                        android:text="Awesomeness score" />
+                        android:text="@string/growth_awesomeness_score" />
 
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/awesomeness_range_chart"
@@ -222,7 +222,7 @@
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="16dp"
                         android:gravity="center_horizontal"
-                        android:text="Completed quests" />
+                        android:text="@string/growth_completed_quests" />
 
                     <ImageButton
                         android:id="@+id/filter_completed_quests"
@@ -282,7 +282,7 @@
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="16dp"
                         android:gravity="center_horizontal"
-                        android:text="Time spent" />
+                        android:text="@string/growth_time_spent" />
 
                     <ImageButton
                         android:id="@+id/filter_time_spent"
@@ -337,7 +337,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:gravity="center_horizontal"
-                        android:text="Coins earned" />
+                        android:text="@string/growth_coins_earned" />
 
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/coins_earned_range_chart"
@@ -380,7 +380,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:gravity="center_horizontal"
-                        android:text="Experience earned" />
+                        android:text="@string/growth_experience_earned" />
 
                     <com.github.mikephil.charting.charts.LineChart
                         android:id="@+id/xp_earned_range_chart"

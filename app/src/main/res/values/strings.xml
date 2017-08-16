@@ -947,6 +947,11 @@
     <string name="achievement_send_feedback_desc">Send Feedback about iPoli</string>
 
     <string name="pick_challenge_to_start">Pick a challenge to start with</string>
+    <string name="growth_awesomeness_score">Awesomeness score</string>
+    <string name="growth_completed_quests">Completed quests</string>
+    <string name="growth_time_spent">Time spent</string>
+    <string name="growth_coins_earned">Coins earned</string>
+    <string name="growth_experience_earned">Experience earned</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
