@@ -6,9 +6,11 @@ import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.auth.ProviderType
 import io.ipoli.android.auth.RxAnonymousAuth
 import io.ipoli.android.player.*
+import io.ipoli.android.util.RxSchedulersTestRule
 import io.reactivex.Single
 import io.reactivex.observers.TestObserver
 import io.reactivex.schedulers.Schedulers
+import org.junit.Rule
 import org.junit.Test
 
 /**
@@ -16,6 +18,10 @@ import org.junit.Test
  * on 8/17/17.
  */
 class SignInUseCaseTest {
+
+    @Rule
+    val rxRule = RxSchedulersTestRule()
+
     @Test
     fun signInGuestPlayer() {
 
