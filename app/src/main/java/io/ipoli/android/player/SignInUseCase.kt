@@ -20,7 +20,7 @@ class SignInUseCase(private val playerRepository: PlayerRepository, subscribeOnS
         return params.socialAuth.login(params.username)
                 .flatMap { (token, authProvider) ->
                     if (params.providerType == ProviderType.ANONYMOUS) {
-                        return@flatMap PlayerRepository().save(Player(UUID.randomUUID().toString(), authProvider = authProvider))
+                        return@flatMap playerRepository.save(Player(UUID.randomUUID().toString(), authProvider = authProvider))
                     }
 
                     val credentials = if (params.providerType == ProviderType.FACEBOOK) {
