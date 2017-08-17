@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.bluelinelabs.conductor.Controller
 import com.facebook.*
+import com.facebook.internal.CallbackManagerImpl
 import com.facebook.login.LoginManager
 import com.facebook.login.LoginResult
 import io.reactivex.Completable
@@ -17,14 +18,14 @@ import io.reactivex.subjects.Subject
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/13/17.
  */
-class RxFacebookAuth private constructor() : RxSocialAuth {
+class RxFacebookAuth private constructor(private val controller: Controller) : RxSocialAuth {
 
-    override fun login(controller: Controller): Single<AuthResult> {
+    override fun login(username: String): Single<AuthResult> {
         return loginWithReadPermissions(controller.activity!!, permissions)
                 .flatMap { loginInfo ->
                     val parameters = Bundle()
                     parameters.putString("fields", "email,id,first_name,last_name,picture")
-                    RxFacebookAuth.create()
+                    RxFacebookAuth.create(controller)
                             .accessToken(loginInfo.accessToken)
                             .params(parameters)
                             .requestMe()
@@ -40,12 +41,21 @@ class RxFacebookAuth private constructor() : RxSocialAuth {
                             response.getString("first_name"),
                             if (response.has("email")) response.getString("email") else "",
                             response.getJSONObject("picture").getJSONObject("data").getString("url")
-                    )
+                    ),
+                    username
             )
         }
     }
 
-    override fun logout(controller: Controller): Completable = logout()
+    override fun logout(): Completable {
+        loginImpl?.shutdown()
+        loginImpl = null
+
+        return Completable.create { emitter ->
+            LoginManager.getInstance().logOut()
+            emitter.onComplete()
+        }
+    }
 
     private var accessToken: AccessToken? = null
 
@@ -90,7 +100,7 @@ class RxFacebookAuth private constructor() : RxSocialAuth {
      * Should be ran on the UI thread
      * Performs a login with read permissions.
      * Note that one should call in the onActivityResult of the {@param context}
-     * [.postLoginActivityResult], since we dont have control over the activity
+     * [.onActivityResult], since we dont have control over the activity
      * If theres an error on the login phase it will be sent to the error stream
      */
     private fun loginWithReadPermissions(context: Activity, permissions: Collection<String>): Single<LoginResult> {
@@ -112,16 +122,6 @@ class RxFacebookAuth private constructor() : RxSocialAuth {
                 .doOnSubscribe { action() }
                 .doOnComplete { loginImpl?.shutdown() }
                 .singleOrError()
-    }
-
-    private fun logout(): Completable {
-        loginImpl?.shutdown()
-        loginImpl = null
-
-        return Completable.create { emitter ->
-            LoginManager.getInstance().logOut()
-            emitter.onComplete()
-        }
     }
 
     /**
@@ -208,8 +208,8 @@ class RxFacebookAuth private constructor() : RxSocialAuth {
          * Create an empty request builder
          * @return
          */
-        fun create(): RxFacebookAuth {
-            return RxFacebookAuth()
+        fun create(controller: Controller): RxFacebookAuth {
+            return RxFacebookAuth(controller)
         }
 
         /**
@@ -222,13 +222,12 @@ class RxFacebookAuth private constructor() : RxSocialAuth {
          * *
          * @return if the on activity result could be parsed or not (maybe it wasnt a facebook intent the one started?)
          */
-        fun postLoginActivityResult(requestCode: Int, resultCode: Int, data: Intent): Boolean {
-            if (loginImpl != null) {
-                val result = loginImpl!!.onActivityResult(requestCode, resultCode, data)
+        fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+            val facebookRequestCode = CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode()
+            if (requestCode == facebookRequestCode && loginImpl != null) {
+                loginImpl!!.onActivityResult(requestCode, resultCode, data!!)
                 loginImpl = null
-                return result
             }
-            return false
         }
 
     }

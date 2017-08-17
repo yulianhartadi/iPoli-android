@@ -20,14 +20,14 @@ import java.net.ConnectException
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/14/17.
  */
-class RxGoogleAuth private constructor() : RxSocialAuth {
+class RxGoogleAuth private constructor(private val controller: Controller) : RxSocialAuth {
 
-    override fun login(controller: Controller): Single<AuthResult> {
+    override fun login(username: String): Single<AuthResult> {
         val subject = PublishSubject.create<GoogleSignInResult>()
         loginHandler = LoginHandler(subject)
         val googleApiClient = createApiClient(controller.applicationContext!!, loginHandler!!)
         return subject.doOnSubscribe {
-            startGoogleLogin(googleApiClient, controller)
+            startGoogleLogin(googleApiClient)
         }.doOnComplete {
             if (googleApiClient.isConnected) {
                 googleApiClient.disconnect()
@@ -42,14 +42,15 @@ class RxGoogleAuth private constructor() : RxSocialAuth {
                                 account.familyName.toString(),
                                 account.displayName.toString(),
                                 account.email.toString(),
-                                account.photoUrl.toString()))
+                                account.photoUrl.toString()),
+                        username)
             } else {
                 throw GoogleSignInError()
             }
         }.singleOrError()
     }
 
-    override fun logout(controller: Controller): Completable {
+    override fun logout(): Completable {
         return Completable.create { emitter ->
             val googleApiClient = createApiClient(controller.applicationContext!!, emitter)
             Auth.GoogleSignInApi.signOut(googleApiClient).setResultCallback {
@@ -78,14 +79,11 @@ class RxGoogleAuth private constructor() : RxSocialAuth {
         })
     }
 
-    private fun startGoogleLogin(apiClient: GoogleApiClient, controller: Controller) {
+    private fun startGoogleLogin(apiClient: GoogleApiClient) {
         val signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient)
         controller.startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN)
     }
 
-    /**
-     * Internal class to use as bridge for the facebook login
-     */
     private class LoginHandler internal constructor(private val subject: Subject<GoogleSignInResult>) : GoogleApiClient.OnConnectionFailedListener {
 
         override fun onConnectionFailed(connectionResult: ConnectionResult) {
@@ -106,27 +104,13 @@ class RxGoogleAuth private constructor() : RxSocialAuth {
 
         private var loginHandler: RxGoogleAuth.LoginHandler? = null
 
-        /**
-         * Create an empty request builder
-         * @return
-         */
-        fun create(): RxGoogleAuth {
-            return RxGoogleAuth()
+        fun create(controller: Controller): RxGoogleAuth {
+            return RxGoogleAuth(controller)
         }
 
-        /**
-         * Post the login results to be processed. The initial stream used will output its results/error
-         * @param requestCode code used for request
-         * *
-         * @param resultCode result code
-         * *
-         * @param data of the result
-         * *
-         * @return if the on activity result could be parsed or not (maybe it wasnt a facebook intent the one started?)
-         */
-        fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit {
+        fun onActivityResult(requestCode: Int, data: Intent?) {
             if (loginHandler != null && requestCode == RC_GOOGLE_SIGN_IN) {
-                loginHandler!!.onActivityResult(data)
+                loginHandler?.onActivityResult(data!!)
                 loginHandler = null
             }
         }

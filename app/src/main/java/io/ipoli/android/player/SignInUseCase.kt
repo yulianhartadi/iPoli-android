@@ -8,11 +8,13 @@ import io.reactivex.Scheduler
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/17/17.
  */
-class SignInUseCase(subscribeOnScheduler: Scheduler?, observeOnScheduler: Scheduler?) : BaseRxUseCase<SignInUseCaseParams, SignInStatePartialChange>(subscribeOnScheduler, observeOnScheduler) {
+class SignInUseCase(subscribeOnScheduler: Scheduler?, observeOnScheduler: Scheduler?) : BaseRxUseCase<SignInRequest, SignInStatePartialChange>(subscribeOnScheduler, observeOnScheduler) {
 
-    override fun createObservable(params: SignInUseCaseParams): Observable<SignInStatePartialChange> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun createObservable(params: SignInRequest): Observable<SignInStatePartialChange> {
+        return params.socialAuth.login(params.username).map {
+            PlayerSignedInPartialChange() as SignInStatePartialChange
+        }
+                .toObservable()
+                .startWith(SignInLoadingPartialChange())
     }
 }
-
-class SignInUseCaseParams

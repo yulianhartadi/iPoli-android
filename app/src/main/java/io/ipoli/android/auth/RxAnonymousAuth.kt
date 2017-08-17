@@ -1,6 +1,5 @@
 package io.ipoli.android.auth
 
-import com.bluelinelabs.conductor.Controller
 import io.reactivex.Completable
 import io.reactivex.Single
 
@@ -10,11 +9,15 @@ import io.reactivex.Single
  */
 class RxAnonymousAuth : RxSocialAuth {
 
-    override fun login(controller: Controller): Single<AuthResult> =
+    override fun login(username: String): Single<AuthResult> =
             Single.just(
                     AuthResult("",
                             AuthProvider(provider = ProviderType.ANONYMOUS.name)
-                    ))
+                            , username))
 
-    override fun logout(controller: Controller): Completable = Completable.complete()
+    override fun logout(): Completable = Completable.complete()
+
+    companion object {
+        fun create(): RxAnonymousAuth = RxAnonymousAuth()
+    }
 }

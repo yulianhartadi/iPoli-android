@@ -10,12 +10,13 @@ import io.reactivex.Single
  */
 interface RxSocialAuth {
 
-    fun login(controller: Controller): Single<AuthResult>
+    fun login(username: String): Single<AuthResult>
 
-    fun logout(controller: Controller): Completable
+    fun logout(): Completable
 }
 
 data class AuthResult(
         val token: String,
-        val authProvider: AuthProvider
+        val authProvider: AuthProvider,
+        val username: String
 )

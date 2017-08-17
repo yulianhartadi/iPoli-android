@@ -104,7 +104,7 @@ class RewardListController : RestoreViewOnCreateMviController<RewardListControll
         return deleteRewardSubject;
     }
 
-    fun render(state: RewardViewState): Unit {
+    fun render(state: RewardViewState) {
         when (state) {
             is RewardsInitialLoadingState -> {
                 Toast.makeText(activity, "Loading", Toast.LENGTH_LONG).show()

@@ -29,7 +29,7 @@
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintLeft_toLeftOf="@+id/guideline2"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/existing_player"
+                app:layout_constraintTop_toBottomOf="@+id/existingPlayer"
                 tools:layout_constraintTop_creator="1" />
 
             <mehdi.sakout.fancybuttons.FancyButton
@@ -155,7 +155,7 @@
             </android.support.design.widget.TextInputLayout>
 
             <CheckBox
-                android:id="@+id/existing_player"
+                android:id="@+id/existingPlayer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -211,7 +211,7 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toLeftOf="@+id/guideline2"
-                app:layout_constraintTop_toBottomOf="@+id/existing_player"
+                app:layout_constraintTop_toBottomOf="@+id/existingPlayer"
                 fancy:fb_defaultColor="#3b5998"
                 fancy:fb_focusColor="#313131"
                 tools:layout_constraintTop_creator="1" />
