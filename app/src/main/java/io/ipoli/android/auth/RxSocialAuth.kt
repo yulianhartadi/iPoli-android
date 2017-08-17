@@ -10,7 +10,7 @@ import io.reactivex.Single
  */
 interface RxSocialAuth {
 
-    fun login(username: String): Single<AuthResult>
+    fun login(username: String): Single<AuthResult?>
 
     fun logout(): Completable
 }

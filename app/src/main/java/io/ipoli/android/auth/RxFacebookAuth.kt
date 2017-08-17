@@ -20,7 +20,7 @@ import io.reactivex.subjects.Subject
  */
 class RxFacebookAuth private constructor(private val controller: Controller) : RxSocialAuth {
 
-    override fun login(username: String): Single<AuthResult> {
+    override fun login(username: String): Single<AuthResult?> {
         return loginWithReadPermissions(controller.activity!!, permissions)
                 .flatMap { loginInfo ->
                     val parameters = Bundle()

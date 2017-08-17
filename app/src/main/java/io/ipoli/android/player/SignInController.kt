@@ -175,6 +175,14 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
             is SignInInitialState -> {
                 Toast.makeText(activity, "Start", Toast.LENGTH_SHORT).show()
             }
+
+            is SignInLoadingState -> {
+                Toast.makeText(activity, "Loading", Toast.LENGTH_SHORT).show()
+            }
+
+            is PlayerSignedInState -> {
+                Toast.makeText(activity, "Signed in", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

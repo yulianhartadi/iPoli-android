@@ -9,7 +9,7 @@ import io.reactivex.Single
  */
 class RxAnonymousAuth : RxSocialAuth {
 
-    override fun login(username: String): Single<AuthResult> =
+    override fun login(username: String): Single<AuthResult?> =
             Single.just(
                     AuthResult("",
                             AuthProvider(provider = ProviderType.ANONYMOUS.name)

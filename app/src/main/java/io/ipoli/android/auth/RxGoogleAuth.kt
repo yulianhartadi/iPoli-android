@@ -6,6 +6,7 @@ import com.bluelinelabs.conductor.Controller
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.signin.GoogleSignInResult
+import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import io.ipoli.android.ApiConstants
@@ -22,7 +23,7 @@ import java.net.ConnectException
  */
 class RxGoogleAuth private constructor(private val controller: Controller) : RxSocialAuth {
 
-    override fun login(username: String): Single<AuthResult> {
+    override fun login(username: String): Single<AuthResult?> {
         val subject = PublishSubject.create<GoogleSignInResult>()
         loginHandler = LoginHandler(subject)
         val googleApiClient = createApiClient(controller.applicationContext!!, loginHandler!!)
@@ -44,6 +45,8 @@ class RxGoogleAuth private constructor(private val controller: Controller) : RxS
                                 account.email.toString(),
                                 account.photoUrl.toString()),
                         username)
+            } else if (signInResult.status.statusCode == 12501) {
+                null
             } else {
                 throw GoogleSignInError()
             }
