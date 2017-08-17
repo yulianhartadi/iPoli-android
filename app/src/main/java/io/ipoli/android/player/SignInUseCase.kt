@@ -14,7 +14,7 @@ import java.util.*
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/17/17.
  */
-class SignInUseCase(subscribeOnScheduler: Scheduler?, observeOnScheduler: Scheduler?) : BaseRxUseCase<SignInRequest, SignInStatePartialChange>(subscribeOnScheduler, observeOnScheduler) {
+class SignInUseCase(private val playerRepository: PlayerRepository, subscribeOnScheduler: Scheduler?, observeOnScheduler: Scheduler?) : BaseRxUseCase<SignInRequest, SignInStatePartialChange>(subscribeOnScheduler, observeOnScheduler) {
 
     override fun createObservable(params: SignInRequest): Observable<SignInStatePartialChange> {
         return params.socialAuth.login(params.username)
@@ -33,7 +33,7 @@ class SignInUseCase(subscribeOnScheduler: Scheduler?, observeOnScheduler: Schedu
                     val serverURL = "realm://10.0.2.2:9080/~/default"
                     val configuration = SyncConfiguration.Builder(user, serverURL).build()
                     Realm.setDefaultConfiguration(configuration)
-                    PlayerRepository().save(Player(user.identity, authProvider = authProvider))
+                    playerRepository.save(Player(user.identity, authProvider = authProvider))
                 }.toObservable().map {
             PlayerSignedInPartialChange() as SignInStatePartialChange
         }.startWith(SignInLoadingPartialChange())
