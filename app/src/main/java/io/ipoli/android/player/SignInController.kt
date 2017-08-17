@@ -10,6 +10,7 @@ import com.facebook.internal.CallbackManagerImpl
 import com.hannesdorfmann.mosby3.RestoreViewOnCreateMviController
 import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
+import io.ipoli.android.auth.ProviderType
 import io.ipoli.android.auth.RxAnonymousAuth
 import io.ipoli.android.auth.RxFacebookAuth
 import io.ipoli.android.auth.RxGoogleAuth
@@ -141,6 +142,7 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
                     SignInRequest(
                             containerView.username.text.toString(),
                             containerView.existingPlayer.isChecked,
+                            ProviderType.GOOGLE,
                             RxGoogleAuth.create(SignInController@ this)
                     )
                 }
@@ -154,6 +156,7 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
                     SignInRequest(
                             containerView.username.text.toString(),
                             containerView.existingPlayer.isChecked,
+                            ProviderType.FACEBOOK,
                             RxFacebookAuth.create(SignInController@ this)
                     )
                 }
@@ -165,6 +168,7 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
             SignInRequest(
                     containerView.username.text.toString(),
                     containerView.existingPlayer.isChecked,
+                    ProviderType.ANONYMOUS,
                     RxAnonymousAuth.create()
             )
         }

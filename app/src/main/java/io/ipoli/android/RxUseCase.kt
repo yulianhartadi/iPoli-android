@@ -7,8 +7,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com> on 8/1/17.
- */
+* Created by Venelin Valkov <venelin@curiousily.com>
+* on 8/1/17.
+*/
 interface RxUseCase<in Parameters, Result> {
 
     fun execute(params: Parameters): Observable<Result>
@@ -29,9 +30,8 @@ abstract class BaseRxUseCase<in Parameters, Result>(private val subscribeOnSched
     }
 
     fun createObserveOnScheduler(): Scheduler {
-        if (observeOnScheduler != null) {
+        if (observeOnScheduler != null)
             return observeOnScheduler
-        }
         return AndroidSchedulers.mainThread()
     }
 

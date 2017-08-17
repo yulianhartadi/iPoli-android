@@ -1,7 +1,7 @@
 package io.ipoli.android.player
 
-import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.realm.Realm
 import java.util.*
 
@@ -52,12 +52,12 @@ class PlayerRepository {
 //    })
     }
 
-    fun save(player: Player): Completable {
-        return Completable.create({ subscriber ->
+    fun save(player: Player): Single<Player> {
+        return Single.create({ emitter ->
             realm.executeTransaction {
                 player.id = UUID.randomUUID().toString()
                 realm.copyToRealmOrUpdate(player)
-                subscriber.onComplete()
+                emitter.onSuccess(player)
             }
         })
 

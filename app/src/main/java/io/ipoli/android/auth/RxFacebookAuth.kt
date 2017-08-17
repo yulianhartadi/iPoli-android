@@ -48,8 +48,8 @@ class RxFacebookAuth private constructor(private val controller: Controller) : R
     }
 
     override fun logout(): Completable {
-        loginImpl?.shutdown()
-        loginImpl = null
+        loginHandler?.shutdown()
+        loginHandler = null
 
         return Completable.create { emitter ->
             LoginManager.getInstance().logOut()
@@ -63,73 +63,37 @@ class RxFacebookAuth private constructor(private val controller: Controller) : R
 
     private val permissions: Collection<String> = ArrayList()
 
-    /**
-     * @param params of the request
-     * *
-     * @return builder instance
-     */
     fun params(params: Bundle): RxFacebookAuth {
         this.params = params
         return this
     }
 
-    /**
-     * @param accessToken to use in the request auth
-     * *
-     * @return builder instance
-     */
     fun accessToken(accessToken: AccessToken): RxFacebookAuth {
         this.accessToken = accessToken
         return this
     }
 
-    /**
-     * Request my user
-     * **Note: If the request has errors, it wont be sent to the error stream. Error stream is used
-     * for internal errors (of the stream) and NOT for request ones. You should validate that the graphResponse
-     * has no error (graphResponse.getError == null)**
-     * @return observable of a graph response
-     */
     private fun requestMe(): Single<GraphResponse> {
         val request = GraphRequest.newMeRequest(accessToken, null)
         request.httpMethod = HttpMethod.GET
         return request(request)
     }
 
-    /**
-     * Should be ran on the UI thread
-     * Performs a login with read permissions.
-     * Note that one should call in the onActivityResult of the {@param context}
-     * [.onActivityResult], since we dont have control over the activity
-     * If theres an error on the login phase it will be sent to the error stream
-     */
     private fun loginWithReadPermissions(context: Activity, permissions: Collection<String>): Single<LoginResult> {
         return login { LoginManager.getInstance().logInWithReadPermissions(context, permissions) }
     }
 
-    /**
-     * Perform a simple login agnostic to the type
-     * @param action to execute when subscribed
-     * *
-     * @return observable of a login result
-     */
     private fun login(action: () -> Unit): Single<LoginResult> {
-        loginImpl?.shutdown()
+        loginHandler?.shutdown()
 
         val subject = PublishSubject.create<LoginResult>()
-        loginImpl = LoginImpl(subject)
+        loginHandler = LoginHandler(subject)
         return subject
                 .doOnSubscribe { action() }
-                .doOnComplete { loginImpl?.shutdown() }
+                .doOnComplete { loginHandler?.shutdown() }
                 .singleOrError()
     }
 
-    /**
-     * Perform a request over a given [GraphRequest]
-     * @param request to execute
-     * *
-     * @return observable of a graph response
-     */
     private fun request(request: GraphRequest): Single<GraphResponse> {
 
         if (accessToken != null && request.accessToken == null) {
@@ -146,10 +110,7 @@ class RxFacebookAuth private constructor(private val controller: Controller) : R
         }
     }
 
-    /**
-     * Internal class to use as bridge for the facebook login
-     */
-    private class LoginImpl internal constructor(private val subject: Subject<LoginResult>) : FacebookCallback<LoginResult> {
+    private class LoginHandler internal constructor(private val subject: Subject<LoginResult>) : FacebookCallback<LoginResult> {
 
         private var facebookCallback: CallbackManager?
 
@@ -166,23 +127,11 @@ class RxFacebookAuth private constructor(private val controller: Controller) : R
             facebookCallback = null
         }
 
-        /**
-         * Trigger.
-         * @param requestCode code
-         * *
-         * @param resultCode code
-         * *
-         * @param data data
-         * *
-         * @return if was processed or not the info.
-         */
-        internal fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Boolean {
+        internal fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit {
             if (facebookCallback != null) {
-                val processed = facebookCallback!!.onActivityResult(requestCode, resultCode, data)
+                facebookCallback!!.onActivityResult(requestCode, resultCode, data)
                 facebookCallback = null
-                return processed
             }
-            return false
         }
 
         override fun onSuccess(loginResult: LoginResult) {
@@ -202,31 +151,17 @@ class RxFacebookAuth private constructor(private val controller: Controller) : R
 
     companion object {
 
-        private var loginImpl: LoginImpl? = null
+        private var loginHandler: LoginHandler? = null
 
-        /**
-         * Create an empty request builder
-         * @return
-         */
         fun create(controller: Controller): RxFacebookAuth {
             return RxFacebookAuth(controller)
         }
 
-        /**
-         * Post the login results to be processed. The initial stream used will output its results/error
-         * @param requestCode code used for request
-         * *
-         * @param resultCode result code
-         * *
-         * @param data of the result
-         * *
-         * @return if the on activity result could be parsed or not (maybe it wasnt a facebook intent the one started?)
-         */
         fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
             val facebookRequestCode = CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode()
-            if (requestCode == facebookRequestCode && loginImpl != null) {
-                loginImpl!!.onActivityResult(requestCode, resultCode, data!!)
-                loginImpl = null
+            if (requestCode == facebookRequestCode && loginHandler != null) {
+                loginHandler!!.onActivityResult(requestCode, resultCode, data!!)
+                loginHandler = null
             }
         }
 

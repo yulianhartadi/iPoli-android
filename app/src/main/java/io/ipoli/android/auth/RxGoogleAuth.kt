@@ -6,13 +6,14 @@ import com.bluelinelabs.conductor.Controller
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.auth.api.signin.GoogleSignInResult
-import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import io.ipoli.android.ApiConstants
 import io.reactivex.Completable
 import io.reactivex.CompletableEmitter
+import io.reactivex.Observable
 import io.reactivex.Single
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import java.net.ConnectException
@@ -33,23 +34,25 @@ class RxGoogleAuth private constructor(private val controller: Controller) : RxS
             if (googleApiClient.isConnected) {
                 googleApiClient.disconnect()
             }
-        }.map { signInResult ->
-            if (signInResult.isSuccess) {
-                val account = signInResult.signInAccount!!
-                AuthResult(account.idToken!!,
-                        AuthProvider(account.id!!,
-                                ProviderType.GOOGLE.name,
-                                account.givenName.toString(),
-                                account.familyName.toString(),
-                                account.displayName.toString(),
-                                account.email.toString(),
-                                account.photoUrl.toString()),
-                        username)
-            } else if (signInResult.status.statusCode == 12501) {
-                null
-            } else {
-                throw GoogleSignInError()
-            }
+        }.flatMap { signInResult ->
+            Observable.fromCallable {
+                if (signInResult.isSuccess) {
+                    val account = signInResult.signInAccount!!
+                    AuthResult(account.idToken!!,
+                            AuthProvider(account.id!!,
+                                    ProviderType.GOOGLE.name,
+                                    account.givenName.toString(),
+                                    account.familyName.toString(),
+                                    account.displayName.toString(),
+                                    account.email.toString(),
+                                    account.photoUrl.toString()),
+                            username)
+                } else if (signInResult.status.statusCode == 12501) {
+                    null
+                } else {
+                    throw GoogleSignInError()
+                }
+            }.subscribeOn(Schedulers.io())
         }.singleOrError()
     }
 
