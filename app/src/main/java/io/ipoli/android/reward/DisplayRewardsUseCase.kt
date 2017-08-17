@@ -6,8 +6,9 @@ import io.reactivex.Observable
 import io.reactivex.Scheduler
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com> on 8/1/17.
- */
+* Created by Venelin Valkov <venelin@curiousily.com>
+* on 8/1/17.
+*/
 class DisplayRewardsUseCase(private val rewardRepository: RewardRepository, private val playerRepository: PlayerRepository, subscribeOnScheduler: Scheduler?, observeOnScheduler: Scheduler?) : SimpleRxUseCase<RewardStatePartialChange>(subscribeOnScheduler, observeOnScheduler) {
 
     override fun createObservable(params: Unit): Observable<RewardStatePartialChange> {

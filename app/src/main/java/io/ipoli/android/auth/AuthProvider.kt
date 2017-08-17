@@ -17,5 +17,5 @@ open class AuthProvider(
 ) : RealmObject()
 
 enum class ProviderType {
-    FACEBOOK, GOOGLE
+    FACEBOOK, GOOGLE, ANONYMOUS
 }
