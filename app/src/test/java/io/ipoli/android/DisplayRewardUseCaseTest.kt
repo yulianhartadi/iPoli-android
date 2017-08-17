@@ -8,12 +8,11 @@ import io.ipoli.android.reward.DisplayRewardsUseCase
 import io.ipoli.android.reward.Reward
 import io.ipoli.android.reward.RewardRepository
 import io.ipoli.android.reward.RewardsLoadedPartialChange
+import io.ipoli.android.util.RxSchedulersTestRule
 import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
-import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.assertThat
-import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 
@@ -22,10 +21,9 @@ import org.junit.Test
  */
 class DisplayRewardUseCaseTest {
 
-    @Before
-    fun setUp() {
-
-    }
+    @Rule
+    @JvmField
+    val rxRule = RxSchedulersTestRule()
 
     @Test
     fun listIsDisplayed() {
@@ -38,7 +36,7 @@ class DisplayRewardUseCaseTest {
             on { loadRewards() } doReturn Observable.just(listOf(Reward()))
         }
 
-        val result = DisplayRewardsUseCase(rewardRepoMock, playerRepoMock, Schedulers.trampoline(), Schedulers.trampoline()).execute(Unit).blockingIterable()
+        val result = DisplayRewardsUseCase(rewardRepoMock, playerRepoMock).execute(Unit).blockingIterable()
         assertThat(result.count(), `is`(2))
 
         val loadedState = result.elementAt(1) as RewardsLoadedPartialChange

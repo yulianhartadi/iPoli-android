@@ -5,8 +5,9 @@ import dagger.Provides
 import io.ipoli.android.player.PlayerRepository
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com> on 8/2/17.
- */
+* Created by Venelin Valkov <venelin@curiousily.com>
+* on 8/2/17.
+*/
 @Module
 class RewardListModule {
 
@@ -21,6 +22,6 @@ class RewardListModule {
     @Provides
     @RewardListScope
     fun provideRewardListUseCase(rewardRepository: RewardRepository, playerRepository: PlayerRepository): DisplayRewardsUseCase {
-        return DisplayRewardsUseCase(rewardRepository, playerRepository, null, null)
+        return DisplayRewardsUseCase(rewardRepository, playerRepository)
     }
 }

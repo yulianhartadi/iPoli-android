@@ -3,7 +3,6 @@ package io.ipoli.android.player
 import io.ipoli.android.BaseRxUseCase
 import io.ipoli.android.auth.ProviderType
 import io.reactivex.Observable
-import io.reactivex.Scheduler
 import io.realm.Realm
 import io.realm.SyncConfiguration
 import io.realm.SyncCredentials
@@ -14,7 +13,7 @@ import java.util.*
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/17/17.
  */
-class SignInUseCase(private val playerRepository: PlayerRepository, subscribeOnScheduler: Scheduler?, observeOnScheduler: Scheduler?) : BaseRxUseCase<SignInRequest, SignInStatePartialChange>(subscribeOnScheduler, observeOnScheduler) {
+class SignInUseCase(private val playerRepository: PlayerRepository) : BaseRxUseCase<SignInRequest, SignInStatePartialChange>() {
 
     override fun createObservable(params: SignInRequest): Observable<SignInStatePartialChange> {
         return params.socialAuth.login(params.username)

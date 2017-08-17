@@ -16,5 +16,5 @@ class SignInModule {
 
     @Provides
     @SignInScope
-    fun provideSignInUseCase(playerRepository: PlayerRepository): SignInUseCase = SignInUseCase(playerRepository, null, null)
+    fun provideSignInUseCase(playerRepository: PlayerRepository): SignInUseCase = SignInUseCase(playerRepository)
 }
