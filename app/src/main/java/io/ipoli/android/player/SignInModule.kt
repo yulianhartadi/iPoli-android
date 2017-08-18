@@ -12,7 +12,7 @@ class SignInModule {
 
     @Provides
     @SignInScope
-    fun providePlayerRepository(): PlayerRepository = PlayerRepository()
+    fun providePlayerRepository(): PlayerRepository = RealmPlayerRepository()
 
     @Provides
     @SignInScope

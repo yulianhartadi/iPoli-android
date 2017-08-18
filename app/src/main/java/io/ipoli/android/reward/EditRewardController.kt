@@ -6,10 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import com.hannesdorfmann.mosby3.RestoreViewOnCreateMviController
 import io.ipoli.android.R
-import kotlinx.android.synthetic.main.controller_edit_reward.view.*
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com> on 7/7/17.
+ * Created by Venelin Valkov <venelin@curiousily.com>
+ * on 7/7/17.
  */
 class EditRewardController(val rewardId: String = "") : RestoreViewOnCreateMviController<EditRewardController, EditRewardPresenter>() {
 
@@ -17,11 +17,11 @@ class EditRewardController(val rewardId: String = "") : RestoreViewOnCreateMviCo
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_edit_reward, container, false) as ViewGroup
-        val rewardRepository = RewardRepository()
-        val reward = rewardRepository.findById(rewardId)
-        view.name.setText(reward.name)
-        view.description.setText(reward.description)
-        view.price.setText(reward.price.toString())
+        val rewardRepository = RealmRewardRepository()
+//        val reward = rewardRepository.findById(rewardId)
+//        view.name.setText(reward.name)
+//        view.description.setText(reward.description)
+//        view.price.setText(reward.price.toString())
         return view
     }
 
