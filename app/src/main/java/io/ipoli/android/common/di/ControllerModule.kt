@@ -2,7 +2,7 @@ package io.ipoli.android.common.di
 
 import dagger.Module
 import dagger.Provides
-import io.ipoli.android.navigation.Navigator
+import io.ipoli.android.common.navigation.Navigator
 
 /**
 * Created by Venelin Valkov <venelin@curiousily.com>

@@ -1,7 +1,7 @@
 package io.ipoli.android.player
 
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
-import io.ipoli.android.navigation.Navigator
+import io.ipoli.android.common.navigation.Navigator
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import timber.log.Timber

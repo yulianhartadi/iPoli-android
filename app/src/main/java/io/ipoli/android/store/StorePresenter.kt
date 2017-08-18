@@ -1,14 +1,6 @@
 package io.ipoli.android.store
 
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
-import io.ipoli.android.RewardViewState
-import io.ipoli.android.navigation.Navigator
-import io.ipoli.android.player.SignInController
-import io.ipoli.android.player.SignInInitialState
-import io.ipoli.android.player.SignInStatePartialChange
-import io.ipoli.android.player.SignInViewState
-import io.ipoli.android.reward.RewardStatePartialChange
-import timber.log.Timber
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject

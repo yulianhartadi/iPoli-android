@@ -1,4 +1,4 @@
-package io.ipoli.android.navigation
+package io.ipoli.android.common.navigation
 
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
