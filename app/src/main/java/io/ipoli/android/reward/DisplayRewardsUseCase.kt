@@ -12,7 +12,7 @@ class DisplayRewardsUseCase(private val rewardRepository: RewardRepository, priv
 
     override fun createObservable(params: Unit): Observable<RewardStatePartialChange> {
 //        playerRepository.save(Player(coins = 22, experience = 345)).subscribe()
-        return playerRepository.get()
+        return playerRepository.findFirst()
 //                .doOnNext { player -> Timber.d(player.coins.toString()) }
             .switchMap { player ->
                 rewardRepository.findAll()

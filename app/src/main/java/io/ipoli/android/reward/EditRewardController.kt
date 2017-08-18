@@ -17,7 +17,7 @@ class EditRewardController(val rewardId: String = "") : RestoreViewOnCreateMviCo
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_edit_reward, container, false) as ViewGroup
-        val rewardRepository = RewardRepository()
+        val rewardRepository = RealmRewardRepository()
 //        val reward = rewardRepository.findById(rewardId)
 //        view.name.setText(reward.name)
 //        view.description.setText(reward.description)
