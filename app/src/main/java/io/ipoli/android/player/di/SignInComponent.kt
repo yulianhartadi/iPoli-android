@@ -1,7 +1,9 @@
-package io.ipoli.android.player
+package io.ipoli.android.player.di
 
 import dagger.Component
 import io.ipoli.android.common.di.ControllerComponent
+import io.ipoli.android.player.ui.SignInController
+import io.ipoli.android.player.SignInPresenter
 import javax.inject.Scope
 
 /**

@@ -1,4 +1,4 @@
-package io.ipoli.android.player
+package io.ipoli.android.player.ui
 
 import android.content.Intent
 import android.os.Bundle
@@ -15,6 +15,9 @@ import io.ipoli.android.player.auth.AnonymousAuth
 import io.ipoli.android.player.auth.FacebookAuth
 import io.ipoli.android.player.auth.GoogleAuth
 import io.ipoli.android.daggerComponent
+import io.ipoli.android.player.DaggerSignInComponent
+import io.ipoli.android.player.SignInPresenter
+import io.ipoli.android.player.di.SignInComponent
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_sign_in.view.*
 
@@ -30,8 +33,7 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
     }
 
     val signInComponent: SignInComponent by lazy {
-        val component = DaggerSignInComponent
-                .builder()
+        val component = DaggerSignInComponent.builder()
                 .controllerComponent(daggerComponent)
                 .build()
         component.inject(this@SignInController)
@@ -58,10 +60,10 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
                 .takeUntil(RxView.detaches(containerView.googleSignIn))
                 .map {
                     SignInRequest(
-                            containerView.username.text.toString(),
-                            containerView.existingPlayer.isChecked,
-                            ProviderType.GOOGLE,
-                            GoogleAuth.create(SignInController@ this)
+                        containerView.username.text.toString(),
+                        containerView.existingPlayer.isChecked,
+                        ProviderType.GOOGLE,
+                        GoogleAuth.create(SignInController@ this)
                     )
                 }
     }
@@ -72,10 +74,10 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
                 .takeUntil(RxView.detaches(containerView.facebookSignIn))
                 .map {
                     SignInRequest(
-                            containerView.username.text.toString(),
-                            containerView.existingPlayer.isChecked,
-                            ProviderType.FACEBOOK,
-                            FacebookAuth.create(SignInController@ this)
+                        containerView.username.text.toString(),
+                        containerView.existingPlayer.isChecked,
+                        ProviderType.FACEBOOK,
+                        FacebookAuth.create(SignInController@ this)
                     )
                 }
     }
@@ -84,10 +86,10 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
         val containerView = view!!
         return RxView.clicks(containerView.guestSignIn).takeUntil(RxView.detaches(containerView.guestSignIn)).map {
             SignInRequest(
-                    containerView.username.text.toString(),
-                    containerView.existingPlayer.isChecked,
-                    ProviderType.ANONYMOUS,
-                    AnonymousAuth.create()
+                containerView.username.text.toString(),
+                containerView.existingPlayer.isChecked,
+                ProviderType.ANONYMOUS,
+                AnonymousAuth.create()
             )
         }
     }

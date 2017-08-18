@@ -1,7 +1,7 @@
 package io.ipoli.android.store
 
 import io.ipoli.android.common.SimpleRxUseCase
-import io.ipoli.android.player.PlayerRepository
+import io.ipoli.android.player.persistence.PlayerRepository
 import io.reactivex.Observable
 
 /**

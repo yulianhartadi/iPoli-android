@@ -1,4 +1,4 @@
-package io.ipoli.android.player
+package io.ipoli.android.player.ui
 
 import io.ipoli.android.player.auth.ProviderType
 import io.ipoli.android.player.auth.RxSocialAuth

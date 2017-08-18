@@ -3,7 +3,7 @@ package io.ipoli.android
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.player.Player
-import io.ipoli.android.player.PlayerRepository
+import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.reward.*
 import io.ipoli.android.util.RxSchedulersTestRule
 import io.reactivex.Observable

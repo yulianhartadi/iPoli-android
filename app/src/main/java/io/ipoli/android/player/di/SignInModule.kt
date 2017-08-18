@@ -1,7 +1,10 @@
-package io.ipoli.android.player
+package io.ipoli.android.player.di
 
 import dagger.Module
 import dagger.Provides
+import io.ipoli.android.player.persistence.PlayerRepository
+import io.ipoli.android.player.persistence.RealmPlayerRepository
+import io.ipoli.android.player.SignInUseCase
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

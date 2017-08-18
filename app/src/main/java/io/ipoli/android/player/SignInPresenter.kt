@@ -2,6 +2,10 @@ package io.ipoli.android.player
 
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.ipoli.android.common.navigation.Navigator
+import io.ipoli.android.player.ui.SignInController
+import io.ipoli.android.player.ui.SignInInitialState
+import io.ipoli.android.player.ui.SignInStatePartialChange
+import io.ipoli.android.player.ui.SignInViewState
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import timber.log.Timber

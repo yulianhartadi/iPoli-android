@@ -6,6 +6,11 @@ import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.player.auth.AnonymousAuth
 import io.ipoli.android.player.auth.ProviderType
 import io.ipoli.android.player.*
+import io.ipoli.android.player.persistence.PlayerRepository
+import io.ipoli.android.player.ui.PlayerSignedInPartialChange
+import io.ipoli.android.player.ui.SignInLoadingPartialChange
+import io.ipoli.android.player.ui.SignInRequest
+import io.ipoli.android.player.ui.SignInStatePartialChange
 import io.ipoli.android.util.RxSchedulersTestRule
 import io.reactivex.Single
 import io.reactivex.observers.TestObserver

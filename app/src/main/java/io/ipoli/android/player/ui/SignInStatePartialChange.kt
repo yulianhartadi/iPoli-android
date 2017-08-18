@@ -1,4 +1,4 @@
-package io.ipoli.android.player
+package io.ipoli.android.player.ui
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

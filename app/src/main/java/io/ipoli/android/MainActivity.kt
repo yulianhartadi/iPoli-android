@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import io.ipoli.android.player.SignInController
+import io.ipoli.android.player.ui.SignInController
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

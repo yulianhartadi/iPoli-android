@@ -2,8 +2,8 @@ package io.ipoli.android.reward
 
 import dagger.Module
 import dagger.Provides
-import io.ipoli.android.player.PlayerRepository
-import io.ipoli.android.player.RealmPlayerRepository
+import io.ipoli.android.player.persistence.PlayerRepository
+import io.ipoli.android.player.persistence.RealmPlayerRepository
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
