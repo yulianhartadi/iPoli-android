@@ -4,6 +4,7 @@ import com.bluelinelabs.conductor.Controller
 import io.ipoli.android.di.ControllerComponent
 import io.ipoli.android.di.ControllerModule
 import io.ipoli.android.di.DaggerControllerComponent
+import io.ipoli.android.navigation.Navigator
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com> on 8/2/17.

@@ -92,7 +92,6 @@ public class RxRealm {
 //                realm.executeTransaction(new Realm.Transaction() {
 //                    @Override
 //                    public void execute(Realm realm) {
-                Timber.d("Emitting");
                 emitter.onNext(realm.copyFromRealm(results));
 //                    }
 //                });

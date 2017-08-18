@@ -1,7 +1,7 @@
 package io.ipoli.android.di
 
 import dagger.Component
-import io.ipoli.android.Navigator
+import io.ipoli.android.navigation.Navigator
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com> on 8/1/17.
