@@ -3,7 +3,6 @@ package io.ipoli.android.reward
 import io.ipoli.android.common.BaseRealmRepository
 import io.reactivex.Observable
 import io.realm.Realm
-import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -21,19 +20,8 @@ class RewardRepository : BaseRealmRepository<Reward>() {
         return realm.where(Reward::class.java).equalTo("id", id).findFirst()
     }
 
-    fun save(reward: Reward) {
-        realm.executeTransaction {
-            val rewardObject = realm.createObject(Reward::class.java, UUID.randomUUID().toString())
-            rewardObject.name = reward.name
-            rewardObject.description = reward.description
-            reward.id = rewardObject.id
-        }
-    }
-
     fun delete(reward: Reward) {
-
         val id = reward.id
-
         realm.executeTransactionAsync({ realmAsync ->
             val realmReward = realmAsync.where(Reward::class.java).equalTo("id", id).findFirst()
             realmReward.deleteFromRealm()
