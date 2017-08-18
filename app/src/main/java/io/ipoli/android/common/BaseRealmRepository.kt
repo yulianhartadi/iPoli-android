@@ -42,7 +42,6 @@ abstract class BaseRealmRepository<T> where T : PersistedModel, T : RealmObject 
             })
         }
 
-
     protected fun queryAll(): Observable<List<T>> = queryAll {}
 
     protected fun queryAll(query: (RealmQuery<T>) -> Unit): Observable<List<T>> =
