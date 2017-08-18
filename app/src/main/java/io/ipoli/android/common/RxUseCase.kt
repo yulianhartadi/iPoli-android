@@ -1,4 +1,4 @@
-package io.ipoli.android
+package io.ipoli.android.common
 
 import io.reactivex.Observable
 import io.reactivex.Scheduler

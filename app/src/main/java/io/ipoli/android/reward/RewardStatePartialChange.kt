@@ -1,7 +1,5 @@
 package io.ipoli.android.reward
 
-import io.ipoli.android.*
-
 
 /**
 * Created by Venelin Valkov <venelin@curiousily.com>

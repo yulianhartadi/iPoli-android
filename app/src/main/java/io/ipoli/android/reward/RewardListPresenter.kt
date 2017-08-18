@@ -1,8 +1,6 @@
 package io.ipoli.android.reward
 
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
-import io.ipoli.android.RewardViewState
-import io.ipoli.android.RewardsInitialLoadingState
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject

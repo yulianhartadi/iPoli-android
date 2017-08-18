@@ -1,7 +1,4 @@
-package io.ipoli.android
-
-import io.ipoli.android.reward.Reward
-import io.ipoli.android.reward.RewardModel
+package io.ipoli.android.reward
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com> on 7/7/17.
