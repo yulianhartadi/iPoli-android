@@ -30,7 +30,7 @@ class SignInUseCaseTest {
             on { save(any()) } doReturn Single.just(Player())
         }
 
-        val signInRequest = SignInRequest("", false, ProviderType.ANONYMOUS, RxAnonymousAuth.create())
+        val signInRequest = SignInRequest("",false, ProviderType.ANONYMOUS, RxAnonymousAuth.create())
 
         val observer = TestObserver<SignInStatePartialChange>()
 
