@@ -1,25 +1,21 @@
 package io.ipoli.android.reward
 
+import io.ipoli.android.common.BaseRealmRepository
 import io.reactivex.Observable
 import io.realm.Realm
 import java.util.*
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com> on 7/7/17.
+ * Created by Venelin Valkov <venelin@curiousily.com>
+ * on 7/7/17.
  */
-class RewardRepository {
+class RewardRepository : BaseRealmRepository<Reward>() {
+
+    override fun getModelClass(): Class<Reward> = Reward::class.java
+
     val realm: Realm = Realm.getDefaultInstance()
 
-    fun loadRewards(): Observable<List<Reward>> {
-
-        return RxRealm.loadRewards()
-//        return RxRealm.getRealm(realm).map { r ->
-//            {
-//                r.where(Reward::class.java).findAll()
-//            }
-//        }
-//        return realm.where(Reward::class.java).findAll()
-    }
+    fun loadRewards(): Observable<List<Reward>> = queryAll()
 
     fun findById(id: String): Reward {
         return realm.where(Reward::class.java).equalTo("id", id).findFirst()
