@@ -3,7 +3,6 @@ package io.ipoli.android
 import android.app.Application
 import android.content.Context
 import com.codemonkeylabs.fpslibrary.TinyDancer
-import com.facebook.FacebookSdk
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.squareup.leakcanary.LeakCanary
@@ -14,7 +13,8 @@ import io.realm.Realm
 import timber.log.Timber
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com> on 7/7/17.
+ * Created by Venelin Valkov <venelin@curiousily.com>
+ * on 7/7/17.
  */
 class iPoliApp : Application() {
 
@@ -24,8 +24,8 @@ class iPoliApp : Application() {
         fun getComponent(c: Context): AppComponent {
             if (component == null) {
                 component = DaggerAppComponent.builder()
-                        .appModule(AppModule(c.applicationContext))
-                        .build()
+                    .appModule(AppModule(c.applicationContext))
+                    .build()
             }
             return component!!
         }
@@ -48,9 +48,5 @@ class iPoliApp : Application() {
         })
         LeakCanary.install(this)
         TinyDancer.create().show(this)
-
-//        rewardsComponent = DaggerRewardsComponent.builder()
-//                .appModule(AppModule(this))
-//                .build()
     }
 }

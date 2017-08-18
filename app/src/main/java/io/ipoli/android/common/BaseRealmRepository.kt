@@ -4,10 +4,8 @@ import android.os.HandlerThread
 import android.os.Looper
 import android.os.Process
 import io.ipoli.android.common.persistence.PersistedModel
+import io.reactivex.*
 import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
-import io.reactivex.Single
-import io.reactivex.SingleEmitter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposables
 import io.realm.Realm
@@ -23,11 +21,11 @@ abstract class BaseRealmRepository<T> where T : PersistedModel, T : RealmObject 
 
     protected abstract fun getModelClass(): Class<T>
 
-    fun queryById(id: String): Observable<T> = querySingle { it.equalTo("id", id) }
+    fun findById(id: String): Observable<T> = find { it.equalTo("id", id) }
 
-    fun queryFirst(): Observable<T> = querySingle {}
+    fun findFirst(): Observable<T> = find {}
 
-    protected fun querySingle(query: (RealmQuery<T>) -> Unit): Observable<T> =
+    protected fun find(query: (RealmQuery<T>) -> Unit): Observable<T> =
         createObservable { emitter ->
             val realm = Realm.getDefaultInstance()
             val realmQuery = RealmQuery.createQuery(realm, getModelClass())
@@ -42,9 +40,9 @@ abstract class BaseRealmRepository<T> where T : PersistedModel, T : RealmObject 
             })
         }
 
-    protected fun queryAll(): Observable<List<T>> = queryAll {}
+    fun findAll(): Observable<List<T>> = findAll {}
 
-    protected fun queryAll(query: (RealmQuery<T>) -> Unit): Observable<List<T>> =
+    fun findAll(query: (RealmQuery<T>) -> Unit): Observable<List<T>> =
         createObservable { emitter ->
             val realm = Realm.getDefaultInstance()
             val realmQuery = RealmQuery.createQuery(realm, getModelClass())
@@ -77,10 +75,23 @@ abstract class BaseRealmRepository<T> where T : PersistedModel, T : RealmObject 
                         model.id = UUID.randomUUID().toString()
                     }
                     it.copyToRealmOrUpdate(model)
-                    emitter.onSuccess(model)
                 }
+                emitter.onSuccess(model)
             }
         }
+
+    fun delete(model: T): Completable =
+        createCompletable { emitter ->
+            Realm.getDefaultInstance().use {
+                val id = model.id
+                it.executeTransaction {
+                    val realmReward = it.where(getModelClass()).equalTo("id", id).findFirst()
+                    realmReward.deleteFromRealm()
+                }
+                emitter.onComplete()
+            }
+        }
+
 
     protected fun <R> createObservable(emitter: (ObservableEmitter<R>) -> Unit): Observable<R> {
         val looper = getLooper()
@@ -96,6 +107,17 @@ abstract class BaseRealmRepository<T> where T : PersistedModel, T : RealmObject 
     protected fun <R> createSingle(emitter: (SingleEmitter<R>) -> Unit): Single<R> {
         val looper = getLooper()
         return Single.create<R>(emitter).doFinally {
+            if (Looper.getMainLooper() != looper) {
+                looper?.thread?.interrupt()
+            }
+        }
+            .subscribeOn(AndroidSchedulers.from(looper))
+            .unsubscribeOn(AndroidSchedulers.from(looper))
+    }
+
+    protected fun createCompletable(emitter: (CompletableEmitter) -> Unit): Completable {
+        val looper = getLooper()
+        return Completable.create(emitter).doFinally {
             if (Looper.getMainLooper() != looper) {
                 looper?.thread?.interrupt()
             }
