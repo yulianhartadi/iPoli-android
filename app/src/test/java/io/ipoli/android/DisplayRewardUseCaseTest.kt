@@ -8,7 +8,6 @@ import io.ipoli.android.reward.*
 import io.ipoli.android.util.RxSchedulersTestRule
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
-import io.reactivex.schedulers.Schedulers
 import org.junit.Rule
 import org.junit.Test
 
@@ -27,20 +26,19 @@ class DisplayRewardUseCaseTest {
     fun listIsDisplayed() {
 
         val playerRepoMock = mock<PlayerRepository> {
-            on { get() } doReturn Observable.just(Player())
+            on { findFirst() } doReturn Observable.just(Player())
         }
 
         val rewardRepoMock = mock<RewardRepository> {
-            on { loadRewards() } doReturn Observable.just(listOf(Reward()))
+            on { findAll() } doReturn Observable.just(listOf(Reward()))
         }
 
         val useCase = DisplayRewardsUseCase(rewardRepoMock, playerRepoMock)
-        useCase.subscribeOnScheduler = Schedulers.io()
 
         val observer = TestObserver<RewardStatePartialChange>()
 
         useCase.execute(Unit)
-                .subscribe(observer)
+            .subscribe(observer)
 
         observer.assertComplete()
         observer.assertNoErrors()
