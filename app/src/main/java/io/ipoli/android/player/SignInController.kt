@@ -50,58 +50,7 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
 //    override fun createPresenter(): SignInPresenter = SignInPresenter()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
-        val view = inflater.inflate(R.layout.controller_sign_in, container, false) as ViewGroup
-
-//        val subscribeOnScheduler = createSubscribeOnScheduler()
-//
-//        Observable.create(ObservableOnSubscribe<List<Reward>> { emitter ->
-//            val realm = Realm.getDefaultInstance()
-//            val results = realm.where(Reward::class.java).findAllAsync()
-//            //                final RealmResults<Reward> results = realm.where(Reward.class).findAllAsync();
-//
-//            //                final RealmChangeListener<RealmResults<Reward>> listener = _realm -> {
-//            //                    if (!emitter.isUnsubscribed()) {
-//            //                        emitter.onNext(results);
-//            //                    }
-//            //                };
-//
-////            val listener = RealmChangeListener<RealmResults<Reward>> { rewards ->
-////                if (!emitter.isDisposed) {
-////                    realm.executeTransaction { realm -> emitter.onNext(realm.copyFromRealm(rewards)) }
-////                }
-////            }
-//
-//            //                    @Override
-//            //                    public void onChange(Realm realmListener) {
-//            //
-//            //                    }
-//
-//            emitter.setDisposable(Disposables.fromAction {
-//                Log.d("RealmListener", "Removed")
-//                results.removeAllChangeListeners()
-//                realm.close()
-//            })
-//
-//            results.addChangeListener { rewards ->
-//                if (!emitter.isDisposed) {
-//                    Timber.d("Emitting")
-//                    realm.executeTransaction { realm -> emitter.onNext(realm.copyFromRealm(rewards)) }
-//                }
-//            }
-//            //                realm.executeTransaction(new Realm.Transaction() {
-//            //                    @Override
-//            //                    public void execute(Realm realm) {
-////            Timber.d("Emitting")
-////            emitter.onNext(realm.copyFromRealm(results))
-//            //                    }
-//            //                });
-//        })
-//                .subscribeOn(subscribeOnScheduler)
-//                .unsubscribeOn(subscribeOnScheduler)
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe()
-
-        return view
+        return inflater.inflate(R.layout.controller_sign_in, container, false)
     }
 
     fun signInWithGoogleIntent(): Observable<SignInRequest> {
