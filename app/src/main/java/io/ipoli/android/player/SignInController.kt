@@ -47,7 +47,6 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
     }
 
     override fun createPresenter(): SignInPresenter = signInComponent.createSignInPresenter()
-//    override fun createPresenter(): SignInPresenter = SignInPresenter()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         return inflater.inflate(R.layout.controller_sign_in, container, false)
