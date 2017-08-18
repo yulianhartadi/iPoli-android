@@ -9,6 +9,7 @@ import io.ipoli.android.player.*
 import io.ipoli.android.util.RxSchedulersTestRule
 import io.reactivex.Single
 import io.reactivex.observers.TestObserver
+import io.reactivex.schedulers.Schedulers
 import org.junit.Rule
 import org.junit.Test
 
@@ -33,8 +34,9 @@ class SignInUseCaseTest {
 
         val observer = TestObserver<SignInStatePartialChange>()
 
-        SignInUseCase(playerRepoMock)
-                .execute(signInRequest)
+        val useCase = SignInUseCase(playerRepoMock)
+        useCase.subscribeOnScheduler = Schedulers.io()
+        useCase.execute(signInRequest)
                 .subscribe(observer)
 
         observer.assertComplete()

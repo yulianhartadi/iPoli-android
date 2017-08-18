@@ -10,8 +10,6 @@ import java.util.*
  */
 class PlayerRepository {
 
-    val realm: Realm = Realm.getDefaultInstance()
-
     fun get(): Observable<Player> {
         return Observable.create({ emitter ->
             val realm = Realm.getDefaultInstance()
@@ -54,6 +52,7 @@ class PlayerRepository {
 
     fun save(player: Player): Single<Player> {
         return Single.create({ emitter ->
+            val realm = Realm.getDefaultInstance()
             realm.executeTransaction {
                 player.id = UUID.randomUUID().toString()
                 realm.copyToRealmOrUpdate(player)

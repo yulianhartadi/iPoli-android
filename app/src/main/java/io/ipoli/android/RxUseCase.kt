@@ -12,14 +12,21 @@ import io.reactivex.android.schedulers.AndroidSchedulers
  */
 interface RxUseCase<in Parameters, Result> {
 
+    var subscribeOnScheduler: Scheduler?
+
     fun execute(params: Parameters): Observable<Result>
 }
 
-abstract class BaseRxUseCase<in Parameters, Result> : RxUseCase<Parameters, Result> {
+abstract class BaseRxUseCase<in Parameters, Result>() : RxUseCase<Parameters, Result> {
+
+    override var subscribeOnScheduler: Scheduler? = null
+        set(value) {
+            field = value
+        }
 
     abstract fun createObservable(params: Parameters): Observable<Result>
 
-    fun createSubscribeOnScheduler(): Scheduler {
+    private fun createSubscribeOnScheduler(): Scheduler {
         val t = HandlerThread("worker")
         if (!t.isAlive)
             t.start()
@@ -30,11 +37,17 @@ abstract class BaseRxUseCase<in Parameters, Result> : RxUseCase<Parameters, Resu
         return AndroidSchedulers.mainThread()
     }
 
+    protected fun getSubscribeScheduler(): Scheduler {
+        if (subscribeOnScheduler == null) {
+            subscribeOnScheduler = createSubscribeOnScheduler()
+        }
+        return subscribeOnScheduler!!
+    }
+
     override fun execute(params: Parameters): Observable<Result> {
-        val subscribeOnScheduler = createSubscribeOnScheduler()
         return createObservable(params)
-                .subscribeOn(subscribeOnScheduler)
-                .unsubscribeOn(subscribeOnScheduler)
+                .subscribeOn(getSubscribeScheduler())
+                .unsubscribeOn(getSubscribeScheduler())
                 .observeOn(createObserveOnScheduler())
     }
 }
@@ -43,7 +56,8 @@ abstract class SimpleRxUseCase<Result> : BaseRxUseCase<Unit, Result>() {
 
     override fun execute(params: Unit): Observable<Result> {
         return createObservable(params)
-                .subscribeOn(createSubscribeOnScheduler())
+                .subscribeOn(getSubscribeScheduler())
+                .unsubscribeOn(getSubscribeScheduler())
                 .observeOn(createObserveOnScheduler())
     }
 }

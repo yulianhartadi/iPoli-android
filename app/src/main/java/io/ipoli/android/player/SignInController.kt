@@ -25,8 +25,6 @@ import kotlinx.android.synthetic.main.controller_sign_in.view.*
  */
 class SignInController : RestoreViewOnCreateMviController<SignInController, SignInPresenter>() {
 
-    private val RC_GOOGLE_SIGN_IN = 9001
-
     init {
         registerForActivityResult(CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode())
     }
@@ -54,82 +52,54 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_sign_in, container, false) as ViewGroup
 
-//        view.googleSignIn.setOnClickListener({
-//            RxGoogleAuth.create()
-//                    .login(this)
-//                    .subscribeOn(Schedulers.io())
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .subscribe({ (token, authProvider) ->
-//                        Timber.d(token)
-//                        Timber.d(authProvider.toString())
+//        val subscribeOnScheduler = createSubscribeOnScheduler()
 //
-//                        Flowable.create<SyncUser>({ subscriber ->
+//        Observable.create(ObservableOnSubscribe<List<Reward>> { emitter ->
+//            val realm = Realm.getDefaultInstance()
+//            val results = realm.where(Reward::class.java).findAllAsync()
+//            //                final RealmResults<Reward> results = realm.where(Reward.class).findAllAsync();
 //
-//                            val credentials = SyncCredentials.google(token)
-//                            val authURL = "http://10.0.2.2:9080/auth"
-//                            val user = SyncUser.login(credentials, authURL)
+//            //                final RealmChangeListener<RealmResults<Reward>> listener = _realm -> {
+//            //                    if (!emitter.isUnsubscribed()) {
+//            //                        emitter.onNext(results);
+//            //                    }
+//            //                };
 //
-//                            subscriber.onNext(user)
-//                            subscriber.onComplete()
-//                        }, BackpressureStrategy.LATEST)
-//                                .subscribeOn(Schedulers.io())
-//                                .observeOn(AndroidSchedulers.mainThread())
-//                                .subscribe { user ->
-//                                    Timber.d(user.identity)
-//                                    val serverURL = "realm://10.0.2.2:9080/~/default"
-//                                    val configuration = SyncConfiguration.Builder(user, serverURL).build()
-//                                    Realm.setDefaultConfiguration(configuration)
-//                                    val realm = Realm.getInstance(Realm.getDefaultConfiguration())
-//                                }
-//                    })
+////            val listener = RealmChangeListener<RealmResults<Reward>> { rewards ->
+////                if (!emitter.isDisposed) {
+////                    realm.executeTransaction { realm -> emitter.onNext(realm.copyFromRealm(rewards)) }
+////                }
+////            }
+//
+//            //                    @Override
+//            //                    public void onChange(Realm realmListener) {
+//            //
+//            //                    }
+//
+//            emitter.setDisposable(Disposables.fromAction {
+//                Log.d("RealmListener", "Removed")
+//                results.removeAllChangeListeners()
+//                realm.close()
+//            })
+//
+//            results.addChangeListener { rewards ->
+//                if (!emitter.isDisposed) {
+//                    Timber.d("Emitting")
+//                    realm.executeTransaction { realm -> emitter.onNext(realm.copyFromRealm(rewards)) }
+//                }
+//            }
+//            //                realm.executeTransaction(new Realm.Transaction() {
+//            //                    @Override
+//            //                    public void execute(Realm realm) {
+////            Timber.d("Emitting")
+////            emitter.onNext(realm.copyFromRealm(results))
+//            //                    }
+//            //                });
 //        })
-
-
-//                .subscribe{ result -> Timber.d(result.)}
-
-//                .subscribe({ syncUser ->
-//                    //                        Timber.d(token)
-////                        Timber.d(authProvider.toString())
-////
-////                        Flowable.create<SyncUser>({ subscriber ->
-////
-////                            val credentials = SyncCredentials.facebook(token)
-////                            val authURL = "http://10.0.2.2:9080/auth"
-////                            val user = SyncUser.login(credentials, authURL)
-////
-////                            subscriber.onNext(user)
-////                            subscriber.onComplete()
-////                        }, BackpressureStrategy.LATEST)
-////                                .subscribeOn(Schedulers.io())
-////                                .observeOn(AndroidSchedulers.mainThread())
-////                                .subscribe { user ->
-////                                    Timber.d(user.identity)
-////                                    val serverURL = "realm://10.0.2.2:9080/~/default"
-////                                    val configuration = SyncConfiguration.Builder(user, serverURL).build()
-////                                    Realm.setDefaultConfiguration(configuration)
-////                                    val realm = Realm.getInstance(Realm.getDefaultConfiguration())
-////                                }
-//                }, { error -> Timber.e(error) })
-
-//        view.facebookSignIn.setOnClickListener({
-//            RxFacebookAuth.create(SignInController@ this)
-//                    .login(this)
-//                    .flatMapCompletable { (token, authProvider) ->
-//                        val credentials = SyncCredentials.facebook(token)
-//                        val authURL = "http://10.0.2.2:9080/auth"
-//                        val user = SyncUser.login(credentials, authURL)
-//                        val serverURL = "realm://10.0.2.2:9080/~/default"
-//                        val configuration = SyncConfiguration.Builder(user, serverURL).build()
-//                        Realm.setDefaultConfiguration(configuration)
-//                        PlayerRepository().save(Player(user.identity, authProvider = authProvider))
-//                    }
-//                    .subscribeOn(Schedulers.io())
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .subscribe {
-//                        Timber.d("Welcome")
-//                    }
-//
-//        })
+//                .subscribeOn(subscribeOnScheduler)
+//                .unsubscribeOn(subscribeOnScheduler)
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe()
 
         return view
     }
