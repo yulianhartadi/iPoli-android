@@ -1,7 +1,7 @@
 package io.ipoli.android.store
 
 import dagger.Component
-import io.ipoli.android.di.ControllerComponent
+import io.ipoli.android.common.di.ControllerComponent
 import javax.inject.Scope
 
 /**

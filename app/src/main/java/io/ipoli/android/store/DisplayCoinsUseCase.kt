@@ -11,10 +11,9 @@ import io.reactivex.Observable
 class DisplayCoinsUseCase(private val playerRepository: PlayerRepository) : SimpleRxUseCase<StoreStatePartialChange>() {
 
     override fun createObservable(params: Unit): Observable<StoreStatePartialChange> =
-        playerRepository.get()
+        playerRepository.findFirst()
             .map { player ->
                 StoreLoadedPartialChange(player.coins) as StoreStatePartialChange
             }
             .startWith(StoreLoadingPartialChange())
-
 }

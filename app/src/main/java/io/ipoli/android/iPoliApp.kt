@@ -2,13 +2,12 @@ package io.ipoli.android
 
 import android.app.Application
 import android.content.Context
-import com.codemonkeylabs.fpslibrary.TinyDancer
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.squareup.leakcanary.LeakCanary
-import io.ipoli.android.di.AppComponent
-import io.ipoli.android.di.AppModule
-import io.ipoli.android.di.DaggerAppComponent
+import io.ipoli.android.common.di.AppComponent
+import io.ipoli.android.common.di.AppModule
+import io.ipoli.android.common.di.DaggerAppComponent
 import io.realm.Realm
 import timber.log.Timber
 

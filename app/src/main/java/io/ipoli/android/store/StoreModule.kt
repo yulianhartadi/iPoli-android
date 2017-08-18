@@ -3,8 +3,7 @@ package io.ipoli.android.store
 import dagger.Module
 import dagger.Provides
 import io.ipoli.android.player.PlayerRepository
-import io.ipoli.android.player.SignInScope
-import io.ipoli.android.player.SignInUseCase
+import io.ipoli.android.player.RealmPlayerRepository
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -14,7 +13,7 @@ import io.ipoli.android.player.SignInUseCase
 class StoreModule {
     @Provides
     @StoreScope
-    fun providePlayerRepository(): PlayerRepository = PlayerRepository()
+    fun providePlayerRepository(): PlayerRepository = RealmPlayerRepository()
 
     @Provides
     @StoreScope

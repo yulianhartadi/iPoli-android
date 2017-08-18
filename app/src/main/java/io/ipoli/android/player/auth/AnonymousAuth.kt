@@ -1,4 +1,4 @@
-package io.ipoli.android.auth
+package io.ipoli.android.player.auth
 
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -7,7 +7,7 @@ import io.reactivex.Single
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/17/17.
  */
-class RxAnonymousAuth : RxSocialAuth {
+class AnonymousAuth : RxSocialAuth {
 
     override fun login(username: String): Single<AuthResult?> =
             Single.just(
@@ -18,6 +18,6 @@ class RxAnonymousAuth : RxSocialAuth {
     override fun logout(): Completable = Completable.complete()
 
     companion object {
-        fun create(): RxAnonymousAuth = RxAnonymousAuth()
+        fun create(): AnonymousAuth = AnonymousAuth()
     }
 }

@@ -1,4 +1,4 @@
-package io.ipoli.android.auth
+package io.ipoli.android.player.auth
 
 import android.content.Context
 import android.content.Intent
@@ -22,7 +22,7 @@ import java.net.ConnectException
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/14/17.
  */
-class RxGoogleAuth private constructor(private val controller: Controller) : RxSocialAuth {
+class GoogleAuth private constructor(private val controller: Controller) : RxSocialAuth {
 
     override fun login(username: String): Single<AuthResult?> {
         val subject = PublishSubject.create<GoogleSignInResult>()
@@ -108,10 +108,10 @@ class RxGoogleAuth private constructor(private val controller: Controller) : RxS
 
         private val RC_GOOGLE_SIGN_IN = 9001
 
-        private var loginHandler: RxGoogleAuth.LoginHandler? = null
+        private var loginHandler: GoogleAuth.LoginHandler? = null
 
-        fun create(controller: Controller): RxGoogleAuth {
-            return RxGoogleAuth(controller)
+        fun create(controller: Controller): GoogleAuth {
+            return GoogleAuth(controller)
         }
 
         fun onActivityResult(requestCode: Int, data: Intent?) {

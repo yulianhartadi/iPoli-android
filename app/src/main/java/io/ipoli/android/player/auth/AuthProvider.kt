@@ -1,4 +1,4 @@
-package io.ipoli.android.auth
+package io.ipoli.android.player.auth
 
 import io.realm.RealmObject
 

@@ -1,6 +1,5 @@
-package io.ipoli.android.auth
+package io.ipoli.android.player.auth
 
-import com.bluelinelabs.conductor.Controller
 import io.reactivex.Completable
 import io.reactivex.Single
 

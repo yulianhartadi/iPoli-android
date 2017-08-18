@@ -1,4 +1,4 @@
-package io.ipoli.android.auth
+package io.ipoli.android.player.auth
 
 import android.app.Activity
 import android.content.Intent
@@ -18,14 +18,14 @@ import io.reactivex.subjects.Subject
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/13/17.
  */
-class RxFacebookAuth private constructor(private val controller: Controller) : RxSocialAuth {
+class FacebookAuth private constructor(private val controller: Controller) : RxSocialAuth {
 
     override fun login(username: String): Single<AuthResult?> {
         return loginWithReadPermissions(controller.activity!!, permissions)
                 .flatMap { loginInfo ->
                     val parameters = Bundle()
                     parameters.putString("fields", "email,id,first_name,last_name,picture")
-                    RxFacebookAuth.create(controller)
+                    FacebookAuth.create(controller)
                             .accessToken(loginInfo.accessToken)
                             .params(parameters)
                             .requestMe()
@@ -63,12 +63,12 @@ class RxFacebookAuth private constructor(private val controller: Controller) : R
 
     private val permissions: Collection<String> = ArrayList()
 
-    fun params(params: Bundle): RxFacebookAuth {
+    fun params(params: Bundle): FacebookAuth {
         this.params = params
         return this
     }
 
-    fun accessToken(accessToken: AccessToken): RxFacebookAuth {
+    fun accessToken(accessToken: AccessToken): FacebookAuth {
         this.accessToken = accessToken
         return this
     }
@@ -153,8 +153,8 @@ class RxFacebookAuth private constructor(private val controller: Controller) : R
 
         private var loginHandler: LoginHandler? = null
 
-        fun create(controller: Controller): RxFacebookAuth {
-            return RxFacebookAuth(controller)
+        fun create(controller: Controller): FacebookAuth {
+            return FacebookAuth(controller)
         }
 
         fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

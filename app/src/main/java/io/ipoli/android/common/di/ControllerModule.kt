@@ -1,4 +1,4 @@
-package io.ipoli.android.di
+package io.ipoli.android.common.di
 
 import dagger.Module
 import dagger.Provides

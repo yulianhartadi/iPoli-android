@@ -1,6 +1,6 @@
 package io.ipoli.android.player
 
-import io.ipoli.android.common.BaseRealmRepository
+import io.ipoli.android.common.persistence.BaseRealmRepository
 import io.ipoli.android.common.persistence.Repository
 
 /**

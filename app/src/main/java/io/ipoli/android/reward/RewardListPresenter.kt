@@ -9,7 +9,8 @@ import javax.inject.Inject
 
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com> on 7/7/17.
+ * Created by Venelin Valkov <venelin@curiousily.com>
+ * on 7/7/17.
  */
 class RewardListPresenter @Inject constructor(private val displayRewardsUseCase: DisplayRewardsUseCase) : MviBasePresenter<RewardListController, RewardViewState>() {
 
@@ -48,9 +49,9 @@ class RewardListPresenter @Inject constructor(private val displayRewardsUseCase:
 //                })
 
         observables.add(
-                intent { it.loadRewardsIntent() }.switchMap {
-                    displayRewardsUseCase.execute(Unit)
-                })
+            intent { it.loadRewardsIntent() }.switchMap {
+                displayRewardsUseCase.execute(Unit)
+            })
 
 //        observables.add(
 //                intent { it.useRewardIntent() }
@@ -68,10 +69,10 @@ class RewardListPresenter @Inject constructor(private val displayRewardsUseCase:
 //                        .switchMap { reward -> interactor.deleteReward(reward) }
 //                        .map { ignored -> RewardDeletedPartialChange() })
 
-        val allIntents: Observable <RewardStatePartialChange> = Observable.merge(observables)
+        val allIntents: Observable<RewardStatePartialChange> = Observable.merge(observables)
         val initialState: RewardViewState = RewardsInitialLoadingState()
         val stateObservable = allIntents.scan(initialState, this::viewStateReducer)
-                .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(AndroidSchedulers.mainThread())
 
         subscribeViewState(stateObservable, RewardListController::render)
     }

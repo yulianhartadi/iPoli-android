@@ -10,10 +10,10 @@ import com.facebook.internal.CallbackManagerImpl
 import com.hannesdorfmann.mosby3.RestoreViewOnCreateMviController
 import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
-import io.ipoli.android.auth.ProviderType
-import io.ipoli.android.auth.RxAnonymousAuth
-import io.ipoli.android.auth.RxFacebookAuth
-import io.ipoli.android.auth.RxGoogleAuth
+import io.ipoli.android.player.auth.ProviderType
+import io.ipoli.android.player.auth.AnonymousAuth
+import io.ipoli.android.player.auth.FacebookAuth
+import io.ipoli.android.player.auth.GoogleAuth
 import io.ipoli.android.daggerComponent
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_sign_in.view.*
@@ -61,7 +61,7 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
                             containerView.username.text.toString(),
                             containerView.existingPlayer.isChecked,
                             ProviderType.GOOGLE,
-                            RxGoogleAuth.create(SignInController@ this)
+                            GoogleAuth.create(SignInController@ this)
                     )
                 }
     }
@@ -75,7 +75,7 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
                             containerView.username.text.toString(),
                             containerView.existingPlayer.isChecked,
                             ProviderType.FACEBOOK,
-                            RxFacebookAuth.create(SignInController@ this)
+                            FacebookAuth.create(SignInController@ this)
                     )
                 }
     }
@@ -87,7 +87,7 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
                     containerView.username.text.toString(),
                     containerView.existingPlayer.isChecked,
                     ProviderType.ANONYMOUS,
-                    RxAnonymousAuth.create()
+                    AnonymousAuth.create()
             )
         }
     }
@@ -110,7 +110,7 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        RxGoogleAuth.onActivityResult(requestCode, data)
-        RxFacebookAuth.onActivityResult(requestCode, resultCode, data)
+        GoogleAuth.onActivityResult(requestCode, data)
+        FacebookAuth.onActivityResult(requestCode, resultCode, data)
     }
 }

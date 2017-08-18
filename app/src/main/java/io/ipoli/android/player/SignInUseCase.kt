@@ -1,7 +1,7 @@
 package io.ipoli.android.player
 
 import io.ipoli.android.BaseRxUseCase
-import io.ipoli.android.auth.ProviderType
+import io.ipoli.android.player.auth.ProviderType
 import io.reactivex.Observable
 import io.realm.Realm
 import io.realm.SyncConfiguration

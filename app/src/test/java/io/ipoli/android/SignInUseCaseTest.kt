@@ -3,8 +3,8 @@ package io.ipoli.android
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import io.ipoli.android.auth.ProviderType
-import io.ipoli.android.auth.RxAnonymousAuth
+import io.ipoli.android.player.auth.AnonymousAuth
+import io.ipoli.android.player.auth.ProviderType
 import io.ipoli.android.player.*
 import io.ipoli.android.util.RxSchedulersTestRule
 import io.reactivex.Single
@@ -32,7 +32,7 @@ class SignInUseCaseTest {
         val signInRequest = SignInRequest("",
             false,
             ProviderType.ANONYMOUS,
-            RxAnonymousAuth.create())
+            AnonymousAuth.create())
 
         val observer = TestObserver<SignInStatePartialChange>()
 

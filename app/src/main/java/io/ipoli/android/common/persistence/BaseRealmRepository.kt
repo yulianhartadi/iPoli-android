@@ -1,10 +1,8 @@
-package io.ipoli.android.common
+package io.ipoli.android.common.persistence
 
 import android.os.HandlerThread
 import android.os.Looper
 import android.os.Process
-import io.ipoli.android.common.persistence.PersistedModel
-import io.ipoli.android.common.persistence.Repository
 import io.reactivex.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers

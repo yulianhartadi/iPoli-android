@@ -1,4 +1,4 @@
-package io.ipoli.android.di
+package io.ipoli.android.common.di
 
 import javax.inject.Scope
 

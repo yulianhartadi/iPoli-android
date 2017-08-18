@@ -1,6 +1,6 @@
 package io.ipoli.android.player
 
-import io.ipoli.android.auth.AuthProvider
+import io.ipoli.android.player.auth.AuthProvider
 import io.ipoli.android.common.persistence.PersistedModel
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
