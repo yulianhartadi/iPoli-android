@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import com.hannesdorfmann.mosby3.RestoreViewOnCreateMviController
 import io.ipoli.android.R
 import io.ipoli.android.daggerComponent
+import io.ipoli.android.navigator
 import io.ipoli.android.player.DaggerSignInComponent
+import kotlinx.android.synthetic.main.controller_store.view.*
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -34,7 +36,12 @@ class StoreController : RestoreViewOnCreateMviController<StoreController, StoreP
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
-        return inflater.inflate(R.layout.controller_store, container, false)
+        val view = inflater.inflate(R.layout.controller_store, container, false)
+        view.subscriptionContainer.setOnClickListener({ navigator.showRewardsList() })
+        view.powerUpsContainer.setOnClickListener({ navigator.showRewardsList() })
+        view.avatarsContainer.setOnClickListener({ navigator.showRewardsList() })
+        view.petsContainer.setOnClickListener({ navigator.showRewardsList() })
+        return view
     }
 
 }
