@@ -47,6 +47,6 @@ class iPoliApp : Application() {
             }
         })
         LeakCanary.install(this)
-        TinyDancer.create().show(this)
+//        TinyDancer.create().show(this)
     }
 }
