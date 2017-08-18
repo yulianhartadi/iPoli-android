@@ -22,7 +22,7 @@ class SignInPresenter @Inject constructor(private val signInUseCase: SignInUseCa
                 },
                 intent { it.signInAsGuestIntent() }.switchMap { signInRequest ->
                     signInUseCase.execute(signInRequest).doOnNext {
-                        navigator.showRewardsList()
+                        navigator.showStore()
                     }
                 })
 
