@@ -4,6 +4,7 @@ import android.os.HandlerThread
 import android.os.Looper
 import android.os.Process
 import io.ipoli.android.common.persistence.PersistedModel
+import io.ipoli.android.common.persistence.Repository
 import io.reactivex.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -17,13 +18,13 @@ import java.util.*
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/18/17.
  */
-abstract class BaseRealmRepository<T> where T : PersistedModel, T : RealmObject {
+abstract class BaseRealmRepository<T> : Repository<T> where T : PersistedModel, T : RealmObject {
 
     protected abstract fun getModelClass(): Class<T>
 
-    fun findById(id: String): Observable<T> = find { it.equalTo("id", id) }
+    override fun findById(id: String): Observable<T> = find { it.equalTo("id", id) }
 
-    fun findFirst(): Observable<T> = find {}
+    override fun findFirst(): Observable<T> = find {}
 
     protected fun find(query: (RealmQuery<T>) -> Unit): Observable<T> =
         createObservable { emitter ->
@@ -40,9 +41,9 @@ abstract class BaseRealmRepository<T> where T : PersistedModel, T : RealmObject 
             })
         }
 
-    fun findAll(): Observable<List<T>> = findAll {}
+    override fun findAll(): Observable<List<T>> = findAll {}
 
-    fun findAll(query: (RealmQuery<T>) -> Unit): Observable<List<T>> =
+    protected fun findAll(query: (RealmQuery<T>) -> Unit): Observable<List<T>> =
         createObservable { emitter ->
             val realm = Realm.getDefaultInstance()
             val realmQuery = RealmQuery.createQuery(realm, getModelClass())
@@ -67,7 +68,7 @@ abstract class BaseRealmRepository<T> where T : PersistedModel, T : RealmObject 
         }
     }
 
-    fun save(model: T): Single<T> =
+    override fun save(model: T): Single<T> =
         createSingle { emitter ->
             Realm.getDefaultInstance().use {
                 it.executeTransaction {
@@ -80,7 +81,7 @@ abstract class BaseRealmRepository<T> where T : PersistedModel, T : RealmObject 
             }
         }
 
-    fun delete(model: T): Completable =
+    override fun delete(model: T): Completable =
         createCompletable { emitter ->
             Realm.getDefaultInstance().use {
                 val id = model.id
