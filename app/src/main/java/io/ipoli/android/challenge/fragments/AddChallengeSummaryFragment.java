@@ -210,7 +210,7 @@ public class AddChallengeSummaryFragment extends BaseFragment {
     }
 
     private void showDifficulty(Difficulty difficulty) {
-        difficultyText.setText(StringUtils.capitalize(difficulty.name()));
+        difficultyText.setText(Difficulty.getNameRes(difficulty));
         difficultyText.setTag(difficulty);
     }
 }

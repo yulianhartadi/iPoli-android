@@ -323,7 +323,7 @@ public class EditChallengeActivity extends BaseActivity implements DatePickerFra
     }
 
     private void populateDifficulty(Difficulty difficulty) {
-        difficultyText.setText(StringUtils.capitalize(difficulty.name()));
+        difficultyText.setText(Difficulty.getNameRes(difficulty));
         difficultyText.setTag(difficulty);
     }
 

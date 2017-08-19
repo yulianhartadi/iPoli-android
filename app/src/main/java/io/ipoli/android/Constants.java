@@ -137,7 +137,6 @@ public interface Constants {
     ));
 
     int DAILY_CHALLENGE_QUEST_COUNT = 3;
-    int DEFAULT_CHALLENGE_DEADLINE_DAY_DURATION = 30;
     int DEFAULT_BAR_COUNT = 4;
     String REMINDER_START_TIME = "reminder_start_time";
 
@@ -149,9 +148,7 @@ public interface Constants {
     Integer DEFAULT_PET_HP = 80;
     double XP_BONUS_PERCENTAGE_OF_HP = 20.0;
     double COINS_BONUS_PERCENTAGE_OF_HP = 10.0;
-    double REWARD_POINTS_BONUS_PERCENTAGE_OF_HP = 10.0;
     int MAX_PET_COIN_BONUS = 10;
-    int MAX_PET_REWARD_POINTS_BONUS = 10;
 
     int MAX_PET_XP_BONUS = 20;
 

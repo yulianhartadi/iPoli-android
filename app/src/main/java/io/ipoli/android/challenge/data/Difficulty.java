@@ -1,5 +1,7 @@
 package io.ipoli.android.challenge.data;
 
+import io.ipoli.android.R;
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 6/23/16.
@@ -25,5 +27,18 @@ public enum Difficulty {
         }
 
         throw new IllegalArgumentException("Difficulty value not found");
+    }
+
+    public static int getNameRes(Difficulty difficulty) {
+        switch (difficulty) {
+            case EASY:
+                return R.string.difficulty_easy;
+            case NORMAL:
+                return R.string.difficulty_normal;
+            case HARD:
+                return R.string.difficulty_hard;
+            default:
+                return R.string.difficulty_hell;
+        }
     }
 }

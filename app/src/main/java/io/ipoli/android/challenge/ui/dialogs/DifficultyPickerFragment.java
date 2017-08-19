@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 
 import io.ipoli.android.R;
-import io.ipoli.android.app.utils.StringUtils;
 import io.ipoli.android.challenge.data.Difficulty;
 
 /**
@@ -54,7 +53,7 @@ public class DifficultyPickerFragment extends DialogFragment {
         selectedDifficultyIndex = -1;
         for (int i = 0; i < Difficulty.values().length; i++) {
             Difficulty d = Difficulty.values()[i];
-            names[i] = StringUtils.capitalize(d.name());
+            names[i] = getString(Difficulty.getNameRes(d));
             if (difficulty == d) {
                 selectedDifficultyIndex = i;
             }
