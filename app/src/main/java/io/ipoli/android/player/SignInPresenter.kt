@@ -16,28 +16,28 @@ import javax.inject.Inject
  * on 8/8/17.
  */
 class SignInPresenter @Inject constructor(private val signInUseCase: SignInUseCase, private val navigator: Navigator) :
-        MviBasePresenter<SignInController, SignInViewState>() {
+    MviBasePresenter<SignInController, SignInViewState>() {
 
     override fun bindIntents() {
         val observables = listOf<Observable<SignInStatePartialChange>>(
-                intent { it.signInWithGoogleIntent() }.switchMap { signInRequest ->
-                    signInUseCase.execute(signInRequest)
-                },
-                intent { it.signInWithFacebookIntent() }.switchMap { signInRequest ->
-                    signInUseCase.execute(signInRequest)
-                },
-                intent { it.signInAsGuestIntent() }.switchMap { signInRequest ->
-                    signInUseCase.execute(signInRequest).doFinally {
-                        navigator.showStore()
-                        Timber.d("show store")
-                    }
-                })
+            intent { it.signInWithGoogleIntent() }.switchMap { signInRequest ->
+                signInUseCase.execute(signInRequest)
+            },
+            intent { it.signInWithFacebookIntent() }.switchMap { signInRequest ->
+                signInUseCase.execute(signInRequest)
+            },
+            intent { it.signInAsGuestIntent() }.switchMap { signInRequest ->
+                signInUseCase.execute(signInRequest).doFinally {
+                    Timber.d("show store")
+                    navigator.showStore()
+                }
+            })
 
         val allIntents: Observable<SignInStatePartialChange> = Observable.merge(observables)
         val initialState: SignInViewState = SignInInitialState()
 
         val stateObservable = allIntents.scan(initialState, this::viewStateReducer)
-                .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(AndroidSchedulers.mainThread())
 
         subscribeViewState(stateObservable, SignInController::render)
     }

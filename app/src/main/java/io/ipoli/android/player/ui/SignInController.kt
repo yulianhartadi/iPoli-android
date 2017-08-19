@@ -11,12 +11,12 @@ import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
 import io.ipoli.android.daggerComponent
-import io.ipoli.android.player.DaggerSignInComponent
 import io.ipoli.android.player.SignInPresenter
 import io.ipoli.android.player.auth.AnonymousAuth
 import io.ipoli.android.player.auth.FacebookAuth
 import io.ipoli.android.player.auth.GoogleAuth
 import io.ipoli.android.player.auth.ProviderType
+import io.ipoli.android.player.di.DaggerSignInComponent
 import io.ipoli.android.player.di.SignInComponent
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_sign_in.view.*

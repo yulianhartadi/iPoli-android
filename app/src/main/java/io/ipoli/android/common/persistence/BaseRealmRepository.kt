@@ -57,13 +57,13 @@ abstract class BaseRealmRepository<T> : Repository<T> where T : PersistedModel, 
         }
 
     protected fun getLooper(): Looper? {
-        return if (Looper.myLooper() != Looper.getMainLooper()) {
-            val backgroundThread = BackgroundThread()
-            backgroundThread.start()
-            backgroundThread.looper
-        } else {
-            Looper.getMainLooper()
-        }
+//        return if (Looper.myLooper() != Looper.getMainLooper()) {
+        val backgroundThread = BackgroundThread()
+        backgroundThread.start()
+        return backgroundThread.looper
+//        } else {
+//            Looper.getMainLooper()
+//        }
     }
 
     override fun save(model: T): Single<T> =
