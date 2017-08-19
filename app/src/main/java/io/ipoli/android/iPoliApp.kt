@@ -5,6 +5,7 @@ import android.content.Context
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.squareup.leakcanary.LeakCanary
+import com.squareup.leakcanary.RefWatcher
 import io.ipoli.android.common.di.AppComponent
 import io.ipoli.android.common.di.AppModule
 import io.ipoli.android.common.di.DaggerAppComponent
@@ -19,6 +20,7 @@ class iPoliApp : Application() {
 
     companion object {
         private var component: AppComponent? = null
+        lateinit var refWatcher: RefWatcher
 
         fun getComponent(c: Context): AppComponent {
             if (component == null) {
@@ -45,7 +47,7 @@ class iPoliApp : Application() {
                 Logger.log(priority, tag, message, t)
             }
         })
-        LeakCanary.install(this)
+        refWatcher = LeakCanary.install(this)
 //        TinyDancer.create().show(this)
     }
 }

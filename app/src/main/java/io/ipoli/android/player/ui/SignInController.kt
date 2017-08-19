@@ -7,16 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.facebook.internal.CallbackManagerImpl
-import com.hannesdorfmann.mosby3.RestoreViewOnCreateMviController
 import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
-import io.ipoli.android.player.auth.ProviderType
-import io.ipoli.android.player.auth.AnonymousAuth
-import io.ipoli.android.player.auth.FacebookAuth
-import io.ipoli.android.player.auth.GoogleAuth
+import io.ipoli.android.common.BaseController
 import io.ipoli.android.daggerComponent
 import io.ipoli.android.player.DaggerSignInComponent
 import io.ipoli.android.player.SignInPresenter
+import io.ipoli.android.player.auth.AnonymousAuth
+import io.ipoli.android.player.auth.FacebookAuth
+import io.ipoli.android.player.auth.GoogleAuth
+import io.ipoli.android.player.auth.ProviderType
 import io.ipoli.android.player.di.SignInComponent
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_sign_in.view.*
@@ -26,7 +26,7 @@ import kotlinx.android.synthetic.main.controller_sign_in.view.*
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/8/17.
  */
-class SignInController : RestoreViewOnCreateMviController<SignInController, SignInPresenter>() {
+class SignInController : BaseController<SignInController, SignInPresenter>() {
 
     init {
         registerForActivityResult(CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode())
@@ -34,8 +34,8 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
 
     val signInComponent: SignInComponent by lazy {
         val component = DaggerSignInComponent.builder()
-                .controllerComponent(daggerComponent)
-                .build()
+            .controllerComponent(daggerComponent)
+            .build()
         component.inject(this@SignInController)
         component
     }
@@ -57,29 +57,29 @@ class SignInController : RestoreViewOnCreateMviController<SignInController, Sign
     fun signInWithGoogleIntent(): Observable<SignInRequest> {
         val containerView = view!!
         return RxView.clicks(containerView.googleSignIn)
-                .takeUntil(RxView.detaches(containerView.googleSignIn))
-                .map {
-                    SignInRequest(
-                        containerView.username.text.toString(),
-                        containerView.existingPlayer.isChecked,
-                        ProviderType.GOOGLE,
-                        GoogleAuth.create(SignInController@ this)
-                    )
-                }
+            .takeUntil(RxView.detaches(containerView.googleSignIn))
+            .map {
+                SignInRequest(
+                    containerView.username.text.toString(),
+                    containerView.existingPlayer.isChecked,
+                    ProviderType.GOOGLE,
+                    GoogleAuth.create(SignInController@ this)
+                )
+            }
     }
 
     fun signInWithFacebookIntent(): Observable<SignInRequest> {
         val containerView = view!!
         return RxView.clicks(containerView.facebookSignIn)
-                .takeUntil(RxView.detaches(containerView.facebookSignIn))
-                .map {
-                    SignInRequest(
-                        containerView.username.text.toString(),
-                        containerView.existingPlayer.isChecked,
-                        ProviderType.FACEBOOK,
-                        FacebookAuth.create(SignInController@ this)
-                    )
-                }
+            .takeUntil(RxView.detaches(containerView.facebookSignIn))
+            .map {
+                SignInRequest(
+                    containerView.username.text.toString(),
+                    containerView.existingPlayer.isChecked,
+                    ProviderType.FACEBOOK,
+                    FacebookAuth.create(SignInController@ this)
+                )
+            }
     }
 
     fun signInAsGuestIntent(): Observable<SignInRequest> {

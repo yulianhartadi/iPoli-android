@@ -13,16 +13,17 @@ import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegate
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
-import com.hannesdorfmann.mosby3.RestoreViewOnCreateMviController
 import com.jakewharton.rxbinding2.view.RxView
-import io.ipoli.android.*
+import io.ipoli.android.R
+import io.ipoli.android.common.BaseController
+import io.ipoli.android.daggerComponent
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.controller_rewards.view.*
 import kotlinx.android.synthetic.main.item_reward.view.*
 
 
-class RewardListController : RestoreViewOnCreateMviController<RewardListController, RewardListPresenter>() {
+class RewardListController : BaseController<RewardListController, RewardListPresenter>() {
 
     private var restoringState: Boolean = false
 
@@ -35,9 +36,9 @@ class RewardListController : RestoreViewOnCreateMviController<RewardListControll
 
     val rewardListComponent: RewardListComponent by lazy {
         val component = DaggerRewardListComponent
-                .builder()
-                .controllerComponent(daggerComponent)
-                .build()
+            .builder()
+            .controllerComponent(daggerComponent)
+            .build()
         component.inject(this@RewardListController)
         component
     }
@@ -69,13 +70,13 @@ class RewardListController : RestoreViewOnCreateMviController<RewardListControll
 
 
         val delegatesManager = AdapterDelegatesManager<List<RewardModel>>()
-                .addDelegate(RewardAdapterDelegate(LayoutInflater.from(activity), useRewardSubject, deleteRewardSubject, {
-                    val pushHandler = HorizontalChangeHandler()
-                    val popHandler = HorizontalChangeHandler()
-                    router.pushController(RouterTransaction.with(EditRewardController(rewardId = it.id))
-                            .pushChangeHandler(pushHandler)
-                            .popChangeHandler(popHandler))
-                }))
+            .addDelegate(RewardAdapterDelegate(LayoutInflater.from(activity), useRewardSubject, deleteRewardSubject, {
+                val pushHandler = HorizontalChangeHandler()
+                val popHandler = HorizontalChangeHandler()
+                router.pushController(RouterTransaction.with(EditRewardController(rewardId = it.id))
+                    .pushChangeHandler(pushHandler)
+                    .popChangeHandler(popHandler))
+            }))
 
         adapter = RewardsAdapter(delegatesManager)
 
@@ -125,7 +126,7 @@ class RewardListController : RestoreViewOnCreateMviController<RewardListControll
     }
 
     class RewardsAdapter(manager: AdapterDelegatesManager<List<RewardModel>>) : ListDelegationAdapter<List<RewardModel>>(
-            manager) {
+        manager) {
 
 //        init {
 //            setHasStableIds(true)
@@ -149,7 +150,7 @@ class RewardListController : RestoreViewOnCreateMviController<RewardListControll
         override fun isForViewType(items: List<RewardModel>, position: Int): Boolean = true
 
         override fun onCreateViewHolder(parent: ViewGroup?): RecyclerView.ViewHolder =
-                RewardViewHolder(inflater.inflate(R.layout.item_reward, parent, false))
+            RewardViewHolder(inflater.inflate(R.layout.item_reward, parent, false))
 
 
         inner class RewardViewHolder(view: View) : RecyclerView.ViewHolder(view) {

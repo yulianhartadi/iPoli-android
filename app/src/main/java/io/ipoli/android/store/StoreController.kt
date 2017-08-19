@@ -1,16 +1,14 @@
 package io.ipoli.android.store
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.hannesdorfmann.mosby3.RestoreViewOnCreateMviController
 import io.ipoli.android.R
+import io.ipoli.android.common.BaseController
 import io.ipoli.android.daggerComponent
 import io.ipoli.android.navigator
-import io.ipoli.android.player.*
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_store.view.*
 import timber.log.Timber
@@ -19,15 +17,15 @@ import timber.log.Timber
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 8/18/17.
  */
-class StoreController : RestoreViewOnCreateMviController<StoreController, StorePresenter>() {
+class StoreController : BaseController<StoreController, StorePresenter>() {
 
     private var restoringState: Boolean = false
 
-    val storeComponent : StoreComponent by lazy {
+    val storeComponent: StoreComponent by lazy {
         val component = DaggerStoreComponent
-                .builder()
-                .controllerComponent(daggerComponent)
-                .build()
+            .builder()
+            .controllerComponent(daggerComponent)
+            .build()
         component.inject(this@StoreController)
         component
     }

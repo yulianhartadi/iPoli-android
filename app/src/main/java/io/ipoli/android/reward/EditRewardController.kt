@@ -4,14 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.hannesdorfmann.mosby3.RestoreViewOnCreateMviController
 import io.ipoli.android.R
+import io.ipoli.android.common.BaseController
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 7/7/17.
  */
-class EditRewardController(val rewardId: String = "") : RestoreViewOnCreateMviController<EditRewardController, EditRewardPresenter>() {
+class EditRewardController(val rewardId: String = "") : BaseController<EditRewardController, EditRewardPresenter>() {
 
     private var restoringState: Boolean = false
 
