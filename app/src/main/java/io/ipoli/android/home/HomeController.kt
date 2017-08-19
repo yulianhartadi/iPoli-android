@@ -1,4 +1,4 @@
-package io.ipoli.android.common
+package io.ipoli.android.home
 
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import com.bluelinelabs.conductor.RouterTransaction
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
+import io.ipoli.android.common.BaseController
 import io.ipoli.android.store.StoreController
 import kotlinx.android.synthetic.main.controller_home.view.*
 
@@ -61,10 +62,8 @@ class HomeController : BaseController<HomeController, HomePresenter>(), Navigati
 
         view.drawerLayout.addDrawerListener(actionBarDrawerToggle)
 
-
         val childRouter = getChildRouter(view.controllerContainer, null)
         childRouter.setRoot(RouterTransaction.with(StoreController()))
-        childRouter.setPopsLastView(true)
 
         actionBarDrawerToggle.syncState()
     }
