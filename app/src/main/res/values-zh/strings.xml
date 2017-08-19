@@ -9,7 +9,7 @@
     <string name="quest_complete">任务完成</string>
     <string name="quest_complete_with_reward">任务完成！+%1$d XP +%2$d硬币。</string>
     <string name="achievement_with_reward">%1$s +%2$d XP +%3$d 硬币.</string>
-    <string name="challenge_complete">挑战 %s 完成</string>
+    <string name="challenge_complete">%s 挑战完成</string>
     <string name="quest_undone">撤销完成任务。 -%1$d XP -%2$d 硬币。</string>
     <string name="quest_undone_to_inbox">任务移动到收集箱。 -%1$d XP -%2$d 硬币。</string>
     <string name="today">今天</string>
@@ -68,7 +68,7 @@
     <string name="dialog_ok">好的</string>
     <string name="rate_dialog_never_ask_again">以后不要再问了</string>
     <string name="rate_dialog_rate_title">我也是！</string>
-    <string name="rate_dialog_rate_message">可以通过在Google Play上评分来鼓励我们吗？</string>
+    <string name="rate_dialog_rate_message">可以在Google Play（及各大应用市场）上评分来鼓励我们吗？</string>
     <string name="rate_dialog_feedback_title">请帮助我们进步</string>
     <string name="rate_dialog_feedback_send">发送</string>
     <string name="rate_dialog_feedback_no">不了，谢谢</string>
@@ -82,18 +82,18 @@
     <string name="help_dialog_repeating_quests_title">重复任务是什么？</string>
     <string name="help_dialog_ok">OK</string>
     <string name="help_dialog_more_help">更多帮助</string>
-    <string name="help_wanted_email_subject">zhaopin</string>
+    <string name="help_wanted_email_subject">需要帮助</string>
     <string name="help_wanted_chooser_title">向我们请求帮助</string>
     <string name="help_dialog_calendar_text1">日程表是你管理日常安排的地方。</string>
     <string name="help_dialog_calendar_text2">日程表上方是放置你没有安排时间的任务的区域。</string>
     <string name="help_dialog_calendar_text3">日程表上灰色的区域是iPoli推荐安排任务的时间。</string>
-    <string name="help_dialog_calendar_drag">触摸，按住然后拖动任务来安排它。</string>
+    <string name="help_dialog_calendar_drag">触摸，按住然后拖动任务来安排它的时间。</string>
     <string name="help_dialog_repeating_quests_text1">重复任务是你需要重复完成的事项</string>
     <string name="help_dialog_repeating_quests_text2">如果你需要在某个特定日期完成任务（多次），iPoli会自动把你的日程表中的一个任务设置成重复。</string>
     <string name="help_dialog_repeating_quests_text3">在这个屏幕你可以跟踪你的一周进度。</string>
     <string name="help_dialog_inbox_text1">这里是放置你所有没有安排日程的任务的地方。</string>
     <string name="help_dialog_inbox_text2">如果你的某个任务当天没有完成，它会自动移到你的收集箱。</string>
-    <string name="help_dialog_overview_text1">通过概览来管理你未来七天没有完成的任务。</string>
+    <string name="help_dialog_overview_text1">通过概览来管理你未来七天内没有完成的任务。</string>
     <string name="help_dialog_challenges_text1">挑战是你短期和长期的目标。</string>
     <string name="help_dialog_challenges_text2">使用它们来清楚地定义你想要达到什么样的结果，为什么想要这么做，和你打算在什么日期之前达到。</string>
     <string name="help_dialog_challenges_text3">通过分配（重复）任务来应对挑战，将你的史诗般的挑战分解成更小的任务。当您从挑战中完成任务时，可获得额外的XP和硬币！</string>
@@ -114,12 +114,12 @@
     <string name="dialog_delete_reward_message">你确定要删除这个奖励吗？</string>
     <string name="reward_deleted">奖励删除</string>
     <string name="reward_activity_edit_title">编辑奖励</string>
-    <string name="reward_too_expensive">积分不足。完成一些任务来获取足够积分！</string>
+    <string name="reward_too_expensive">积分不足，去完成一些任务来获取足够积分！</string>
     <string name="level_up_title">你达到了新等级</string>
     <string name="sweet">好的</string>
-    <string name="level_up_message"><![CDATA[干得好！你现在在等级 <b>%d</b>！继续加油吧！]]></string>
-    <string name="empty_text_rewards">可惜！这里没有奖励，现在添加？</string>
-    <string name="empty_overview_text">你的旅程什么也没有！现在开始添加一个任务？</string>
+    <string name="level_up_message"><![CDATA[干得好！你升到了<b>%d</b>级！继续加油吧！]]></string>
+    <string name="empty_text_rewards">可惜！这里没有奖励，现在添加一个？</string>
+    <string name="empty_overview_text">你的旅程里什么也没有！现在开始添加一个任务？</string>
     <string name="empty_inbox_text">你的收集箱是空的</string>
     <string name="empty_repeating_quests_text">没有重复任务？添加重复目标或习惯吧</string>
     <string name="nav_drawer_player_xp">XP：%s</string>
@@ -129,14 +129,14 @@
     <string name="help_dialog_growth_experience_chart">经验表格告诉你每天获取了多少经验</string>
     <string name="title_activity_add_challenge">挑战你自己</string>
     <string name="reward_name_validation">你必须给你的奖励添加标题</string>
-    <string name="end_of_time">时间到</string>
+    <string name="end_of_time">结束时间：</string>
     <string name="quest_end_date_question">你会在什么时间去做？</string>
     <string name="quest_start_time_question">它应该什么时候开始？</string>
     <string name="quest_duration_question">持续多长时间？</string>
     <string name="quest_repeat_pattern_question">它重复的频率是多少？</string>
     <string name="reward_description_question">你为什么想要这个奖励？</string>
     <string name="reward_price_question">它需要花费多少？</string>
-    <string name="reward_saved">奖励保存</string>
+    <string name="reward_saved">奖励已保存</string>
     <string name="quest_note_question">备注</string>
     <string name="none">无</string>
     <string name="pick_note_title">添加备注</string>
@@ -157,9 +157,9 @@
     <string name="experience_gained">获得经验</string>
     <string name="coins_won">获得硬币</string>
     <string name="help_dialog_daily_challenge_text1">准备好接受挑战了吗</string>
-    <string name="every_morning_choose_your_3_help_dialog_daily_challenge_text2">每天早晨，选择3个你认为今天最重要的任务。</string>
+    <string name="every_morning_choose_your_3_help_dialog_daily_challenge_text2">每天早晨选择3个你认为今天最重要的任务。</string>
     <string name="help_dialog_daily_challenge_text3">通过创建和为你的任务分配优先级，你会更愿意完成它们。</string>
-    <string name="help_dialog_daily_challenge_star">最重要的任务将高亮在您的日程表和旅程中</string>
+    <string name="help_dialog_daily_challenge_star">最重要的任务将高亮在你的日程表和旅程中</string>
     <string name="help_dialog_daily_challenge_settings">你可以在设置中调整挑战日期和提醒时间</string>
     <string name="add_challenge_name_hint">标题（例：跑一次5km的马拉松）</string>
     <string name="challenge_difficulty_question">它有多困难？</string>
@@ -167,7 +167,7 @@
     <string name="challenge_reasons_question">为什么你想要做这件事？</string>
     <string name="add_challenge_name">请添加挑战的名称</string>
     <string name="add_challenge_expected_result">添加至少一个预期结果来激励你自己</string>
-    <string name="add_challenge_reason">添加制定好一个原因说明你为什么要做这个</string>
+    <string name="add_challenge_reason">添加至少一个原因说明你为什么要做这个</string>
     <string name="challenge_saved">挑战已保存</string>
     <string name="title_edit_challenge">编辑挑战</string>
     <string name="challenge_deleted">挑战已删除</string>
@@ -181,7 +181,7 @@
     <string name="ready_to_start">准备好开始了吗？</string>
     <string name="snooze">推迟</string>
     <string name="recurrence_picker_title">选择重复模式</string>
-    <string name="pick_flexible_count_title">什么频率？</string>
+    <string name="pick_flexible_count_title">重复次数</string>
     <string name="preferred_days">偏爱的日子</string>
     <string name="add_sub_quest">添加子任务</string>
     <string name="edit_quest_add_sub_quest">+ 添加子任务</string>
@@ -214,7 +214,7 @@
     <string name="do_today">安排到今天</string>
     <string name="snooze_for_tomorrow">推迟到明天</string>
     <string name="quest_duplicated">任务已复制</string>
-    <string name="view">视图</string>
+    <string name="view">查看</string>
     <string name="pick_date">选择日期</string>
     <string name="quest_snoozed">任务已推迟</string>
     <string name="quest_moved_to_inbox">任务移到收集箱</string>
@@ -228,7 +228,7 @@
     <string name="not_enough_coins_to_buy_pet">硬币不够买这只宠物</string>
     <string name="help_dialog_pet_title">享受忠诚的朋友</string>
     <string name="help_dialog_pet_text1">这是在旅程中帮助你的私人宠物！</string>
-    <string name="help_dialog_pet_text2">通过添加和完成任务以及挑战来使他保持健康。宠物越健康，你能获得的奖励就越多。</string>
+    <string name="help_dialog_pet_text2">通过添加和完成任务以及挑战来使它保持健康。宠物越健康，你能获得的奖励就越多。</string>
     <string name="help_dialog_pet_shop">去宠物店购买和更换宠物。你只能同时拥有一个宠物。</string>
     <string name="edit_menu">编辑</string>
     <string name="title_activity_pick_challenge">选择一个挑战</string>
@@ -253,7 +253,7 @@
     <string name="title_activity_agenda">你的日程表</string>
     <string name="migration_text">不，你需要等等！\niPoli正在吃块饼干并升级你的经验</string>
     <string name="agenda_daily_journey">日常旅程 %s</string>
-    <string name="add_quest_by_date">由 %s</string>
+    <string name="add_quest_by_date">到 %s</string>
     <string name="agenda_daily_journey_format">MMMM d\'%s\'</string>
     <string name="empty_agenda_text">这个日期没有任务</string>
     <string name="invite_title">邀请你的朋友</string>
@@ -308,7 +308,7 @@
     <string name="add_challenge_reason2_hint">第2个原因</string>
     <string name="add_challenge_reason3_hint">第3个原因</string>
     <string name="title_fragment_wizard_challenge_reasons">你为什么想要做这个？</string>
-    <string name="title_fragment_wizard_challenge_end_date">实现它在</string>
+    <string name="title_fragment_wizard_challenge_end_date">在多长时间内实现它</string>
     <string name="one_month">1个月</string>
     <string name="one_week">1周</string>
     <string name="ten_days">10天</string>
@@ -366,10 +366,10 @@
     <string name="settings_app_version">App版本</string>
     <string name="duplicate">复制</string>
     <string name="mark_as_done">标记为完成</string>
-    <string name="reminder_message">信息（例：不要懒惰）</string>
+    <string name="reminder_message">提示信息（例：不要懒惰）</string>
     <string name="rate_dialog_feedback_hint">你是如何看待iPoli的</string>
-    <string name="repeat_type_flexible">灵活的</string>
-    <string name="repeat_frequency">频繁的</string>
+    <string name="repeat_type_flexible">自定义</string>
+    <string name="repeat_frequency">重复周期</string>
     <string name="sunday_short">周日</string>
     <string name="monday_short">周一</string>
     <string name="tuesday_short">周二</string>
@@ -377,7 +377,7 @@
     <string name="thursday_short">周四</string>
     <string name="friday_short">周五</string>
     <string name="saturday_short">周六</string>
-    <string name="day_of_month">Day of month</string>
+    <string name="day_of_month">每月的哪一天</string>
     <string name="day">天</string>
     <string name="until">直到</string>
     <string name="start_time">开始时间</string>
@@ -666,7 +666,7 @@
     <string name="reward_price_coins">%d 硬币</string>
     <string name="help_dialog_rewards_buy">按下按钮来购买你的奖励，如果按钮是灰的，再努力一点工作，赚取更多硬币！</string>
     <string name="help_dialog_rewards_text1">定义你自己的奖励，当你通过完成任务赚到足够的硬币时就可以购买它们。</string>
-    <string name="get_it">√</string>
+    <string name="get_it">Get it</string>
     <string name="reminders">提醒</string>
     <string name="timer">计时器</string>
     <string name="programmed_challenges">程序化的挑战</string>
@@ -680,8 +680,8 @@
     <string name="avatar_name_macarena">幸运女神</string>
     <string name="avatar_name_macarena_mexican">火辣小姐</string>
     <string name="avatar_name_blondy">迷人小姐</string>
-    <string name="avatar_name_green_eyes">天使的眼睛</string>
-    <string name="avatar_name_pipilota">Butter Cup</string>
+    <string name="avatar_name_green_eyes">天使之眼</string>
+    <string name="avatar_name_pipilota">眼镜小姐</string>
     <string name="avatar_name_old_pirate">挖宝人</string>
     <string name="avatar_name_beard_guy">Mr. Right</string>
     <string name="avatar_name_dwight">肌肉男</string>
@@ -694,7 +694,7 @@
     <string name="power_up_growth_sub_title">跟踪你的进程和分数</string>
     <string name="power_up_growth_short_desc">跟踪并对比你的进程和在不同时间段的效率。</string>
     <string name="power_up_growth_long_desc">监控你在每个种类的任务上花了多少时间。
-完成了多少，森么是你最优秀的分数和帮助你高效率的因素。</string>
+完成了多少，什么是你最优秀的分数和帮助你高效率的因素。</string>
     <string name="power_up_matrix_sub_title">把重要和紧急分开</string>
     <string name="power_up_matrix_short_desc">为你的任务设置优先级，并专注在最重要的一个上</string>
     <string name="power_up_matrix_long_desc">艾森豪威尔矩阵把你的任务根据优先级划分为4组。
@@ -718,7 +718,7 @@
     <string name="power_up_sub_quests_short_desc">创建你的任务的清单列表</string>
     <string name="power_up_sub_quests_long_desc">通过把你的任务划分为更小的小块来保持更高效率。
 定义步骤，子任务或甚至创建一个购物清单。</string>
-    <string name="power_up_reminders_sub_title">不要忘记任务</string>
+    <string name="power_up_reminders_sub_title">不要忘记任何事</string>
     <string name="power_up_reminders_short_desc">让iPoli提醒你什么时候该做下一个任务</string>
     <string name="power_up_reminders_long_desc">给你的任务添加提醒。不需要一直看着你的手机或者一直看着时间，
 专注在目前的任务上，iPoli会提醒你什么时候下个任务开始。</string>
@@ -885,6 +885,16 @@
     <string name="achievement_complete_quests_in_row_desc">连续100天每天至少完成一个任务</string>
     <string name="achievement_send_feedback_name">社区服务</string>
     <string name="achievement_send_feedback_desc">发送关于iPoli的反馈</string>
+    <string name="pick_challenge_to_start">选择一个挑战来开始</string>
+    <string name="growth_awesomeness_score">得到的分数</string>
+    <string name="growth_completed_quests">完成的任务</string>
+    <string name="growth_time_spent">花费的时间</string>
+    <string name="growth_coins_earned">获得的硬币</string>
+    <string name="growth_experience_earned">获得的经验</string>
+    <string name="difficulty_easy">简单</string>
+    <string name="difficulty_normal">一般</string>
+    <string name="difficulty_hard">困难</string>
+    <string name="difficulty_hell">地狱</string>
     <string-array name="player_titles">
         <item>新手</item>
         <item>学徒</item>
