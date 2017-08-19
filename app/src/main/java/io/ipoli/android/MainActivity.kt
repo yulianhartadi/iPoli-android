@@ -14,12 +14,13 @@ import io.ipoli.android.player.ui.SignInController
  */
 class MainActivity : AppCompatActivity() {
 
-    lateinit public var router: Router
+    lateinit var router: Router
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        router = Conductor.attachRouter(this, findViewById(R.id.controller_container), savedInstanceState)
+
+        router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         if (!router.hasRootController()) {
 //            router.setRoot(RouterTransaction.with(RewardListController()))
             router.setRoot(RouterTransaction.with(SignInController()))

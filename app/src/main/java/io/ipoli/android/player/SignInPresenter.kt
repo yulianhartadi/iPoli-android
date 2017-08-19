@@ -29,7 +29,7 @@ class SignInPresenter @Inject constructor(private val signInUseCase: SignInUseCa
             intent { it.signInAsGuestIntent() }.switchMap { signInRequest ->
                 signInUseCase.execute(signInRequest).doFinally {
                     Timber.d("show store")
-                    navigator.showStore()
+                    navigator.showHome()
                 }
             })
 

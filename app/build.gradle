@@ -63,6 +63,7 @@ dependencies {
     kapt "com.google.dagger:dagger-compiler:2.11"
 
     implementation 'com.github.medyo:fancybuttons:1.8.4'
+    implementation 'de.hdodenhof:circleimageview:2.1.0'
 
 //    debugImplementation "com.github.brianPlummer:tinydancer:0.1.1"
 //    implementation "com.github.brianPlummer:tinydancer-noop:0.1.1"

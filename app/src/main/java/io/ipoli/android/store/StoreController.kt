@@ -62,7 +62,7 @@ class StoreController : BaseController<StoreController, StorePresenter>() {
 
             is StoreLoadedState -> {
                 Toast.makeText(activity, "Loaded Coins: " + state.coins, Toast.LENGTH_SHORT).show()
-                view?.playerCoins?.text = state.coins.toString()
+//                view?.playerCoins?.text = state.coins.toString()
             }
         }
     }
