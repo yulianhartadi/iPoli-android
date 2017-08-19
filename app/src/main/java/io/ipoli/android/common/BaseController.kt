@@ -14,7 +14,7 @@ import io.ipoli.android.iPoliApp
  */
 abstract class BaseController<V : MvpView, P : MviPresenter<V, *>> : RestoreViewOnCreateMviController<V, P> {
 
-    private var hasExited: Boolean = false
+    private var hasExited = false
 
     constructor() : super()
     constructor(args: Bundle) : super(args)
