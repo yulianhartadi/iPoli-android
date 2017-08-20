@@ -51,7 +51,6 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.5.1'
     implementation 'com.orhanobut:logger:2.1.1'
     implementation 'com.jakewharton.rxbinding2:rxbinding-kotlin:2.0.0'
-    implementation 'com.hannesdorfmann:adapterdelegates3:3.0.1'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
     implementation "io.reactivex.rxjava2:rxjava:2.1.2"
     implementation 'com.hannesdorfmann.mosby3:mvi-conductor:3.0.0', {
@@ -63,8 +62,10 @@ dependencies {
     implementation "com.google.dagger:dagger:2.11"
     kapt "com.google.dagger:dagger-compiler:2.11"
 
+    implementation 'com.hannesdorfmann:adapterdelegates3:3.0.1'
     implementation 'com.github.medyo:fancybuttons:1.8.4'
     implementation 'de.hdodenhof:circleimageview:2.1.0'
+    implementation 'com.lnikkila:extendedtouchview:0.1.1'
 
 //    debugImplementation "com.github.brianPlummer:tinydancer:0.1.1"
 //    implementation "com.github.brianPlummer:tinydancer-noop:0.1.1"

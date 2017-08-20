@@ -13,8 +13,7 @@ import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
-import io.ipoli.android.navigator
-import io.ipoli.android.store.StoreController
+import io.ipoli.android.quest.overview.ui.OverviewController
 import kotlinx.android.synthetic.main.controller_home.view.*
 
 /**
@@ -64,10 +63,15 @@ class HomeController : BaseController<HomeController, HomePresenter>(), Navigati
 
         view.drawerLayout.addDrawerListener(actionBarDrawerToggle)
 
-//        val childRouter = getChildRouter(view.controllerContainer, null)
-//        childRouter.setRoot(RouterTransaction.with(StoreController()))
+        val handler = FadeChangeHandler()
+        val childRouter = getChildRouter(view.controllerContainer, null)
+        childRouter.setRoot(
+            RouterTransaction.with(OverviewController())
+                .pushChangeHandler(handler)
+                .popChangeHandler(handler)
+        )
 
-        navigator.showStore()
+//        navigator.showStore()
 
         actionBarDrawerToggle.syncState()
     }
