@@ -2,7 +2,7 @@ package io.ipoli.android.quest.overview
 
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.ipoli.android.quest.overview.ui.OverviewController
-import io.ipoli.android.quest.overview.ui.OverviewInitialLoadingState
+import io.ipoli.android.quest.overview.ui.OverviewLoadingState
 import io.ipoli.android.quest.overview.ui.OverviewStatePartialChange
 import io.ipoli.android.quest.overview.ui.OverviewViewState
 import io.reactivex.Observable
@@ -25,7 +25,7 @@ class OverviewPresenter @Inject constructor(private val displayOverviewQuestsUse
         )
 
         val allIntents: Observable<OverviewStatePartialChange> = Observable.merge(observables)
-        val initialState: OverviewViewState = OverviewInitialLoadingState()
+        val initialState: OverviewViewState = OverviewLoadingState()
         val stateObservable = allIntents.scan(initialState, this::viewStateReducer)
             .observeOn(AndroidSchedulers.mainThread())
 

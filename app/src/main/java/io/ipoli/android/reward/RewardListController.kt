@@ -53,7 +53,7 @@ class RewardListController : BaseController<RewardListController, RewardListPres
         val view = inflater.inflate(R.layout.controller_rewards, container, false) as ViewGroup
         rewardList = view.rewardList
         rewardList.setHasFixedSize(true)
-        rewardList.layoutManager = LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false)
+        rewardList.layoutManager = LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
 
 //        val rewardRepository = RewardRepository()
 
