@@ -2,6 +2,8 @@ package io.ipoli.android.store
 
 import dagger.Component
 import io.ipoli.android.common.di.ControllerComponent
+import io.ipoli.android.store.items.StoreItemsController
+import io.ipoli.android.store.items.StoreItemsPresenter
 import javax.inject.Scope
 
 /**
@@ -9,13 +11,13 @@ import javax.inject.Scope
  * on 8/18/17.
  */
 @StoreScope
-@Component(modules = arrayOf(StoreItemsModule::class),
+@Component(modules = arrayOf(StoreModule::class),
         dependencies = arrayOf(ControllerComponent::class))
-interface StoreItemsComponent {
+interface StoreComponent {
 
-    fun inject(controller: StoreItemsController)
+    fun inject(controller: StoreController)
 
-    fun createStoreItemsPresenter(): StoreItemsPresenter
+    fun createStorePresenter(): StorePresenter
 }
 
 @Scope

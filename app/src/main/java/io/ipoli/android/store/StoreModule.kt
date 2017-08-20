@@ -10,7 +10,7 @@ import io.ipoli.android.player.persistence.RealmPlayerRepository
  * on 8/18/17.
  */
 @Module
-class StoreItemsModule {
+class StoreModule {
     @Provides
     @StoreScope
     fun providePlayerRepository(): PlayerRepository = RealmPlayerRepository()
