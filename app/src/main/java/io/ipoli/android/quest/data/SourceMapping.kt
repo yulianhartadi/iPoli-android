@@ -1,12 +1,16 @@
 package io.ipoli.android.quest.data
 
+import io.realm.RealmObject
+
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/19/17.
  */
 
-class SourceMapping private constructor() {
+open class SourceMapping : RealmObject {
     private var androidCalendarMapping: AndroidCalendarMapping? = null
+
+    constructor()
 
     companion object {
 
@@ -18,7 +22,7 @@ class SourceMapping private constructor() {
     }
 }
 
-class AndroidCalendarMapping {
+open class AndroidCalendarMapping : RealmObject {
     var calendarId: Long? = null
     var eventId: Long? = null
 

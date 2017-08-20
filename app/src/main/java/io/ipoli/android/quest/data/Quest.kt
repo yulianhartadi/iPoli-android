@@ -5,6 +5,7 @@ import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.TimePreference
 import io.ipoli.android.common.persistence.PersistedModel
+import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import org.threeten.bp.Instant
@@ -58,8 +59,8 @@ open class Quest : RealmObject, PersistedModel {
 
     var repeatingQuestId: String? = null
 
-    var reminders: MutableList<Reminder> = ArrayList()
-    var subQuests: MutableList<SubQuest> = ArrayList()
+    var reminders: RealmList<Reminder> = RealmList()
+    var subQuests: RealmList<SubQuest> = RealmList()
 
     var difficulty: Int? = null
 
@@ -73,7 +74,7 @@ open class Quest : RealmObject, PersistedModel {
     var coins: Long? = null
     var experience: Long? = null
 
-    var notes: MutableList<Note> = ArrayList()
+    var notes: RealmList<Note> = RealmList()
 
     var source: String? = null
 
