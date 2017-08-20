@@ -9,9 +9,11 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
+import io.ipoli.android.navigator
 import io.ipoli.android.store.StoreController
 import kotlinx.android.synthetic.main.controller_home.view.*
 
@@ -62,10 +64,10 @@ class HomeController : BaseController<HomeController, HomePresenter>(), Navigati
 
         view.drawerLayout.addDrawerListener(actionBarDrawerToggle)
 
-        val childRouter = getChildRouter(view.controllerContainer, null)
-        childRouter.setRoot(RouterTransaction.with(StoreController()))
+//        val childRouter = getChildRouter(view.controllerContainer, null)
+//        childRouter.setRoot(RouterTransaction.with(StoreController()))
 
-//        router.pushController(RouterTransaction.with(StoreController()))
+        navigator.showStore()
 
         actionBarDrawerToggle.syncState()
     }
