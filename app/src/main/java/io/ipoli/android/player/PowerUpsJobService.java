@@ -84,12 +84,6 @@ public class PowerUpsJobService extends JobService {
         LocalDate currentDate = LocalDate.now();
 
         if (player.getMembership() == MembershipType.NONE) {
-            LocalDate createdAt = player.getCreatedAtDate();
-            if (isOnLastDayOfTrial(createdAt, currentDate)) {
-                showTrialExpiringNotification();
-                return finishJobOnMainThread(params);
-            }
-
             List<PowerUp> expiringPowerUps = new ArrayList<>();
             for (Map.Entry<PowerUp, LocalDate> entry : player.getPowerUps().entrySet()) {
                 if (entry.getValue().equals(currentDate)) {
@@ -184,10 +178,6 @@ public class PowerUpsJobService extends JobService {
         showNotification(title, text);
     }
 
-    private void showTrialExpiringNotification() {
-        showNotification(getString(R.string.trial_expiring_title), getString(R.string.trial_expiring_message));
-    }
-
     private void showNotification(String title, String text) {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
@@ -214,10 +204,6 @@ public class PowerUpsJobService extends JobService {
     protected boolean finishJobOnMainThread(JobParameters params) {
         jobFinished(params, false);
         return false;
-    }
-
-    private boolean isOnLastDayOfTrial(LocalDate createdAt, LocalDate currentDate) {
-        return createdAt.plusDays(Constants.POWER_UPS_TRIAL_PERIOD_DAYS - 1).isEqual(currentDate);
     }
 
     private Purchase getActivePurchase(List<Purchase> purchases) {
