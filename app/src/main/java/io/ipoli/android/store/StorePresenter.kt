@@ -1,7 +1,6 @@
 package io.ipoli.android.store
 
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
-import io.ipoli.android.store.items.StoreItemsController
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
