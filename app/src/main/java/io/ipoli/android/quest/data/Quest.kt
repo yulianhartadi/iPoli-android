@@ -28,7 +28,7 @@ open class Quest : RealmObject, PersistedModel {
 
     var rawText: String? = null
 
-    var name: String? = null
+    var name: String = ""
 
     var category: String? = null
 
