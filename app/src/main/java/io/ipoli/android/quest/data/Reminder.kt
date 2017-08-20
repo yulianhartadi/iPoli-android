@@ -17,7 +17,7 @@ class Reminder {
 
     var start: Long? = null
 
-    constructor() {}
+    constructor()
 
     @JvmOverloads constructor(minutesFromStart: Long, notificationId: String = Random().nextInt().toString()) {
         this.minutesFromStart = minutesFromStart
