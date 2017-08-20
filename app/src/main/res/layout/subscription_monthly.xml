@@ -5,8 +5,7 @@
     android:id="@+id/monthly_root_layout"
     style="@style/subscription_plan_card">
 
-    <android.support.constraint.ConstraintLayout
-        style="@style/match_parent">
+    <android.support.constraint.ConstraintLayout style="@style/match_parent">
 
         <TextView
             android:id="@+id/monthly_title"
@@ -14,29 +13,39 @@
             android:text="@string/monthly_plan"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintRight_toRightOf="parent" />
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
         <TextView
             android:id="@+id/benefit1"
             style="@style/subscription_price_list_item"
             android:drawableStart="@drawable/ic_done_yellow_24dp"
-            android:text="@string/enable_all_power_ups"
+            android:text="@string/membership_benefit_enable_all_power_ups"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="@+id/monthly_title"
-            app:layout_constraintTop_toBottomOf="@+id/monthly_title"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintHorizontal_bias="0.0" />
+            app:layout_constraintTop_toBottomOf="@+id/monthly_title" />
 
         <TextView
             android:id="@+id/benefit2"
             style="@style/subscription_price_list_item"
             android:drawableStart="@drawable/ic_done_yellow_24dp"
-            android:text="@string/get_all_future_power_ups_for_free"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="@+id/monthly_title"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/benefit1" />
+            app:layout_constraintTop_toBottomOf="@+id/benefit1"
+            card_view:text="@string/membership_benefit_free_trial" />
+
+        <TextView
+            android:id="@+id/benefit3"
+            style="@style/subscription_price_list_item"
+            android:drawableStart="@drawable/ic_done_yellow_24dp"
+            android:text="@string/membership_benefit_cancellation"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintLeft_toLeftOf="@+id/monthly_title"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/benefit2" />
 
         <TextView
             android:id="@+id/disadvantage1"
@@ -46,7 +55,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintLeft_toLeftOf="@+id/monthly_title"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/benefit2" />
+            app:layout_constraintTop_toBottomOf="@+id/benefit3" />
 
         <TextView
             android:id="@+id/monthly_price"

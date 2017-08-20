@@ -828,7 +828,7 @@
     <string name="trial_message">哇！所有的高级功能都对你免费%d天。</string>
     <string name="membership">会员</string>
     <string name="subscription_price_per_month">%s每月</string>
-    <string name="enable_all_power_ups">激活所有高级功能</string>
+    <string name="membership_benefit_enable_all_power_ups">激活所有高级功能</string>
     <string name="get_all_future_power_ups_for_free">免费获得所有将来的高级功能</string>
     <string name="quarterly_plan_disadvantage1">比较贵的选择：3月一付</string>
     <string name="monthly_plan_disadvantage1">最贵的选择：按月付</string>

@@ -284,6 +284,15 @@ public class MembershipStoreFragment extends BaseFragment {
             return;
         }
 
+        ((TextView) monthlyPlanContainer.findViewById(R.id.benefit2))
+                .setText(getString(R.string.membership_benefit_free_trial, Constants.POWER_UPS_TRIAL_PERIOD_DAYS));
+
+        ((TextView) quarterlyContainer.findViewById(R.id.benefit2))
+                .setText(getString(R.string.membership_benefit_free_trial, Constants.POWER_UPS_TRIAL_PERIOD_DAYS));
+
+        ((TextView) yearlyContainer.findViewById(R.id.benefit2))
+                .setText(getString(R.string.membership_benefit_free_trial, Constants.POWER_UPS_TRIAL_PERIOD_DAYS));
+
         showPrice(monthlySubscription, 1, R.color.colorYellow, monthlyPrice);
         showPrice(yearlySubscription, 12, R.color.colorGreen, yearlyPrice);
         showPrice(quarterlySubscription, 3, R.color.colorRed, quarterlyPrice);

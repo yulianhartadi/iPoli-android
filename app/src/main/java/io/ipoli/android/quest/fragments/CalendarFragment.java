@@ -38,6 +38,7 @@ import io.ipoli.android.app.events.CalendarDayChangedEvent;
 import io.ipoli.android.app.events.EventSource;
 import io.ipoli.android.app.help.HelpDialog;
 import io.ipoli.android.app.ui.FabMenuView;
+import io.ipoli.android.app.ui.ThemedSnackbar;
 import io.ipoli.android.app.ui.events.FabMenuTappedEvent;
 import io.ipoli.android.app.ui.events.ToolbarCalendarTapEvent;
 import io.ipoli.android.app.utils.DateUtils;
@@ -48,6 +49,8 @@ import io.ipoli.android.quest.activities.AgendaActivity;
 import io.ipoli.android.quest.activities.EisenhowerMatrixActivity;
 import io.ipoli.android.quest.events.ScrollToTimeEvent;
 import io.ipoli.android.store.PowerUp;
+import io.ipoli.android.store.StoreItemType;
+import io.ipoli.android.store.activities.StoreActivity;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -152,7 +155,14 @@ public class CalendarFragment extends BaseFragment implements View.OnClickListen
         calendarPager.setCurrentItem(MID_POSITION);
 
         if (showTrialMessage) {
-            Snackbar snackbar = Snackbar.make(rootContainer, getString(R.string.trial_message, Constants.POWER_UPS_TRIAL_PERIOD_DAYS), Snackbar.LENGTH_INDEFINITE);
+            Snackbar snackbar = ThemedSnackbar.make(rootContainer,
+                    getString(R.string.trial_membership_message, Constants.POWER_UPS_TRIAL_PERIOD_DAYS), Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction(R.string.go_premium, view1 -> {
+                Intent intent = new Intent(getContext(), StoreActivity.class);
+                intent.putExtra(StoreActivity.START_ITEM_TYPE, StoreItemType.MEMBERSHIP.name());
+                startActivity(intent);
+            });
+
             snackbar.getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
                 @Override
                 public void onViewAttachedToWindow(View v) {

@@ -824,7 +824,7 @@
     <string name="trial_message">びっくり！ すべてのパワーアップアイテムが %d 日間無料です。</string>
     <string name="membership">会員</string>
     <string name="subscription_price_per_month">"ひと月あたり %s "</string>
-    <string name="enable_all_power_ups">すべてのパワーアップを有効にする</string>
+    <string name="membership_benefit_enable_all_power_ups">すべてのパワーアップを有効にする</string>
     <string name="get_all_future_power_ups_for_free">すべての将来のパワーアップを無料で手に入れよう</string>
     <string name="quarterly_plan_disadvantage1">高価なオプション - 3か月ごとに請求</string>
     <string name="monthly_plan_disadvantage1">最も高価なオプション - 毎月請求</string>

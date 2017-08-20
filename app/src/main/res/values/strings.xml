@@ -887,8 +887,7 @@
     <string name="trial_message">Surprise! All power-ups are FREE for you for %d days.</string>
     <string name="membership">Membership</string>
     <string name="subscription_price_per_month">%s per month</string>
-    <string name="enable_all_power_ups">Enable all power-ups</string>
-    <string name="get_all_future_power_ups_for_free">Get all future power-ups for FREE</string>
+    <string name="membership_benefit_enable_all_power_ups">Enable all power-ups (incl. all future ones)</string>
     <string name="quarterly_plan_disadvantage1">Expensive option - billed every 3 months</string>
     <string name="monthly_plan_disadvantage1">Most expensive option - billed monthly</string>
     <string name="yearly_plan_benefit3">Smartest plan - billed yearly</string>
@@ -957,6 +956,9 @@
     <string name="difficulty_normal">Normal</string>
     <string name="difficulty_hard">Hard</string>
     <string name="difficulty_hell">Hell</string>
+    <string name="trial_membership_message">Enable all Power-ups for %d days - FREE</string>
+    <string name="membership_benefit_free_trial">%d days FREE trial</string>
+    <string name="membership_benefit_cancellation">Cancel at any time</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
