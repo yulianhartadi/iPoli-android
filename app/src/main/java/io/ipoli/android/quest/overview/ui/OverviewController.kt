@@ -8,6 +8,7 @@ import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
 import io.ipoli.android.daggerComponent
 import io.ipoli.android.quest.overview.OverviewPresenter
+import io.ipoli.android.quest.overview.di.DaggerOverviewComponent
 import io.ipoli.android.quest.overview.di.OverviewComponent
 
 /**
