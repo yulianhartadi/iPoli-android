@@ -9,13 +9,13 @@ import javax.inject.Scope
  * on 8/18/17.
  */
 @StoreScope
-@Component(modules = arrayOf(StoreModule::class),
+@Component(modules = arrayOf(StoreItemsModule::class),
         dependencies = arrayOf(ControllerComponent::class))
-interface StoreComponent {
+interface StoreItemsComponent {
 
-    fun inject(controller: StoreController)
+    fun inject(controller: StoreItemsController)
 
-    fun createStorePresenter(): StorePresenter
+    fun createStoreItemsPresenter(): StoreItemsPresenter
 }
 
 @Scope

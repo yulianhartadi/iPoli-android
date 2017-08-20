@@ -62,8 +62,10 @@ class HomeController : BaseController<HomeController, HomePresenter>(), Navigati
 
         view.drawerLayout.addDrawerListener(actionBarDrawerToggle)
 
-        val childRouter = getChildRouter(view.controllerContainer, null)
-        childRouter.setRoot(RouterTransaction.with(StoreController()))
+//        val childRouter = getChildRouter(view.controllerContainer, null)
+//        childRouter.setRoot(RouterTransaction.with(StoreController()))
+
+        router.pushController(RouterTransaction.with(StoreController()))
 
         actionBarDrawerToggle.syncState()
     }

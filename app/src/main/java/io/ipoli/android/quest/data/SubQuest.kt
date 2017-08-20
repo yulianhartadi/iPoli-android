@@ -7,7 +7,7 @@ import java.util.*
  * Created by Venelin Valkov <venelin></venelin>@curiousily.com>
  * on 8/19/17.
  */
-class SubQuest : RealmObject {
+open class SubQuest : RealmObject {
 
     var name: String? = null
 
