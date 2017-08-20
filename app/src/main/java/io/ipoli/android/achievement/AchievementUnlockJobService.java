@@ -86,6 +86,11 @@ public class AchievementUnlockJobService extends JobService {
             protected List<Achievement> doInBackground(Void... voids) {
                 Player player = playerPersistenceService.get();
                 AchievementsProgress progress = achievementProgressPersistenceService.get();
+                if (progress == null) {
+                    achievementProgressPersistenceService.save(new AchievementsProgress());
+                    eventBus.post(new AppErrorEvent(new IllegalStateException("Player with id " + player.getId() + " has no achievement progress")));
+                }
+
                 AchievementsProgressCoordinator.update(action, progress);
 
                 List<Achievement> achievementsToUnlock = achievementUnlocker.findUnlocked(
