@@ -27,11 +27,9 @@ class StoreItemsController : BaseController<StoreItemsController, StoreItemsPres
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_store_items, container, false)
-        view.subscriptionContainer.setOnClickListener({
-            Timber.d("CLICKKKK")
-            navigator.showRewardsList() })
+        view.subscriptionContainer.setOnClickListener({ navigator.showRewardsList() })
         view.powerUpsContainer.setOnClickListener({ navigator.showRewardsList() })
-        view.avatarsContainer.setOnClickListener({ navigator.showRewardsList() })
+        view.avatarsContainer.setOnClickListener({ navigator.showAvatarList() })
         view.petsContainer.setOnClickListener({ navigator.showRewardsList() })
         return view
     }

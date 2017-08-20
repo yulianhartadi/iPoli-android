@@ -6,6 +6,7 @@ import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.home.HomeController
 import io.ipoli.android.reward.RewardListController
 import io.ipoli.android.store.StoreController
+import io.ipoli.android.store.avatars.AvatarListController
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -32,6 +33,14 @@ class Navigator(private val router: Router) {
     fun showHome() {
         val handler = FadeChangeHandler()
         router.pushController(RouterTransaction.with(HomeController())
+            .pushChangeHandler(handler)
+            .popChangeHandler(handler)
+        )
+    }
+
+    fun showAvatarList() {
+        val handler = FadeChangeHandler()
+        router.pushController(RouterTransaction.with(AvatarListController())
             .pushChangeHandler(handler)
             .popChangeHandler(handler)
         )
