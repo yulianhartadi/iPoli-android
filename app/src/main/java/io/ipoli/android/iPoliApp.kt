@@ -2,6 +2,7 @@ package io.ipoli.android
 
 import android.app.Application
 import android.content.Context
+import com.jakewharton.threetenabp.AndroidThreeTen
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.squareup.leakcanary.LeakCanary
@@ -9,7 +10,11 @@ import com.squareup.leakcanary.RefWatcher
 import io.ipoli.android.common.di.AppComponent
 import io.ipoli.android.common.di.AppModule
 import io.ipoli.android.common.di.DaggerAppComponent
+import io.ipoli.android.quest.data.Category
+import io.ipoli.android.quest.data.Quest
+import io.ipoli.android.quest.persistence.RealmQuestRepository
 import io.realm.Realm
+import org.threeten.bp.LocalDate
 import timber.log.Timber
 
 /**
@@ -39,6 +44,7 @@ class iPoliApp : Application() {
             // You should not init your app in this process.
             return
         }
+        AndroidThreeTen.init(this)
         // Initialize Realm. Should only be done once when the application starts.
         Realm.init(this)
         Logger.addLogAdapter(AndroidLogAdapter())
@@ -49,5 +55,8 @@ class iPoliApp : Application() {
         })
         refWatcher = LeakCanary.install(this)
 //        TinyDancer.create().show(this)
+
+        val questRepository = RealmQuestRepository()
+        questRepository.save(Quest("Welcome to China", LocalDate.now(), Category.FUN)).subscribe()
     }
 }

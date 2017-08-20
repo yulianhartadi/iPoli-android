@@ -8,7 +8,6 @@ import io.ipoli.android.player.ui.SignInStatePartialChange
 import io.ipoli.android.player.ui.SignInViewState
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -28,7 +27,6 @@ class SignInPresenter @Inject constructor(private val signInUseCase: SignInUseCa
             },
             intent { it.signInAsGuestIntent() }.switchMap { signInRequest ->
                 signInUseCase.execute(signInRequest).doFinally {
-                    Timber.d("show store")
                     navigator.showHome()
                 }
             })

@@ -7,6 +7,7 @@ import io.ipoli.android.quest.overview.ui.OverviewStatePartialChange
 import io.ipoli.android.quest.overview.ui.OverviewViewState
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -17,8 +18,9 @@ class OverviewPresenter @Inject constructor(private val displayOverviewQuestsUse
     override fun bindIntents() {
 
         val observables = listOf<Observable<OverviewStatePartialChange>>(
-            intent { it.loadQuestsIntent() }.switchMap { paramaters ->
-                displayOverviewQuestsUseCase.execute(paramaters)
+            intent { it.loadQuestsIntent() }.switchMap { parameters ->
+                Timber.d("Loading")
+                displayOverviewQuestsUseCase.execute(parameters)
             }
         )
 

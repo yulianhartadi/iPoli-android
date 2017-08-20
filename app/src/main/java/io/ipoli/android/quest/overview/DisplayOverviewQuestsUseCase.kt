@@ -8,6 +8,7 @@ import io.ipoli.android.quest.overview.ui.QuestsLoadedLoadedPartialChange
 import io.ipoli.android.quest.persistence.QuestRepository
 import io.reactivex.Observable
 import org.threeten.bp.LocalDate
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -18,7 +19,7 @@ class DisplayOverviewQuestsUseCase(private val questRepository: QuestRepository)
     override fun createObservable(params: Parameters): Observable<OverviewStatePartialChange> {
         return questRepository.findScheduledBetween(params.startDate.minusDays(params.showCompletedForPastDays), params.endDate)
             .map { quests ->
-
+                Timber.d(" Quests size " + quests.size)
                 val comparator = Comparator<Quest> { q1, q2 ->
                     when {
                         q1.scheduledDate!!.isEqual(q2.scheduledDate) -> q1.scheduledDate!!.compareTo(q2.scheduledDate)

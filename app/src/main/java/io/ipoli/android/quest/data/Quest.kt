@@ -4,6 +4,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.TimePreference
+import io.ipoli.android.common.datetime.toStartOfDayUTCMillis
 import io.ipoli.android.common.persistence.PersistedModel
 import io.realm.RealmList
 import io.realm.RealmObject
@@ -93,7 +94,7 @@ open class Quest : RealmObject, PersistedModel {
         this.name = name
         this.endDate = endDate
         startDate = endDate
-        scheduledDate = endDate
+        scheduled = endDate?.toStartOfDayUTCMillis()
         startMinute = null
         createdAt = DateUtils.nowUTC().getTime()
         updatedAt = DateUtils.nowUTC().getTime()
