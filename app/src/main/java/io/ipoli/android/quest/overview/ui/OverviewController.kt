@@ -6,6 +6,7 @@ import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -150,7 +151,21 @@ class OverviewAdapterDelegate(private val inflater: LayoutInflater) : AdapterDel
                 itemView.scheduleInfo.text = ScheduleTextFormatter(true).format(overviewQuestViewModel, itemView.context)
 
                 itemView.scheduleInfo.visibility = if (itemView.scheduleInfo.text.isNotEmpty()) View.VISIBLE else View.GONE
+
+                itemView.moreMenu.setOnClickListener { button ->
+                    showPopupMenu(overviewQuestViewModel, button)
+                }
             }
+        }
+
+        private fun showPopupMenu(model: OverviewQuestViewModel, button: View) {
+            val pm = PopupMenu(itemView.context, button)
+            pm.inflate(R.menu.overview_actions_menu)
+
+            val startItem = pm.menu.findItem(R.id.quest_start)
+            startItem.setTitle(if (model.isStarted) R.string.stop else R.string.start)
+
+            pm.show()
         }
     }
 
