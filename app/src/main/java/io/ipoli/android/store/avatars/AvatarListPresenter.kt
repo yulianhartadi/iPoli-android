@@ -25,7 +25,7 @@ class AvatarListPresenter @Inject constructor(private val displayAvatarListUseCa
 
             intent {
                 it.buyAvatarIntent().switchMap { params ->
-                    buyAvatarUseCase.execute(Unit)
+                    buyAvatarUseCase.execute(params)
                 }
             }
         )
