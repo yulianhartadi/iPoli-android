@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">iPoli</string>
     <string name="title_fragment_inbox">Caixa de entrada</string>
-    <string name="title_activity_pick_avatar">Escolher um avatar</string>
+    <string name="title_activity_pick_avatar">Escolher um vm</string>
     <string name="title_edit_quest">Editar missão</string>
     <string name="quest_deleted">Missão deletada</string>
     <string name="repeating_quest_deleted">Missão recorrente deletada</string>
@@ -381,8 +381,8 @@
     <string name="challenge_deadline_question">Quando é o prazo?</string>
     <string name="add_reminder_button">+ Adicionar lembrete</string>
     <string name="settings_general_title">Geral</string>
-    <string name="settings_avatar_title">Mudar o avatar</string>
-    <string name="settings_avatar_desc">Escolha um novo avatar incrível para você</string>
+    <string name="settings_avatar_title">Mudar o vm</string>
+    <string name="settings_avatar_desc">Escolha um novo vm incrível para você</string>
     <string name="settings_persistent_notification_title">Notificação persistente</string>
     <string name="settings_persistent_notification_desc">Veja rapidamente suas missões diárias e seu progresso</string>
     <string name="settings_tutorial_title">Mostrar tutorial</string>
@@ -669,7 +669,7 @@
     <string name="pet_store_use_pet">Usar</string>
     <string name="pet_selected_message">Animal alterado com sucesso</string>
     <string name="avatar_store_use_avatar">Usar</string>
-    <string name="not_enough_coins_to_buy_avatar">Sem moedas suficientes para comprar o avatar</string>
+    <string name="not_enough_coins_to_buy_avatar">Sem moedas suficientes para comprar o vm</string>
     <string name="avatar_selected_message">Avatar alterado com sucesso</string>
     <string name="growth_no_categories_selected">Selecione uma categoria para ver mais dados</string>
     <string name="last_month">Último mês</string>
@@ -686,7 +686,7 @@
     <string name="coins_pack_value">+ %d moedas da vida</string>
     <string name="upgrade_price">%d moedas da vida</string>
     <string name="upgrade_unloked_on">Desbloqueado em %s</string>
-    <string name="fragment_avatar_store_title">Comprar avatar</string>
+    <string name="fragment_avatar_store_title">Comprar vm</string>
     <string name="fragment_pet_store_title">Comprar animal</string>
     <string name="fragment_upgrade_store_title">Desbloquear melhoria</string>
     <string name="upgrade_successfully_bought">Agora você pode aproveitar %s</string>
