@@ -165,6 +165,9 @@ class OverviewAdapterDelegate(private val inflater: LayoutInflater) : AdapterDel
             val startItem = pm.menu.findItem(R.id.quest_start)
             startItem.setTitle(if (model.isStarted) R.string.stop else R.string.start)
 
+            val scheduleQuestItem = pm.menu.findItem(R.id.schedule_quest)
+            scheduleQuestItem.setTitle(if (model.isForToday) R.string.snooze_for_tomorrow else R.string.do_today)
+
             pm.show()
         }
     }
@@ -213,7 +216,8 @@ data class OverviewQuestViewModel(
     val isFromRepeatingQuest: Boolean,
     val isFromChallenge: Boolean,
     val isStarted: Boolean,
-    val priority: Int
+    val priority: Int,
+    val isForToday: Boolean
 ) {
     companion object {
         fun create(quest: Quest): OverviewQuestViewModel {
@@ -230,7 +234,9 @@ data class OverviewQuestViewModel(
                 quest.isFromRepeatingQuest,
                 quest.isFromChallenge,
                 quest.isStarted,
-                quest.getPriority())
+                quest.getPriority(),
+                quest.scheduledDate!!.isEqual(LocalDate.now())
+            )
         }
     }
 }
