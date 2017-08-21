@@ -1,4 +1,4 @@
-package io.ipoli.android.store.items
+package io.ipoli.android.store.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,9 +13,9 @@ import kotlinx.android.synthetic.main.controller_store_items.view.*
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 8/20/17.
  */
-class StoreItemsController : BaseController<StoreItemsController, StoreItemsPresenter>() {
+class StoreHomeController : BaseController<StoreHomeController, StoreHomePresenter>() {
 
-    override fun createPresenter(): StoreItemsPresenter = StoreItemsPresenter()
+    override fun createPresenter(): StoreHomePresenter = StoreHomePresenter()
 
     override fun setRestoringViewState(restoringViewState: Boolean) {
     }
