@@ -57,6 +57,9 @@ class iPoliApp : Application() {
 //        TinyDancer.create().show(this)
 
         val questRepository = RealmQuestRepository()
-        questRepository.save(Quest("Welcome to China", LocalDate.now(), Category.FUN)).subscribe()
+        val quest = Quest("Welcome to China", LocalDate.now(), Category.FUN)
+        quest.setDuration(60)
+        quest.startMinute = 360
+        questRepository.save(quest).subscribe()
     }
 }

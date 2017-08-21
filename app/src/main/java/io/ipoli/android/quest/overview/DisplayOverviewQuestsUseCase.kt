@@ -47,7 +47,7 @@ class DisplayOverviewQuestsUseCase(private val questRepository: QuestRepository)
     }
 
     private fun toOverviewQuestViewModel(quests: List<Quest>) =
-        quests.map { OverviewQuestViewModel.fromQuest(it) }
+        quests.map { OverviewQuestViewModel.create(it) }
 
 
     data class Parameters(

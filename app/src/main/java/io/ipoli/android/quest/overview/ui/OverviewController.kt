@@ -15,6 +15,8 @@ import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
+import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.text.ScheduleTextFormatter
 import io.ipoli.android.daggerComponent
 import io.ipoli.android.quest.data.Quest
 import io.ipoli.android.quest.overview.DisplayOverviewQuestsUseCase
@@ -145,7 +147,9 @@ class OverviewAdapterDelegate(private val inflater: LayoutInflater) : AdapterDel
                 itemView.repeatingIndicator.visibility = if (isFromRepeatingQuest) View.VISIBLE else View.GONE
                 itemView.challengeIndicator.visibility = if (isFromChallenge) View.VISIBLE else View.GONE
 
-//                itemView.description.setText(description)
+                itemView.scheduleInfo.text = ScheduleTextFormatter(true).format(overviewQuestViewModel, itemView.context)
+
+                itemView.scheduleInfo.visibility = if (itemView.scheduleInfo.text.isNotEmpty()) View.VISIBLE else View.GONE
             }
         }
     }
@@ -188,6 +192,7 @@ class OverviewQuestsLoadedState(todayQuests: List<OverviewQuestViewModel>,
 data class OverviewQuestViewModel(
     val name: String,
     val duration: Int,
+    val startTime: Time?,
     @DrawableRes val categoryImage: Int,
     @ColorRes val categoryColor: Int,
     val isFromRepeatingQuest: Boolean,
@@ -196,14 +201,21 @@ data class OverviewQuestViewModel(
     val priority: Int
 ) {
     companion object {
-        fun fromQuest(quest: Quest): OverviewQuestViewModel =
-            OverviewQuestViewModel(quest.name,
+        fun create(quest: Quest): OverviewQuestViewModel {
+            val startTime = if (quest.startMinute == null) {
+                null
+            } else Time.of(quest.startMinute!!)
+
+            return OverviewQuestViewModel(
+                quest.name,
                 quest.getDuration(),
+                startTime,
                 quest.categoryType.colorfulImage,
                 quest.categoryType.color500,
                 quest.isFromRepeatingQuest,
                 quest.isFromChallenge,
                 quest.isStarted,
                 quest.getPriority())
+        }
     }
 }
