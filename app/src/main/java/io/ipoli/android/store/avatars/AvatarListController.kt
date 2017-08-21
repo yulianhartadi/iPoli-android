@@ -96,8 +96,8 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
                 val avatars = state.avatarList
                 val name = activity?.getString(avatars[state.boughtAvatarPosition].name)
                 Toast.makeText(activity, name + " successfully bought" , Toast.LENGTH_SHORT).show();
-                adapter.items = avatars
-                adapter.notifyDataSetChanged()
+//                adapter.items = avatars
+//                adapter.notifyDataSetChanged()
             }
         }
     }
