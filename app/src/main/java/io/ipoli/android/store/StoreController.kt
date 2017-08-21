@@ -10,8 +10,7 @@ import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
 import io.ipoli.android.daggerComponent
-import io.ipoli.android.store.items.StoreItemsController
-import io.ipoli.android.store.items.StoreItemsPresenter
+import io.ipoli.android.store.home.StoreHomeController
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_store.view.*
 import timber.log.Timber
@@ -55,7 +54,7 @@ class StoreController : BaseController<StoreController, StorePresenter>() {
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
         val childRouter = getChildRouter(view.controllerContainer, null)
-        childRouter.setRoot(RouterTransaction.with(StoreItemsController()))
+        childRouter.setRoot(RouterTransaction.with(StoreHomeController()))
     }
 
     fun showCoinsIntent(): Observable<Boolean> {

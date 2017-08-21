@@ -2,8 +2,6 @@ package io.ipoli.android.store
 
 import dagger.Component
 import io.ipoli.android.common.di.ControllerComponent
-import io.ipoli.android.store.items.StoreItemsController
-import io.ipoli.android.store.items.StoreItemsPresenter
 import javax.inject.Scope
 
 /**
