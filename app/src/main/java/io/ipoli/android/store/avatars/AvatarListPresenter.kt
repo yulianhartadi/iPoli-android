@@ -7,20 +7,28 @@ import io.ipoli.android.store.StoreStatePartialChange
 import io.ipoli.android.store.StoreViewState
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 8/20/17.
  */
-class AvatarListPresenter @Inject constructor(private val displayAvatarListUseCase: DisplayAvatarListUseCase) :
+class AvatarListPresenter @Inject constructor(private val displayAvatarListUseCase: DisplayAvatarListUseCase,
+                                              private val buyAvatarUseCase: BuyAvatarUseCase) :
     MviBasePresenter<AvatarListController, AvatarListViewState>() {
     override fun bindIntents() {
-        val observables = ArrayList<Observable<AvatarListPartialStateChange>>()
-        observables.add(
+        val observables = listOf<Observable<AvatarListPartialStateChange>>(
             intent { it.displayAvatarListIntent() }.switchMap {
                 displayAvatarListUseCase.execute(Unit)
-            })
+            },
+
+            intent {
+                it.buyAvatarIntent().switchMap { params ->
+                    buyAvatarUseCase.execute(Unit)
+                }
+            }
+        )
 
         val allIntents: Observable<AvatarListPartialStateChange> = Observable.merge(observables)
         val initialState: AvatarListViewState = AvatarListLoadingViewState()
