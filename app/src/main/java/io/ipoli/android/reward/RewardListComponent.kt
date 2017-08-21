@@ -9,7 +9,7 @@ import javax.inject.Scope
  */
 @RewardListScope
 @Component(modules = arrayOf(RewardListModule::class),
-        dependencies = arrayOf(ControllerComponent::class))
+    dependencies = arrayOf(ControllerComponent::class))
 interface RewardListComponent {
 
     fun inject(controller: RewardListController)

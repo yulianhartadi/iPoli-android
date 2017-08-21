@@ -1,6 +1,10 @@
 package io.ipoli.android.quest.overview.ui
 
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.support.annotation.ColorRes
+import android.support.annotation.DrawableRes
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -24,6 +28,7 @@ import kotlinx.android.synthetic.main.view_error.view.*
 import kotlinx.android.synthetic.main.view_loading.view.*
 import org.threeten.bp.LocalDate
 import timber.log.Timber
+
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -127,6 +132,19 @@ class OverviewAdapterDelegate(private val inflater: LayoutInflater) : AdapterDel
 //                RxView.clicks(itemView.delete).takeUntil(RxView.detaches(itemView)).map { reward }.subscribe(deleteSubject)
 //                itemView.setOnClickListener { clickListener(reward) }
                 itemView.name.text = name
+                itemView.scheduleInfo.text = duration.toString()
+                itemView.categoryImage.setImageResource(categoryImage)
+
+                if (isStarted) {
+                    val drawable = itemView.runningIndicator.background as GradientDrawable
+                    drawable.setColor(ContextCompat.getColor(itemView.context, categoryColor))
+                }
+                itemView.runningIndicator.visibility = if (isStarted) View.VISIBLE else View.GONE
+
+                itemView.priorityIndicator.visibility = if (priority == Quest.PRIORITY_MOST_IMPORTANT_FOR_DAY) View.VISIBLE else View.GONE
+                itemView.repeatingIndicator.visibility = if (isFromRepeatingQuest) View.VISIBLE else View.GONE
+                itemView.challengeIndicator.visibility = if (isFromChallenge) View.VISIBLE else View.GONE
+
 //                itemView.description.setText(description)
             }
         }
@@ -169,12 +187,23 @@ class OverviewQuestsLoadedState(todayQuests: List<OverviewQuestViewModel>,
 
 data class OverviewQuestViewModel(
     val name: String,
-    val isRecurrent: Boolean,
+    val duration: Int,
+    @DrawableRes val categoryImage: Int,
+    @ColorRes val categoryColor: Int,
+    val isFromRepeatingQuest: Boolean,
     val isFromChallenge: Boolean,
-    val isStarted: Boolean
+    val isStarted: Boolean,
+    val priority: Int
 ) {
     companion object {
         fun fromQuest(quest: Quest): OverviewQuestViewModel =
-            OverviewQuestViewModel(quest.name, quest.isFromRepeatingQuest, quest.isFromChallenge, quest.isStarted)
+            OverviewQuestViewModel(quest.name,
+                quest.getDuration(),
+                quest.categoryType.colorfulImage,
+                quest.categoryType.color500,
+                quest.isFromRepeatingQuest,
+                quest.isFromChallenge,
+                quest.isStarted,
+                quest.getPriority())
     }
 }

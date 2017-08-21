@@ -11,7 +11,6 @@ import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
 import io.ipoli.android.daggerComponent
 import io.ipoli.android.store.items.StoreItemsController
-import io.ipoli.android.store.items.StoreItemsPresenter
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_store.view.*
 import timber.log.Timber

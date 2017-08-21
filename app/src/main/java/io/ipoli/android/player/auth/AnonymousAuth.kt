@@ -10,10 +10,10 @@ import io.reactivex.Single
 class AnonymousAuth : RxSocialAuth {
 
     override fun login(username: String): Single<AuthResult?> =
-            Single.just(
-                    AuthResult("",
-                            AuthProvider(provider = ProviderType.ANONYMOUS.name)
-                            , username))
+        Single.just(
+            AuthResult("",
+                AuthProvider(provider = ProviderType.ANONYMOUS.name)
+                , username))
 
     override fun logout(): Completable = Completable.complete()
 

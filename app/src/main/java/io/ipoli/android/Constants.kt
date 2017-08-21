@@ -136,7 +136,7 @@ interface Constants {
 
         val QUICK_ADD_ADDITIONAL_TEXT = "quick_add_additional_text"
         val DEFAULT_PET_NAME = "Flopsy"
-//        val DEFAULT_PET_AVATAR = PetAvatar.ELEPHANT
+        //        val DEFAULT_PET_AVATAR = PetAvatar.ELEPHANT
         val DEFAULT_PET_BACKGROUND_PICTURE = "pet_background_1"
 
         val DEFAULT_PET_HP = 80

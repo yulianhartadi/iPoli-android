@@ -5,7 +5,7 @@ package io.ipoli.android.store
  * on 8/18/17.
  */
 interface StoreStatePartialChange {
-    fun computeNewState(prevState : StoreViewState) : StoreViewState
+    fun computeNewState(prevState: StoreViewState): StoreViewState
 }
 
 class StoreLoadingPartialChange : StoreStatePartialChange {

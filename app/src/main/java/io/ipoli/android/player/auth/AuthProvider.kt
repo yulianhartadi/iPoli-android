@@ -7,13 +7,13 @@ import io.realm.RealmObject
  * on 8/14/17.
  */
 open class AuthProvider(
-        var id: String = "",
-        var provider: String = "",
-        var firstName: String = "",
-        var lastName: String = "",
-        var username: String = "",
-        var email: String = "",
-        var image: String = ""
+    var id: String = "",
+    var provider: String = "",
+    var firstName: String = "",
+    var lastName: String = "",
+    var username: String = "",
+    var email: String = "",
+    var image: String = ""
 ) : RealmObject()
 
 enum class ProviderType {

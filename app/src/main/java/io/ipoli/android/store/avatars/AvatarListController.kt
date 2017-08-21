@@ -1,32 +1,23 @@
 package io.ipoli.android.store.avatars
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegate
+import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
+import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
 import io.ipoli.android.daggerComponent
-import io.ipoli.android.reward.RewardModel
-import io.ipoli.android.store.DaggerStoreComponent
-import io.ipoli.android.store.StoreComponent
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.controller_avatar_list.view.*
 import kotlinx.android.synthetic.main.item_avatar_store.view.*
 import kotlinx.android.synthetic.main.item_reward.view.*
-import android.graphics.drawable.Drawable
-import android.support.v7.widget.LinearLayoutManager
-import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
-import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
-import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
-import io.ipoli.android.R.id.price
-import io.ipoli.android.reward.EditRewardController
-import io.ipoli.android.reward.RewardListController
-import kotlinx.android.synthetic.main.controller_avatar_list.view.*
-import kotlinx.android.synthetic.main.controller_rewards.view.*
 
 
 /**

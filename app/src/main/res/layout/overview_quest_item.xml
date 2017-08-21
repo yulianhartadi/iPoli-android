@@ -17,7 +17,7 @@
         android:layout_marginStart="16dp">
 
         <ImageView
-            android:id="@+id/quest_category_indicator_image"
+            android:id="@+id/categoryImage"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center"
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content">
 
             <View
-                android:id="@+id/quest_running_indicator"
+                android:id="@+id/runningIndicator"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
                 android:layout_gravity="center_vertical"
@@ -57,33 +57,10 @@
                 android:textSize="16sp" />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/quest_details_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/quest_duration"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp" />
-
-            <LinearLayout
-                android:id="@+id/quest_progress_container"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:orientation="horizontal" />
-
-            <TextView
-                android:id="@+id/quest_remaining"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="6dp"
-                android:textColor="@color/md_dark_text_54" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/scheduleInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <LinearLayout
@@ -95,7 +72,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/quest_due_date"
+            android:id="@+id/dueDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end" />
@@ -107,7 +84,7 @@
             android:layout_marginTop="4dp">
 
             <ImageView
-                android:id="@+id/quest_priority_indicator"
+                android:id="@+id/priorityIndicator"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_marginEnd="2dp"
@@ -115,7 +92,7 @@
                 android:src="@drawable/ic_star_accent_24dp" />
 
             <ImageView
-                android:id="@+id/quest_repeating_indicator"
+                android:id="@+id/repeatingIndicator"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_marginEnd="2dp"
@@ -124,7 +101,7 @@
                 android:src="@drawable/ic_repeating_quest_24dp_transparent" />
 
             <ImageView
-                android:id="@+id/quest_challenge_indicator"
+                android:id="@+id/challengeIndicator"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_marginStart="2dp"

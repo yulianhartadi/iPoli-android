@@ -10,7 +10,6 @@ import io.ipoli.android.quest.persistence.QuestRepository
 import io.reactivex.Observable
 import org.threeten.bp.LocalDate
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -20,7 +19,6 @@ class DisplayOverviewQuestsUseCase(private val questRepository: QuestRepository)
 
     override fun createObservable(params: Parameters): Observable<OverviewStatePartialChange> {
         return questRepository.findScheduledBetween(params.startDate.minusDays(params.showCompletedForPastDays), params.endDate)
-            .delay(2, TimeUnit.SECONDS)
             .map { quests ->
                 Timber.d(" Quests size " + quests.size)
                 val comparator = Comparator<Quest> { q1, q2 ->

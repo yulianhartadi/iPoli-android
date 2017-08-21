@@ -38,7 +38,7 @@
             android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/quest_due_date"
+            android:id="@+id/dueDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/md_dark_text_54" />
