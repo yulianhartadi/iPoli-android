@@ -10,23 +10,25 @@ import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
 import io.ipoli.android.daggerComponent
-import io.ipoli.android.reward.RewardModel
-import io.ipoli.android.store.DaggerStoreComponent
-import io.ipoli.android.store.StoreComponent
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.item_avatar_store.view.*
 import kotlinx.android.synthetic.main.item_reward.view.*
 import android.graphics.drawable.Drawable
+import android.support.annotation.ColorRes
+import android.support.v4.content.ContextCompat
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
-import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
-import io.ipoli.android.R.id.price
-import io.ipoli.android.reward.EditRewardController
-import io.ipoli.android.reward.RewardListController
+import io.ipoli.android.quest.overview.ui.OverviewViewState
+import io.ipoli.android.store.avatars.data.Avatar
+import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_avatar_list.view.*
-import kotlinx.android.synthetic.main.controller_rewards.view.*
+import timber.log.Timber
+import android.view.animation.AnimationUtils
+import android.view.animation.Animation
+
+
 
 
 /**
@@ -34,11 +36,12 @@ import kotlinx.android.synthetic.main.controller_rewards.view.*
  * on 8/20/17.
  */
 class AvatarListController : BaseController<AvatarListController, AvatarListPresenter>() {
+    private var restoringState: Boolean = false
 
     lateinit private var avatarList: RecyclerView
 
-    private val buySubject = PublishSubject.create<AvatarModel>()
-    private val useSubject = PublishSubject.create<AvatarModel>()
+    private val buySubject = PublishSubject.create<AvatarViewModel>()
+    private val useSubject = PublishSubject.create<AvatarViewModel>()
 
     private lateinit var adapter: AvatarListAdapter
 
@@ -56,15 +59,13 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
         val view = inflater.inflate(R.layout.controller_avatar_list, container, false)
         avatarList = view.avatarList
         avatarList.setHasFixedSize(true)
-        avatarList.layoutManager = LinearLayoutManager(view.getContext(), LinearLayoutManager.VERTICAL, false)
+        avatarList.layoutManager = GridLayoutManager(view.context, 2)
 
-        val delegatesManager = AdapterDelegatesManager<List<AvatarModel>>()
+        val delegatesManager = AdapterDelegatesManager<List<AvatarViewModel>>()
             .addDelegate(AvatarListController.AvatarAdapterDelegate(LayoutInflater.from(activity), buySubject, useSubject))
-
         adapter = AvatarListAdapter(delegatesManager)
-
-
         avatarList.adapter = adapter
+
         return view
     }
 
@@ -74,56 +75,109 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
     }
 
     override fun setRestoringViewState(restoringViewState: Boolean) {
+        this.restoringState = restoringViewState
     }
 
-    class AvatarListAdapter(manager: AdapterDelegatesManager<List<AvatarModel>>) : ListDelegationAdapter<List<AvatarModel>>(
-        manager) {
-
-//        init {
-//            setHasStableIds(true)
-//        }
-
-//        override fun getItemId(position: Int): Long = items[position].id
-
+    fun displayAvatarListIntent(): Observable<Boolean> {
+        return Observable.just(!restoringState).filter { _ -> true }
     }
+
+    fun render(state: AvatarListViewState) {
+        when (state) {
+            is AvatarListLoadingViewState -> {
+
+            }
+
+            is AvatarListLoadedViewState -> {
+                adapter.items = state.avatarList
+                adapter.notifyDataSetChanged()
+            }
+        }
+    }
+
+    class AvatarListAdapter(manager: AdapterDelegatesManager<List<AvatarViewModel>>) : ListDelegationAdapter<List<AvatarViewModel>>(
+        manager)
 
     class AvatarAdapterDelegate(private val inflater: LayoutInflater,
-                                private val buySubject: PublishSubject<AvatarModel>,
-                                private val useSubject: PublishSubject<AvatarModel>) : AdapterDelegate<List<AvatarModel>>() {
-        override fun isForViewType(items: List<AvatarModel>, position: Int): Boolean = true
+                                private val buySubject: PublishSubject<AvatarViewModel>,
+                                private val useSubject: PublishSubject<AvatarViewModel>) : AdapterDelegate<List<AvatarViewModel>>() {
 
-        override fun onBindViewHolder(items: List<AvatarModel>, position: Int, holder: RecyclerView.ViewHolder, payloads: MutableList<Any>) {
+        private var lastAnimatedPosition = -1
+
+        private val colors = intArrayOf(R.color.md_green_300,
+            R.color.md_indigo_300,
+            R.color.md_blue_300,
+            R.color.md_red_300,
+            R.color.md_deep_orange_300,
+            R.color.md_purple_300,
+            R.color.md_orange_300,
+            R.color.md_pink_300)
+
+        override fun isForViewType(items: List<AvatarViewModel>, position: Int): Boolean = true
+
+        override fun onBindViewHolder(items: List<AvatarViewModel>, position: Int, holder: RecyclerView.ViewHolder, payloads: MutableList<Any>) {
             val vh = holder as AvatarViewHolder
             val avatar = items[position]
-            vh.bindAvatar(avatar)
+            vh.bindAvatar(avatar, colors.get(position % colors.size))
+            playEnterAnimation(holder.itemView, holder.getAdapterPosition());
         }
 
         override fun onCreateViewHolder(parent: ViewGroup?): RecyclerView.ViewHolder =
             AvatarViewHolder(inflater.inflate(R.layout.item_avatar_store, parent, false))
 
 
+        protected fun playEnterAnimation(viewToAnimate: View, position: Int) {
+            if (position > lastAnimatedPosition) {
+                val anim = AnimationUtils.loadAnimation(viewToAnimate.context, R.anim.fade_in)
+                anim.startOffset = (position * 50).toLong()
+                viewToAnimate.startAnimation(anim)
+                lastAnimatedPosition = position
+            }
+        }
+
         inner class AvatarViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-            fun bindAvatar(avatar: AvatarModel) {
-                with(avatar) {
-                    val observable = RxView.clicks(itemView.avatarPrice).takeUntil(RxView.detaches(itemView)).map { avatar }
-                    val resources = itemView.resources
+            fun bindAvatar(vm: AvatarViewModel, @ColorRes backgroundColor : Int) {
+                with(vm) {
+                    val context = itemView.context
+                    val observable = RxView.clicks(itemView.avatarPrice).takeUntil(RxView.detaches(itemView)).map { vm }
                     if (isBought) {
-                        itemView.avatarPrice.setText(resources.getString(R.string.avatar_store_use_avatar).toUpperCase())
+                        itemView.avatarPrice.setText(context.getString(R.string.avatar_store_use_avatar).toUpperCase())
                         itemView.avatarPrice.setIconResource(null as Drawable?)
                         observable.subscribe(useSubject)
                     } else {
                         itemView.avatarPrice.setText(price.toString())
-                        itemView.avatarPrice.setIconResource(resources.getDrawable(R.drawable.ic_life_coin_white_24dp))
+                        itemView.avatarPrice.setIconResource(context.getDrawable(R.drawable.ic_life_coin_white_24dp))
                         observable.subscribe(buySubject)
                     }
-                    itemView.name.text = name
+                    itemView.avatarName.text = context.getString(name)
                     itemView.avatarPicture.setImageResource(picture)
+                    itemView.setBackgroundColor(ContextCompat.getColor(context, backgroundColor))
                 }
             }
         }
 
     }
-
 }
 
+open class AvatarListViewState(val avatarList: List<AvatarViewModel> = listOf())
+
+class AvatarListLoadingViewState : AvatarListViewState()
+
+class AvatarListLoadedViewState(avatarList: List<AvatarViewModel>) : AvatarListViewState(avatarList)
+
+interface AvatarListPartialStateChange {
+    fun computeNewState(prevState: AvatarListViewState): AvatarListViewState
+}
+
+class AvatarListLoadingPartialStateChange : AvatarListPartialStateChange {
+    override fun computeNewState(prevState: AvatarListViewState): AvatarListViewState {
+        return AvatarListLoadingViewState()
+    }
+}
+
+class AvatarListLoadedPartialStateChange(private val avatarList: List<AvatarViewModel>) : AvatarListPartialStateChange {
+    override fun computeNewState(prevState: AvatarListViewState): AvatarListViewState {
+        return AvatarListLoadedViewState(avatarList)
+    }
+}

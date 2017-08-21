@@ -362,8 +362,8 @@
     <string name="challenge_deadline_question">When is the deadline?</string>
     <string name="add_reminder_button">+ Add reminder</string>
     <string name="settings_general_title">General</string>
-    <string name="settings_avatar_title">Change your avatar</string>
-    <string name="settings_avatar_desc">Pick an awesome new avatar for yourself</string>
+    <string name="settings_avatar_title">Change your vm</string>
+    <string name="settings_avatar_desc">Pick an awesome new vm for yourself</string>
     <string name="settings_persistent_notification_title">Persistent notification</string>
     <string name="settings_persistent_notification_desc">Quickly view your daily quests and progress</string>
     <string name="settings_tutorial_title">Show tutorial</string>
@@ -657,7 +657,7 @@
     <string name="pet_store_use_pet">Use it</string>
     <string name="pet_selected_message">Pet successfully changed</string>
     <string name="avatar_store_use_avatar">Use it</string>
-    <string name="not_enough_coins_to_buy_avatar">Not enough coins to buy avatar</string>
+    <string name="not_enough_coins_to_buy_avatar">Not enough coins to buy vm</string>
     <string name="avatar_selected_message">Avatar successfully changed</string>
 
     <string name="growth_no_categories_selected">Select a category to view more data</string>
@@ -675,7 +675,7 @@
 
     <string name="power_up_price">%d life coins</string>
     <string name="power_up_expires_on">Enabled until %s</string>
-    <string name="fragment_avatar_store_title">Buy avatar</string>
+    <string name="fragment_avatar_store_title">Buy vm</string>
     <string name="fragment_pet_store_title">Buy pet</string>
     <string name="fragment_power_up_store_title">Enable power-up</string>
     <string name="power_up_successfully_bought">You can now enjoy %s for a month</string>
@@ -816,7 +816,7 @@
     <string name="outro_text">%s, let\'s achieve your life goals by fighting procrastination, laziness and clutter together!</string>
     <string name="tutorial_calendar_quest_hint">Your quest has been added to your calendar. Complete it by tapping on the checkbox.</string>
     <string name="tutorial_quest_complete">Every time you complete a quest you get a reward! Experience allows you to level up and with life coins you can enable power-ups, buy new avatars ot pets.</string>
-    <string name="tutorial_follow_progress">You can follow your progress here. These are your avatar and pet. Keep your pet happy by completing your quests regularly to achieve maximum coins and XP bonus!</string>
+    <string name="tutorial_follow_progress">You can follow your progress here. These are your vm and pet. Keep your pet happy by completing your quests regularly to achieve maximum coins and XP bonus!</string>
     <string name="tutorial_store">Use your hard earned coins to enable powerful power-ups (Challenges, Calendar sync, Notes etc) or buy new avatars and cute pets!</string>
     <string name="choose_category">Choose Category</string>
     <string name="tutorial_quest_name">Quest name</string>
@@ -912,7 +912,7 @@
     <string name="achievement_first_post_created_name">Enthusiast</string>
     <string name="achievement_first_post_created_desc">Share your first Quest</string>
     <string name="achievement_first_avatar_changed_name">Fancy pants</string>
-    <string name="achievement_first_avatar_changed_desc">Change your avatar for a fist time</string>
+    <string name="achievement_first_avatar_changed_desc">Change your vm for a fist time</string>
     <string name="achievement_five_posts_created_name">Motivator</string>
     <string name="achievement_five_posts_created_desc">Share 5 posts</string>
     <string name="achievement_complete_10_quests_in_a_day_name">Mean machine</string>

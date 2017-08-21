@@ -64,11 +64,9 @@ class StoreController : BaseController<StoreController, StorePresenter>() {
     fun render(state: StoreViewState) {
         when (state) {
             is StoreLoadingState -> {
-                Toast.makeText(activity, "Loading", Toast.LENGTH_SHORT).show()
             }
 
             is StoreLoadedState -> {
-                Toast.makeText(activity, "Loaded Coins: " + state.coins, Toast.LENGTH_SHORT).show()
                 view?.playerCoins?.text = state.coins.toString()
             }
         }
