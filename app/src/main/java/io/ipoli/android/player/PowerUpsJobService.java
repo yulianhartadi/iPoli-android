@@ -77,7 +77,7 @@ public class PowerUpsJobService extends JobService {
 
         Player player = playerPersistenceService.get();
 
-        if (player.hasNoPowerUps()) {
+        if (player == null || player.hasNoPowerUps()) {
             return finishJobOnMainThread(params);
         }
 
