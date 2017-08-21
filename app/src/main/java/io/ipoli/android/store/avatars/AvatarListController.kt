@@ -1,35 +1,27 @@
 package io.ipoli.android.store.avatars
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegate
+import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
+import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
 import io.ipoli.android.daggerComponent
 import io.reactivex.subjects.PublishSubject
+import kotlinx.android.synthetic.main.controller_avatar_list.view.*
 import kotlinx.android.synthetic.main.item_avatar_store.view.*
-import kotlinx.android.synthetic.main.item_reward.view.*
-import android.graphics.drawable.Drawable
 import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
-import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
-import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
-import io.ipoli.android.quest.overview.ui.OverviewViewState
-import io.ipoli.android.store.avatars.data.Avatar
 import io.reactivex.Observable
-import kotlinx.android.synthetic.main.controller_avatar_list.view.*
-import timber.log.Timber
 import android.view.animation.AnimationUtils
-import android.view.animation.Animation
-
-
-
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>

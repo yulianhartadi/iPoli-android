@@ -2,8 +2,8 @@ package io.ipoli.android.player.di
 
 import dagger.Component
 import io.ipoli.android.common.di.ControllerComponent
-import io.ipoli.android.player.ui.SignInController
 import io.ipoli.android.player.SignInPresenter
+import io.ipoli.android.player.ui.SignInController
 import javax.inject.Scope
 
 /**
@@ -11,7 +11,7 @@ import javax.inject.Scope
  */
 @SignInScope
 @Component(modules = arrayOf(SignInModule::class),
-        dependencies = arrayOf(ControllerComponent::class))
+    dependencies = arrayOf(ControllerComponent::class))
 interface SignInComponent {
 
     fun inject(controller: SignInController)

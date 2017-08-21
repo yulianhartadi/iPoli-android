@@ -22,27 +22,27 @@ class FacebookAuth private constructor(private val controller: Controller) : RxS
 
     override fun login(username: String): Single<AuthResult?> {
         return loginWithReadPermissions(controller.activity!!, permissions)
-                .flatMap { loginInfo ->
-                    val parameters = Bundle()
-                    parameters.putString("fields", "email,id,first_name,last_name,picture")
-                    FacebookAuth.create(controller)
-                            .accessToken(loginInfo.accessToken)
-                            .params(parameters)
-                            .requestMe()
-                            .subscribeOn(Schedulers.io())
-                }.map { graphResponse ->
+            .flatMap { loginInfo ->
+                val parameters = Bundle()
+                parameters.putString("fields", "email,id,first_name,last_name,picture")
+                FacebookAuth.create(controller)
+                    .accessToken(loginInfo.accessToken)
+                    .params(parameters)
+                    .requestMe()
+                    .subscribeOn(Schedulers.io())
+            }.map { graphResponse ->
             val response = graphResponse.jsonObject
             AuthResult(AccessToken.getCurrentAccessToken().token,
-                    AuthProvider(
-                            response.getString("id"),
-                            ProviderType.FACEBOOK.name,
-                            response.getString("first_name"),
-                            response.getString("last_name"),
-                            response.getString("first_name"),
-                            if (response.has("email")) response.getString("email") else "",
-                            response.getJSONObject("picture").getJSONObject("data").getString("url")
-                    ),
-                    username
+                AuthProvider(
+                    response.getString("id"),
+                    ProviderType.FACEBOOK.name,
+                    response.getString("first_name"),
+                    response.getString("last_name"),
+                    response.getString("first_name"),
+                    if (response.has("email")) response.getString("email") else "",
+                    response.getJSONObject("picture").getJSONObject("data").getString("url")
+                ),
+                username
             )
         }
     }
@@ -89,9 +89,9 @@ class FacebookAuth private constructor(private val controller: Controller) : RxS
         val subject = PublishSubject.create<LoginResult>()
         loginHandler = LoginHandler(subject)
         return subject
-                .doOnSubscribe { action() }
-                .doOnComplete { loginHandler?.shutdown() }
-                .singleOrError()
+            .doOnSubscribe { action() }
+            .doOnComplete { loginHandler?.shutdown() }
+            .singleOrError()
     }
 
     private fun request(request: GraphRequest): Single<GraphResponse> {

@@ -39,14 +39,14 @@ class GoogleAuth private constructor(private val controller: Controller) : RxSoc
                 if (signInResult.isSuccess) {
                     val account = signInResult.signInAccount!!
                     AuthResult(account.idToken!!,
-                            AuthProvider(account.id!!,
-                                    ProviderType.GOOGLE.name,
-                                    account.givenName.toString(),
-                                    account.familyName.toString(),
-                                    account.displayName.toString(),
-                                    account.email.toString(),
-                                    account.photoUrl.toString()),
-                            username)
+                        AuthProvider(account.id!!,
+                            ProviderType.GOOGLE.name,
+                            account.givenName.toString(),
+                            account.familyName.toString(),
+                            account.displayName.toString(),
+                            account.email.toString(),
+                            account.photoUrl.toString()),
+                        username)
                 } else if (signInResult.status.statusCode == 12501) {
                     null
                 } else {
@@ -70,13 +70,13 @@ class GoogleAuth private constructor(private val controller: Controller) : RxSoc
 
     private fun createApiClient(context: Context, listener: GoogleApiClient.OnConnectionFailedListener): GoogleApiClient {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(ApiConstants.WEB_SERVER_GOOGLE_PLUS_CLIENT_ID)
-                .requestEmail()
-                .build()
+            .requestIdToken(ApiConstants.WEB_SERVER_GOOGLE_PLUS_CLIENT_ID)
+            .requestEmail()
+            .build()
         return GoogleApiClient.Builder(context)
-                .addOnConnectionFailedListener(listener)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build()
+            .addOnConnectionFailedListener(listener)
+            .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+            .build()
     }
 
     private fun createApiClient(context: Context, emitter: CompletableEmitter): GoogleApiClient {

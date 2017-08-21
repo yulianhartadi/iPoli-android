@@ -15,7 +15,7 @@ interface RxSocialAuth {
 }
 
 data class AuthResult(
-        val token: String,
-        val authProvider: AuthProvider,
-        val username: String
+    val token: String,
+    val authProvider: AuthProvider,
+    val username: String
 )

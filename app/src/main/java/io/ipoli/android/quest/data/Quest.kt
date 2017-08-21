@@ -154,9 +154,8 @@ open class Quest : RealmObject, PersistedModel {
         this.isAllDay = allDay
     }
 
-    fun getPriority(): Int {
-        return if (priority != null) priority!! else Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT
-    }
+    fun getPriority(): Int =
+        if (priority != null) priority!! else Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT
 
     fun setPriority(priority: Int?) {
         this.priority = priority

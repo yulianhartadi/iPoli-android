@@ -2,9 +2,6 @@ package io.ipoli.android.store.avatars
 
 import dagger.Component
 import io.ipoli.android.common.di.ControllerComponent
-import io.ipoli.android.store.StoreController
-import io.ipoli.android.store.StoreModule
-import io.ipoli.android.store.StorePresenter
 import javax.inject.Scope
 
 /**

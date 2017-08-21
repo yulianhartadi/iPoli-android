@@ -10,7 +10,7 @@ import javax.inject.Scope
  */
 @StoreScope
 @Component(modules = arrayOf(StoreModule::class),
-        dependencies = arrayOf(ControllerComponent::class))
+    dependencies = arrayOf(ControllerComponent::class))
 interface StoreComponent {
 
     fun inject(controller: StoreController)
