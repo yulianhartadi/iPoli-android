@@ -24,4 +24,8 @@ class AvatarListModule {
     @Provides
     @AvatarListScope
     fun provideDisplayRewardListUseCase(playerRepository: PlayerRepository): DisplayAvatarListUseCase = DisplayAvatarListUseCase(playerRepository)
+
+    @Provides
+    @AvatarListScope
+    fun provideBuyRewardUseCase(playerRepository: PlayerRepository): BuyAvatarUseCase = BuyAvatarUseCase(playerRepository)
 }

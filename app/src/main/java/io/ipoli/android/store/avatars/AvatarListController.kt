@@ -22,6 +22,9 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.GridLayoutManager
 import io.reactivex.Observable
 import android.view.animation.AnimationUtils
+import android.widget.Toast
+import io.ipoli.android.reward.RewardModel
+import io.ipoli.android.store.avatars.data.Avatar
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -74,6 +77,10 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
         return Observable.just(!restoringState).filter { _ -> true }
     }
 
+    fun buyAvatarIntent(): Observable<AvatarViewModel> {
+        return buySubject
+    }
+
     fun render(state: AvatarListViewState) {
         when (state) {
             is AvatarListLoadingViewState -> {
@@ -82,6 +89,14 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
 
             is AvatarListLoadedViewState -> {
                 adapter.items = state.avatarList
+                adapter.notifyDataSetChanged()
+            }
+
+            is AvatarBoughtViewState -> {
+                val avatars = state.avatarList
+                val name = activity?.getString(avatars[state.boughtAvatarPosition].name)
+                Toast.makeText(activity, name + " successfully bought" , Toast.LENGTH_SHORT).show();
+                adapter.items = avatars
                 adapter.notifyDataSetChanged()
             }
         }
@@ -152,11 +167,13 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
     }
 }
 
-open class AvatarListViewState(val avatarList: List<AvatarViewModel> = listOf())
+open class AvatarListViewState
 
 class AvatarListLoadingViewState : AvatarListViewState()
 
-class AvatarListLoadedViewState(avatarList: List<AvatarViewModel>) : AvatarListViewState(avatarList)
+class AvatarListLoadedViewState(val avatarList: List<AvatarViewModel>) : AvatarListViewState()
+
+class AvatarBoughtViewState(val avatarList: List<AvatarViewModel>, val boughtAvatarPosition : Int) : AvatarListViewState()
 
 interface AvatarListPartialStateChange {
     fun computeNewState(prevState: AvatarListViewState): AvatarListViewState
@@ -172,4 +189,11 @@ class AvatarListLoadedPartialStateChange(private val avatarList: List<AvatarView
     override fun computeNewState(prevState: AvatarListViewState): AvatarListViewState {
         return AvatarListLoadedViewState(avatarList)
     }
+}
+
+class AvatarBoughtPartialStateChange(private val avatarList : List<AvatarViewModel>, private val boughtAvatarPosition: Int) : AvatarListPartialStateChange {
+    override fun computeNewState(prevState: AvatarListViewState): AvatarListViewState {
+        return AvatarBoughtViewState(avatarList, boughtAvatarPosition)
+    }
+
 }
