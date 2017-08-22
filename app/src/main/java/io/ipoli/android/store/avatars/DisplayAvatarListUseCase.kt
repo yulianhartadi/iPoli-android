@@ -20,7 +20,7 @@ class DisplayAvatarListUseCase(private val playerRepository: PlayerRepository) :
         playerRepository.findFirst()
             .map { player ->
                 AvatarListLoadedPartialStateChange(Avatar.values().map { AvatarViewModel(it.code, it.avatarName,
-                    it.price, it.picture, false) }) as AvatarListPartialStateChange
+                    it.price, it.picture, player.inventory.hasAvatar(it.code)) }) as AvatarListPartialStateChange
             }
             .startWith(AvatarListLoadingPartialStateChange())
 }
