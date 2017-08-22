@@ -10,8 +10,6 @@ import com.squareup.leakcanary.RefWatcher
 import io.ipoli.android.common.di.AppComponent
 import io.ipoli.android.common.di.AppModule
 import io.ipoli.android.common.di.DaggerAppComponent
-import io.ipoli.android.repeatingquest.data.RepeatingQuest
-import io.ipoli.android.repeatingquest.persistence.RealmRepeatingQuestRepository
 import io.realm.Realm
 import timber.log.Timber
 
@@ -62,10 +60,10 @@ class iPoliApp : Application() {
 //        quest.completedAtMinute = 380
 //        questRepository.save(quest).subscribe()
 
-        val repeatingQuestRepository = RealmRepeatingQuestRepository()
-
-        val quest = RepeatingQuest()
-        quest.name = "Welcome"
-        repeatingQuestRepository.save(quest).subscribe()
+//        val repeatingQuestRepository = RealmRepeatingQuestRepository()
+//
+//        val quest = RepeatingQuest()
+//        quest.name = "Welcome"
+//        repeatingQuestRepository.save(quest).subscribe()
     }
 }

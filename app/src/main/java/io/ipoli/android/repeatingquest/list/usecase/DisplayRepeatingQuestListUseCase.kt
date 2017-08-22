@@ -15,7 +15,11 @@ class DisplayRepeatingQuestListUseCase(private val repeatingQuestRepository: Rep
         return repeatingQuestRepository.findAll()
             .map { repeatingQuests ->
                 val viewModels = repeatingQuests.map { RepeatingQuestViewModel.create(it) }
-                RepeatingQuestListViewState.DataLoaded(viewModels)
+                if (viewModels.isEmpty()) {
+                    RepeatingQuestListViewState.Empty()
+                } else {
+                    RepeatingQuestListViewState.DataLoaded(viewModels)
+                }
             }
             .cast(RepeatingQuestListViewState::class.java)
             .startWith(RepeatingQuestListViewState.Loading())

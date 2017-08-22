@@ -19,6 +19,9 @@ import io.ipoli.android.repeatingquest.list.usecase.RepeatingQuestListViewState
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_repeating_quest_list.view.*
 import kotlinx.android.synthetic.main.item_repeating_quest.view.*
+import kotlinx.android.synthetic.main.view_empty.view.*
+import kotlinx.android.synthetic.main.view_error.view.*
+import kotlinx.android.synthetic.main.view_loading.view.*
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -71,7 +74,24 @@ class RepeatingQuestListController : BaseController<RepeatingQuestListController
         Observable.just(!restoringState).filter { _ -> true }
 
     fun render(state: RepeatingQuestListViewState) {
+        val contentView = view!!
         when (state) {
+
+            is RepeatingQuestListViewState.Loading -> {
+                contentView.loadingView.visibility = View.VISIBLE
+                contentView.emptyView.visibility = View.GONE
+                contentView.errorView.visibility = View.GONE
+                contentView.questList.visibility = View.GONE
+            }
+
+            is RepeatingQuestListViewState.Empty -> {
+                contentView.emptyView.visibility = View.VISIBLE
+                contentView.emptyText.text = "No Repeating Quests. Create one?"
+                contentView.loadingView.visibility = View.GONE
+                contentView.errorView.visibility = View.GONE
+                contentView.questList.visibility = View.GONE
+            }
+
             is RepeatingQuestListViewState.DataLoaded -> {
                 adapter.items = state.repeatingQuests
                 adapter.notifyDataSetChanged()
