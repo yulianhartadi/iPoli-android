@@ -17,6 +17,7 @@ import io.ipoli.android.repeatingquest.list.di.DaggerRepeatingQuestListComponent
 import io.ipoli.android.repeatingquest.list.di.RepeatingQuestListComponent
 import io.ipoli.android.repeatingquest.list.usecase.RepeatingQuestListViewState
 import io.reactivex.Observable
+import kotlinx.android.synthetic.main.controller_repeating_quest_list.view.*
 import kotlinx.android.synthetic.main.item_repeating_quest.view.*
 
 /**
@@ -45,9 +46,9 @@ class RepeatingQuestListController : BaseController<RepeatingQuestListController
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
-        val view = inflater.inflate(R.layout.controller_repeating_quest_list, container, false) as RecyclerView
+        val view = inflater.inflate(R.layout.controller_repeating_quest_list, container, false)
 
-        questList = view
+        questList = view.questList
         questList.setHasFixedSize(true)
         questList.layoutManager = LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
 

@@ -6,6 +6,8 @@ interface RepeatingQuestListViewState {
 
     class Loading : RepeatingQuestListViewState
 
+    class Empty : RepeatingQuestListViewState
+
     data class Error(val error: Throwable) : RepeatingQuestListViewState
 
     data class DataLoaded(val repeatingQuests: List<RepeatingQuestViewModel>) : RepeatingQuestListViewState
