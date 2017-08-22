@@ -6,6 +6,7 @@ import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.player.auth.AnonymousAuth
 import io.ipoli.android.player.auth.ProviderType
 import io.ipoli.android.player.*
+import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.ui.PlayerSignedInPartialChange
 import io.ipoli.android.player.ui.SignInLoadingPartialChange

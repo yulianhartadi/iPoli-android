@@ -1,4 +1,4 @@
-package io.ipoli.android.player
+package io.ipoli.android.player.data
 
 import io.ipoli.android.common.persistence.PersistedModel
 import io.ipoli.android.player.auth.AuthProvider
@@ -15,5 +15,6 @@ open class Player(
     override var id: String = "",
     var coins: Int = 0,
     var experience: Int = 0,
-    var authProvider: AuthProvider? = null
+    var authProvider: AuthProvider? = null,
+    var inventory: Inventory = Inventory()
 ) : RealmObject(), PersistedModel

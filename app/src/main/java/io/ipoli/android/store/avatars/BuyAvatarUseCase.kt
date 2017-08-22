@@ -1,12 +1,10 @@
 package io.ipoli.android.store.avatars
 
 import io.ipoli.android.common.BaseRxUseCase
-import io.ipoli.android.common.SimpleRxUseCase
-import io.ipoli.android.player.Player
 import io.ipoli.android.player.persistence.PlayerRepository
-import io.ipoli.android.player.persistence.RealmPlayerRepository
 import io.ipoli.android.store.avatars.data.Avatar
 import io.reactivex.Observable
+import org.threeten.bp.LocalDate
 import timber.log.Timber
 
 /**
@@ -17,13 +15,18 @@ class BuyAvatarUseCase(private val playerRepository: PlayerRepository) : BaseRxU
 
     override fun createObservable(avatarViewModel: AvatarViewModel): Observable<AvatarListPartialStateChange> =
         playerRepository.findFirst()
-            .map { player ->
+            .flatMapSingle { player ->
                 Timber.d(avatarViewModel.name.toString())
-                //player.addAvatar(avatarViewModel.code)
-                //save player
-                AvatarBoughtPartialStateChange(Avatar.values()
-                    .map { AvatarViewModel(it.code, it.avatarName, it.price, it.picture, false) },
-                    0) as AvatarListPartialStateChange
-            }.startWith(AvatarListLoadingPartialStateChange())
+                player.inventory.addAvatar(avatarViewModel.code, LocalDate.now())
+                playerRepository.save(player)
+            }.map { player ->
+            val avatarList = Avatar.values().map {
+                AvatarViewModel(it.code, it.avatarName, it.price, it.picture, player.inventory.hasAvatar(it.code))
+            }
+            avatarList.indexOfFirst { (code) -> code == avatarViewModel.code }
+            AvatarBoughtPartialStateChange(avatarList,
+                avatarList.indexOfFirst { (code) -> code == avatarViewModel.code })
+                as AvatarListPartialStateChange
+        }.startWith(AvatarListLoadingPartialStateChange())
 
 }
