@@ -3,7 +3,7 @@ package io.ipoli.android.quest.data
 import io.realm.RealmObject
 
 /**
- * Created by Venelin Valkov <venelin></venelin>@curiousily.com>
+ * Created by Venelin Valkov venelin@curiousily.com>
  * on 8/19/17.
  */
 open class Note : RealmObject {

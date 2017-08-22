@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 /**
- * Created by Venelin Valkov <venelin></venelin>@curiousily.com>
+ * Created by Venelin Valkov venelin@curiousily.com>
  * on 8/19/17.
  */
 open class Quest : RealmObject, PersistedModel {
