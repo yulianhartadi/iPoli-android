@@ -45,9 +45,9 @@ class RepeatingQuestListController : BaseController<RepeatingQuestListController
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
-        val view = inflater.inflate(R.layout.controller_repeating_quest_list, container, false)
+        val view = inflater.inflate(R.layout.controller_repeating_quest_list, container, false) as RecyclerView
 
-        questList = view as RecyclerView
+        questList = view
         questList.setHasFixedSize(true)
         questList.layoutManager = LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
 
