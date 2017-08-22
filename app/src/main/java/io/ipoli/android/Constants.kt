@@ -4,7 +4,7 @@ import org.threeten.bp.DayOfWeek
 import java.util.*
 
 /**
- * Created by Venelin Valkov <venelin></venelin>@curiousily.com>
+ * Created by Venelin Valkov venelin@curiousily.com>
  * on 8/20/17.
  */
 interface Constants {

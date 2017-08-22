@@ -232,7 +232,6 @@ class QuestViewModelDelegate(private val inflater: LayoutInflater) : AdapterDele
             pm.show()
         }
     }
-
 }
 
 interface OverviewStatePartialChange {
