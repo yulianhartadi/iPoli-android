@@ -1,5 +1,6 @@
 package io.ipoli.android.store.avatars
 
+import android.util.Log
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.ipoli.android.store.StoreController
 import io.ipoli.android.store.StoreLoadingState
@@ -7,6 +8,7 @@ import io.ipoli.android.store.StoreStatePartialChange
 import io.ipoli.android.store.StoreViewState
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Consumer
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -24,8 +26,8 @@ class AvatarListPresenter @Inject constructor(private val displayAvatarListUseCa
             },
 
             intent {
-                it.buyAvatarIntent().switchMap { params ->
-                    buyAvatarUseCase.execute(params)
+                it.buyAvatarIntent().switchMap { avatarViewModel ->
+                    buyAvatarUseCase.execute(avatarViewModel)
                 }
             }
         )

@@ -20,11 +20,14 @@ import kotlinx.android.synthetic.main.item_avatar_store.view.*
 import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.GridLayoutManager
+import android.util.Log
 import io.reactivex.Observable
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 import io.ipoli.android.reward.RewardModel
 import io.ipoli.android.store.avatars.data.Avatar
+import io.reactivex.functions.Consumer
+import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -35,8 +38,8 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
 
     lateinit private var avatarList: RecyclerView
 
-    private val buySubject = PublishSubject.create<AvatarViewModel>()
-    private val useSubject = PublishSubject.create<AvatarViewModel>()
+    private var buySubject = PublishSubject.create<AvatarViewModel>()
+    private var useSubject = PublishSubject.create<AvatarViewModel>()
 
     private lateinit var adapter: AvatarListAdapter
 
@@ -96,8 +99,8 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
                 val avatars = state.avatarList
                 val name = activity?.getString(avatars[state.boughtAvatarPosition].name)
                 Toast.makeText(activity, name + " successfully bought" , Toast.LENGTH_SHORT).show();
-//                adapter.items = avatars
-//                adapter.notifyDataSetChanged()
+                adapter.items = avatars
+                adapter.notifyDataSetChanged()
             }
         }
     }
@@ -132,7 +135,6 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
         override fun onCreateViewHolder(parent: ViewGroup?): RecyclerView.ViewHolder =
             AvatarViewHolder(inflater.inflate(R.layout.item_avatar_store, parent, false))
 
-
         protected fun playEnterAnimation(viewToAnimate: View, position: Int) {
             if (position > lastAnimatedPosition) {
                 val anim = AnimationUtils.loadAnimation(viewToAnimate.context, R.anim.fade_in)
@@ -147,7 +149,7 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
             fun bindAvatar(vm: AvatarViewModel, @ColorRes backgroundColor : Int) {
                 with(vm) {
                     val context = itemView.context
-                    val observable = RxView.clicks(itemView.avatarPrice).takeUntil(RxView.detaches(itemView)).map { vm }
+                    val observable = RxView.clicks(itemView.avatarPrice).map { vm }
                     if (isBought) {
                         itemView.avatarPrice.setText(context.getString(R.string.avatar_store_use_avatar).toUpperCase())
                         itemView.avatarPrice.setIconResource(null as Drawable?)
