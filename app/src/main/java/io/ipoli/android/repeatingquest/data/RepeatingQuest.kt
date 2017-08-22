@@ -67,9 +67,6 @@ open class RepeatingQuest : RealmObject, PersistedModel {
 
     var challengeId: String? = null
 
-    var timesADay: Int? = null
-        private set
-
     var source: String? = null
 
     var sourceMapping: SourceMapping? = null
@@ -81,10 +78,8 @@ open class RepeatingQuest : RealmObject, PersistedModel {
         createdAt = DateUtils.nowUTC().time
         updatedAt = DateUtils.nowUTC().time
         this.category = Category.PERSONAL.name
-        setTimesADay(1)
         this.source = Constants.API_RESOURCE_SOURCE
     }
-
 
     var startTime: Time?
         get() = if (startMinute == null) {
@@ -96,17 +91,14 @@ open class RepeatingQuest : RealmObject, PersistedModel {
             startMinute = null
         }
 
-
     var completedAtDate: Date?
         get() = if (completedAt != null) Date(completedAt!!) else null
         set(completedAtDate) {
             completedAt = completedAtDate?.time
         }
 
-
     val isCompleted: Boolean
         get() = completedAtDate != null
-
 
     fun shouldBeScheduledAfter(date: LocalDate): Boolean {
         return recurrence!!.dtendDate == null || recurrence!!.dtend!! >= date.toStartOfDayUTCMillis()
@@ -154,14 +146,9 @@ open class RepeatingQuest : RealmObject, PersistedModel {
         notes!!.add(note)
     }
 
-
     fun removeTextNote() {
         val txtNotes = textNotes
         notes!!.removeAll(txtNotes)
-    }
-
-    fun setTimesADay(timesADay: Int) {
-        this.timesADay = timesADay
     }
 
     var categoryType: Category

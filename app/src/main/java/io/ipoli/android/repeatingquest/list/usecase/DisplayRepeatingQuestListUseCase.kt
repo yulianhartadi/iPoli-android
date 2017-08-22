@@ -1,7 +1,6 @@
 package io.ipoli.android.repeatingquest.list.usecase
 
 import io.ipoli.android.common.SimpleRxUseCase
-import io.ipoli.android.repeatingquest.list.ui.RepeatingQuestListViewState
 import io.ipoli.android.repeatingquest.list.ui.RepeatingQuestViewModel
 import io.ipoli.android.repeatingquest.persistence.RepeatingQuestRepository
 import io.reactivex.Observable

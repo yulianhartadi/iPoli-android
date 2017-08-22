@@ -2,7 +2,7 @@ package io.ipoli.android.repeatingquest.list
 
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.ipoli.android.repeatingquest.list.ui.RepeatingQuestListController
-import io.ipoli.android.repeatingquest.list.ui.RepeatingQuestListViewState
+import io.ipoli.android.repeatingquest.list.usecase.RepeatingQuestListViewState
 import io.ipoli.android.repeatingquest.list.usecase.DisplayRepeatingQuestListUseCase
 import javax.inject.Inject
 
