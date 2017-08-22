@@ -19,6 +19,6 @@ class OverviewModule {
 
     @Provides
     @OverviewScope
-    fun provideSignInUseCase(questRepository: QuestRepository): DisplayOverviewQuestsUseCase =
+    fun provideDisplayOverviewQuestsUseCase(questRepository: QuestRepository): DisplayOverviewQuestsUseCase =
         DisplayOverviewQuestsUseCase(questRepository)
 }

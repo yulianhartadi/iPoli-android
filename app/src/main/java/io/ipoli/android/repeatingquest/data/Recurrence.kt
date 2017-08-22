@@ -1,4 +1,4 @@
-package io.ipoli.android.repeatingquest
+package io.ipoli.android.repeatingquest.data
 
 import io.ipoli.android.common.datetime.DateUtils
 import io.realm.RealmObject
