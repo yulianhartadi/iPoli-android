@@ -7,12 +7,13 @@ import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
+import io.ipoli.android.challenge.data.Challenge
+import io.ipoli.android.challenge.persistence.RealmChallengeRepository
 import io.ipoli.android.common.di.AppComponent
 import io.ipoli.android.common.di.AppModule
 import io.ipoli.android.common.di.DaggerAppComponent
-import io.ipoli.android.repeatingquest.data.RepeatingQuest
-import io.ipoli.android.repeatingquest.persistence.RealmRepeatingQuestRepository
 import io.realm.Realm
+import org.threeten.bp.LocalDate
 import timber.log.Timber
 
 /**
@@ -62,10 +63,14 @@ class iPoliApp : Application() {
 //        quest.completedAtMinute = 380
 //        questRepository.save(quest).subscribe()
 
-        val repeatingQuestRepository = RealmRepeatingQuestRepository()
+//        val repeatingQuestRepository = RealmRepeatingQuestRepository()
+//
+//        val quest = RepeatingQuest("Do it every day")
+//        quest.name = "Welcome"
+//        repeatingQuestRepository.save(quest).subscribe()
 
-        val quest = RepeatingQuest("Do it every day")
-        quest.name = "Welcome"
-        repeatingQuestRepository.save(quest).subscribe()
+        val challenge = Challenge("Hello")
+        challenge.endDate = LocalDate.now().plusDays(2)
+        RealmChallengeRepository().save(challenge).subscribe()
     }
 }

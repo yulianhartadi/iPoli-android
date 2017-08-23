@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -13,9 +12,9 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
+import io.ipoli.android.challenge.list.ui.ChallengeListController
 import io.ipoli.android.common.BaseController
 import io.ipoli.android.navigator
-import io.ipoli.android.repeatingquest.list.ui.RepeatingQuestListController
 import kotlinx.android.synthetic.main.controller_home.view.*
 
 /**
@@ -68,7 +67,7 @@ class HomeController : BaseController<HomeController, HomePresenter>(), Navigati
         val handler = FadeChangeHandler()
         val childRouter = getChildRouter(view.controllerContainer, null)
         childRouter.setRoot(
-            RouterTransaction.with(RepeatingQuestListController())
+            RouterTransaction.with(ChallengeListController())
                 .pushChangeHandler(handler)
                 .popChangeHandler(handler)
         )
