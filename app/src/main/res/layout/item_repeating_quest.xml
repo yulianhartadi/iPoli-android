@@ -17,7 +17,7 @@
         android:layout_marginStart="16dp">
 
         <ImageView
-            android:id="@+id/quest_category_indicator_image"
+            android:id="@+id/categoryImage"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="center"

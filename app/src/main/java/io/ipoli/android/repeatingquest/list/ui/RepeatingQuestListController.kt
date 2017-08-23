@@ -93,6 +93,10 @@ class RepeatingQuestListController : BaseController<RepeatingQuestListController
             }
 
             is RepeatingQuestListViewState.DataLoaded -> {
+                contentView.questList.visibility = View.VISIBLE
+                contentView.loadingView.visibility = View.GONE
+                contentView.emptyView.visibility = View.GONE
+                contentView.errorView.visibility = View.GONE
                 adapter.items = state.repeatingQuests
                 adapter.notifyDataSetChanged()
             }
@@ -119,6 +123,7 @@ class RepeatingQuestViewModelAdapterDelegate(private val inflater: LayoutInflate
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(viewModel: RepeatingQuestViewModel) {
             itemView.name.text = viewModel.name
+            itemView.categoryImage.setImageResource(viewModel.categoryImage)
         }
     }
 }
