@@ -10,7 +10,11 @@ import com.squareup.leakcanary.RefWatcher
 import io.ipoli.android.common.di.AppComponent
 import io.ipoli.android.common.di.AppModule
 import io.ipoli.android.common.di.DaggerAppComponent
+import io.ipoli.android.quest.data.Category
+import io.ipoli.android.quest.data.Quest
+import io.ipoli.android.quest.persistence.RealmQuestRepository
 import io.realm.Realm
+import org.threeten.bp.LocalDate
 import timber.log.Timber
 
 /**
@@ -52,13 +56,13 @@ class iPoliApp : Application() {
         refWatcher = LeakCanary.install(this)
 //        TinyDancer.create().show(this)
 
-//        val questRepository = RealmQuestRepository()
-//        val quest = Quest("Mystery", LocalDate.now(), Category.FUN)
-//        quest.setDuration(60)
-//        quest.startMinute = 360
-//        quest.completedAtDate = LocalDate.now()
-//        quest.completedAtMinute = 380
-//        questRepository.save(quest).subscribe()
+        val questRepository = RealmQuestRepository()
+        val quest = Quest("Mystery", LocalDate.now(), Category.FUN)
+        quest.setDuration(60)
+        quest.startMinute = 360
+        quest.completedAtDate = LocalDate.now()
+        quest.completedAtMinute = 380
+        questRepository.save(quest).subscribe()
 
 //        val repeatingQuestRepository = RealmRepeatingQuestRepository()
 //

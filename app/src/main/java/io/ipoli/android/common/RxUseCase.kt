@@ -10,7 +10,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
  */
 interface RxUseCase<in Parameters, Result> {
 
-    fun execute(params: Parameters): Observable<Result>
+    fun execute(parameters: Parameters): Observable<Result>
 }
 
 abstract class BaseRxUseCase<in Parameters, Result>() : RxUseCase<Parameters, Result> {
@@ -21,16 +21,16 @@ abstract class BaseRxUseCase<in Parameters, Result>() : RxUseCase<Parameters, Re
         return AndroidSchedulers.mainThread()
     }
 
-    override fun execute(params: Parameters): Observable<Result> {
-        return createObservable(params)
+    override fun execute(parameters: Parameters): Observable<Result> {
+        return createObservable(parameters)
             .observeOn(createObserveOnScheduler())
     }
 }
 
 abstract class SimpleRxUseCase<Result> : BaseRxUseCase<Unit, Result>() {
 
-    override fun execute(params: Unit): Observable<Result> {
-        return createObservable(params)
+    override fun execute(parameters: Unit): Observable<Result> {
+        return createObservable(parameters)
             .observeOn(createObserveOnScheduler())
     }
 }

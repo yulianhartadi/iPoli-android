@@ -25,5 +25,4 @@ class DisplayRepeatingQuestListUseCase(private val repeatingQuestRepository: Rep
             .startWith(RepeatingQuestListViewState.Loading())
             .onErrorReturn { RepeatingQuestListViewState.Error(it) }
     }
-
 }
