@@ -16,10 +16,11 @@ import io.ipoli.android.challenge.list.di.ChallengeListComponent
 import io.ipoli.android.challenge.list.di.DaggerChallengeListComponent
 import io.ipoli.android.challenge.list.usecase.ChallengeListViewState
 import io.ipoli.android.common.BaseController
+import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.daggerComponent
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_challenge_list.view.*
-import kotlinx.android.synthetic.main.item_repeating_quest.view.*
+import kotlinx.android.synthetic.main.item_challenge.view.*
 import kotlinx.android.synthetic.main.view_empty.view.*
 import kotlinx.android.synthetic.main.view_error.view.*
 import kotlinx.android.synthetic.main.view_loading.view.*
@@ -108,6 +109,7 @@ class ChallengeViewModelAdapterDelegate(private val inflater: LayoutInflater) : 
         fun bind(viewModel: ChallengeViewModel) {
             itemView.name.text = viewModel.name
             itemView.categoryImage.setImageResource(viewModel.categoryImage)
+            itemView.dueDate.text = DateFormatter.format(itemView.context, viewModel.dueDate)
 
             itemView.moreMenu.setOnClickListener { v ->
                 val popupMenu = PopupMenu(itemView.context, v)
