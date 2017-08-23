@@ -2,6 +2,7 @@ package io.ipoli.android.player.data
 
 import io.ipoli.android.common.persistence.PersistedModel
 import io.ipoli.android.player.auth.AuthProvider
+import io.ipoli.android.store.avatars.data.Avatar
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
@@ -16,5 +17,6 @@ open class Player(
     var coins: Int = 0,
     var experience: Int = 0,
     var authProvider: AuthProvider? = null,
-    var inventory: Inventory = Inventory()
+    var inventory: Inventory = Inventory(),
+    var avatarCode: Int = Avatar.IPOLI_CLASSIC.code
 ) : RealmObject(), PersistedModel

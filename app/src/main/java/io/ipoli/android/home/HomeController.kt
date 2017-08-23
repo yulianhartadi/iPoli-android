@@ -14,6 +14,7 @@ import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.challenge.list.ui.ChallengeListController
 import io.ipoli.android.common.BaseController
+import io.ipoli.android.navigator
 import kotlinx.android.synthetic.main.controller_home.view.*
 
 /**
@@ -71,12 +72,13 @@ class HomeController : BaseController<HomeController, HomePresenter>(), Navigati
                 .popChangeHandler(handler)
         )
 
-//        navigator.showStore()
-
         actionBarDrawerToggle.syncState()
     }
 
     private fun onItemSelectedFromDrawer() {
+        when (navigationItemSelected?.itemId) {
+            R.id.store -> navigator.showStore()
+        }
 
     }
 

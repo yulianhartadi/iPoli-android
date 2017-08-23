@@ -10,9 +10,10 @@ import io.realm.RealmObject
  * on 8/18/17.
  */
 interface Repository<T> where T : PersistedModel, T : RealmObject {
-    fun findById(id: String): Observable<T>
-    fun findFirst(): Observable<T>
-    fun findAll(): Observable<List<T>>
+    fun listenById(id: String): Observable<T>
+    fun listen(): Observable<T>
+    fun listenForAll(): Observable<List<T>>
+    fun find() : Single<T>
     fun save(model: T): Single<T>
     fun delete(model: T): Completable
 }

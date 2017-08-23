@@ -12,7 +12,7 @@ import io.reactivex.Observable
 class DisplayRepeatingQuestListUseCase(private val repeatingQuestRepository: RepeatingQuestRepository) : SimpleRxUseCase<RepeatingQuestListViewState>() {
 
     override fun createObservable(params: Unit): Observable<RepeatingQuestListViewState> {
-        return repeatingQuestRepository.findAll()
+        return repeatingQuestRepository.listenForAll()
             .map { repeatingQuests ->
                 val viewModels = repeatingQuests.map { RepeatingQuestViewModel.create(it) }
                 if (viewModels.isEmpty()) {

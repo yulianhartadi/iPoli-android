@@ -1,5 +1,6 @@
 package io.ipoli.android.player
 
+import android.util.Log
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.player.ui.SignInController

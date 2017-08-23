@@ -20,11 +20,11 @@ abstract class BaseRealmRepository<T> : Repository<T> where T : PersistedModel, 
 
     protected abstract fun getModelClass(): Class<T>
 
-    override fun findById(id: String): Observable<T> = find { it.equalTo("id", id) }
+    override fun listenById(id: String): Observable<T> = listen { it.equalTo("id", id) }
 
-    override fun findFirst(): Observable<T> = find {}
+    override fun listen(): Observable<T> = listen {}
 
-    protected fun find(query: (RealmQuery<T>) -> Unit): Observable<T> =
+    protected fun listen(query: (RealmQuery<T>) -> Unit): Observable<T> =
         createObservable { emitter ->
             val realm = Realm.getDefaultInstance()
             val realmQuery = RealmQuery.createQuery(realm, getModelClass())
@@ -39,9 +39,9 @@ abstract class BaseRealmRepository<T> : Repository<T> where T : PersistedModel, 
             })
         }
 
-    override fun findAll(): Observable<List<T>> = findAll {}
+    override fun listenForAll(): Observable<List<T>> = listenForAll {}
 
-    protected fun findAll(query: (RealmQuery<T>) -> Unit): Observable<List<T>> =
+    protected fun listenForAll(query: (RealmQuery<T>) -> Unit): Observable<List<T>> =
         createObservable { emitter ->
             val realm = Realm.getDefaultInstance()
             val realmQuery = RealmQuery.createQuery(realm, getModelClass())
@@ -55,6 +55,24 @@ abstract class BaseRealmRepository<T> : Repository<T> where T : PersistedModel, 
                 realm.close()
             })
         }
+
+    override fun find(): Single<T> = find { }
+
+    protected fun find(query: (RealmQuery<T>) -> Unit): Single<T> =
+        createSingle { emitter ->
+            val realm = Realm.getDefaultInstance()
+            val realmQuery = RealmQuery.createQuery(realm, getModelClass())
+            query(realmQuery)
+            val result = realmQuery.findFirstAsync()
+            result.addChangeListener<T> { it ->
+                emitter.onSuccess(realm.copyFromRealm(it))
+            }
+            emitter.setDisposable(Disposables.fromAction {
+                result.removeAllChangeListeners()
+                realm.close()
+            })
+        }
+
 
     protected fun getLooper(): Looper? {
 //        return if (Looper.myLooper() != Looper.getMainLooper()) {

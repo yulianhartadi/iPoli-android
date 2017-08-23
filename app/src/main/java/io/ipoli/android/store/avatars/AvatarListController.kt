@@ -76,31 +76,41 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
         this.restoringState = restoringViewState
     }
 
-    fun displayAvatarListIntent(): Observable<Boolean> {
-        return Observable.just(!restoringState).filter { _ -> true }
-    }
+    fun displayAvatarListIntent(): Observable<Boolean> =
+        Observable.just(!restoringState).filter { _ -> true }
 
     fun buyAvatarIntent(): Observable<AvatarViewModel> {
         return buySubject
     }
 
+    fun useAvatarIntent(): Observable<AvatarViewModel> {
+        return useSubject
+    }
+
     fun render(state: AvatarListViewState) {
+        Log.d("AAA", state.toString())
         when (state) {
-            is AvatarListLoadingViewState -> {
-
+            is AvatarListViewState.Loading -> {
+                Toast.makeText(activity, "Loading", Toast.LENGTH_SHORT).show()
             }
 
-            is AvatarListLoadedViewState -> {
-                adapter.items = state.avatarList
+            is AvatarListViewState.Error -> {
+                Toast.makeText(activity, "Error", Toast.LENGTH_SHORT).show()
+            }
+
+            is AvatarListViewState.DataLoaded -> {
+                adapter.items = state.avatars
                 adapter.notifyDataSetChanged()
             }
 
-            is AvatarBoughtViewState -> {
-                val avatars = state.avatarList
-                val name = activity?.getString(avatars[state.boughtAvatarPosition].name)
-                Toast.makeText(activity, name + " successfully bought" , Toast.LENGTH_SHORT).show();
-                adapter.items = avatars
-                adapter.notifyDataSetChanged()
+            is AvatarListViewState.AvatarBought -> {
+                val name = activity?.getString(state.avatarViewModel.name)
+                Toast.makeText(activity, name + " successfully bought", Toast.LENGTH_SHORT).show();
+            }
+
+            is AvatarListViewState.AvatarUsed -> {
+                val name = activity?.getString(state.avatarViewModel.name)
+                Toast.makeText(activity, name + " successfully used", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -135,7 +145,7 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
         override fun onCreateViewHolder(parent: ViewGroup?): RecyclerView.ViewHolder =
             AvatarViewHolder(inflater.inflate(R.layout.item_avatar_store, parent, false))
 
-        protected fun playEnterAnimation(viewToAnimate: View, position: Int) {
+        private fun playEnterAnimation(viewToAnimate: View, position: Int) {
             if (position > lastAnimatedPosition) {
                 val anim = AnimationUtils.loadAnimation(viewToAnimate.context, R.anim.fade_in)
                 anim.startOffset = (position * 50).toLong()
@@ -146,7 +156,7 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
 
         inner class AvatarViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-            fun bindAvatar(vm: AvatarViewModel, @ColorRes backgroundColor : Int) {
+            fun bindAvatar(vm: AvatarViewModel, @ColorRes backgroundColor: Int) {
                 with(vm) {
                     val context = itemView.context
                     val observable = RxView.clicks(itemView.avatarPrice).map { vm }
@@ -167,35 +177,4 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
         }
 
     }
-}
-
-open class AvatarListViewState
-
-class AvatarListLoadingViewState : AvatarListViewState()
-
-class AvatarListLoadedViewState(val avatarList: List<AvatarViewModel>) : AvatarListViewState()
-
-class AvatarBoughtViewState(val avatarList: List<AvatarViewModel>, val boughtAvatarPosition : Int) : AvatarListViewState()
-
-interface AvatarListPartialStateChange {
-    fun computeNewState(prevState: AvatarListViewState): AvatarListViewState
-}
-
-class AvatarListLoadingPartialStateChange : AvatarListPartialStateChange {
-    override fun computeNewState(prevState: AvatarListViewState): AvatarListViewState {
-        return AvatarListLoadingViewState()
-    }
-}
-
-class AvatarListLoadedPartialStateChange(private val avatarList: List<AvatarViewModel>) : AvatarListPartialStateChange {
-    override fun computeNewState(prevState: AvatarListViewState): AvatarListViewState {
-        return AvatarListLoadedViewState(avatarList)
-    }
-}
-
-class AvatarBoughtPartialStateChange(private val avatarList : List<AvatarViewModel>, private val boughtAvatarPosition: Int) : AvatarListPartialStateChange {
-    override fun computeNewState(prevState: AvatarListViewState): AvatarListViewState {
-        return AvatarBoughtViewState(avatarList, boughtAvatarPosition)
-    }
-
 }

@@ -26,11 +26,11 @@ class DisplayRewardUseCaseTest {
     fun listIsDisplayed() {
 
         val playerRepoMock = mock<PlayerRepository> {
-            on { findFirst() } doReturn Observable.just(Player())
+            on { listen() } doReturn Observable.just(Player())
         }
 
         val rewardRepoMock = mock<RewardRepository> {
-            on { findAll() } doReturn Observable.just(listOf(Reward()))
+            on { listenForAll() } doReturn Observable.just(listOf(Reward()))
         }
 
         val useCase = DisplayRewardsUseCase(rewardRepoMock, playerRepoMock)
