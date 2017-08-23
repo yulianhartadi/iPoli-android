@@ -53,6 +53,8 @@ open class RepeatingQuest : RealmObject, PersistedModel {
         }
     var subQuests: RealmList<SubQuest>? = null
 
+    var quests: RealmList<Quest> = RealmList()
+
     var completedAt: Long? = null
 
     var recurrence: Recurrence? = null

@@ -14,6 +14,7 @@ import io.ipoli.android.common.di.AppModule
 import io.ipoli.android.common.di.DaggerAppComponent
 import io.ipoli.android.quest.data.Category
 import io.ipoli.android.quest.data.Quest
+import io.ipoli.android.repeatingquest.data.RepeatingQuest
 import io.realm.Realm
 import org.threeten.bp.LocalDate
 import timber.log.Timber
@@ -74,6 +75,11 @@ class iPoliApp : Application() {
         val challenge = Challenge("Hello")
         challenge.endDate = LocalDate.now().plusDays(2)
         challenge.quests.add(Quest("Welcome to China", Category.CHORES))
+
+        val repeatingQuest = RepeatingQuest("Hi")
+        repeatingQuest.quests.add(Quest("Hi", Category.LEARNING))
+        challenge.repeatingQuests.add(repeatingQuest)
+
         RealmChallengeRepository().save(challenge).subscribe()
     }
 }

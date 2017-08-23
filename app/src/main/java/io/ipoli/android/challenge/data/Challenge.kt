@@ -6,6 +6,7 @@ import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.persistence.PersistedModel
 import io.ipoli.android.quest.data.Category
 import io.ipoli.android.quest.data.Quest
+import io.ipoli.android.repeatingquest.data.RepeatingQuest
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
@@ -44,6 +45,8 @@ open class Challenge : RealmObject, PersistedModel {
     var source: String? = null
 
     var quests: RealmList<Quest> = RealmList()
+
+    var repeatingQuests: RealmList<RepeatingQuest> = RealmList()
 
     constructor()
 
