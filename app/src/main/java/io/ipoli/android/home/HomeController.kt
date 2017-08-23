@@ -15,7 +15,7 @@ import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
 import io.ipoli.android.navigator
-import io.ipoli.android.quest.overview.ui.OverviewController
+import io.ipoli.android.repeatingquest.list.ui.RepeatingQuestListController
 import kotlinx.android.synthetic.main.controller_home.view.*
 
 /**
@@ -65,13 +65,13 @@ class HomeController : BaseController<HomeController, HomePresenter>(), Navigati
 
         view.drawerLayout.addDrawerListener(actionBarDrawerToggle)
 
-//        val handler = FadeChangeHandler()
-//        val childRouter = getChildRouter(view.controllerContainer, null)
-//        childRouter.setRoot(
-//            RouterTransaction.with(OverviewController())
-//                .pushChangeHandler(handler)
-//                .popChangeHandler(handler)
-//        )
+        val handler = FadeChangeHandler()
+        val childRouter = getChildRouter(view.controllerContainer, null)
+        childRouter.setRoot(
+            RouterTransaction.with(RepeatingQuestListController())
+                .pushChangeHandler(handler)
+                .popChangeHandler(handler)
+        )
 
         actionBarDrawerToggle.syncState()
     }
