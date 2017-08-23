@@ -1,5 +1,6 @@
 package io.ipoli.android.store.avatars
 
+import android.util.Log
 import io.ipoli.android.common.BaseRxUseCase
 import io.ipoli.android.common.SimpleRxUseCase
 import io.ipoli.android.player.persistence.PlayerRepository
@@ -19,6 +20,7 @@ class DisplayAvatarListUseCase(private val playerRepository: PlayerRepository) :
     override fun createObservable(params: Unit): Observable<AvatarListPartialStateChange> =
         playerRepository.findFirst()
             .map { player ->
+                Log.d("AAA use case", "display avatar")
                 AvatarListLoadedPartialStateChange(Avatar.values().map { AvatarViewModel(it.code, it.avatarName,
                     it.price, it.picture, player.inventory.hasAvatar(it.code)) }) as AvatarListPartialStateChange
             }

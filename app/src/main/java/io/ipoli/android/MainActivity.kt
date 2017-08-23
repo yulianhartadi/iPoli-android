@@ -22,7 +22,6 @@ class MainActivity : AppCompatActivity() {
 
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         if (!router.hasRootController()) {
-//            router.setRoot(RouterTransaction.with(RewardListController()))
             router.setRoot(RouterTransaction.with(SignInController()))
         }
     }

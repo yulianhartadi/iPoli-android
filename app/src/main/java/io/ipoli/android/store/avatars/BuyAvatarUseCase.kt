@@ -20,13 +20,13 @@ class BuyAvatarUseCase(private val playerRepository: PlayerRepository) : BaseRxU
                 player.inventory.addAvatar(avatarViewModel.code, LocalDate.now())
                 playerRepository.save(player)
             }.map { player ->
-            val avatarList = Avatar.values().map {
-                AvatarViewModel(it.code, it.avatarName, it.price, it.picture, player.inventory.hasAvatar(it.code))
-            }
-            avatarList.indexOfFirst { (code) -> code == avatarViewModel.code }
-            AvatarBoughtPartialStateChange(avatarList,
-                avatarList.indexOfFirst { (code) -> code == avatarViewModel.code })
-                as AvatarListPartialStateChange
-        }.startWith(AvatarListLoadingPartialStateChange())
+                val avatarList = Avatar.values().map {
+                    AvatarViewModel(it.code, it.avatarName, it.price, it.picture, player.inventory.hasAvatar(it.code))
+                }
+
+                AvatarBoughtPartialStateChange(avatarList,
+                    avatarList.indexOfFirst { (code) -> code == avatarViewModel.code })
+                    as AvatarListPartialStateChange
+            }.startWith(AvatarListLoadingPartialStateChange())
 
 }

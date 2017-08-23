@@ -17,7 +17,8 @@ import javax.inject.Inject
  * on 8/20/17.
  */
 class AvatarListPresenter @Inject constructor(private val displayAvatarListUseCase: DisplayAvatarListUseCase,
-                                              private val buyAvatarUseCase: BuyAvatarUseCase) :
+                                              private val buyAvatarUseCase: BuyAvatarUseCase,
+                                              private val useAvatarUseCase: UseAvatarUseCase) :
     MviBasePresenter<AvatarListController, AvatarListViewState>() {
     override fun bindIntents() {
         val observables = listOf<Observable<AvatarListPartialStateChange>>(
@@ -25,9 +26,13 @@ class AvatarListPresenter @Inject constructor(private val displayAvatarListUseCa
                 displayAvatarListUseCase.execute(Unit)
             },
 
-            intent {
-                it.buyAvatarIntent().switchMap { avatarViewModel ->
+            intent { it.buyAvatarIntent().switchMap { avatarViewModel ->
                     buyAvatarUseCase.execute(avatarViewModel)
+                }
+            },
+
+            intent { it.useAvatarIntent().switchMap { avatarViewModel ->
+                    useAvatarUseCase.execute(avatarViewModel)
                 }
             }
         )

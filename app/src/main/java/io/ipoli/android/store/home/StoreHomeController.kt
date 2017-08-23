@@ -1,6 +1,7 @@
 package io.ipoli.android.store.home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup

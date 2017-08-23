@@ -77,14 +77,19 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
     }
 
     fun displayAvatarListIntent(): Observable<Boolean> {
-        return Observable.just(!restoringState).filter { _ -> true }
+        return Observable.just(!restoringState).filter { _ -> true }.doOnComplete {  }
     }
 
     fun buyAvatarIntent(): Observable<AvatarViewModel> {
         return buySubject
     }
 
+    fun useAvatarIntent(): Observable<AvatarViewModel> {
+        return useSubject
+    }
+
     fun render(state: AvatarListViewState) {
+        Log.d("AAA", state.toString())
         when (state) {
             is AvatarListLoadingViewState -> {
 
@@ -99,6 +104,14 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
                 val avatars = state.avatarList
                 val name = activity?.getString(avatars[state.boughtAvatarPosition].name)
                 Toast.makeText(activity, name + " successfully bought" , Toast.LENGTH_SHORT).show();
+                adapter.items = avatars
+                adapter.notifyDataSetChanged()
+            }
+
+            is AvatarUsedViewState -> {
+                val avatars = state.avatarList
+                val name = activity?.getString(avatars[state.usedAvatarPosition].name)
+                Toast.makeText(activity, name + " successfully used" , Toast.LENGTH_SHORT).show();
                 adapter.items = avatars
                 adapter.notifyDataSetChanged()
             }
@@ -135,7 +148,7 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
         override fun onCreateViewHolder(parent: ViewGroup?): RecyclerView.ViewHolder =
             AvatarViewHolder(inflater.inflate(R.layout.item_avatar_store, parent, false))
 
-        protected fun playEnterAnimation(viewToAnimate: View, position: Int) {
+        private fun playEnterAnimation(viewToAnimate: View, position: Int) {
             if (position > lastAnimatedPosition) {
                 val anim = AnimationUtils.loadAnimation(viewToAnimate.context, R.anim.fade_in)
                 anim.startOffset = (position * 50).toLong()
@@ -177,6 +190,8 @@ class AvatarListLoadedViewState(val avatarList: List<AvatarViewModel>) : AvatarL
 
 class AvatarBoughtViewState(val avatarList: List<AvatarViewModel>, val boughtAvatarPosition : Int) : AvatarListViewState()
 
+class AvatarUsedViewState(val avatarList: List<AvatarViewModel>, val usedAvatarPosition : Int) : AvatarListViewState()
+
 interface AvatarListPartialStateChange {
     fun computeNewState(prevState: AvatarListViewState): AvatarListViewState
 }
@@ -198,4 +213,10 @@ class AvatarBoughtPartialStateChange(private val avatarList : List<AvatarViewMod
         return AvatarBoughtViewState(avatarList, boughtAvatarPosition)
     }
 
+}
+
+class AvatarUsedPartialStateChange(private val avatarList : List<AvatarViewModel>, private val usedAvatarPosition: Int) : AvatarListPartialStateChange {
+    override fun computeNewState(prevState: AvatarListViewState): AvatarListViewState {
+        return AvatarUsedViewState(avatarList, usedAvatarPosition)
+    }
 }
