@@ -2,6 +2,7 @@ package io.ipoli.android.repeatingquest.list.ui
 
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +23,7 @@ import kotlinx.android.synthetic.main.item_repeating_quest.view.*
 import kotlinx.android.synthetic.main.view_empty.view.*
 import kotlinx.android.synthetic.main.view_error.view.*
 import kotlinx.android.synthetic.main.view_loading.view.*
+
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -124,6 +126,12 @@ class RepeatingQuestViewModelAdapterDelegate(private val inflater: LayoutInflate
         fun bind(viewModel: RepeatingQuestViewModel) {
             itemView.name.text = viewModel.name
             itemView.categoryImage.setImageResource(viewModel.categoryImage)
+
+            itemView.moreMenu.setOnClickListener { v ->
+                val popupMenu = PopupMenu(itemView.context, v)
+                popupMenu.inflate(R.menu.repeating_quest_actions_menu)
+                popupMenu.show()
+            }
         }
     }
 }
