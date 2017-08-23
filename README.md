@@ -8,7 +8,7 @@
 
 <p align="center"><img src="./.github/icon.png" width="128px"/></p>
 
-iPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one place! It's goal is to listen time for the things that matter most in your life, make you stick to good habits and free you from the burden of scheduling tasks by yourself.
+iPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one place! It's goal is to find time for the things that matter most in your life, make you stick to good habits and free you from the burden of scheduling tasks by yourself.
 
 <img src="./.github/screens/calendar.png" width="250px"/> &nbsp;&nbsp;&nbsp;
 <img src="./.github/screens/quest.png" width="250px"/> &nbsp;&nbsp;&nbsp;
@@ -28,7 +28,7 @@ iPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one
 * Sync between device & server
 * Flexible habit scheduling - Workout 3 times per week every Mon, Tue, Fri and Sat
 * Sync with Google Calendar/Outlook (something else?)
-* Automatic task scheduling - listen the best slot (time) to start/do a task
+* Automatic task scheduling - find the best slot (time) to start/do a task
 
 # Libraries used
 
