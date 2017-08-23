@@ -2,7 +2,6 @@ package io.ipoli.android.store.avatars
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -20,14 +19,11 @@ import kotlinx.android.synthetic.main.item_avatar_store.view.*
 import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.GridLayoutManager
-import android.util.Log
 import io.reactivex.Observable
 import android.view.animation.AnimationUtils
 import android.widget.Toast
-import io.ipoli.android.reward.RewardModel
-import io.ipoli.android.store.avatars.data.Avatar
-import io.reactivex.functions.Consumer
-import timber.log.Timber
+import kotlinx.android.synthetic.main.view_error.view.*
+import kotlinx.android.synthetic.main.view_loading.view.*
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -88,30 +84,52 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
     }
 
     fun render(state: AvatarListViewState) {
+        val contentView = view!!
         when (state) {
             is AvatarListViewState.Loading -> {
-                Toast.makeText(activity, "Loading", Toast.LENGTH_SHORT).show()
+                showLoadingView(contentView)
             }
 
             is AvatarListViewState.Error -> {
-                Toast.makeText(activity, "Error", Toast.LENGTH_SHORT).show()
+                showErrorView(contentView)
             }
 
             is AvatarListViewState.DataLoaded -> {
+                showDataView(contentView)
                 adapter.items = state.avatars
                 adapter.notifyDataSetChanged()
             }
 
             is AvatarListViewState.AvatarBought -> {
+                showDataView(contentView)
                 val name = activity?.getString(state.avatarViewModel.name)
                 Toast.makeText(activity, name + " successfully bought", Toast.LENGTH_SHORT).show();
             }
 
             is AvatarListViewState.AvatarUsed -> {
+                showDataView(contentView)
                 val name = activity?.getString(state.avatarViewModel.name)
                 Toast.makeText(activity, name + " successfully used", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private fun showErrorView(contentView: View) {
+        contentView.avatarList.visibility = View.GONE
+        contentView.loadingView.visibility = View.GONE
+        contentView.errorView.visibility = View.VISIBLE
+    }
+
+    private fun showLoadingView(contentView: View) {
+        contentView.loadingView.visibility = View.VISIBLE
+        contentView.errorView.visibility = View.GONE
+        contentView.avatarList.visibility = View.GONE
+    }
+
+    private fun showDataView(contentView: View) {
+        contentView.avatarList.visibility = View.VISIBLE
+        contentView.loadingView.visibility = View.GONE
+        contentView.errorView.visibility = View.GONE
     }
 
     class AvatarListAdapter(manager: AdapterDelegatesManager<List<AvatarViewModel>>) : ListDelegationAdapter<List<AvatarViewModel>>(

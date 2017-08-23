@@ -1,14 +1,13 @@
 package io.ipoli.android.store.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
 import io.ipoli.android.navigator
-import kotlinx.android.synthetic.main.controller_store_items.view.*
+import kotlinx.android.synthetic.main.controller_store_home.view.*
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -22,7 +21,7 @@ class StoreHomeController : BaseController<StoreHomeController, StoreHomePresent
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
-        val view = inflater.inflate(R.layout.controller_store_items, container, false)
+        val view = inflater.inflate(R.layout.controller_store_home, container, false)
         view.subscriptionContainer.setOnClickListener({ navigator.showRewardsList() })
         view.powerUpsContainer.setOnClickListener({ navigator.showRewardsList() })
         view.avatarsContainer.setOnClickListener({ navigator.showAvatarList() })

@@ -11,7 +11,7 @@ import io.reactivex.Observable
  */
 class DisplayChallengeListUseCase(private val challengeRepository: ChallengeRepository) : SimpleRxUseCase<ChallengeListViewState>() {
     override fun createObservable(params: Unit): Observable<ChallengeListViewState> =
-        challengeRepository.findAll()
+        challengeRepository.listenForAll()
             .map { challenges ->
                 val viewModels = challenges.map { ChallengeViewModel.create(it) }
                 if (viewModels.isEmpty()) {
