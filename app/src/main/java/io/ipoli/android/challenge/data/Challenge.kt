@@ -5,6 +5,8 @@ import io.ipoli.android.common.data.Difficulty
 import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.persistence.PersistedModel
 import io.ipoli.android.quest.data.Category
+import io.ipoli.android.quest.data.Quest
+import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import org.threeten.bp.LocalDate
@@ -40,6 +42,8 @@ open class Challenge : RealmObject, PersistedModel {
     private var updatedAt: Long? = null
 
     var source: String? = null
+
+    var quests: RealmList<Quest> = RealmList()
 
     constructor()
 
