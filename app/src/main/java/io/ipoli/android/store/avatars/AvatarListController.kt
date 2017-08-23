@@ -88,7 +88,6 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
     }
 
     fun render(state: AvatarListViewState) {
-        Log.d("AAA", state.toString())
         when (state) {
             is AvatarListViewState.Loading -> {
                 Toast.makeText(activity, "Loading", Toast.LENGTH_SHORT).show()

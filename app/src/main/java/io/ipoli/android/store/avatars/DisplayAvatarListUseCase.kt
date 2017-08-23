@@ -15,7 +15,6 @@ class DisplayAvatarListUseCase(private val playerRepository: PlayerRepository) :
     override fun createObservable(params: Unit): Observable<AvatarListViewState> =
         playerRepository.listen()
             .map { player ->
-                Log.d("AAA use case", "display avatar")
                 AvatarListViewState.DataLoaded(Avatar.values().map {
                     AvatarViewModel(it.code, it.avatarName,
                         it.price, it.picture, player.inventory.hasAvatar(it.code))

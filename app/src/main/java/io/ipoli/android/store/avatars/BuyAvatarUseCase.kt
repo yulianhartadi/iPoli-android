@@ -16,12 +16,10 @@ class BuyAvatarUseCase(private val playerRepository: PlayerRepository) : BaseRxU
     override fun createObservable(avatarViewModel: AvatarViewModel): Observable<AvatarListViewState> =
         playerRepository.find()
             .flatMap { player ->
-                Log.d("AAA find", player.toString())
                 player.inventory.addAvatar(avatarViewModel.code, LocalDate.now())
                 playerRepository.save(player)
             }
             .map { player ->
-                Log.d("AAA buy", player.toString())
                 AvatarListViewState.AvatarBought(avatarViewModel)
             }.toObservable()
             .cast(AvatarListViewState::class.java)
