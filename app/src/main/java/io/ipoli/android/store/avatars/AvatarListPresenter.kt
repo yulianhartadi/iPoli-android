@@ -21,27 +21,21 @@ class AvatarListPresenter @Inject constructor(private val displayAvatarListUseCa
                                               private val useAvatarUseCase: UseAvatarUseCase) :
     MviBasePresenter<AvatarListController, AvatarListViewState>() {
     override fun bindIntents() {
-        val displayAvatarsIntent = intent { it.displayAvatarListIntent() }.switchMap { r ->
-            displayAvatarListUseCase.execute(Unit)
-        }
+        val observables = listOf<Observable<AvatarListViewState>>(
+            intent { it.displayAvatarListIntent() }.switchMap {
+                displayAvatarListUseCase.execute(Unit)
+            },
 
-        intent { it.buyAvatarIntent() }.switchMap { avatarViewModel ->
-            Log.d("AAA", avatarViewModel.toString())
-            buyAvatarUseCase.execute(avatarViewModel)
-        }.subscribe()
+            intent { it.buyAvatarIntent() }.switchMap { avatarViewModel ->
+                buyAvatarUseCase.execute(avatarViewModel)
+            },
 
+            intent { it.useAvatarIntent() }.switchMap { avatarViewModel ->
+                useAvatarUseCase.execute(avatarViewModel)
+            }
+        )
 
-        intent { it.useAvatarIntent() }.switchMap { avatarViewModel ->
-            useAvatarUseCase.execute(avatarViewModel)
-        }.subscribe()
-
-//        val allIntents: Observable<AvatarListViewState> = Observable.merge(observables)
-//        val initialState: AvatarListViewState = AvatarListViewState.Loading()
-//
-//        val stateObservable = allIntents.scan(initialState, this::viewStateReducer)
-//            .observeOn(AndroidSchedulers.mainThread())
-
-        subscribeViewState(displayAvatarsIntent, AvatarListController::render)
+        subscribeViewState(Observable.merge(observables), AvatarListController::render)
     }
 }
 
