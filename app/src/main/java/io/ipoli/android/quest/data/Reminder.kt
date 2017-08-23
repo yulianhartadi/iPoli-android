@@ -5,7 +5,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
- * Created by Venelin Valkov venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/19/17.
  */
 open class Reminder : RealmObject {

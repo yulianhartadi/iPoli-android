@@ -4,7 +4,7 @@ import io.realm.RealmObject
 import java.util.*
 
 /**
- * Created by Venelin Valkov venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/19/17.
  */
 open class SubQuest : RealmObject {

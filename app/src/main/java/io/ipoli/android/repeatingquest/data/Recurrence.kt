@@ -5,7 +5,7 @@ import io.realm.RealmObject
 import org.threeten.bp.LocalDate
 
 /**
- * Created by Venelin Valkov venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/22/17.
  */
 open class Recurrence : RealmObject() {
