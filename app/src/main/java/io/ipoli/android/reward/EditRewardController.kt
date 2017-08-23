@@ -18,7 +18,7 @@ class EditRewardController(val rewardId: String = "") : BaseController<EditRewar
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_edit_reward, container, false) as ViewGroup
         val rewardRepository = RealmRewardRepository()
-//        val reward = rewardRepository.findById(rewardId)
+//        val reward = rewardRepository.listenById(rewardId)
 //        view.name.setText(reward.name)
 //        view.description.setText(reward.description)
 //        view.price.setText(reward.price.toString())

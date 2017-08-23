@@ -17,7 +17,7 @@ interface QuestRepository : Repository<Quest> {
 
 class RealmQuestRepository : BaseRealmRepository<Quest>(), QuestRepository {
     override fun findScheduledBetween(startDate: LocalDate, endDate: LocalDate): Observable<List<Quest>> =
-        findAll { query ->
+        listenForAll { query ->
             query.between("scheduled", startDate.toStartOfDayUTCMillis(), endDate.toStartOfDayUTCMillis())
         }
 

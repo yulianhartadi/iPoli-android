@@ -21,33 +21,27 @@ class AvatarListPresenter @Inject constructor(private val displayAvatarListUseCa
                                               private val useAvatarUseCase: UseAvatarUseCase) :
     MviBasePresenter<AvatarListController, AvatarListViewState>() {
     override fun bindIntents() {
-        val observables = listOf<Observable<AvatarListPartialStateChange>>(
-            intent { it.displayAvatarListIntent() }.switchMap {
-                displayAvatarListUseCase.execute(Unit)
-            },
+        val displayAvatarsIntent = intent { it.displayAvatarListIntent() }.switchMap { r ->
+            displayAvatarListUseCase.execute(Unit)
+        }
 
-            intent { it.buyAvatarIntent().switchMap { avatarViewModel ->
-                    buyAvatarUseCase.execute(avatarViewModel)
-                }
-            },
+        intent { it.buyAvatarIntent() }.switchMap { avatarViewModel ->
+            Log.d("AAA", avatarViewModel.toString())
+            buyAvatarUseCase.execute(avatarViewModel)
+        }.subscribe()
 
-            intent { it.useAvatarIntent().switchMap { avatarViewModel ->
-                    useAvatarUseCase.execute(avatarViewModel)
-                }
-            }
-        )
 
-        val allIntents: Observable<AvatarListPartialStateChange> = Observable.merge(observables)
-        val initialState: AvatarListViewState = AvatarListLoadingViewState()
+        intent { it.useAvatarIntent() }.switchMap { avatarViewModel ->
+            useAvatarUseCase.execute(avatarViewModel)
+        }.subscribe()
 
-        val stateObservable = allIntents.scan(initialState, this::viewStateReducer)
-            .observeOn(AndroidSchedulers.mainThread())
+//        val allIntents: Observable<AvatarListViewState> = Observable.merge(observables)
+//        val initialState: AvatarListViewState = AvatarListViewState.Loading()
+//
+//        val stateObservable = allIntents.scan(initialState, this::viewStateReducer)
+//            .observeOn(AndroidSchedulers.mainThread())
 
-        subscribeViewState(stateObservable, AvatarListController::render)
-    }
-
-    private fun viewStateReducer(previousState: AvatarListViewState, statePartialChange: AvatarListPartialStateChange): AvatarListViewState {
-        return statePartialChange.computeNewState(previousState)
+        subscribeViewState(displayAvatarsIntent, AvatarListController::render)
     }
 }
 
