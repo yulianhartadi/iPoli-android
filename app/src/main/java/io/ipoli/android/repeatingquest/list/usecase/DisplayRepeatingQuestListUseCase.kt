@@ -65,7 +65,7 @@ class DisplayRepeatingQuestListUseCase(private val repeatingQuestRepository: Rep
         return nextDate
     }
 
-    fun getPeriodHistories(repeatingQuest: RepeatingQuest): List<PeriodHistory> {
+    private fun getPeriodHistories(repeatingQuest: RepeatingQuest): List<PeriodHistory> {
 
         val currentDate = LocalDate.now()
 

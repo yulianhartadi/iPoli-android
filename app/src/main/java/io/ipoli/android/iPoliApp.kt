@@ -10,8 +10,14 @@ import com.squareup.leakcanary.RefWatcher
 import io.ipoli.android.common.di.AppComponent
 import io.ipoli.android.common.di.AppModule
 import io.ipoli.android.common.di.DaggerAppComponent
+import io.ipoli.android.quest.data.Quest
+import io.ipoli.android.repeatingquest.data.Recurrence
+import io.ipoli.android.repeatingquest.data.RepeatingQuest
+import io.ipoli.android.repeatingquest.persistence.RealmRepeatingQuestRepository
 import io.realm.Realm
+import org.threeten.bp.LocalDate
 import timber.log.Timber
+import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -60,17 +66,18 @@ class iPoliApp : Application() {
 //        quest.completedAtMinute = 380
 //        questRepository.save(quest).subscribe()
 
-//        val repeatingQuestRepository = RealmRepeatingQuestRepository()
-//
-//        val rq = RepeatingQuest("Wakka")
-//        rq.name = "Doodle"
-//        rq.setDuration(20)
-//        rq.recurrence = Recurrence.create()
-//        val quest = Quest("Piki")
-//        quest.scheduledDate = LocalDate.now().plusDays(1)
+        val repeatingQuestRepository = RealmRepeatingQuestRepository()
+
+        val rq = RepeatingQuest("Wakka")
+        rq.name = "Doodle"
+        rq.setDuration(20)
+        rq.recurrence = Recurrence.create()
+        val quest = Quest("Piki")
+        quest.id = UUID.randomUUID().toString()
+        quest.scheduledDate = LocalDate.now().plusDays(1)
 //        quest.completedAt = System.currentTimeMillis()
-//        rq.quests.add(quest)
-//        repeatingQuestRepository.save(rq).subscribe()
+        rq.quests.add(quest)
+        repeatingQuestRepository.save(rq).subscribe()
 
 //        val challenge = Challenge("Hello")
 //        challenge.endDate = LocalDate.now().plusDays(2)

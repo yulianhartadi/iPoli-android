@@ -96,8 +96,8 @@ open class Quest : RealmObject, PersistedModel {
         startDate = endDate
         scheduled = endDate?.toStartOfDayUTCMillis()
         startMinute = null
-        createdAt = DateUtils.nowUTC().getTime()
-        updatedAt = DateUtils.nowUTC().getTime()
+        createdAt = DateUtils.nowUTC().time
+        updatedAt = DateUtils.nowUTC().time
         this.category = category.name
         this.source = Constants.API_RESOURCE_SOURCE
         this.isAllDay = false
