@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
-import io.ipoli.android.navigator
+import io.ipoli.android.common.navigator
 import kotlinx.android.synthetic.main.controller_store_home.view.*
 
 /**

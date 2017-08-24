@@ -19,3 +19,9 @@ fun LocalDate.toStartOfDayUTC(): Date {
 fun LocalDate.fromZonedDateTime(dateTime: ZonedDateTime): Date {
     return Date(dateTime.toInstant().toEpochMilli())
 }
+
+fun LocalDate.isBetween(start: LocalDate?, end: LocalDate?): Boolean {
+    return if (start == null || end == null) {
+        false
+    } else !isBefore(start) && !isAfter(end)
+}

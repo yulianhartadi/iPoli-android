@@ -12,9 +12,9 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
-import io.ipoli.android.challenge.list.ui.ChallengeListController
 import io.ipoli.android.common.BaseController
-import io.ipoli.android.navigator
+import io.ipoli.android.common.navigator
+import io.ipoli.android.repeatingquest.list.ui.RepeatingQuestListController
 import kotlinx.android.synthetic.main.controller_home.view.*
 
 /**
@@ -67,7 +67,7 @@ class HomeController : BaseController<HomeController, HomePresenter>(), Navigati
         val handler = FadeChangeHandler()
         val childRouter = getChildRouter(view.controllerContainer, null)
         childRouter.setRoot(
-            RouterTransaction.with(ChallengeListController())
+            RouterTransaction.with(RepeatingQuestListController())
                 .pushChangeHandler(handler)
                 .popChangeHandler(handler)
         )
