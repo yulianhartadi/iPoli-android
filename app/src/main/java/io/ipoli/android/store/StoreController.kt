@@ -1,17 +1,15 @@
 package io.ipoli.android.store
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
-import io.ipoli.android.daggerComponent
+import io.ipoli.android.common.daggerComponent
 import io.ipoli.android.store.home.StoreHomeController
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_store.view.*

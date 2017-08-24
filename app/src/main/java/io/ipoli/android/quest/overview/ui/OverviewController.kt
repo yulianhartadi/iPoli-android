@@ -21,7 +21,7 @@ import io.ipoli.android.common.BaseController
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.text.DateFormatter
 import io.ipoli.android.common.text.ScheduleTextFormatter
-import io.ipoli.android.daggerComponent
+import io.ipoli.android.common.daggerComponent
 import io.ipoli.android.quest.data.Quest
 import io.ipoli.android.quest.overview.DisplayOverviewQuestsUseCase
 import io.ipoli.android.quest.overview.OverviewPresenter

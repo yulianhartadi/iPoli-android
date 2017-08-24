@@ -203,7 +203,7 @@
     <string name="help_dialog_repeating_quest_streak">Streak counter. The higher your streak, the more XP and coins you will receive when completing the quest.</string>
     <string name="action_search">Search</string>
     <string name="title_pick_challenge_quests_activity">Choose quests</string>
-    <string name="unscheduled">Unscheduled</string>
+    <string name="unscheduled">Not scheduled</string>
     <string name="help_dialog_challenge_title">Track your challenge</string>
     <string name="help_dialog_challenge_text1">Check your progress and how you are doing with your challenge.</string>
     <string name="help_dialog_challenge_text2">Track how many quests you\'ve completed and how many remain.</string>

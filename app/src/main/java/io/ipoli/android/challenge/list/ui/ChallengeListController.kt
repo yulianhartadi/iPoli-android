@@ -17,7 +17,7 @@ import io.ipoli.android.challenge.list.di.DaggerChallengeListComponent
 import io.ipoli.android.challenge.list.usecase.ChallengeListViewState
 import io.ipoli.android.common.BaseController
 import io.ipoli.android.common.text.DateFormatter
-import io.ipoli.android.daggerComponent
+import io.ipoli.android.common.daggerComponent
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_challenge_list.view.*
 import kotlinx.android.synthetic.main.item_challenge.view.*

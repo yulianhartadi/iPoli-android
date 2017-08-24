@@ -10,7 +10,7 @@ import com.facebook.internal.CallbackManagerImpl
 import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
-import io.ipoli.android.daggerComponent
+import io.ipoli.android.common.daggerComponent
 import io.ipoli.android.player.SignInPresenter
 import io.ipoli.android.player.auth.AnonymousAuth
 import io.ipoli.android.player.auth.FacebookAuth

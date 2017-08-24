@@ -16,7 +16,7 @@ import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
-import io.ipoli.android.daggerComponent
+import io.ipoli.android.common.daggerComponent
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.controller_rewards.view.*

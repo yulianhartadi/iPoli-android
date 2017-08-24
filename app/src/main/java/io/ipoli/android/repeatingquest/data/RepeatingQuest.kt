@@ -57,7 +57,7 @@ open class RepeatingQuest : RealmObject, PersistedModel {
 
     var completedAt: Long? = null
 
-    var recurrence: Recurrence? = null
+    var recurrence: Recurrence = Recurrence.create()
 
     var notes: RealmList<Note>? = null
         get() {
