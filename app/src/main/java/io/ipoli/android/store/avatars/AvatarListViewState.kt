@@ -1,20 +1,56 @@
 package io.ipoli.android.store.avatars
 
-import io.ipoli.android.repeatingquest.list.ui.RepeatingQuestViewModel
-
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 8/23/17.
  */
-interface AvatarListViewState {
+data class AvatarListViewState(val loading: Boolean = false,
+                               val error: Throwable? = null,
+                               val isDataNew : Boolean = false,
+                               val avatars: List<AvatarViewModel>? = null,
+                               val boughtAvatar: AvatarViewModel? = null,
+                               val usedAvatar: AvatarViewModel? = null,
+                               val avatarTooExpensive: AvatarViewModel? = null)
 
-    class Loading : AvatarListViewState
 
-    data class Error(val error: Throwable) : AvatarListViewState
+interface AvatarListPartialChange {
+    fun computeNewState(prevState: AvatarListViewState): AvatarListViewState
 
-    data class DataLoaded(val avatars: List<AvatarViewModel>) : AvatarListViewState
+    class Loading : AvatarListPartialChange {
+        override fun computeNewState(prevState: AvatarListViewState): AvatarListViewState {
+            return AvatarListViewState(loading = true, avatars = prevState.avatars)
+        }
+    }
 
-    data class AvatarBought(val avatarViewModel : AvatarViewModel) : AvatarListViewState
+    class Error(private val error: Throwable) : AvatarListPartialChange {
+        override fun computeNewState(prevState: AvatarListViewState): AvatarListViewState {
+            return AvatarListViewState(error = error)
+        }
 
-    data class AvatarUsed(val avatarViewModel : AvatarViewModel) : AvatarListViewState
+    }
+
+    class DataLoaded(private val avatars: List<AvatarViewModel>) : AvatarListPartialChange {
+        override fun computeNewState(prevState: AvatarListViewState): AvatarListViewState {
+            return AvatarListViewState(avatars = avatars, isDataNew = true)
+        }
+    }
+
+    class AvatarBought(private val avatar: AvatarViewModel) : AvatarListPartialChange {
+        override fun computeNewState(prevState: AvatarListViewState): AvatarListViewState {
+            return AvatarListViewState(avatars = prevState.avatars, boughtAvatar = avatar)
+        }
+    }
+
+    class AvatarUsed(private val avatar: AvatarViewModel) : AvatarListPartialChange {
+        override fun computeNewState(prevState: AvatarListViewState): AvatarListViewState {
+            return AvatarListViewState(avatars = prevState.avatars, usedAvatar = avatar)
+        }
+    }
+
+    class AvatarTooExpensive(private val avatar: AvatarViewModel) : AvatarListPartialChange {
+        override fun computeNewState(prevState: AvatarListViewState): AvatarListViewState {
+            return AvatarListViewState(avatars = prevState.avatars, avatarTooExpensive = avatar)
+        }
+    }
+
 }

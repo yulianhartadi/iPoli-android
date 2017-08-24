@@ -85,51 +85,30 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
 
     fun render(state: AvatarListViewState) {
         val contentView = view!!
-        when (state) {
-            is AvatarListViewState.Loading -> {
-                showLoadingView(contentView)
-            }
 
-            is AvatarListViewState.Error -> {
-                showErrorView(contentView)
-            }
+        contentView.loadingView.visibility = if (state.loading) View.VISIBLE else View.GONE
+        contentView.errorView.visibility = if (state.error != null) View.VISIBLE else View.GONE
+        contentView.avatarList.visibility = if (state.avatars != null) View.VISIBLE else View.GONE
 
-            is AvatarListViewState.DataLoaded -> {
-                showDataView(contentView)
-                adapter.items = state.avatars
-                adapter.notifyDataSetChanged()
-            }
-
-            is AvatarListViewState.AvatarBought -> {
-                showDataView(contentView)
-                val name = activity?.getString(state.avatarViewModel.name)
-                Toast.makeText(activity, name + " successfully bought", Toast.LENGTH_SHORT).show();
-            }
-
-            is AvatarListViewState.AvatarUsed -> {
-                showDataView(contentView)
-                val name = activity?.getString(state.avatarViewModel.name)
-                Toast.makeText(activity, name + " successfully used", Toast.LENGTH_SHORT).show();
-            }
+        if (state.isDataNew) {
+            adapter.items = state.avatars
+            adapter.notifyDataSetChanged()
         }
-    }
 
-    private fun showErrorView(contentView: View) {
-        contentView.avatarList.visibility = View.GONE
-        contentView.loadingView.visibility = View.GONE
-        contentView.errorView.visibility = View.VISIBLE
-    }
+        if (state.boughtAvatar != null) {
+            val name = activity?.getString(state.boughtAvatar.name)
+            Toast.makeText(activity, name + " successfully bought", Toast.LENGTH_SHORT).show();
+        }
 
-    private fun showLoadingView(contentView: View) {
-        contentView.loadingView.visibility = View.VISIBLE
-        contentView.errorView.visibility = View.GONE
-        contentView.avatarList.visibility = View.GONE
-    }
+        if (state.usedAvatar != null) {
+            val name = activity?.getString(state.usedAvatar.name)
+            Toast.makeText(activity, name + " successfully used", Toast.LENGTH_SHORT).show();
+        }
 
-    private fun showDataView(contentView: View) {
-        contentView.avatarList.visibility = View.VISIBLE
-        contentView.loadingView.visibility = View.GONE
-        contentView.errorView.visibility = View.GONE
+        if (state.avatarTooExpensive != null) {
+            val name = activity?.getString(state.avatarTooExpensive.name)
+            Toast.makeText(activity, name + " is too expensive", Toast.LENGTH_SHORT).show();
+        }
     }
 
     class AvatarListAdapter(manager: AdapterDelegatesManager<List<AvatarViewModel>>) : ListDelegationAdapter<List<AvatarViewModel>>(

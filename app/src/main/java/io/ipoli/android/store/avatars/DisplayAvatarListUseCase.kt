@@ -10,16 +10,16 @@ import io.reactivex.Observable
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 8/21/17.
  */
-class DisplayAvatarListUseCase(private val playerRepository: PlayerRepository) : SimpleRxUseCase<AvatarListViewState>() {
+class DisplayAvatarListUseCase(private val playerRepository: PlayerRepository) : SimpleRxUseCase<AvatarListPartialChange>() {
 
-    override fun createObservable(params: Unit): Observable<AvatarListViewState> =
+    override fun createObservable(params: Unit): Observable<AvatarListPartialChange> =
         playerRepository.listen()
             .map { player ->
-                AvatarListViewState.DataLoaded(Avatar.values().map {
+                AvatarListPartialChange.DataLoaded(Avatar.values().map {
                     AvatarViewModel(it.code, it.avatarName,
                         it.price, it.picture, player.inventory.hasAvatar(it.code))
                 })
-            }.cast(AvatarListViewState::class.java)
-            .startWith(AvatarListViewState.Loading())
-            .onErrorReturn { AvatarListViewState.Error(it) }
+            }.cast(AvatarListPartialChange::class.java)
+            .startWith(AvatarListPartialChange.Loading())
+            .onErrorReturn { AvatarListPartialChange.Error(it) }
 }

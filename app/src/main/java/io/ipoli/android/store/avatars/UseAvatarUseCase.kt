@@ -9,18 +9,18 @@ import io.reactivex.Observable
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 8/21/17.
  */
-class UseAvatarUseCase(private val playerRepository: PlayerRepository) : BaseRxUseCase<AvatarViewModel, AvatarListViewState>() {
+class UseAvatarUseCase(private val playerRepository: PlayerRepository) : BaseRxUseCase<AvatarViewModel, AvatarListPartialChange>() {
 
-    override fun createObservable(avatarViewModel: AvatarViewModel): Observable<AvatarListViewState> =
+    override fun createObservable(avatarViewModel: AvatarViewModel): Observable<AvatarListPartialChange> =
         playerRepository.find()
             .flatMap { player ->
                 player.avatarCode = avatarViewModel.code
                 playerRepository.save(player)
             }.map { player ->
-            AvatarListViewState.AvatarUsed(avatarViewModel)
+            AvatarListPartialChange.AvatarUsed(avatarViewModel)
         }.toObservable()
-            .cast(AvatarListViewState::class.java)
-            .startWith(AvatarListViewState.Loading())
-            .onErrorReturn { AvatarListViewState.Error(it) }
+            .cast(AvatarListPartialChange::class.java)
+            .startWith(AvatarListPartialChange.Loading())
+            .onErrorReturn { AvatarListPartialChange.Error(it) }
 
 }
