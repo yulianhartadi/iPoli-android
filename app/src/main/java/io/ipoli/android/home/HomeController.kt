@@ -15,6 +15,7 @@ import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
 import io.ipoli.android.common.navigator
 import io.ipoli.android.repeatingquest.list.ui.RepeatingQuestListController
+import io.ipoli.android.reward.RewardListController
 import kotlinx.android.synthetic.main.controller_home.view.*
 
 /**
@@ -67,7 +68,7 @@ class HomeController : BaseController<HomeController, HomePresenter>(), Navigati
         val handler = FadeChangeHandler()
         val childRouter = getChildRouter(view.controllerContainer, null)
         childRouter.setRoot(
-            RouterTransaction.with(RepeatingQuestListController())
+            RouterTransaction.with(RewardListController())
                 .pushChangeHandler(handler)
                 .popChangeHandler(handler)
         )

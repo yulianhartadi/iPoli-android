@@ -31,8 +31,8 @@ class RewardListController : BaseController<RewardListController, RewardListPres
 
     private lateinit var adapter: RewardsAdapter
 
-    private val useRewardSubject = PublishSubject.create<RewardModel>()
-    private val deleteRewardSubject = PublishSubject.create<RewardModel>()
+    private val useRewardSubject = PublishSubject.create<RewardViewModel>()
+    private val deleteRewardSubject = PublishSubject.create<RewardViewModel>()
 
     val rewardListComponent: RewardListComponent by lazy {
         val component = DaggerRewardListComponent
@@ -69,7 +69,7 @@ class RewardListController : BaseController<RewardListController, RewardListPres
 //        })
 
 
-        val delegatesManager = AdapterDelegatesManager<List<RewardModel>>()
+        val delegatesManager = AdapterDelegatesManager<List<RewardViewModel>>()
             .addDelegate(RewardAdapterDelegate(LayoutInflater.from(activity), useRewardSubject, deleteRewardSubject, {
                 val pushHandler = HorizontalChangeHandler()
                 val popHandler = HorizontalChangeHandler()
@@ -97,23 +97,23 @@ class RewardListController : BaseController<RewardListController, RewardListPres
         return Observable.just(!restoringState).filter { _ -> true }.doOnComplete { Log.d("Chingy", "thingy") }
     }
 
-    fun useRewardIntent(): Observable<RewardModel> {
+    fun useRewardIntent(): Observable<RewardViewModel> {
         return useRewardSubject
     }
 
-    fun deleteRewardIntent(): Observable<RewardModel> {
+    fun deleteRewardIntent(): Observable<RewardViewModel> {
         return deleteRewardSubject;
     }
 
     fun render(state: RewardViewState) {
-        when (state) {
-            is RewardsInitialLoadingState -> {
+        with(state) {
+            if (isLoading) {
                 Toast.makeText(activity, "Loading", Toast.LENGTH_LONG).show()
             }
-            is RewardsLoadedState -> {
-                adapter.items = state.rewards
+            if (hasFreshData) {
+                adapter.items = state.rewardViews
                 adapter.notifyDataSetChanged()
-//                rewardList.adapter = RewardListAdapter(state.rewards!!, { reward ->
+//                rewardList.adapter = RewardListAdapter(state.rewardViews!!, { reward ->
 //
 //                    val pushHandler = HorizontalChangeHandler()
 //                    val popHandler = HorizontalChangeHandler()
@@ -125,7 +125,7 @@ class RewardListController : BaseController<RewardListController, RewardListPres
         }
     }
 
-    class RewardsAdapter(manager: AdapterDelegatesManager<List<RewardModel>>) : ListDelegationAdapter<List<RewardModel>>(
+    class RewardsAdapter(manager: AdapterDelegatesManager<List<RewardViewModel>>) : ListDelegationAdapter<List<RewardViewModel>>(
         manager) {
 
 //        init {
@@ -137,17 +137,17 @@ class RewardListController : BaseController<RewardListController, RewardListPres
     }
 
     class RewardAdapterDelegate(private val inflater: LayoutInflater,
-                                private val clickSubject: PublishSubject<RewardModel>,
-                                private val deleteSubject: PublishSubject<RewardModel>,
-                                private val clickListener: (RewardModel) -> Unit) : AdapterDelegate<List<RewardModel>>() {
+                                private val clickSubject: PublishSubject<RewardViewModel>,
+                                private val deleteSubject: PublishSubject<RewardViewModel>,
+                                private val clickListener: (RewardViewModel) -> Unit) : AdapterDelegate<List<RewardViewModel>>() {
 
-        override fun onBindViewHolder(items: List<RewardModel>, position: Int, holder: RecyclerView.ViewHolder, payloads: MutableList<Any>) {
+        override fun onBindViewHolder(items: List<RewardViewModel>, position: Int, holder: RecyclerView.ViewHolder, payloads: MutableList<Any>) {
             val vh = holder as RewardViewHolder
             val reward = items[position]
             vh.bindReward(reward)
         }
 
-        override fun isForViewType(items: List<RewardModel>, position: Int): Boolean = true
+        override fun isForViewType(items: List<RewardViewModel>, position: Int): Boolean = true
 
         override fun onCreateViewHolder(parent: ViewGroup?): RecyclerView.ViewHolder =
             RewardViewHolder(inflater.inflate(R.layout.item_reward, parent, false))
@@ -155,11 +155,11 @@ class RewardListController : BaseController<RewardListController, RewardListPres
 
         inner class RewardViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-            fun bindReward(reward: RewardModel) {
-                with(reward) {
-                    RxView.clicks(itemView.buyReward).takeUntil(RxView.detaches(itemView)).map { reward }.subscribe(clickSubject)
-                    RxView.clicks(itemView.delete).takeUntil(RxView.detaches(itemView)).map { reward }.subscribe(deleteSubject)
-                    itemView.setOnClickListener { clickListener(reward) }
+            fun bindReward(rewardView: RewardViewModel) {
+                with(rewardView) {
+                    RxView.clicks(itemView.buyReward).takeUntil(RxView.detaches(itemView)).map { rewardView }.subscribe(clickSubject)
+                    RxView.clicks(itemView.delete).takeUntil(RxView.detaches(itemView)).map { rewardView }.subscribe(deleteSubject)
+                    itemView.setOnClickListener { clickListener(rewardView) }
                     itemView.name.setText(name)
                     itemView.description.setText(description)
                 }

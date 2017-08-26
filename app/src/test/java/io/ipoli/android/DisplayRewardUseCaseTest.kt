@@ -35,7 +35,7 @@ class DisplayRewardUseCaseTest {
 
         val useCase = DisplayRewardsUseCase(rewardRepoMock, playerRepoMock)
 
-        val observer = TestObserver<RewardStatePartialChange>()
+        val observer = TestObserver<RewardListPartialChange>()
 
         useCase.execute(Unit)
             .subscribe(observer)
