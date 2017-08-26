@@ -30,7 +30,6 @@ import kotlinx.android.synthetic.main.view_error.view.*
 import kotlinx.android.synthetic.main.view_loading.view.*
 import timber.log.Timber
 
-
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/22/17.
