@@ -39,8 +39,8 @@ class RewardListPresenter @Inject constructor(private val displayRewardsUseCase:
 //        observables.add(
 //                intent { it.loadRewardsIntent() }.switchMap { _ ->
 //                    displayRewardsUseCase.execute(Unit)
-////                            .doOnNext { rewardViews ->
-////                                Log.d("Loading rewardViews", "Loading all " + rewardViews.size + " " + Looper.getMainLooper().isCurrentThread
+////                            .doOnNext { rewards ->
+////                                Log.d("Loading rewards", "Loading all " + rewards.size + " " + Looper.getMainLooper().isCurrentThread
 ////                                )
 ////                            }
 ////                            .subscribeOn(Schedulers.io())

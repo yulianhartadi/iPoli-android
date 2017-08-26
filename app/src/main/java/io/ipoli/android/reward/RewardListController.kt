@@ -19,7 +19,7 @@ import io.ipoli.android.common.BaseController
 import io.ipoli.android.common.daggerComponent
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.controller_rewards.view.*
+import kotlinx.android.synthetic.main.controller_reward_list.view.*
 import kotlinx.android.synthetic.main.item_reward.view.*
 
 
@@ -50,7 +50,7 @@ class RewardListController : BaseController<RewardListController, RewardListPres
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
-        val view = inflater.inflate(R.layout.controller_rewards, container, false) as ViewGroup
+        val view = inflater.inflate(R.layout.controller_reward_list, container, false) as ViewGroup
         rewardList = view.rewardList
         rewardList.setHasFixedSize(true)
         rewardList.layoutManager = LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
@@ -111,9 +111,9 @@ class RewardListController : BaseController<RewardListController, RewardListPres
                 Toast.makeText(activity, "Loading", Toast.LENGTH_LONG).show()
             }
             if (hasFreshData) {
-                adapter.items = state.rewardViews
+                adapter.items = state.rewards
                 adapter.notifyDataSetChanged()
-//                rewardList.adapter = RewardListAdapter(state.rewardViews!!, { reward ->
+//                rewardList.adapter = RewardListAdapter(state.rewards!!, { reward ->
 //
 //                    val pushHandler = HorizontalChangeHandler()
 //                    val popHandler = HorizontalChangeHandler()

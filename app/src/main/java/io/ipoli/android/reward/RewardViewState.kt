@@ -8,5 +8,5 @@ data class RewardViewState(
     val isLoading: Boolean = false,
     val hasError: Boolean = false,
     val hasFreshData: Boolean = false,
-    val rewardViews: List<RewardViewModel> = listOf()
+    val rewards: List<RewardViewModel> = listOf()
 )

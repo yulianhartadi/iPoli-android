@@ -10,24 +10,23 @@ interface RewardListPartialChange {
 
     class Loading : RewardListPartialChange {
         override fun computeNewState(prevState: RewardViewState): RewardViewState =
-            RewardViewState(isLoading = true,
-                rewardViews = prevState.rewardViews)
+            RewardViewState(isLoading = true)
     }
 
     class Empty : RewardListPartialChange {
         override fun computeNewState(prevState: RewardViewState): RewardViewState =
-            RewardViewState(rewardViews = prevState.rewardViews)
+            RewardViewState()
     }
 
     class Error : RewardListPartialChange {
         override fun computeNewState(prevState: RewardViewState): RewardViewState =
-            RewardViewState(hasError = true, rewardViews = prevState.rewardViews)
+            RewardViewState(hasError = true, rewards = prevState.rewards)
 
     }
 
     class DataLoaded(val rewardViews: List<RewardViewModel>) : RewardListPartialChange {
         override fun computeNewState(prevState: RewardViewState): RewardViewState =
-            RewardViewState(hasFreshData = true, rewardViews = rewardViews)
+            RewardViewState(hasFreshData = true, rewards = rewardViews)
 
     }
 }
