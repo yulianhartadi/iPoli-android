@@ -26,7 +26,7 @@ interface RewardListPartialChange {
 
     class DataLoaded(val rewardViews: List<RewardViewModel>) : RewardListPartialChange {
         override fun computeNewState(prevState: RewardListViewState): RewardListViewState =
-            RewardListViewState(hasFreshData = true,
+            RewardListViewState(shouldShowData = true,
                 rewards = rewardViews)
 
     }
@@ -36,6 +36,6 @@ interface RewardListPartialChange {
         override fun computeNewState(prevState: RewardListViewState): RewardListViewState =
             RewardListViewState(rewards = rewardViews,
                 isRewardRemoved = true,
-                hasFreshData = true)
+                shouldShowData = true)
     }
 }
