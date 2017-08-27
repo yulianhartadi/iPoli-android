@@ -2,7 +2,6 @@ package io.ipoli.android.store.avatars
 
 import io.ipoli.android.common.BaseRxUseCase
 import io.ipoli.android.player.persistence.PlayerRepository
-import io.ipoli.android.store.avatars.data.Avatar
 import io.reactivex.Observable
 
 /**
@@ -11,13 +10,13 @@ import io.reactivex.Observable
  */
 class UseAvatarUseCase(private val playerRepository: PlayerRepository) : BaseRxUseCase<AvatarViewModel, AvatarListPartialChange>() {
 
-    override fun createObservable(avatarViewModel: AvatarViewModel): Observable<AvatarListPartialChange> =
+    override fun createObservable(parameters: AvatarViewModel): Observable<AvatarListPartialChange> =
         playerRepository.find()
             .flatMap { player ->
-                player.avatarCode = avatarViewModel.code
+                player.avatarCode = parameters.code
                 playerRepository.save(player)
-            }.map { player ->
-            AvatarListPartialChange.AvatarUsed(avatarViewModel)
+            }.map {
+            AvatarListPartialChange.AvatarUsed(parameters)
         }.toObservable()
             .cast(AvatarListPartialChange::class.java)
             .startWith(AvatarListPartialChange.Loading())

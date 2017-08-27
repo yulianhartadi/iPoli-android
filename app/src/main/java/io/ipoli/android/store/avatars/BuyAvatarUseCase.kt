@@ -1,9 +1,7 @@
 package io.ipoli.android.store.avatars
 
-import android.util.Log
 import io.ipoli.android.common.BaseRxUseCase
 import io.ipoli.android.player.persistence.PlayerRepository
-import io.ipoli.android.store.avatars.data.Avatar
 import io.reactivex.Observable
 import org.threeten.bp.LocalDate
 
@@ -13,14 +11,14 @@ import org.threeten.bp.LocalDate
  */
 class BuyAvatarUseCase(private val playerRepository: PlayerRepository) : BaseRxUseCase<AvatarViewModel, AvatarListPartialChange>() {
 
-    override fun createObservable(avatarViewModel: AvatarViewModel): Observable<AvatarListPartialChange> =
+    override fun createObservable(parameters: AvatarViewModel): Observable<AvatarListPartialChange> =
         playerRepository.find()
             .flatMap { player ->
-                player.inventory.addAvatar(avatarViewModel.code, LocalDate.now())
+                player.inventory.addAvatar(parameters.code, LocalDate.now())
                 playerRepository.save(player)
             }
-            .map { player ->
-                AvatarListPartialChange.AvatarBought(avatarViewModel)
+            .map {
+                AvatarListPartialChange.AvatarBought(parameters)
             }.toObservable()
             .cast(AvatarListPartialChange::class.java)
             .startWith(AvatarListPartialChange.Loading())

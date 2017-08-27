@@ -19,7 +19,7 @@ import org.threeten.bp.LocalDate
  */
 class DisplayRepeatingQuestListUseCase(private val repeatingQuestRepository: RepeatingQuestRepository) : SimpleRxUseCase<RepeatingQuestListViewState>() {
 
-    override fun createObservable(params: Unit): Observable<RepeatingQuestListViewState> {
+    override fun createObservable(parameters: Unit): Observable<RepeatingQuestListViewState> {
         return repeatingQuestRepository.listenForAll()
             .map { repeatingQuests ->
                 val viewModels = repeatingQuests.map {

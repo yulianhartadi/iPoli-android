@@ -13,8 +13,8 @@ import org.threeten.bp.LocalDate
  */
 class DisplayOverviewQuestsUseCase(private val questRepository: QuestRepository) : BaseRxUseCase<DisplayOverviewQuestsUseCase.Parameters, OverviewStatePartialChange>() {
 
-    override fun createObservable(params: Parameters): Observable<OverviewStatePartialChange> {
-        return questRepository.findScheduledBetween(params.startDate.minusDays(params.showCompletedForPastDays), params.endDate)
+    override fun createObservable(parameters: Parameters): Observable<OverviewStatePartialChange> {
+        return questRepository.findScheduledBetween(parameters.startDate.minusDays(parameters.showCompletedForPastDays), parameters.endDate)
             .map { quests ->
                 val comparator = Comparator<Quest> { q1, q2 ->
                     when {
@@ -28,12 +28,12 @@ class DisplayOverviewQuestsUseCase(private val questRepository: QuestRepository)
                 val sortedQuests = quests.sortedWith(comparator)
                 val (completedQuests, incompleteQuests) = sortedQuests.partition { it.isCompleted }
 
-                val tomorrow = params.today.plusDays(1)
+                val tomorrow = parameters.today.plusDays(1)
 
-                val (todayQuests, others) = incompleteQuests.partition { it.scheduledDate!!.isEqual(params.today) }
+                val (todayQuests, others) = incompleteQuests.partition { it.scheduledDate!!.isEqual(parameters.today) }
                 val (tomorrowQuests, otherNonCompleted) = others.partition { it.scheduledDate!!.isEqual(tomorrow) }
 
-                val upcomingQuests = otherNonCompleted.filter { it.scheduledDate!!.isAfter(params.today.minusDays(1)) }
+                val upcomingQuests = otherNonCompleted.filter { it.scheduledDate!!.isAfter(parameters.today.minusDays(1)) }
 
                 QuestsLoadedPartialChange(toOverviewQuestViewModel(todayQuests),
                     toOverviewQuestViewModel(tomorrowQuests),

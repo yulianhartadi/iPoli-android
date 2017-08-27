@@ -15,7 +15,7 @@ interface RxUseCase<in Parameters, Result> {
 
 abstract class BaseRxUseCase<in Parameters, Result>() : RxUseCase<Parameters, Result> {
 
-    abstract fun createObservable(params: Parameters): Observable<Result>
+    abstract fun createObservable(parameters: Parameters): Observable<Result>
 
     fun createObserveOnScheduler(): Scheduler {
         return AndroidSchedulers.mainThread()

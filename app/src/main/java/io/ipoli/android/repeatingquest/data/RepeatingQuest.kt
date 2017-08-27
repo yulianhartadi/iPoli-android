@@ -103,13 +103,13 @@ open class RepeatingQuest : RealmObject, PersistedModel {
         get() = completedAtDate != null
 
     fun shouldBeScheduledAfter(date: LocalDate): Boolean {
-        return recurrence!!.dtendDate == null || recurrence!!.dtend!! >= date.toStartOfDayUTCMillis()
+        return recurrence.dtendDate == null || recurrence.dtend!! >= date.toStartOfDayUTCMillis()
     }
 
     val frequency: Int
         get() {
             val recurrence = recurrence
-            if (recurrence!!.isFlexible) {
+            if (recurrence.isFlexible) {
                 return recurrence.flexibleCount
             }
             if (recurrence.recurrenceType === Recurrence.RepeatType.DAILY) {
@@ -136,7 +136,7 @@ open class RepeatingQuest : RealmObject, PersistedModel {
     }
 
     val isFlexible: Boolean
-        get() = recurrence!!.isFlexible
+        get() = recurrence.isFlexible
 
 
     val textNotes: List<Note>

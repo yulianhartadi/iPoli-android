@@ -12,7 +12,7 @@ import io.reactivex.Observable
  */
 class DisplayAvatarListUseCase(private val playerRepository: PlayerRepository) : SimpleRxUseCase<AvatarListPartialChange>() {
 
-    override fun createObservable(params: Unit): Observable<AvatarListPartialChange> =
+    override fun createObservable(parameters: Unit): Observable<AvatarListPartialChange> =
         playerRepository.listen()
             .map { player ->
                 AvatarListPartialChange.DataLoaded(Avatar.values().map {

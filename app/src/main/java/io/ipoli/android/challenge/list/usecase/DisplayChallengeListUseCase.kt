@@ -10,7 +10,7 @@ import io.reactivex.Observable
  * on 8/23/17.
  */
 class DisplayChallengeListUseCase(private val challengeRepository: ChallengeRepository) : SimpleRxUseCase<ChallengeListViewState>() {
-    override fun createObservable(params: Unit): Observable<ChallengeListViewState> =
+    override fun createObservable(parameters: Unit): Observable<ChallengeListViewState> =
         challengeRepository.listenForAll()
             .map { challenges ->
                 val viewModels = challenges.map { ChallengeViewModel.create(it) }

@@ -16,7 +16,7 @@ class DisplayRewardsUseCase(private val rewardRepository: RewardRepository,
                             private val playerRepository: PlayerRepository)
     : SimpleRxUseCase<RewardListPartialChange>() {
 
-    override fun createObservable(params: Unit): Observable<RewardListPartialChange> =
+    override fun createObservable(parameters: Unit): Observable<RewardListPartialChange> =
         Observable.combineLatest<Player, List<Reward>, RewardListPartialChange>(
             playerRepository.listen(),
             rewardRepository.listenForAll(),

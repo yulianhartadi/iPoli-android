@@ -22,13 +22,13 @@ import io.realm.SyncUser
  */
 class SignInUseCase(private val playerRepository: PlayerRepository) : BaseRxUseCase<SignInRequest, SignInStatePartialChange>() {
 
-    override fun createObservable(params: SignInRequest): Observable<SignInStatePartialChange> {
-        return params.socialAuth.login(params.username)
+    override fun createObservable(parameters: SignInRequest): Observable<SignInStatePartialChange> {
+        return parameters.socialAuth.login(parameters.username)
             .flatMap { (token, authProvider) ->
-                if (params.providerType == ProviderType.ANONYMOUS) {
+                if (parameters.providerType == ProviderType.ANONYMOUS) {
                     saveGuestPlayer(authProvider)
                 } else {
-                    saveAuthenticatedPlayer(params, token, authProvider)
+                    saveAuthenticatedPlayer(parameters, token, authProvider)
                 }
             }.toObservable().map {
             PlayerSignedInPartialChange() as SignInStatePartialChange
