@@ -19,27 +19,12 @@ import timber.log.Timber
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 8/18/17.
  */
-class StoreController : BaseController<StoreController, StorePresenter>() {
-    private var restoringState: Boolean = false
+class StoreController : BaseController<StoreController, StorePresenter, StoreComponent>() {
 
-    val storeComponent: StoreComponent by lazy {
-        val component = DaggerStoreComponent.builder()
+    override fun buildComponent(): StoreComponent =
+        DaggerStoreComponent.builder()
             .controllerComponent(daggerComponent)
             .build()
-        component.inject(this@StoreController)
-        component
-    }
-
-    override fun createPresenter(): StorePresenter = storeComponent.createStorePresenter()
-
-    override fun setRestoringViewState(restoringViewState: Boolean) {
-        this.restoringState = restoringViewState
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        storeComponent // will ensure that dagger component will be initialized lazily.
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         return inflater.inflate(R.layout.controller_store, container, false)

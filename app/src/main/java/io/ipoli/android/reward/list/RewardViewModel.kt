@@ -1,4 +1,4 @@
-package io.ipoli.android.reward
+package io.ipoli.android.reward.list
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

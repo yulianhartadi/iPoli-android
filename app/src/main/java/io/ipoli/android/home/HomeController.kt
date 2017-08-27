@@ -1,6 +1,5 @@
 package io.ipoli.android.home
 
-import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -8,21 +7,20 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
-import io.ipoli.android.common.BaseController
 import io.ipoli.android.common.navigator
-import io.ipoli.android.repeatingquest.list.ui.RepeatingQuestListController
-import io.ipoli.android.reward.RewardListController
+import io.ipoli.android.reward.list.RewardListController
 import kotlinx.android.synthetic.main.controller_home.view.*
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/19/17.
  */
-class HomeController : BaseController<HomeController, HomePresenter>(), NavigationView.OnNavigationItemSelectedListener {
+class HomeController : Controller(), NavigationView.OnNavigationItemSelectedListener {
 
     private var navigationItemSelected: MenuItem? = null
 
@@ -32,9 +30,7 @@ class HomeController : BaseController<HomeController, HomePresenter>(), Navigati
         return false
     }
 
-    override fun createPresenter(): HomePresenter = HomePresenter()
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.controller_home, container, false)
     }
@@ -89,9 +85,6 @@ class HomeController : BaseController<HomeController, HomePresenter>(), Navigati
             return true
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun setRestoringViewState(restoringViewState: Boolean) {
     }
 
 }

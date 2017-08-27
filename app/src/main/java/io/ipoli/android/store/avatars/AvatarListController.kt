@@ -29,8 +29,7 @@ import kotlinx.android.synthetic.main.view_loading.view.*
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 8/20/17.
  */
-class AvatarListController : BaseController<AvatarListController, AvatarListPresenter>() {
-    private var restoringState: Boolean = false
+class AvatarListController : BaseController<AvatarListController, AvatarListPresenter, AvatarListComponent>() {
 
     lateinit private var avatarList: RecyclerView
 
@@ -39,15 +38,10 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
 
     private lateinit var adapter: AvatarListAdapter
 
-    val avatarListComponent: AvatarListComponent by lazy {
-        val component = DaggerAvatarListComponent.builder()
+    override fun buildComponent(): AvatarListComponent =
+        DaggerAvatarListComponent.builder()
             .controllerComponent(daggerComponent)
             .build()
-        component.inject(this@AvatarListController)
-        component
-    }
-
-    override fun createPresenter(): AvatarListPresenter = avatarListComponent.createAvatarListPresenter()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_avatar_list, container, false)
@@ -61,15 +55,6 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
         avatarList.adapter = adapter
 
         return view
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        avatarListComponent // will ensure that dagger component will be initialized lazily.
-    }
-
-    override fun setRestoringViewState(restoringViewState: Boolean) {
-        this.restoringState = restoringViewState
     }
 
     fun displayAvatarListIntent(): Observable<Boolean> =
@@ -97,17 +82,17 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
 
         if (state.boughtAvatar != null) {
             val name = activity?.getString(state.boughtAvatar.name)
-            Toast.makeText(activity, name + " successfully bought", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, name + " successfully bought", Toast.LENGTH_SHORT).show()
         }
 
         if (state.usedAvatar != null) {
             val name = activity?.getString(state.usedAvatar.name)
-            Toast.makeText(activity, name + " successfully used", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, name + " successfully used", Toast.LENGTH_SHORT).show()
         }
 
         if (state.avatarTooExpensive != null) {
             val name = activity?.getString(state.avatarTooExpensive.name)
-            Toast.makeText(activity, name + " is too expensive", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, name + " is too expensive", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -134,8 +119,8 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
         override fun onBindViewHolder(items: List<AvatarViewModel>, position: Int, holder: RecyclerView.ViewHolder, payloads: MutableList<Any>) {
             val vh = holder as AvatarViewHolder
             val avatar = items[position]
-            vh.bindAvatar(avatar, colors.get(position % colors.size))
-            playEnterAnimation(holder.itemView, holder.getAdapterPosition());
+            vh.bindAvatar(avatar, colors[position % colors.size])
+            playEnterAnimation(holder.itemView, holder.getAdapterPosition())
         }
 
         override fun onCreateViewHolder(parent: ViewGroup?): RecyclerView.ViewHolder =

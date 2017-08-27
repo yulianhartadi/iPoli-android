@@ -1,9 +1,11 @@
-package io.ipoli.android.reward
+package io.ipoli.android.reward.list
 
 import dagger.Module
 import dagger.Provides
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.persistence.RealmPlayerRepository
+import io.ipoli.android.reward.RealmRewardRepository
+import io.ipoli.android.reward.RewardRepository
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>

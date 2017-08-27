@@ -12,12 +12,29 @@ import io.ipoli.android.iPoliApp
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/19/17.
  */
-abstract class BaseController<V : MvpView, P : MviPresenter<V, *>> : RestoreViewOnCreateMviController<V, P> {
+abstract class BaseController<V : MvpView, P : MviPresenter<V, *>, C : BaseComponent<V, P>> : RestoreViewOnCreateMviController<V, P> {
+
+    protected var restoringState: Boolean = false
 
     private var hasExited = false
 
+    val component: C by lazy {
+        val component = buildComponent()
+        component.inject(mvpView)
+        component
+    }
+
     constructor() : super()
+
     constructor(args: Bundle) : super(args)
+
+    override fun createPresenter(): P = component.createPresenter()
+
+    override fun setRestoringViewState(restoringViewState: Boolean) {
+        this.restoringState = restoringViewState
+    }
+
+    protected abstract fun buildComponent(): C
 
     public override fun onDestroy() {
         super.onDestroy()

@@ -1,4 +1,4 @@
-package io.ipoli.android.reward
+package io.ipoli.android.reward.list
 
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -17,15 +17,18 @@ import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
 import io.ipoli.android.common.daggerComponent
+import io.ipoli.android.common.ui.visible
+import io.ipoli.android.reward.edit.EditRewardController
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.controller_reward_list.view.*
 import kotlinx.android.synthetic.main.item_reward.view.*
+import kotlinx.android.synthetic.main.view_empty.view.*
+import kotlinx.android.synthetic.main.view_error.view.*
+import kotlinx.android.synthetic.main.view_loading.view.*
 
 
-class RewardListController : BaseController<RewardListController, RewardListPresenter>() {
-
-    private var restoringState: Boolean = false
+class RewardListController : BaseController<RewardListController, RewardListPresenter, RewardListComponent>() {
 
     lateinit private var rewardList: RecyclerView
 
@@ -34,20 +37,10 @@ class RewardListController : BaseController<RewardListController, RewardListPres
     private val useRewardSubject = PublishSubject.create<RewardViewModel>()
     private val deleteRewardSubject = PublishSubject.create<RewardViewModel>()
 
-    val rewardListComponent: RewardListComponent by lazy {
-        val component = DaggerRewardListComponent
-            .builder()
+    override fun buildComponent(): RewardListComponent =
+        DaggerRewardListComponent.builder()
             .controllerComponent(daggerComponent)
             .build()
-        component.inject(this@RewardListController)
-        component
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        rewardListComponent // will ensure that dagger component will be initialized lazily.
-    }
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_reward_list, container, false) as ViewGroup
@@ -85,13 +78,6 @@ class RewardListController : BaseController<RewardListController, RewardListPres
         return view;
     }
 
-    override fun setRestoringViewState(restoringViewState: Boolean) {
-        this.restoringState = restoringViewState
-    }
-
-    override fun createPresenter(): RewardListPresenter {
-        return rewardListComponent.createRewardListPresenter()
-    }
 
     fun loadRewardsIntent(): Observable<Boolean> {
         return Observable.just(!restoringState).filter { _ -> true }.doOnComplete { Log.d("Chingy", "thingy") }
@@ -106,7 +92,13 @@ class RewardListController : BaseController<RewardListController, RewardListPres
     }
 
     fun render(state: RewardViewState) {
+        val contentView = view!!
         with(state) {
+            contentView.emptyView.visible = state.isEmpty
+            contentView.errorView.visible = state.hasError
+            contentView.loadingView.visible = state.isLoading
+            contentView.rewardList.visible = state.shouldShowData
+
             if (isLoading) {
                 Toast.makeText(activity, "Loading", Toast.LENGTH_LONG).show()
             }

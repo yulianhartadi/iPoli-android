@@ -29,26 +29,16 @@ import kotlinx.android.synthetic.main.view_loading.view.*
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/23/17.
  */
-class ChallengeListController : BaseController<ChallengeListController, ChallengeListPresenter>() {
-
-    private var restoringState: Boolean = false
+class ChallengeListController : BaseController<ChallengeListController, ChallengeListPresenter, ChallengeListComponent>() {
 
     lateinit private var challengeList: RecyclerView
 
     private lateinit var adapter: ChallengeAdapter
 
-    val controllerComponent: ChallengeListComponent by lazy {
-        val component = DaggerChallengeListComponent.builder()
+    override fun buildComponent(): ChallengeListComponent =
+        DaggerChallengeListComponent.builder()
             .controllerComponent(daggerComponent)
             .build()
-        component.inject(this@ChallengeListController)
-        component
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        controllerComponent
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_challenge_list, container, false)
@@ -63,13 +53,6 @@ class ChallengeListController : BaseController<ChallengeListController, Challeng
 
         challengeList.adapter = adapter
         return view
-    }
-
-    override fun createPresenter(): ChallengeListPresenter =
-        controllerComponent.createPresenter()
-
-    override fun setRestoringViewState(restoringViewState: Boolean) {
-        this.restoringState = restoringViewState
     }
 
     fun loadChallengesIntent(): Observable<Boolean> =

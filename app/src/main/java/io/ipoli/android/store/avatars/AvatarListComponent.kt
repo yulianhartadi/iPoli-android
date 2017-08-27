@@ -1,6 +1,7 @@
 package io.ipoli.android.store.avatars
 
 import dagger.Component
+import io.ipoli.android.common.BaseComponent
 import io.ipoli.android.common.di.ControllerComponent
 import javax.inject.Scope
 
@@ -11,12 +12,7 @@ import javax.inject.Scope
 @AvatarListScope
 @Component(modules = arrayOf(AvatarListModule::class),
     dependencies = arrayOf(ControllerComponent::class))
-interface AvatarListComponent {
-
-    fun inject(controller: AvatarListController)
-
-    fun createAvatarListPresenter(): AvatarListPresenter
-}
+interface AvatarListComponent : BaseComponent<AvatarListController, AvatarListPresenter>
 
 @Scope
 annotation class AvatarListScope

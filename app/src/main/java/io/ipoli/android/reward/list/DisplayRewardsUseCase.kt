@@ -1,8 +1,10 @@
-package io.ipoli.android.reward
+package io.ipoli.android.reward.list
 
 import io.ipoli.android.common.SimpleRxUseCase
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.persistence.PlayerRepository
+import io.ipoli.android.reward.Reward
+import io.ipoli.android.reward.RewardRepository
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 

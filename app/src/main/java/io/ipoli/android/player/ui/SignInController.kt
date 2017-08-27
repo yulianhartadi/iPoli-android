@@ -26,29 +26,16 @@ import kotlinx.android.synthetic.main.controller_sign_in.view.*
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/8/17.
  */
-class SignInController : BaseController<SignInController, SignInPresenter>() {
+class SignInController : BaseController<SignInController, SignInPresenter, SignInComponent>() {
 
     init {
         registerForActivityResult(CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode())
     }
 
-    val signInComponent: SignInComponent by lazy {
-        val component = DaggerSignInComponent.builder()
+    override fun buildComponent(): SignInComponent =
+        DaggerSignInComponent.builder()
             .controllerComponent(daggerComponent)
             .build()
-        component.inject(this@SignInController)
-        component
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        signInComponent // will ensure that dagger component will be initialized lazily.
-    }
-
-    override fun setRestoringViewState(restoringViewState: Boolean) {
-    }
-
-    override fun createPresenter(): SignInPresenter = signInComponent.createSignInPresenter()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         return inflater.inflate(R.layout.controller_sign_in, container, false)

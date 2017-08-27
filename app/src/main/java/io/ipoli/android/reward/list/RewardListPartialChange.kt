@@ -1,4 +1,4 @@
-package io.ipoli.android.reward
+package io.ipoli.android.reward.list
 
 
 /**
@@ -10,12 +10,12 @@ interface RewardListPartialChange {
 
     class Loading : RewardListPartialChange {
         override fun computeNewState(prevState: RewardViewState): RewardViewState =
-            RewardViewState(isLoading = true)
+            RewardViewState(isLoading = true, rewards = prevState.rewards)
     }
 
     class Empty : RewardListPartialChange {
         override fun computeNewState(prevState: RewardViewState): RewardViewState =
-            RewardViewState()
+            RewardViewState(isEmpty = true, rewards = prevState.rewards)
     }
 
     class Error : RewardListPartialChange {
@@ -26,7 +26,9 @@ interface RewardListPartialChange {
 
     class DataLoaded(val rewardViews: List<RewardViewModel>) : RewardListPartialChange {
         override fun computeNewState(prevState: RewardViewState): RewardViewState =
-            RewardViewState(hasFreshData = true, rewards = rewardViews)
+            RewardViewState(hasFreshData = true,
+                rewards = rewardViews,
+                shouldShowData = true)
 
     }
 }

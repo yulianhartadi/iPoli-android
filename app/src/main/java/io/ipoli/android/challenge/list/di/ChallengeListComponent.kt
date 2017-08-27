@@ -3,6 +3,7 @@ package io.ipoli.android.challenge.list.di
 import dagger.Component
 import io.ipoli.android.challenge.list.ChallengeListPresenter
 import io.ipoli.android.challenge.list.ui.ChallengeListController
+import io.ipoli.android.common.BaseComponent
 import io.ipoli.android.common.di.ControllerComponent
 import javax.inject.Scope
 
@@ -13,11 +14,7 @@ import javax.inject.Scope
 @ChallengeListScope
 @Component(modules = arrayOf(ChallengeListModule::class),
     dependencies = arrayOf(ControllerComponent::class))
-interface ChallengeListComponent {
-    fun inject(controller: ChallengeListController)
-
-    fun createPresenter(): ChallengeListPresenter
-}
+interface ChallengeListComponent : BaseComponent<ChallengeListController, ChallengeListPresenter>
 
 @Scope
 annotation class ChallengeListScope

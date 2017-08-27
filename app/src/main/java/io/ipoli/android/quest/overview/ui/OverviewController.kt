@@ -40,26 +40,16 @@ import org.threeten.bp.LocalDate
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/20/17.
  */
-class OverviewController : BaseController<OverviewController, OverviewPresenter>() {
-
-    private var restoringState: Boolean = false
+class OverviewController : BaseController<OverviewController, OverviewPresenter, OverviewComponent>() {
 
     lateinit private var questList: RecyclerView
 
     private lateinit var adapter: OverviewAdapter
 
-    val controllerComponent: OverviewComponent by lazy {
-        val component = DaggerOverviewComponent.builder()
+    override fun buildComponent(): OverviewComponent =
+        DaggerOverviewComponent.builder()
             .controllerComponent(daggerComponent)
             .build()
-        component.inject(this@OverviewController)
-        component
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        controllerComponent
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
 
@@ -79,12 +69,6 @@ class OverviewController : BaseController<OverviewController, OverviewPresenter>
 
         return view
     }
-
-    override fun setRestoringViewState(restoringViewState: Boolean) {
-        this.restoringState = restoringViewState
-    }
-
-    override fun createPresenter(): OverviewPresenter = controllerComponent.createPresenter()
 
     fun loadQuestsIntent(): Observable<DisplayOverviewQuestsUseCase.Parameters> =
         Observable.just(!restoringState).filter { _ -> true }.

@@ -34,26 +34,16 @@ import timber.log.Timber
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/22/17.
  */
-class RepeatingQuestListController : BaseController<RepeatingQuestListController, RepeatingQuestListPresenter>() {
-
-    private var restoringState: Boolean = false
+class RepeatingQuestListController : BaseController<RepeatingQuestListController, RepeatingQuestListPresenter, RepeatingQuestListComponent>() {
 
     lateinit private var questList: RecyclerView
 
     private lateinit var adapter: RepeatingQuestAdapter
 
-    val controllerComponent: RepeatingQuestListComponent by lazy {
-        val component = DaggerRepeatingQuestListComponent.builder()
+    override fun buildComponent(): RepeatingQuestListComponent =
+        DaggerRepeatingQuestListComponent.builder()
             .controllerComponent(daggerComponent)
             .build()
-        component.inject(this@RepeatingQuestListController)
-        component
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        controllerComponent
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_repeating_quest_list, container, false)
@@ -69,12 +59,6 @@ class RepeatingQuestListController : BaseController<RepeatingQuestListController
 
         questList.adapter = adapter
         return view
-    }
-
-    override fun createPresenter(): RepeatingQuestListPresenter = controllerComponent.createPresenter()
-
-    override fun setRestoringViewState(restoringViewState: Boolean) {
-        this.restoringState = restoringViewState
     }
 
     fun loadRepeatingQuestsIntent(): Observable<Boolean> =
