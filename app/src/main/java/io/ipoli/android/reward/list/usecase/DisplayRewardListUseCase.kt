@@ -1,10 +1,12 @@
-package io.ipoli.android.reward.list
+package io.ipoli.android.reward.list.usecase
 
 import io.ipoli.android.common.SimpleRxUseCase
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.reward.Reward
 import io.ipoli.android.reward.RewardRepository
+import io.ipoli.android.reward.list.RewardListPartialChange
+import io.ipoli.android.reward.list.RewardViewModel
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 
@@ -12,8 +14,8 @@ import io.reactivex.functions.BiFunction
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/1/17.
  */
-class DisplayRewardsUseCase(private val rewardRepository: RewardRepository,
-                            private val playerRepository: PlayerRepository)
+class DisplayRewardListUseCase(private val rewardRepository: RewardRepository,
+                               private val playerRepository: PlayerRepository)
     : SimpleRxUseCase<RewardListPartialChange>() {
 
     override fun createObservable(parameters: Unit): Observable<RewardListPartialChange> =
@@ -33,5 +35,7 @@ class DisplayRewardsUseCase(private val rewardRepository: RewardRepository,
                     }
                     RewardListPartialChange.DataLoaded(rewardModels)
                 }
-            }).startWith(RewardListPartialChange.Loading())
+            })
+            .startWith(RewardListPartialChange.Loading())
+            .onErrorReturn { RewardListPartialChange.Error() }
 }

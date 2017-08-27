@@ -6,6 +6,8 @@ import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.persistence.RealmPlayerRepository
 import io.ipoli.android.reward.RealmRewardRepository
 import io.ipoli.android.reward.RewardRepository
+import io.ipoli.android.reward.list.usecase.DisplayRewardListUseCase
+import io.ipoli.android.reward.list.usecase.RemoveRewardFromListUseCase
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -24,7 +26,12 @@ class RewardListModule {
 
     @Provides
     @RewardListScope
-    fun provideRewardListUseCase(rewardRepository: RewardRepository, playerRepository: PlayerRepository): DisplayRewardsUseCase {
-        return DisplayRewardsUseCase(rewardRepository, playerRepository)
+    fun provideRewardListUseCase(rewardRepository: RewardRepository, playerRepository: PlayerRepository): DisplayRewardListUseCase {
+        return DisplayRewardListUseCase(rewardRepository, playerRepository)
     }
+
+    @Provides
+    @RewardListScope
+    fun provideRemoveRewardFromListUseCase(): RemoveRewardFromListUseCase =
+        RemoveRewardFromListUseCase()
 }

@@ -15,7 +15,7 @@ import java.util.*
  */
 object NextScheduledDateFormatter {
     fun format(context: Context, nextDate: LocalDate?, duration: Int, startTime: Time?): String {
-        var nextText = ""
+        var nextText: String
         if (nextDate == null) {
             return context.getString(R.string.unscheduled)
         } else {

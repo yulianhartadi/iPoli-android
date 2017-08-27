@@ -1,6 +1,8 @@
 package io.ipoli.android.reward.list
 
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
+import io.ipoli.android.reward.list.usecase.DisplayRewardListUseCase
+import io.ipoli.android.reward.list.usecase.RemoveRewardFromListUseCase
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
@@ -10,13 +12,14 @@ import javax.inject.Inject
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 7/7/17.
  */
-class RewardListPresenter @Inject constructor(private val displayRewardsUseCase: DisplayRewardsUseCase) : MviBasePresenter<RewardListController, RewardViewState>() {
+class RewardListPresenter @Inject constructor(private val displayRewardListUseCase: DisplayRewardListUseCase,
+                                              private val removeRewardFromListUseCase: RemoveRewardFromListUseCase) : MviBasePresenter<RewardListController, RewardListViewState>() {
 
     override fun bindIntents() {
 
-//        val loadDataState: Observable<RewardViewState> = intent { it.loadRewardsIntent() }
+//        val loadDataState: Observable<RewardListViewState> = intent { it.loadRewardsIntent() }
 //                .switchMap { interactor.loadRewards() }
-//                .switchMap { data -> Observable.just(RewardsLoadedState(data) as RewardViewState) }
+//                .switchMap { data -> Observable.just(RewardsLoadedState(data) as RewardListViewState) }
 //                .startWith(RewardsInitialLoadingState())
 //                .onErrorReturn { RewardInitialLoadingErrorState() }
 //                .observeOn(AndroidSchedulers.mainThread())
@@ -34,11 +37,11 @@ class RewardListPresenter @Inject constructor(private val displayRewardsUseCase:
 
         val observables = ArrayList<Observable<RewardListPartialChange>>()
 
-//        val displayRewardsUseCase = DisplayRewardsUseCase(rewardRepository)
+//        val displayRewardListUseCase = DisplayRewardListUseCase(rewardRepository)
 
 //        observables.add(
 //                intent { it.loadRewardsIntent() }.switchMap { _ ->
-//                    displayRewardsUseCase.execute(Unit)
+//                    displayRewardListUseCase.execute(Unit)
 ////                            .doOnNext { rewards ->
 ////                                Log.d("Loading rewards", "Loading all " + rewards.size + " " + Looper.getMainLooper().isCurrentThread
 ////                                )
@@ -48,8 +51,13 @@ class RewardListPresenter @Inject constructor(private val displayRewardsUseCase:
 
         observables.add(
             intent { it.loadRewardsIntent() }.switchMap {
-                displayRewardsUseCase.execute(Unit)
+                displayRewardListUseCase.execute(Unit)
             })
+
+        observables += intent { it.removeRewardIntent() }
+            .switchMap { parameters ->
+                removeRewardFromListUseCase.execute(parameters)
+            }
 
 //        observables.add(
 //                intent { it.useRewardIntent() }
@@ -62,20 +70,20 @@ class RewardListPresenter @Inject constructor(private val displayRewardsUseCase:
 //        )
 //
 //        observables.add(
-//                intent { it.deleteRewardIntent() }
+//                intent { it.removeRewardIntent() }
 //                        .doOnNext { reward -> Log.d("Deleting reward", reward.name) }
 //                        .switchMap { reward -> interactor.deleteReward(reward) }
 //                        .map { ignored -> RewardDeletedPartialChange() })
 
         val allIntents: Observable<RewardListPartialChange> = Observable.merge(observables)
-        val initialState = RewardViewState()
+        val initialState = RewardListViewState()
         val stateObservable = allIntents.scan(initialState, this::viewStateReducer)
             .observeOn(AndroidSchedulers.mainThread())
 
         subscribeViewState(stateObservable, RewardListController::render)
     }
 
-    private fun viewStateReducer(previousStateReward: RewardViewState, listPartialChange: RewardListPartialChange): RewardViewState {
-        return listPartialChange.computeNewState(previousStateReward)
+    private fun viewStateReducer(prevState: RewardListViewState, partialChange: RewardListPartialChange): RewardListViewState {
+        return partialChange.computeNewState(prevState)
     }
 }

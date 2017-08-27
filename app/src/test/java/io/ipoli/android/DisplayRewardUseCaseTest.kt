@@ -5,7 +5,7 @@ import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.player.data.Player
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.reward.*
-import io.ipoli.android.reward.list.DisplayRewardsUseCase
+import io.ipoli.android.reward.list.usecase.DisplayRewardListUseCase
 import io.ipoli.android.reward.list.RewardListPartialChange
 import io.ipoli.android.util.RxSchedulersTestRule
 import io.reactivex.Observable
@@ -35,7 +35,7 @@ class DisplayRewardUseCaseTest {
             on { listenForAll() } doReturn Observable.just(listOf(Reward()))
         }
 
-        val useCase = DisplayRewardsUseCase(rewardRepoMock, playerRepoMock)
+        val useCase = DisplayRewardListUseCase(rewardRepoMock, playerRepoMock)
 
         val observer = TestObserver<RewardListPartialChange>()
 

@@ -6,29 +6,36 @@ package io.ipoli.android.reward.list
  * on 7/8/17.
  */
 interface RewardListPartialChange {
-    fun computeNewState(prevState: RewardViewState): RewardViewState
+    fun computeNewState(prevState: RewardListViewState): RewardListViewState
 
     class Loading : RewardListPartialChange {
-        override fun computeNewState(prevState: RewardViewState): RewardViewState =
-            RewardViewState(isLoading = true, rewards = prevState.rewards)
+        override fun computeNewState(prevState: RewardListViewState): RewardListViewState =
+            RewardListViewState(isLoading = true, rewards = prevState.rewards)
     }
 
     class Empty : RewardListPartialChange {
-        override fun computeNewState(prevState: RewardViewState): RewardViewState =
-            RewardViewState(isEmpty = true, rewards = prevState.rewards)
+        override fun computeNewState(prevState: RewardListViewState): RewardListViewState =
+            RewardListViewState(isEmpty = true, rewards = prevState.rewards)
     }
 
     class Error : RewardListPartialChange {
-        override fun computeNewState(prevState: RewardViewState): RewardViewState =
-            RewardViewState(hasError = true, rewards = prevState.rewards)
+        override fun computeNewState(prevState: RewardListViewState): RewardListViewState =
+            RewardListViewState(hasError = true, rewards = prevState.rewards)
 
     }
 
     class DataLoaded(val rewardViews: List<RewardViewModel>) : RewardListPartialChange {
-        override fun computeNewState(prevState: RewardViewState): RewardViewState =
-            RewardViewState(hasFreshData = true,
-                rewards = rewardViews,
-                shouldShowData = true)
+        override fun computeNewState(prevState: RewardListViewState): RewardListViewState =
+            RewardListViewState(hasFreshData = true,
+                rewards = rewardViews)
 
+    }
+
+    class RewardRemoved(val rewardViews: List<RewardViewModel>) : RewardListPartialChange {
+
+        override fun computeNewState(prevState: RewardListViewState): RewardListViewState =
+            RewardListViewState(rewards = rewardViews,
+                isRewardRemoved = true,
+                hasFreshData = true)
     }
 }

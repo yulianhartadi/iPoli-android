@@ -60,9 +60,9 @@ class iPoliApp : Application() {
         refWatcher = LeakCanary.install(this)
 //        TinyDancer.create().show(this)
 
-
-        val rewardRepository = RealmRewardRepository()
-        rewardRepository.save(Reward(name = "Reward 1", description = "desc1", price = 200)).subscribe()
+//
+//        val rewardRepository = RealmRewardRepository()
+//        rewardRepository.save(Reward(name = "Reward 1", description = "desc1", price = 200)).subscribe()
 
 //        val questRepository = RealmQuestRepository()
 //        val quest = Quest("Mystery", LocalDate.now(), Category.FUN)

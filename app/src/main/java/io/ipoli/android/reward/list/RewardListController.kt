@@ -8,17 +8,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.HorizontalChangeHandler
-import com.hannesdorfmann.adapterdelegates3.AdapterDelegate
-import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
-import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
+import io.ipoli.android.challenge.list.ui.AutoUpdatableAdapter
 import io.ipoli.android.common.BaseController
 import io.ipoli.android.common.daggerComponent
 import io.ipoli.android.common.ui.visible
-import io.ipoli.android.reward.edit.EditRewardController
+import io.ipoli.android.reward.list.usecase.RemoveRewardFromListUseCase
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.controller_reward_list.view.*
@@ -26,16 +22,17 @@ import kotlinx.android.synthetic.main.item_reward.view.*
 import kotlinx.android.synthetic.main.view_empty.view.*
 import kotlinx.android.synthetic.main.view_error.view.*
 import kotlinx.android.synthetic.main.view_loading.view.*
+import kotlin.properties.Delegates
 
 
 class RewardListController : BaseController<RewardListController, RewardListPresenter, RewardListComponent>() {
 
     lateinit private var rewardList: RecyclerView
 
-    private lateinit var adapter: RewardsAdapter
+    private lateinit var adapter: RewardListAdapter
 
     private val useRewardSubject = PublishSubject.create<RewardViewModel>()
-    private val deleteRewardSubject = PublishSubject.create<RewardViewModel>()
+    private val removeRewardSubject = PublishSubject.create<RemoveRewardFromListUseCase.Parameters>()
 
     override fun buildComponent(): RewardListComponent =
         DaggerRewardListComponent.builder()
@@ -62,16 +59,18 @@ class RewardListController : BaseController<RewardListController, RewardListPres
 //        })
 
 
-        val delegatesManager = AdapterDelegatesManager<List<RewardViewModel>>()
-            .addDelegate(RewardAdapterDelegate(LayoutInflater.from(activity), useRewardSubject, deleteRewardSubject, {
-                val pushHandler = HorizontalChangeHandler()
-                val popHandler = HorizontalChangeHandler()
-                router.pushController(RouterTransaction.with(EditRewardController(rewardId = it.id))
-                    .pushChangeHandler(pushHandler)
-                    .popChangeHandler(popHandler))
-            }))
+//        val delegatesManager = AdapterDelegatesManager<List<RewardViewModel>>()
+//            .addDelegate(RewardAdapterDelegate(LayoutInflater.from(activity), useRewardSubject, removeRewardSubject, {
+//                val pushHandler = HorizontalChangeHandler()
+//                val popHandler = HorizontalChangeHandler()
+//                router.pushController(RouterTransaction.with(EditRewardController(rewardId = it.id))
+//                    .pushChangeHandler(pushHandler)
+//                    .popChangeHandler(popHandler))
+//            }))
+//
+//        adapter = RewardListAdapter(delegatesManager)
 
-        adapter = RewardsAdapter(delegatesManager)
+        adapter = RewardListAdapter(removeRewardSubject)
 
         rewardList.adapter = adapter
 
@@ -87,77 +86,98 @@ class RewardListController : BaseController<RewardListController, RewardListPres
         return useRewardSubject
     }
 
-    fun deleteRewardIntent(): Observable<RewardViewModel> {
-        return deleteRewardSubject;
+    fun removeRewardIntent(): Observable<RemoveRewardFromListUseCase.Parameters> {
+        return removeRewardSubject
     }
 
-    fun render(state: RewardViewState) {
+    fun render(state: RewardListViewState) {
         val contentView = view!!
         with(state) {
             contentView.emptyView.visible = state.isEmpty
             contentView.errorView.visible = state.hasError
             contentView.loadingView.visible = state.isLoading
-            contentView.rewardList.visible = state.shouldShowData
+            contentView.rewardList.visible = state.hasFreshData
 
-            if (isLoading) {
-                Toast.makeText(activity, "Loading", Toast.LENGTH_LONG).show()
-            }
             if (hasFreshData) {
-                adapter.items = state.rewards
-                adapter.notifyDataSetChanged()
-//                rewardList.adapter = RewardListAdapter(state.rewards!!, { reward ->
-//
-//                    val pushHandler = HorizontalChangeHandler()
-//                    val popHandler = HorizontalChangeHandler()
-//                    router.pushController(RouterTransaction.with(EditRewardController(rewardId = reward.id))
-//                            .pushChangeHandler(pushHandler)
-//                            .popChangeHandler(popHandler))
-//                })
+                adapter.rewardList = state.rewards.toMutableList()
+//                adapter.rewardList = state.rewards.toMutableList()
+            }
+
+            if (isRewardRemoved) {
+                Toast.makeText(applicationContext, "Reward Removed", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    class RewardsAdapter(manager: AdapterDelegatesManager<List<RewardViewModel>>) : ListDelegationAdapter<List<RewardViewModel>>(
-        manager) {
+    class RewardListAdapter(val deleteSubject: PublishSubject<RemoveRewardFromListUseCase.Parameters>) : RecyclerView.Adapter<RewardListAdapter.RewardViewHolder>(), AutoUpdatableAdapter {
 
-//        init {
-//            setHasStableIds(true)
-//        }
-
-//        override fun getItemId(position: Int): Long = items[position].id
-
-    }
-
-    class RewardAdapterDelegate(private val inflater: LayoutInflater,
-                                private val clickSubject: PublishSubject<RewardViewModel>,
-                                private val deleteSubject: PublishSubject<RewardViewModel>,
-                                private val clickListener: (RewardViewModel) -> Unit) : AdapterDelegate<List<RewardViewModel>>() {
-
-        override fun onBindViewHolder(items: List<RewardViewModel>, position: Int, holder: RecyclerView.ViewHolder, payloads: MutableList<Any>) {
-            val vh = holder as RewardViewHolder
-            val reward = items[position]
-            vh.bindReward(reward)
+        var rewardList: MutableList<RewardViewModel> by Delegates.observable(mutableListOf()) { _, old, new ->
+            autoNotify(old, new) { o, n -> o.id == n.id }
         }
 
-        override fun isForViewType(items: List<RewardViewModel>, position: Int): Boolean = true
+        override fun getItemCount(): Int = rewardList.size
 
-        override fun onCreateViewHolder(parent: ViewGroup?): RecyclerView.ViewHolder =
-            RewardViewHolder(inflater.inflate(R.layout.item_reward, parent, false))
+        override fun onBindViewHolder(holder: RewardViewHolder, position: Int) {
+            val post = rewardList[position]
+            holder.bind(post)
+        }
 
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RewardViewHolder =
+            RewardViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_reward, parent, false))
 
         inner class RewardViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-            fun bindReward(rewardView: RewardViewModel) {
+            fun bind(rewardView: RewardViewModel) {
                 with(rewardView) {
-                    RxView.clicks(itemView.buyReward).takeUntil(RxView.detaches(itemView)).map { rewardView }.subscribe(clickSubject)
-                    RxView.clicks(itemView.delete).takeUntil(RxView.detaches(itemView)).map { rewardView }.subscribe(deleteSubject)
-                    itemView.setOnClickListener { clickListener(rewardView) }
-                    itemView.name.setText(name)
-                    itemView.description.setText(description)
+                    //                    RxView.clicks(itemView.buyReward).takeUntil(RxView.detaches(itemView)).map { rewardView }.subscribe(clickSubject)
+                    RxView.clicks(itemView.delete)
+                        .map { RemoveRewardFromListUseCase.Parameters(rewardList, rewardView) }
+                        .subscribe(deleteSubject)
+//                    itemView.setOnClickListener { clickListener(rewardView) }
+                    itemView.name.text = name
+                    itemView.description.text = description
                 }
             }
         }
-
     }
+
+//    class RewardListAdapter(manager: AdapterDelegatesManager<List<RewardViewModel>>) : ListDelegationAdapter<List<RewardViewModel>>(
+//        manager), AutoUpdatableAdapter {
+//
+
+//
+//    }
+//
+//    class RewardAdapterDelegate(private val inflater: LayoutInflater,
+//                                private val clickSubject: PublishSubject<RewardViewModel>,
+//                                private val deleteSubject: PublishSubject<RewardViewModel>,
+//                                private val clickListener: (RewardViewModel) -> Unit) : AdapterDelegate<List<RewardViewModel>>() {
+//
+//        override fun onBindViewHolder(items: List<RewardViewModel>, position: Int, holder: RecyclerView.ViewHolder, payloads: MutableList<Any>) {
+//            val vh = holder as RewardViewHolder
+//            val reward = items[position]
+//            vh.bindReward(reward)
+//        }
+//
+//        override fun isForViewType(items: List<RewardViewModel>, position: Int): Boolean = true
+//
+//        override fun onCreateViewHolder(parent: ViewGroup?): RecyclerView.ViewHolder =
+//            RewardViewHolder(inflater.inflate(R.layout.item_reward, parent, false))
+//
+//
+//        inner class RewardViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+//
+//            fun bindReward(rewardView: RewardViewModel) {
+//                with(rewardView) {
+//                    RxView.clicks(itemView.buyReward).takeUntil(RxView.detaches(itemView)).map { rewardView }.subscribe(clickSubject)
+//                    RxView.clicks(itemView.delete).takeUntil(RxView.detaches(itemView)).map { rewardView }.subscribe(deleteSubject)
+//                    itemView.setOnClickListener { clickListener(rewardView) }
+//                    itemView.name.text = name
+//                    itemView.description.text = description
+//                }
+//            }
+//        }
+//
+//    }
 
 }
