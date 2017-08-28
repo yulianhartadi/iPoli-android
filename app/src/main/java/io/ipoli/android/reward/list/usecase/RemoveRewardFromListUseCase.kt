@@ -55,13 +55,14 @@ class RemoveRewardFromListUseCase(val context: Context) : BaseRxUseCase<RemoveRe
         val removedRewardIndex: Int
     )
 
-    fun undo(parameters: UndoParameters): Observable<RewardListPartialChange>? {
-        return Observable.defer {
+    fun undo(parameters: UndoParameters): Observable<RewardListPartialChange> =
+        Observable.defer {
             val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
             jobScheduler.cancel(jobId)
             val newList = parameters.rewards.toMutableList()
             newList.add(parameters.removedRewardIndex, parameters.removedReward)
             Observable.just(RewardListPartialChange.UndoRemovedReward(newList))
         }
-    }
+            .cast(RewardListPartialChange::class.java)
+            .onErrorReturn { RewardListPartialChange.Error() }
 }
