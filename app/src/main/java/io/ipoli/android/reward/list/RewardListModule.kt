@@ -1,5 +1,6 @@
 package io.ipoli.android.reward.list
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import io.ipoli.android.player.persistence.PlayerRepository
@@ -14,7 +15,7 @@ import io.ipoli.android.reward.list.usecase.RemoveRewardFromListUseCase
  * on 8/2/17.
  */
 @Module
-class RewardListModule {
+class RewardListModule(val context: Context) {
 
     @Provides
     @RewardListScope
@@ -33,5 +34,5 @@ class RewardListModule {
     @Provides
     @RewardListScope
     fun provideRemoveRewardFromListUseCase(): RemoveRewardFromListUseCase =
-        RemoveRewardFromListUseCase()
+        RemoveRewardFromListUseCase(context)
 }

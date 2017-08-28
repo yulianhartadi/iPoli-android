@@ -13,7 +13,8 @@ interface Repository<T> where T : PersistedModel, T : RealmObject {
     fun listenById(id: String): Observable<T>
     fun listen(): Observable<T>
     fun listenForAll(): Observable<List<T>>
-    fun find() : Single<T>
+    fun find(): Single<T>
     fun save(model: T): Single<T>
     fun delete(model: T): Completable
+    fun delete(id: String): Completable
 }

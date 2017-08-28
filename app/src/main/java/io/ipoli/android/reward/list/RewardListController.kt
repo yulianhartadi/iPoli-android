@@ -41,6 +41,7 @@ class RewardListController : BaseController<RewardListController, RewardListPres
     override fun buildComponent(): RewardListComponent =
         DaggerRewardListComponent.builder()
             .controllerComponent(daggerComponent)
+            .rewardListModule(RewardListModule(applicationContext!!))
             .build()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {

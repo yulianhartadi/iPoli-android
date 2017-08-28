@@ -75,13 +75,9 @@ abstract class BaseRealmRepository<T> : Repository<T> where T : PersistedModel, 
 
 
     protected fun getLooper(): Looper? {
-//        return if (Looper.myLooper() != Looper.getMainLooper()) {
         val backgroundThread = BackgroundThread()
         backgroundThread.start()
         return backgroundThread.looper
-//        } else {
-//            Looper.getMainLooper()
-//        }
     }
 
     override fun save(model: T): Single<T> =
@@ -98,9 +94,11 @@ abstract class BaseRealmRepository<T> : Repository<T> where T : PersistedModel, 
         }
 
     override fun delete(model: T): Completable =
+        delete(model.id)
+
+    override fun delete(id: String): Completable =
         createCompletable { emitter ->
             Realm.getDefaultInstance().use {
-                val id = model.id
                 it.executeTransaction {
                     val result = it.where(getModelClass()).equalTo("id", id).findFirst()
                     result.deleteFromRealm()
