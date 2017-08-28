@@ -59,6 +59,11 @@ class RewardListPresenter @Inject constructor(private val displayRewardListUseCa
                 removeRewardFromListUseCase.execute(parameters)
             }
 
+        observables += intent { it.undoRemoveRewardIntent() }
+            .switchMap { parameters ->
+                removeRewardFromListUseCase.undo(parameters)
+            }
+
 //        observables.add(
 //                intent { it.useRewardIntent() }
 //                        .switchMap { reward ->

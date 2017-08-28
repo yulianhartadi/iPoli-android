@@ -1,17 +1,13 @@
 package io.ipoli.android.reward.list
 
 import android.os.Bundle
-import android.support.v7.util.DiffUtil
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import com.hannesdorfmann.adapterdelegates3.AdapterDelegate
-import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
-import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
 import io.ipoli.android.challenge.list.ui.AutoUpdatableAdapter
@@ -36,7 +32,8 @@ class RewardListController : BaseController<RewardListController, RewardListPres
     private lateinit var adapter: RewardListAdapter
 
     private val useRewardSubject = PublishSubject.create<RewardViewModel>()
-    private val removeRewardSubject = PublishSubject.create<RemoveRewardFromListUseCase.Parameters>()
+    private val removeRewardSubject = PublishSubject.create<RemoveRewardFromListUseCase.RemoveParameters>()
+    private val undoRemoveRewardSubject = PublishSubject.create<RemoveRewardFromListUseCase.UndoParameters>()
 
     override fun buildComponent(): RewardListComponent =
         DaggerRewardListComponent.builder()
@@ -86,17 +83,16 @@ class RewardListController : BaseController<RewardListController, RewardListPres
     }
 
 
-    fun loadRewardsIntent(): Observable<Boolean> {
-        return Observable.just(!restoringState).filter { _ -> true }.doOnComplete { Log.d("Chingy", "thingy") }
-    }
+    fun loadRewardsIntent(): Observable<Boolean> =
+        Observable.just(!restoringState).filter { _ -> true }.doOnComplete { Log.d("Chingy", "thingy") }
 
-    fun useRewardIntent(): Observable<RewardViewModel> {
-        return useRewardSubject
-    }
+    fun useRewardIntent(): Observable<RewardViewModel> = useRewardSubject
 
-    fun removeRewardIntent(): Observable<RemoveRewardFromListUseCase.Parameters> {
-        return removeRewardSubject
-    }
+    fun removeRewardIntent(): Observable<RemoveRewardFromListUseCase.RemoveParameters> =
+        removeRewardSubject
+
+    fun undoRemoveRewardIntent(): Observable<RemoveRewardFromListUseCase.UndoParameters> =
+        undoRemoveRewardSubject
 
     fun render(state: RewardListViewState) {
         val contentView = view!!
@@ -107,35 +103,25 @@ class RewardListController : BaseController<RewardListController, RewardListPres
             contentView.rewardList.visible = state.shouldShowData
 
             if (shouldShowData) {
-
-//                val oldList = adapter.items?.toMutableList() ?: mutableListOf()
-//                val newList = state.rewards.toMutableList()
-//
-//                val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-//
-//                    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-//                        oldList[oldItemPosition].id == newList[newItemPosition].id
-//
-//                    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
-//                        oldList[oldItemPosition] == newList[newItemPosition]
-//
-//                    override fun getOldListSize() = oldList.size
-//
-//                    override fun getNewListSize() = newList.size
-//                })
-//                adapter.items = newList
-//                diff.dispatchUpdatesTo(adapter)
-
                 adapter.rewardList = state.rewards.toMutableList()
             }
 
             if (isRewardRemoved) {
-                Toast.makeText(applicationContext, "Reward Removed", Toast.LENGTH_SHORT).show()
+                val snackbar = Snackbar.make(parentController?.view!!, "Reward removed", 2000)
+                snackbar.setAction("UNDO", {
+                    undoRemoveRewardSubject.onNext(RemoveRewardFromListUseCase.UndoParameters(
+                        state.rewards,
+                        state.removedReward!!,
+                        state.removedRewardIndex!!
+                    ))
+                })
+                snackbar.show()
+//                Toast.makeText(applicationContext, "Reward Removed", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    class RewardListAdapter(val deleteSubject: PublishSubject<RemoveRewardFromListUseCase.Parameters>) : RecyclerView.Adapter<RewardListAdapter.RewardViewHolder>(), AutoUpdatableAdapter {
+    class RewardListAdapter(val deleteSubject: PublishSubject<RemoveRewardFromListUseCase.RemoveParameters>) : RecyclerView.Adapter<RewardListAdapter.RewardViewHolder>(), AutoUpdatableAdapter {
 
         var rewardList: MutableList<RewardViewModel> by Delegates.observable(mutableListOf()) { _, old, new ->
             autoNotify(old, new) { o, n -> o.id == n.id }
@@ -156,7 +142,7 @@ class RewardListController : BaseController<RewardListController, RewardListPres
             fun bind(rewardView: RewardViewModel) {
                 with(rewardView) {
                     RxView.clicks(itemView.delete)
-                        .map { RemoveRewardFromListUseCase.Parameters(rewardList, rewardView) }
+                        .map { RemoveRewardFromListUseCase.RemoveParameters(rewardList, rewardView) }
                         .subscribe(deleteSubject)
                     itemView.name.text = name
                     itemView.description.text = description
@@ -164,38 +150,4 @@ class RewardListController : BaseController<RewardListController, RewardListPres
             }
         }
     }
-
-//    class RewardListAdapter(manager: AdapterDelegatesManager<List<RewardViewModel>>) : ListDelegationAdapter<List<RewardViewModel>>(
-//        manager)
-//
-//    class RewardAdapterDelegate(private val inflater: LayoutInflater,
-//                                private val removeSubject: PublishSubject<RemoveRewardFromListUseCase.Parameters>) : AdapterDelegate<List<RewardViewModel>>() {
-//
-//        override fun onBindViewHolder(items: List<RewardViewModel>, position: Int, holder: RecyclerView.ViewHolder, payloads: MutableList<Any>) {
-//            val vh = holder as RewardViewHolder
-//            val reward = items[position]
-//            vh.bindReward(reward, items)
-//        }
-//
-//        override fun isForViewType(items: List<RewardViewModel>, position: Int): Boolean = true
-//
-//        override fun onCreateViewHolder(parent: ViewGroup?): RecyclerView.ViewHolder =
-//            RewardViewHolder(inflater.inflate(R.layout.item_reward, parent, false))
-//
-//
-//        inner class RewardViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-//
-//            fun bindReward(rewardView: RewardViewModel, items: List<RewardViewModel>) {
-//                with(rewardView) {
-//                    RxView.clicks(itemView.delete)
-//                        .map { RemoveRewardFromListUseCase.Parameters(items, rewardView) }
-//                        .subscribe(removeSubject)
-//                    itemView.name.text = name
-//                    itemView.description.text = description
-//                }
-//            }
-//        }
-//
-//    }
-
 }

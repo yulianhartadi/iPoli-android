@@ -15,6 +15,8 @@ class DeleteRewardJobService : JobService() {
 
     override fun onStartJob(jobParameters: JobParameters): Boolean {
 
+        Timber.d("Job Started")
+
         val rewardId = jobParameters.extras.getString("reward_id")
         val rewardRepo = RealmRewardRepository()
 

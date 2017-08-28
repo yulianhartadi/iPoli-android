@@ -17,29 +17,51 @@ import java.util.*
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/27/17.
  */
-class RemoveRewardFromListUseCase(val context: Context) : BaseRxUseCase<RemoveRewardFromListUseCase.Parameters, RewardListPartialChange>() {
-    override fun createObservable(parameters: Parameters): Observable<RewardListPartialChange> {
+class RemoveRewardFromListUseCase(val context: Context) : BaseRxUseCase<RemoveRewardFromListUseCase.RemoveParameters, RewardListPartialChange>() {
+
+    private var jobId = 0
+
+    override fun createObservable(parameters: RemoveParameters): Observable<RewardListPartialChange> {
         return Observable.defer {
-            val newList = parameters.rewards.filter { it != parameters.rewardToDelete }
+            val indexOfRemovedReward = parameters.rewards.indexOf(parameters.rewardToRemove)
+            val newList = parameters.rewards.filter { it != parameters.rewardToRemove }
             val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
             val data = PersistableBundle()
-            data.putString("reward_id", parameters.rewardToDelete.id)
-            val job = JobInfo.Builder(Random().nextInt(),
+            data.putString("reward_id", parameters.rewardToRemove.id)
+            jobId = Random().nextInt()
+            val job = JobInfo.Builder(jobId,
                 ComponentName(context, DeleteRewardJobService::class.java))
-                .setOverrideDeadline(0)
+                .setMinimumLatency(2500)
+                .setOverrideDeadline(2500)
                 .setExtras(data)
                 .build()
             jobScheduler.schedule(job)
             if (newList.isEmpty()) {
-                Observable.just(RewardListPartialChange.Empty())
+                Observable.just(RewardListPartialChange.Empty(parameters.rewardToRemove, indexOfRemovedReward))
             } else {
-                Observable.just(RewardListPartialChange.RewardRemoved(newList))
+                Observable.just(RewardListPartialChange.RewardRemoved(newList, parameters.rewardToRemove, indexOfRemovedReward))
             }
         }.onErrorReturn { RewardListPartialChange.Error() }
     }
 
-    data class Parameters(
+    data class RemoveParameters(
         val rewards: List<RewardViewModel>,
-        val rewardToDelete: RewardViewModel
+        val rewardToRemove: RewardViewModel
     )
+
+    data class UndoParameters(
+        val rewards: List<RewardViewModel>,
+        val removedReward: RewardViewModel,
+        val removedRewardIndex: Int
+    )
+
+    fun undo(parameters: UndoParameters): Observable<RewardListPartialChange>? {
+        return Observable.defer {
+            val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+            jobScheduler.cancel(jobId)
+            val newList = parameters.rewards.toMutableList()
+            newList.add(parameters.removedRewardIndex, parameters.removedReward)
+            Observable.just(RewardListPartialChange.UndoRemovedReward(newList))
+        }
+    }
 }
