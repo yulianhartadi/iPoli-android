@@ -62,7 +62,7 @@ class RepeatingQuestListController : BaseController<RepeatingQuestListController
     }
 
     fun loadRepeatingQuestsIntent(): Observable<Boolean> =
-        Observable.just(!restoringState).filter { _ -> true }
+        Observable.just(creatingState).filter { _ -> true }
 
     fun render(state: RepeatingQuestListViewState) {
         val contentView = view!!

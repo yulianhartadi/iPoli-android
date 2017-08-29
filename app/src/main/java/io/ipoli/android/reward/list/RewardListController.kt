@@ -2,7 +2,6 @@ package io.ipoli.android.reward.list
 
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.support.v7.util.DiffUtil
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -68,7 +67,7 @@ class RewardListController : BaseController<RewardListController, RewardListPres
 
 
     fun loadRewardsIntent(): Observable<Boolean> =
-        Observable.just(!restoringState).filter { _ -> true }.doOnComplete { Log.d("Chingy", "thingy") }
+        Observable.just(creatingState).filter { _ -> true }.doOnComplete { Log.d("Chingy", "thingy") }
 
     fun useRewardIntent(): Observable<RewardViewModel> = useRewardSubject
 

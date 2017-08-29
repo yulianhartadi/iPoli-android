@@ -71,7 +71,7 @@ class OverviewController : BaseController<OverviewController, OverviewPresenter,
     }
 
     fun loadQuestsIntent(): Observable<DisplayOverviewQuestsUseCase.Parameters> =
-        Observable.just(!restoringState).filter { _ -> true }.
+        Observable.just(creatingState).filter { _ -> true }.
             map {
                 DisplayOverviewQuestsUseCase.Parameters(
                     LocalDate.now(),

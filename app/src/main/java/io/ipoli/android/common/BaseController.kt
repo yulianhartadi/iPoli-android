@@ -14,7 +14,7 @@ import io.ipoli.android.iPoliApp
  */
 abstract class BaseController<V : MvpView, P : MviPresenter<V, *>, C : BaseComponent<V, P>> : RestoreViewOnCreateMviController<V, P> {
 
-    protected var restoringState: Boolean = false
+    protected var creatingState: Boolean = true
 
     private var hasExited = false
 
@@ -31,7 +31,7 @@ abstract class BaseController<V : MvpView, P : MviPresenter<V, *>, C : BaseCompo
     override fun createPresenter(): P = component.createPresenter()
 
     override fun setRestoringViewState(restoringViewState: Boolean) {
-        this.restoringState = restoringViewState
+        this.creatingState = restoringViewState
     }
 
     protected abstract fun buildComponent(): C

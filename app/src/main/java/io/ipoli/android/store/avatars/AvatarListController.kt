@@ -58,7 +58,7 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
     }
 
     fun displayAvatarListIntent(): Observable<Boolean> =
-        Observable.just(!restoringState).filter { _ -> true }
+        Observable.just(creatingState).filter { _ -> true }
 
     fun buyAvatarIntent(): Observable<AvatarViewModel> {
         return buySubject

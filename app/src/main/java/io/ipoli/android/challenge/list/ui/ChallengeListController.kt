@@ -56,7 +56,7 @@ class ChallengeListController : BaseController<ChallengeListController, Challeng
     }
 
     fun loadChallengesIntent(): Observable<Boolean> =
-        Observable.just(!restoringState).filter { _ -> true }
+        Observable.just(creatingState).filter { _ -> true }
 
     fun render(state: ChallengeListViewState) {
         val contentView = view!!

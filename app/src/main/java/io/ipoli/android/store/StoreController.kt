@@ -48,7 +48,7 @@ class StoreController : BaseController<StoreController, StorePresenter, StoreCom
     }
 
     fun showCoinsIntent(): Observable<Boolean> {
-        return Observable.just(!restoringState).filter { _ -> true }.doOnComplete { Timber.d("Coins") }
+        return Observable.just(creatingState).filter { _ -> true }.doOnComplete { Timber.d("Coins") }
     }
 
     fun render(state: StoreViewState) {
