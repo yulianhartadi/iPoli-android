@@ -97,4 +97,3 @@ dependencies {
 }
 
 apply from: 'quality.gradle'
-apply plugin: 'com.google.gms.google-services'
