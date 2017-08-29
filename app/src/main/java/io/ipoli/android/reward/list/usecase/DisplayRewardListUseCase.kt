@@ -24,7 +24,7 @@ class DisplayRewardListUseCase(private val rewardRepository: RewardRepository,
             rewardRepository.listenForAll(),
             BiFunction { player, rewards ->
                 if (rewards.isEmpty()) {
-                    RewardListPartialChange.Empty(parameters.rewardToDelete, indexOfRemovedReward)
+                    RewardListPartialChange.Empty()
                 } else {
                     val rewardModels = rewards.map {
                         RewardViewModel(it.id,
