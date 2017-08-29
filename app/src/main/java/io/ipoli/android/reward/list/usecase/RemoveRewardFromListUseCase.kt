@@ -29,16 +29,6 @@ class RemoveRewardFromListUseCase(private val jobQueue: JobQueue) : BaseRxUseCas
             val data = PersistableBundle()
             data.putString("reward_id", parameters.rewardToRemove.id)
             jobId = jobQueue.add(data, RemoveRewardJobService::class.java)
-//            val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-
-//            jobId = Random().nextInt()
-//            val job = JobInfo.Builder(jobId,
-//                ComponentName(context, RemoveRewardJobService::class.java))
-//                .setMinimumLatency(2500)
-//                .setOverrideDeadline(2500)
-//                .setExtras(data)
-//                .build()
-//            jobScheduler.schedule(job)
             if (newList.isEmpty()) {
                 Observable.just(RewardListPartialChange.Empty(parameters.rewardToRemove, indexOfRemovedReward))
             } else {
@@ -60,8 +50,6 @@ class RemoveRewardFromListUseCase(private val jobQueue: JobQueue) : BaseRxUseCas
 
     fun undo(parameters: UndoParameters): Observable<RewardListPartialChange> =
         Observable.defer {
-            //            val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-//            jobScheduler.cancel(jobId)
             jobQueue.remove(jobId)
             val newList = parameters.rewards.toMutableList()
             newList.add(parameters.removedRewardIndex, parameters.removedReward)
