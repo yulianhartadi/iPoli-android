@@ -3,6 +3,7 @@ package io.ipoli.android.reward.list
 import android.content.Context
 import dagger.Module
 import dagger.Provides
+import io.ipoli.android.common.jobservice.JobQueue
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.persistence.RealmPlayerRepository
 import io.ipoli.android.reward.RealmRewardRepository
@@ -15,7 +16,7 @@ import io.ipoli.android.reward.list.usecase.RemoveRewardFromListUseCase
  * on 8/2/17.
  */
 @Module
-class RewardListModule(val context: Context) {
+class RewardListModule(private val context: Context) {
 
     @Provides
     @RewardListScope
@@ -33,6 +34,11 @@ class RewardListModule(val context: Context) {
 
     @Provides
     @RewardListScope
-    fun provideRemoveRewardFromListUseCase(): RemoveRewardFromListUseCase =
-        RemoveRewardFromListUseCase(context)
+    fun provideJobQueue(): JobQueue =
+        JobQueue(context)
+
+    @Provides
+    @RewardListScope
+    fun provideRemoveRewardFromListUseCase(jobQueue: JobQueue): RemoveRewardFromListUseCase =
+        RemoveRewardFromListUseCase(jobQueue)
 }

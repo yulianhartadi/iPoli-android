@@ -10,13 +10,10 @@ import timber.log.Timber
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/28/17.
  */
-class DeleteRewardJobService : JobService() {
+class RemoveRewardJobService : JobService() {
 
 
     override fun onStartJob(jobParameters: JobParameters): Boolean {
-
-        Timber.d("Job Started")
-
         val rewardId = jobParameters.extras.getString("reward_id")
         val rewardRepo = RealmRewardRepository()
 

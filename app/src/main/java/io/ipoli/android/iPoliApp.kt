@@ -62,7 +62,7 @@ class iPoliApp : Application() {
 
 //
         val rewardRepository = RealmRewardRepository()
-        rewardRepository.save(Reward(name = "Reward 2", description = "desc1", price = 200)).subscribe()
+        rewardRepository.save(Reward(name = "Reward 1", description = "desc1", price = 200)).subscribe()
 
 //        val questRepository = RealmQuestRepository()
 //        val quest = Quest("Mystery", LocalDate.now(), Category.FUN)

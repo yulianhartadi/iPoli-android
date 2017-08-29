@@ -13,6 +13,7 @@ import io.ipoli.android.R
 import io.ipoli.android.challenge.list.ui.AutoUpdatableAdapter
 import io.ipoli.android.common.BaseController
 import io.ipoli.android.common.daggerComponent
+import io.ipoli.android.common.di.AppModule
 import io.ipoli.android.common.ui.visible
 import io.ipoli.android.reward.list.usecase.RemoveRewardFromListUseCase
 import io.reactivex.Observable

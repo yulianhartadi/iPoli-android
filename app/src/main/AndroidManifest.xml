@@ -44,7 +44,7 @@
             android:value="@string/facebook_app_id" />
 
         <service
-            android:name=".reward.jobservice.DeleteRewardJobService"
+            android:name=".reward.jobservice.RemoveRewardJobService"
             android:exported="true"
             android:permission="android.permission.BIND_JOB_SERVICE" />
     </application>

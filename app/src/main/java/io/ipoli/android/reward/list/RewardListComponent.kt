@@ -2,6 +2,7 @@ package io.ipoli.android.reward.list
 
 import dagger.Component
 import io.ipoli.android.common.BaseComponent
+import io.ipoli.android.common.di.AppModule
 import io.ipoli.android.common.di.ControllerComponent
 import javax.inject.Scope
 
