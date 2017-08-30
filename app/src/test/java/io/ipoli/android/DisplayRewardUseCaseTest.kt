@@ -7,6 +7,7 @@ import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.reward.*
 import io.ipoli.android.reward.list.usecase.DisplayRewardListUseCase
 import io.ipoli.android.reward.list.RewardListPartialChange
+import io.ipoli.android.reward.list.RewardListViewState
 import io.ipoli.android.util.RxSchedulersTestRule
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
@@ -45,11 +46,11 @@ class DisplayRewardUseCaseTest {
         observer.assertComplete()
         observer.assertNoErrors()
         observer.assertValueCount(2)
-        observer.assertValueAt(0, { it is RewardsLoadingPartialChange })
-        observer.assertValueAt(1, { it is RewardsLoadedPartialChange })
+        observer.assertValueAt(0, { it is RewardListPartialChange.Loading })
+        observer.assertValueAt(1, { it is RewardListPartialChange.DataLoaded })
         observer.assertValueAt(1, {
-            val state = it as RewardsLoadedPartialChange
-            state.data.size == 1
+            val state = it.computeNewState(RewardListViewState())
+            state.rewards.size == 1
         })
     }
 }
