@@ -4,7 +4,6 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'realm-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.getkeepsafe.dexcount'
-apply plugin: 'de.mannodermaus.android-junit5'
 
 android {
     compileSdkVersion 26
@@ -32,16 +31,6 @@ android {
 
 realm {
     syncEnabled = true
-}
-
-junitPlatform {
-    jupiterVersion "5.0.0-RC3"
-    vintageVersion "4.12.0-RC3"
-    filters {
-        engines {
-            include 'spek'
-        }
-    }
 }
 
 dependencies {
@@ -109,7 +98,8 @@ dependencies {
     testImplementation 'org.jetbrains.spek:spek-api:1.1.4'
     testImplementation 'org.jetbrains.spek:spek-junit-platform-engine:1.1.4'
     testImplementation 'org.jetbrains.spek:spek-subject-extension:1.1.4'
-    testImplementation junitJupiter()
+    testImplementation "org.junit.vintage:junit-vintage-engine:4.12.0-RC3"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.0.0-RC3"
     testImplementation 'org.amshove.kluent:kluent:1.28'
 }
 
