@@ -92,8 +92,6 @@ dependencies {
     testImplementation 'com.android.support.test:runner:1.0.0'
     testImplementation 'com.android.support.test:rules:1.0.0'
     testImplementation 'junit:junit:4.12'
-//    testImplementation 'org.mockito:mockito-inline:2.8.47'
-//    testImplementation 'com.nhaarman:mockito-kotlin-kt1.1:1.5.0'
 
     testImplementation 'org.jetbrains.spek:spek-api:1.1.4'
     testImplementation 'org.jetbrains.spek:spek-junit-platform-engine:1.1.4'
@@ -108,6 +106,9 @@ afterEvaluate {
         def name = it.name
 
         def copyTask = project.task(type: Copy, "copyKotlin${name.capitalize()}UnitTestClasses") {
+            from "build/tmp/kotlin-classes/debug"
+            into "build/intermediates/classes/debug"
+
             from "build/tmp/kotlin-classes/${name}UnitTest"
             into "build/intermediates/classes/test/$name"
         }
