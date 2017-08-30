@@ -74,7 +74,8 @@ class EditRewardUseCaseSpek : SubjectSpek<EditRewardUseCase>({
             }
 
             it("should have value") {
-                val expectedState = EditRewardViewState.Invalid(listOf(EditRewardViewState.ValidationError.EMPTY_NAME))
+                val validationErrors = listOf(EditRewardViewState.ValidationError.EMPTY_NAME)
+                val expectedState = EditRewardViewState.Invalid(validationErrors)
                 state `should equal` expectedState
             }
         }
