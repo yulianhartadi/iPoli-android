@@ -29,40 +29,26 @@ class EditRewardUseCaseSpek : SubjectSpek<EditRewardUseCase>({
     setupRxJava()
 
     describe("create Reward") {
-
-        val reward = createReward("reward 1")
-
-        val states = executeUseCase(reward)
+        val states = executeUseCase(createReward("reward 1"))
 
         checkForSingleState(states)
 
-        context("state") {
-
-            val state = states.first()
-            checkStateType(state, EditRewardViewState.Created::class)
-
-            checkStateValue(state, EditRewardViewState.Created)
-        }
+        checkFirstState(states,
+            EditRewardViewState.Created::class,
+            EditRewardViewState.Created)
     }
 
     describe("create Reward without name") {
 
-        val reward = createReward("")
-
-        val states = executeUseCase(reward)
+        val states = executeUseCase(createReward(""))
 
         checkForSingleState(states)
 
-        context("state") {
+        val validationErrors = listOf(EditRewardViewState.ValidationError.EMPTY_NAME)
 
-            val state = states.first()
-            checkStateType(state, EditRewardViewState.Invalid::class)
-
-            val validationErrors = listOf(EditRewardViewState.ValidationError.EMPTY_NAME)
-            val expectedState = EditRewardViewState.Invalid(validationErrors)
-
-            checkStateValue(state, expectedState)
-        }
+        checkFirstState(states,
+            EditRewardViewState.Invalid::class,
+            EditRewardViewState.Invalid(validationErrors))
     }
 
     describe("create Reward with too long name") {
@@ -72,15 +58,11 @@ class EditRewardUseCaseSpek : SubjectSpek<EditRewardUseCase>({
 
         checkForSingleState(states)
 
-        context("state") {
-            val state = states.first()
-            checkStateType(state, EditRewardViewState.Invalid::class)
+        val validationErrors = listOf(EditRewardViewState.ValidationError.NAME_TOO_LONG)
 
-            val validationErrors = listOf(EditRewardViewState.ValidationError.NAME_TOO_LONG)
-            val expectedState = EditRewardViewState.Invalid(validationErrors)
-
-            checkStateValue(state, expectedState)
-        }
+        checkFirstState(states,
+            EditRewardViewState.Invalid::class,
+            EditRewardViewState.Invalid(validationErrors))
     }
 
     describe("create Reward with too long description") {
@@ -88,17 +70,13 @@ class EditRewardUseCaseSpek : SubjectSpek<EditRewardUseCase>({
 
         checkForSingleState(states)
 
-        context("state") {
-            val state = states.first()
-            checkStateType(state, EditRewardViewState.Invalid::class)
+        val validationErrors = listOf(
+            EditRewardViewState.ValidationError.DESCRIPTION_TOO_LONG
+        )
 
-            val validationErrors = listOf(
-                EditRewardViewState.ValidationError.DESCRIPTION_TOO_LONG
-            )
-            val expectedState = EditRewardViewState.Invalid(validationErrors)
-
-            checkStateValue(state, expectedState)
-        }
+        checkFirstState(states,
+            EditRewardViewState.Invalid::class,
+            EditRewardViewState.Invalid(validationErrors))
     }
 
     describe("create Reward with empty name and long description") {
@@ -106,18 +84,14 @@ class EditRewardUseCaseSpek : SubjectSpek<EditRewardUseCase>({
 
         checkForSingleState(states)
 
-        context("state") {
-            val state = states.first()
-            checkStateType(state, EditRewardViewState.Invalid::class)
+        val validationErrors = listOf(
+            EditRewardViewState.ValidationError.EMPTY_NAME,
+            EditRewardViewState.ValidationError.DESCRIPTION_TOO_LONG
+        )
 
-            val validationErrors = listOf(
-                EditRewardViewState.ValidationError.EMPTY_NAME,
-                EditRewardViewState.ValidationError.DESCRIPTION_TOO_LONG
-            )
-            val expectedState = EditRewardViewState.Invalid(validationErrors)
-
-            checkStateValue(state, expectedState)
-        }
+        checkFirstState(states,
+            EditRewardViewState.Invalid::class,
+            EditRewardViewState.Invalid(validationErrors))
     }
 
     describe("create Reward with negative price") {
