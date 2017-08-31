@@ -119,7 +119,29 @@ class EditRewardUseCaseSpek : SubjectSpek<EditRewardUseCase>({
             checkStateValue(state, expectedState)
         }
     }
+
+    describe("create Reward with negative price") {
+        val states = executeUseCase(createReward("reward", price = -1))
+
+        checkForSingleState(states)
+
+        val validationErrors = listOf(
+            EditRewardViewState.ValidationError.NEGATIVE_PRICE
+        )
+
+        checkFirstState(states,
+            EditRewardViewState.Invalid::class,
+            EditRewardViewState.Invalid(validationErrors))
+    }
 })
+
+private fun <T : EditRewardViewState> SpecBody.checkFirstState(states: Iterable<EditRewardViewState>, stateType: KClass<T>, expected: EditRewardViewState) {
+    context("state") {
+        val state = states.first()
+        checkStateType(state, stateType)
+        checkStateValue(state, expected)
+    }
+}
 
 private fun SpecBody.checkStateValue(state: EditRewardViewState, expected: EditRewardViewState) {
     it("should have value") {
@@ -145,11 +167,12 @@ private fun SpecBody.checkStateCount(states: Iterable<EditRewardViewState>, coun
 private fun SubjectProviderDsl<EditRewardUseCase>.executeUseCase(reward: EditRewardViewModel) =
     subject.execute(Parameters(reward)).blockingIterable()
 
-private fun createReward(name: String, description: String = "desc", id: String = ""): EditRewardViewModel =
+private fun createReward(name: String, description: String = "desc",
+                         id: String = "", price: Int = 200): EditRewardViewModel =
     EditRewardViewModel(id,
         name,
         description,
-        200)
+        price)
 
 private fun setupRxJava() {
     RxAndroidPlugins.reset()

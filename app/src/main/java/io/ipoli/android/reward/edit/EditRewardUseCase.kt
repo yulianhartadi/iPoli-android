@@ -24,12 +24,18 @@ class EditRewardUseCase : BaseRxUseCase<Parameters, EditRewardViewState>() {
             100,
             EditRewardViewState.ValidationError.DESCRIPTION_TOO_LONG))
 
+        validationErrors.addIfNotNull(validateNonNegative(reward.price,
+            EditRewardViewState.ValidationError.NEGATIVE_PRICE))
+
         if (validationErrors.isNotEmpty()) {
             return Observable.just(EditRewardViewState.Invalid(validationErrors))
         }
 
         return Observable.just(EditRewardViewState.Created)
     }
+
+    private fun validateNonNegative(number: Int, error: EditRewardViewState.ValidationError): EditRewardViewState.ValidationError? =
+        if (number < 0) error else null
 
     private fun validateLength(text: String, maxLength: Int, error: EditRewardViewState.ValidationError): EditRewardViewState.ValidationError? =
         if (text.length > maxLength) error else null
@@ -49,7 +55,8 @@ sealed class EditRewardViewState {
     enum class ValidationError {
         EMPTY_NAME,
         NAME_TOO_LONG,
-        DESCRIPTION_TOO_LONG
+        DESCRIPTION_TOO_LONG,
+        NEGATIVE_PRICE
     }
 
     object Created : EditRewardViewState()
