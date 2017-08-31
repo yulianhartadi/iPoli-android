@@ -29,13 +29,13 @@ class EditRewardUseCaseSpek : SubjectSpek<EditRewardUseCase>({
     setupRxJava()
 
     describe("create Reward") {
-        val states = executeUseCase(createReward("reward 1"))
+        val states = executeUseCase(createReward())
 
         checkForSingleState(states)
 
         checkFirstState(states,
-            EditRewardViewState.Created::class,
-            EditRewardViewState.Created)
+            EditRewardViewState.Added::class,
+            EditRewardViewState.Added)
     }
 
     describe("create Reward without name") {
@@ -66,7 +66,7 @@ class EditRewardUseCaseSpek : SubjectSpek<EditRewardUseCase>({
     }
 
     describe("create Reward with too long description") {
-        val states = executeUseCase(createReward("reward", "s".repeat(101)))
+        val states = executeUseCase(createReward(description = "s".repeat(101)))
 
         checkForSingleState(states)
 
@@ -95,7 +95,7 @@ class EditRewardUseCaseSpek : SubjectSpek<EditRewardUseCase>({
     }
 
     describe("create Reward with negative price") {
-        val states = executeUseCase(createReward("reward", price = -1))
+        val states = executeUseCase(createReward(price = -1))
 
         checkForSingleState(states)
 
@@ -106,6 +106,17 @@ class EditRewardUseCaseSpek : SubjectSpek<EditRewardUseCase>({
         checkFirstState(states,
             EditRewardViewState.Invalid::class,
             EditRewardViewState.Invalid(validationErrors))
+    }
+
+    describe("edit Reward") {
+        val useCase = EditRewardUseCase("123")
+        val states = useCase.execute(Parameters(createReward())).blockingIterable()
+
+        checkForSingleState(states)
+
+        checkFirstState(states,
+            EditRewardViewState.Updated::class,
+            EditRewardViewState.Updated)
     }
 })
 
@@ -141,12 +152,13 @@ private fun SpecBody.checkStateCount(states: Iterable<EditRewardViewState>, coun
 private fun SubjectProviderDsl<EditRewardUseCase>.executeUseCase(reward: EditRewardViewModel) =
     subject.execute(Parameters(reward)).blockingIterable()
 
-private fun createReward(name: String, description: String = "desc",
-                         id: String = "", price: Int = 200): EditRewardViewModel =
-    EditRewardViewModel(id,
+private fun createReward(name: String = "reward", description: String = "desc",
+                         price: Int = 200): EditRewardViewModel =
+    EditRewardViewModel(
         name,
         description,
-        price)
+        price
+    )
 
 private fun setupRxJava() {
     RxAndroidPlugins.reset()

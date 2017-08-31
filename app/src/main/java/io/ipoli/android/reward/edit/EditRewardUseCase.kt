@@ -7,7 +7,7 @@ import io.reactivex.Observable
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/29/17.
  */
-class EditRewardUseCase : BaseRxUseCase<Parameters, EditRewardViewState>() {
+class EditRewardUseCase(private val rewardId: String = "") : BaseRxUseCase<Parameters, EditRewardViewState>() {
     override fun createObservable(parameters: Parameters): Observable<EditRewardViewState> {
         val reward = parameters.reward
 
@@ -31,7 +31,11 @@ class EditRewardUseCase : BaseRxUseCase<Parameters, EditRewardViewState>() {
             return Observable.just(EditRewardViewState.Invalid(validationErrors))
         }
 
-        return Observable.just(EditRewardViewState.Created)
+        return if (rewardId.isNotEmpty()) {
+            Observable.just(EditRewardViewState.Updated)
+        } else {
+            Observable.just(EditRewardViewState.Added)
+        }
     }
 
     private fun validateNonNegative(number: Int, error: EditRewardViewState.ValidationError): EditRewardViewState.ValidationError? =
@@ -59,7 +63,8 @@ sealed class EditRewardViewState {
         NEGATIVE_PRICE
     }
 
-    object Created : EditRewardViewState()
+    object Added : EditRewardViewState()
+    object Updated : EditRewardViewState()
 
     data class Invalid(val validationErrors: List<ValidationError>) : EditRewardViewState()
 }
