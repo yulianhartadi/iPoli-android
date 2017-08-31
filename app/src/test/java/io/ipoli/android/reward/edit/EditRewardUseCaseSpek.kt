@@ -1,11 +1,13 @@
 package io.ipoli.android.reward.edit
 
+import io.ipoli.android.common.jobservice.JobQueue
 import io.ipoli.android.util.RxSchedulersSpek
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.Schedulers
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should equal`
+import org.amshove.kluent.mock
 import org.jetbrains.spek.api.dsl.SpecBody
 import org.jetbrains.spek.api.dsl.context
 import org.jetbrains.spek.api.dsl.describe
@@ -21,7 +23,9 @@ import kotlin.reflect.KClass
  */
 class EditRewardUseCaseSpek : SubjectSpek<EditRewardUseCase>({
 
-    subject { EditRewardUseCase() }
+    val jobQueue = mock<JobQueue>()
+
+    subject { EditRewardUseCase(jobQueue) }
 
     include(RxSchedulersSpek)
 
@@ -109,7 +113,7 @@ class EditRewardUseCaseSpek : SubjectSpek<EditRewardUseCase>({
     }
 
     describe("edit Reward") {
-        val useCase = EditRewardUseCase("123")
+        val useCase = EditRewardUseCase(jobQueue, "123")
         val states = useCase.execute(Parameters(createReward())).blockingIterable()
 
         checkForSingleState(states)

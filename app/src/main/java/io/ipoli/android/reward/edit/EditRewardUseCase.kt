@@ -1,56 +1,40 @@
 package io.ipoli.android.reward.edit
 
 import io.ipoli.android.common.BaseRxUseCase
+import io.ipoli.android.common.Validator
+import io.ipoli.android.common.jobservice.JobQueue
+import io.ipoli.android.reward.edit.EditRewardViewState.ValidationError.*
 import io.reactivex.Observable
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 8/29/17.
  */
-class EditRewardUseCase(private val rewardId: String = "") : BaseRxUseCase<Parameters, EditRewardViewState>() {
+class EditRewardUseCase(private val jobQueue: JobQueue, private val rewardId: String = "") : BaseRxUseCase<Parameters, EditRewardViewState>() {
+
     override fun createObservable(parameters: Parameters): Observable<EditRewardViewState> {
         val reward = parameters.reward
 
-        val validationErrors = mutableListOf<EditRewardViewState.ValidationError>()
+        val validationErrors = Validator<EditRewardViewModel, EditRewardViewState.ValidationError> {
+            "name"{
+                not { name.isEmpty() } error EMPTY_NAME
+                not { name.length > 50 } error NAME_TOO_LONG
+            }
+            "description" {
+                not { description.length > 100 } error DESCRIPTION_TOO_LONG
+            }
+            "price" {
+                not { price < 0 } error NEGATIVE_PRICE
+            }
+        }.validate(reward)
 
-        validationErrors.addIfNotNull(validateNotEmpty(reward.name,
-            EditRewardViewState.ValidationError.EMPTY_NAME))
-
-        validationErrors.addIfNotNull(validateLength(reward.name,
-            50,
-            EditRewardViewState.ValidationError.NAME_TOO_LONG))
-
-        validationErrors.addIfNotNull(validateLength(reward.description,
-            100,
-            EditRewardViewState.ValidationError.DESCRIPTION_TOO_LONG))
-
-        validationErrors.addIfNotNull(validateNonNegative(reward.price,
-            EditRewardViewState.ValidationError.NEGATIVE_PRICE))
-
-        if (validationErrors.isNotEmpty()) {
-            return Observable.just(EditRewardViewState.Invalid(validationErrors))
-        }
-
-        return if (rewardId.isNotEmpty()) {
-            Observable.just(EditRewardViewState.Updated)
+        return if (validationErrors.isNotEmpty()) {
+            Observable.just(EditRewardViewState.Invalid(validationErrors))
+        } else if (rewardId.isNotEmpty()) {
+            Observable.just<EditRewardViewState>(EditRewardViewState.Updated)
         } else {
-            Observable.just(EditRewardViewState.Added)
+            Observable.just<EditRewardViewState>(EditRewardViewState.Added)
         }
-    }
-
-    private fun validateNonNegative(number: Int, error: EditRewardViewState.ValidationError): EditRewardViewState.ValidationError? =
-        if (number < 0) error else null
-
-    private fun validateLength(text: String, maxLength: Int, error: EditRewardViewState.ValidationError): EditRewardViewState.ValidationError? =
-        if (text.length > maxLength) error else null
-
-    private fun validateNotEmpty(text: String, error: EditRewardViewState.ValidationError): EditRewardViewState.ValidationError? =
-        if (text.isEmpty()) error else null
-}
-
-private fun <E> MutableList<E>.addIfNotNull(element: E?) {
-    if (element != null) {
-        add(element)
     }
 }
 
