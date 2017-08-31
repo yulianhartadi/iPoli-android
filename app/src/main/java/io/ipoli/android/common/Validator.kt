@@ -18,24 +18,28 @@ class Validator<in ValueType, out ErrorType>(private val rules: Map<String, Prop
 
 
     class Builder<ValueType, ErrorType> {
-        private val childValidations: MutableMap<String, PropertyValidator<ValueType, ErrorType>> = mutableMapOf()
+        private val propertyValidators: MutableMap<String, PropertyValidator<ValueType, ErrorType>> = mutableMapOf()
 
         operator fun String.invoke(init: PropertyValidator<ValueType, ErrorType>.() -> Unit) {
-            childValidations.put(this, PropertyValidator<ValueType, ErrorType>().apply(init))
+            propertyValidators.put(this, PropertyValidator<ValueType, ErrorType>().apply(init))
         }
 
         fun build(): Validator<ValueType, ErrorType> {
-            return Validator(childValidations)
+            return Validator(propertyValidators)
         }
     }
 
     class PropertyValidator<ValueType, ErrorType> {
         internal var validations: MutableList<Pair<ValueType.() -> Boolean, ErrorType>> = mutableListOf()
 
-        fun not(validate: ValueType.() -> Boolean) = validate
+        fun When(validate: ValueType.() -> Boolean) = validate
 
         infix fun (ValueType.() -> Boolean).error(error: ErrorType) {
             validations.add(this to error)
         }
     }
+}
+
+fun <T, ErrorType> T.validate(init: Validator.Builder<T, ErrorType>.() -> Unit): List<ErrorType> {
+    return Validator(init).validate(this)
 }

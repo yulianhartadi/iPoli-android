@@ -1,8 +1,8 @@
 package io.ipoli.android.reward.edit
 
 import io.ipoli.android.common.BaseRxUseCase
-import io.ipoli.android.common.Validator
 import io.ipoli.android.common.jobservice.JobQueue
+import io.ipoli.android.common.validate
 import io.ipoli.android.reward.edit.EditRewardViewState.ValidationError.*
 import io.reactivex.Observable
 
@@ -15,25 +15,22 @@ class EditRewardUseCase(private val jobQueue: JobQueue, private val rewardId: St
     override fun createObservable(parameters: Parameters): Observable<EditRewardViewState> {
         val reward = parameters.reward
 
-        val validationErrors = Validator<EditRewardViewModel, EditRewardViewState.ValidationError> {
-            "name"{
-                not { name.isEmpty() } error EMPTY_NAME
-                not { name.length > 50 } error NAME_TOO_LONG
+        val validationErrors = reward.validate<EditRewardViewModel, EditRewardViewState.ValidationError> {
+            "name" {
+                When { name.isEmpty() } error EMPTY_NAME
+                When { name.length > 50 } error NAME_TOO_LONG
             }
             "description" {
-                not { description.length > 100 } error DESCRIPTION_TOO_LONG
+                When { description.length > 100 } error DESCRIPTION_TOO_LONG
             }
             "price" {
-                not { price < 0 } error NEGATIVE_PRICE
+                When { price < 0 } error NEGATIVE_PRICE
             }
-        }.validate(reward)
-
-        return if (validationErrors.isNotEmpty()) {
-            Observable.just(EditRewardViewState.Invalid(validationErrors))
-        } else if (rewardId.isNotEmpty()) {
-            Observable.just<EditRewardViewState>(EditRewardViewState.Updated)
-        } else {
-            Observable.just<EditRewardViewState>(EditRewardViewState.Added)
+        }
+        return when {
+            validationErrors.isNotEmpty() -> Observable.just(EditRewardViewState.Invalid(validationErrors))
+            rewardId.isNotEmpty() -> Observable.just<EditRewardViewState>(EditRewardViewState.Updated)
+            else -> Observable.just<EditRewardViewState>(EditRewardViewState.Added)
         }
     }
 }
