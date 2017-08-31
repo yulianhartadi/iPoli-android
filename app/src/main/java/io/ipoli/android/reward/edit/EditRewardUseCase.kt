@@ -1,7 +1,6 @@
 package io.ipoli.android.reward.edit
 
 import io.ipoli.android.common.BaseRxUseCase
-import io.ipoli.android.reward.list.RewardViewModel
 import io.reactivex.Observable
 
 /**
@@ -14,19 +13,23 @@ class EditRewardUseCase : BaseRxUseCase<Parameters, EditRewardViewState>() {
         if (reward.name.isEmpty()) {
             return Observable.just(EditRewardViewState.Invalid(listOf(EditRewardViewState.ValidationError.EMPTY_NAME)))
         }
-        return Observable.just(EditRewardViewState.Created())
+        if (reward.name.length > 50) {
+            return Observable.just(EditRewardViewState.Invalid(listOf(EditRewardViewState.ValidationError.NAME_TOO_LONG)))
+        }
+        return Observable.just(EditRewardViewState.Created)
     }
 }
 
-interface EditRewardViewState {
+sealed class EditRewardViewState {
 
     enum class ValidationError {
-        EMPTY_NAME
+        EMPTY_NAME,
+        NAME_TOO_LONG
     }
 
-    class Created : EditRewardViewState
+    object Created : EditRewardViewState()
 
-    data class Invalid(val validationErrors: List<ValidationError>) : EditRewardViewState
+    data class Invalid(val validationErrors: List<ValidationError>) : EditRewardViewState()
 }
 
 data class Parameters(val reward: EditRewardViewModel)
