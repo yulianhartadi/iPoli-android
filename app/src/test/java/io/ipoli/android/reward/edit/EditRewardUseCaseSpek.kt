@@ -82,6 +82,43 @@ class EditRewardUseCaseSpek : SubjectSpek<EditRewardUseCase>({
             checkStateValue(state, expectedState)
         }
     }
+
+    describe("create Reward with too long description") {
+        val states = executeUseCase(createReward("reward", "s".repeat(101)))
+
+        checkForSingleState(states)
+
+        context("state") {
+            val state = states.first()
+            checkStateType(state, EditRewardViewState.Invalid::class)
+
+            val validationErrors = listOf(
+                EditRewardViewState.ValidationError.DESCRIPTION_TOO_LONG
+            )
+            val expectedState = EditRewardViewState.Invalid(validationErrors)
+
+            checkStateValue(state, expectedState)
+        }
+    }
+
+    describe("create Reward with empty name and long description") {
+        val states = executeUseCase(createReward("", "s".repeat(101)))
+
+        checkForSingleState(states)
+
+        context("state") {
+            val state = states.first()
+            checkStateType(state, EditRewardViewState.Invalid::class)
+
+            val validationErrors = listOf(
+                EditRewardViewState.ValidationError.EMPTY_NAME,
+                EditRewardViewState.ValidationError.DESCRIPTION_TOO_LONG
+            )
+            val expectedState = EditRewardViewState.Invalid(validationErrors)
+
+            checkStateValue(state, expectedState)
+        }
+    }
 })
 
 private fun SpecBody.checkStateValue(state: EditRewardViewState, expected: EditRewardViewState) {
