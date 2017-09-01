@@ -8,6 +8,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegate
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
@@ -17,6 +19,7 @@ import io.ipoli.android.challenge.list.ui.AutoUpdatableAdapter
 import io.ipoli.android.common.BaseController
 import io.ipoli.android.common.daggerComponent
 import io.ipoli.android.common.ui.visible
+import io.ipoli.android.reward.edit.EditRewardController
 import io.ipoli.android.reward.list.usecase.RemoveRewardFromListUseCase
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -52,7 +55,15 @@ class RewardListController : BaseController<RewardListController, RewardListPres
         rewardList.setHasFixedSize(true)
         rewardList.layoutManager = LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
 
-        adapter = RewardListAdapter(removeRewardSubject)
+        adapter = RewardListAdapter({ model ->
+            val executingRouter = parentController?.router
+            val handler = FadeChangeHandler()
+            executingRouter?.pushController(RouterTransaction.with(EditRewardController(model.id))
+                .pushChangeHandler(handler)
+                .popChangeHandler(handler))
+
+//            navigator.showEditReward(model.id)
+        }, removeRewardSubject)
         rewardList.adapter = adapter
 
 //        val delegatesManager = AdapterDelegatesManager<List<RewardViewModel>>()
@@ -123,7 +134,7 @@ class RewardListController : BaseController<RewardListController, RewardListPres
         }
     }
 
-    class RewardListAdapter(val deleteSubject: PublishSubject<RemoveRewardFromListUseCase.RemoveParameters>) :
+    class RewardListAdapter(private val editClickListener: (RewardViewModel) -> Unit, val deleteSubject: PublishSubject<RemoveRewardFromListUseCase.RemoveParameters>) :
         RecyclerView.Adapter<RewardListAdapter.RewardViewHolder>(), AutoUpdatableAdapter {
 
         var rewardList: MutableList<RewardViewModel> by Delegates.observable(mutableListOf()) { _, old, new ->
@@ -149,6 +160,7 @@ class RewardListController : BaseController<RewardListController, RewardListPres
                         .subscribe(deleteSubject)
                     itemView.name.text = name
                     itemView.description.text = description
+                    itemView.edit.setOnClickListener { editClickListener(rewardView) }
                 }
             }
         }

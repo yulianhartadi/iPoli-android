@@ -3,6 +3,7 @@ package io.ipoli.android.reward.edit
 import io.ipoli.android.common.BaseRxUseCase
 import io.ipoli.android.common.jobservice.JobQueue
 import io.ipoli.android.common.validate
+import io.ipoli.android.reward.Reward
 import io.ipoli.android.reward.edit.EditRewardViewState.ValidationError.*
 import io.reactivex.Observable
 
@@ -26,6 +27,14 @@ class EditRewardUseCase(private val jobQueue: JobQueue, private val rewardId: St
             "price" {
                 When { price < 0 } error NEGATIVE_PRICE
             }
+        }
+        if (validationErrors.isEmpty()) {
+            jobQueue.save(
+                Reward(rewardId,
+                    reward.name,
+                    reward.description,
+                    reward.price)
+            )
         }
         return when {
             validationErrors.isNotEmpty() -> Observable.just(EditRewardViewState.Invalid(validationErrors))

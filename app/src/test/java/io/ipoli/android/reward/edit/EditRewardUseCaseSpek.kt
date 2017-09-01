@@ -24,7 +24,6 @@ import kotlin.reflect.KClass
 class EditRewardUseCaseSpek : SubjectSpek<EditRewardUseCase>({
 
     val jobQueue = mock<JobQueue>()
-
     subject { EditRewardUseCase(jobQueue) }
 
     include(RxSchedulersSpek)

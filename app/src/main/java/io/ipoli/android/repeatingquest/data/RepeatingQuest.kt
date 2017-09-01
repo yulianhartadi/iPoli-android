@@ -4,14 +4,12 @@ import io.ipoli.android.Constants
 import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.TimePreference
-import io.ipoli.android.common.datetime.toStartOfDayUTCMillis
 import io.ipoli.android.common.persistence.PersistedModel
 import io.ipoli.android.quest.data.*
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import net.fortuna.ical4j.model.Recur
-import org.threeten.bp.LocalDate
 import java.text.ParseException
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -57,7 +55,7 @@ open class RepeatingQuest : RealmObject, PersistedModel {
 
     var completedAt: Long? = null
 
-    var recurrence: Recurrence = Recurrence.create()
+    var recurrence: Recurrence? = Recurrence.create()
 
     var notes: RealmList<Note>? = null
         get() {
@@ -102,13 +100,9 @@ open class RepeatingQuest : RealmObject, PersistedModel {
     val isCompleted: Boolean
         get() = completedAtDate != null
 
-    fun shouldBeScheduledAfter(date: LocalDate): Boolean {
-        return recurrence.dtendDate == null || recurrence.dtend!! >= date.toStartOfDayUTCMillis()
-    }
-
     val frequency: Int
         get() {
-            val recurrence = recurrence
+            val recurrence = recurrence!!
             if (recurrence.isFlexible) {
                 return recurrence.flexibleCount
             }
@@ -134,9 +128,6 @@ open class RepeatingQuest : RealmObject, PersistedModel {
     fun getDuration(): Int {
         return if (duration != null) duration!! else 0
     }
-
-    val isFlexible: Boolean
-        get() = recurrence.isFlexible
 
 
     val textNotes: List<Note>

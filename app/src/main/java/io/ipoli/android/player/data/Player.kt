@@ -17,6 +17,6 @@ open class Player(
     var coins: Int = 0,
     var experience: Int = 0,
     var authProvider: AuthProvider? = null,
-    var inventory: Inventory = Inventory(),
+    var inventory: Inventory? = Inventory(),
     var avatarCode: Int = Avatar.IPOLI_CLASSIC.code
 ) : RealmObject(), PersistedModel

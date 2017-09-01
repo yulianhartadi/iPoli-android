@@ -34,8 +34,8 @@ class RewardListModule(private val context: Context) {
 
     @Provides
     @RewardListScope
-    fun provideJobQueue(): JobQueue =
-        JobQueue(context)
+    fun provideJobQueue(rewardRepository: RewardRepository): JobQueue =
+        JobQueue(rewardRepository)
 
     @Provides
     @RewardListScope

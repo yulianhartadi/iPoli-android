@@ -14,7 +14,7 @@ class BuyAvatarUseCase(private val playerRepository: PlayerRepository) : BaseRxU
     override fun createObservable(parameters: AvatarViewModel): Observable<AvatarListPartialChange> =
         playerRepository.find()
             .flatMap { player ->
-                player.inventory.addAvatar(parameters.code, LocalDate.now())
+                player.inventory!!.addAvatar(parameters.code, LocalDate.now())
                 playerRepository.save(player)
             }
             .map {

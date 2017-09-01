@@ -1,17 +1,11 @@
 package io.ipoli.android.reward.list.usecase
 
-import android.app.job.JobInfo
-import android.app.job.JobScheduler
-import android.content.ComponentName
-import android.content.Context
 import android.os.PersistableBundle
 import io.ipoli.android.common.BaseRxUseCase
 import io.ipoli.android.common.jobservice.JobQueue
-import io.ipoli.android.reward.jobservice.RemoveRewardJobService
 import io.ipoli.android.reward.list.RewardListPartialChange
 import io.ipoli.android.reward.list.RewardViewModel
 import io.reactivex.Observable
-import java.util.*
 
 
 /**
@@ -28,7 +22,7 @@ class RemoveRewardFromListUseCase(private val jobQueue: JobQueue) : BaseRxUseCas
             val newList = parameters.rewards.filter { it != parameters.rewardToRemove }
             val data = PersistableBundle()
             data.putString("reward_id", parameters.rewardToRemove.id)
-            jobId = jobQueue.add(data, RemoveRewardJobService::class.java)
+//            jobId = jobQueue.add(data, RemoveRewardJobService::class.java)
             if (newList.isEmpty()) {
                 Observable.just(RewardListPartialChange.Empty(parameters.rewardToRemove, indexOfRemovedReward))
             } else {
@@ -50,7 +44,7 @@ class RemoveRewardFromListUseCase(private val jobQueue: JobQueue) : BaseRxUseCas
 
     fun undo(parameters: UndoParameters): Observable<RewardListPartialChange> =
         Observable.defer {
-            jobQueue.remove(jobId)
+//            jobQueue.remove(jobId)
             val newList = parameters.rewards.toMutableList()
             newList.add(parameters.removedRewardIndex, parameters.removedReward)
             Observable.just(RewardListPartialChange.UndoRemovedReward(newList))

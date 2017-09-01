@@ -101,7 +101,7 @@ abstract class BaseRealmRepository<T> : Repository<T> where T : PersistedModel, 
             Realm.getDefaultInstance().use {
                 it.executeTransaction {
                     val result = it.where(getModelClass()).equalTo("id", id).findFirst()
-                    result.deleteFromRealm()
+                    result?.deleteFromRealm()
                 }
                 emitter.onComplete()
             }

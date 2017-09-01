@@ -49,7 +49,7 @@ class DisplayRepeatingQuestListUseCase(private val repeatingQuestRepository: Rep
             currentPeriod.scheduledCount,
             currentPeriod.completedCount,
             currentPeriod.remainingCount,
-            repeatingQuest.recurrence.recurrenceType)
+            repeatingQuest.recurrence!!.recurrenceType)
     }
 
     private fun getNextScheduledDate(quests: List<Quest>): LocalDate? {
@@ -71,7 +71,7 @@ class DisplayRepeatingQuestListUseCase(private val repeatingQuestRepository: Rep
 
         val result = ArrayList<PeriodHistory>()
         val frequency = repeatingQuest.frequency
-        val pairs = if (repeatingQuest.recurrence.recurrenceType === Recurrence.RepeatType.MONTHLY)
+        val pairs = if (repeatingQuest.recurrence!!.recurrenceType === Recurrence.RepeatType.MONTHLY)
             DateUtils.getBoundsFor4MonthsInThePast(currentDate)
         else
             DateUtils.getBoundsFor4WeeksInThePast(currentDate)

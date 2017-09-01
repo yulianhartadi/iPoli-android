@@ -1,11 +1,9 @@
 package io.ipoli.android.player.data
 
-import io.realm.RealmObject
-import io.ipoli.android.R.string.avatars
-import io.ipoli.android.R.string.pets
 import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.store.avatars.data.Avatar
 import io.realm.RealmList
+import io.realm.RealmObject
 import org.threeten.bp.LocalDate
 
 
@@ -13,15 +11,13 @@ import org.threeten.bp.LocalDate
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 8/22/17.
  */
-open class Inventory : RealmObject {
+open class Inventory() : RealmObject() {
 
     var powerUps: RealmList<InventoryItem> = RealmList()
     var pets: RealmList<InventoryItem> = RealmList()
     var avatars: RealmList<InventoryItem> = RealmList()
 
-    constructor()
-
-//    fun addPowerUp(powerUp: PowerUp, expirationDate: LocalDate) {
+    //    fun addPowerUp(powerUp: PowerUp, expirationDate: LocalDate) {
 //        getPowerUps().put(powerUp.code, toMillis(expirationDate))
 //    }
 //
