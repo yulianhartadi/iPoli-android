@@ -15,13 +15,14 @@ import org.junit.runner.RunWith
 
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com> on 7/10/17.
- * This test is not executing due to this: https://github.com/realm/realm-java/issues/4662 & https://github.com/realm/realm-java/pull/4883
+ * Created by Venelin Valkov <venelin@ipoli.io>
+ * on 7/10/17.
  */
 @RunWith(AndroidJUnit4::class)
 class RewardListTest {
 
-    @Rule @JvmField
+    @Rule
+    @JvmField
     val testRule = ActivityTestRule<MainActivity>(MainActivity::class.java)
 
     private lateinit var router: Router

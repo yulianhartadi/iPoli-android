@@ -18,7 +18,7 @@ import org.jetbrains.spek.subject.dsl.SubjectProviderDsl
 import kotlin.reflect.KClass
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/29/17.
  */
 class EditRewardUseCaseSpek : SubjectSpek<EditRewardUseCase>({

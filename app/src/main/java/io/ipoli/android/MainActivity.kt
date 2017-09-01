@@ -12,7 +12,7 @@ import io.ipoli.android.player.ui.SignInController
 import javax.inject.Inject
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 7/6/17.
  */
 class MainActivity : AppCompatActivity() {

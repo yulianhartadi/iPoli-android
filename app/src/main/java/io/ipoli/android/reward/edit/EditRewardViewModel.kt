@@ -1,7 +1,7 @@
 package io.ipoli.android.reward.edit
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/30/17.
  */
 data class EditRewardViewModel(val name: String,

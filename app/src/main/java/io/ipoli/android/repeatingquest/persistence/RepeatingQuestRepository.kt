@@ -5,7 +5,7 @@ import io.ipoli.android.common.persistence.Repository
 import io.ipoli.android.repeatingquest.data.RepeatingQuest
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/22/17.
  */
 interface RepeatingQuestRepository : Repository<RepeatingQuest> {

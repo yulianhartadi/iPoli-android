@@ -10,7 +10,7 @@ import io.ipoli.android.store.StoreController
 import io.ipoli.android.store.avatars.AvatarListController
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/2/17.
  */
 class Navigator(private val router: Router) {

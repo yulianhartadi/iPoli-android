@@ -17,7 +17,7 @@ import io.realm.SyncCredentials
 import io.realm.SyncUser
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/17/17.
  */
 class SignInUseCase(private val playerRepository: PlayerRepository) : BaseRxUseCase<SignInRequest, SignInStatePartialChange>() {

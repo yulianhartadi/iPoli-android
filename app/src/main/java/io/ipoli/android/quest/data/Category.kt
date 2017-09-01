@@ -6,7 +6,7 @@ import android.support.annotation.DrawableRes
 import io.ipoli.android.R
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/20/17.
  */
 enum class Category(@param:ColorRes val color50: Int,

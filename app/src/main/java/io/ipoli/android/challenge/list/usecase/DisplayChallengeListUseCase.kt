@@ -6,7 +6,7 @@ import io.ipoli.android.common.SimpleRxUseCase
 import io.reactivex.Observable
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/23/17.
  */
 class DisplayChallengeListUseCase(private val challengeRepository: ChallengeRepository) : SimpleRxUseCase<ChallengeListViewState>() {

@@ -14,7 +14,7 @@ import org.threeten.bp.LocalDate
 import java.util.*
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/23/17.
  */
 open class Challenge : RealmObject, PersistedModel {

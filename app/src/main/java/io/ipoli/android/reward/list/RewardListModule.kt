@@ -12,7 +12,7 @@ import io.ipoli.android.reward.list.usecase.DisplayRewardListUseCase
 import io.ipoli.android.reward.list.usecase.RemoveRewardFromListUseCase
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/2/17.
  */
 @Module

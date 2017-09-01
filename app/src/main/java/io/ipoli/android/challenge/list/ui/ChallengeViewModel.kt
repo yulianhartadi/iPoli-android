@@ -5,7 +5,7 @@ import io.ipoli.android.challenge.data.Challenge
 import org.threeten.bp.LocalDate
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/23/17.
  */
 data class ChallengeViewModel(val name: String,

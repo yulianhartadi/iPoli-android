@@ -13,11 +13,11 @@ import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.navigator
-import io.ipoli.android.reward.list.RewardListController
+import io.ipoli.android.quest.calendar.CalendarController
 import kotlinx.android.synthetic.main.controller_home.view.*
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/19/17.
  */
 class HomeController : Controller(), NavigationView.OnNavigationItemSelectedListener {
@@ -64,7 +64,7 @@ class HomeController : Controller(), NavigationView.OnNavigationItemSelectedList
         val handler = FadeChangeHandler()
         val childRouter = getChildRouter(view.controllerContainer, null)
         childRouter.setRoot(
-            RouterTransaction.with(RewardListController())
+            RouterTransaction.with(CalendarController())
                 .pushChangeHandler(handler)
                 .popChangeHandler(handler)
         )

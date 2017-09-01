@@ -11,7 +11,7 @@ import io.ipoli.android.reward.edit.di.DaggerEditRewardComponent
 import io.ipoli.android.reward.edit.di.EditRewardComponent
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 7/7/17.
  */
 class EditRewardController(val rewardId: String = "") : BaseController<EditRewardController, EditRewardPresenter, EditRewardComponent>() {

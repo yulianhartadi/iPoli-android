@@ -8,7 +8,7 @@ import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.iPoliApp
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/2/17.
  */
 val Controller.daggerComponent: ControllerComponent

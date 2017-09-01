@@ -31,7 +31,7 @@ import kotlinx.android.synthetic.main.view_loading.view.*
 import timber.log.Timber
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/22/17.
  */
 class RepeatingQuestListController : BaseController<RepeatingQuestListController, RepeatingQuestListPresenter, RepeatingQuestListComponent>() {

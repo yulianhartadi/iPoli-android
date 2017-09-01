@@ -4,7 +4,7 @@ import io.ipoli.android.common.persistence.BaseRealmRepository
 import io.ipoli.android.common.persistence.Repository
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 7/7/17.
  */
 interface RewardRepository : Repository<Reward> {}

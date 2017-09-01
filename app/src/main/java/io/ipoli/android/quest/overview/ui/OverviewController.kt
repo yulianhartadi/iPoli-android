@@ -37,7 +37,7 @@ import org.threeten.bp.LocalDate
 
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/20/17.
  */
 class OverviewController : BaseController<OverviewController, OverviewPresenter, OverviewComponent>() {

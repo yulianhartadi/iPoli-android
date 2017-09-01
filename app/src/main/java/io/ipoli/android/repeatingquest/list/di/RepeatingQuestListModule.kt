@@ -7,7 +7,7 @@ import io.ipoli.android.repeatingquest.persistence.RealmRepeatingQuestRepository
 import io.ipoli.android.repeatingquest.persistence.RepeatingQuestRepository
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/22/17.
  */
 @Module

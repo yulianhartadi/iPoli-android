@@ -15,7 +15,7 @@ import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/13/17.
  */
 class FacebookAuth private constructor(private val controller: Controller) : RxSocialAuth {

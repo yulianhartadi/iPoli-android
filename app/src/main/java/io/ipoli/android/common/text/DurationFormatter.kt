@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit
 
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/21/17.
  */
 object DurationFormatter {

@@ -3,7 +3,7 @@ package io.ipoli.android.common.ui
 import android.view.View
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/27/17.
  */
 var View.visible: Boolean

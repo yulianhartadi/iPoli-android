@@ -19,7 +19,7 @@ import io.reactivex.subjects.Subject
 import java.net.ConnectException
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/14/17.
  */
 class GoogleAuth private constructor(private val controller: Controller) : RxSocialAuth {

@@ -22,7 +22,7 @@ import timber.log.Timber
 import java.util.*
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 7/7/17.
  */
 class iPoliApp : Application() {

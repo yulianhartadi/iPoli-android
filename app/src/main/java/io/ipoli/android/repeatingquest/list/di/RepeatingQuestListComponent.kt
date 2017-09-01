@@ -8,7 +8,7 @@ import io.ipoli.android.repeatingquest.list.ui.RepeatingQuestListController
 import javax.inject.Scope
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/22/17.
  */
 @RepeatingQuestListScope

@@ -4,7 +4,7 @@ import com.hannesdorfmann.mosby3.mvi.MviPresenter
 import com.hannesdorfmann.mosby3.mvp.MvpView
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/27/17.
  */
 interface BaseComponent<V : MvpView, out P : MviPresenter<V, *>> {

@@ -19,7 +19,7 @@ import org.junit.Rule
 import org.junit.Test
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/17/17.
  */
 class SignInUseCaseTest {

@@ -5,7 +5,7 @@ import android.util.TypedValue
 
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/24/17.
  */
 object ViewUtils {

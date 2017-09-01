@@ -7,7 +7,7 @@ import io.ipoli.android.reward.RewardRepository
 import javax.inject.Singleton
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/1/17.
  */
 @Module

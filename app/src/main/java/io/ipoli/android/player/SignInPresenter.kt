@@ -12,7 +12,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/8/17.
  */
 class SignInPresenter @Inject constructor(private val signInUseCase: SignInUseCase, private val navigator: Navigator) :

@@ -5,7 +5,7 @@ import dagger.Provides
 import io.ipoli.android.common.navigation.Navigator
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/1/17.
  */
 @Module

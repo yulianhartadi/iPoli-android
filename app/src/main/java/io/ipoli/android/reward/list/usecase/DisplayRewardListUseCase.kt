@@ -11,7 +11,7 @@ import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/1/17.
  */
 class DisplayRewardListUseCase(private val rewardRepository: RewardRepository,

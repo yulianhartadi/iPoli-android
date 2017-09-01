@@ -16,7 +16,7 @@ import org.junit.Test
 
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 7/10/17.
  */
 class DisplayRewardUseCaseTest {

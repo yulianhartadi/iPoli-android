@@ -8,7 +8,7 @@ import org.threeten.bp.temporal.TemporalAdjusters.lastDayOfMonth
 import java.util.*
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/20/17.
  */
 object DateUtils {

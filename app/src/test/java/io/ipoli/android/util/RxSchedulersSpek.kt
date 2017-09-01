@@ -6,7 +6,7 @@ import io.reactivex.schedulers.Schedulers
 import org.jetbrains.spek.api.Spek
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/30/17.
  */
 object RxSchedulersSpek : Spek({

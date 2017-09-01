@@ -9,7 +9,7 @@ import com.hannesdorfmann.mosby3.mvp.MvpView
 import io.ipoli.android.iPoliApp
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/19/17.
  */
 abstract class BaseController<V : MvpView, P : MviPresenter<V, *>, C : BaseComponent<V, P>> : RestoreViewOnCreateMviController<V, P> {

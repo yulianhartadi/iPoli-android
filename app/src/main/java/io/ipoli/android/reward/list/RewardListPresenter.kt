@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 7/7/17.
  */
 class RewardListPresenter @Inject constructor(private val displayRewardListUseCase: DisplayRewardListUseCase,

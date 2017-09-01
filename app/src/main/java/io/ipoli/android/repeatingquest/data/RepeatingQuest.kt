@@ -15,7 +15,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/22/17.
  */
 open class RepeatingQuest : RealmObject, PersistedModel {

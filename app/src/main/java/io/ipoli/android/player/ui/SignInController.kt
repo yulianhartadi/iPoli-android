@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.controller_sign_in.view.*
 
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/8/17.
  */
 class SignInController : BaseController<SignInController, SignInPresenter, SignInComponent>() {

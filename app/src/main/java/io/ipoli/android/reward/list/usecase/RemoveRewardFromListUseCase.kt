@@ -9,7 +9,7 @@ import io.reactivex.Observable
 
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/27/17.
  */
 class RemoveRewardFromListUseCase(private val jobQueue: JobQueue) : BaseRxUseCase<RemoveRewardFromListUseCase.RemoveParameters, RewardListPartialChange>() {

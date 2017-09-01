@@ -8,7 +8,7 @@ import io.ipoli.android.quest.overview.ui.OverviewController
 import javax.inject.Scope
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/20/17.
  */
 @OverviewScope

@@ -10,7 +10,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/20/17.
  */
 class OverviewPresenter @Inject constructor(private val displayOverviewQuestsUseCase: DisplayOverviewQuestsUseCase) : MviBasePresenter<OverviewController, OverviewViewState>() {

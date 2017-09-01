@@ -7,7 +7,7 @@ import io.ipoli.android.quest.persistence.QuestRepository
 import io.ipoli.android.quest.persistence.RealmQuestRepository
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/20/17.
  */
 @Module

@@ -8,7 +8,7 @@ import io.ipoli.android.reward.edit.EditRewardViewState.ValidationError.*
 import io.reactivex.Observable
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/29/17.
  */
 class EditRewardUseCase(private val jobQueue: JobQueue, private val rewardId: String = "") : BaseRxUseCase<Parameters, EditRewardViewState>() {

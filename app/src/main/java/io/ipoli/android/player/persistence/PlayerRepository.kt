@@ -6,7 +6,7 @@ import io.ipoli.android.player.data.Player
 import io.realm.Realm
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/2/17.
  */
 interface PlayerRepository : Repository<Player> {

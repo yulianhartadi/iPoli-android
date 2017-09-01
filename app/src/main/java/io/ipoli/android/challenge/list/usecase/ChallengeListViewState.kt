@@ -3,7 +3,7 @@ package io.ipoli.android.challenge.list.usecase
 import io.ipoli.android.challenge.list.ui.ChallengeViewModel
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/23/17.
  */
 interface ChallengeListViewState {

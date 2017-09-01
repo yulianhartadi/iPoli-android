@@ -4,7 +4,7 @@ import io.reactivex.Completable
 import io.reactivex.Single
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/17/17.
  */
 class AnonymousAuth : RxSocialAuth {

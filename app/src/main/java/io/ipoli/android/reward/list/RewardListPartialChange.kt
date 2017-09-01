@@ -2,7 +2,7 @@ package io.ipoli.android.reward.list
 
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 7/8/17.
  */
 interface RewardListPartialChange {

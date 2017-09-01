@@ -8,7 +8,7 @@ import io.reactivex.Observable
 import org.threeten.bp.LocalDate
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/20/17.
  */
 class DisplayOverviewQuestsUseCase(private val questRepository: QuestRepository) : BaseRxUseCase<DisplayOverviewQuestsUseCase.Parameters, OverviewStatePartialChange>() {

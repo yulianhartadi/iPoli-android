@@ -9,7 +9,7 @@ import io.ipoli.android.reward.list.RewardListModule
 import javax.inject.Scope
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/27/17.
  */
 @EditRewardScope

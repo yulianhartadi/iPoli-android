@@ -7,7 +7,7 @@ import io.ipoli.android.quest.overview.ui.OverviewQuestViewModel
 
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/21/17.
  */
 class ScheduleTextFormatter(private val use24HourFormat: Boolean) {

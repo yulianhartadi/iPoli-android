@@ -7,7 +7,7 @@ import io.ipoli.android.challenge.list.usecase.DisplayChallengeListUseCase
 import javax.inject.Inject
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/23/17.
  */
 class ChallengeListPresenter @Inject constructor(private val displayChallengeListUseCase: DisplayChallengeListUseCase) :

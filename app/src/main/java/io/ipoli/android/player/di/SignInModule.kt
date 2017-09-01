@@ -7,7 +7,7 @@ import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.persistence.RealmPlayerRepository
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/8/17.
  */
 @Module

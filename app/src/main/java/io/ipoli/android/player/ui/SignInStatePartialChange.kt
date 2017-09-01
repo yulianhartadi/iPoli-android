@@ -1,7 +1,7 @@
 package io.ipoli.android.player.ui
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/17/17.
  */
 interface SignInStatePartialChange {

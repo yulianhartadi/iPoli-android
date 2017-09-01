@@ -7,7 +7,7 @@ import io.ipoli.android.common.di.ControllerComponent
 import javax.inject.Scope
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/1/17.
  */
 @RewardListScope

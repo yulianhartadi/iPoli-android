@@ -8,7 +8,7 @@ import io.ipoli.android.player.persistence.RealmPlayerRepository
 import javax.inject.Singleton
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/1/17.
  */
 @Module

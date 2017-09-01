@@ -3,7 +3,7 @@ package io.ipoli.android.player.auth
 import io.realm.RealmObject
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/14/17.
  */
 open class AuthProvider(

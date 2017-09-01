@@ -26,7 +26,7 @@ import kotlinx.android.synthetic.main.view_error.view.*
 import kotlinx.android.synthetic.main.view_loading.view.*
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/23/17.
  */
 class ChallengeListController : BaseController<ChallengeListController, ChallengeListPresenter, ChallengeListComponent>() {

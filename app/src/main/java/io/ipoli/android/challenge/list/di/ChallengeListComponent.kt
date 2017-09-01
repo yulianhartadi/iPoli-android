@@ -8,7 +8,7 @@ import io.ipoli.android.common.di.ControllerComponent
 import javax.inject.Scope
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/23/17.
  */
 @ChallengeListScope

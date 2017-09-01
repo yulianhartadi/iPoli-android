@@ -14,7 +14,7 @@ import org.threeten.bp.LocalDate
 
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/22/17.
  */
 class DisplayRepeatingQuestListUseCase(private val repeatingQuestRepository: RepeatingQuestRepository) : SimpleRxUseCase<RepeatingQuestListViewState>() {

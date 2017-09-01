@@ -7,7 +7,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/28/17.
  */
 class RemoveRewardJobService : JobService() {

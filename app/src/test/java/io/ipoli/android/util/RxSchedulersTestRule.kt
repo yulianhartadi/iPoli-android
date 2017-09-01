@@ -9,7 +9,7 @@ import org.junit.runners.model.Statement
 
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/18/17.
  */
 class RxSchedulersTestRule : TestRule {
