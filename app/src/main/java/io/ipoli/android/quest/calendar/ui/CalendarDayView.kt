@@ -11,6 +11,7 @@ import android.widget.FrameLayout
 import android.widget.ScrollView
 import io.ipoli.android.R
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
+import timber.log.Timber
 
 
 /**
@@ -151,7 +152,7 @@ class CalendarDayView : ScrollView {
     }
 
     protected fun getMinutesFor(y: Float, rangeLength: Int): Int {
-        var minutes = (getRelativeY(y.toInt()) % hourHeight / minuteHeight) as Int
+        var minutes = (getRelativeY(y) % hourHeight / minuteHeight).toInt()
         minutes = Math.max(0, minutes)
         val bounds = mutableListOf<Int>()
         var rangeStart = 0
@@ -165,14 +166,20 @@ class CalendarDayView : ScrollView {
         return bounds.get(minutes)
     }
 
-    private fun getRelativeY(y: Int): Int {
+    private fun getRelativeY(y: Float): Float {
         val offsets = IntArray(2)
         getLocationOnScreen(offsets)
-        return getRelativeY(y, offsets[1])
+        return getRelativeY(y, offsets[1].toFloat())
     }
 
-    private fun getRelativeY(y: Int, yOffset: Int): Int {
-        return Math.max(0, scrollY + y - yOffset)
+    private fun getRelativeY(y: Float, yOffset: Float): Float {
+        return Math.max(0f, scrollY + y - yOffset)
+    }
+
+    fun getViewRawTop(v: View): Int {
+        val loc = IntArray(2)
+        v.getLocationInWindow(loc)
+        return loc[1]
     }
 
     fun startEditMode(position: Int) {
@@ -218,6 +225,7 @@ class CalendarDayView : ScrollView {
                     adapterView.top += dy.toInt()
                     adapterView.bottom += dy.toInt()
                     (adapterView.layoutParams as FrameLayout.LayoutParams).topMargin += dy.toInt()
+                    Timber.d(getMinutesFor(getViewRawTop(adapterView).toFloat(), 5).toString())
                 }
 
                 MotionEvent.ACTION_POINTER_UP -> {
