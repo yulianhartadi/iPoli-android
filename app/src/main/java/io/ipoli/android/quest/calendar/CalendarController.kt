@@ -9,6 +9,7 @@ import io.ipoli.android.quest.calendar.ui.CalendarAdapter
 import io.ipoli.android.quest.calendar.ui.CalendarDayView
 import io.ipoli.android.quest.calendar.ui.CalendarEvent
 import kotlinx.android.synthetic.main.controller_calendar.view.*
+import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 
 
 /**
@@ -88,7 +89,8 @@ class CalendarController : Controller() {
         }
 
         override fun onStartTimeChanged(editView: View, position: Int, startTime: Time) {
-
+            editView.startTime.text = startTime.toString()
+            editView.endTime.text = Time.plusMinutes(startTime, getItem(position).duration).toString()
         }
     }
 }
