@@ -9,14 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <ScrollView
+    <io.ipoli.android.quest.calendar.ui.CalendarDayView
+        android:id="@+id/calendarContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <io.ipoli.android.quest.calendar.ui.CalendarDayView
-            android:id="@+id/calendarContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </ScrollView>
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

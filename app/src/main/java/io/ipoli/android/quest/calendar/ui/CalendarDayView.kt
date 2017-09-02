@@ -8,6 +8,7 @@ import android.util.DisplayMetrics
 import android.view.*
 import android.widget.Adapter
 import android.widget.FrameLayout
+import android.widget.ScrollView
 import io.ipoli.android.R
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 
@@ -16,7 +17,7 @@ import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 9/2/17.
  */
-class CalendarDayView : FrameLayout {
+class CalendarDayView : ScrollView {
 
     private var hourHeight: Float = 0f
     private var minuteHeight: Float = 0f
@@ -30,6 +31,7 @@ class CalendarDayView : FrameLayout {
     }
 
     private lateinit var editModeBackground: View
+    private lateinit var mainContainer: FrameLayout
 
     private var mode = Mode.NONE
 
@@ -68,6 +70,12 @@ class CalendarDayView : FrameLayout {
         hourHeight = screenHeight / 6f
         minuteHeight = hourHeight / 60f
 
+        isVerticalScrollBarEnabled = false
+        mainContainer = FrameLayout(context)
+        mainContainer.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+
+        addView(mainContainer)
+
         for (hour in 0..23) {
 
             val hourView = LayoutInflater.from(context).inflate(R.layout.calendar_hour_cell, this, false)
@@ -77,14 +85,18 @@ class CalendarDayView : FrameLayout {
             val layoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, hourHeight.toInt())
             layoutParams.topMargin = (hour * hourHeight).toInt()
             hourView.layoutParams = layoutParams
-            addView(hourView)
+            mainContainer.addView(hourView)
         }
 
         editModeBackground = View(context)
         editModeBackground.layoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         editModeBackground.setBackgroundResource(R.color.md_dark_text_26)
         editModeBackground.visibility = View.GONE
-        addView(editModeBackground)
+        mainContainer.addView(editModeBackground)
+    }
+
+    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+        return false
     }
 
     fun setAdapter(adapter: CalendarAdapter<*>) {
@@ -108,7 +120,7 @@ class CalendarDayView : FrameLayout {
             layoutParams.topMargin = (event.startMinute * minuteHeight).toInt()
             layoutParams.height = (event.duration * minuteHeight).toInt()
             adapterViews.add(i, adapterView)
-            addView(adapterView)
+            mainContainer.addView(adapterView)
         }
     }
 
@@ -124,7 +136,7 @@ class CalendarDayView : FrameLayout {
 
         if (childCount < adapterSize) {
             for (i in childCount until adapterSize) {
-                addView(a.getView(i, null, this), i)
+                mainContainer.addView(a.getView(i, null, this), i)
             }
         } else if (childCount > adapterSize) {
             removeViews(adapterSize, childCount)
@@ -138,6 +150,31 @@ class CalendarDayView : FrameLayout {
         return metrics.heightPixels
     }
 
+    protected fun getMinutesFor(y: Float, rangeLength: Int): Int {
+        var minutes = (getRelativeY(y.toInt()) % hourHeight / minuteHeight) as Int
+        minutes = Math.max(0, minutes)
+        val bounds = mutableListOf<Int>()
+        var rangeStart = 0
+        for (min in 0..59) {
+
+            if (min % rangeLength == 0) {
+                rangeStart = min
+            }
+            bounds.add(rangeStart)
+        }
+        return bounds.get(minutes)
+    }
+
+    private fun getRelativeY(y: Int): Int {
+        val offsets = IntArray(2)
+        getLocationOnScreen(offsets)
+        return getRelativeY(y, offsets[1])
+    }
+
+    private fun getRelativeY(y: Int, yOffset: Int): Int {
+        return Math.max(0, scrollY + y - yOffset)
+    }
+
     fun startEditMode(position: Int) {
         requestDisallowInterceptTouchEvent(true)
         editModeBackground.bringToFront()
@@ -147,7 +184,7 @@ class CalendarDayView : FrameLayout {
         editModeBackground.visibility = View.VISIBLE
         adapterView.setOnTouchListener { v, e ->
 
-//            setOnTouchListener { view, motionEvent ->
+            //            setOnTouchListener { view, motionEvent ->
 //                adapter?.onStopEdit(position)
 //                adapterView.setOnTouchListener(null)
 //                editModeBackground.setOnTouchListener(null)
