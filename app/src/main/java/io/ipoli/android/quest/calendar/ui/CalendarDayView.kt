@@ -80,6 +80,8 @@ class CalendarDayView : FrameLayout {
         addView(questView)
 
         questView.setOnLongClickListener {
+
+
             TransitionManager.beginDelayedTransition(this)
             editModeBackground.visibility = View.VISIBLE
 
@@ -87,15 +89,15 @@ class CalendarDayView : FrameLayout {
 
                 when (motionEvent.action) {
                     MotionEvent.ACTION_DOWN -> {
-                        mode = Mode.DRAG;
+                        mode = Mode.DRAG
 
                         startX = motionEvent.x - prevDx
                         startY = motionEvent.y - prevDy
                     }
 
                     MotionEvent.ACTION_MOVE -> {
-                        dx = motionEvent.getX() - startX
-                        dy = motionEvent.getY() - startY
+                        dx = motionEvent.x - startX
+                        dy = motionEvent.y - startY
 
                         questView.top += dy.toInt()
                         questView.bottom += dy.toInt()
