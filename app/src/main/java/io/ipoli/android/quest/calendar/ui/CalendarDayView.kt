@@ -1,13 +1,15 @@
 package io.ipoli.android.quest.calendar.ui
 
 import android.content.Context
+import android.database.DataSetObserver
 import android.support.transition.TransitionManager
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.*
+import android.widget.Adapter
 import android.widget.FrameLayout
-import android.widget.TextView
 import io.ipoli.android.R
+import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import timber.log.Timber
 
 
@@ -17,7 +19,10 @@ import timber.log.Timber
  */
 class CalendarDayView : FrameLayout {
 
-    private var hourHeight: Int = 0
+    private var hourHeight: Float = 0f
+    private var minuteHeight: Float = 0f
+
+    private val adapterViews = mutableListOf<View>()
 
     private enum class Mode {
         NONE,
@@ -25,20 +30,27 @@ class CalendarDayView : FrameLayout {
         ZOOM
     }
 
+    private lateinit var editModeBackground: View
 
     private var mode = Mode.NONE
-    private val scale = 1.0f
-    private val lastScaleFactor = 0f
 
-    // Where the finger first  touches the screen
-    private var startX = 0f
     private var startY = 0f
 
-    // How much to translate the canvas
-    private var dx = 0f
     private var dy = 0f
-    private var prevDx = 0f
     private var prevDy = 0f
+
+    private var adapter: CalendarAdapter<*>? = null
+
+    private val dataSetObserver = object : DataSetObserver() {
+
+        override fun onChanged() {
+            refreshViewsFromAdapter()
+        }
+
+        override fun onInvalidated() {
+            removeAllViews()
+        }
+    }
 
     constructor(context: Context) : super(context) {
         initUi()
@@ -54,86 +66,128 @@ class CalendarDayView : FrameLayout {
 
     private fun initUi() {
         val screenHeight = getScreenHeight()
-        hourHeight = screenHeight / 6
+        hourHeight = screenHeight / 6f
+        minuteHeight = hourHeight / 60f
 
-        for (hour in 1..23) {
-            val hourView = TextView(context)
-            hourView.text = hour.toString()
-            val layoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, hourHeight)
-            layoutParams.topMargin = (hour - 1) * hourHeight
+        for (hour in 0..23) {
+
+            val hourView = LayoutInflater.from(context).inflate(R.layout.calendar_hour_cell, this, false)
+            if (hour > 0) {
+                hourView.timeLabel.text = hour.toString()
+            }
+            val layoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, hourHeight.toInt())
+            layoutParams.topMargin = (hour * hourHeight).toInt()
             hourView.layoutParams = layoutParams
             addView(hourView)
         }
 
-        val editModeBackground = View(context)
+        editModeBackground = View(context)
         editModeBackground.layoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        editModeBackground.setBackgroundResource(R.color.md_grey_700)
+        editModeBackground.setBackgroundResource(R.color.md_dark_text_26)
         editModeBackground.visibility = View.GONE
         addView(editModeBackground)
 
         val inflater = LayoutInflater.from(context)
 
-        val questView = inflater.inflate(R.layout.item_calendar_quest, this, false)
-
-        (questView.layoutParams as FrameLayout.LayoutParams).topMargin = 2 * hourHeight - (hourHeight / 2)
-
-        addView(questView)
-
-        questView.setOnLongClickListener {
-
-
-            TransitionManager.beginDelayedTransition(this)
-            editModeBackground.visibility = View.VISIBLE
-
-            questView.setOnTouchListener { view, motionEvent ->
-
-                when (motionEvent.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        mode = Mode.DRAG
-
-                        startX = motionEvent.x - prevDx
-                        startY = motionEvent.y - prevDy
-                    }
-
-                    MotionEvent.ACTION_MOVE -> {
-                        dx = motionEvent.x - startX
-                        dy = motionEvent.y - startY
-
-                        questView.top += dy.toInt()
-                        questView.bottom += dy.toInt()
-                    }
-
-                    MotionEvent.ACTION_POINTER_UP -> {
-                        mode = Mode.NONE
-                    }
-
-                    MotionEvent.ACTION_UP -> {
-                        mode = Mode.NONE
-                        prevDx = dx
-                        prevDy = dy
-                    }
-
-                    else -> {
-
-                    }
-                }
-
-                if (mode == Mode.DRAG) {
-                    requestDisallowInterceptTouchEvent(true)
-
-//                    val maxDx = child().getWidth() * (scale - 1)  // adjusted for zero pivot
-//                    val maxDy = child().getHeight() * (scale - 1)  // adjusted for zero pivot
-//                    dx = Math.min(Math.max(dx, -maxDx), 0)  // adjusted for zero pivot
-//                    dy = Math.min(Math.max(dy, -maxDy), 0)  // adjusted for zero pivot
-                }
-
-                true
-            }
-
-            true
-        }
+//        questView.setOnLongClickListener {
+//
+//
+//            TransitionManager.beginDelayedTransition(this)
+//            editModeBackground.visibility = View.VISIBLE
+//
+//            questView.setOnTouchListener { view, motionEvent ->
+//
+//                when (motionEvent.action) {
+//                    MotionEvent.ACTION_DOWN -> {
+//                        mode = Mode.DRAG
+//
+//                        startX = motionEvent.x - prevDx
+//                        startY = motionEvent.y - prevDy
+//                    }
+//
+//                    MotionEvent.ACTION_MOVE -> {
+//                        dx = motionEvent.x - startX
+//                        dy = motionEvent.y - startY
+//
+//                        questView.top += dy.toInt()
+//                        questView.bottom += dy.toInt()
+//                    }
+//
+//                    MotionEvent.ACTION_POINTER_UP -> {
+//                        mode = Mode.NONE
+//                    }
+//
+//                    MotionEvent.ACTION_UP -> {
+//                        mode = Mode.NONE
+//                        prevDx = dx
+//                        prevDy = dy
+//                    }
+//
+//                    else -> {
+//
+//                    }
+//                }
+//
+//                if (mode == Mode.DRAG) {
+//                    requestDisallowInterceptTouchEvent(true)
+//
+////                    val maxDx = child().getWidth() * (scale - 1)  // adjusted for zero pivot
+////                    val maxDy = child().getHeight() * (scale - 1)  // adjusted for zero pivot
+////                    dx = Math.min(Math.max(dx, -maxDx), 0)  // adjusted for zero pivot
+////                    dy = Math.min(Math.max(dy, -maxDy), 0)  // adjusted for zero pivot
+//                }
+//
+//                true
+//            }
+//
+//            true
+//        }
 
         Timber.d(screenHeight.toString())
+    }
+
+    fun setAdapter(adapter: CalendarAdapter<*>) {
+        this.adapter?.unregisterDataSetObserver(dataSetObserver)
+        this.adapter = adapter
+        this.adapter?.registerDataSetObserver(dataSetObserver)
+        initViewsFromAdapter()
+    }
+
+    fun getAdapter(): Adapter? {
+        return adapter
+    }
+
+    private fun initViewsFromAdapter() {
+//        removeAllViews()
+        val a = adapter!!
+        for (i in 0 until a.count) {
+            val adapterView = a.getView(i, null, this)
+            val event = a.getItem(i)
+            val layoutParams = adapterView.layoutParams as FrameLayout.LayoutParams
+            layoutParams.topMargin = (event.startMinute * minuteHeight).toInt()
+            layoutParams.height = (event.duration * minuteHeight).toInt()
+            adapterViews.add(i, adapterView)
+            addView(adapterView)
+        }
+    }
+
+    private fun refreshViewsFromAdapter() {
+        val childCount = childCount
+        val a = adapter!!
+        val adapterSize = a.count
+        val reuseCount = Math.min(childCount, adapterSize)
+
+        for (i in 0 until reuseCount) {
+            a.getView(i, getChildAt(i), this)
+        }
+
+        if (childCount < adapterSize) {
+            for (i in childCount until adapterSize) {
+                addView(a.getView(i, null, this), i)
+            }
+        } else if (childCount > adapterSize) {
+            removeViews(adapterSize, childCount)
+        }
     }
 
     private fun getScreenHeight(): Int {
@@ -141,6 +195,57 @@ class CalendarDayView : FrameLayout {
         val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         wm.defaultDisplay.getMetrics(metrics)
         return metrics.heightPixels
+    }
+
+    fun startEditMode(position: Int) {
+        editModeBackground.bringToFront()
+        val adapterView = adapterViews[position]
+        adapterView.bringToFront()
+        TransitionManager.beginDelayedTransition(this)
+        editModeBackground.visibility = View.VISIBLE
+        adapterView.setOnTouchListener { v, e ->
+
+            requestDisallowInterceptTouchEvent(true)
+
+            when (e.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    mode = Mode.DRAG
+                    startY = e.y - prevDy
+                }
+
+                MotionEvent.ACTION_MOVE -> {
+                    dy = e.y - startY
+
+                    adapterView.top += dy.toInt()
+                    adapterView.bottom += dy.toInt()
+                }
+
+                MotionEvent.ACTION_POINTER_UP -> {
+                    mode = Mode.NONE
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    mode = Mode.NONE
+                    prevDy = dy
+                }
+
+                else -> {
+
+                }
+            }
+
+//            if (mode == Mode.DRAG) {
+//                requestDisallowInterceptTouchEvent(true)
+//
+////                    val maxDx = child().getWidth() * (scale - 1)  // adjusted for zero pivot
+////                    val maxDy = child().getHeight() * (scale - 1)  // adjusted for zero pivot
+////                    dx = Math.min(Math.max(dx, -maxDx), 0)  // adjusted for zero pivot
+////                    dy = Math.min(Math.max(dy, -maxDy), 0)  // adjusted for zero pivot
+//            }
+
+            true
+        }
+        adapter?.onStartEdit(position)
     }
 
 }

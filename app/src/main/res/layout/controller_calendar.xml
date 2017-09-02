@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/unscheduled_quests"
+        android:id="@+id/unscheduledQuests"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -14,7 +14,7 @@
         android:layout_height="match_parent">
 
         <io.ipoli.android.quest.calendar.ui.CalendarDayView
-            android:id="@+id/calendar_container"
+            android:id="@+id/calendarContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </ScrollView>
