@@ -37,15 +37,15 @@ class HomeController : Controller(), NavigationView.OnNavigationItemSelectedList
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-
         val activity = activity as MainActivity
         activity.setSupportActionBar(view.toolbar)
+
         val actionBar = activity.supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
         view.navigationView.setNavigationItemSelectedListener(this)
 
-        val actionBarDrawerToggle = object : ActionBarDrawerToggle(activity, view.drawerLayout, R.string.drawer_open, R.string.drawer_close) {
+        val actionBarDrawerToggle = object : ActionBarDrawerToggle(activity, view.drawerLayout, view.toolbar, R.string.drawer_open, R.string.drawer_close) {
 
             override fun onDrawerOpened(drawerView: View) {
                 navigationItemSelected = null
@@ -70,6 +70,7 @@ class HomeController : Controller(), NavigationView.OnNavigationItemSelectedList
         )
 
         actionBarDrawerToggle.syncState()
+
     }
 
     private fun onItemSelectedFromDrawer() {
