@@ -11,4 +11,5 @@ abstract class CalendarAdapter<T : CalendarEvent>(context: Context, resource: In
     ArrayAdapter<T>(context, resource, events) {
     protected val resource = resource
     abstract fun onStartEdit(position: Int)
+    abstract fun onStopEdit(position: Int)
 }

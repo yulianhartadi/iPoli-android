@@ -10,7 +10,6 @@ import android.widget.Adapter
 import android.widget.FrameLayout
 import io.ipoli.android.R
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
-import timber.log.Timber
 
 
 /**
@@ -86,64 +85,6 @@ class CalendarDayView : FrameLayout {
         editModeBackground.setBackgroundResource(R.color.md_dark_text_26)
         editModeBackground.visibility = View.GONE
         addView(editModeBackground)
-
-        val inflater = LayoutInflater.from(context)
-
-//        questView.setOnLongClickListener {
-//
-//
-//            TransitionManager.beginDelayedTransition(this)
-//            editModeBackground.visibility = View.VISIBLE
-//
-//            questView.setOnTouchListener { view, motionEvent ->
-//
-//                when (motionEvent.action) {
-//                    MotionEvent.ACTION_DOWN -> {
-//                        mode = Mode.DRAG
-//
-//                        startX = motionEvent.x - prevDx
-//                        startY = motionEvent.y - prevDy
-//                    }
-//
-//                    MotionEvent.ACTION_MOVE -> {
-//                        dx = motionEvent.x - startX
-//                        dy = motionEvent.y - startY
-//
-//                        questView.top += dy.toInt()
-//                        questView.bottom += dy.toInt()
-//                    }
-//
-//                    MotionEvent.ACTION_POINTER_UP -> {
-//                        mode = Mode.NONE
-//                    }
-//
-//                    MotionEvent.ACTION_UP -> {
-//                        mode = Mode.NONE
-//                        prevDx = dx
-//                        prevDy = dy
-//                    }
-//
-//                    else -> {
-//
-//                    }
-//                }
-//
-//                if (mode == Mode.DRAG) {
-//                    requestDisallowInterceptTouchEvent(true)
-//
-////                    val maxDx = child().getWidth() * (scale - 1)  // adjusted for zero pivot
-////                    val maxDy = child().getHeight() * (scale - 1)  // adjusted for zero pivot
-////                    dx = Math.min(Math.max(dx, -maxDx), 0)  // adjusted for zero pivot
-////                    dy = Math.min(Math.max(dy, -maxDy), 0)  // adjusted for zero pivot
-//                }
-//
-//                true
-//            }
-//
-//            true
-//        }
-
-        Timber.d(screenHeight.toString())
     }
 
     fun setAdapter(adapter: CalendarAdapter<*>) {
@@ -198,6 +139,7 @@ class CalendarDayView : FrameLayout {
     }
 
     fun startEditMode(position: Int) {
+        requestDisallowInterceptTouchEvent(true)
         editModeBackground.bringToFront()
         val adapterView = adapterViews[position]
         adapterView.bringToFront()
@@ -205,7 +147,17 @@ class CalendarDayView : FrameLayout {
         editModeBackground.visibility = View.VISIBLE
         adapterView.setOnTouchListener { v, e ->
 
-            requestDisallowInterceptTouchEvent(true)
+            setOnTouchListener { view, motionEvent ->
+                adapter?.onStopEdit(position)
+                adapterView.setOnTouchListener(null)
+                setOnTouchListener(null)
+                requestDisallowInterceptTouchEvent(false)
+                TransitionManager.beginDelayedTransition(this)
+                editModeBackground.visibility = View.GONE
+                true
+            }
+
+
 
             when (e.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -218,6 +170,7 @@ class CalendarDayView : FrameLayout {
 
                     adapterView.top += dy.toInt()
                     adapterView.bottom += dy.toInt()
+                    (adapterView.layoutParams as FrameLayout.LayoutParams).topMargin += dy.toInt()
                 }
 
                 MotionEvent.ACTION_POINTER_UP -> {

@@ -17,6 +17,8 @@ import kotlinx.android.synthetic.main.controller_calendar.view.*
  */
 class CalendarController : Controller() {
 
+    private var actionMode: ActionMode? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val view = inflater.inflate(R.layout.controller_calendar, container, false)
         view.calendarContainer.setAdapter(QuestCalendarAdapter(activity!!,
@@ -36,6 +38,7 @@ class CalendarController : Controller() {
             }
 
             override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+                actionMode = mode
                 mode.menuInflater.inflate(R.menu.calendar_quest_edit_menu, menu)
                 return true
             }
@@ -45,9 +48,13 @@ class CalendarController : Controller() {
             }
 
             override fun onDestroyActionMode(p0: ActionMode?) {
-
+                actionMode = null
             }
         })
+    }
+
+    private fun stopActionMode() {
+        actionMode?.finish()
     }
 
 
@@ -69,12 +76,15 @@ class CalendarController : Controller() {
                 (parent as CalendarDayView).startEditMode(position)
                 true
             }
-
             return view
         }
 
         override fun onStartEdit(position: Int) {
             startActionMode()
+        }
+
+        override fun onStopEdit(position: Int) {
+            stopActionMode()
         }
     }
 }
