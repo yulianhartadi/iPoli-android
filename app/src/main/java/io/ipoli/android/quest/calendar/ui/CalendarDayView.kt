@@ -147,17 +147,27 @@ class CalendarDayView : FrameLayout {
         editModeBackground.visibility = View.VISIBLE
         adapterView.setOnTouchListener { v, e ->
 
-            setOnTouchListener { view, motionEvent ->
+//            setOnTouchListener { view, motionEvent ->
+//                adapter?.onStopEdit(position)
+//                adapterView.setOnTouchListener(null)
+//                editModeBackground.setOnTouchListener(null)
+//                setOnTouchListener(null)
+//                requestDisallowInterceptTouchEvent(false)
+//                TransitionManager.beginDelayedTransition(this)
+//                editModeBackground.visibility = View.GONE
+//                true
+//            }
+
+            editModeBackground.setOnTouchListener { view, motionEvent ->
                 adapter?.onStopEdit(position)
                 adapterView.setOnTouchListener(null)
-                setOnTouchListener(null)
+                editModeBackground.setOnTouchListener(null)
+//                setOnTouchListener(null)
                 requestDisallowInterceptTouchEvent(false)
                 TransitionManager.beginDelayedTransition(this)
                 editModeBackground.visibility = View.GONE
                 true
             }
-
-
 
             when (e.action) {
                 MotionEvent.ACTION_DOWN -> {

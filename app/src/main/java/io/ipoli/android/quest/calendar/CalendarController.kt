@@ -23,8 +23,8 @@ class CalendarController : Controller() {
         val view = inflater.inflate(R.layout.controller_calendar, container, false)
         view.calendarContainer.setAdapter(QuestCalendarAdapter(activity!!,
             listOf(
-                QuestViewModel(60, Time.atHours(18).toMinuteOfDay()),
-                QuestViewModel(30, Time.atHours(20).toMinuteOfDay())
+                QuestViewModel(60, Time.atHours(1).toMinuteOfDay()),
+                QuestViewModel(30, Time.atHours(3).toMinuteOfDay())
             )
         ))
         return view
