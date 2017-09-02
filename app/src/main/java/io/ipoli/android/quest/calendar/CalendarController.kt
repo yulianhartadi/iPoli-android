@@ -73,18 +73,22 @@ class CalendarController : Controller() {
             val questModel = getItem(position)
 
             view.setOnLongClickListener { v ->
-                (parent as CalendarDayView).startEditMode(position)
+                (parent as CalendarDayView).startEditMode(v, position)
                 true
             }
             return view
         }
 
-        override fun onStartEdit(position: Int) {
+        override fun onStartEdit(editView: View, position: Int) {
             startActionMode()
         }
 
-        override fun onStopEdit(position: Int) {
+        override fun onStopEdit(editView: View, position: Int) {
             stopActionMode()
+        }
+
+        override fun onStartTimeChanged(editView: View, position: Int, startTime: Time) {
+
         }
     }
 }

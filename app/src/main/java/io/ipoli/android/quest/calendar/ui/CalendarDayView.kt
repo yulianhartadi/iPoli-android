@@ -10,8 +10,8 @@ import android.widget.Adapter
 import android.widget.FrameLayout
 import android.widget.ScrollView
 import io.ipoli.android.R
+import io.ipoli.android.common.datetime.Time
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
-import timber.log.Timber
 
 
 /**
@@ -151,6 +151,11 @@ class CalendarDayView : ScrollView {
         return metrics.heightPixels
     }
 
+    protected fun getHoursFor(y: Float): Int {
+        val h = getRelativeY(y) / hourHeight
+        return Math.min(h.toInt(), 23)
+    }
+
     protected fun getMinutesFor(y: Float, rangeLength: Int): Int {
         var minutes = (getRelativeY(y) % hourHeight / minuteHeight).toInt()
         minutes = Math.max(0, minutes)
@@ -176,13 +181,33 @@ class CalendarDayView : ScrollView {
         return Math.max(0f, scrollY + y - yOffset)
     }
 
+
+    private fun getYPositionFor(hours: Int, minutes: Int): Float {
+        var y = hours * hourHeight
+        y += getMinutesHeight(minutes)
+        return y
+    }
+
+    private fun getYPositionFor(minutesAfterMidnight: Int): Float {
+        val time = Time.of(minutesAfterMidnight)
+        return getYPositionFor(time.hours, time.getMinutes())
+    }
+
+    protected fun getHeightFor(duration: Int): Int {
+        return getMinutesHeight(duration).toInt()
+    }
+
+    private fun getMinutesHeight(minutes: Int): Float {
+        return minuteHeight * minutes
+    }
+
     fun getViewRawTop(v: View): Int {
         val loc = IntArray(2)
         v.getLocationInWindow(loc)
         return loc[1]
     }
 
-    fun startEditMode(position: Int) {
+    fun startEditMode(editView: View, position: Int) {
         requestDisallowInterceptTouchEvent(true)
         editModeBackground.bringToFront()
         val adapterView = adapterViews[position]
@@ -191,25 +216,8 @@ class CalendarDayView : ScrollView {
         editModeBackground.visibility = View.VISIBLE
         adapterView.setOnTouchListener { v, e ->
 
-            //            setOnTouchListener { view, motionEvent ->
-//                adapter?.onStopEdit(position)
-//                adapterView.setOnTouchListener(null)
-//                editModeBackground.setOnTouchListener(null)
-//                setOnTouchListener(null)
-//                requestDisallowInterceptTouchEvent(false)
-//                TransitionManager.beginDelayedTransition(this)
-//                editModeBackground.visibility = View.GONE
-//                true
-//            }
-
             editModeBackground.setOnTouchListener { view, motionEvent ->
-                adapter?.onStopEdit(position)
-                adapterView.setOnTouchListener(null)
-                editModeBackground.setOnTouchListener(null)
-//                setOnTouchListener(null)
-                requestDisallowInterceptTouchEvent(false)
-                TransitionManager.beginDelayedTransition(this)
-                editModeBackground.visibility = View.GONE
+                stopEditMode(adapterView, position)
                 true
             }
 
@@ -225,7 +233,10 @@ class CalendarDayView : ScrollView {
                     adapterView.top += dy.toInt()
                     adapterView.bottom += dy.toInt()
                     (adapterView.layoutParams as FrameLayout.LayoutParams).topMargin += dy.toInt()
-                    Timber.d(getMinutesFor(getViewRawTop(adapterView).toFloat(), 5).toString())
+                    val yPosition = getViewRawTop(adapterView).toFloat()
+                    val hours = getHoursFor(yPosition)
+                    val minutes = getMinutesFor(yPosition, 5)
+                    adapter?.onStartTimeChanged(editView, position, Time.at(hours, minutes))
                 }
 
                 MotionEvent.ACTION_POINTER_UP -> {
@@ -253,7 +264,23 @@ class CalendarDayView : ScrollView {
 
             true
         }
-        adapter?.onStartEdit(position)
+        adapter?.onStartEdit(editView, position)
+    }
+
+    private fun stopEditMode(editView: View, position: Int) {
+
+        val layoutParams = editView.layoutParams as FrameLayout.LayoutParams
+        val h = getHoursFor(getViewRawTop(editView).toFloat())
+        val m = getMinutesFor(getViewRawTop(editView).toFloat(), 5)
+        layoutParams.topMargin = getYPositionFor(h, m).toInt()
+
+        adapter?.onStopEdit(editView, position)
+        editView.setOnTouchListener(null)
+        editModeBackground.setOnTouchListener(null)
+        //                setOnTouchListener(null)
+        requestDisallowInterceptTouchEvent(false)
+        TransitionManager.beginDelayedTransition(this)
+        editModeBackground.visibility = View.GONE
     }
 
 }
