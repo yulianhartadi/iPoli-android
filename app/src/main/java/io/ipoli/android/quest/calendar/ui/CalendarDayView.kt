@@ -214,7 +214,7 @@ class CalendarDayView : ScrollView {
         return loc[1]
     }
 
-    fun startEditMode(editView: View, bottomDragView: View, position: Int) {
+    fun startEditMode(editView: View, bottomDragView: View, topDragView: View, position: Int) {
         requestDisallowInterceptTouchEvent(true)
         editModeBackground.bringToFront()
         val adapterView = adapterViews[position]
@@ -222,23 +222,38 @@ class CalendarDayView : ScrollView {
         TransitionManager.beginDelayedTransition(this)
         editModeBackground.visibility = View.VISIBLE
 
-
-
         bottomDragView.setOnTouchListener { v, e ->
             if (e.action == MotionEvent.ACTION_DOWN) {
-                Log.d("AAAA down", e.y.toString())
                 startY = e.y
             }
 
             if (e.action == MotionEvent.ACTION_MOVE) {
-                Log.d("AAAA move e.y", e.y.toString())
                 dy = e.y - startY
                 val lp = editView.layoutParams as FrameLayout.LayoutParams
                 lp.height = editView.height + dy.toInt()
                 editView.layoutParams = lp
 
-                Log.d("AAAA move dy", dy.toString())
                 startY = e.y
+            }
+
+            true
+        }
+
+        var lastY = 0
+        topDragView.setOnTouchListener { v, e ->
+            if (e.action == MotionEvent.ACTION_DOWN) {
+                lastY = e.y.toInt()
+            }
+
+            if (e.action == MotionEvent.ACTION_MOVE) {
+                dy = e.y - lastY
+
+                val lp = editView.layoutParams as FrameLayout.LayoutParams
+                lp.topMargin += dy.toInt()
+                lp.height = editView.height - dy.toInt()
+                editView.layoutParams = lp
+
+                lastY = e.y.toInt()
             }
 
             true
