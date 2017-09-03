@@ -71,12 +71,20 @@ class CalendarController : Controller() {
             if (view == null) {
                 view = LayoutInflater.from(context).inflate(resource, parent, false)!!
             }
+            view.clipToOutline = false
+//            val lp = (view.dragBottom.layoutParams as ConstraintLayout.LayoutParams)
+//            lp.bo -= 50
+//            lp.topToTop += 50
+//
+//            view.dragBottom.layoutParams = lp
+
             val questModel = getItem(position)
 
             view.setOnLongClickListener { v ->
-                (parent as CalendarDayView).startEditMode(v, position)
+                (parent as CalendarDayView).startEditMode(v, v.dragBottom,  position)
                 true
             }
+
             return view
         }
 

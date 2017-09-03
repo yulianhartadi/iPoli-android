@@ -5,6 +5,7 @@ import android.database.DataSetObserver
 import android.support.transition.TransitionManager
 import android.util.AttributeSet
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.*
 import android.widget.Adapter
 import android.widget.FrameLayout
@@ -71,9 +72,15 @@ class CalendarDayView : ScrollView {
         hourHeight = screenHeight / 6f
         minuteHeight = hourHeight / 60f
 
+        this.clipChildren = false
+        this.clipToPadding = false
+
         isVerticalScrollBarEnabled = false
         mainContainer = FrameLayout(context)
         mainContainer.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+
+        mainContainer.clipChildren = false
+        mainContainer.clipToPadding = false
 
         addView(mainContainer)
 
@@ -207,13 +214,36 @@ class CalendarDayView : ScrollView {
         return loc[1]
     }
 
-    fun startEditMode(editView: View, position: Int) {
+    fun startEditMode(editView: View, bottomDragView: View, position: Int) {
         requestDisallowInterceptTouchEvent(true)
         editModeBackground.bringToFront()
         val adapterView = adapterViews[position]
         adapterView.bringToFront()
         TransitionManager.beginDelayedTransition(this)
         editModeBackground.visibility = View.VISIBLE
+
+
+
+        bottomDragView.setOnTouchListener { v, e ->
+            if (e.action == MotionEvent.ACTION_DOWN) {
+                Log.d("AAAA down", e.y.toString())
+                startY = e.y
+            }
+
+            if (e.action == MotionEvent.ACTION_MOVE) {
+                Log.d("AAAA move e.y", e.y.toString())
+                dy = e.y - startY
+                val lp = editView.layoutParams as FrameLayout.LayoutParams
+                lp.height = editView.height + dy.toInt()
+                editView.layoutParams = lp
+
+                Log.d("AAAA move dy", dy.toString())
+                startY = e.y
+            }
+
+            true
+        }
+
         adapterView.setOnTouchListener { v, e ->
 
             editModeBackground.setOnTouchListener { view, motionEvent ->
@@ -223,13 +253,16 @@ class CalendarDayView : ScrollView {
 
             when (e.action) {
                 MotionEvent.ACTION_DOWN -> {
+                    Log.d("AAA down prev", prevDy.toString())
                     mode = Mode.DRAG
                     startY = e.y - prevDy
+                    Log.d("AAA down start", startY.toString())
                 }
 
                 MotionEvent.ACTION_MOVE -> {
                     dy = e.y - startY
-
+                    Log.d("AAA mode event y", e.y.toString())
+                    Log.d("AAA mode dy", dy.toString())
                     adapterView.top += dy.toInt()
                     adapterView.bottom += dy.toInt()
                     (adapterView.layoutParams as FrameLayout.LayoutParams).topMargin += dy.toInt()
@@ -264,6 +297,7 @@ class CalendarDayView : ScrollView {
 
             true
         }
+
         adapter?.onStartEdit(editView, position)
     }
 
