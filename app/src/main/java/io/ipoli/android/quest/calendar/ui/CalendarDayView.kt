@@ -6,6 +6,7 @@ import android.database.DataSetObserver
 import android.support.transition.TransitionManager
 import android.util.AttributeSet
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.*
 import android.widget.Adapter
 import android.widget.FrameLayout
@@ -76,7 +77,9 @@ class CalendarDayView : ScrollView {
         this.clipToPadding = false
 
         isVerticalScrollBarEnabled = false
-        mainContainer = FrameLayout(context)
+        mainContainer = object : FrameLayout(context) {
+            override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean = false
+        }
         mainContainer.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
 
         mainContainer.clipChildren = false
@@ -101,6 +104,9 @@ class CalendarDayView : ScrollView {
         editModeBackground.setBackgroundResource(R.color.md_dark_text_26)
         editModeBackground.visibility = View.GONE
         mainContainer.addView(editModeBackground)
+
+        mainContainer.setOnTouchListener { _, _ -> false }
+        mainContainer.requestDisallowInterceptTouchEvent(true)
     }
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
@@ -235,15 +241,17 @@ class CalendarDayView : ScrollView {
 //
 //        mainContainer.addView(tdv)
 
+
         setBottomDragViewListener(bottomDragView, editView)
         setTopDragViewListener(topDragView, editView)
 
         editView.setOnTouchListener { v, e ->
+            Log.d("AAA", e.action.toString())
 
-            editModeBackground.setOnTouchListener { view, motionEvent ->
-                stopEditMode(editView, position)
-                true
-            }
+//            editModeBackground.setOnTouchListener { view, motionEvent ->
+//                stopEditMode(editView, position)
+//                true
+//            }
 
             when (e.action) {
                 MotionEvent.ACTION_DOWN -> {
