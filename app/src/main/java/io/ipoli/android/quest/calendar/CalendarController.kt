@@ -71,11 +71,10 @@ class CalendarController : Controller() {
             if (view == null) {
                 view = LayoutInflater.from(context).inflate(resource, parent, false)!!
             }
-            view.clipToOutline = false
             val questModel = getItem(position)
 
             view.setOnLongClickListener { v ->
-                (parent as CalendarDayView).startEditMode(v, v.bottomDrag, v.topDrag, position)
+                (parent as CalendarDayView).startEditMode(v, position)
                 true
             }
 
@@ -83,14 +82,10 @@ class CalendarController : Controller() {
         }
 
         override fun onStartEdit(editView: View, position: Int) {
-            editView.bottomDrag.visibility = View.VISIBLE
-            editView.topDrag.visibility = View.VISIBLE
             startActionMode()
         }
 
         override fun onStopEdit(editView: View, position: Int) {
-            editView.bottomDrag.visibility = View.GONE
-            editView.topDrag.visibility = View.GONE
             stopActionMode()
         }
 

@@ -6,10 +6,10 @@ import android.database.DataSetObserver
 import android.support.transition.TransitionManager
 import android.util.AttributeSet
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.*
 import android.widget.Adapter
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.ScrollView
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
@@ -22,6 +22,8 @@ import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 class CalendarDayView : ScrollView {
     private val MIN_EVENT_DURATION = 10
     private val MAX_EVENT_DURATION = Time.h2Min(4)
+
+    private val DRAG_VIEW_SIZE = toPx(16)
 
     private var hourHeight: Float = 0f
     private var minuteHeight: Float = 0f
@@ -36,6 +38,8 @@ class CalendarDayView : ScrollView {
 
     private lateinit var editModeBackground: View
     private lateinit var mainContainer: FrameLayout
+    private lateinit var topDragView: View
+    private lateinit var bottomDragView: View
 
     private var mode = Mode.NONE
 
@@ -73,17 +77,9 @@ class CalendarDayView : ScrollView {
         hourHeight = screenHeight / 6f
         minuteHeight = hourHeight / 60f
 
-        this.clipChildren = false
-        this.clipToPadding = false
-
         isVerticalScrollBarEnabled = false
-        mainContainer = object : FrameLayout(context) {
-            override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean = false
-        }
+        mainContainer = FrameLayout(context)
         mainContainer.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-
-        mainContainer.clipChildren = false
-        mainContainer.clipToPadding = false
 
         addView(mainContainer)
 
@@ -105,9 +101,21 @@ class CalendarDayView : ScrollView {
         editModeBackground.visibility = View.GONE
         mainContainer.addView(editModeBackground)
 
-        mainContainer.setOnTouchListener { _, _ -> false }
-        mainContainer.requestDisallowInterceptTouchEvent(true)
+        topDragView = createEditDragView()
+        bottomDragView = createEditDragView()
+        mainContainer.addView(topDragView)
+        mainContainer.addView(bottomDragView)
+
     }
+
+    private fun createEditDragView(): View {
+        val view = ImageView(context)
+        view.layoutParams = LayoutParams(DRAG_VIEW_SIZE, DRAG_VIEW_SIZE)
+        view.setImageResource(R.drawable.circle_accent)
+        view.visibility = View.GONE
+        return view
+    }
+
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
         return false
@@ -224,34 +232,37 @@ class CalendarDayView : ScrollView {
         return loc[1]
     }
 
-    fun startEditMode(editView: View, bottomDragView: View, topDragView: View, position: Int) {
-        requestDisallowInterceptTouchEvent(true)
+    fun startEditMode(editView: View, position: Int) {
+        setOnTouchListener { view, motionEvent -> true }
         editModeBackground.bringToFront()
         editView.bringToFront()
+        topDragView.bringToFront()
+        bottomDragView.bringToFront()
         TransitionManager.beginDelayedTransition(this)
         editModeBackground.visibility = View.VISIBLE
 
+        val topLP = topDragView.layoutParams as LayoutParams
+        topLP.topMargin = editView.top - DRAG_VIEW_SIZE / 2
+        topLP.marginStart = editView.left + editView.width / 2
+        topDragView.layoutParams = topLP
+        topDragView.visibility = View.VISIBLE
 
-//        val tdv = ImageView(context)
-//        val size = toPx(16)
-//        tdv.layoutParams = FrameLayout.LayoutParams(size, size)
-//        (tdv.layoutParams as LayoutParams).topMargin = editView.top - size / 2
-//        (tdv.layoutParams as LayoutParams).marginStart = editView.left + editView.width / 2
-//        tdv.setImageResource(R.drawable.circle_accent)
-//
-//        mainContainer.addView(tdv)
-
+        val bottomLP = bottomDragView.layoutParams as LayoutParams
+        bottomLP.topMargin = editView.bottom - DRAG_VIEW_SIZE / 2
+        bottomLP.marginStart = editView.left + editView.width / 2
+        bottomDragView.layoutParams = bottomLP
+        bottomDragView.visibility = View.VISIBLE
 
         setBottomDragViewListener(bottomDragView, editView)
         setTopDragViewListener(topDragView, editView)
 
-        editView.setOnTouchListener { v, e ->
-            Log.d("AAA", e.action.toString())
 
-//            editModeBackground.setOnTouchListener { view, motionEvent ->
-//                stopEditMode(editView, position)
-//                true
-//            }
+        startY = -1f
+        editView.setOnTouchListener { v, e ->
+            editModeBackground.setOnTouchListener { view, motionEvent ->
+                stopEditMode(editView, position)
+                true
+            }
 
             when (e.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -260,10 +271,14 @@ class CalendarDayView : ScrollView {
                 }
 
                 MotionEvent.ACTION_MOVE -> {
+                    if (startY < 0) {
+                        startY = e.y
+                    }
                     dy = e.y - startY
-                    editView.top += dy.toInt()
-                    editView.bottom += dy.toInt()
                     (editView.layoutParams as FrameLayout.LayoutParams).topMargin += dy.toInt()
+                    (topDragView.layoutParams as FrameLayout.LayoutParams).topMargin += dy.toInt()
+                    (bottomDragView.layoutParams as FrameLayout.LayoutParams).topMargin += dy.toInt()
+
                     val yPosition = getViewRawTop(editView).toFloat()
                     val hours = getHoursFor(yPosition)
                     val minutes = getMinutesFor(yPosition, 5)
@@ -312,6 +327,7 @@ class CalendarDayView : ScrollView {
                     val lp = editView.layoutParams as LayoutParams
                     lp.height = height
                     editView.layoutParams = lp
+                    (bottomDragView.layoutParams as FrameLayout.LayoutParams).topMargin += dy.toInt()
                     lastY = e.y
                 }
             }
@@ -335,6 +351,7 @@ class CalendarDayView : ScrollView {
                     lp.topMargin += dy.toInt()
                     lp.height = height
                     editView.layoutParams = lp
+                    (topDragView.layoutParams as FrameLayout.LayoutParams).topMargin += dy.toInt()
                     lastY = e.y
                 }
             }
@@ -348,7 +365,7 @@ class CalendarDayView : ScrollView {
 
 
     private fun stopEditMode(editView: View, position: Int) {
-
+        setOnTouchListener(null)
         val layoutParams = editView.layoutParams as FrameLayout.LayoutParams
         val h = getHoursFor(getViewRawTop(editView).toFloat())
         val m = getMinutesFor(getViewRawTop(editView).toFloat(), 5)
@@ -357,13 +374,13 @@ class CalendarDayView : ScrollView {
         adapter?.onStopEdit(editView, position)
         editView.setOnTouchListener(null)
         editModeBackground.setOnTouchListener(null)
-        //                setOnTouchListener(null)
-        requestDisallowInterceptTouchEvent(false)
         TransitionManager.beginDelayedTransition(this)
         editModeBackground.visibility = View.GONE
+        topDragView.visibility = View.GONE
+        bottomDragView.visibility = View.GONE
     }
 
-    fun toPx(dp : Int): Int =
+    fun toPx(dp: Int): Int =
         (dp * Resources.getSystem().displayMetrics.density).toInt()
 
 }
