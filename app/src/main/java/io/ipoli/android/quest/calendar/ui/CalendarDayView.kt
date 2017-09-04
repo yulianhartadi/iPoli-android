@@ -3,6 +3,7 @@ package io.ipoli.android.quest.calendar.ui
 import android.content.Context
 import android.content.res.Resources
 import android.database.DataSetObserver
+import android.graphics.drawable.Drawable
 import android.support.transition.TransitionManager
 import android.util.AttributeSet
 import android.util.DisplayMetrics
@@ -23,10 +24,11 @@ class CalendarDayView : ScrollView {
     private val MIN_EVENT_DURATION = 10
     private val MAX_EVENT_DURATION = Time.h2Min(4)
 
-    private val DRAG_VIEW_SIZE = toPx(16)
-
     private var hourHeight: Float = 0f
     private var minuteHeight: Float = 0f
+
+    private lateinit var dragImage: Drawable
+    private var dragImageSize: Int = toPx(16)
 
     private val adapterViews = mutableListOf<View>()
 
@@ -61,18 +63,26 @@ class CalendarDayView : ScrollView {
     }
 
     constructor(context: Context) : super(context) {
-        initUi()
+        initUi(null, 0)
     }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        initUi()
+        initUi(attrs, 0)
     }
 
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        initUi()
+        initUi(attrs, defStyleAttr)
     }
 
-    private fun initUi() {
+    private fun initUi(attrs: AttributeSet?, defStyleAttr: Int) {
+
+        if (attrs != null) {
+            val a = context.theme.obtainStyledAttributes(attrs, R.styleable.CalendarDayView, defStyleAttr, 0)
+            dragImage = a.getDrawable(R.styleable.CalendarDayView_dragImage)
+            dragImageSize = a.getDimensionPixelSize(R.styleable.CalendarDayView_dragImageSize, dragImageSize)
+            a.recycle()
+        }
+
         val screenHeight = getScreenHeight()
         hourHeight = screenHeight / 6f
         minuteHeight = hourHeight / 60f
@@ -110,8 +120,8 @@ class CalendarDayView : ScrollView {
 
     private fun createEditDragView(): View {
         val view = ImageView(context)
-        view.layoutParams = LayoutParams(DRAG_VIEW_SIZE, DRAG_VIEW_SIZE)
-        view.setImageResource(R.drawable.circle_accent)
+        view.layoutParams = LayoutParams(dragImageSize, dragImageSize)
+        view.setImageDrawable(dragImage)
         view.visibility = View.GONE
         return view
     }
@@ -242,13 +252,13 @@ class CalendarDayView : ScrollView {
         editModeBackground.visibility = View.VISIBLE
 
         val topLP = topDragView.layoutParams as LayoutParams
-        topLP.topMargin = editView.top - DRAG_VIEW_SIZE / 2
+        topLP.topMargin = editView.top - dragImageSize / 2
         topLP.marginStart = editView.left + editView.width / 2
         topDragView.layoutParams = topLP
         topDragView.visibility = View.VISIBLE
 
         val bottomLP = bottomDragView.layoutParams as LayoutParams
-        bottomLP.topMargin = editView.bottom - DRAG_VIEW_SIZE / 2
+        bottomLP.topMargin = editView.bottom - dragImageSize / 2
         bottomLP.marginStart = editView.left + editView.width / 2
         bottomDragView.layoutParams = bottomLP
         bottomDragView.visibility = View.VISIBLE
@@ -297,15 +307,6 @@ class CalendarDayView : ScrollView {
 
                 }
             }
-
-//            if (mode == Mode.DRAG) {
-//                requestDisallowInterceptTouchEvent(true)
-//
-////                    val maxDx = child().getWidth() * (scale - 1)  // adjusted for zero pivot
-////                    val maxDy = child().getHeight() * (scale - 1)  // adjusted for zero pivot
-////                    dx = Math.min(Math.max(dx, -maxDx), 0)  // adjusted for zero pivot
-////                    dy = Math.min(Math.max(dy, -maxDy), 0)  // adjusted for zero pivot
-//            }
 
             true
         }
@@ -380,7 +381,7 @@ class CalendarDayView : ScrollView {
         bottomDragView.visibility = View.GONE
     }
 
-    fun toPx(dp: Int): Int =
+    private fun toPx(dp: Int): Int =
         (dp * Resources.getSystem().displayMetrics.density).toInt()
 
 }

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="CategoryView">
-        <attr name="category_gap" format="dimension"/>
-        <attr name="categoryName_color" format="color"/>
+        <attr name="category_gap" format="dimension" />
+        <attr name="categoryName_color" format="color" />
     </declare-styleable>
     <declare-styleable name="IconButton">
-        <attr name="iconPadding" format="dimension"/>
+        <attr name="iconPadding" format="dimension" />
     </declare-styleable>
     <declare-styleable name="AddSubQuestView">
         <attr name="showIcon" format="boolean" />
@@ -13,6 +13,10 @@
         <attr name="editTextLayout" format="reference" />
     </declare-styleable>
     <declare-styleable name="FabMenuView">
-        <attr name="onlyQuests" format="boolean"/>
+        <attr name="onlyQuests" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="CalendarDayView">
+        <attr name="dragImage" format="reference" />
+        <attr name="dragImageSize" format="dimension" />
     </declare-styleable>
 </resources>
