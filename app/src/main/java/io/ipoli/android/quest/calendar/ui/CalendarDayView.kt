@@ -15,6 +15,7 @@ import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -33,6 +34,8 @@ class CalendarDayView : LinearLayout {
     private lateinit var editModeBackground: View
     private lateinit var topDragView: View
     private lateinit var bottomDragView: View
+    private lateinit var positionToTimeMapper: PositionToTimeMapper
+
     private var adapter: CalendarAdapter<*>? = null
 
     private val dataSetObserver = object : DataSetObserver() {
@@ -71,6 +74,8 @@ class CalendarDayView : LinearLayout {
         val screenHeight = getScreenHeight()
         hourHeight = screenHeight / 6f
         minuteHeight = hourHeight / 60f
+
+        positionToTimeMapper = PositionToTimeMapper(minuteHeight)
 
         scrollView.isVerticalScrollBarEnabled = false
 
@@ -154,15 +159,38 @@ class CalendarDayView : LinearLayout {
     fun startEditMode(editView: View, position: Int) {
         scrollView.locked = true
         editModeBackground.bringToFront()
-        editView.bringToFront()
+        setupEditView(editView, position)
         setupTopDragView(editView)
         setupBottomDragView(editView)
         TransitionManager.beginDelayedTransition(this)
         showViews(editModeBackground, topDragView, bottomDragView)
-
-        setEditViewTouchListener(editView, position)
-
         adapter?.onStartEdit(editView, position)
+    }
+
+    private fun setupEditView(editView: View, position: Int) {
+        editView.bringToFront()
+        setEditViewTouchListener(editView, position)
+    }
+
+    private fun setEditViewTouchListener(editView: View, position: Int) {
+        var startY = -1f
+        editView.setOnTouchListener { _, e ->
+            setEditModeTouchListener(editView, position)
+            val action = e.actionMasked
+
+            if (action == MotionEvent.ACTION_DOWN) {
+                startY = e.y
+            }
+            if (action == MotionEvent.ACTION_MOVE) {
+                if (startY < 0) {
+                    startY = e.y
+                }
+                val dy = e.y - startY
+                onChangeEditViewPosition(editView, dy)
+                adapter?.onStartTimeChanged(editView, position, positionToTimeMapper.timeAt((editView.layoutParams as MarginLayoutParams).topMargin.toFloat(), 5))
+            }
+            true
+        }
     }
 
     private fun setupBottomDragView(editView: View) {
@@ -189,27 +217,6 @@ class CalendarDayView : LinearLayout {
         lp.topMargin = editView.top - dragImageSize / 2
         lp.marginStart = editView.left + editView.width / 2
         topDragView.layoutParams = lp
-    }
-
-    private fun setEditViewTouchListener(editView: View, position: Int) {
-        var startY = -1f
-        editView.setOnTouchListener { _, e ->
-            setEditModeTouchListener(editView, position)
-            val action = e.actionMasked
-
-            if (action == MotionEvent.ACTION_DOWN) {
-                startY = e.y
-            }
-            if (action == MotionEvent.ACTION_MOVE) {
-                if (startY < 0) {
-                    startY = e.y
-                }
-                val dy = e.y - startY
-                onChangeEditViewPosition(editView, dy)
-                adapter?.onStartTimeChanged(editView, position, getStartTimeFromPosition(editView, 5))
-            }
-            true
-        }
     }
 
     private fun onChangeEditViewPosition(editView: View, deltaY: Float) {
@@ -269,6 +276,7 @@ class CalendarDayView : LinearLayout {
                 if (isValidHeightForEvent(height)) {
                     editView.changePositionAndHeight(dy, height)
                     topDragView.changePosition(dy)
+                    Timber.d("New start time " + positionToTimeMapper.timeAt((topDragView.layoutParams as MarginLayoutParams).topMargin.toFloat()))
                     lastY = e.y
                 }
             }
@@ -312,21 +320,7 @@ class CalendarDayView : LinearLayout {
         getMinutesFor(height) in MIN_EVENT_DURATION..MAX_EVENT_DURATION
 
     private fun getAdjustedYPosFor(view: View, rangeLength: Int): Float =
-        getYPositionFor(getStartTimeFromPosition(view, rangeLength))
-
-    private fun getStartTimeFromPosition(view: View, rangeLength: Int): Time {
-        val rawTop = view.getRawTop()
-        return Time.at(
-            hours = getHoursFor(rawTop),
-            minutes = getMinutesFor(rawTop, rangeLength)
-        )
-    }
-
-    private fun View.getRawTop(): Float {
-        val loc = IntArray(2)
-        getLocationInWindow(loc)
-        return loc[1].toFloat()
-    }
+        getYPositionFor(positionToTimeMapper.timeAt((view.layoutParams as MarginLayoutParams).topMargin.toFloat(), rangeLength))
 
     private fun getScreenHeight(): Int {
         val metrics = DisplayMetrics()
@@ -335,45 +329,9 @@ class CalendarDayView : LinearLayout {
         return metrics.heightPixels
     }
 
-    private fun getHoursFor(y: Float): Int {
-        val h = getRelativeY(y) / hourHeight
-        return Math.min(h.toInt(), 23)
-    }
-
-    private fun getMinutesFor(y: Float, rangeLength: Int): Int {
-        var minutes = (getRelativeY(y) % hourHeight / minuteHeight).toInt()
-        minutes = Math.max(0, minutes)
-        val bounds = mutableListOf<Int>()
-        var rangeStart = 0
-        for (min in 0..59) {
-            if (min % rangeLength == 0) {
-                rangeStart = min
-            }
-            bounds.add(rangeStart)
-        }
-        return bounds[minutes]
-    }
-
-    private fun getRelativeY(y: Float): Float {
-        val offsets = IntArray(2)
-        eventContainer.getLocationOnScreen(offsets)
-        return getRelativeY(y, offsets[1].toFloat())
-    }
-
-    private fun getRelativeY(y: Float, yOffset: Float): Float =
-        Math.max(0f, scrollY + y - yOffset)
-
     private fun getYPositionFor(time: Time): Float =
         time.hours * hourHeight + getMinutesHeight(time.getMinutes())
 
-    //    private fun getYPositionFor(minutesAfterMidnight: Int): Float {
-//        val time = Time.of(minutesAfterMidnight)
-//        return getYPositionFor(time.hours, time.getMinutes())
-//    }
-//
-//    protected fun getHeightFor(duration: Int): Int {
-//        return getMinutesHeight(duration).toInt()
-//    }
     private fun getMinutesHeight(minutes: Int): Float =
         minuteHeight * minutes
 

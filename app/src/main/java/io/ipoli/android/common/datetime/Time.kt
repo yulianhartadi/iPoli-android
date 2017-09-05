@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/20/17.
  */
-class Time private constructor(minutesAfterMidnight: Int) {
+data class Time constructor(private val minutesAfterMidnight: Int) {
     private val minutes: Int
 
     init {
@@ -18,7 +18,7 @@ class Time private constructor(minutesAfterMidnight: Int) {
         this.minutes = minutesAfterMidnight % MINUTES_IN_A_DAY
     }
 
-    private constructor(hours: Int, minutes: Int) : this(hours * 60 + minutes) {}
+    private constructor(hours: Int, minutes: Int) : this(hours * 60 + minutes)
 
     fun toMinuteOfDay(): Int {
         return minutes
