@@ -192,15 +192,11 @@ class CalendarDayView : LinearLayout {
         return getRelativeY(y, offsets[1].toFloat())
     }
 
-    private fun getRelativeY(y: Float, yOffset: Float): Float {
-        return Math.max(0f, scrollY + y - yOffset)
-    }
+    private fun getRelativeY(y: Float, yOffset: Float): Float =
+        Math.max(0f, scrollY + y - yOffset)
 
-    private fun getYPositionFor(time: Time): Float {
-        var y = time.hours * hourHeight
-        y += getMinutesHeight(time.getMinutes())
-        return y
-    }
+    private fun getYPositionFor(time: Time): Float =
+        time.hours * hourHeight + getMinutesHeight(time.getMinutes())
 
     //    private fun getYPositionFor(minutesAfterMidnight: Int): Float {
 //        val time = Time.of(minutesAfterMidnight)
@@ -210,13 +206,11 @@ class CalendarDayView : LinearLayout {
 //    protected fun getHeightFor(duration: Int): Int {
 //        return getMinutesHeight(duration).toInt()
 //    }
-    private fun getMinutesHeight(minutes: Int): Float {
-        return minuteHeight * minutes
-    }
+    private fun getMinutesHeight(minutes: Int): Float =
+        minuteHeight * minutes
 
-    private fun getMinutesFor(height: Int): Int {
-        return (height / minuteHeight).toInt()
-    }
+    private fun getMinutesFor(height: Int): Int =
+        (height / minuteHeight).toInt()
 
     fun startEditMode(editView: View, position: Int) {
         scrollView.locked = true
