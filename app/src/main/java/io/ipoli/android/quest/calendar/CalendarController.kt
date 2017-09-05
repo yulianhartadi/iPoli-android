@@ -11,7 +11,6 @@ import io.ipoli.android.quest.calendar.ui.CalendarEvent
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 
-
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/2/17.
@@ -58,10 +57,7 @@ class CalendarController : Controller() {
         actionMode?.finish()
     }
 
-
-    data class QuestViewModel(override var duration: Int, override var startMinute: Int) : CalendarEvent {
-
-    }
+    data class QuestViewModel(override var duration: Int, override var startMinute: Int) : CalendarEvent
 
     inner class QuestCalendarAdapter(context: Context, events: List<QuestViewModel>, private val calendarDayView: CalendarDayView) :
         CalendarAdapter<QuestViewModel>(context, R.layout.item_calendar_quest, events) {
@@ -71,7 +67,6 @@ class CalendarController : Controller() {
             if (view == null) {
                 view = LayoutInflater.from(context).inflate(resource, parent, false)!!
             }
-            val questModel = getItem(position)
 
             view.setOnLongClickListener { v ->
                 calendarDayView.startEditMode(v, position)
