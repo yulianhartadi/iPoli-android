@@ -33,8 +33,6 @@ class CalendarDayView : LinearLayout {
     private lateinit var editModeBackground: View
     private lateinit var topDragView: View
     private lateinit var bottomDragView: View
-    private var startY = 0f
-    private var dy = 0f
     private var adapter: CalendarAdapter<*>? = null
 
     private val dataSetObserver = object : DataSetObserver() {
@@ -153,6 +151,183 @@ class CalendarDayView : LinearLayout {
         }
     }
 
+    fun startEditMode(editView: View, position: Int) {
+        scrollView.locked = true
+        editModeBackground.bringToFront()
+        editView.bringToFront()
+        setupTopDragView(editView)
+        setupBottomDragView(editView)
+        TransitionManager.beginDelayedTransition(this)
+        showViews(editModeBackground, topDragView, bottomDragView)
+
+        setEditViewTouchListener(editView, position)
+
+        adapter?.onStartEdit(editView, position)
+    }
+
+    private fun setupBottomDragView(editView: View) {
+        bottomDragView.bringToFront()
+        positionBottomDragView(editView)
+        setBottomDragViewListener(bottomDragView, editView)
+    }
+
+    private fun setupTopDragView(editView: View) {
+        topDragView.bringToFront()
+        positionTopDragView(editView)
+        setTopDragViewListener(topDragView, editView)
+    }
+
+    private fun positionBottomDragView(editView: View) {
+        val lp = bottomDragView.layoutParams as MarginLayoutParams
+        lp.topMargin = editView.bottom - dragImageSize / 2
+        lp.marginStart = editView.left + editView.width / 2
+        bottomDragView.layoutParams = lp
+    }
+
+    private fun positionTopDragView(editView: View) {
+        val lp = topDragView.layoutParams as MarginLayoutParams
+        lp.topMargin = editView.top - dragImageSize / 2
+        lp.marginStart = editView.left + editView.width / 2
+        topDragView.layoutParams = lp
+    }
+
+    private fun setEditViewTouchListener(editView: View, position: Int) {
+        var startY = -1f
+        editView.setOnTouchListener { _, e ->
+            setEditModeTouchListener(editView, position)
+            val action = e.actionMasked
+
+            if (action == MotionEvent.ACTION_DOWN) {
+                startY = e.y
+            }
+            if (action == MotionEvent.ACTION_MOVE) {
+                if (startY < 0) {
+                    startY = e.y
+                }
+                val dy = e.y - startY
+                onChangeEditViewPosition(editView, dy)
+                adapter?.onStartTimeChanged(editView, position, getStartTimeFromPosition(editView, 5))
+            }
+            true
+        }
+    }
+
+    private fun onChangeEditViewPosition(editView: View, deltaY: Float) {
+        editView.changePosition(deltaY)
+        topDragView.changePosition(deltaY)
+        bottomDragView.changePosition(deltaY)
+    }
+
+    private fun setEditModeTouchListener(editView: View, position: Int) {
+        editModeBackground.setOnTouchListener { _, _ ->
+            stopEditMode(editView, position)
+            true
+        }
+    }
+
+    private fun stopEditMode(editView: View, position: Int) {
+        scrollView.locked = false
+        editView.setPosition(getAdjustedYPosFor(editView, rangeLength = 5))
+        editView.setOnTouchListener(null)
+        editModeBackground.setOnTouchListener(null)
+        TransitionManager.beginDelayedTransition(this)
+        hideViews(editModeBackground, topDragView, bottomDragView)
+        adapter?.onStopEdit(editView, position)
+    }
+
+    private fun setBottomDragViewListener(bottomDragView: View, editView: View) {
+        var lastY = 0f
+        bottomDragView.setOnTouchListener { _, e ->
+            if (e.actionMasked == MotionEvent.ACTION_DOWN) {
+                lastY = e.y
+            }
+
+            if (e.actionMasked == MotionEvent.ACTION_MOVE) {
+                val dy = e.y - lastY
+                val height = editView.height + dy.toInt()
+                if (isValidHeightForEvent(height)) {
+                    editView.changeHeight(height)
+                    bottomDragView.changePosition(dy)
+                    lastY = e.y
+                }
+            }
+
+            true
+        }
+    }
+
+    private fun setTopDragViewListener(topDragView: View, editView: View) {
+        var lastY = 0f
+        topDragView.setOnTouchListener { _, e ->
+            if (e.actionMasked == MotionEvent.ACTION_DOWN) {
+                lastY = e.y
+            }
+
+            if (e.actionMasked == MotionEvent.ACTION_MOVE) {
+                val dy = e.y - lastY
+                val height = editView.height - dy.toInt()
+                if (isValidHeightForEvent(height)) {
+                    editView.changePositionAndHeight(dy, height)
+                    topDragView.changePosition(dy)
+                    lastY = e.y
+                }
+            }
+
+            true
+        }
+    }
+
+    private fun View.changePositionAndHeight(yDelta: Float, height: Int) =
+        changeLayoutParams<MarginLayoutParams> {
+            it.topMargin += yDelta.toInt()
+            it.height = height
+        }
+
+    private fun View.setPositionAndHeight(yPosition: Float, height: Int) =
+        changeLayoutParams<MarginLayoutParams> {
+            it.topMargin = yPosition.toInt()
+            it.height = height
+        }
+
+    private fun View.setPosition(yPosition: Float) =
+        changeLayoutParams<MarginLayoutParams> { it.topMargin = yPosition.toInt() }
+
+    private fun View.changePosition(yDelta: Float) =
+        changePosition(yDelta.toInt())
+
+    private fun View.changePosition(yDelta: Int) =
+        changeLayoutParams<MarginLayoutParams> { it.topMargin += yDelta }
+
+    private fun View.changeHeight(height: Int) =
+        changeLayoutParams<MarginLayoutParams> { it.height = height }
+
+    private fun <T : ViewGroup.LayoutParams> View.changeLayoutParams(cb: (layoutParams: T) -> Unit) {
+        @Suppress("UNCHECKED_CAST")
+        val lp = layoutParams as T
+        cb(lp)
+        layoutParams = lp
+    }
+
+    private fun isValidHeightForEvent(height: Int): Boolean =
+        getMinutesFor(height) in MIN_EVENT_DURATION..MAX_EVENT_DURATION
+
+    private fun getAdjustedYPosFor(view: View, rangeLength: Int): Float =
+        getYPositionFor(getStartTimeFromPosition(view, rangeLength))
+
+    private fun getStartTimeFromPosition(view: View, rangeLength: Int): Time {
+        val rawTop = view.getRawTop()
+        return Time.at(
+            hours = getHoursFor(rawTop),
+            minutes = getMinutesFor(rawTop, rangeLength)
+        )
+    }
+
+    private fun View.getRawTop(): Float {
+        val loc = IntArray(2)
+        getLocationInWindow(loc)
+        return loc[1].toFloat()
+    }
+
     private fun getScreenHeight(): Int {
         val metrics = DisplayMetrics()
         val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -204,180 +379,6 @@ class CalendarDayView : LinearLayout {
 
     private fun getMinutesFor(height: Int): Int =
         (height / minuteHeight).toInt()
-
-    fun startEditMode(editView: View, position: Int) {
-        scrollView.locked = true
-        editModeBackground.bringToFront()
-        editView.bringToFront()
-        setupTopDragView(editView)
-        setupBottomDragView(editView)
-        TransitionManager.beginDelayedTransition(this)
-        showViews(editModeBackground, topDragView, bottomDragView)
-
-        startY = -1f
-        setEditViewTouchListener(editView, position)
-
-        adapter?.onStartEdit(editView, position)
-    }
-
-    private fun setupBottomDragView(editView: View) {
-        bottomDragView.bringToFront()
-        positionBottomDragView(editView)
-        setBottomDragViewListener(bottomDragView, editView)
-    }
-
-    private fun setupTopDragView(editView: View) {
-        topDragView.bringToFront()
-        positionTopDragView(editView)
-        setTopDragViewListener(topDragView, editView)
-    }
-
-    private fun positionBottomDragView(editView: View) {
-        val lp = bottomDragView.layoutParams as MarginLayoutParams
-        lp.topMargin = editView.bottom - dragImageSize / 2
-        lp.marginStart = editView.left + editView.width / 2
-        bottomDragView.layoutParams = lp
-    }
-
-    private fun positionTopDragView(editView: View) {
-        val lp = topDragView.layoutParams as MarginLayoutParams
-        lp.topMargin = editView.top - dragImageSize / 2
-        lp.marginStart = editView.left + editView.width / 2
-        topDragView.layoutParams = lp
-    }
-
-    private fun setEditViewTouchListener(editView: View, position: Int) {
-        editView.setOnTouchListener { _, e ->
-            editModeBackground.setOnTouchListener { _, _ ->
-                stopEditMode(editView, position)
-                true
-            }
-            val action = e.actionMasked
-
-            if (action == MotionEvent.ACTION_DOWN) {
-                startY = e.y
-            }
-            if (action == MotionEvent.ACTION_MOVE) {
-                if (startY < 0) {
-                    startY = e.y
-                }
-                dy = e.y - startY
-                onChangeEditViewPosition(editView, dy)
-                adapter?.onStartTimeChanged(editView, position, getStartTimeFromPosition(editView, 5))
-            }
-            true
-        }
-    }
-
-    private fun stopEditMode(editView: View, position: Int) {
-        scrollView.locked = false
-        editView.setPosition(getAdjustedYPosFor(editView, rangeLength = 5))
-        editView.setOnTouchListener(null)
-        editModeBackground.setOnTouchListener(null)
-        TransitionManager.beginDelayedTransition(this)
-        hideViews(editModeBackground, topDragView, bottomDragView)
-        adapter?.onStopEdit(editView, position)
-    }
-
-    private fun onChangeEditViewPosition(editView: View, deltaY: Float) {
-        editView.changePosition(deltaY)
-        topDragView.changePosition(deltaY)
-        bottomDragView.changePosition(deltaY)
-    }
-
-    private fun setBottomDragViewListener(bottomDragView: View, editView: View) {
-        var lastY = 0f
-        bottomDragView.setOnTouchListener { _, e ->
-            if (e.actionMasked == MotionEvent.ACTION_DOWN) {
-                lastY = e.y
-            }
-
-            if (e.actionMasked == MotionEvent.ACTION_MOVE) {
-                dy = e.y - lastY
-                val height = editView.height + dy.toInt()
-                if (isValidHeightForEvent(height)) {
-                    editView.changeHeight(height)
-                    bottomDragView.changePosition(dy)
-                    lastY = e.y
-                }
-            }
-
-            true
-        }
-    }
-
-    private fun setTopDragViewListener(topDragView: View, editView: View) {
-        var lastY = 0f
-        topDragView.setOnTouchListener { _, e ->
-            if (e.actionMasked == MotionEvent.ACTION_DOWN) {
-                lastY = e.y
-            }
-
-            if (e.actionMasked == MotionEvent.ACTION_MOVE) {
-                dy = e.y - lastY
-                val height = editView.height - dy.toInt()
-                if (isValidHeightForEvent(height)) {
-                    editView.changePositionAndHeight(dy, height)
-                    topDragView.changePosition(dy)
-                    lastY = e.y
-                }
-            }
-
-            true
-        }
-    }
-
-    private fun View.getRawTop(): Float {
-        val loc = IntArray(2)
-        getLocationInWindow(loc)
-        return loc[1].toFloat()
-    }
-
-    private fun View.changePositionAndHeight(yDelta: Float, height: Int) =
-        changeLayoutParams<MarginLayoutParams> {
-            it.topMargin += yDelta.toInt()
-            it.height = height
-        }
-
-    private fun View.setPositionAndHeight(yPosition: Float, height: Int) =
-        changeLayoutParams<MarginLayoutParams> {
-            it.topMargin = yPosition.toInt()
-            it.height = height
-        }
-
-    private fun View.setPosition(yPosition: Float) =
-        changeLayoutParams<MarginLayoutParams> { it.topMargin = yPosition.toInt() }
-
-    private fun View.changePosition(yDelta: Float) =
-        changePosition(yDelta.toInt())
-
-    private fun View.changePosition(yDelta: Int) =
-        changeLayoutParams<MarginLayoutParams> { it.topMargin += yDelta }
-
-    private fun View.changeHeight(height: Int) {
-        changeLayoutParams<MarginLayoutParams> { it.height = height }
-    }
-
-    private fun <T : ViewGroup.LayoutParams> View.changeLayoutParams(cb: (layoutParams: T) -> Unit) {
-        @Suppress("UNCHECKED_CAST")
-        val lp = layoutParams as T
-        cb(lp)
-        layoutParams = lp
-    }
-
-    private fun isValidHeightForEvent(height: Int): Boolean =
-        getMinutesFor(height) in MIN_EVENT_DURATION..MAX_EVENT_DURATION
-
-    private fun getAdjustedYPosFor(view: View, rangeLength: Int): Float =
-        getYPositionFor(getStartTimeFromPosition(view, rangeLength))
-
-    private fun getStartTimeFromPosition(view: View, rangeLength: Int): Time {
-        val rawTop = view.getRawTop()
-        return Time.at(
-            hours = getHoursFor(rawTop),
-            minutes = getMinutesFor(rawTop, rangeLength)
-        )
-    }
 
     private fun showViews(vararg views: View) =
         views.forEach { it.visibility = View.VISIBLE }
