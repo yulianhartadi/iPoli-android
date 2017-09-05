@@ -30,16 +30,9 @@ class CalendarDayView : LinearLayout {
     private var dragImageSize: Int = toPx(16)
     private val adapterViews = mutableListOf<View>()
 
-    private enum class Mode {
-        NONE,
-        DRAG,
-        ZOOM
-    }
-
     private lateinit var editModeBackground: View
     private lateinit var topDragView: View
     private lateinit var bottomDragView: View
-    private var mode = Mode.NONE
     private var startY = 0f
     private var dy = 0f
     private var adapter: CalendarAdapter<*>? = null
@@ -259,25 +252,18 @@ class CalendarDayView : LinearLayout {
                 stopEditMode(editView, position)
                 true
             }
+            val action = e.actionMasked
 
-            when (e.actionMasked) {
-                MotionEvent.ACTION_DOWN -> {
-                    mode = Mode.DRAG
+            if (action == MotionEvent.ACTION_DOWN) {
+                startY = e.y
+            }
+            if (action == MotionEvent.ACTION_MOVE) {
+                if (startY < 0) {
                     startY = e.y
                 }
-                MotionEvent.ACTION_MOVE -> {
-                    if (startY < 0) {
-                        startY = e.y
-                    }
-                    dy = e.y - startY
-                    onChangeEditViewPosition(editView, dy)
-                    adapter?.onStartTimeChanged(editView, position, getStartTimeFromPosition(editView, 5))
-                }
-                MotionEvent.ACTION_UP -> {
-                    mode = Mode.NONE
-                }
-                else -> {
-                }
+                dy = e.y - startY
+                onChangeEditViewPosition(editView, dy)
+                adapter?.onStartTimeChanged(editView, position, getStartTimeFromPosition(editView, 5))
             }
             true
         }
