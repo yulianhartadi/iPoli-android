@@ -1,20 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<io.ipoli.android.quest.calendar.ui.CalendarDayView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/calendar"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/unscheduledQuests"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <io.ipoli.android.quest.calendar.ui.CalendarDayView
-        android:id="@+id/calendarContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:dragImage="@drawable/circle_accent"
-        app:dragImageSize="16dp" />
-
-</LinearLayout>
+    app:dragImage="@drawable/circle_accent"
+    app:dragImageSize="16dp" />
