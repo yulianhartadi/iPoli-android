@@ -12,7 +12,7 @@ import io.reactivex.subjects.PublishSubject
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/8/17.
  */
-abstract class MviController<VS, V : ViewStateRenderer<VS>, P : MviPresenter<V, VS>> : Controller {
+abstract class MviController<VS, V : ViewStateRenderer<VS>, P : MviPresenter<V, VS>> : Controller, ViewStateRenderer<VS> {
 
     init {
         addLifecycleListener(createMviLifecycleListener())
@@ -91,8 +91,7 @@ abstract class MviController<VS, V : ViewStateRenderer<VS>, P : MviPresenter<V, 
         return PublishSubject.create<I>()
     }
 
-    @Suppress("UNUSED")
-    fun render(state: VS) {
+    override fun render(state: VS) {
         render(state, view!!)
     }
 
