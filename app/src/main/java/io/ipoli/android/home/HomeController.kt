@@ -13,7 +13,7 @@ import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.navigator
-import io.ipoli.android.quest.calendar.CalendarController
+import io.ipoli.android.quest.calendar.ui.CalendarController
 import kotlinx.android.synthetic.main.controller_home.view.*
 
 /**

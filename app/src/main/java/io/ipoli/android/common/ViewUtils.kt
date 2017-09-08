@@ -1,6 +1,6 @@
 package io.ipoli.android.common
 
-import android.content.res.Resources
+import android.content.Context
 import android.util.TypedValue
 
 
@@ -10,6 +10,6 @@ import android.util.TypedValue
  */
 object ViewUtils {
 
-    fun dpToPx(dips: Float, resources: Resources): Float =
-        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dips, resources.displayMetrics)
+    fun dpToPx(dips: Float, context: Context): Float =
+        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dips, context.resources.displayMetrics)
 }

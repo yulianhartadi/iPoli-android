@@ -8,19 +8,19 @@ import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.quest.calendar.ui.CalendarAdapter
 import io.ipoli.android.quest.calendar.ui.CalendarDayView
 import io.ipoli.android.quest.calendar.ui.CalendarEvent
-import kotlinx.android.synthetic.main.controller_calendar.view.*
+import kotlinx.android.synthetic.main.controller_day_view.view.*
 import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/2/17.
  */
-class CalendarController : Controller() {
+class DayViewController : Controller() {
 
     private var actionMode: ActionMode? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
-        val view = inflater.inflate(R.layout.controller_calendar, container, false)
+        val view = inflater.inflate(R.layout.controller_day_view, container, false)
         view.calendar.setAdapter(QuestCalendarAdapter(activity!!,
             listOf(
                 QuestViewModel(60, Time.atHours(1).toMinuteOfDay()),

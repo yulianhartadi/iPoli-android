@@ -143,7 +143,7 @@ class RepeatingQuestViewModelAdapterDelegate(private val inflater: LayoutInflate
                     itemView.progressContainer, false)
                 val progressViewEmptyBackground = progressViewEmpty.background as GradientDrawable
 
-                val strokeWidth = ViewUtils.dpToPx(1f, context.resources).toInt()
+                val strokeWidth = ViewUtils.dpToPx(1f, context).toInt()
                 val strokeColor = ContextCompat.getColor(context, viewModel.categoryColor)
                 progressViewEmptyBackground.setStroke(strokeWidth, strokeColor)
                 itemView.progressContainer.addView(progressViewEmpty)
