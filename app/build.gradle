@@ -71,6 +71,7 @@ dependencies {
     implementation 'com.github.medyo:fancybuttons:1.8.4'
     implementation 'de.hdodenhof:circleimageview:2.1.0'
     implementation 'com.lnikkila:extendedtouchview:0.1.1'
+    implementation 'sun.bob:mcalendarview:1.0.0'
 
 //    debugImplementation "com.github.brianPlummer:tinydancer:0.1.1"
 //    implementation "com.github.brianPlummer:tinydancer-noop:0.1.1"

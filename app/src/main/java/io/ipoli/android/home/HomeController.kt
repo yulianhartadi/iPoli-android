@@ -16,6 +16,8 @@ import io.ipoli.android.common.navigator
 import io.ipoli.android.quest.calendar.ui.CalendarController
 import kotlinx.android.synthetic.main.controller_home.view.*
 
+
+
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/19/17.
@@ -37,6 +39,7 @@ class HomeController : Controller(), NavigationView.OnNavigationItemSelectedList
 
     override fun onAttach(view: View) {
         super.onAttach(view)
+
         val activity = activity as MainActivity
         activity.setSupportActionBar(view.toolbar)
 
