@@ -7,10 +7,10 @@
     android:clipChildren="false">
 
     <RelativeLayout
-        android:elevation="2dp"
         android:id="@+id/dayPickerContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:elevation="12dp"
         android:clipChildren="false">
 
         <sun.bob.mcalendarview.views.WeekColumnView
@@ -39,17 +39,22 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:id="@+id/expander"
+            android:elevation="12dp"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="-12dp"
-            android:elevation="12dp"
             android:src="@drawable/circle_accent"/>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="12dp"
+            android:background="@android:color/transparent"
+            android:layout_below="@+id/dayPicker"/>
     </RelativeLayout>
 
 
     <android.support.v4.view.ViewPager
-        android:elevation="1dp"
         android:id="@+id/pager"
+        android:elevation="2dp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>

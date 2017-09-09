@@ -12,6 +12,7 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.ipoli.android.R
+import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.quest.calendar.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import org.threeten.bp.LocalDate
@@ -69,39 +70,32 @@ class CalendarController : Controller() {
 
             TransitionManager.beginDelayedTransition(view.dayPickerContainer)
 
+            val layoutParams = view.pager.layoutParams as ViewGroup.MarginLayoutParams
             if (pickerState == 0) {
                 CellConfig.Month2WeekPos = CellConfig.middlePosition
                 CellConfig.ifMonth = false
                 view.dayPicker.shrink()
                 pickerState = 1
+                layoutParams.topMargin = ViewUtils.dpToPx(-12f, view.context).toInt()
+                view.pager.layoutParams = layoutParams
                 view.dayPickerContainer.visibility = View.VISIBLE
             } else {
                 view.dayPickerContainer.visibility = View.GONE
                 pickerState = 0
+                layoutParams.topMargin = 0
             }
-
-//            if (pickerState == 0) {
-//                CellConfig.Week2MonthPos = CellConfig.middlePosition
-//                CellConfig.ifMonth = true
-//                view.dayPicker.expand()
-//                pickerState = 2
-//                view.dayPickerContainer.visibility = View.VISIBLE
-//            } else if (pickerState == 1) {
-//                view.dayPickerContainer.visibility = View.GONE
-//                pickerState = 0
-//            } else {
-//                CellConfig.Month2WeekPos = CellConfig.middlePosition
-//                CellConfig.ifMonth = false
-//                view.dayPicker.shrink()
-//                pickerState = 1
-//            }
-
+            view.pager.layoutParams = layoutParams
         }
 
         view.expander.setOnClickListener({
             CellConfig.Week2MonthPos = CellConfig.middlePosition
-            CellConfig.ifMonth = true
-            view.dayPicker.expand()
+            if(CellConfig.ifMonth) {
+                CellConfig.ifMonth = false
+                view.dayPicker.shrink()
+            } else {
+                CellConfig.ifMonth = true
+                view.dayPicker.expand()
+            }
         })
 
 //        calendarAdapter.switchToWeek(monthPager.rowIndex)

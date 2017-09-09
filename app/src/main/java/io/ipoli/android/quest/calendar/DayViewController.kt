@@ -23,7 +23,7 @@ class DayViewController : Controller() {
         val view = inflater.inflate(R.layout.controller_day_view, container, false)
         view.calendar.setAdapter(QuestCalendarAdapter(activity!!,
             listOf(
-                QuestViewModel(60, Time.atHours(1).toMinuteOfDay()),
+                QuestViewModel(60, Time.atHours(0).toMinuteOfDay()),
                 QuestViewModel(30, Time.atHours(3).toMinuteOfDay())
             ),
             view.calendar
