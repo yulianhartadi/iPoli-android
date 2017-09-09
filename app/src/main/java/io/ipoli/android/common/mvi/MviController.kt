@@ -34,8 +34,12 @@ abstract class MviController<VS, V : ViewStateRenderer<VS>, P : MviPresenter<V, 
                 setRestoringViewState(true)
             }
 
-            @Suppress("UNCHECKED_CAST")
-            presenter?.onAttachView(this@MviController as V)
+            try {
+                @Suppress("UNCHECKED_CAST")
+                presenter?.onAttachView(this@MviController as V)
+            } catch (e: ClassCastException) {
+                throw RuntimeException("Your view " + this@MviController.javaClass.simpleName + " must implement the View interface ")
+            }
 
             if (isRestoringViewState) {
                 setRestoringViewState(false)
