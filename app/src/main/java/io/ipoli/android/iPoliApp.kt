@@ -7,25 +7,23 @@ import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
-import io.ipoli.android.common.di.AppComponent
-import io.ipoli.android.common.di.AppModule
-import io.ipoli.android.common.di.DaggerAppComponent
-import io.ipoli.android.quest.data.Quest
-import io.ipoli.android.repeatingquest.data.Recurrence
-import io.ipoli.android.repeatingquest.data.RepeatingQuest
-import io.ipoli.android.repeatingquest.persistence.RealmRepeatingQuestRepository
+import io.ipoli.android.common.di.*
 import io.ipoli.android.reward.RealmRewardRepository
 import io.ipoli.android.reward.Reward
 import io.realm.Realm
-import org.threeten.bp.LocalDate
 import timber.log.Timber
-import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 7/7/17.
  */
+
 class iPoliApp : Application() {
+
+    private val module = Module(
+        androidModule = MainAndroidModule(this),
+        repositoryModule = RealmRepositoryModule()
+    )
 
     companion object {
         private var component: AppComponent? = null
@@ -39,6 +37,8 @@ class iPoliApp : Application() {
             }
             return component!!
         }
+
+        fun module(context: Context) = (context.applicationContext as iPoliApp).module
     }
 
     override fun onCreate() {

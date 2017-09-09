@@ -5,17 +5,24 @@ import android.view.*
 import com.bluelinelabs.conductor.Controller
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.di.Module
+import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.ui.CalendarAdapter
 import io.ipoli.android.quest.calendar.ui.CalendarDayView
 import io.ipoli.android.quest.calendar.ui.CalendarEvent
 import kotlinx.android.synthetic.main.controller_day_view.view.*
 import kotlinx.android.synthetic.main.item_calendar_quest.view.*
+import space.traversal.kapsule.Injects
+import space.traversal.kapsule.inject
+import space.traversal.kapsule.required
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/2/17.
  */
-class DayViewController : Controller() {
+class DayViewController : Controller(), Injects<Module> {
+
+    private val sharedPreferences by required { sharedPreferences }
 
     private var actionMode: ActionMode? = null
 
@@ -29,6 +36,10 @@ class DayViewController : Controller() {
             view.calendar
         ))
         return view
+    }
+
+    override fun onContextAvailable(context: Context) {
+        inject(iPoliApp.module(context))
     }
 
     private fun startActionMode() {
