@@ -4,6 +4,11 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'realm-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.getkeepsafe.dexcount'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
 
 android {
     compileSdkVersion 26
@@ -61,6 +66,9 @@ dependencies {
         ['org.codehaus.groovy', 'commons-codec', 'org.apache.commons', 'biz.aQute.bnd', 'org.threeten'].each {
             exclude group: it
         }
+    }
+    implementation('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
+        transitive = true
     }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
