@@ -14,7 +14,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.quest.calendar.ui.CalendarAdapter
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import timber.log.Timber
@@ -39,6 +38,7 @@ class CalendarDayView : LinearLayout {
     private lateinit var positionToTimeMapper: PositionToTimeMapper
 
     private var calendarAdapter: CalendarAdapter<*>? = null
+    private var unscheduledEventsAdapter: UnscheduledEventsAdapter<*>? = null
 
     private val dataSetObserver = object : DataSetObserver() {
         override fun onChanged() {
@@ -133,7 +133,8 @@ class CalendarDayView : LinearLayout {
         unscheduledQuests.isNestedScrollingEnabled = false
     }
 
-    fun setUnscheduledQuestsAdapter(adapter: UnscheduledQuestsAdapter) {
+    fun setUnscheduledQuestsAdapter(adapter: UnscheduledEventsAdapter<*>) {
+        unscheduledEventsAdapter = adapter
         unscheduledQuests.adapter = adapter
     }
 
@@ -175,6 +176,10 @@ class CalendarDayView : LinearLayout {
         } else if (eventsInViewCount > eventsInAdapterCount) {
             removeViews(eventsInAdapterCount, eventsInViewCount)
         }
+    }
+
+    fun scheduleEvent(unscheduledEvent: UnscheduledEvent) {
+        val eventPosition = unscheduledEventsAdapter?.events?.indexOf(unscheduledEvent)
     }
 
     fun startEditMode(editView: View, position: Int) {
