@@ -11,7 +11,6 @@ import android.util.DisplayMetrics
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
@@ -22,7 +21,7 @@ import timber.log.Timber
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 9/2/17.
  */
-class CalendarDayView : LinearLayout {
+class CalendarDayView : FrameLayout {
 
     private val MIN_EVENT_DURATION = 10
     private val MAX_EVENT_DURATION = Time.h2Min(4)
@@ -65,7 +64,6 @@ class CalendarDayView : LinearLayout {
     private fun initUi(attrs: AttributeSet?, defStyleAttr: Int) {
         setMainLayout()
         fetchStyleAttributes(attrs, defStyleAttr)
-        orientation = VERTICAL
         val screenHeight = getScreenHeight()
         hourHeight = screenHeight / 6f
         minuteHeight = hourHeight / 60f
@@ -178,8 +176,37 @@ class CalendarDayView : LinearLayout {
         }
     }
 
-    fun scheduleEvent(unscheduledEvent: UnscheduledEvent) {
-        val eventPosition = unscheduledEventsAdapter?.events?.indexOf(unscheduledEvent)
+    fun scheduleEvent(adapterView: View) {
+
+        interceptTouch = true
+        adapterView.visibility = View.GONE
+        TransitionManager.beginDelayedTransition(this)
+        val dragView = LayoutInflater.from(context).inflate(R.layout.item_calendar_drag, this, false)
+        dragView.setPositionAndHeight(adapterView.top.toFloat(), getMinutesHeight(90).toInt())
+        addView(dragView)
+
+        var startY = -1f
+        setOnTouchListener { _, ev ->
+            val action = ev.actionMasked
+
+            if (action == MotionEvent.ACTION_DOWN) {
+                startY = ev.rawY
+            }
+            if (action == MotionEvent.ACTION_MOVE) {
+                if (startY < 0) {
+                    startY = ev.y
+                }
+                val dy = ev.rawY - startY
+                dragView?.setPosition(dy)
+            }
+            true
+        }
+    }
+
+    private var interceptTouch = false
+
+    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+        return interceptTouch
     }
 
     fun startEditMode(editView: View, position: Int) {

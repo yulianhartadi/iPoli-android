@@ -15,13 +15,14 @@ import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
 
+
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/2/17.
  */
 class DayViewController : Controller(), Injects<Module> {
 
-    private val sharedPreferences by required { sharedPreferences }
+    private val layoutInflater by required { layoutInflater }
 
     private var actionMode: ActionMode? = null
 
@@ -79,10 +80,10 @@ class DayViewController : Controller(), Injects<Module> {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
             var view = convertView
             if (view == null) {
-                view = LayoutInflater.from(context).inflate(resource, parent, false)!!
+                view = layoutInflater.inflate(resource, parent, false)
             }
 
-            view.setOnLongClickListener { v ->
+            view!!.setOnLongClickListener { v ->
                 calendarDayView.startEditMode(v, position)
                 true
             }
@@ -113,8 +114,9 @@ class DayViewController : Controller(), Injects<Module> {
         override fun ViewHolder.bind(event: UnscheduledQuestViewModel, calendarDayView: CalendarDayView) {
             itemView.name.text = event.name
 
+//            calendarDayView.scheduleEvent(itemView)
             itemView.setOnLongClickListener {
-                calendarDayView.scheduleEvent(event)
+                calendarDayView.scheduleEvent(itemView)
                 true
             }
         }
