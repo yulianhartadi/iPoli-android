@@ -14,7 +14,6 @@ import io.realm.Realm
 import timber.log.Timber
 
 
-
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 7/7/17.
@@ -51,6 +50,10 @@ class iPoliApp : Application() {
             return
         }
         Fabric.with(this, Crashlytics())
+        Fabric.with(Fabric.Builder(this)
+            .kits(Crashlytics())
+            .debuggable(BuildConfig.DEBUG)
+            .build())
         AndroidThreeTen.init(this)
         // Initialize Realm. Should only be done once when the application starts.
         Realm.init(this)
