@@ -8,8 +8,10 @@ import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.ui.CalendarAdapter
-import io.ipoli.android.quest.calendar.ui.CalendarDayView
-import io.ipoli.android.quest.calendar.ui.CalendarEvent
+import io.ipoli.android.quest.calendar.ui.dayview.CalendarDayView
+import io.ipoli.android.quest.calendar.ui.dayview.CalendarEvent
+import io.ipoli.android.quest.calendar.ui.dayview.UnscheduledQuestViewModel
+import io.ipoli.android.quest.calendar.ui.dayview.UnscheduledQuestsAdapter
 import kotlinx.android.synthetic.main.controller_day_view.view.*
 import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 import space.traversal.kapsule.Injects
@@ -28,13 +30,17 @@ class DayViewController : Controller(), Injects<Module> {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val view = inflater.inflate(R.layout.controller_day_view, container, false)
-        view.calendar.setAdapter(QuestCalendarAdapter(activity!!,
+        view.calendar.setCalendarAdapter(QuestCalendarAdapter(activity!!,
             listOf(
                 QuestViewModel(60, Time.atHours(0).toMinuteOfDay()),
                 QuestViewModel(30, Time.atHours(3).toMinuteOfDay())
             ),
             view.calendar
         ))
+        view.calendar.setUnscheduledQuestsAdapter(UnscheduledQuestsAdapter(activity!!, listOf(
+            UnscheduledQuestViewModel("name 1"),
+            UnscheduledQuestViewModel("name 2")
+        )))
         return view
     }
 
