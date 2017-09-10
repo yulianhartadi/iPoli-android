@@ -36,6 +36,11 @@
             android:authorities="com.facebook.app.FacebookContentProvider1609232436065758"
             android:exported="true" />
 
+        <service
+            android:name=".reward.jobservice.RemoveRewardJobService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -43,10 +48,10 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <service
-            android:name=".reward.jobservice.RemoveRewardJobService"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="95b02b4f720064a454d0d0a5484e95d756741950"
+            />
     </application>
 
 </manifest>

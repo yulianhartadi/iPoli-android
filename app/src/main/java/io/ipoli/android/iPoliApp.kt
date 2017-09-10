@@ -2,16 +2,18 @@ package io.ipoli.android
 
 import android.app.Application
 import android.content.Context
+import com.crashlytics.android.Crashlytics
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
+import io.fabric.sdk.android.Fabric
 import io.ipoli.android.common.di.*
-import io.ipoli.android.reward.RealmRewardRepository
-import io.ipoli.android.reward.Reward
 import io.realm.Realm
 import timber.log.Timber
+
+
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -48,6 +50,7 @@ class iPoliApp : Application() {
             // You should not init your app in this process.
             return
         }
+        Fabric.with(this, Crashlytics())
         AndroidThreeTen.init(this)
         // Initialize Realm. Should only be done once when the application starts.
         Realm.init(this)
@@ -61,10 +64,10 @@ class iPoliApp : Application() {
 //        TinyDancer.create().show(this)
 
 //
-        val rewardRepository = RealmRewardRepository()
-        rewardRepository.save(Reward(name = "Reward 1", description = "desc1", price = 100)).subscribe()
-        rewardRepository.save(Reward(name = "Reward 2", description = "desc 2", price = 200)).subscribe()
-        rewardRepository.save(Reward(name = "Reward 3", description = "desc 3", price = 300)).subscribe()
+//        val rewardRepository = RealmRewardRepository()
+//        rewardRepository.save(Reward(name = "Reward 1", description = "desc1", price = 100)).subscribe()
+//        rewardRepository.save(Reward(name = "Reward 2", description = "desc 2", price = 200)).subscribe()
+//        rewardRepository.save(Reward(name = "Reward 3", description = "desc 3", price = 300)).subscribe()
 
 //        val questRepository = RealmQuestRepository()
 //        val quest = Quest("Mystery", LocalDate.now(), Category.FUN)
