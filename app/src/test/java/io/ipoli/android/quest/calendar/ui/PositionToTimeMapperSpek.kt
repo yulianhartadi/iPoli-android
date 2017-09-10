@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.calendar.ui
 
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.quest.calendar.ui.dayview.PositionToTimeMapper
 import org.amshove.kluent.`should equal`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe

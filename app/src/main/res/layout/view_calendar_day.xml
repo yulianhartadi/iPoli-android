@@ -6,6 +6,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <View
+        android:id="@+id/unscheduled_quests_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?attr/colorPrimary" />
+
     <io.ipoli.android.common.ui.LockableScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
@@ -15,12 +21,5 @@
             android:id="@+id/eventContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
-        <!--<io.ipoli.android.quest.calendar.ui.CalendarDayView-->
-        <!--android:id="@+id/calendarContainer"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--app:dragImage="@drawable/circle_accent"-->
-        <!--app:dragImageSize="16dp" />-->
     </io.ipoli.android.common.ui.LockableScrollView>
 </merge>

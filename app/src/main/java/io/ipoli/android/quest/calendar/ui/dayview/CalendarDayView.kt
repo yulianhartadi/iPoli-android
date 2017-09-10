@@ -1,10 +1,11 @@
-package io.ipoli.android.quest.calendar.ui
+package io.ipoli.android.quest.calendar.ui.dayview
 
 import android.content.Context
 import android.content.res.Resources
 import android.database.DataSetObserver
 import android.graphics.drawable.Drawable
 import android.support.transition.TransitionManager
+import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.*
@@ -13,6 +14,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.quest.calendar.ui.CalendarAdapter
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import timber.log.Timber
@@ -36,11 +38,11 @@ class CalendarDayView : LinearLayout {
     private lateinit var bottomDragView: View
     private lateinit var positionToTimeMapper: PositionToTimeMapper
 
-    private var adapter: CalendarAdapter<*>? = null
+    private var calendarAdapter: CalendarAdapter<*>? = null
 
     private val dataSetObserver = object : DataSetObserver() {
         override fun onChanged() {
-            refreshViewsFromAdapter()
+            refreshEventsFromAdapter()
         }
 
         override fun onInvalidated() {
@@ -61,29 +63,39 @@ class CalendarDayView : LinearLayout {
     }
 
     private fun initUi(attrs: AttributeSet?, defStyleAttr: Int) {
-        LayoutInflater.from(context).inflate(R.layout.view_calendar_day, this, true)
-
+        setMainLayout()
+        fetchStyleAttributes(attrs, defStyleAttr)
         orientation = VERTICAL
-
-        if (attrs != null) {
-            val a = context.theme.obtainStyledAttributes(attrs, R.styleable.CalendarDayView, defStyleAttr, 0)
-            dragImage = a.getDrawable(R.styleable.CalendarDayView_dragImage)
-            dragImageSize = a.getDimensionPixelSize(R.styleable.CalendarDayView_dragImageSize, dragImageSize)
-            a.recycle()
-        }
         val screenHeight = getScreenHeight()
         hourHeight = screenHeight / 6f
         minuteHeight = hourHeight / 60f
 
         positionToTimeMapper = PositionToTimeMapper(minuteHeight)
 
-        scrollView.isVerticalScrollBarEnabled = false
-
+        setupScroll()
         setupHourCells()
         setupEditBackgroundView()
+        setupUnscheduledQuests()
 
         topDragView = addDragView()
         bottomDragView = addDragView()
+    }
+
+    private fun setupScroll() {
+        scrollView.isVerticalScrollBarEnabled = false
+    }
+
+    private fun setMainLayout() {
+        LayoutInflater.from(context).inflate(R.layout.view_calendar_day, this, true)
+    }
+
+    private fun fetchStyleAttributes(attrs: AttributeSet?, defStyleAttr: Int) {
+        if (attrs != null) {
+            val a = context.theme.obtainStyledAttributes(attrs, R.styleable.CalendarDayView, defStyleAttr, 0)
+            dragImage = a.getDrawable(R.styleable.CalendarDayView_dragImage)
+            dragImageSize = a.getDimensionPixelSize(R.styleable.CalendarDayView_dragImageSize, dragImageSize)
+            a.recycle()
+        }
     }
 
     private fun setupEditBackgroundView() {
@@ -116,16 +128,25 @@ class CalendarDayView : LinearLayout {
         return view
     }
 
-    fun setAdapter(adapter: CalendarAdapter<*>) {
-        this.adapter?.unregisterDataSetObserver(dataSetObserver)
-        this.adapter = adapter
-        this.adapter?.registerDataSetObserver(dataSetObserver)
-        initViewsFromAdapter()
+    private fun setupUnscheduledQuests() {
+        unscheduledQuests.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        unscheduledQuests.isNestedScrollingEnabled = false
     }
 
-    private fun initViewsFromAdapter() {
+    fun setUnscheduledQuestsAdapter(adapter: UnscheduledQuestsAdapter) {
+        unscheduledQuests.adapter = adapter
+    }
+
+    fun setCalendarAdapter(adapter: CalendarAdapter<*>) {
+        this.calendarAdapter?.unregisterDataSetObserver(dataSetObserver)
+        this.calendarAdapter = adapter
+        this.calendarAdapter?.registerDataSetObserver(dataSetObserver)
+        addEventsFromAdapter()
+    }
+
+    private fun addEventsFromAdapter() {
 //        removeAllViews()
-        val a = adapter!!
+        val a = calendarAdapter!!
         for (i in 0 until a.count) {
             val adapterView = a.getView(i, null, eventContainer)
             val event = a.getItem(i)
@@ -137,22 +158,22 @@ class CalendarDayView : LinearLayout {
         }
     }
 
-    private fun refreshViewsFromAdapter() {
-        val childCount = childCount
-        val a = adapter!!
-        val adapterSize = a.count
-        val reuseCount = Math.min(childCount, adapterSize)
+    private fun refreshEventsFromAdapter() {
+        val a = calendarAdapter!!
+        val eventsInViewCount = childCount
+        val eventsInAdapterCount = a.count
+        val reuseCount = Math.min(eventsInViewCount, eventsInAdapterCount)
 
         for (i in 0 until reuseCount) {
             a.getView(i, getChildAt(i), eventContainer)
         }
 
-        if (childCount < adapterSize) {
-            for (i in childCount until adapterSize) {
+        if (eventsInViewCount < eventsInAdapterCount) {
+            for (i in eventsInViewCount until eventsInAdapterCount) {
                 eventContainer.addView(a.getView(i, null, eventContainer), i)
             }
-        } else if (childCount > adapterSize) {
-            removeViews(adapterSize, childCount)
+        } else if (eventsInViewCount > eventsInAdapterCount) {
+            removeViews(eventsInAdapterCount, eventsInViewCount)
         }
     }
 
@@ -164,7 +185,7 @@ class CalendarDayView : LinearLayout {
         setupBottomDragView(editView)
         TransitionManager.beginDelayedTransition(this)
         showViews(editModeBackground, topDragView, bottomDragView)
-        adapter?.onStartEdit(editView, position)
+        calendarAdapter?.onStartEdit(editView, position)
     }
 
     private fun setupEditView(editView: View, position: Int) {
@@ -187,7 +208,7 @@ class CalendarDayView : LinearLayout {
                 }
                 val dy = e.y - startY
                 onChangeEditViewPosition(editView, dy)
-                adapter?.onStartTimeChanged(editView, position, positionToTimeMapper.timeAt((editView.layoutParams as MarginLayoutParams).topMargin.toFloat(), 5))
+                calendarAdapter?.onStartTimeChanged(editView, position, positionToTimeMapper.timeAt((editView.layoutParams as MarginLayoutParams).topMargin.toFloat(), 5))
             }
             true
         }
@@ -239,7 +260,7 @@ class CalendarDayView : LinearLayout {
         editModeBackground.setOnTouchListener(null)
         TransitionManager.beginDelayedTransition(this)
         hideViews(editModeBackground, topDragView, bottomDragView)
-        adapter?.onStopEdit(editView, position)
+        calendarAdapter?.onStopEdit(editView, position)
     }
 
     private fun setBottomDragViewListener(bottomDragView: View, editView: View) {

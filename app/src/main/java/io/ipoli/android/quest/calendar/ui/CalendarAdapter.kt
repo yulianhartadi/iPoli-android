@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.View
 import android.widget.ArrayAdapter
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.quest.calendar.ui.dayview.CalendarEvent
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
