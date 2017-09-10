@@ -7,13 +7,10 @@ import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.iPoliApp
-import io.ipoli.android.quest.calendar.ui.CalendarAdapter
-import io.ipoli.android.quest.calendar.ui.dayview.CalendarDayView
-import io.ipoli.android.quest.calendar.ui.dayview.CalendarEvent
-import io.ipoli.android.quest.calendar.ui.dayview.UnscheduledQuestViewModel
-import io.ipoli.android.quest.calendar.ui.dayview.UnscheduledQuestsAdapter
+import io.ipoli.android.quest.calendar.ui.dayview.*
 import kotlinx.android.synthetic.main.controller_day_view.view.*
 import kotlinx.android.synthetic.main.item_calendar_quest.view.*
+import kotlinx.android.synthetic.main.unscheduled_quest_item.view.*
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -37,10 +34,10 @@ class DayViewController : Controller(), Injects<Module> {
             ),
             view.calendar
         ))
-        view.calendar.setUnscheduledQuestsAdapter(UnscheduledQuestsAdapter(activity!!, listOf(
-            UnscheduledQuestViewModel("name 1"),
-            UnscheduledQuestViewModel("name 2")
-        )))
+        view.calendar.setUnscheduledQuestsAdapter(UnscheduledQuestsAdapter(listOf(
+            UnscheduledQuestViewModel("name 1", 45),
+            UnscheduledQuestViewModel("name 2", 90)
+        ), view.calendar))
         return view
     }
 
@@ -104,6 +101,20 @@ class DayViewController : Controller(), Injects<Module> {
         override fun onStartTimeChanged(editView: View, position: Int, startTime: Time) {
             editView.startTime.text = startTime.toString()
             editView.endTime.text = Time.plusMinutes(startTime, getItem(position).duration).toString()
+        }
+    }
+
+    data class UnscheduledQuestViewModel(val name: String, val duration: Int) : UnscheduledEvent
+
+    inner class UnscheduledQuestsAdapter(items: List<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) : UnscheduledEventsAdapter<UnscheduledQuestViewModel>
+    (R.layout.unscheduled_quest_item, items, calendarDayView) {
+        override fun ViewHolder.bind(event: UnscheduledQuestViewModel, calendarDayView: CalendarDayView) {
+            itemView.name.text = event.name
+
+            itemView.setOnLongClickListener {
+                calendarDayView.scheduleEvent(event)
+                true
+            }
         }
     }
 }
