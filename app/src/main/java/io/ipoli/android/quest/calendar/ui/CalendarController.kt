@@ -16,7 +16,10 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.quest.calendar.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import org.threeten.bp.LocalDate
+import org.threeten.bp.format.DateTimeFormatter
 import sun.bob.mcalendarview.CellConfig
+import sun.bob.mcalendarview.listeners.OnDateClickListener
+import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
 
 /**
@@ -63,40 +66,7 @@ class CalendarController : Controller() {
         val toolbar = activity!!.findViewById<Toolbar>(R.id.toolbar)
 
 //        view.dayPicker.markDate(2017, 9, 12)
-        view.dayPickerContainer.visibility = View.GONE
-        toolbar.setOnClickListener {
-
-            view.dayPicker.travelTo(DateData(2017, 9, 10))
-
-            TransitionManager.beginDelayedTransition(view.dayPickerContainer)
-
-            val layoutParams = view.pager.layoutParams as ViewGroup.MarginLayoutParams
-            if (pickerState == 0) {
-                CellConfig.Month2WeekPos = CellConfig.middlePosition
-                CellConfig.ifMonth = false
-                view.dayPicker.shrink()
-                pickerState = 1
-                layoutParams.topMargin = ViewUtils.dpToPx(-12f, view.context).toInt()
-                view.pager.layoutParams = layoutParams
-                view.dayPickerContainer.visibility = View.VISIBLE
-            } else {
-                view.dayPickerContainer.visibility = View.GONE
-                pickerState = 0
-                layoutParams.topMargin = 0
-            }
-            view.pager.layoutParams = layoutParams
-        }
-
-        view.expander.setOnClickListener({
-            CellConfig.Week2MonthPos = CellConfig.middlePosition
-            if(CellConfig.ifMonth) {
-                CellConfig.ifMonth = false
-                view.dayPicker.shrink()
-            } else {
-                CellConfig.ifMonth = true
-                view.dayPicker.expand()
-            }
-        })
+        initDayPicker(view, toolbar)
 
 //        calendarAdapter.switchToWeek(monthPager.rowIndex)
 
@@ -146,6 +116,67 @@ class CalendarController : Controller() {
         })
 
         return view
+    }
+
+    private fun initDayPicker(view: View, toolbar: Toolbar) {
+        view.dayPickerContainer.visibility = View.GONE
+        val dayPicker = view.dayPicker
+
+        dayPicker.weekColumnView
+
+        toolbar.setOnClickListener {
+
+            view.currentMonth.text = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM"))
+
+            TransitionManager.beginDelayedTransition(view.dayPickerContainer)
+
+            val layoutParams = view.pager.layoutParams as ViewGroup.MarginLayoutParams
+            if (pickerState == 0) {
+                CellConfig.Month2WeekPos = CellConfig.middlePosition
+                CellConfig.ifMonth = false
+                dayPicker.shrink()
+                pickerState = 1
+                layoutParams.topMargin = ViewUtils.dpToPx(-12f, view.context).toInt()
+                view.pager.layoutParams = layoutParams
+                view.dayPickerContainer.visibility = View.VISIBLE
+            } else {
+                view.dayPickerContainer.visibility = View.GONE
+                pickerState = 0
+                layoutParams.topMargin = 0
+            }
+            view.pager.layoutParams = layoutParams
+        }
+
+        view.expander.setOnClickListener({
+            CellConfig.Week2MonthPos = CellConfig.middlePosition
+            if (CellConfig.ifMonth) {
+                CellConfig.ifMonth = false
+                dayPicker.shrink()
+            } else {
+                CellConfig.ifMonth = true
+                dayPicker.expand()
+            }
+        })
+
+        dayPicker.setOnDateClickListener(object : OnDateClickListener() {
+            override fun onDateClick(v: View, date: DateData) {
+                dayPicker.markedDates.removeAdd()
+                dayPicker.markDate(date)
+                val localDate = LocalDate.of(date.year, date.month, date.day)
+                view.currentMonth.text = localDate.format(DateTimeFormatter.ofPattern("MMMM"))
+            }
+        })
+
+        dayPicker.setOnMonthScrollListener(object : OnMonthScrollListener() {
+            override fun onMonthChange(year: Int, month: Int) {
+                val localDate = LocalDate.of(year, month, 1)
+                view.currentMonth.text = localDate.format(DateTimeFormatter.ofPattern("MMMM"))
+            }
+
+            override fun onMonthScroll(positionOffset: Float) {
+            }
+
+        })
     }
 
     override fun onDestroyView(view: View) {
