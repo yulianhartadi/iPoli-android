@@ -119,6 +119,7 @@ class CalendarController : Controller() {
     }
 
     private fun initDayPicker(view: View, toolbar: Toolbar) {
+        val monthPattern = DateTimeFormatter.ofPattern("MMMM")
         view.dayPickerContainer.visibility = View.GONE
         val dayPicker = view.dayPicker
 
@@ -126,7 +127,7 @@ class CalendarController : Controller() {
 
         toolbar.setOnClickListener {
 
-            view.currentMonth.text = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM"))
+            view.currentMonth.text = LocalDate.now().format(monthPattern)
 
             TransitionManager.beginDelayedTransition(view.dayPickerContainer)
 
@@ -148,12 +149,13 @@ class CalendarController : Controller() {
         }
 
         view.expander.setOnClickListener({
-            CellConfig.Week2MonthPos = CellConfig.middlePosition
             if (CellConfig.ifMonth) {
                 CellConfig.ifMonth = false
+                CellConfig.Month2WeekPos = CellConfig.middlePosition
                 dayPicker.shrink()
             } else {
                 CellConfig.ifMonth = true
+                CellConfig.Week2MonthPos = CellConfig.middlePosition
                 dayPicker.expand()
             }
         })
@@ -163,14 +165,14 @@ class CalendarController : Controller() {
                 dayPicker.markedDates.removeAdd()
                 dayPicker.markDate(date)
                 val localDate = LocalDate.of(date.year, date.month, date.day)
-                view.currentMonth.text = localDate.format(DateTimeFormatter.ofPattern("MMMM"))
+                view.currentMonth.text = localDate.format(monthPattern)
             }
         })
 
         dayPicker.setOnMonthScrollListener(object : OnMonthScrollListener() {
             override fun onMonthChange(year: Int, month: Int) {
                 val localDate = LocalDate.of(year, month, 1)
-                view.currentMonth.text = localDate.format(DateTimeFormatter.ofPattern("MMMM"))
+                view.currentMonth.text = localDate.format(monthPattern)
             }
 
             override fun onMonthScroll(positionOffset: Float) {

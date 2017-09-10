@@ -10,22 +10,25 @@
         android:id="@+id/dayPickerContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="12dp"
+        android:elevation="8dp"
         android:clipChildren="false">
 
         <TextView
+            style="@android:style/TextAppearance.Material.Subhead"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:paddingTop="12dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="@color/md_white"
             android:gravity="center"
             android:id="@+id/currentMonth"/>
 
         <sun.bob.mcalendarview.views.WeekColumnView
-            android:paddingTop="12dp"
+            android:paddingTop="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="12dp"
+            android:paddingBottom="8dp"
             android:layout_below="@+id/currentMonth"
             android:id="@+id/weekColumnView"/>
 
@@ -47,7 +50,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:id="@+id/expander"
-            android:elevation="12dp"
+            android:elevation="8dp"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="-12dp"
             android:src="@drawable/circle_accent"/>
