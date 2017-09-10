@@ -106,8 +106,10 @@ class DayViewController : Controller(), Injects<Module> {
 
     data class UnscheduledQuestViewModel(val name: String, val duration: Int) : UnscheduledEvent
 
-    inner class UnscheduledQuestsAdapter(items: List<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) : UnscheduledEventsAdapter<UnscheduledQuestViewModel>
-    (R.layout.unscheduled_quest_item, items, calendarDayView) {
+    inner class UnscheduledQuestsAdapter(items: List<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) :
+        UnscheduledEventsAdapter<UnscheduledQuestViewModel>
+        (R.layout.unscheduled_quest_item, items, calendarDayView) {
+
         override fun ViewHolder.bind(event: UnscheduledQuestViewModel, calendarDayView: CalendarDayView) {
             itemView.name.text = event.name
 
