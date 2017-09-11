@@ -1,6 +1,5 @@
 package io.ipoli.android.quest.calendar.ui
 
-import android.support.transition.TransitionManager
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.Toolbar
@@ -19,6 +18,7 @@ import io.ipoli.android.mcalendar.listeners.OnMonthScrollListener
 import io.ipoli.android.mcalendar.vo.DateData
 import io.ipoli.android.quest.calendar.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
+import kotlinx.android.synthetic.main.controller_calendar_toolbar.view.*
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 
@@ -64,49 +64,12 @@ class CalendarController : Controller() {
         view.pager.currentItem = MID_POSITION
 
         val toolbar = activity!!.findViewById<Toolbar>(R.id.toolbar)
+        val calendarToolbar = inflater.inflate(R.layout.controller_calendar_toolbar, toolbar, false) as ViewGroup
+        calendarToolbar.day.text = "Today"
+        calendarToolbar.date.text = "Sept 8th 17"
+        toolbar.addView(calendarToolbar)
 
-//        view.dayPicker.markDate(2017, 9, 12)
-        initDayPicker(view, toolbar)
-
-//        calendarAdapter.switchToWeek(monthPager.rowIndex)
-
-//
-//        val appBarLayout = activity!!.findViewById<AppBarLayout>(R.id.appbar)
-//        toolbar.title = "Friday Sept 8th 2017"
-//        val lp = toolbar.layoutParams as ViewGroup.MarginLayoutParams
-//        val window = activity!!.window
-//        toolbar.setOnClickListener {
-//            TransitionManager.beginDelayedTransition(appBarLayout)
-//            val existingView = toolbar.findViewWithTag<View>("calendar")
-//            if (existingView == null) {
-//
-//
-//
-//// clear FLAG_TRANSLUCENT_STATUS flag:
-////                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-////
-////// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-////                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-//
-//// finally change the color
-//                window.statusBarColor = ContextCompat.getColor(activity, R.color.md_white)
-//
-//                lp.marginStart = ViewUtils.dpToPx(-32f, view.context).toInt()
-//                toolbar.layoutParams = lp
-//                appBarLayout.setBackgroundResource(R.color.md_white)
-//                val calendarView = inflater.inflate(R.layout.toolbar_calendar, toolbar, false)
-//                calendarView.tag = "calendar"
-//                calendarView.toolbarTitle.text = toolbar.title
-//                toolbar.addView(calendarView)
-//            } else {
-//
-//                lp.marginStart = ViewUtils.dpToPx(0f, view.context).toInt()
-//                toolbar.layoutParams = lp
-//                toolbar.removeView(existingView)
-//                appBarLayout.setBackgroundResource(R.color.colorPrimary)
-//                window.statusBarColor = ContextCompat.getColor(activity, R.color.colorPrimaryDark)
-//            }
-//        }
+        initDayPicker(view, calendarToolbar)
 
         view.pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
@@ -118,31 +81,32 @@ class CalendarController : Controller() {
         return view
     }
 
-    private fun initDayPicker(view: View, toolbar: Toolbar) {
+    private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
         val monthPattern = DateTimeFormatter.ofPattern("MMMM")
         view.dayPickerContainer.visibility = View.GONE
         val dayPicker = view.dayPicker
+        val calendarIndicator = calendarToolbar.calendarIndicator
 
         var currentDate = LocalDate.now()
+        dayPicker.markDate(DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth))
+        var isOpen = false
 
-        toolbar.setOnClickListener {
-
+        calendarToolbar.setOnClickListener {
+            calendarIndicator.animate().rotationBy(180f).setDuration(200)
             view.currentMonth.text = LocalDate.now().format(monthPattern)
 
-            TransitionManager.beginDelayedTransition(view.dayPickerContainer)
-
             val layoutParams = view.pager.layoutParams as ViewGroup.MarginLayoutParams
-            if (pickerState == 0) {
+            if (!isOpen) {
                 CellConfig.Month2WeekPos = CellConfig.middlePosition
                 CellConfig.ifMonth = false
                 dayPicker.shrink()
-                pickerState = 1
+                isOpen = true
                 layoutParams.topMargin = ViewUtils.dpToPx(-12f, view.context).toInt()
                 view.pager.layoutParams = layoutParams
                 view.dayPickerContainer.visibility = View.VISIBLE
             } else {
                 view.dayPickerContainer.visibility = View.GONE
-                pickerState = 0
+                isOpen = false
                 layoutParams.topMargin = 0
             }
             view.pager.layoutParams = layoutParams
