@@ -14,14 +14,14 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
+import io.ipoli.android.mcalendar.CellConfig
+import io.ipoli.android.mcalendar.listeners.OnDateClickListener
+import io.ipoli.android.mcalendar.listeners.OnMonthScrollListener
+import io.ipoli.android.mcalendar.vo.DateData
 import io.ipoli.android.quest.calendar.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
-import sun.bob.mcalendarview.CellConfig
-import sun.bob.mcalendarview.listeners.OnDateClickListener
-import sun.bob.mcalendarview.listeners.OnMonthScrollListener
-import sun.bob.mcalendarview.vo.DateData
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -154,6 +154,7 @@ class CalendarController : Controller() {
                 CellConfig.ifMonth = false
                 CellConfig.Month2WeekPos = CellConfig.middlePosition
 //                CellConfig.Month2WqeekPos = 500
+                CellConfig.m2wPointDate = DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
                 dayPicker.shrink()
 
 //                dayPicker.postDelayed(Runnable {
