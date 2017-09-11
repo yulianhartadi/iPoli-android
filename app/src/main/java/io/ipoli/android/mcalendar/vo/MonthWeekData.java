@@ -35,6 +35,10 @@ public class MonthWeekData {
         if (CellConfig.w2mPointDate == null) {
             CellConfig.w2mPointDate = new DateData(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH));
         }
+        if(CellConfig.weekAnchorPointDate == null) {
+            CellConfig.weekAnchorPointDate = new DateData(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH));
+        }
+
 
         if (CellConfig.ifMonth) {
             getPointDate();
@@ -138,7 +142,8 @@ public class MonthWeekData {
         }
         // 如果是今天的月份，则锚点的日期为今天； 如果不是今天的月份，则锚点的日期为1号
 //        calendar.set(Calendar.DAY_OF_MONTH, ifThisMonth());
-        calendar.set(Calendar.DAY_OF_MONTH, CellConfig.m2wPointDate.getDay());
+
+        calendar.set(Calendar.DAY_OF_MONTH, getAnchorDate(CellConfig.weekAnchorPointDate));
 ///////////////////////////////////////////////////////////////////////////////////////////
         // 下面是：获得该页的锚点后，判断三页显示的内容，中间和两边页显示不同
         if (realPosition == CellConfig.Month2WeekPos) {
@@ -155,7 +160,7 @@ public class MonthWeekData {
 
         // 添加数据
         DayData addDate;
-        weekIndex = calendar.get(Calendar.DAY_OF_WEEK);
+        weekIndex = calendar.get(Calendar.DAY_OF_WEEK);;
         calendar.add(Calendar.DATE, -weekIndex + 1);
         for (int i = 0; i < 7; i++) {
             addDate = new DayData(new DateData(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH) + 1, calendar.get(Calendar.DAY_OF_MONTH)));
@@ -164,13 +169,14 @@ public class MonthWeekData {
         }
     }
 
-    private int ifThisMonth() {
+    private int getAnchorDate(DateData date) {
         int thisMonth = Calendar.getInstance().get(Calendar.MONTH);
 //        Log.e("","================================");
 //        Log.e("",calendar.get(Calendar.MONTH)+" "+thisMonth);
 //        Log.e("","================================");
-        if (calendar.get(Calendar.MONTH) == thisMonth) {
-            return Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+        if (calendar.get(Calendar.MONTH) == date.getMonth() - 1 && calendar.get(Calendar.YEAR) == date.getYear()) {
+            return date.getDay();
+//            return Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
         } else {
             return 1;
         }

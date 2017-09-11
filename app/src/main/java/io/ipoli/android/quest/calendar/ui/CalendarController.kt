@@ -4,7 +4,6 @@ import android.support.transition.TransitionManager
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.Toolbar
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -154,15 +153,8 @@ class CalendarController : Controller() {
                 CellConfig.ifMonth = false
                 CellConfig.Month2WeekPos = CellConfig.middlePosition
 //                CellConfig.Month2WqeekPos = 500
-                CellConfig.m2wPointDate = DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
+                CellConfig.weekAnchorPointDate = DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
                 dayPicker.shrink()
-
-//                dayPicker.postDelayed(Runnable {
-//                    CellConfig.m2wPointDate = DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
-//                    CellConfig.w2mPointDate = DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
-//                    dayPicker.travelTo(DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth))
-//                }, 2000)
-//                dayPicker.travelTo(DateData(currentDate.year, 12, currentDate.dayOfMonth))
             } else {
                 CellConfig.ifMonth = true
                 CellConfig.Week2MonthPos = CellConfig.middlePosition
@@ -177,7 +169,6 @@ class CalendarController : Controller() {
                 dayPicker.markDate(date)
                 currentDate = LocalDate.of(date.year, date.month, date.day)
                 view.currentMonth.text = currentDate.format(monthPattern)
-                Log.d("AAA month", date.month.toString())
             }
         })
 
