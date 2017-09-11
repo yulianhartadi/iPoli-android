@@ -202,14 +202,13 @@ class CalendarDayView : FrameLayout {
         var startOffset = initialOffset
         setOnTouchListener { _, e ->
 
-
             val topVR = Rect()
             topDragView.getGlobalVisibleRect(topVR)
 
             val action = e.actionMasked
             if (action == MotionEvent.ACTION_DOWN) {
 
-
+                startOffset = e.rawY.toInt() - dragView.topLocationOnScreen
                 val visibleRect = Rect()
                 dragView.getGlobalVisibleRect(visibleRect)
 
@@ -219,26 +218,39 @@ class CalendarDayView : FrameLayout {
                     stopEditMode(dragView)
                 } else {
 
-                    startOffset = e.rawY.toInt() - dragView.topLocationOnScreen
                 }
             }
             if (action == MotionEvent.ACTION_MOVE) {
 
-                if (topVR.contains(e.rawX.toInt(), e.rawY.toInt())) {
-                    Timber.d("Topeka")
-                } else {
-                    val dy = e.rawY - topLocationOnScreen - startOffset
+//                if (topVR.contains(e.rawX.toInt(), e.rawY.toInt())) {
+//                    Timber.d("Topeka")
 
-                    val calendarPosition = dragView.topLocationOnScreen - scrollView.topLocationOnScreen.toFloat()
+                val dy = e.rawY - topLocationOnScreen // - startOffset
 
-                    dragView.setPosition(timeToTopPosition(positionToTimeMapper.timeAt(dy, 5)))
+                val topPosition = timeToPosition(positionToTimeMapper.timeAt(dy, 5))
 
-                    if (calendarPosition >= 0) {
-                        scheduledEventsAdapter?.onStartTimeChanged(dragView, positionToTimeMapper.timeAt(calendarPosition + scrollView.scrollY))
-                    }
-                    topDragView.setPosition(dragView.top.toFloat() - dragImageSize / 2)
-                    bottomDragView.setPosition(dragView.bottom.toFloat() - dragImageSize / 2)
+                val bottomPos = timeToPosition(positionToTimeMapper.timeAt(dragView.bottom.toFloat()))
+
+                val heightPx = (bottomPos - topPosition).toInt()
+                if (isValidHeightForEvent(heightPx)) {
+                    topDragView.setTopPosition(topPosition - dragImageSize / 2)
+                    dragView.setPositionAndHeight(topPosition, heightPx)
                 }
+
+//                } else {
+//                    Timber.d("Not timber")
+//                    val dy = e.rawY - topLocationOnScreen - startOffset
+//
+//                    dragView.setTopPosition(timeToPosition(positionToTimeMapper.timeAt(dy, 5)))
+//
+//                    val calendarPosition = dragView.topLocationOnScreen - scrollView.topLocationOnScreen.toFloat()
+//
+//                    if (calendarPosition >= 0) {
+//                        scheduledEventsAdapter?.onStartTimeChanged(dragView, positionToTimeMapper.timeAt(calendarPosition + scrollView.scrollY))
+//                    }
+//                    topDragView.setTopPosition(dragView.top.toFloat() - dragImageSize / 2)
+//                    bottomDragView.setTopPosition(dragView.bottom.toFloat() - dragImageSize / 2)
+//                }
             }
             true
         }
@@ -263,31 +275,6 @@ class CalendarDayView : FrameLayout {
         setupTopDragView(dragView)
         setupBottomDragView(dragView)
     }
-
-//    private fun setupEditView(editView: View) {
-//        editView.bringToFront()
-//        setEditViewTouchListener(editView)
-//    }
-
-//    private fun setEditViewTouchListener(editView: View) {
-//        var startY = -1f
-//        editView.setOnTouchListener { _, e ->
-//            val action = e.actionMasked
-//
-//            if (action == MotionEvent.ACTION_DOWN) {
-//                startY = e.y
-//            }
-//            if (action == MotionEvent.ACTION_MOVE) {
-//                if (startY < 0) {
-//                    startY = e.y
-//                }
-//                val dy = e.y - startY
-//                onChangeEditViewPosition(editView, dy)
-//                scheduledEventsAdapter?.onStartTimeChanged(editView, positionToTimeMapper.timeAt((editView.layoutParams as MarginLayoutParams).topMargin.toFloat(), 5))
-//            }
-//            true
-//        }
-//    }
 
     private fun setupBottomDragView(editView: View) {
         bottomDragView.elevation = editView.elevation
@@ -316,17 +303,11 @@ class CalendarDayView : FrameLayout {
         lp.marginStart = editView.left + editView.width / 2 - dragImageSize / 2
         topDragView.layoutParams = lp
     }
-//
-//    private fun onChangeEditViewPosition(editView: View, deltaY: Float) {
-//        editView.changePosition(deltaY)
-//        topDragView.changePosition(deltaY)
-//        bottomDragView.changePosition(deltaY)
-//    }
 
     private fun stopEditMode(editView: View) {
         setOnTouchListener(null)
         interceptTouch = false
-        editView.setPosition(getAdjustedYPosFor(editView, rangeLength = 5))
+        editView.setTopPosition(getAdjustedYPosFor(editView, rangeLength = 5))
         TransitionManager.beginDelayedTransition(this)
         hideViews(editModeBackground, topDragView, bottomDragView)
         scheduledEventsAdapter?.onStopEdit(editView)
@@ -388,7 +369,7 @@ class CalendarDayView : FrameLayout {
             it.height = height
         }
 
-    private fun View.setPosition(yPosition: Float) =
+    private fun View.setTopPosition(yPosition: Float) =
         changeLayoutParams<MarginLayoutParams> { it.topMargin = yPosition.toInt() }
 
     private fun View.changePosition(yDelta: Float) =
@@ -418,7 +399,7 @@ class CalendarDayView : FrameLayout {
         getMinutesFor(height) in MIN_EVENT_DURATION..MAX_EVENT_DURATION
 
     private fun getAdjustedYPosFor(view: View, rangeLength: Int): Float =
-        timeToTopPosition(positionToTimeMapper.timeAt((view.layoutParams as MarginLayoutParams).topMargin.toFloat(), rangeLength))
+        timeToPosition(positionToTimeMapper.timeAt((view.layoutParams as MarginLayoutParams).topMargin.toFloat(), rangeLength))
 
     private fun getScreenHeight(): Int {
         val metrics = DisplayMetrics()
@@ -427,7 +408,7 @@ class CalendarDayView : FrameLayout {
         return metrics.heightPixels
     }
 
-    private fun timeToTopPosition(time: Time): Float =
+    private fun timeToPosition(time: Time): Float =
         time.hours * hourHeight + getMinutesHeight(time.getMinutes())
 
     private fun getMinutesHeight(minutes: Int): Float =
