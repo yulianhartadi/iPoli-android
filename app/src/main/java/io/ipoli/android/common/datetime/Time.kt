@@ -48,7 +48,7 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
         if (!use24HourFormat) {
             format = if (getMinutes() > 0) "h:mm a" else "h a"
         }
-        return SimpleDateFormat(format).format(c.time)
+        return SimpleDateFormat(format, Locale.getDefault()).format(c.time)
     }
 
     companion object {

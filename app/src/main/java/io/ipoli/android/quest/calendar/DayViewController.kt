@@ -9,7 +9,7 @@ import io.ipoli.android.common.di.Module
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.ui.dayview.*
 import kotlinx.android.synthetic.main.controller_day_view.view.*
-import kotlinx.android.synthetic.main.item_calendar_quest.view.*
+import kotlinx.android.synthetic.main.item_calendar_drag.view.*
 import kotlinx.android.synthetic.main.unscheduled_quest_item.view.*
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -28,7 +28,7 @@ class DayViewController : Controller(), Injects<Module> {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val view = inflater.inflate(R.layout.controller_day_view, container, false)
-        view.calendar.setCalendarAdapter(QuestCalendarAdapter(activity!!,
+        view.calendar.setScheduledEventsAdapter(QuestScheduledEventsAdapter(activity!!,
             listOf(
                 QuestViewModel(60, Time.atHours(0).toMinuteOfDay()),
                 QuestViewModel(30, Time.atHours(3).toMinuteOfDay())
@@ -74,8 +74,8 @@ class DayViewController : Controller(), Injects<Module> {
 
     data class QuestViewModel(override var duration: Int, override var startMinute: Int) : CalendarEvent
 
-    inner class QuestCalendarAdapter(context: Context, events: List<QuestViewModel>, private val calendarDayView: CalendarDayView) :
-        CalendarAdapter<QuestViewModel>(context, R.layout.item_calendar_quest, events) {
+    inner class QuestScheduledEventsAdapter(context: Context, events: List<QuestViewModel>, private val calendarDayView: CalendarDayView) :
+        ScheduledEventsAdapter<QuestViewModel>(context, R.layout.item_calendar_quest, events) {
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
             var view = convertView
@@ -84,24 +84,27 @@ class DayViewController : Controller(), Injects<Module> {
             }
 
             view!!.setOnLongClickListener { v ->
-                calendarDayView.startEditMode(v, position)
+                v.visibility = View.GONE
+                calendarDayView.scheduleEvent(v)
+//                calendarDayView.startEditMode(v, position)
                 true
             }
 
             return view
         }
 
-        override fun onStartEdit(editView: View, position: Int) {
+        override fun onStartEdit(editView: View) {
             startActionMode()
         }
 
-        override fun onStopEdit(editView: View, position: Int) {
+        override fun onStopEdit(editView: View) {
             stopActionMode()
         }
 
-        override fun onStartTimeChanged(editView: View, position: Int, startTime: Time) {
+        override fun onStartTimeChanged(editView: View, startTime: Time) {
             editView.startTime.text = startTime.toString()
-            editView.endTime.text = Time.plusMinutes(startTime, getItem(position).duration).toString()
+//            editView.startTime.text = startTime.toString()
+//            editView.endTime.text = Time.plusMinutes(startTime, getItem(position).duration).toString()
         }
     }
 
