@@ -185,19 +185,15 @@ class CalendarDayView : FrameLayout {
         dragView.setPositionAndHeight(adapterView.top.toFloat(), getMinutesHeight(90).toInt())
         addView(dragView)
 
-        var startY = -1f
-        setOnTouchListener { _, ev ->
-            val action = ev.actionMasked
-
+        var startOffset = adapterView.height / 2
+        setOnTouchListener { _, e ->
+            val action = e.actionMasked
             if (action == MotionEvent.ACTION_DOWN) {
-                startY = ev.rawY
+                startOffset = e.rawY.toInt() - dragView.topLocationOnScreen()
             }
             if (action == MotionEvent.ACTION_MOVE) {
-                if (startY < 0) {
-                    startY = ev.y
-                }
-                val dy = ev.rawY - startY
-                dragView?.setPosition(dy)
+                val dy = e.rawY - topLocationOnScreen() - startOffset
+                dragView.setPosition(dy)
             }
             true
         }
@@ -367,6 +363,12 @@ class CalendarDayView : FrameLayout {
         val lp = layoutParams as T
         cb(lp)
         layoutParams = lp
+    }
+
+    private fun View.topLocationOnScreen(): Int {
+        val location = IntArray(2)
+        getLocationOnScreen(location)
+        return location[1]
     }
 
     private fun isValidHeightForEvent(height: Int): Boolean =
