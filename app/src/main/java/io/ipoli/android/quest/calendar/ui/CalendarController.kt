@@ -149,10 +149,10 @@ class CalendarController : Controller() {
         }
 
         view.expander.setOnClickListener({
+
             if (CellConfig.ifMonth) {
-                CellConfig.ifMonth = false
                 CellConfig.Month2WeekPos = CellConfig.middlePosition
-//                CellConfig.Month2WqeekPos = 500
+                CellConfig.ifMonth = false
                 CellConfig.weekAnchorPointDate = DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
                 dayPicker.shrink()
             } else {
