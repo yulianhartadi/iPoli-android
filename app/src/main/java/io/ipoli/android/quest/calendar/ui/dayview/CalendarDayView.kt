@@ -252,6 +252,16 @@ class CalendarDayView : FrameLayout {
 //                    bottomDragView.setTopPosition(dragView.bottom.toFloat() - dragImageSize / 2)
 //                }
             }
+
+            if (action == MotionEvent.ACTION_UP) {
+                setOnTouchListener(null)
+                interceptTouch = false
+
+                dragView.setOnTouchListener { _, motionEvent ->
+                    Timber.d("Touching drag view")
+                    true
+                }
+            }
             true
         }
     }
