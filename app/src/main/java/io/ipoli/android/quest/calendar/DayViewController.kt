@@ -4,6 +4,8 @@ import android.content.Context
 import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.TintableCompoundButton
+import android.text.SpannableString
+import android.text.style.StrikethroughSpan
 import android.view.*
 import com.bluelinelabs.conductor.Controller
 import io.ipoli.android.R
@@ -33,8 +35,8 @@ class DayViewController : Controller(), Injects<Module> {
         val view = inflater.inflate(R.layout.controller_day_view, container, false)
         view.calendar.setScheduledEventsAdapter(QuestScheduledEventsAdapter(activity!!,
             listOf(
-                QuestViewModel("Play COD", 45, Time.atHours(1).toMinuteOfDay(), Category.FUN.color500, Category.FUN.color800),
-                QuestViewModel("Study Bayesian Stats", 3 * 60, Time.atHours(3).toMinuteOfDay(), Category.LEARNING.color500, Category.LEARNING.color800)
+                QuestViewModel("Play COD", 45, Time.atHours(1).toMinuteOfDay(), Category.FUN.color500, Category.FUN.color800, true),
+                QuestViewModel("Study Bayesian Stats", 3 * 60, Time.atHours(3).toMinuteOfDay(), Category.LEARNING.color500, Category.LEARNING.color800, false)
             ),
             view.calendar
         ))
@@ -79,7 +81,8 @@ class DayViewController : Controller(), Injects<Module> {
                               override var duration: Int,
                               override var startMinute: Int,
                               @ColorRes val backgroundColor: Int,
-                              @ColorRes val textColor: Int) : CalendarEvent
+                              @ColorRes val textColor: Int,
+                              var isCompleted: Boolean) : CalendarEvent
 
     inner class QuestScheduledEventsAdapter(context: Context, events: List<QuestViewModel>, private val calendarDayView: CalendarDayView) :
         ScheduledEventsAdapter<QuestViewModel>(context, R.layout.item_calendar_quest, events) {
@@ -99,13 +102,22 @@ class DayViewController : Controller(), Injects<Module> {
                 true
             }
 
-            view.questName.text = vm.name
-            view.questName.setTextColor(vm.textColor)
 
-            view.questBackground.setBackgroundResource(vm.backgroundColor)
-            view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor)
+            if(!vm.isCompleted) {
+                view.questName.text = vm.name
+                view.questName.setTextColor(vm.textColor)
+                view.questBackground.setBackgroundResource(vm.backgroundColor)
+                view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor)
+            } else {
+                val span = SpannableString(vm.name)
+                span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
+                view.questName.text = span
+                view.questBackground.setBackgroundResource(R.color.md_grey_500)
+                view.questCategoryIndicator.setBackgroundResource(R.color.md_grey_500)
+            }
 
             (view.checkBox as TintableCompoundButton).supportButtonTintList = getTintList(vm.backgroundColor)
+
 
             return view
         }

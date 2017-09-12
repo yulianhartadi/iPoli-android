@@ -100,7 +100,7 @@ class CalendarDayView : FrameLayout {
     private fun setupEditBackgroundView() {
         editModeBackground = View(context)
         editModeBackground.layoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        editModeBackground.setBackgroundResource(R.color.md_dark_text_26)
+        editModeBackground.setBackgroundResource(R.color.md_dark_text_12)
         editModeBackground.visibility = View.GONE
         addView(editModeBackground)
     }
@@ -193,7 +193,7 @@ class CalendarDayView : FrameLayout {
     private fun addAndPositionDragView(adapterView: View): View {
         TransitionManager.beginDelayedTransition(this)
         val dragView = LayoutInflater.from(context).inflate(R.layout.item_calendar_drag, this, false)
-        dragView.setPositionAndHeight(adapterView.top.toFloat(), getMinutesHeight(90).toInt())
+        dragView.setPositionAndHeight(adapterView.top.toFloat(), getMinutesHeight(15).toInt())
         addView(dragView)
         return dragView
     }
