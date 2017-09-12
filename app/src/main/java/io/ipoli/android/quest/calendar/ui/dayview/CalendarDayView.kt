@@ -24,6 +24,75 @@ import timber.log.Timber
  */
 class CalendarDayView : FrameLayout {
 
+    interface Reducer {
+        fun reduce(state: FSM.State, event: FSM.Event): FSM.State
+    }
+
+    interface Consumer {
+        fun consume(state: FSM.State)
+    }
+
+    class FSM(initialState: State, private val reducer: Reducer, private val consumer: Consumer) {
+
+        private var currentState: State = initialState
+
+        init {
+            consumer.consume(currentState)
+        }
+
+        sealed class Event {
+            object Click : Event()
+            data class Move(val y: Int) : Event()
+        }
+
+        sealed class State(open val yPosition: Int?, open val duration: Int?) {
+            object View : State(null, null)
+            data class MoveQuest(override val yPosition: Int, override val duration: Int) : State(yPosition, duration)
+        }
+
+        fun fireEvent(event: Event) {
+            currentState = reducer.reduce(currentState, event)
+            consumer.consume(currentState)
+        }
+    }
+
+    private var dragView: View? = null
+
+    private val fsm: FSM = FSM(FSM.State.View,
+        object : Reducer {
+            override fun reduce(state: FSM.State, event: FSM.Event): FSM.State {
+//                Timber.d("Cur State " + (state == FSM.State.View))
+                when (state) {
+
+                    is FSM.State.View -> {
+//                        Timber.d("Event " + event)
+                        when (event) {
+                            is FSM.Event.Click -> {
+
+                            }
+
+                            is FSM.Event.Move -> {
+//                                Timber.d("Moving")
+                                return FSM.State.MoveQuest(event.y, 90)
+                            }
+                        }
+                    }
+                }
+                return FSM.State.View
+            }
+        },
+        object : Consumer {
+            override fun consume(state: FSM.State) {
+                when (state) {
+                    is FSM.State.MoveQuest -> {
+                        dragView?.setTopPosition(timeToPosition(positionToTimeMapper.timeAt(state.yPosition.toFloat(), 5)))
+                    }
+                }
+                Timber.d("Consuming " + state)
+            }
+
+        })
+
     private val MIN_EVENT_DURATION = 10
     private val MAX_EVENT_DURATION = Time.h2Min(4)
     private var hourHeight: Float = 0f
@@ -78,6 +147,8 @@ class CalendarDayView : FrameLayout {
 
         topDragView = addDragView()
         bottomDragView = addDragView()
+
+        fsm.fireEvent(FSM.Event.Move(20))
     }
 
     private fun setupScroll() {
@@ -182,6 +253,7 @@ class CalendarDayView : FrameLayout {
         interceptTouch = true
         val dragView = addAndPositionDragView(adapterView)
         dragView.post {
+            this.dragView = dragView
             setupDragViews(dragView)
             editModeBackground.bringToFront()
             showViews(editModeBackground, topDragView, bottomDragView)
@@ -225,21 +297,22 @@ class CalendarDayView : FrameLayout {
 //                if (topVR.contains(e.rawX.toInt(), e.rawY.toInt())) {
 //                    Timber.d("Topeka")
 
-                val dy = e.rawY - topLocationOnScreen // - startOffset
-
-                val topPosition = timeToPosition(positionToTimeMapper.timeAt(dy, 5))
-
-                val bottomPos = timeToPosition(positionToTimeMapper.timeAt(dragView.bottom.toFloat()))
-
-                val heightPx = (bottomPos - topPosition).toInt()
-                if (isValidHeightForEvent(heightPx)) {
-                    topDragView.setTopPosition(topPosition - dragImageSize / 2)
-                    dragView.setPositionAndHeight(topPosition, heightPx)
-                }
+//                val dy = e.rawY - topLocationOnScreen // - startOffset
+//
+//                val topPosition = timeToPosition(positionToTimeMapper.timeAt(dy, 5))
+//
+//                val bottomPos = timeToPosition(positionToTimeMapper.timeAt(dragView.bottom.toFloat()))
+//
+//                val heightPx = (bottomPos - topPosition).toInt()
+//                if (isValidHeightForEvent(heightPx)) {
+//                    topDragView.setTopPosition(topPosition - dragImageSize / 2)
+//                    dragView.setPositionAndHeight(topPosition, heightPx)
+//                }
 
 //                } else {
 //                    Timber.d("Not timber")
-//                    val dy = e.rawY - topLocationOnScreen - startOffset
+                val dy = e.rawY - topLocationOnScreen - startOffset
+                fsm.fireEvent(FSM.Event.Move(dy.toInt()))
 //
 //                    dragView.setTopPosition(timeToPosition(positionToTimeMapper.timeAt(dy, 5)))
 //
