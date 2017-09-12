@@ -1,6 +1,9 @@
 package io.ipoli.android.quest.calendar
 
 import android.content.Context
+import android.support.annotation.ColorRes
+import android.support.v4.content.ContextCompat
+import android.support.v4.widget.TintableCompoundButton
 import android.view.*
 import com.bluelinelabs.conductor.Controller
 import io.ipoli.android.R
@@ -8,13 +11,13 @@ import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.ui.dayview.*
+import io.ipoli.android.quest.data.Category
 import kotlinx.android.synthetic.main.controller_day_view.view.*
-import kotlinx.android.synthetic.main.item_calendar_drag.view.*
+import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 import kotlinx.android.synthetic.main.unscheduled_quest_item.view.*
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
-
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -30,8 +33,8 @@ class DayViewController : Controller(), Injects<Module> {
         val view = inflater.inflate(R.layout.controller_day_view, container, false)
         view.calendar.setScheduledEventsAdapter(QuestScheduledEventsAdapter(activity!!,
             listOf(
-                QuestViewModel(60, Time.atHours(0).toMinuteOfDay()),
-                QuestViewModel(30, Time.atHours(3).toMinuteOfDay())
+                QuestViewModel("Play COD", 45, Time.atHours(1).toMinuteOfDay(), Category.FUN.color500, Category.FUN.color800),
+                QuestViewModel("Study Bayesian Stats", 3 * 60, Time.atHours(3).toMinuteOfDay(), Category.LEARNING.color500, Category.LEARNING.color800)
             ),
             view.calendar
         ))
@@ -72,7 +75,11 @@ class DayViewController : Controller(), Injects<Module> {
         actionMode?.finish()
     }
 
-    data class QuestViewModel(override var duration: Int, override var startMinute: Int) : CalendarEvent
+    data class QuestViewModel(val name: String,
+                              override var duration: Int,
+                              override var startMinute: Int,
+                              @ColorRes val backgroundColor: Int,
+                              @ColorRes val textColor: Int) : CalendarEvent
 
     inner class QuestScheduledEventsAdapter(context: Context, events: List<QuestViewModel>, private val calendarDayView: CalendarDayView) :
         ScheduledEventsAdapter<QuestViewModel>(context, R.layout.item_calendar_quest, events) {
@@ -80,8 +87,10 @@ class DayViewController : Controller(), Injects<Module> {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
             var view = convertView
             if (view == null) {
-                view = layoutInflater.inflate(resource, parent, false)
+                view = LayoutInflater.from(context).inflate(resource, parent, false)
             }
+
+            val vm = getItem(position)
 
             view!!.setOnLongClickListener { v ->
                 v.visibility = View.GONE
@@ -90,8 +99,18 @@ class DayViewController : Controller(), Injects<Module> {
                 true
             }
 
+            view.questName.text = vm.name
+            view.questName.setTextColor(vm.textColor)
+
+            view.questBackground.setBackgroundResource(vm.backgroundColor)
+            view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor)
+
+            (view.checkBox as TintableCompoundButton).supportButtonTintList = getTintList(vm.backgroundColor)
+
             return view
         }
+
+        private fun getTintList(@ColorRes color: Int) = ContextCompat.getColorStateList(context, color)
 
         override fun onStartEdit(editView: View) {
             startActionMode()
@@ -102,7 +121,7 @@ class DayViewController : Controller(), Injects<Module> {
         }
 
         override fun onStartTimeChanged(editView: View, startTime: Time) {
-            editView.startTime.text = startTime.toString()
+//            editView.startTime.text = startTime.toString()
 //            editView.startTime.text = startTime.toString()
 //            editView.endTime.text = Time.plusMinutes(startTime, getItem(position).duration).toString()
         }

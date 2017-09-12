@@ -5,10 +5,22 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="72dp"
-    android:background="@color/md_green_100">
+    android:background="?android:attr/selectableItemBackground">
+
+    <View
+        android:id="@+id/questBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.12" />
+
+    <View
+        android:id="@+id/questCategoryIndicator"
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:alpha="0.54" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/questName"
         android:layout_width="192dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -16,9 +28,8 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:padding="16dp"
-        android:text="Workout today with Vihar and Vini because Vini is suhar"
         android:textAlignment="center"
-        android:textSize="14sp"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/imageView9"
         app:layout_constraintHorizontal_bias="0.5"
@@ -33,6 +44,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="10:30"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="10:30" />
@@ -44,6 +56,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         android:text="12:30"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

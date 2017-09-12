@@ -109,7 +109,7 @@ class CalendarDayView : FrameLayout {
         for (hour in 0..23) {
             val hourView = LayoutInflater.from(context).inflate(R.layout.calendar_hour_cell, this, false)
             if (hour > 0) {
-                hourView.timeLabel.text = hour.toString()
+                hourView.timeLabel.text = hour.toString() + ":00"
             }
             val layoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, hourHeight.toInt())
             layoutParams.topMargin = (hour * hourHeight).toInt()
