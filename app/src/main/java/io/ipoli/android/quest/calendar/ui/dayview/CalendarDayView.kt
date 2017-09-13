@@ -25,14 +25,10 @@ import kotlin.reflect.KClass
  */
 class CalendarDayView : FrameLayout {
 
-    enum class EventType {Click, Move }
-
-    sealed class Event(val type: EventType) {
-        object Click : Event(EventType.Click)
-        data class Move(val y: Int) : Event(EventType.Move)
+    sealed class Event {
+        object Click : Event()
+        data class Move(val y: Int) : Event()
     }
-
-    enum class StateType
 
     sealed class State(open val yPosition: Int?, open val duration: Int?) {
         object View : State(null, null)
@@ -43,102 +39,41 @@ class CalendarDayView : FrameLayout {
         fun consume(state: State)
     }
 
-    interface Transition {
-        fun reduce(state: State, event: Any): State
+    interface Transition<in E : Event> {
+        fun reduce(state: State, event: E): State
     }
 
     class FSM(initialState: State, private val consumer: Consumer) {
 
         private var currentState: State = initialState
-        private val transitions = mutableMapOf<KClass<*>, Transition>()
+        private val transitions = mutableMapOf<Pair<KClass<*>, KClass<*>>, Transition<*>>()
 
         init {
             consumer.consume(currentState)
-
-//            val trans = object : Transition {
-//                override fun reduce(state: State, event: Any): State =
-//                    when (event) {
-//                        is Event.Move -> {
-//                            State.MoveQuest(event.y, 90)
-//                        }
-//                        else -> {
-//                            state
-//                        }
-//                    }
-//            }
         }
 
-        fun <S : State> transition(from: Pair<KClass<S>, (state: State, event: Any) -> State>) {
-            transitions[from.first] = object : Transition {
-                override fun reduce(state: State, event: Any): State =
-                    from.second(state, event)
+        fun <S : State, E : Event> transition(given: KClass<S>, on: KClass<E>, execute: (state: State, event: E) -> State) {
+            val t = object : Transition<E> {
+                override fun reduce(state: State, event: E): State {
+                    return execute(state, event)
+                }
+
             }
+            transitions[Pair(given, on)] = t
         }
 
-        fun fireEvent(event: Event) {
-
+        fun <E : Event> fire(event: E) {
             val currentStateClass = currentState::class
-            currentState = transitions[currentStateClass]!!.reduce(currentState, event)
-//            val eventClass = event::class
-
-//            for (t in transitions) {
-//                if (t.stateType == currentStateClass && t.eventType == eventClass) {
-//                    t.reduce(currentState, event)
-////                    t.reducer(currentState, event)
-//                    break
-//                }
-//            }
-
-//            currentState = reducer.reduce(currentState, event)
+            val eventClass = event::class
+            val trans = transitions[Pair(currentStateClass, eventClass)] as Transition<E>
+            currentState = trans.reduce(currentState, event)
             consumer.consume(currentState)
         }
     }
 
-//
-//        fun <S : State, E : Event> addTransitionHandler(state: S, event: E) {
-//            val mapKey = Pair(state::class, event::class)
-//            val map = mutableMapOf(mapKey to Transition())
-//
-//
-//            /////#################
-//
-//            val newState = State.View
-//            val newEvent = Event.Move(10)
-//
-//            val newKey = Pair(newState::class, newEvent::class)
-//
-//            val trans = map[newKey]
-//        }
-
-//        fun doIt() {
-//
-//        }
-
     private var dragView: View? = null
 
     private val fsm: FSM = FSM(State.View,
-        //        object : Reducer {
-//            override fun reduce(state: State, event: Event): State {
-////                Timber.d("Cur State " + (state == State.View))
-//                when (state) {
-//
-//                    is State.View -> {
-////                        Timber.d("Event " + event)
-//                        when (event) {
-//                            is Event.Click -> {
-//
-//                            }
-//
-//                            is Event.Move -> {
-////                                Timber.d("Moving")
-//                                return State.MoveQuest(event.y, 90)
-//                            }
-//                        }
-//                    }
-//                }
-//                return State.View
-//            }
-//        },
         object : Consumer {
             override fun consume(state: State) {
                 when (state) {
@@ -206,49 +141,12 @@ class CalendarDayView : FrameLayout {
         topDragView = addDragView()
         bottomDragView = addDragView()
 
-        //        object : Reducer {
-//            override fun reduce(state: State, event: Event): State {
-////                Timber.d("Cur State " + (state == State.View))
-//                when (state) {
-//
-//                    is State.View -> {
-////                        Timber.d("Event " + event)
-//                        when (event) {
-//                            is Event.Click -> {
-//
-//                            }
-//
-//                            is Event.Move -> {
-////                                Timber.d("Moving")
-//                                return State.MoveQuest(event.y, 90)
-//                            }
-//                        }
-//                    }
-//                }
-//                return State.View
-//            }
-//        },
-
-        fsm.transition(State.View::class to { s, e ->
-            when (e) {
-                is Event.Move -> {
-                    State.MoveQuest(e.y, 20)
-                }
-                else -> {
-                    State.View
-                }
-            }
+        fsm.transition(State.View::class, Event.Move::class, { s, e ->
+            State.MoveQuest(e.y, 20)
         })
 
-        fsm.transition(State.MoveQuest::class to { s, e ->
-            when (e) {
-                is Event.Move -> {
-                    State.MoveQuest(e.y, 20)
-                }
-                else -> {
-                    State.View
-                }
-            }
+        fsm.transition(State.MoveQuest::class, Event.Move::class, { s, e ->
+            State.MoveQuest(e.y, 20)
         })
     }
 
@@ -413,7 +311,7 @@ class CalendarDayView : FrameLayout {
 //                } else {
 //                    Timber.d("Not timber")
                 val dy = e.rawY - topLocationOnScreen - startOffset
-                fsm.fireEvent(Event.Move(dy.toInt()))
+                fsm.fire(Event.Move(dy.toInt()))
 //
 //                    dragView.setTopPosition(timeToPosition(positionToTimeMapper.timeAt(dy, 5)))
 //
