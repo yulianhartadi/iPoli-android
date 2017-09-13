@@ -17,6 +17,7 @@ import io.ipoli.android.common.datetime.Time
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import timber.log.Timber
+import kotlin.reflect.KClass
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -24,67 +25,124 @@ import timber.log.Timber
  */
 class CalendarDayView : FrameLayout {
 
-    interface Reducer {
-        fun reduce(state: FSM.State, event: FSM.Event): FSM.State
+    enum class EventType {Click, Move }
+
+    sealed class Event(val type: EventType) {
+        object Click : Event(EventType.Click)
+        data class Move(val y: Int) : Event(EventType.Move)
+    }
+
+    enum class StateType
+
+    sealed class State(open val yPosition: Int?, open val duration: Int?) {
+        object View : State(null, null)
+        data class MoveQuest(override val yPosition: Int, override val duration: Int) : State(yPosition, duration)
     }
 
     interface Consumer {
-        fun consume(state: FSM.State)
+        fun consume(state: State)
     }
 
-    class FSM(initialState: State, private val reducer: Reducer, private val consumer: Consumer) {
+    interface Transition {
+        fun reduce(state: State, event: Any): State
+    }
+
+    class FSM(initialState: State, private val consumer: Consumer) {
 
         private var currentState: State = initialState
+        private val transitions = mutableMapOf<KClass<*>, Transition>()
 
         init {
             consumer.consume(currentState)
+
+//            val trans = object : Transition {
+//                override fun reduce(state: State, event: Any): State =
+//                    when (event) {
+//                        is Event.Move -> {
+//                            State.MoveQuest(event.y, 90)
+//                        }
+//                        else -> {
+//                            state
+//                        }
+//                    }
+//            }
         }
 
-        sealed class Event {
-            object Click : Event()
-            data class Move(val y: Int) : Event()
-        }
-
-        sealed class State(open val yPosition: Int?, open val duration: Int?) {
-            object View : State(null, null)
-            data class MoveQuest(override val yPosition: Int, override val duration: Int) : State(yPosition, duration)
+        fun <S : State> transition(from: Pair<KClass<S>, (state: State, event: Any) -> State>) {
+            transitions[from.first] = object : Transition {
+                override fun reduce(state: State, event: Any): State =
+                    from.second(state, event)
+            }
         }
 
         fun fireEvent(event: Event) {
-            currentState = reducer.reduce(currentState, event)
+
+            val currentStateClass = currentState::class
+            currentState = transitions[currentStateClass]!!.reduce(currentState, event)
+//            val eventClass = event::class
+
+//            for (t in transitions) {
+//                if (t.stateType == currentStateClass && t.eventType == eventClass) {
+//                    t.reduce(currentState, event)
+////                    t.reducer(currentState, event)
+//                    break
+//                }
+//            }
+
+//            currentState = reducer.reduce(currentState, event)
             consumer.consume(currentState)
         }
     }
 
+//
+//        fun <S : State, E : Event> addTransitionHandler(state: S, event: E) {
+//            val mapKey = Pair(state::class, event::class)
+//            val map = mutableMapOf(mapKey to Transition())
+//
+//
+//            /////#################
+//
+//            val newState = State.View
+//            val newEvent = Event.Move(10)
+//
+//            val newKey = Pair(newState::class, newEvent::class)
+//
+//            val trans = map[newKey]
+//        }
+
+//        fun doIt() {
+//
+//        }
+
     private var dragView: View? = null
 
-    private val fsm: FSM = FSM(FSM.State.View,
-        object : Reducer {
-            override fun reduce(state: FSM.State, event: FSM.Event): FSM.State {
-//                Timber.d("Cur State " + (state == FSM.State.View))
-                when (state) {
-
-                    is FSM.State.View -> {
-//                        Timber.d("Event " + event)
-                        when (event) {
-                            is FSM.Event.Click -> {
-
-                            }
-
-                            is FSM.Event.Move -> {
-//                                Timber.d("Moving")
-                                return FSM.State.MoveQuest(event.y, 90)
-                            }
-                        }
-                    }
-                }
-                return FSM.State.View
-            }
-        },
+    private val fsm: FSM = FSM(State.View,
+        //        object : Reducer {
+//            override fun reduce(state: State, event: Event): State {
+////                Timber.d("Cur State " + (state == State.View))
+//                when (state) {
+//
+//                    is State.View -> {
+////                        Timber.d("Event " + event)
+//                        when (event) {
+//                            is Event.Click -> {
+//
+//                            }
+//
+//                            is Event.Move -> {
+////                                Timber.d("Moving")
+//                                return State.MoveQuest(event.y, 90)
+//                            }
+//                        }
+//                    }
+//                }
+//                return State.View
+//            }
+//        },
         object : Consumer {
-            override fun consume(state: FSM.State) {
+            override fun consume(state: State) {
                 when (state) {
-                    is FSM.State.MoveQuest -> {
+                    is State.MoveQuest -> {
                         dragView?.setTopPosition(timeToPosition(positionToTimeMapper.timeAt(state.yPosition.toFloat(), 5)))
                     }
                 }
@@ -148,7 +206,50 @@ class CalendarDayView : FrameLayout {
         topDragView = addDragView()
         bottomDragView = addDragView()
 
-        fsm.fireEvent(FSM.Event.Move(20))
+        //        object : Reducer {
+//            override fun reduce(state: State, event: Event): State {
+////                Timber.d("Cur State " + (state == State.View))
+//                when (state) {
+//
+//                    is State.View -> {
+////                        Timber.d("Event " + event)
+//                        when (event) {
+//                            is Event.Click -> {
+//
+//                            }
+//
+//                            is Event.Move -> {
+////                                Timber.d("Moving")
+//                                return State.MoveQuest(event.y, 90)
+//                            }
+//                        }
+//                    }
+//                }
+//                return State.View
+//            }
+//        },
+
+        fsm.transition(State.View::class to { s, e ->
+            when (e) {
+                is Event.Move -> {
+                    State.MoveQuest(e.y, 20)
+                }
+                else -> {
+                    State.View
+                }
+            }
+        })
+
+        fsm.transition(State.MoveQuest::class to { s, e ->
+            when (e) {
+                is Event.Move -> {
+                    State.MoveQuest(e.y, 20)
+                }
+                else -> {
+                    State.View
+                }
+            }
+        })
     }
 
     private fun setupScroll() {
@@ -312,7 +413,7 @@ class CalendarDayView : FrameLayout {
 //                } else {
 //                    Timber.d("Not timber")
                 val dy = e.rawY - topLocationOnScreen - startOffset
-                fsm.fireEvent(FSM.Event.Move(dy.toInt()))
+                fsm.fireEvent(Event.Move(dy.toInt()))
 //
 //                    dragView.setTopPosition(timeToPosition(positionToTimeMapper.timeAt(dy, 5)))
 //
