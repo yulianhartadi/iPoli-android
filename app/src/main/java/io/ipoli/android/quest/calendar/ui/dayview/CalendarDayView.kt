@@ -23,20 +23,94 @@ import kotlin.reflect.KClass
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 9/2/17.
  */
-class CalendarDayView : FrameLayout {
+
+interface Consumer {
+    fun consume(state: CalendarDayView.State)
+}
+
+class CalendarDayView : FrameLayout, Consumer {
 
     sealed class Event {
-        object Click : Event()
-        data class Move(val y: Int) : Event()
+        object CompleteEdit : Event()
+        object Up : Event()
+        data class StartEdit(val y: Int, val height: Int, val name: String) : Event()
+        data class Drag(val y: Int, val height: Int) : Event()
+        data class DragTop(val y: Int, val height: Int) : Event()
+        data class DragBottom(val y: Int, val height: Int) : Event()
+        data class EditName(val name: String) : Event()
+        object CompleteEditName : Event()
     }
 
-    sealed class State(open val yPosition: Int?, open val duration: Int?) {
-        object View : State(null, null)
-        data class MoveQuest(override val yPosition: Int, override val duration: Int) : State(yPosition, duration)
+    data class State(val type: State.Type = Type.VIEW, val yPosition: Int? = null,
+                     val height: Int? = null, val name: String? = null) {
+        enum class Type {
+            VIEW, EDIT, DRAG, DRAG_TOP, DRAG_BOTTOM, EDIT_NAME
+        }
     }
 
-    interface Consumer {
-        fun consume(state: State)
+    private fun setupFSM() {
+        fsm = FSM(State(), this)
+        fsm.transition(State.Type.VIEW, Event.StartEdit::class, { s, e ->
+            s.copy(type = State.Type.DRAG, yPosition = e.y, height = e.height, name = e.name)
+        })
+
+        fsm.transition(State.Type.DRAG, Event.Drag::class, { s, e ->
+            s.copy(yPosition = e.y)
+        })
+
+        listOf(State.Type.DRAG, State.Type.DRAG_TOP, State.Type.DRAG_BOTTOM).forEach {
+            fsm.transition(it, Event.Up::class, { s, _ ->
+                s.copy(type = State.Type.EDIT)
+            })
+        }
+
+        fsm.transition(State.Type.DRAG_TOP, Event.DragTop::class, { s, e ->
+            s.copy(yPosition = e.y, height = e.height)
+        })
+
+        fsm.transition(State.Type.DRAG_BOTTOM, Event.DragBottom::class, { s, e ->
+            s.copy(yPosition = e.y, height = e.height)
+        })
+
+        fsm.transition(State.Type.EDIT, Event.Drag::class, { s, e ->
+            s.copy(type = State.Type.DRAG, yPosition = e.y)
+        })
+
+        fsm.transition(State.Type.EDIT, Event.DragTop::class, { s, e ->
+            s.copy(type = State.Type.DRAG_TOP, yPosition = e.y, height = e.height)
+        })
+
+        fsm.transition(State.Type.EDIT, Event.DragBottom::class, { s, e ->
+            s.copy(type = State.Type.DRAG_BOTTOM, yPosition = e.y, height = e.height)
+        })
+
+        fsm.transition(State.Type.EDIT, Event.EditName::class, { s, e ->
+            s.copy(type = State.Type.EDIT_NAME, name = e.name)
+        })
+
+        fsm.transition(State.Type.EDIT, Event.CompleteEdit::class, { s, e ->
+            s.copy(type = State.Type.VIEW)
+        })
+
+        fsm.transition(State.Type.EDIT_NAME, Event.CompleteEditName::class, { s, e ->
+            s.copy(type = State.Type.EDIT)
+        })
+
+        fsm.transition(State.Type.EDIT_NAME, Event.EditName::class, { s, e ->
+            s.copy(type = State.Type.EDIT_NAME, name = e.name)
+        })
+
+        fsm.transition(State.Type.EDIT_NAME, Event.Drag::class, { s, e ->
+            s.copy(type = State.Type.DRAG, yPosition = e.y)
+        })
+
+        fsm.transition(State.Type.EDIT_NAME, Event.DragTop::class, { s, e ->
+            s.copy(type = State.Type.DRAG_TOP, yPosition = e.y, height = e.height)
+        })
+
+        fsm.transition(State.Type.EDIT_NAME, Event.DragBottom::class, { s, e ->
+            s.copy(type = State.Type.DRAG_BOTTOM, yPosition = e.y, height = e.height)
+        })
     }
 
     class FSM(initialState: State, private val consumer: Consumer) {
@@ -46,13 +120,13 @@ class CalendarDayView : FrameLayout {
         }
 
         private var currentState: State = initialState
-        private val actions = mutableMapOf<Pair<KClass<*>, KClass<*>>, Action<*>>()
+        private val actions = mutableMapOf<Pair<State.Type, KClass<*>>, Action<*>>()
 
         init {
             consumer.consume(currentState)
         }
 
-        fun <S : State, E : Event> transition(given: KClass<S>, on: KClass<E>, execute: (state: State, event: E) -> State) {
+        fun <E : Event> transition(given: State.Type, on: KClass<E>, execute: (state: State, event: E) -> State) {
             val a = object : Action<E> {
                 override fun execute(state: State, event: E): State {
                     return execute(state, event)
@@ -62,7 +136,7 @@ class CalendarDayView : FrameLayout {
         }
 
         fun <E : Event> fire(event: E) {
-            val actionKey = Pair(currentState::class, event::class)
+            val actionKey = Pair(currentState.type, event::class)
             @Suppress("UNCHECKED_CAST")
             val a = actions[actionKey] as Action<E>
             currentState = a.execute(currentState, event)
@@ -72,18 +146,7 @@ class CalendarDayView : FrameLayout {
 
     private var dragView: View? = null
 
-    private val fsm: FSM = FSM(State.View,
-        object : Consumer {
-            override fun consume(state: State) {
-                when (state) {
-                    is State.MoveQuest -> {
-                        dragView?.setTopPosition(timeToPosition(positionToTimeMapper.timeAt(state.yPosition.toFloat(), 5)))
-                    }
-                }
-                Timber.d("Consuming " + state)
-            }
-
-        })
+    private lateinit var fsm: FSM
 
     private val MIN_EVENT_DURATION = 10
     private val MAX_EVENT_DURATION = Time.h2Min(4)
@@ -140,13 +203,7 @@ class CalendarDayView : FrameLayout {
         topDragView = addDragView()
         bottomDragView = addDragView()
 
-        fsm.transition(State.View::class, Event.Move::class, { s, e ->
-            State.MoveQuest(e.y, 20)
-        })
-
-        fsm.transition(State.MoveQuest::class, Event.Move::class, { s, e ->
-            State.MoveQuest(e.y, 20)
-        })
+        setupFSM()
     }
 
     private fun setupScroll() {
@@ -252,12 +309,13 @@ class CalendarDayView : FrameLayout {
         val dragView = addAndPositionDragView(adapterView)
         dragView.post {
             this.dragView = dragView
+            // @TODO get event name
+            fsm.fire(Event.StartEdit(dragView.top, dragView.height, "namy"))
             setupDragViews(dragView)
             editModeBackground.bringToFront()
             showViews(editModeBackground, topDragView, bottomDragView)
             setDragListener(dragView, adapterView.height / 2)
         }
-
     }
 
     private fun addAndPositionDragView(adapterView: View): View {
@@ -310,7 +368,7 @@ class CalendarDayView : FrameLayout {
 //                } else {
 //                    Timber.d("Not timber")
                 val dy = e.rawY - topLocationOnScreen - startOffset
-                fsm.fire(Event.Move(dy.toInt()))
+                fsm.fire(Event.Drag(dy.toInt(), dragView.height))
 //
 //                    dragView.setTopPosition(timeToPosition(positionToTimeMapper.timeAt(dy, 5)))
 //
@@ -342,15 +400,6 @@ class CalendarDayView : FrameLayout {
     override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
         return interceptTouch
     }
-
-//    fun startEditMode(editView: View) {
-//        editModeBackground.bringToFront()
-//        setupEditView(editView)
-//        setupDragViews(editView)
-//        TransitionManager.beginDelayedTransition(this)
-//        showViews(editModeBackground, topDragView, bottomDragView)
-//        scheduledEventsAdapter?.onStartEdit(editView)
-//    }
 
     private fun setupDragViews(dragView: View) {
         setupTopDragView(dragView)
@@ -435,6 +484,14 @@ class CalendarDayView : FrameLayout {
             }
 
             true
+        }
+    }
+
+    override fun consume(state: State) {
+        when (state.type) {
+            State.Type.DRAG -> {
+                dragView?.setTopPosition(timeToPosition(positionToTimeMapper.timeAt(state.yPosition!!.toFloat(), 5)))
+            }
         }
     }
 
