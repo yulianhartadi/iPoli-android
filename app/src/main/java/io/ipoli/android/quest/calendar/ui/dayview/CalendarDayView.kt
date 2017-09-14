@@ -39,34 +39,33 @@ class CalendarDayView : FrameLayout {
         fun consume(state: State)
     }
 
-    interface Transition<in E : Event> {
-        fun reduce(state: State, event: E): State
-    }
-
     class FSM(initialState: State, private val consumer: Consumer) {
 
+        interface Action<in E : Event> {
+            fun execute(state: State, event: E): State
+        }
+
         private var currentState: State = initialState
-        private val transitions = mutableMapOf<Pair<KClass<*>, KClass<*>>, Transition<*>>()
+        private val actions = mutableMapOf<Pair<KClass<*>, KClass<*>>, Action<*>>()
 
         init {
             consumer.consume(currentState)
         }
 
         fun <S : State, E : Event> transition(given: KClass<S>, on: KClass<E>, execute: (state: State, event: E) -> State) {
-            val t = object : Transition<E> {
-                override fun reduce(state: State, event: E): State {
+            val a = object : Action<E> {
+                override fun execute(state: State, event: E): State {
                     return execute(state, event)
                 }
-
             }
-            transitions[Pair(given, on)] = t
+            actions[Pair(given, on)] = a
         }
 
         fun <E : Event> fire(event: E) {
-            val currentStateClass = currentState::class
-            val eventClass = event::class
-            val trans = transitions[Pair(currentStateClass, eventClass)] as Transition<E>
-            currentState = trans.reduce(currentState, event)
+            val actionKey = Pair(currentState::class, event::class)
+            @Suppress("UNCHECKED_CAST")
+            val a = actions[actionKey] as Action<E>
+            currentState = a.execute(currentState, event)
             consumer.consume(currentState)
         }
     }
