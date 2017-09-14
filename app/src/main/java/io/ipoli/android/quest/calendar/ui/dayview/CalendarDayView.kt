@@ -145,6 +145,7 @@ class CalendarDayView : FrameLayout, Consumer {
     }
 
     private var dragView: View? = null
+    private var lastY: Float? = null
 
     private lateinit var fsm: FSM
 
@@ -314,20 +315,25 @@ class CalendarDayView : FrameLayout, Consumer {
             setupDragViews(dragView)
             editModeBackground.bringToFront()
             showViews(editModeBackground, topDragView, bottomDragView)
-            setDragListener(dragView, adapterView.height / 2)
+            setDragListener(dragView, lastY!!.toInt() - dragView.topLocationOnScreen)
         }
     }
 
     private fun addAndPositionDragView(adapterView: View): View {
         TransitionManager.beginDelayedTransition(this)
         val dragView = LayoutInflater.from(context).inflate(R.layout.item_calendar_drag, this, false)
-        dragView.setPositionAndHeight(adapterView.top.toFloat(), getMinutesHeight(15).toInt())
+        dragView.setPositionAndHeight(adapterView.topLocationOnScreen - topLocationOnScreen.toFloat(), adapterView.height)
         addView(dragView)
         return dragView
     }
 
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        lastY = ev.rawY
+        return super.dispatchTouchEvent(ev)
+    }
+
     private fun setDragListener(dragView: View, initialOffset: Int) {
-        var startOffset = initialOffset
+//        var startOffset = initialOffset
         setOnTouchListener { _, e ->
 
             val topVR = Rect()
@@ -336,7 +342,7 @@ class CalendarDayView : FrameLayout, Consumer {
             val action = e.actionMasked
             if (action == MotionEvent.ACTION_DOWN) {
 
-                startOffset = e.rawY.toInt() - dragView.topLocationOnScreen
+//                startOffset = e.rawY.toInt() - dragView.topLocationOnScreen
                 val visibleRect = Rect()
                 dragView.getGlobalVisibleRect(visibleRect)
 
@@ -367,7 +373,7 @@ class CalendarDayView : FrameLayout, Consumer {
 
 //                } else {
 //                    Timber.d("Not timber")
-                val dy = e.rawY - topLocationOnScreen - startOffset
+                val dy = e.rawY - topLocationOnScreen - initialOffset
                 fsm.fire(Event.Drag(dy.toInt(), dragView.height))
 //
 //                    dragView.setTopPosition(timeToPosition(positionToTimeMapper.timeAt(dy, 5)))
@@ -490,7 +496,10 @@ class CalendarDayView : FrameLayout, Consumer {
     override fun consume(state: State) {
         when (state.type) {
             State.Type.DRAG -> {
-                dragView?.setTopPosition(timeToPosition(positionToTimeMapper.timeAt(state.yPosition!!.toFloat(), 5)))
+                val topPosition = timeToPosition(positionToTimeMapper.timeAt(state.yPosition!!.toFloat(), 5))
+                dragView?.setTopPosition(topPosition)
+                topDragView.setTopPosition(topPosition - dragImageSize / 2)
+                bottomDragView.setTopPosition(topPosition + state.height!!.toFloat() - dragImageSize / 2)
             }
         }
     }
