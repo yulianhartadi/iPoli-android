@@ -5,9 +5,10 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-beta5'
+        classpath 'com.android.tools.build:gradle:3.0.0-beta6'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
         classpath "io.realm:realm-gradle-plugin:3.7.0"
@@ -24,7 +25,6 @@ allprojects {
         jcenter()
         mavenCentral()
         maven { url "http://dl.bintray.com/jetbrains/spek" }
-        maven { url 'https://maven.fabric.io/public' }
     }
 }
 
