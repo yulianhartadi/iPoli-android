@@ -62,22 +62,25 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     sealed class Event {
         object CompleteEdit : Event()
         object Up : Event()
-        data class StartEdit(val y: Int, val height: Int, val name: String) : Event()
-        data class Drag(val y: Int, val height: Int) : Event()
-        data class DragTop(val y: Int, val height: Int) : Event()
-        data class DragBottom(val y: Int, val height: Int) : Event()
+        data class StartEdit(val y: Float, val name: String) : Event()
+        data class Drag(val y: Float) : Event()
+        data class DragTop(val y: Float) : Event()
+        data class DragBottom(val y: Float) : Event()
         data class EditName(val name: String) : Event()
         object CompleteEditName : Event()
     }
 
     data class State(
         val type: State.Type,
-        val topPosition: Int? = null,
-        val bottomPosition: Int? = null,
+        val topPosition: Float? = null,
+        val topDragViewPosition: Float? = null,
+        val bottomDragViewPosition: Float? = null,
         val height: Int? = null,
         val name: String? = null) {
         enum class Type {
-            VIEW, EDIT, DRAG, DRAG_TOP, DRAG_BOTTOM, EDIT_NAME
+            // DRAG_TOP, DRAG_BOTTOM,
+            VIEW,
+            EDIT, DRAG, EDIT_NAME
         }
     }
 
@@ -147,25 +150,40 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private fun setupFSM() {
         fsm = FSM(State(State.Type.VIEW), this)
         fsm.transition(State.Type.VIEW, Event.StartEdit::class, { s, e ->
-            s.copy(type = State.Type.DRAG, topPosition = e.y, height = e.height, name = e.name)
+
+            val absPos = e.y - topLocationOnScreen
+            val topPosition = roundPositionToMinutes(absPos)
+
+            s.copy(
+                type = State.Type.DRAG,
+                topPosition = topPosition,
+                topDragViewPosition = topPosition - dragImageSize / 2,
+                bottomDragViewPosition = topPosition + dragView!!.height - dragImageSize / 2)
+
+//            s.copy(type = State.Type.DRAG, topPosition = e.y, height = e.height, name = e.name)
         })
 
         fsm.transition(State.Type.DRAG, Event.Drag::class, { s, e ->
+            //                    val yPosition = e.rawY - topLocationOnScreen - initialOffset
+            val absPos = e.y - topLocationOnScreen
+            val topPosition = roundPositionToMinutes(absPos)
+
+            s.copy(
+                topPosition = topPosition,
+                topDragViewPosition = topPosition - dragImageSize / 2,
+                bottomDragViewPosition = topPosition + dragView!!.height - dragImageSize / 2)
+        })
+
+        fsm.transition(State.Type.DRAG, Event.Up::class, { s, _ ->
+            s.copy(type = State.Type.EDIT)
+        })
+
+        fsm.transition(State.Type.DRAG, Event.DragTop::class, { s, e ->
             s.copy(topPosition = e.y)
         })
 
-        listOf(State.Type.DRAG, State.Type.DRAG_TOP, State.Type.DRAG_BOTTOM).forEach {
-            fsm.transition(it, Event.Up::class, { s, _ ->
-                s.copy(type = State.Type.EDIT)
-            })
-        }
-
-        fsm.transition(State.Type.DRAG_TOP, Event.DragTop::class, { s, e ->
-            s.copy(topPosition = e.y, height = e.height)
-        })
-
-        fsm.transition(State.Type.DRAG_BOTTOM, Event.DragBottom::class, { s, e ->
-            s.copy(topPosition = e.y, height = e.height)
+        fsm.transition(State.Type.DRAG, Event.DragBottom::class, { s, e ->
+            s.copy(topPosition = e.y)
         })
 
         fsm.transition(State.Type.EDIT, Event.Drag::class, { s, e ->
@@ -173,11 +191,11 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         })
 
         fsm.transition(State.Type.EDIT, Event.DragTop::class, { s, e ->
-            s.copy(type = State.Type.DRAG_TOP, topPosition = e.y, height = e.height)
+            s.copy(type = State.Type.DRAG, topPosition = e.y)
         })
 
         fsm.transition(State.Type.EDIT, Event.DragBottom::class, { s, e ->
-            s.copy(type = State.Type.DRAG_BOTTOM, topPosition = e.y, height = e.height)
+            s.copy(type = State.Type.DRAG, topPosition = e.y)
         })
 
         fsm.transition(State.Type.EDIT, Event.EditName::class, { s, e ->
@@ -201,11 +219,11 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         })
 
         fsm.transition(State.Type.EDIT_NAME, Event.DragTop::class, { s, e ->
-            s.copy(type = State.Type.DRAG_TOP, topPosition = e.y, height = e.height)
+            s.copy(type = State.Type.DRAG, topPosition = e.y)
         })
 
         fsm.transition(State.Type.EDIT_NAME, Event.DragBottom::class, { s, e ->
-            s.copy(type = State.Type.DRAG_BOTTOM, topPosition = e.y, height = e.height)
+            s.copy(type = State.Type.DRAG, topPosition = e.y)
         })
     }
 
@@ -307,18 +325,18 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     fun scheduleEvent(adapterView: View) {
-
         scrollView.isLocked = true
         val dragView = addAndPositionDragView(adapterView)
         dragView.post {
             this.dragView = dragView
             // @TODO get event name
-            fsm.fire(Event.StartEdit(dragView.top, dragView.height, "namy"))
+//            fsm.fire(Event.StartEdit(dragView.top.toFloat(), dragView.height, "namy"))
+            fsm.fire(Event.StartEdit(dragView.topLocationOnScreen.toFloat(), "namy"))
             setupDragViews(dragView)
             editModeBackground.bringToFront()
             showViews(editModeBackground, topDragView, bottomDragView)
 
-            val initialOffset = lastY!!.toInt() - dragView.topLocationOnScreen
+            val initialOffset = lastY!! - dragView.topLocationOnScreen
 
             adapterView.setOnTouchListener { _, e ->
 
@@ -326,8 +344,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 val action = e.actionMasked
 
                 if (action == MotionEvent.ACTION_MOVE) {
-                    val yPosition = e.rawY - topLocationOnScreen - initialOffset
-                    fsm.fire(Event.Drag(yPosition.toInt(), dragView.height))
+//                    val yPosition = e.rawY - topLocationOnScreen - initialOffset
+                    fsm.fire(Event.Drag(e.rawY - initialOffset))
                 }
 
                 if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
@@ -405,14 +423,15 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun setDragViewTouchListener() {
-        var initialOffset = lastY!!.toInt() - dragView!!.topLocationOnScreen
+        var initialOffset = lastY!! - dragView!!.topLocationOnScreen
         dragView!!.setOnTouchListener { _, e ->
             val action = e.actionMasked
             if (action == MotionEvent.ACTION_DOWN) {
-                initialOffset = e.rawY.toInt() - dragView!!.topLocationOnScreen
+                initialOffset = e.rawY - dragView!!.topLocationOnScreen
             }
             if (action == MotionEvent.ACTION_MOVE) {
-                fsm.fire(Event.Drag((e.rawY - topLocationOnScreen - initialOffset).toInt(), dragView!!.height))
+//                fsm.fire(Event.Drag((e.rawY - topLocationOnScreen - initialOffset).toInt(), dragView!!.height))
+                fsm.fire(Event.Drag(e.rawY - initialOffset))
             }
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
                 fsm.fire(Event.Up)
@@ -425,7 +444,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         bottomDragView.setOnTouchListener { _, e ->
             val action = e.actionMasked
             if (action == MotionEvent.ACTION_MOVE) {
-                fsm.fire(Event.DragBottom((e.rawY - topLocationOnScreen).toInt(), dragView!!.height))
+//                fsm.fire(Event.DragBottom((e.rawY - topLocationOnScreen).toInt(), dragView!!.height))
+                fsm.fire(Event.DragBottom(e.rawY))
             }
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
                 fsm.fire(Event.Up)
@@ -438,7 +458,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         topDragView.setOnTouchListener { _, e ->
             val action = e.actionMasked
             if (action == MotionEvent.ACTION_MOVE) {
-                fsm.fire(Event.DragTop((e.rawY - topLocationOnScreen).toInt(), dragView!!.height))
+                fsm.fire(Event.DragTop(e.rawY))
             }
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
                 fsm.fire(Event.Up)
@@ -450,31 +470,31 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     override fun onStateChanged(state: State) {
         when (state.type) {
             State.Type.DRAG -> {
-                val topPosition = roundPositionToMinutes(state.topPosition!!)
-                dragView?.setTopPosition(topPosition)
-                topDragView.setTopPosition(topPosition - dragImageSize / 2)
+//                val topPosition = roundPositionToMinutes(state.topPosition!!)
+                dragView?.setTopPosition(state.topPosition!!)
+                topDragView.setTopPosition(state.topDragViewPosition!!)
 //                bottomDragView.setTopPosition(topPosition + state.height!!.toFloat() - dragImageSize / 2)
-                bottomDragView.setTopPosition(state.bottomPosition!!.toFloat())
+                bottomDragView.setTopPosition(state.bottomDragViewPosition!!)
             }
 
-            State.Type.DRAG_TOP -> {
-                val topPosition = roundPositionToMinutes(state.topPosition!!)
-                val dy = topPosition - dragView!!.top
-                val dragHeight = dragView!!.height - dy.toInt()
-                if (isValidHeightForEvent(dragHeight)) {
-                    dragView?.changePositionAndHeight(dy, dragHeight)
-                    topDragView.setTopPosition(topPosition - dragImageSize / 2)
-                }
-            }
-
-            State.Type.DRAG_BOTTOM -> {
-                val topPosition = roundPositionToMinutes(state.topPosition!!)
-                val dragHeight = (topPosition - dragView!!.top).toInt()
-                if (isValidHeightForEvent(dragHeight)) {
-                    dragView?.changeHeight(dragHeight)
-                    bottomDragView.setTopPosition(topPosition - dragImageSize / 2)
-                }
-            }
+//            State.Type.DRAG_TOP -> {
+//                val topPosition = roundPositionToMinutes(state.topPosition!!)
+//                val dy = topPosition - dragView!!.top
+//                val dragHeight = dragView!!.height - dy.toInt()
+//                if (isValidHeightForEvent(dragHeight)) {
+//                    dragView?.changePositionAndHeight(dy, dragHeight)
+//                    topDragView.setTopPosition(topPosition - dragImageSize / 2)
+//                }
+//            }
+//
+//            State.Type.DRAG_BOTTOM -> {
+//                val topPosition = roundPositionToMinutes(state.topPosition!!)
+//                val dragHeight = (topPosition - dragView!!.top).toInt()
+//                if (isValidHeightForEvent(dragHeight)) {
+//                    dragView?.changeHeight(dragHeight)
+//                    bottomDragView.setTopPosition(topPosition - dragImageSize / 2)
+//                }
+//            }
 
             State.Type.VIEW -> {
                 TransitionManager.beginDelayedTransition(this)
