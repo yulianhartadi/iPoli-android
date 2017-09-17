@@ -304,7 +304,8 @@ class CalendarDayView : FrameLayout, Consumer {
     }
 
     fun scheduleEvent(adapterView: View) {
-        scheduledEventsAdapter?.onStartEdit(adapterView)
+
+//        interceptTouch = true
         scrollView.isLocked = true
         val dragView = addAndPositionDragView(adapterView)
         dragView.post {
@@ -314,14 +315,45 @@ class CalendarDayView : FrameLayout, Consumer {
             setupDragViews(dragView)
             editModeBackground.bringToFront()
             showViews(editModeBackground, topDragView, bottomDragView)
-            setDragListener(dragView, lastY!!.toInt() - dragView.topLocationOnScreen)
+
+            val initialOffset = lastY!!.toInt() - dragView.topLocationOnScreen
+
+            adapterView.setOnTouchListener { _, e ->
+
+                val action = e.actionMasked
+
+                if (action == MotionEvent.ACTION_MOVE) {
+                    val yPosition = e.rawY - topLocationOnScreen - initialOffset
+                    fsm.fire(Event.Drag(yPosition.toInt(), dragView.height))
+                }
+
+                if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                    Timber.d("Up or cancel")
+                    fsm.fire(Event.Up)
+                    setOnTouchListener(null)
+                    dragView.setOnTouchListener { _, motionEvent ->
+                        Timber.d("Touching drag view")
+                        true
+                    }
+                    setTopDragViewListener()
+                    setBottomDragViewListener()
+                    adapterView.setOnTouchListener(null)
+                }
+                true
+            }
+//            setDragListener(dragView, lastY!!.toInt() - dragView.topLocationOnScreen)
+            scheduledEventsAdapter?.onStartEdit(adapterView)
+
         }
     }
 
     private fun addAndPositionDragView(adapterView: View): View {
         TransitionManager.beginDelayedTransition(this)
         val dragView = LayoutInflater.from(context).inflate(R.layout.item_calendar_drag, this, false)
-        dragView.setPositionAndHeight(adapterView.topLocationOnScreen - topLocationOnScreen.toFloat(), adapterView.height)
+        dragView.setPositionAndHeight(
+            adapterView.topLocationOnScreen - topLocationOnScreen.toFloat(),
+            adapterView.height
+        )
         addView(dragView)
         return dragView
     }
@@ -329,70 +361,6 @@ class CalendarDayView : FrameLayout, Consumer {
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         lastY = ev.rawY
         return super.dispatchTouchEvent(ev)
-    }
-
-    private fun setDragListener(dragView: View, initialOffset: Int) {
-        setOnTouchListener { _, e ->
-
-            val action = e.actionMasked
-            if (action == MotionEvent.ACTION_DOWN) {
-//
-////                startOffset = e.rawY.toInt() - dragView.topLocationOnScreen
-//                val visibleRect = Rect()
-//                dragView.getGlobalVisibleRect(visibleRect)
-//
-//                if (topVR.contains(e.rawX.toInt(), e.rawY.toInt())) {
-//                    Timber.d("Topeka")
-//                } else if (!visibleRect.contains(e.rawX.toInt(), e.rawY.toInt())) {
-//                    stopEditMode(dragView)
-//                } else {
-//
-//                }
-            }
-            if (action == MotionEvent.ACTION_MOVE) {
-
-//                if (topVR.contains(e.rawX.toInt(), e.rawY.toInt())) {
-//                    Timber.d("Topeka")
-
-//                val dy = e.rawY - topLocationOnScreen // - startOffset
-//
-//                val topPosition = timeToPosition(positionToTimeMapper.timeAt(dy, 5))
-//
-//                val bottomPos = timeToPosition(positionToTimeMapper.timeAt(dragView.bottom.toFloat()))
-//
-//                val heightPx = (bottomPos - topPosition).toInt()
-//                if (isValidHeightForEvent(heightPx)) {
-//                    topDragView.setTopPosition(topPosition - dragImageSize / 2)
-//                    dragView.setPositionAndHeight(topPosition, heightPx)
-//                }
-
-//                } else {
-//                    Timber.d("Not timber")
-                val dy = e.rawY - topLocationOnScreen - initialOffset
-                fsm.fire(Event.Drag(dy.toInt(), dragView.height))
-//
-//                    dragView.setTopPosition(timeToPosition(positionToTimeMapper.timeAt(dy, 5)))
-//
-//                    val calendarPosition = dragView.topLocationOnScreen - scrollView.topLocationOnScreen.toFloat()
-//
-//                    if (calendarPosition >= 0) {
-//                        scheduledEventsAdapter?.onStartTimeChanged(dragView, positionToTimeMapper.timeAt(calendarPosition + scrollView.scrollY))
-//                    }
-//                    topDragView.setTopPosition(dragView.top.toFloat() - dragImageSize / 2)
-//                    bottomDragView.setTopPosition(dragView.bottom.toFloat() - dragImageSize / 2)
-//                }
-            }
-
-            if (action == MotionEvent.ACTION_UP) {
-//                setOnTouchListener(null)
-//
-//                dragView.setOnTouchListener { _, motionEvent ->
-//                    Timber.d("Touching drag view")
-//                    true
-//                }
-            }
-            true
-        }
     }
 
     private fun setupDragViews(dragView: View) {
@@ -404,14 +372,14 @@ class CalendarDayView : FrameLayout, Consumer {
         bottomDragView.elevation = editView.elevation
         bottomDragView.bringToFront()
         positionBottomDragView(editView)
-        setBottomDragViewListener(bottomDragView, editView)
+        setBottomDragViewListener()
     }
 
     private fun setupTopDragView(editView: View) {
         topDragView.elevation = editView.elevation
         topDragView.bringToFront()
         positionTopDragView(editView)
-        setTopDragViewListener(topDragView, editView)
+        setTopDragViewListener()
     }
 
     private fun positionBottomDragView(editView: View) {
@@ -436,44 +404,29 @@ class CalendarDayView : FrameLayout, Consumer {
         scheduledEventsAdapter?.onStopEdit(editView)
     }
 
-    private fun setBottomDragViewListener(bottomDragView: View, editView: View) {
-        var lastY = 0f
+    private fun setBottomDragViewListener() {
+//        var lastY = 0f
         bottomDragView.setOnTouchListener { _, e ->
-            if (e.actionMasked == MotionEvent.ACTION_DOWN) {
-                lastY = e.y
-            }
+            //            if (e.actionMasked == MotionEvent.ACTION_DOWN) {
+//                val height = lastY!!.toInt() - editView.topLocationOnScreen
+//                fsm.fire(Event.DragBottom(lastY!!.toInt(), height))
+//            }
 
             if (e.actionMasked == MotionEvent.ACTION_MOVE) {
-                val dy = e.y - lastY
-                val height = editView.height + dy.toInt()
-                if (isValidHeightForEvent(height)) {
-                    editView.changeHeight(height)
-                    bottomDragView.changePosition(dy)
-                    lastY = e.y
-                }
+
+//                val height = lastY!!.toInt() - editView.topLocationOnScreen
+                fsm.fire(Event.DragBottom((e.rawY - topLocationOnScreen).toInt(), dragView!!.height))
+
             }
 
             true
         }
     }
 
-    private fun setTopDragViewListener(topDragView: View, editView: View) {
-        var lastY = 0f
+    private fun setTopDragViewListener() {
         topDragView.setOnTouchListener { _, e ->
-            if (e.actionMasked == MotionEvent.ACTION_DOWN) {
-                lastY = e.y
-            }
-
             if (e.actionMasked == MotionEvent.ACTION_MOVE) {
-                val dy = e.y - lastY
-                val height = editView.height - dy.toInt()
-                if (isValidHeightForEvent(height)) {
-                    editView.changePositionAndHeight(dy, height)
-                    topDragView.changePosition(dy)
-
-                    Timber.d("New start time " + positionToTimeMapper.timeAt((topDragView.layoutParams as MarginLayoutParams).topMargin.toFloat()))
-                    lastY = e.y
-                }
+                fsm.fire(Event.DragTop((e.rawY - topLocationOnScreen).toInt(), dragView!!.height))
             }
 
             true
@@ -487,6 +440,30 @@ class CalendarDayView : FrameLayout, Consumer {
                 dragView?.setTopPosition(topPosition)
                 topDragView.setTopPosition(topPosition - dragImageSize / 2)
                 bottomDragView.setTopPosition(topPosition + state.height!!.toFloat() - dragImageSize / 2)
+            }
+
+
+            State.Type.DRAG_TOP -> {
+                val topPosition = timeToPosition(positionToTimeMapper.timeAt(
+                    state.yPosition!!.toFloat(),
+                    5))
+                val dy = topPosition - dragView!!.top
+                val dragHeight = dragView!!.height - dy.toInt()
+                if (isValidHeightForEvent(dragHeight)) {
+                    dragView?.changePositionAndHeight(dy, dragHeight)
+                    topDragView.setTopPosition(topPosition - dragImageSize / 2)
+                }
+            }
+
+            State.Type.DRAG_BOTTOM -> {
+                val topPosition = timeToPosition(positionToTimeMapper.timeAt(
+                    state.yPosition!!.toFloat(),
+                    5))
+                val dragHeight = (topPosition - dragView!!.top).toInt()
+                if (isValidHeightForEvent(dragHeight)) {
+                    dragView?.changeHeight(dragHeight)
+                    bottomDragView.setTopPosition(topPosition - dragImageSize / 2)
+                }
             }
         }
     }

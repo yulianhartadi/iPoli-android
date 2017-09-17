@@ -23,10 +23,10 @@ class LockableScrollView : ScrollView {
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean =
         if (isLocked) false else super.onInterceptTouchEvent(ev)
 
-    override fun onTouchEvent(ev: MotionEvent): Boolean {
-        if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
-            return if (!isLocked) super.onTouchEvent(ev) else isLocked
+    override fun onTouchEvent(ev: MotionEvent): Boolean =
+        if (isLocked) {
+            false
+        } else {
+            super.onTouchEvent(ev)
         }
-        return super.onTouchEvent(ev)
-    }
 }

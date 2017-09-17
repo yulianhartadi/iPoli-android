@@ -96,11 +96,14 @@ class DayViewController : Controller(), Injects<Module> {
             val vm = getItem(position)
 
             view!!.setOnLongClickListener { v ->
+
                 v.visibility = View.GONE
                 calendarDayView.scheduleEvent(v)
 //                calendarDayView.startEditMode(v, position)
-                true
+                false
             }
+
+
 
 
             if(!vm.isCompleted) {
