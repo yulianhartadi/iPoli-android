@@ -318,14 +318,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
             adapterView.setOnTouchListener { _, e ->
 
-                editModeBackground.setOnTouchListener { _, ev ->
-                    val action = ev.actionMasked
-                    if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
-                        fsm.fire(Event.CompleteEdit)
-                    }
-                    true
-                }
-
+                setBackgroundTouchListener()
                 val action = e.actionMasked
 
                 if (action == MotionEvent.ACTION_MOVE) {
@@ -336,9 +329,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
                     fsm.fire(Event.Up)
                     setOnTouchListener(null)
-                    dragView.setOnTouchListener { _, motionEvent ->
-                        true
-                    }
+                    setDragViewTouchListener()
                     setTopDragViewListener()
                     setBottomDragViewListener()
                     adapterView.setOnTouchListener(null)
@@ -347,6 +338,16 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             }
             scheduledEventsAdapter?.onStartEdit(adapterView)
 
+        }
+    }
+
+    private fun setBackgroundTouchListener() {
+        editModeBackground.setOnTouchListener { _, ev ->
+            val action = ev.actionMasked
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                fsm.fire(Event.CompleteEdit)
+            }
+            true
         }
     }
 
@@ -399,10 +400,22 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         topDragView.layoutParams = lp
     }
 
-    private fun stopEditMode(editView: View) {
-        TransitionManager.beginDelayedTransition(this)
-        hideViews(editModeBackground, topDragView, bottomDragView)
-        scheduledEventsAdapter?.onStopEdit(editView)
+
+    private fun setDragViewTouchListener() {
+        var initialOffset = lastY!!.toInt() - dragView!!.topLocationOnScreen
+        dragView?.setOnTouchListener { _, e ->
+            val action = e.actionMasked
+            if (action == MotionEvent.ACTION_DOWN) {
+                initialOffset = e.rawY.toInt() - dragView!!.topLocationOnScreen
+            }
+            if (action == MotionEvent.ACTION_MOVE) {
+                fsm.fire(Event.Drag((e.rawY - topLocationOnScreen - initialOffset).toInt(), dragView!!.height))
+            }
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                fsm.fire(Event.Up)
+            }
+            true
+        }
     }
 
     private fun setBottomDragViewListener() {
@@ -463,6 +476,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 TransitionManager.beginDelayedTransition(this)
                 hideViews(editModeBackground, topDragView, bottomDragView)
                 scheduledEventsAdapter?.onStopEdit(dragView!!)
+                removeView(dragView)
+                dragView = null
             }
         }
     }

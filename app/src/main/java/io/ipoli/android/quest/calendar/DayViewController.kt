@@ -97,14 +97,11 @@ class DayViewController : Controller(), Injects<Module> {
 
             view!!.setOnLongClickListener { v ->
 
-                v.visibility = View.GONE
+//                v.visibility = View.GONE
                 calendarDayView.scheduleEvent(v)
 //                calendarDayView.startEditMode(v, position)
                 false
             }
-
-
-
 
             if(!vm.isCompleted) {
                 view.questName.text = vm.name
