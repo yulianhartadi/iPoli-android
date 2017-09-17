@@ -3,7 +3,6 @@ package io.ipoli.android.quest.calendar.ui.dayview
 import android.content.Context
 import android.content.res.Resources
 import android.database.DataSetObserver
-import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.support.transition.TransitionManager
 import android.support.v7.widget.LinearLayoutManager
@@ -306,7 +305,7 @@ class CalendarDayView : FrameLayout, Consumer {
 
     fun scheduleEvent(adapterView: View) {
         scheduledEventsAdapter?.onStartEdit(adapterView)
-        interceptTouch = true
+        scrollView.isLocked = true
         val dragView = addAndPositionDragView(adapterView)
         dragView.post {
             this.dragView = dragView
@@ -333,26 +332,22 @@ class CalendarDayView : FrameLayout, Consumer {
     }
 
     private fun setDragListener(dragView: View, initialOffset: Int) {
-//        var startOffset = initialOffset
         setOnTouchListener { _, e ->
-
-            val topVR = Rect()
-            topDragView.getGlobalVisibleRect(topVR)
 
             val action = e.actionMasked
             if (action == MotionEvent.ACTION_DOWN) {
-
-//                startOffset = e.rawY.toInt() - dragView.topLocationOnScreen
-                val visibleRect = Rect()
-                dragView.getGlobalVisibleRect(visibleRect)
-
-                if (topVR.contains(e.rawX.toInt(), e.rawY.toInt())) {
-                    Timber.d("Topeka")
-                } else if (!visibleRect.contains(e.rawX.toInt(), e.rawY.toInt())) {
-                    stopEditMode(dragView)
-                } else {
-
-                }
+//
+////                startOffset = e.rawY.toInt() - dragView.topLocationOnScreen
+//                val visibleRect = Rect()
+//                dragView.getGlobalVisibleRect(visibleRect)
+//
+//                if (topVR.contains(e.rawX.toInt(), e.rawY.toInt())) {
+//                    Timber.d("Topeka")
+//                } else if (!visibleRect.contains(e.rawX.toInt(), e.rawY.toInt())) {
+//                    stopEditMode(dragView)
+//                } else {
+//
+//                }
             }
             if (action == MotionEvent.ACTION_MOVE) {
 
@@ -389,22 +384,15 @@ class CalendarDayView : FrameLayout, Consumer {
             }
 
             if (action == MotionEvent.ACTION_UP) {
-                setOnTouchListener(null)
-                interceptTouch = false
-
-                dragView.setOnTouchListener { _, motionEvent ->
-                    Timber.d("Touching drag view")
-                    true
-                }
+//                setOnTouchListener(null)
+//
+//                dragView.setOnTouchListener { _, motionEvent ->
+//                    Timber.d("Touching drag view")
+//                    true
+//                }
             }
             true
         }
-    }
-
-    private var interceptTouch = false
-
-    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
-        return interceptTouch
     }
 
     private fun setupDragViews(dragView: View) {
@@ -442,7 +430,6 @@ class CalendarDayView : FrameLayout, Consumer {
 
     private fun stopEditMode(editView: View) {
         setOnTouchListener(null)
-        interceptTouch = false
         editView.setTopPosition(getAdjustedYPosFor(editView, rangeLength = 5))
         TransitionManager.beginDelayedTransition(this)
         hideViews(editModeBackground, topDragView, bottomDragView)
