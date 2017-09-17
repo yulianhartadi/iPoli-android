@@ -23,11 +23,11 @@ import kotlin.reflect.KClass
  * on 9/2/17.
  */
 
-interface Consumer {
-    fun consume(state: CalendarDayView.State)
+interface StateChangeListener {
+    fun onStateChanged(state: CalendarDayView.State)
 }
 
-class CalendarDayView : FrameLayout, Consumer {
+class CalendarDayView : FrameLayout, StateChangeListener {
 
     sealed class Event {
         object CompleteEdit : Event()
@@ -112,7 +112,7 @@ class CalendarDayView : FrameLayout, Consumer {
         })
     }
 
-    class FSM(initialState: State, private val consumer: Consumer) {
+    class FSM(initialState: State, private val listener: StateChangeListener) {
 
         interface Action<in E : Event> {
             fun execute(state: State, event: E): State
@@ -122,7 +122,7 @@ class CalendarDayView : FrameLayout, Consumer {
         private val actions = mutableMapOf<Pair<State.Type, KClass<*>>, Action<*>>()
 
         init {
-            consumer.consume(currentState)
+            listener.onStateChanged(currentState)
         }
 
         fun <E : Event> transition(given: State.Type, on: KClass<E>, execute: (state: State, event: E) -> State) {
@@ -139,7 +139,7 @@ class CalendarDayView : FrameLayout, Consumer {
             @Suppress("UNCHECKED_CAST")
             val a = actions[actionKey] as Action<E>
             currentState = a.execute(currentState, event)
-            consumer.consume(currentState)
+            listener.onStateChanged(currentState)
         }
     }
 
@@ -398,27 +398,17 @@ class CalendarDayView : FrameLayout, Consumer {
 
     private fun stopEditMode(editView: View) {
         setOnTouchListener(null)
-        editView.setTopPosition(getAdjustedYPosFor(editView, rangeLength = 5))
+        editView.setTopPosition(roundPositionToMinutes((editView.layoutParams as MarginLayoutParams).topMargin))
         TransitionManager.beginDelayedTransition(this)
         hideViews(editModeBackground, topDragView, bottomDragView)
         scheduledEventsAdapter?.onStopEdit(editView)
     }
 
     private fun setBottomDragViewListener() {
-//        var lastY = 0f
         bottomDragView.setOnTouchListener { _, e ->
-            //            if (e.actionMasked == MotionEvent.ACTION_DOWN) {
-//                val height = lastY!!.toInt() - editView.topLocationOnScreen
-//                fsm.fire(Event.DragBottom(lastY!!.toInt(), height))
-//            }
-
             if (e.actionMasked == MotionEvent.ACTION_MOVE) {
-
-//                val height = lastY!!.toInt() - editView.topLocationOnScreen
                 fsm.fire(Event.DragBottom((e.rawY - topLocationOnScreen).toInt(), dragView!!.height))
-
             }
-
             true
         }
     }
@@ -428,25 +418,21 @@ class CalendarDayView : FrameLayout, Consumer {
             if (e.actionMasked == MotionEvent.ACTION_MOVE) {
                 fsm.fire(Event.DragTop((e.rawY - topLocationOnScreen).toInt(), dragView!!.height))
             }
-
             true
         }
     }
 
-    override fun consume(state: State) {
+    override fun onStateChanged(state: State) {
         when (state.type) {
             State.Type.DRAG -> {
-                val topPosition = timeToPosition(positionToTimeMapper.timeAt(state.yPosition!!.toFloat(), 5))
+                val topPosition = roundPositionToMinutes(state.yPosition!!)
                 dragView?.setTopPosition(topPosition)
                 topDragView.setTopPosition(topPosition - dragImageSize / 2)
                 bottomDragView.setTopPosition(topPosition + state.height!!.toFloat() - dragImageSize / 2)
             }
 
-
             State.Type.DRAG_TOP -> {
-                val topPosition = timeToPosition(positionToTimeMapper.timeAt(
-                    state.yPosition!!.toFloat(),
-                    5))
+                val topPosition = roundPositionToMinutes(state.yPosition!!)
                 val dy = topPosition - dragView!!.top
                 val dragHeight = dragView!!.height - dy.toInt()
                 if (isValidHeightForEvent(dragHeight)) {
@@ -456,9 +442,7 @@ class CalendarDayView : FrameLayout, Consumer {
             }
 
             State.Type.DRAG_BOTTOM -> {
-                val topPosition = timeToPosition(positionToTimeMapper.timeAt(
-                    state.yPosition!!.toFloat(),
-                    5))
+                val topPosition = roundPositionToMinutes(state.yPosition!!)
                 val dragHeight = (topPosition - dragView!!.top).toInt()
                 if (isValidHeightForEvent(dragHeight)) {
                     dragView?.changeHeight(dragHeight)
@@ -467,6 +451,12 @@ class CalendarDayView : FrameLayout, Consumer {
             }
         }
     }
+
+    private fun roundPositionToMinutes(position: Int, roundedToMinutes: Int = 5) =
+        roundPositionToMinutes(position.toFloat(), roundedToMinutes)
+
+    private fun roundPositionToMinutes(position: Float, roundedToMinutes: Int = 5) =
+        positionToTimeMapper.timeAt(position, roundedToMinutes).toPosition()
 
     private fun View.changePositionAndHeight(yDelta: Float, height: Int) =
         changeLayoutParams<MarginLayoutParams> {
@@ -506,11 +496,11 @@ class CalendarDayView : FrameLayout, Consumer {
             return location[1]
         }
 
+    private fun Time.toPosition() =
+        toMinuteOfDay() * minuteHeight
+
     private fun isValidHeightForEvent(height: Int): Boolean =
         getMinutesFor(height) in MIN_EVENT_DURATION..MAX_EVENT_DURATION
-
-    private fun getAdjustedYPosFor(view: View, rangeLength: Int): Float =
-        timeToPosition(positionToTimeMapper.timeAt((view.layoutParams as MarginLayoutParams).topMargin.toFloat(), rangeLength))
 
     private fun getScreenHeight(): Int {
         val metrics = DisplayMetrics()
@@ -518,12 +508,6 @@ class CalendarDayView : FrameLayout, Consumer {
         wm.defaultDisplay.getMetrics(metrics)
         return metrics.heightPixels
     }
-
-    private fun timeToPosition(time: Time): Float =
-        time.hours * hourHeight + getMinutesHeight(time.getMinutes())
-
-    private fun getMinutesHeight(minutes: Int): Float =
-        minuteHeight * minutes
 
     private fun getMinutesFor(height: Int): Int =
         (height / minuteHeight).toInt()
