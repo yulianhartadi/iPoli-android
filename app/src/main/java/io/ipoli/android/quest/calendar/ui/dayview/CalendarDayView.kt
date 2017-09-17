@@ -15,7 +15,6 @@ import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
-import timber.log.Timber
 import kotlin.reflect.KClass
 
 /**
@@ -28,6 +27,37 @@ interface StateChangeListener {
 }
 
 class CalendarDayView : FrameLayout, StateChangeListener {
+
+    class FSM(initialState: State, private val listener: StateChangeListener) {
+
+        interface Action<in E : Event> {
+            fun execute(state: State, event: E): State
+        }
+
+        private var currentState: State = initialState
+        private val actions = mutableMapOf<Pair<State.Type, KClass<*>>, Action<*>>()
+
+        init {
+            listener.onStateChanged(currentState)
+        }
+
+        fun <E : Event> transition(given: State.Type, on: KClass<E>, execute: (state: State, event: E) -> State) {
+            val a = object : Action<E> {
+                override fun execute(state: State, event: E): State {
+                    return execute(state, event)
+                }
+            }
+            actions[Pair(given, on)] = a
+        }
+
+        fun <E : Event> fire(event: E) {
+            val actionKey = Pair(currentState.type, event::class)
+            @Suppress("UNCHECKED_CAST")
+            val a = actions[actionKey] as Action<E>
+            currentState = a.execute(currentState, event)
+            listener.onStateChanged(currentState)
+        }
+    }
 
     sealed class Event {
         object CompleteEdit : Event()
@@ -45,6 +75,69 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         enum class Type {
             VIEW, EDIT, DRAG, DRAG_TOP, DRAG_BOTTOM, EDIT_NAME
         }
+    }
+
+    private var dragView: View? = null
+    private var lastY: Float? = null
+
+    private lateinit var fsm: FSM
+
+    private val MIN_EVENT_DURATION = 10
+    private val MAX_EVENT_DURATION = Time.h2Min(4)
+    private var hourHeight: Float = 0f
+    private var minuteHeight: Float = 0f
+    private lateinit var dragImage: Drawable
+    private var dragImageSize: Int = toPx(16)
+    private val adapterViews = mutableListOf<View>()
+
+    private lateinit var editModeBackground: View
+    private lateinit var topDragView: View
+    private lateinit var bottomDragView: View
+    private lateinit var positionToTimeMapper: PositionToTimeMapper
+
+    private var scheduledEventsAdapter: ScheduledEventsAdapter<*>? = null
+    private var unscheduledEventsAdapter: UnscheduledEventsAdapter<*>? = null
+
+    private val dataSetObserver = object : DataSetObserver() {
+        override fun onChanged() {
+            refreshEventsFromAdapter()
+        }
+
+        override fun onInvalidated() {
+            removeAllViews()
+        }
+    }
+
+    constructor(context: Context) : super(context) {
+        initUi(null, 0)
+    }
+
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+        initUi(attrs, 0)
+    }
+
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+        initUi(attrs, defStyleAttr)
+    }
+
+    private fun initUi(attrs: AttributeSet?, defStyleAttr: Int) {
+        setMainLayout()
+        fetchStyleAttributes(attrs, defStyleAttr)
+        val screenHeight = getScreenHeight()
+        hourHeight = screenHeight / 6f
+        minuteHeight = hourHeight / 60f
+
+        positionToTimeMapper = PositionToTimeMapper(minuteHeight)
+
+        setupScroll()
+        setupHourCells()
+        setupEditBackgroundView()
+        setupUnscheduledQuests()
+
+        topDragView = addDragView()
+        bottomDragView = addDragView()
+
+        setupFSM()
     }
 
     private fun setupFSM() {
@@ -110,100 +203,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fsm.transition(State.Type.EDIT_NAME, Event.DragBottom::class, { s, e ->
             s.copy(type = State.Type.DRAG_BOTTOM, yPosition = e.y, height = e.height)
         })
-    }
-
-    class FSM(initialState: State, private val listener: StateChangeListener) {
-
-        interface Action<in E : Event> {
-            fun execute(state: State, event: E): State
-        }
-
-        private var currentState: State = initialState
-        private val actions = mutableMapOf<Pair<State.Type, KClass<*>>, Action<*>>()
-
-        init {
-            listener.onStateChanged(currentState)
-        }
-
-        fun <E : Event> transition(given: State.Type, on: KClass<E>, execute: (state: State, event: E) -> State) {
-            val a = object : Action<E> {
-                override fun execute(state: State, event: E): State {
-                    return execute(state, event)
-                }
-            }
-            actions[Pair(given, on)] = a
-        }
-
-        fun <E : Event> fire(event: E) {
-            val actionKey = Pair(currentState.type, event::class)
-            @Suppress("UNCHECKED_CAST")
-            val a = actions[actionKey] as Action<E>
-            currentState = a.execute(currentState, event)
-            listener.onStateChanged(currentState)
-        }
-    }
-
-    private var dragView: View? = null
-    private var lastY: Float? = null
-
-    private lateinit var fsm: FSM
-
-    private val MIN_EVENT_DURATION = 10
-    private val MAX_EVENT_DURATION = Time.h2Min(4)
-    private var hourHeight: Float = 0f
-    private var minuteHeight: Float = 0f
-    private lateinit var dragImage: Drawable
-    private var dragImageSize: Int = toPx(16)
-    private val adapterViews = mutableListOf<View>()
-
-    private lateinit var editModeBackground: View
-    private lateinit var topDragView: View
-    private lateinit var bottomDragView: View
-    private lateinit var positionToTimeMapper: PositionToTimeMapper
-
-    private var scheduledEventsAdapter: ScheduledEventsAdapter<*>? = null
-    private var unscheduledEventsAdapter: UnscheduledEventsAdapter<*>? = null
-
-    private val dataSetObserver = object : DataSetObserver() {
-        override fun onChanged() {
-            refreshEventsFromAdapter()
-        }
-
-        override fun onInvalidated() {
-            removeAllViews()
-        }
-    }
-
-    constructor(context: Context) : super(context) {
-        initUi(null, 0)
-    }
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-        initUi(attrs, 0)
-    }
-
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        initUi(attrs, defStyleAttr)
-    }
-
-    private fun initUi(attrs: AttributeSet?, defStyleAttr: Int) {
-        setMainLayout()
-        fetchStyleAttributes(attrs, defStyleAttr)
-        val screenHeight = getScreenHeight()
-        hourHeight = screenHeight / 6f
-        minuteHeight = hourHeight / 60f
-
-        positionToTimeMapper = PositionToTimeMapper(minuteHeight)
-
-        setupScroll()
-        setupHourCells()
-        setupEditBackgroundView()
-        setupUnscheduledQuests()
-
-        topDragView = addDragView()
-        bottomDragView = addDragView()
-
-        setupFSM()
     }
 
     private fun setupScroll() {
@@ -305,7 +304,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     fun scheduleEvent(adapterView: View) {
 
-//        interceptTouch = true
         scrollView.isLocked = true
         val dragView = addAndPositionDragView(adapterView)
         dragView.post {
@@ -320,6 +318,14 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
             adapterView.setOnTouchListener { _, e ->
 
+                editModeBackground.setOnTouchListener { _, ev ->
+                    val action = ev.actionMasked
+                    if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                        fsm.fire(Event.CompleteEdit)
+                    }
+                    true
+                }
+
                 val action = e.actionMasked
 
                 if (action == MotionEvent.ACTION_MOVE) {
@@ -328,11 +334,9 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 }
 
                 if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
-                    Timber.d("Up or cancel")
                     fsm.fire(Event.Up)
                     setOnTouchListener(null)
                     dragView.setOnTouchListener { _, motionEvent ->
-                        Timber.d("Touching drag view")
                         true
                     }
                     setTopDragViewListener()
@@ -341,7 +345,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 }
                 true
             }
-//            setDragListener(dragView, lastY!!.toInt() - dragView.topLocationOnScreen)
             scheduledEventsAdapter?.onStartEdit(adapterView)
 
         }
@@ -397,8 +400,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun stopEditMode(editView: View) {
-        setOnTouchListener(null)
-        editView.setTopPosition(roundPositionToMinutes((editView.layoutParams as MarginLayoutParams).topMargin))
         TransitionManager.beginDelayedTransition(this)
         hideViews(editModeBackground, topDragView, bottomDragView)
         scheduledEventsAdapter?.onStopEdit(editView)
@@ -406,8 +407,12 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     private fun setBottomDragViewListener() {
         bottomDragView.setOnTouchListener { _, e ->
-            if (e.actionMasked == MotionEvent.ACTION_MOVE) {
+            val action = e.actionMasked
+            if (action == MotionEvent.ACTION_MOVE) {
                 fsm.fire(Event.DragBottom((e.rawY - topLocationOnScreen).toInt(), dragView!!.height))
+            }
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                fsm.fire(Event.Up)
             }
             true
         }
@@ -415,8 +420,12 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     private fun setTopDragViewListener() {
         topDragView.setOnTouchListener { _, e ->
-            if (e.actionMasked == MotionEvent.ACTION_MOVE) {
+            val action = e.actionMasked
+            if (action == MotionEvent.ACTION_MOVE) {
                 fsm.fire(Event.DragTop((e.rawY - topLocationOnScreen).toInt(), dragView!!.height))
+            }
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                fsm.fire(Event.Up)
             }
             true
         }
@@ -448,6 +457,12 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                     dragView?.changeHeight(dragHeight)
                     bottomDragView.setTopPosition(topPosition - dragImageSize / 2)
                 }
+            }
+
+            State.Type.VIEW -> {
+                TransitionManager.beginDelayedTransition(this)
+                hideViews(editModeBackground, topDragView, bottomDragView)
+                scheduledEventsAdapter?.onStopEdit(dragView!!)
             }
         }
     }
