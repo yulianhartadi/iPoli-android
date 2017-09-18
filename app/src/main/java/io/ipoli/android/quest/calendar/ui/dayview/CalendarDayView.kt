@@ -235,15 +235,15 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         })
 
         fsm.transition(State.Type.EDIT_NAME, Event.Drag::class, { s, e ->
-            s.copy(type = State.Type.DRAG, topPosition = e.y)
+            s.copy(type = State.Type.DRAG)
         })
 
         fsm.transition(State.Type.EDIT_NAME, Event.DragTop::class, { s, e ->
-            s.copy(type = State.Type.DRAG, topPosition = e.y)
+            s.copy(type = State.Type.DRAG)
         })
 
         fsm.transition(State.Type.EDIT_NAME, Event.DragBottom::class, { s, e ->
-            s.copy(type = State.Type.DRAG, topPosition = e.y)
+            s.copy(type = State.Type.DRAG)
         })
     }
 
