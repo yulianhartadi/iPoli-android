@@ -221,6 +221,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         })
 
         fsm.transition(State.Type.EDIT, Event.CompleteEdit::class, { s, e ->
+            stopEdit()
             s.copy(type = State.Type.VIEW)
         })
 
@@ -243,6 +244,13 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fsm.transition(State.Type.EDIT_NAME, Event.DragBottomIndicator::class, { s, e ->
             s.copy(type = State.Type.DRAG, topDragViewPosition = e.y)
         })
+    }
+
+    private fun stopEdit() {
+        TransitionManager.beginDelayedTransition(this)
+        scheduledEventsAdapter?.onStopEdit(dragView!!)
+        removeView(dragView)
+        dragView = null
     }
 
     private fun setupScroll() {
@@ -487,37 +495,19 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     override fun onStateChanged(state: State) {
         when (state.type) {
+            State.Type.EDIT -> {
+                showViews(editModeBackground, topDragView, bottomDragView)
+            }
+
             State.Type.DRAG -> {
+                showViews(editModeBackground, topDragView, bottomDragView)
                 dragView?.setPositionAndHeight(state.topDragViewPosition!!, state.height!!)
                 topDragView.setTopPosition(state.topDragIndicatorPosition!!)
                 bottomDragView.setTopPosition(state.bottomDragIndicatorPosition!!)
             }
 
-//            State.Type.DRAG_TOP -> {
-//                val topPosition = roundPositionToMinutes(state.topPosition!!)
-//                val dy = topPosition - dragView!!.top
-//                val dragHeight = dragView!!.height - dy.toInt()
-//                if (isValidHeightForEvent(dragHeight)) {
-//                    dragView?.changePositionAndHeight(dy, dragHeight)
-//                    topDragView.setTopPosition(topPosition - dragImageSize / 2)
-//                }
-//            }
-//
-//            State.Type.DRAG_BOTTOM -> {
-//                val topPosition = roundPositionToMinutes(state.topPosition!!)
-//                val dragHeight = (topPosition - dragView!!.top).toInt()
-//                if (isValidHeightForEvent(dragHeight)) {
-//                    dragView?.changeHeight(dragHeight)
-//                    bottomDragView.setTopPosition(topPosition - dragImageSize / 2)
-//                }
-//            }
-
             State.Type.VIEW -> {
-                TransitionManager.beginDelayedTransition(this)
                 hideViews(editModeBackground, topDragView, bottomDragView)
-                scheduledEventsAdapter?.onStopEdit(dragView!!)
-                removeView(dragView)
-                dragView = null
             }
         }
     }
