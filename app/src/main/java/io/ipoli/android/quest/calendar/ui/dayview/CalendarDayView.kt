@@ -5,11 +5,13 @@ import android.content.res.Resources
 import android.database.DataSetObserver
 import android.graphics.drawable.Drawable
 import android.support.transition.TransitionManager
+import android.support.v4.widget.TextViewCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.DisplayMetrics
+import android.util.TypedValue
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -18,7 +20,6 @@ import io.ipoli.android.common.datetime.Time
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.item_calendar_drag.view.*
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
-import timber.log.Timber
 import kotlin.reflect.KClass
 
 
@@ -423,6 +424,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun setupDragViews(dragView: View) {
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.startTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.endTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
         setupTopDragView(dragView)
         setupBottomDragView(dragView)
         setupEventName(dragView)
