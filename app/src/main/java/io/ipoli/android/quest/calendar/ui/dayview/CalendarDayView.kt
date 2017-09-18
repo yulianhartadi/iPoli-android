@@ -6,6 +6,8 @@ import android.database.DataSetObserver
 import android.graphics.drawable.Drawable
 import android.support.transition.TransitionManager
 import android.support.v7.widget.LinearLayoutManager
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.*
@@ -14,8 +16,12 @@ import android.widget.ImageView
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
+import kotlinx.android.synthetic.main.item_calendar_drag.view.*
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
+import timber.log.Timber
 import kotlin.reflect.KClass
+
+
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -419,6 +425,30 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private fun setupDragViews(dragView: View) {
         setupTopDragView(dragView)
         setupBottomDragView(dragView)
+        setupEventName(dragView)
+    }
+
+    private fun setupEventName(dragView: View) {
+        dragView.name.setOnFocusChangeListener { _, isFocused ->
+            if (isFocused) {
+                fsm.fire(Event.EditName(dragView.name.text.toString()))
+            }
+        }
+
+        dragView.name.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
+                fsm.fire(Event.EditName(text.toString()))
+            }
+
+        })
     }
 
     private fun setupBottomDragView(editView: View) {

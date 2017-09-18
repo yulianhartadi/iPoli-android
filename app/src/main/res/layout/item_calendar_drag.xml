@@ -34,7 +34,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/quest_text"
+        android:id="@+id/name"
         style="@style/Calendar.Quest.Name.Drag"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
