@@ -62,7 +62,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     sealed class Event {
         object CompleteEdit : Event()
         object Up : Event()
-        data class StartEdit(val y: Float, val name: String) : Event()
+        data class StartEdit(val view: View, val name: String) : Event()
         data class Drag(val y: Float) : Event()
         data class DragTopIndicator(val y: Float) : Event()
         data class DragBottomIndicator(val y: Float) : Event()
@@ -76,7 +76,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val topDragIndicatorPosition: Float? = null,
         val bottomDragIndicatorPosition: Float? = null,
         val height: Int? = null,
-        val name: String? = null) {
+        val name: String? = null,
+        val isScrollLocked: Boolean = false) {
         enum class Type {
             // DRAG_TOP, DRAG_BOTTOM,
             VIEW,
@@ -150,8 +151,13 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private fun setupFSM() {
         fsm = FSM(State(State.Type.VIEW), this)
         fsm.transition(State.Type.VIEW, Event.StartEdit::class, { s, e ->
+            val adapterView = e.view
+            setupDragViews(dragView!!)
+            editModeBackground.bringToFront()
+            setAdapterViewTouchListener(adapterView)
+            scheduledEventsAdapter?.onStartEdit(adapterView)
 
-            val absPos = e.y - topLocationOnScreen
+            val absPos = dragView!!.topLocationOnScreen.toFloat() - topLocationOnScreen
             val topPosition = roundPositionToMinutes(absPos)
 
             s.copy(
@@ -159,7 +165,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 topDragViewPosition = topPosition,
                 topDragIndicatorPosition = topPosition - dragImageSize / 2,
                 bottomDragIndicatorPosition = topPosition + dragView!!.height - dragImageSize / 2,
-                height = dragView!!.height)
+                height = dragView!!.height,
+                isScrollLocked = true)
         })
 
         fsm.transition(State.Type.DRAG, Event.Drag::class, { s, e ->
@@ -179,7 +186,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fsm.transition(State.Type.DRAG, Event.DragTopIndicator::class, { s, e ->
             val absPos = e.y - topLocationOnScreen
             val topPosition = (Math.ceil(roundPositionToMinutes(absPos).toDouble())).toFloat()
-            val height = (dragView!!.bottom  - topPosition).toInt()
+            val height = (dragView!!.bottom - topPosition).toInt()
             if (!isValidHeightForEvent(height)) {
                 return@transition s
             }
@@ -222,7 +229,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
         fsm.transition(State.Type.EDIT, Event.CompleteEdit::class, { s, e ->
             stopEdit()
-            s.copy(type = State.Type.VIEW)
+            s.copy(type = State.Type.VIEW, isScrollLocked = false)
         })
 
         fsm.transition(State.Type.EDIT_NAME, Event.CompleteEditName::class, { s, e ->
@@ -244,6 +251,30 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fsm.transition(State.Type.EDIT_NAME, Event.DragBottomIndicator::class, { s, e ->
             s.copy(type = State.Type.DRAG, topDragViewPosition = e.y)
         })
+    }
+
+    private fun setAdapterViewTouchListener(adapterView: View) {
+        val initialOffset = lastY!! - dragView!!.topLocationOnScreen
+
+        adapterView.setOnTouchListener { _, e ->
+
+            setBackgroundTouchListener()
+            val action = e.actionMasked
+
+            if (action == MotionEvent.ACTION_MOVE) {
+                fsm.fire(Event.Drag(e.rawY - initialOffset))
+            }
+
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                fsm.fire(Event.Up)
+                setOnTouchListener(null)
+                setDragViewTouchListener()
+                setTopDragViewListener()
+                setBottomDragViewListener()
+                adapterView.setOnTouchListener(null)
+            }
+            true
+        }
     }
 
     private fun stopEdit() {
@@ -351,41 +382,11 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     fun scheduleEvent(adapterView: View) {
-        scrollView.isLocked = true
         val dragView = addAndPositionDragView(adapterView)
         dragView.post {
             this.dragView = dragView
             // @TODO get event name
-//            fsm.fire(Event.StartEdit(dragView.top.toFloat(), dragView.height, "namy"))
-            fsm.fire(Event.StartEdit(dragView.topLocationOnScreen.toFloat(), "namy"))
-            setupDragViews(dragView)
-            editModeBackground.bringToFront()
-            showViews(editModeBackground, topDragView, bottomDragView)
-
-            val initialOffset = lastY!! - dragView.topLocationOnScreen
-
-            adapterView.setOnTouchListener { _, e ->
-
-                setBackgroundTouchListener()
-                val action = e.actionMasked
-
-                if (action == MotionEvent.ACTION_MOVE) {
-//                    val yPosition = e.rawY - topLocationOnScreen - initialOffset
-                    fsm.fire(Event.Drag(e.rawY - initialOffset))
-                }
-
-                if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
-                    fsm.fire(Event.Up)
-                    setOnTouchListener(null)
-                    setDragViewTouchListener()
-                    setTopDragViewListener()
-                    setBottomDragViewListener()
-                    adapterView.setOnTouchListener(null)
-                }
-                true
-            }
-            scheduledEventsAdapter?.onStartEdit(adapterView)
-
+            fsm.fire(Event.StartEdit(adapterView, "namy"))
         }
     }
 
@@ -494,6 +495,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     override fun onStateChanged(state: State) {
+        scrollView.isLocked = state.isScrollLocked
+
         when (state.type) {
             State.Type.EDIT -> {
                 showViews(editModeBackground, topDragView, bottomDragView)
