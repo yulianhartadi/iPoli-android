@@ -4,15 +4,12 @@ import android.app.Application
 import android.content.Context
 import com.crashlytics.android.Crashlytics
 import com.jakewharton.threetenabp.AndroidThreeTen
-import com.orhanobut.logger.AndroidLogAdapter
-import com.orhanobut.logger.Logger
 import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
 import io.fabric.sdk.android.Fabric
 import io.ipoli.android.common.di.*
 import io.realm.Realm
 import timber.log.Timber
-
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -57,12 +54,14 @@ class iPoliApp : Application() {
         AndroidThreeTen.init(this)
         // Initialize Realm. Should only be done once when the application starts.
         Realm.init(this)
-        Logger.addLogAdapter(AndroidLogAdapter())
-        Timber.plant(object : Timber.DebugTree() {
-            override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-                Logger.log(priority, tag, message, t)
-            }
-        })
+        Timber.plant(Timber.DebugTree())
+//        Logger.addLogAdapter(AndroidLogAdapter())
+
+//        Timber.plant(object : Timber.DebugTree() {
+//            override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+//                Logger.log(priority, tag, message, t)
+//            }
+//        })
         refWatcher = LeakCanary.install(this)
 //        TinyDancer.create().show(this)
 

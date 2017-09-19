@@ -4,14 +4,15 @@ import android.content.Context
 import android.content.res.Resources
 import android.database.DataSetObserver
 import android.graphics.drawable.Drawable
+import android.os.Handler
+import android.os.Looper
+import android.support.transition.AutoTransition
 import android.support.transition.TransitionManager
-import android.support.v4.widget.TextViewCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.DisplayMetrics
-import android.util.TypedValue
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -97,13 +98,16 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     private lateinit var fsm: FSM
 
+    private var visibleHoursPerScreen = 6
+    private var initialDistance = 1f
+
+
     private val MIN_EVENT_DURATION = 10
     private val MAX_EVENT_DURATION = Time.h2Min(4)
     private var hourHeight: Float = 0f
     private var minuteHeight: Float = 0f
     private lateinit var dragImage: Drawable
     private var dragImageSize: Int = toPx(16)
-    private val adapterViews = mutableListOf<View>()
 
     private lateinit var editModeBackground: View
     private lateinit var topDragView: View
@@ -135,11 +139,15 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         initUi(attrs, defStyleAttr)
     }
 
+    var handy = Handler(Looper.getMainLooper())
+
+    var runnable: Runnable? = null
+
     private fun initUi(attrs: AttributeSet?, defStyleAttr: Int) {
         setMainLayout()
         fetchStyleAttributes(attrs, defStyleAttr)
         val screenHeight = getScreenHeight()
-        hourHeight = screenHeight / 6f
+        hourHeight = screenHeight / visibleHoursPerScreen.toFloat()
         minuteHeight = hourHeight / 60f
 
         positionToTimeMapper = PositionToTimeMapper(minuteHeight)
@@ -153,6 +161,134 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         bottomDragView = addDragView()
 
         setupFSM()
+
+        runnable = Runnable {
+
+            scrollView.scrollY = scrollView.scrollY + hourHeight.toInt()
+            TransitionManager.beginDelayedTransition(this)
+            visibleHoursPerScreen = Math.max(visibleHoursPerScreen - 1, 6)
+
+            hourHeight = getScreenHeight() / visibleHoursPerScreen.toFloat()
+
+//            Timber.d("New Hour height $hourHeight")
+            minuteHeight = hourHeight / 60f
+
+            positionToTimeMapper = PositionToTimeMapper(minuteHeight)
+
+            val hourCells = mutableListOf<View>()
+            val events = mutableListOf<View>()
+
+            (0 until eventContainer.childCount)
+                .map { eventContainer.getChildAt(it) }
+                .forEach {
+                    if (it.tag == null) {
+                        events.add(it)
+                    } else if (it.tag.toString() == "hour_cell") {
+                        hourCells.add(it)
+                    }
+                }
+
+            hourCells.forEachIndexed { i, hc ->
+                val topPosition = (i * hourHeight).toInt()
+                hc.setPositionAndHeight(topPosition.toFloat(), hourHeight.toInt())
+            }
+
+            val a = scheduledEventsAdapter!!
+            for (i in 0 until a.count) {
+                val adapterView = events[i]
+                val event = a.getItem(i)
+                adapterView.setPositionAndHeight(
+                    event.startMinute * minuteHeight,
+                    (event.duration * minuteHeight).toInt())
+            }
+
+            handy.postDelayed(runnable, 1000)
+        }
+
+//        handy.postDelayed(runnable!!, 1000)
+
+        val scaleDetector = ScaleGestureDetector(context, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+
+            override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
+                initialDistance = detector.currentSpan;
+                return super.onScaleBegin(detector)
+            }
+
+            override fun onScale(detector: ScaleGestureDetector): Boolean {
+                if(!gestureTolerance(detector)) {
+                    return true
+                }
+
+
+                val focusTime = positionToTimeMapper.timeAt(detector.focusY + scrollView.scrollY, 1)
+
+                val scaleFactor = detector.scaleFactor
+
+                if (scaleFactor > 1) {
+                    visibleHoursPerScreen--
+                } else {
+                    visibleHoursPerScreen++
+                }
+
+                initialDistance = detector.currentSpan
+
+                visibleHoursPerScreen = Math.max(visibleHoursPerScreen, 6)
+                visibleHoursPerScreen = Math.min(visibleHoursPerScreen, 16)
+
+                hourHeight = getScreenHeight() / visibleHoursPerScreen.toFloat()
+                minuteHeight = hourHeight / 60f
+                positionToTimeMapper = PositionToTimeMapper(minuteHeight)
+
+                val hourCells = mutableListOf<View>()
+                val events = mutableListOf<View>()
+
+                (0 until eventContainer.childCount)
+                    .map { eventContainer.getChildAt(it) }
+                    .forEach {
+                        if (it.tag == null) {
+                            events.add(it)
+                        } else if (it.tag.toString() == "hour_cell") {
+                            hourCells.add(it)
+                        }
+                    }
+
+                val transition = AutoTransition()
+                transition.duration = 0
+                TransitionManager.beginDelayedTransition(this@CalendarDayView, transition)
+
+                hourCells.forEachIndexed { i, hc ->
+                    val topPosition = (i * hourHeight).toInt()
+                    hc.setPositionAndHeight(topPosition.toFloat(), hourHeight.toInt())
+                }
+
+                val a = scheduledEventsAdapter!!
+                for (i in 0 until a.count) {
+                    val adapterView = events[i]
+                    val event = a.getItem(i)
+                    adapterView.setPositionAndHeight(
+                        event.startMinute * minuteHeight,
+                        (event.duration * minuteHeight).toInt())
+                }
+
+                val newFocusPosition = focusTime.toPosition()
+                val timeDelta = newFocusPosition - (detector.focusY + scrollView.scrollY)
+                scrollView.scrollBy(0, timeDelta.toInt())
+
+                return true
+            }
+        })
+
+
+        scrollView.setOnTouchListener { _, e ->
+            scaleDetector.onTouchEvent(e)
+            false
+        }
+    }
+
+    private fun gestureTolerance(detector: ScaleGestureDetector): Boolean {
+        val currentDistance = detector.currentSpan
+        val distanceDelta = Math.abs(initialDistance - currentDistance)
+        return distanceDelta > toPx(24)
     }
 
     private fun setupFSM() {
@@ -325,6 +461,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             val layoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, hourHeight.toInt())
             layoutParams.topMargin = (hour * hourHeight).toInt()
             hourView.layoutParams = layoutParams
+            hourView.tag = "hour_cell"
             eventContainer.addView(hourView)
         }
     }
@@ -364,7 +501,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             adapterView.setPositionAndHeight(
                 event.startMinute * minuteHeight,
                 (event.duration * minuteHeight).toInt())
-            adapterViews.add(i, adapterView)
             eventContainer.addView(adapterView)
         }
     }
@@ -424,8 +560,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun setupDragViews(dragView: View) {
-        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.startTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
-        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.endTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
+//        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.startTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
+//        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.endTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
         setupTopDragView(dragView)
         setupBottomDragView(dragView)
         setupEventName(dragView)
@@ -540,6 +676,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 dragView?.setPositionAndHeight(state.topDragViewPosition!!, state.height!!)
                 topDragView.setTopPosition(state.topDragIndicatorPosition!!)
                 bottomDragView.setTopPosition(state.bottomDragIndicatorPosition!!)
+//                dragView?.startTime!!.changeHeight(state.height!! / 4)
             }
 
             State.Type.VIEW -> {

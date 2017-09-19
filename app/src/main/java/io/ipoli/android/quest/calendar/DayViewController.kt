@@ -35,14 +35,15 @@ class DayViewController : Controller(), Injects<Module> {
         val view = inflater.inflate(R.layout.controller_day_view, container, false)
         view.calendar.setScheduledEventsAdapter(QuestScheduledEventsAdapter(activity!!,
             listOf(
-                QuestViewModel("Play COD", 45, Time.atHours(1).toMinuteOfDay(), Category.FUN.color500, Category.FUN.color800, true),
-                QuestViewModel("Study Bayesian Stats", 3 * 60, Time.atHours(3).toMinuteOfDay(), Category.LEARNING.color500, Category.LEARNING.color800, false)
+                QuestViewModel("Play COD", 40, Time.atHours(1).toMinuteOfDay(), Category.FUN.color500, Category.FUN.color800, true),
+                QuestViewModel("Study Bayesian Stats", 3 * 60, Time.atHours(3).toMinuteOfDay(), Category.LEARNING.color500, Category.LEARNING.color700, false),
+                QuestViewModel("Workout in the Gym", 90, Time.atHours(7).toMinuteOfDay(), Category.WELLNESS.color500, Category.WELLNESS.color700, false)
             ),
             view.calendar
         ))
         view.calendar.setUnscheduledQuestsAdapter(UnscheduledQuestsAdapter(listOf(
-            UnscheduledQuestViewModel("name 1", 45),
-            UnscheduledQuestViewModel("name 2", 90)
+//            UnscheduledQuestViewModel("name 1", 45),
+//            UnscheduledQuestViewModel("name 2", 90)
         ), view.calendar))
         return view
     }
@@ -105,7 +106,7 @@ class DayViewController : Controller(), Injects<Module> {
 
             if(!vm.isCompleted) {
                 view.questName.text = vm.name
-                view.questName.setTextColor(vm.textColor)
+                view.questName.setTextColor(ContextCompat.getColor(context, vm.textColor))
                 view.questBackground.setBackgroundResource(vm.backgroundColor)
                 view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor)
             } else {
