@@ -113,18 +113,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private val MIN_EVENT_DURATION = 10
     private val MAX_EVENT_DURATION = Time.h2Min(4)
 
-//    private lateinit var timeHeight: TimeHeight
-//
-//    data class TimeHeight(val hourHeight: Float) {
-//        val minuteHeight = hourHeight / 60f
-//
-//    }
-
-//    private val hourHeight: Float
-//        get() =
-//    private val timeHeight.minuteHeight: Float
-//        get() = hourHeight / 60f
-
     private lateinit var dragImage: Drawable
     private var dragImageSize: Int = toPx(16)
 
@@ -196,7 +184,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         }
     }
 
-    private fun gestureTolerance(previousDistance: Float, currentDistance: Float): Boolean {
+    private fun hasZoomedEnough(previousDistance: Float, currentDistance: Float): Boolean {
         val distanceDelta = abs(previousDistance - currentDistance)
         return distanceDelta > toPx(24)
     }
@@ -312,26 +300,12 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         })
 
         fsm.transition(State.Type.ZOOM, Event.Zoom::class, { s, e ->
-            if (!gestureTolerance(s.zoomDistance!!, e.zoomDistance)) {
+            if (!hasZoomedEnough(s.zoomDistance!!, e.zoomDistance)) {
                 return@transition s
             }
-            val visibleHours = calculateNewVisibleHours(s.visibleHours, e.scaleFactor)
-
-            val (hourCells, calendarEvents) = (0 until eventContainer.childCount)
-                .map { eventContainer.getChildAt(it) }.partition { it.tag != null }
-
-            val newState = s.copy(
-                visibleHours = visibleHours,
-                zoomDistance = e.zoomDistance,
-                hourHeight = getScreenHeight() / visibleHours.toFloat()
-            )
-            startZoomAnimation()
-            resizeHourCells(hourCells, newState.hourHeight)
-            resizeCalendarEvents(calendarEvents, newState.minuteHeight)
-
-            val focusTime = PositionToTimeMapper(s.minuteHeight).timeAt(e.focusY + scrollView.scrollY, 1)
-            val scrollDelta = focusTime.toPosition(newState.minuteHeight) - (e.focusY + scrollView.scrollY)
-            scrollView.scrollBy(0, scrollDelta.toInt())
+            val newState = createNewZoomState(s, e)
+            resizeCalendar(newState.hourHeight, newState.minuteHeight)
+            scrollToFocusPosition(s.minuteHeight, newState.minuteHeight, e.focusY)
 
             newState
         })
@@ -340,6 +314,30 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             s.copy(type = State.Type.VIEW)
         })
 
+    }
+
+    private fun createNewZoomState(state: State, event: Event.Zoom): State {
+        val visibleHours = calculateNewVisibleHours(state.visibleHours, event.scaleFactor)
+        return state.copy(
+            visibleHours = visibleHours,
+            zoomDistance = event.zoomDistance,
+            hourHeight = getScreenHeight() / visibleHours.toFloat()
+        )
+    }
+
+    private fun scrollToFocusPosition(prevMinuteHeight: Float, minuteHeight: Float, focusY: Float) {
+        val relativeFocusY = focusY + scrollView.scrollY
+        val focusTime = PositionToTimeMapper(prevMinuteHeight).timeAt(relativeFocusY, 1)
+        val scrollDelta = focusTime.toPosition(minuteHeight) - relativeFocusY
+        scrollView.scrollBy(0, scrollDelta.toInt())
+    }
+
+    private fun resizeCalendar(hourHeight: Float, minuteHeight: Float) {
+        startResizeAnimation()
+        val (hourCells, calendarEvents) = (0 until eventContainer.childCount)
+            .map { eventContainer.getChildAt(it) }.partition { it.tag != null }
+        resizeHourCells(hourCells, hourHeight)
+        resizeCalendarEvents(calendarEvents, minuteHeight)
     }
 
     private fun resizeCalendarEvents(events: List<View>, minuteHeight: Float) {
@@ -359,7 +357,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         }
     }
 
-    private fun startZoomAnimation() {
+    private fun startResizeAnimation() {
         val transition = AutoTransition()
         transition.duration = 0
         TransitionManager.beginDelayedTransition(this, transition)
