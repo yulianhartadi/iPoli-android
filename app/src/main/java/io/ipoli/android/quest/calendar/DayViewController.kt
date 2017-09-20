@@ -127,22 +127,22 @@ class DayViewController : Controller(), Injects<Module> {
 
             (view.checkBox as TintableCompoundButton).supportButtonTintList = getTintList(vm.backgroundColor)
 
-            view.post { updateView(view!!) }
+            view.post {
+                adaptViewForHeight(view!!, ViewUtils.pxToDp(view!!.height, context))
+            }
 
             return view
         }
 
         override fun onEventZoomed(adapterView: View) {
-            updateView(adapterView)
+            adaptViewForHeight(adapterView, ViewUtils.pxToDp(adapterView.height, context))
         }
 
-        private fun updateView(adapterView: View) {
-
-            val dpHeight = ViewUtils.pxToDp(adapterView.height, context)
+        private fun adaptViewForHeight(adapterView: View, height: Float) {
             with(adapterView) {
                 when {
-                    dpHeight < 28 -> ViewUtils.hideViews(checkBox, indicatorContainer, startTime, endTime)
-                    dpHeight < 104 -> {
+                    height < 28 -> ViewUtils.hideViews(checkBox, indicatorContainer, startTime, endTime)
+                    height < 104 -> {
                         ViewUtils.showViews(checkBox, indicatorContainer)
                         ViewUtils.hideViews(startTime, endTime)
                         if (indicatorContainer.orientation == LinearLayout.VERTICAL) {
