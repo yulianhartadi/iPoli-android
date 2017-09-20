@@ -19,6 +19,7 @@ import io.ipoli.android.common.datetime.Time
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.item_calendar_drag.view.*
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
+import java.lang.Math.*
 import kotlin.reflect.KClass
 
 /**
@@ -44,6 +45,9 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         init {
             listener.onStateChanged(currentState)
         }
+
+        val state: State
+            get() = currentState
 
         fun <E : Event> transition(given: State.Type, on: KClass<E>, execute: (state: State, event: E) -> State) {
             val a = object : Action<E> {
@@ -78,7 +82,9 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     companion object {
-        val DEFAULT_VISIBLE_HOURS_PER_SCREEN = 6
+        val DEFAULT_VISIBLE_HOURS = 9
+        val MIN_VISIBLE_HOURS = 6
+        val MAX_VISIBLE_HOURS = 16
     }
 
     data class State(
@@ -88,12 +94,15 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val bottomDragIndicatorPosition: Float? = null,
         val height: Int? = null,
         val name: String? = null,
-        val visibleHoursPerScreen: Int = DEFAULT_VISIBLE_HOURS_PER_SCREEN,
+        val visibleHours: Int = DEFAULT_VISIBLE_HOURS,
+        val hourHeight: Float = 0f,
         val zoomDistance: Float? = null,
         val isScrollLocked: Boolean = false) {
         enum class Type {
             VIEW, EDIT, DRAG, EDIT_NAME, ZOOM
         }
+
+        val minuteHeight = hourHeight / 60f
     }
 
     private var dragView: View? = null
@@ -103,15 +112,25 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     private val MIN_EVENT_DURATION = 10
     private val MAX_EVENT_DURATION = Time.h2Min(4)
-    private var hourHeight: Float = 0f
-    private var minuteHeight: Float = 0f
+
+//    private lateinit var timeHeight: TimeHeight
+//
+//    data class TimeHeight(val hourHeight: Float) {
+//        val minuteHeight = hourHeight / 60f
+//
+//    }
+
+//    private val hourHeight: Float
+//        get() =
+//    private val timeHeight.minuteHeight: Float
+//        get() = hourHeight / 60f
+
     private lateinit var dragImage: Drawable
     private var dragImageSize: Int = toPx(16)
 
     private lateinit var editModeBackground: View
     private lateinit var topDragView: View
     private lateinit var bottomDragView: View
-    private lateinit var positionToTimeMapper: PositionToTimeMapper
 
     private var scheduledEventsAdapter: ScheduledEventsAdapter<*>? = null
     private var unscheduledEventsAdapter: UnscheduledEventsAdapter<*>? = null
@@ -141,11 +160,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private fun initUi(attrs: AttributeSet?, defStyleAttr: Int) {
         setMainLayout()
         fetchStyleAttributes(attrs, defStyleAttr)
-        val screenHeight = getScreenHeight()
-        hourHeight = screenHeight / DEFAULT_VISIBLE_HOURS_PER_SCREEN.toFloat()
-        minuteHeight = hourHeight / 60f
 
-        positionToTimeMapper = PositionToTimeMapper(minuteHeight)
+        setupFSM()
 
         setupScroll()
         setupHourCells()
@@ -155,8 +171,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         topDragView = addDragView()
         bottomDragView = addDragView()
 
-        setupFSM()
-
         val scaleDetector = ScaleGestureDetector(context, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
 
             override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
@@ -164,14 +178,14 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 return super.onScaleBegin(detector)
             }
 
-            override fun onScaleEnd(detector: ScaleGestureDetector?) {
-                fsm.fire(Event.ZoomEnd)
-                super.onScaleEnd(detector)
-            }
-
             override fun onScale(detector: ScaleGestureDetector): Boolean {
                 fsm.fire(Event.Zoom(detector.currentSpan, detector.focusY, detector.scaleFactor))
                 return true
+            }
+
+            override fun onScaleEnd(detector: ScaleGestureDetector?) {
+                fsm.fire(Event.ZoomEnd)
+                super.onScaleEnd(detector)
             }
         })
 
@@ -183,12 +197,13 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun gestureTolerance(previousDistance: Float, currentDistance: Float): Boolean {
-        val distanceDelta = Math.abs(previousDistance - currentDistance)
+        val distanceDelta = abs(previousDistance - currentDistance)
         return distanceDelta > toPx(24)
     }
 
     private fun setupFSM() {
-        fsm = FSM(State(State.Type.VIEW), this)
+        val hourHeight = getScreenHeight() / DEFAULT_VISIBLE_HOURS.toFloat()
+        fsm = FSM(State(State.Type.VIEW, hourHeight = hourHeight), this)
         fsm.transition(State.Type.VIEW, Event.StartEdit::class, { s, e ->
             val adapterView = e.view
             setupDragViews(dragView!!)
@@ -224,7 +239,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
         fsm.transition(State.Type.DRAG, Event.DragTopIndicator::class, { s, e ->
             val absPos = e.y - topLocationOnScreen
-            val topPosition = (Math.ceil(roundPositionToMinutes(absPos).toDouble())).toFloat()
+            val topPosition = (ceil(roundPositionToMinutes(absPos).toDouble())).toFloat()
             val height = (dragView!!.bottom - topPosition).toInt()
             if (!isValidHeightForEvent(height)) {
                 return@transition s
@@ -300,55 +315,59 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             if (!gestureTolerance(s.zoomDistance!!, e.zoomDistance)) {
                 return@transition s
             }
+            val visibleHours = calculateNewVisibleHours(s.visibleHours, e.scaleFactor)
 
-            val focusTime = positionToTimeMapper.timeAt(e.focusY + scrollView.scrollY, 1)
-            val scaleFactor = e.scaleFactor
-
-            var visibleHoursPerScreen = s.visibleHoursPerScreen
-
-            if (scaleFactor > 1) {
-                visibleHoursPerScreen--
-            } else {
-                visibleHoursPerScreen++
-            }
-
-            visibleHoursPerScreen = Math.max(visibleHoursPerScreen, DEFAULT_VISIBLE_HOURS_PER_SCREEN)
-            visibleHoursPerScreen = Math.min(visibleHoursPerScreen, 16)
-
-            hourHeight = getScreenHeight() / visibleHoursPerScreen.toFloat()
-            minuteHeight = hourHeight / 60f
-            positionToTimeMapper = PositionToTimeMapper(minuteHeight)
-
-            val (hourCells, events) = (0 until eventContainer.childCount)
+            val (hourCells, calendarEvents) = (0 until eventContainer.childCount)
                 .map { eventContainer.getChildAt(it) }.partition { it.tag != null }
 
-            val transition = AutoTransition()
-            transition.duration = 0
-            TransitionManager.beginDelayedTransition(this, transition)
+            val newState = s.copy(
+                visibleHours = visibleHours,
+                zoomDistance = e.zoomDistance,
+                hourHeight = getScreenHeight() / visibleHours.toFloat()
+            )
+            startZoomAnimation()
+            resizeHourCells(hourCells, newState.hourHeight)
+            resizeCalendarEvents(calendarEvents, newState.minuteHeight)
 
-            hourCells.forEachIndexed { i, hc ->
-                val topPosition = (i * hourHeight).toInt()
-                hc.setPositionAndHeight(topPosition.toFloat(), hourHeight.toInt())
-            }
-
-            val a = scheduledEventsAdapter!!
-            events.forEachIndexed { i, adapterView ->
-                val event = a.getItem(i)
-                adapterView.setPositionAndHeight(
-                    event.startMinute * minuteHeight,
-                    (event.duration * minuteHeight).toInt())
-            }
-
-            val scrollDelta = focusTime.toPosition() - (e.focusY + scrollView.scrollY)
+            val focusTime = PositionToTimeMapper(s.minuteHeight).timeAt(e.focusY + scrollView.scrollY, 1)
+            val scrollDelta = focusTime.toPosition(newState.minuteHeight) - (e.focusY + scrollView.scrollY)
             scrollView.scrollBy(0, scrollDelta.toInt())
 
-            s.copy(visibleHoursPerScreen = visibleHoursPerScreen, zoomDistance = e.zoomDistance)
+            newState
         })
 
         fsm.transition(State.Type.ZOOM, Event.ZoomEnd::class, { s, e ->
             s.copy(type = State.Type.VIEW)
         })
 
+    }
+
+    private fun resizeCalendarEvents(events: List<View>, minuteHeight: Float) {
+        val a = scheduledEventsAdapter!!
+        events.forEachIndexed { i, adapterView ->
+            val event = a.getItem(i)
+            adapterView.setPositionAndHeight(
+                event.startMinute * minuteHeight,
+                (event.duration * minuteHeight).toInt())
+        }
+    }
+
+    private fun resizeHourCells(hourCells: List<View>, hourHeight: Float) {
+        hourCells.forEachIndexed { i, hc ->
+            val topPosition = (i * hourHeight).toInt()
+            hc.setPositionAndHeight(topPosition.toFloat(), hourHeight.toInt())
+        }
+    }
+
+    private fun startZoomAnimation() {
+        val transition = AutoTransition()
+        transition.duration = 0
+        TransitionManager.beginDelayedTransition(this, transition)
+    }
+
+    private fun calculateNewVisibleHours(visibleHours: Int, scaleFactor: Float): Int {
+        val vh = if (scaleFactor > 1) visibleHours - 1 else visibleHours + 1
+        return min(max(vh, MIN_VISIBLE_HOURS), MAX_VISIBLE_HOURS)
     }
 
     private fun setAdapterViewTouchListener(adapterView: View) {
@@ -408,6 +427,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun setupHourCells() {
+        val hourHeight = fsm.state.hourHeight
         for (hour in 0..23) {
             val hourView = LayoutInflater.from(context).inflate(R.layout.calendar_hour_cell, this, false)
             if (hour > 0) {
@@ -450,6 +470,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private fun addEventsFromAdapter() {
 //        removeAllViews()
         val a = scheduledEventsAdapter!!
+        val minuteHeight = fsm.state.minuteHeight
         for (i in 0 until a.count) {
             val adapterView = a.getView(i, null, eventContainer)
             val event = a.getItem(i)
@@ -464,7 +485,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val a = scheduledEventsAdapter!!
         val eventsInViewCount = childCount
         val eventsInAdapterCount = a.count
-        val reuseCount = Math.min(eventsInViewCount, eventsInAdapterCount)
+        val reuseCount = min(eventsInViewCount, eventsInAdapterCount)
 
         for (i in 0 until reuseCount) {
             a.getView(i, getChildAt(i), eventContainer)
@@ -621,30 +642,30 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     override fun onStateChanged(state: State) {
         scrollView.isLocked = state.isScrollLocked
 
-        when (state.type) {
-            State.Type.EDIT -> {
-                showViews(editModeBackground, topDragView, bottomDragView)
-            }
-
-            State.Type.DRAG -> {
-                showViews(editModeBackground, topDragView, bottomDragView)
-                dragView?.setPositionAndHeight(state.topDragViewPosition!!, state.height!!)
-                topDragView.setTopPosition(state.topDragIndicatorPosition!!)
-                bottomDragView.setTopPosition(state.bottomDragIndicatorPosition!!)
-//                dragView?.startTime!!.changeHeight(state.height!! / 4)
-            }
-
-            State.Type.VIEW -> {
-                hideViews(editModeBackground, topDragView, bottomDragView)
-            }
-        }
+//        when (state.type) {
+//            State.Type.EDIT -> {
+//                showViews(editModeBackground, topDragView, bottomDragView)
+//            }
+//
+//            State.Type.DRAG -> {
+//                showViews(editModeBackground, topDragView, bottomDragView)
+//                dragView?.setPositionAndHeight(state.topDragViewPosition!!, state.height!!)
+//                topDragView.setTopPosition(state.topDragIndicatorPosition!!)
+//                bottomDragView.setTopPosition(state.bottomDragIndicatorPosition!!)
+////                dragView?.startTime!!.changeHeight(state.height!! / 4)
+//            }
+//
+//            State.Type.VIEW -> {
+//                hideViews(editModeBackground, topDragView, bottomDragView)
+//            }
+//        }
     }
 
     private fun roundPositionToMinutes(position: Int, roundedToMinutes: Int = 5) =
         roundPositionToMinutes(position.toFloat(), roundedToMinutes)
 
     private fun roundPositionToMinutes(position: Float, roundedToMinutes: Int = 5) =
-        positionToTimeMapper.timeAt(position, roundedToMinutes).toPosition()
+        PositionToTimeMapper(fsm.state.minuteHeight).timeAt(position, roundedToMinutes).toPosition(fsm.state.minuteHeight)
 
     private fun View.changePositionAndHeight(yDelta: Float, height: Int) =
         changeLayoutParams<MarginLayoutParams> {
@@ -684,7 +705,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             return location[1]
         }
 
-    private fun Time.toPosition() =
+    private fun Time.toPosition(minuteHeight: Float) =
         toMinuteOfDay() * minuteHeight
 
     private fun isValidHeightForEvent(height: Int): Boolean =
@@ -698,7 +719,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun getMinutesFor(height: Int): Int =
-        (height / minuteHeight).toInt()
+        (height / fsm.state.minuteHeight).toInt()
 
     private fun showViews(vararg views: View) =
         views.forEach { it.visibility = View.VISIBLE }
