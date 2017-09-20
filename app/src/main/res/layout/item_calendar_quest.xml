@@ -22,7 +22,7 @@
     <TextView
         android:id="@+id/questName"
         style="@style/Calendar.Quest.Name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -82,7 +82,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
-            android:id="@+id/popupMenuVertical"
+            android:id="@+id/popupMenu"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:background="?android:attr/selectableItemBackground"
@@ -93,7 +93,7 @@
             app:srcCompat="@drawable/ic_more_vert_black_24dp" />
 
         <ImageView
-            android:id="@+id/challengeIndicatorVertical"
+            android:id="@+id/challengeIndicator"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginTop="4dp"
@@ -103,7 +103,7 @@
             app:srcCompat="@drawable/ic_sword_black_24dp" />
 
         <ImageView
-            android:id="@+id/repeatingQuestIndicatorVertical"
+            android:id="@+id/repeatingQuestIndicator"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginTop="4dp"
@@ -113,7 +113,7 @@
             app:srcCompat="@drawable/ic_repeating_quest_24dp_transparent" />
 
         <ImageView
-            android:id="@+id/priorityIndicatorVertical"
+            android:id="@+id/priorityIndicator"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginTop="4dp"
@@ -122,54 +122,5 @@
             android:visibility="visible"
             app:srcCompat="@drawable/ic_star_accent_24dp" />
     </LinearLayout>
-
-
-    <!--<ImageView-->
-    <!--android:id="@+id/challengeIndicatorHorizontal"-->
-    <!--android:layout_width="16dp"-->
-    <!--android:layout_height="16dp"-->
-    <!--android:layout_marginEnd="8dp"-->
-    <!--android:scaleType="fitXY"-->
-    <!--android:visibility="gone"-->
-    <!--app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--app:layout_constraintEnd_toStartOf="@+id/popupMenuHorizontal"-->
-    <!--app:layout_constraintTop_toTopOf="parent"-->
-    <!--app:srcCompat="@drawable/ic_sword_black_24dp" />-->
-
-    <!--<ImageView-->
-    <!--android:id="@+id/repeatingQuestIndicatorHorizontal"-->
-    <!--android:layout_width="16dp"-->
-    <!--android:layout_height="16dp"-->
-    <!--android:layout_marginEnd="4dp"-->
-    <!--android:scaleType="fitXY"-->
-    <!--android:visibility="gone"-->
-    <!--app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--app:layout_constraintEnd_toStartOf="@+id/challengeIndicatorHorizontal"-->
-    <!--app:layout_constraintTop_toTopOf="parent"-->
-    <!--app:srcCompat="@drawable/ic_repeating_quest_24dp_transparent" />-->
-
-    <!--<ImageView-->
-    <!--android:id="@+id/priorityIndicatorHorizontal"-->
-    <!--android:layout_width="16dp"-->
-    <!--android:layout_height="16dp"-->
-    <!--android:layout_marginEnd="4dp"-->
-    <!--android:scaleType="fitXY"-->
-    <!--android:visibility="visible"-->
-    <!--app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--app:layout_constraintEnd_toStartOf="@+id/repeatingQuestIndicatorHorizontal"-->
-    <!--app:layout_constraintTop_toTopOf="parent"-->
-    <!--app:srcCompat="@drawable/ic_star_accent_24dp" />-->
-
-    <!--<ImageButton-->
-    <!--android:id="@+id/popupMenuHorizontal"-->
-    <!--android:layout_width="24dp"-->
-    <!--android:layout_height="24dp"-->
-    <!--android:layout_marginEnd="8dp"-->
-    <!--android:background="?android:attr/selectableItemBackground"-->
-    <!--android:visibility="gone"-->
-    <!--app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--app:layout_constraintEnd_toEndOf="parent"-->
-    <!--app:layout_constraintTop_toTopOf="parent"-->
-    <!--app:srcCompat="@drawable/ic_more_vert_black_24dp" />-->
 
 </android.support.constraint.ConstraintLayout>

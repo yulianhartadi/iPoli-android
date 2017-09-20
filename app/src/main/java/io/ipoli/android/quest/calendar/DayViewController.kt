@@ -39,7 +39,7 @@ class DayViewController : Controller(), Injects<Module> {
         val view = inflater.inflate(R.layout.controller_day_view, container, false)
         view.calendar.setScheduledEventsAdapter(QuestScheduledEventsAdapter(activity!!,
             listOf(
-                QuestViewModel("Play COD", 15, Time.atHours(1).toMinuteOfDay(), Category.FUN.color500, Category.FUN.color800, false),
+                QuestViewModel("Play COD", 15, Time.atHours(1).toMinuteOfDay(), Category.FUN.color500, Category.FUN.color800, true),
                 QuestViewModel("Study Bayesian Stats", 30, Time.atHours(3).toMinuteOfDay(), Category.LEARNING.color500, Category.LEARNING.color700, false),
                 QuestViewModel("Workout in the Gym with Vihar and his baba", 60, Time.atHours(7).toMinuteOfDay(), Category.WELLNESS.color500, Category.WELLNESS.color700, false)
             ),
@@ -119,6 +119,7 @@ class DayViewController : Controller(), Injects<Module> {
                 view.questName.text = span
                 view.questBackground.setBackgroundResource(R.color.md_grey_500)
                 view.questCategoryIndicator.setBackgroundResource(R.color.md_grey_500)
+                view.checkBox.isChecked = true
             }
 
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(view.questName, 8, 16, 1, TypedValue.COMPLEX_UNIT_SP)
@@ -140,7 +141,7 @@ class DayViewController : Controller(), Injects<Module> {
             val dpHeight = ViewUtils.pxToDp(adapterView.height, context)
             with(adapterView) {
                 when {
-                    dpHeight < 32 -> ViewUtils.hideViews(checkBox, indicatorContainer, startTime, endTime)
+                    dpHeight < 28 -> ViewUtils.hideViews(checkBox, indicatorContainer, startTime, endTime)
                     dpHeight < 104 -> {
                         ViewUtils.showViews(checkBox, indicatorContainer)
                         ViewUtils.hideViews(startTime, endTime)
