@@ -72,8 +72,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         data class DragBottomIndicator(val y: Float) : Event()
         data class EditName(val name: String) : Event()
         object CompleteEditName : Event()
-        data class ZoomStart(val initialSpan: Float) : Event()
-        data class Zoom(val currentSpan: Float, val focusY: Float, val scaleFactor: Float) : Event()
+        data class ZoomStart(val zoomDistance: Float) : Event()
+        data class Zoom(val zoomDistance: Float, val focusY: Float, val scaleFactor: Float) : Event()
         object ZoomEnd : Event()
     }
 
@@ -89,6 +89,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val height: Int? = null,
         val name: String? = null,
         val visibleHoursPerScreen: Int = DEFAULT_VISIBLE_HOURS_PER_SCREEN,
+        val zoomDistance: Float? = null,
         val isScrollLocked: Boolean = false) {
         enum class Type {
             VIEW, EDIT, DRAG, EDIT_NAME, ZOOM
@@ -99,9 +100,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private var lastY: Float? = null
 
     private lateinit var fsm: FSM
-
-    //    private var visibleHoursPerScreen = 6
-    private var initialDistance = 1f
 
     private val MIN_EVENT_DURATION = 10
     private val MAX_EVENT_DURATION = Time.h2Min(4)
@@ -184,8 +182,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         }
     }
 
-    private fun gestureTolerance(currentDistance: Float): Boolean {
-        val distanceDelta = Math.abs(initialDistance - currentDistance)
+    private fun gestureTolerance(previousDistance: Float, currentDistance: Float): Boolean {
+        val distanceDelta = Math.abs(previousDistance - currentDistance)
         return distanceDelta > toPx(24)
     }
 
@@ -295,12 +293,11 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
 
         fsm.transition(State.Type.VIEW, Event.ZoomStart::class, { s, e ->
-            initialDistance = e.initialSpan
-            s.copy(type = State.Type.ZOOM)
+            s.copy(type = State.Type.ZOOM, zoomDistance = e.zoomDistance)
         })
 
         fsm.transition(State.Type.ZOOM, Event.Zoom::class, { s, e ->
-            if (!gestureTolerance(e.currentSpan)) {
+            if (!gestureTolerance(s.zoomDistance!!, e.zoomDistance)) {
                 return@transition s
             }
 
@@ -315,8 +312,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 visibleHoursPerScreen++
             }
 
-            initialDistance = e.currentSpan
-
             visibleHoursPerScreen = Math.max(visibleHoursPerScreen, DEFAULT_VISIBLE_HOURS_PER_SCREEN)
             visibleHoursPerScreen = Math.min(visibleHoursPerScreen, 16)
 
@@ -324,18 +319,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             minuteHeight = hourHeight / 60f
             positionToTimeMapper = PositionToTimeMapper(minuteHeight)
 
-            val hourCells = mutableListOf<View>()
-            val events = mutableListOf<View>()
-
-            (0 until eventContainer.childCount)
-                .map { eventContainer.getChildAt(it) }
-                .forEach {
-                    if (it.tag == null) {
-                        events.add(it)
-                    } else if (it.tag.toString() == "hour_cell") {
-                        hourCells.add(it)
-                    }
-                }
+            val (hourCells, events) = (0 until eventContainer.childCount)
+                .map { eventContainer.getChildAt(it) }.partition { it.tag != null }
 
             val transition = AutoTransition()
             transition.duration = 0
@@ -347,19 +332,17 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             }
 
             val a = scheduledEventsAdapter!!
-            for (i in 0 until a.count) {
-                val adapterView = events[i]
+            events.forEachIndexed { i, adapterView ->
                 val event = a.getItem(i)
                 adapterView.setPositionAndHeight(
                     event.startMinute * minuteHeight,
                     (event.duration * minuteHeight).toInt())
             }
 
-            val newFocusPosition = focusTime.toPosition()
-            val timeDelta = newFocusPosition - (e.focusY + scrollView.scrollY)
-            scrollView.scrollBy(0, timeDelta.toInt())
+            val scrollDelta = focusTime.toPosition() - (e.focusY + scrollView.scrollY)
+            scrollView.scrollBy(0, scrollDelta.toInt())
 
-            s.copy(visibleHoursPerScreen = visibleHoursPerScreen)
+            s.copy(visibleHoursPerScreen = visibleHoursPerScreen, zoomDistance = e.zoomDistance)
         })
 
         fsm.transition(State.Type.ZOOM, Event.ZoomEnd::class, { s, e ->
