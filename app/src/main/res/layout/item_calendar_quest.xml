@@ -24,18 +24,19 @@
         style="@style/Calendar.Quest.Name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/imageView9"
+        app:layout_constraintEnd_toStartOf="@+id/indicatorContainer"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/checkBox"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5"
+        tools:text="Workout" />
 
     <TextView
         android:id="@+id/startTime"
+        style="@style/Calendar.Quest.StartTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -43,19 +44,18 @@
         android:text="10:30"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="10:30"
-        style="@style/Calendar.Quest.StartTime" />
+        tools:text="10:30" />
 
     <TextView
         android:id="@+id/endTime"
+        style="@style/Calendar.Quest.EndTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
         android:text="12:30"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        style="@style/Calendar.Quest.EndTime" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <CheckBox
         android:id="@+id/checkBox"
@@ -69,92 +69,107 @@
         app:layout_constraintTop_toBottomOf="@+id/startTime"
         app:layout_constraintVertical_bias="0.5" />
 
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+    <LinearLayout
+        android:id="@+id/indicatorContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:scaleType="fitXY"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_more_vert_black_24dp" />
-
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginTop="8dp"
-        android:scaleType="fitXY"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton"
-        app:srcCompat="@drawable/ic_sword_black_24dp" />
-
-    <ImageView
-        android:id="@+id/imageView5"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginTop="4dp"
-        android:scaleType="fitXY"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3"
-        app:srcCompat="@drawable/ic_repeating_quest_24dp_transparent" />
-
-    <ImageView
-        android:id="@+id/imageView6"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginTop="4dp"
-        android:scaleType="fitXY"
-        android:visibility="gone"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView5"
-        app:srcCompat="@drawable/ic_star_accent_24dp" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <ImageView
-        android:id="@+id/imageView7"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="12dp"
-        android:scaleType="fitXY"
-        android:visibility="gone"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_sword_black_24dp" />
+        <ImageButton
+            android:id="@+id/popupMenuVertical"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="fitXY"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_more_vert_black_24dp" />
 
-    <ImageView
-        android:id="@+id/imageView8"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginTop="12dp"
-        android:scaleType="fitXY"
-        android:visibility="gone"
-        app:layout_constraintEnd_toStartOf="@+id/imageView7"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_repeating_quest_24dp_transparent" />
+        <ImageView
+            android:id="@+id/challengeIndicatorVertical"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="4dp"
+            android:scaleType="fitXY"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_sword_black_24dp" />
 
-    <ImageView
-        android:id="@+id/imageView9"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginTop="12dp"
-        android:scaleType="fitXY"
-        android:visibility="gone"
-        app:layout_constraintEnd_toStartOf="@+id/imageView8"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_star_accent_24dp" />
+        <ImageView
+            android:id="@+id/repeatingQuestIndicatorVertical"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="4dp"
+            android:scaleType="fitXY"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_repeating_quest_24dp_transparent" />
+
+        <ImageView
+            android:id="@+id/priorityIndicatorVertical"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="4dp"
+            android:scaleType="fitXY"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_star_accent_24dp" />
+    </LinearLayout>
+
+
+    <!--<ImageView-->
+    <!--android:id="@+id/challengeIndicatorHorizontal"-->
+    <!--android:layout_width="16dp"-->
+    <!--android:layout_height="16dp"-->
+    <!--android:layout_marginEnd="8dp"-->
+    <!--android:scaleType="fitXY"-->
+    <!--android:visibility="gone"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintEnd_toStartOf="@+id/popupMenuHorizontal"-->
+    <!--app:layout_constraintTop_toTopOf="parent"-->
+    <!--app:srcCompat="@drawable/ic_sword_black_24dp" />-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/repeatingQuestIndicatorHorizontal"-->
+    <!--android:layout_width="16dp"-->
+    <!--android:layout_height="16dp"-->
+    <!--android:layout_marginEnd="4dp"-->
+    <!--android:scaleType="fitXY"-->
+    <!--android:visibility="gone"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintEnd_toStartOf="@+id/challengeIndicatorHorizontal"-->
+    <!--app:layout_constraintTop_toTopOf="parent"-->
+    <!--app:srcCompat="@drawable/ic_repeating_quest_24dp_transparent" />-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/priorityIndicatorHorizontal"-->
+    <!--android:layout_width="16dp"-->
+    <!--android:layout_height="16dp"-->
+    <!--android:layout_marginEnd="4dp"-->
+    <!--android:scaleType="fitXY"-->
+    <!--android:visibility="visible"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintEnd_toStartOf="@+id/repeatingQuestIndicatorHorizontal"-->
+    <!--app:layout_constraintTop_toTopOf="parent"-->
+    <!--app:srcCompat="@drawable/ic_star_accent_24dp" />-->
+
+    <!--<ImageButton-->
+    <!--android:id="@+id/popupMenuHorizontal"-->
+    <!--android:layout_width="24dp"-->
+    <!--android:layout_height="24dp"-->
+    <!--android:layout_marginEnd="8dp"-->
+    <!--android:background="?android:attr/selectableItemBackground"-->
+    <!--android:visibility="gone"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintEnd_toEndOf="parent"-->
+    <!--app:layout_constraintTop_toTopOf="parent"-->
+    <!--app:srcCompat="@drawable/ic_more_vert_black_24dp" />-->
 
 </android.support.constraint.ConstraintLayout>

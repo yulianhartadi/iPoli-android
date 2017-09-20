@@ -3,12 +3,16 @@ package io.ipoli.android.quest.calendar
 import android.content.Context
 import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
+import android.support.v4.widget.TextViewCompat
 import android.support.v4.widget.TintableCompoundButton
 import android.text.SpannableString
 import android.text.style.StrikethroughSpan
+import android.util.TypedValue
 import android.view.*
+import android.widget.LinearLayout
 import com.bluelinelabs.conductor.Controller
 import io.ipoli.android.R
+import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.iPoliApp
@@ -35,14 +39,14 @@ class DayViewController : Controller(), Injects<Module> {
         val view = inflater.inflate(R.layout.controller_day_view, container, false)
         view.calendar.setScheduledEventsAdapter(QuestScheduledEventsAdapter(activity!!,
             listOf(
-                QuestViewModel("Play COD", 40, Time.atHours(1).toMinuteOfDay(), Category.FUN.color500, Category.FUN.color800, true),
-                QuestViewModel("Study Bayesian Stats", 3 * 60, Time.atHours(3).toMinuteOfDay(), Category.LEARNING.color500, Category.LEARNING.color700, false),
-                QuestViewModel("Workout in the Gym", 90, Time.atHours(7).toMinuteOfDay(), Category.WELLNESS.color500, Category.WELLNESS.color700, false)
+                QuestViewModel("Play COD", 15, Time.atHours(1).toMinuteOfDay(), Category.FUN.color500, Category.FUN.color800, false),
+                QuestViewModel("Study Bayesian Stats", 30, Time.atHours(3).toMinuteOfDay(), Category.LEARNING.color500, Category.LEARNING.color700, false),
+                QuestViewModel("Workout in the Gym with Vihar and his baba", 60, Time.atHours(7).toMinuteOfDay(), Category.WELLNESS.color500, Category.WELLNESS.color700, false)
             ),
             view.calendar
         ))
         view.calendar.setUnscheduledQuestsAdapter(UnscheduledQuestsAdapter(listOf(
-//            UnscheduledQuestViewModel("name 1", 45),
+            //            UnscheduledQuestViewModel("name 1", 45),
 //            UnscheduledQuestViewModel("name 2", 90)
         ), view.calendar))
         return view
@@ -98,13 +102,13 @@ class DayViewController : Controller(), Injects<Module> {
 
             view!!.setOnLongClickListener { v ->
 
-//                v.visibility = View.GONE
+                //                v.visibility = View.GONE
                 calendarDayView.scheduleEvent(v)
 //                calendarDayView.startEditMode(v, position)
                 false
             }
 
-            if(!vm.isCompleted) {
+            if (!vm.isCompleted) {
                 view.questName.text = vm.name
                 view.questName.setTextColor(ContextCompat.getColor(context, vm.textColor))
                 view.questBackground.setBackgroundResource(vm.backgroundColor)
@@ -117,10 +121,54 @@ class DayViewController : Controller(), Injects<Module> {
                 view.questCategoryIndicator.setBackgroundResource(R.color.md_grey_500)
             }
 
+            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(view.questName, 8, 16, 1, TypedValue.COMPLEX_UNIT_SP)
+
+
             (view.checkBox as TintableCompoundButton).supportButtonTintList = getTintList(vm.backgroundColor)
 
+            view.post { updateView(view!!) }
 
             return view
+        }
+
+        override fun onEventZoomed(adapterView: View) {
+            updateView(adapterView)
+        }
+
+        private fun updateView(adapterView: View) {
+
+            val dpHeight = ViewUtils.pxToDp(adapterView.height, context)
+            with(adapterView) {
+                when {
+                    dpHeight < 32 -> ViewUtils.hideViews(checkBox, indicatorContainer, startTime, endTime)
+                    dpHeight < 104 -> {
+                        ViewUtils.showViews(checkBox, indicatorContainer)
+                        ViewUtils.hideViews(startTime, endTime)
+                        if (indicatorContainer.orientation == LinearLayout.VERTICAL) {
+                            indicatorContainer.orientation = LinearLayout.HORIZONTAL
+                            reverseIndicators(indicatorContainer)
+                        }
+                    }
+                    else -> {
+                        ViewUtils.showViews(checkBox, indicatorContainer, startTime, endTime)
+                        if (indicatorContainer.orientation == LinearLayout.HORIZONTAL) {
+                            indicatorContainer.orientation = LinearLayout.VERTICAL
+                            reverseIndicators(indicatorContainer)
+                        }
+                    }
+                }
+            }
+        }
+
+        private fun reverseIndicators(indicatorContainer: ViewGroup) {
+            val indicators = (0 until indicatorContainer.childCount)
+                .map { indicatorContainer.getChildAt(it) }.reversed()
+
+            indicatorContainer.removeAllViews()
+
+            indicators.forEach {
+                indicatorContainer.addView(it)
+            }
         }
 
         private fun getTintList(@ColorRes color: Int) = ContextCompat.getColorStateList(context, color)

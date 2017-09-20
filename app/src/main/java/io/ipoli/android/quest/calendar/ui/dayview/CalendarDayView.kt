@@ -347,6 +347,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             adapterView.setPositionAndHeight(
                 event.startMinute * minuteHeight,
                 (event.duration * minuteHeight).toInt())
+            adapterView.post { scheduledEventsAdapter!!.onEventZoomed(adapterView) }
         }
     }
 

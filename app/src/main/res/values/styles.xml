@@ -140,7 +140,6 @@
     <style name="Calendar.Quest"/>
 
     <style name="Calendar.Quest.Name">
-        <item name="android:padding">16dp</item>
         <item name="android:textAlignment">center</item>
         <item name="android:textSize">16sp</item>
     </style>
