@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.res.Resources
 import android.database.DataSetObserver
 import android.graphics.drawable.Drawable
+import android.os.Handler
+import android.os.Looper
 import android.support.transition.AutoTransition
 import android.support.transition.TransitionManager
 import android.support.v7.widget.LinearLayoutManager
@@ -79,6 +81,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         data class ZoomStart(val zoomDistance: Float) : Event()
         data class Zoom(val zoomDistance: Float, val focusY: Float, val scaleFactor: Float) : Event()
         object ZoomEnd : Event()
+        object ScrollUp : Event()
+        object ScrollDown : Event()
     }
 
     companion object {
@@ -119,9 +123,12 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private lateinit var editModeBackground: View
     private lateinit var topDragView: View
     private lateinit var bottomDragView: View
+    private lateinit var scaleDetector: ScaleGestureDetector
 
     private var scheduledEventsAdapter: ScheduledEventsAdapter<*>? = null
     private var unscheduledEventsAdapter: UnscheduledEventsAdapter<*>? = null
+
+    private val autoScrollHandler = Handler(Looper.getMainLooper())
 
     private val dataSetObserver = object : DataSetObserver() {
         override fun onChanged() {
@@ -159,7 +166,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         topDragView = addDragView()
         bottomDragView = addDragView()
 
-        val scaleDetector = ScaleGestureDetector(context, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+        scaleDetector = ScaleGestureDetector(context, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
 
             override fun onScaleBegin(detector: ScaleGestureDetector): Boolean {
                 fsm.fire(Event.ZoomStart(detector.currentSpan))
@@ -176,12 +183,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 super.onScaleEnd(detector)
             }
         })
-
-
-        scrollView.setOnTouchListener { _, e ->
-            scaleDetector.onTouchEvent(e)
-            false
-        }
     }
 
     private fun hasZoomedEnough(previousDistance: Float, currentDistance: Float): Boolean {
@@ -189,10 +190,21 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         return distanceDelta > toPx(24)
     }
 
+    private lateinit var autoScrollUp: Runnable
+
     private fun setupFSM() {
         val hourHeight = getScreenHeight() / DEFAULT_VISIBLE_HOURS.toFloat()
         fsm = FSM(State(State.Type.VIEW, hourHeight = hourHeight), this)
+
+        autoScrollUp = Runnable {
+            scrollView.smoothScrollTo(scrollView.scrollX, scrollView.scrollY - fsm.state.hourHeight.toInt())
+            autoScrollHandler.postDelayed(autoScrollUp, 1000)
+        }
+
+        listenForZoom()
+
         fsm.transition(State.Type.VIEW, Event.StartEdit::class, { s, e ->
+            scrollView.setOnTouchListener(null)
             val adapterView = e.view
             setupDragViews(dragView!!)
             editModeBackground.bringToFront()
@@ -214,6 +226,12 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fsm.transition(State.Type.DRAG, Event.Drag::class, { s, e ->
             val absPos = e.y - topLocationOnScreen
             val topPosition = roundPositionToMinutes(absPos)
+
+            val topScrollThreshold = unscheduledQuests.topLocationOnScreen + unscheduledQuests.height
+            if (e.y <= topScrollThreshold) {
+                
+                autoScrollHandler.postDelayed(autoScrollUp, 1000)
+            }
 
             s.copy(
                 topDragViewPosition = topPosition,
@@ -271,6 +289,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
         fsm.transition(State.Type.EDIT, Event.CompleteEdit::class, { s, e ->
             stopEdit()
+            listenForZoom()
+            hideViews(editModeBackground, topDragView, bottomDragView)
             s.copy(type = State.Type.VIEW, isScrollLocked = false)
         })
 
@@ -314,6 +334,13 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             s.copy(type = State.Type.VIEW)
         })
 
+    }
+
+    private fun listenForZoom() {
+        scrollView.setOnTouchListener { _, e ->
+            scaleDetector.onTouchEvent(e)
+            false
+        }
     }
 
     private fun createNewZoomState(state: State, event: Event.Zoom): State {
@@ -641,23 +668,23 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     override fun onStateChanged(state: State) {
         scrollView.isLocked = state.isScrollLocked
 
-//        when (state.type) {
-//            State.Type.EDIT -> {
-//                showViews(editModeBackground, topDragView, bottomDragView)
-//            }
+        when (state.type) {
+            State.Type.EDIT -> {
+                showViews(editModeBackground, topDragView, bottomDragView)
+            }
 //
-//            State.Type.DRAG -> {
-//                showViews(editModeBackground, topDragView, bottomDragView)
-//                dragView?.setPositionAndHeight(state.topDragViewPosition!!, state.height!!)
-//                topDragView.setTopPosition(state.topDragIndicatorPosition!!)
-//                bottomDragView.setTopPosition(state.bottomDragIndicatorPosition!!)
-////                dragView?.startTime!!.changeHeight(state.height!! / 4)
-//            }
+            State.Type.DRAG -> {
+                showViews(editModeBackground, topDragView, bottomDragView)
+                dragView?.setPositionAndHeight(state.topDragViewPosition!!, state.height!!)
+                topDragView.setTopPosition(state.topDragIndicatorPosition!!)
+                bottomDragView.setTopPosition(state.bottomDragIndicatorPosition!!)
+//                dragView?.startTime!!.changeHeight(state.height!! / 4)
+            }
 //
 //            State.Type.VIEW -> {
 //                hideViews(editModeBackground, topDragView, bottomDragView)
 //            }
-//        }
+        }
     }
 
     private fun roundPositionToMinutes(position: Int, roundedToMinutes: Int = 5) =

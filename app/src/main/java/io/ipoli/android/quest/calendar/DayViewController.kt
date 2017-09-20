@@ -46,8 +46,8 @@ class DayViewController : Controller(), Injects<Module> {
             view.calendar
         ))
         view.calendar.setUnscheduledQuestsAdapter(UnscheduledQuestsAdapter(listOf(
-            //            UnscheduledQuestViewModel("name 1", 45),
-//            UnscheduledQuestViewModel("name 2", 90)
+            UnscheduledQuestViewModel("name 1", 45),
+            UnscheduledQuestViewModel("name 2", 90)
         ), view.calendar))
         return view
     }
