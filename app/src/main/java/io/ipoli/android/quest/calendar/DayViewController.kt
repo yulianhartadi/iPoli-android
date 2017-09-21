@@ -24,7 +24,7 @@ import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 import kotlinx.android.synthetic.main.unscheduled_quest_item.view.*
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
-import space.traversal.kapsule.required
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -32,19 +32,19 @@ import space.traversal.kapsule.required
  */
 class DayViewController : Controller(), Injects<Module> {
 
-    private val layoutInflater by required { layoutInflater }
-
     private var actionMode: ActionMode? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val view = inflater.inflate(R.layout.controller_day_view, container, false)
         view.calendar.setScheduledEventsAdapter(QuestScheduledEventsAdapter(activity!!,
-            listOf(
+            mutableListOf(
                 QuestViewModel("Play COD", 15, Time.atHours(1).toMinuteOfDay(), "1:00", "1:15",
                     Category.FUN.color500, Category.FUN.color800, true),
                 QuestViewModel("Study Bayesian Stats", 45, Time.atHours(3).toMinuteOfDay(), "3:00", "3:45",
                     Category.LEARNING.color500, Category.LEARNING.color700, false),
                 QuestViewModel("Workout in the Gym with Vihar and his baba", 60, Time.atHours(7).toMinuteOfDay(), "7:00", "8:00",
+                    Category.WELLNESS.color500, Category.WELLNESS.color700, false),
+                QuestViewModel("Workout in the Gym with Vihar and his baba", 60, Time.atHours(22).toMinuteOfDay(), "7:00", "8:00",
                     Category.WELLNESS.color500, Category.WELLNESS.color700, false)
             ),
             view.calendar
@@ -95,7 +95,7 @@ class DayViewController : Controller(), Injects<Module> {
                               @ColorRes val textColor: Int,
                               var isCompleted: Boolean) : CalendarEvent
 
-    inner class QuestScheduledEventsAdapter(context: Context, events: List<QuestViewModel>, private val calendarDayView: CalendarDayView) :
+    inner class QuestScheduledEventsAdapter(context: Context, events: MutableList<QuestViewModel>, private val calendarDayView: CalendarDayView) :
         ScheduledEventsAdapter<QuestViewModel>(context, R.layout.item_calendar_quest, events) {
 
         override fun bindView(view: View, position: Int) {
@@ -104,7 +104,7 @@ class DayViewController : Controller(), Injects<Module> {
             view.setOnLongClickListener { v ->
 
                 //                v.visibility = View.GONE
-                calendarDayView.scheduleEvent(v)
+                calendarDayView.scheduleEvent(v, position)
 //                calendarDayView.startEditMode(v, position)
                 false
             }
@@ -183,8 +183,17 @@ class DayViewController : Controller(), Injects<Module> {
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragEndTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
         }
 
-        override fun onStopEdit(editView: View) {
+        override fun onStopEdit(position: Int, startTime: Time, duration: Int) {
             stopActionMode()
+            val vm = getItem(position)
+            events[position] = vm.copy(
+                startMinute = startTime.toMinuteOfDay(),
+                startTime = startTime.toString(),
+                duration = duration,
+                endTime = Time.plusMinutes(startTime, duration).toString()
+            )
+            Timber.d("${events[position]}")
+            notifyDataSetChanged()
         }
 
         override fun onScheduledTimeChanged(dragView: View, startTime: Time, endTime: Time) {
@@ -204,7 +213,7 @@ class DayViewController : Controller(), Injects<Module> {
 
 //            calendarDayView.scheduleEvent(itemView)
             itemView.setOnLongClickListener {
-                calendarDayView.scheduleEvent(itemView)
+                calendarDayView.scheduleEvent(itemView, adapterPosition)
                 true
             }
         }

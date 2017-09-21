@@ -20,6 +20,7 @@ import io.ipoli.android.common.datetime.Time
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.item_calendar_drag.view.*
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
+import timber.log.Timber
 import java.lang.Math.*
 import kotlin.reflect.KClass
 
@@ -77,7 +78,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     sealed class Event {
         object CompleteEdit : Event()
         object Up : Event()
-        data class StartEdit(val view: View, val name: String) : Event()
+        data class StartEdit(val view: View, val position: Int) : Event()
         data class Drag(val y: Float) : Event()
         data class DragTopIndicator(val y: Float) : Event()
         data class DragBottomIndicator(val y: Float) : Event()
@@ -99,6 +100,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val topDragViewPosition: Float? = null,
         val topDragIndicatorPosition: Float? = null,
         val bottomDragIndicatorPosition: Float? = null,
+        val adapterPosition: Int? = null,
         val height: Int? = null,
         val name: String? = null,
         val visibleHours: Int = DEFAULT_VISIBLE_HOURS,
@@ -131,13 +133,23 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private var scheduledEventsAdapter: ScheduledEventsAdapter<*>? = null
     private var unscheduledEventsAdapter: UnscheduledEventsAdapter<*>? = null
 
+    private val eventViews = mutableListOf<View>()
+
     private val dataSetObserver = object : DataSetObserver() {
         override fun onChanged() {
-            refreshEventsFromAdapter()
+            for (v in eventViews) {
+                eventContainer.removeView(v)
+            }
+            eventViews.clear()
+            addEventsFromAdapter()
         }
 
         override fun onInvalidated() {
-            removeAllViews()
+            Timber.d("Invalidated")
+            for (v in eventViews) {
+                eventContainer.removeView(v)
+            }
+            eventViews.clear()
         }
     }
 
@@ -207,30 +219,30 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             val absPos = dragView!!.topLocationOnScreen.toFloat() - topLocationOnScreen
             val topPosition = roundPositionToMinutes(absPos)
 
-            val timeMapper = PositionToTimeMapper(s.minuteHeight)
-            val topRelativePos = topPosition - unscheduledQuests.height + scrollView.scrollY
-            scheduledEventsAdapter?.onStartEdit(dragView!!,
-                timeMapper.timeAt(topRelativePos),
-                timeMapper.timeAt(topRelativePos + dragView!!.height))
+//            val timeMapper = PositionToTimeMapper(s.minuteHeight)
+//            val topRelativePos = topPosition - unscheduledQuests.height + scrollView.scrollY
+//            scheduledEventsAdapter?.onStartEdit(dragView!!,
+//                timeMapper.timeAt(topRelativePos),
+//                timeMapper.timeAt(topRelativePos + dragView!!.height))
 
             s.copy(
                 type = State.Type.DRAG,
                 topDragViewPosition = topPosition,
                 topDragIndicatorPosition = topPosition - dragImageSize / 2,
                 bottomDragIndicatorPosition = topPosition + dragView!!.height - dragImageSize / 2,
+                adapterPosition = e.position,
                 height = dragView!!.height,
                 isScrollLocked = true)
         })
 
         fsm.transition(State.Type.DRAG, Event.Drag::class, { s, e ->
-            val absPos = e.y - topLocationOnScreen
-            val topPosition = roundPositionToMinutes(absPos)
+            val topPosition = calculateTopPosition(e.y)
 
             val timeMapper = PositionToTimeMapper(s.minuteHeight)
             val topRelativePos = topPosition - unscheduledQuests.height + scrollView.scrollY
-            scheduledEventsAdapter?.onScheduledTimeChanged(dragView!!,
-                timeMapper.timeAt(topRelativePos),
-                timeMapper.timeAt(topRelativePos + s.height!!))
+//            scheduledEventsAdapter?.onScheduledTimeChanged(dragView!!,
+//                timeMapper.timeAt(topRelativePos),
+//                timeMapper.timeAt(topRelativePos + s.height!!))
 
             s.copy(
                 topDragViewPosition = topPosition,
@@ -243,8 +255,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         })
 
         fsm.transition(State.Type.DRAG, Event.DragTopIndicator::class, { s, e ->
-            val absPos = e.y - topLocationOnScreen
-            val topPosition = (ceil(roundPositionToMinutes(absPos).toDouble())).toFloat()
+            val topPosition = (ceil(calculateTopPosition(e.y).toDouble())).toFloat()
             val height = (dragView!!.bottom - topPosition).toInt()
             if (!isValidHeightForEvent(height)) {
                 return@transition s
@@ -258,8 +269,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         })
 
         fsm.transition(State.Type.DRAG, Event.DragBottomIndicator::class, { s, e ->
-            val absPos = e.y - topLocationOnScreen
-            val bottomPosition = roundPositionToMinutes(absPos)
+            val bottomPosition = calculateBottomPosition(e.y)
             val height = (bottomPosition - dragView!!.top).toInt()
             if (!isValidHeightForEvent(height)) {
                 return@transition s
@@ -295,6 +305,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             stopEdit()
             listenForZoom()
             hideViews(editModeBackground, topDragView, bottomDragView)
+
             editModeBackground.setOnTouchListener(null)
             s.copy(type = State.Type.VIEW, isScrollLocked = false)
         })
@@ -345,6 +356,17 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             s.copy(type = State.Type.VIEW)
         })
 
+    }
+
+    private fun calculateBottomPosition(y: Float): Float {
+        val absPos = y - topLocationOnScreen
+        return roundPositionToMinutes(min(absPos, bottom.toFloat()))
+    }
+
+    private fun calculateTopPosition(y: Float): Float {
+        val absPos = y - topLocationOnScreen
+        val maxTopPosition = (bottom - dragView!!.height).toFloat()
+        return roundPositionToMinutes(min(max(0f, absPos), maxTopPosition))
     }
 
     private fun listenForZoom() {
@@ -432,8 +454,15 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun stopEdit() {
-        TransitionManager.beginDelayedTransition(this)
-        scheduledEventsAdapter?.onStopEdit(dragView!!)
+        val transition = AutoTransition()
+        transition.duration = 200
+        TransitionManager.beginDelayedTransition(this, transition)
+        val state = fsm.state
+        val timeMapper = PositionToTimeMapper(state.minuteHeight)
+        val topRelativePos = state.topDragViewPosition!! - unscheduledQuests.height + scrollView.scrollY
+        val startTime = timeMapper.timeAt(topRelativePos)
+        val duration = (state.height!! / state.minuteHeight).toInt()
+        scheduledEventsAdapter?.onStopEdit(state.adapterPosition!!, startTime, duration)
         removeView(dragView)
         dragView = null
     }
@@ -488,8 +517,11 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun setupUnscheduledQuests() {
-        unscheduledQuests.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        unscheduledQuests.isNestedScrollingEnabled = false
+        unscheduledQuests.layoutManager = object : LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false) {
+            override fun canScrollVertically(): Boolean {
+                return !fsm.state.isScrollLocked
+            }
+        }
     }
 
     fun setUnscheduledQuestsAdapter(adapter: UnscheduledEventsAdapter<*>) {
@@ -514,16 +546,17 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             adapterView.setPositionAndHeight(
                 event.startMinute * minuteHeight,
                 (event.duration * minuteHeight).toInt())
+            eventViews.add(adapterView)
             eventContainer.addView(adapterView)
         }
     }
 
     private fun refreshEventsFromAdapter() {
         val a = scheduledEventsAdapter!!
-        val eventsInViewCount = childCount
+        val eventsInViewCount = eventViews.size
         val eventsInAdapterCount = a.count
         val reuseCount = min(eventsInViewCount, eventsInAdapterCount)
-
+        Timber.d("$eventsInAdapterCount $eventsInViewCount")
         for (i in 0 until reuseCount) {
             a.getView(i, getChildAt(i), eventContainer)
         }
@@ -537,12 +570,11 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         }
     }
 
-    fun scheduleEvent(adapterView: View) {
+    fun scheduleEvent(adapterView: View, adapterPosition: Int) {
         val dragView = addAndPositionDragView(adapterView)
         dragView.post {
             this.dragView = dragView
-            // @TODO get event name
-            fsm.fire(Event.StartEdit(adapterView, "namy"))
+            fsm.fire(Event.StartEdit(adapterView, adapterPosition))
         }
     }
 

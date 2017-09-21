@@ -11,7 +11,7 @@ import io.ipoli.android.common.datetime.Time
  * Created by Venelin Valkov <venelin@curiousily.com>
  * on 9/2/17.
  */
-abstract class ScheduledEventsAdapter<T : CalendarEvent>(context: Context, protected val resource: Int, events: List<T>) :
+abstract class ScheduledEventsAdapter<T : CalendarEvent>(context: Context, protected val resource: Int, protected val events: MutableList<T>) :
     ArrayAdapter<T>(context, resource, events) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
@@ -25,7 +25,7 @@ abstract class ScheduledEventsAdapter<T : CalendarEvent>(context: Context, prote
 
     abstract fun bindView(view: View, position: Int)
     abstract fun onStartEdit(dragView: View, startTime: Time, endTime: Time)
-    abstract fun onStopEdit(editView: View)
+    abstract fun onStopEdit(position: Int, startTime: Time, duration: Int)
     abstract fun onScheduledTimeChanged(dragView: View, startTime: Time, endTime: Time)
     abstract fun onEventZoomed(adapterView: View)
 }
