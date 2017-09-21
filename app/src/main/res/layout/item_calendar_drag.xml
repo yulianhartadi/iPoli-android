@@ -5,6 +5,7 @@
     android:id="@+id/quest_details_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:focusableInTouchMode="true"
     android:layout_marginStart="70dp"
     android:background="@color/md_green_500"
     android:elevation="6dp">

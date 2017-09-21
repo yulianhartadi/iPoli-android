@@ -12,6 +12,7 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import io.ipoli.android.R
@@ -39,6 +40,9 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             fun execute(state: State, event: E): State
         }
 
+        class ActionNotFound(private val actionKey: Pair<*, *>) :
+            RuntimeException("Action for state ${actionKey.first} when event ${actionKey.second} is not defined")
+
         private var currentState: State = initialState
         private val actions = mutableMapOf<Pair<State.Type, KClass<*>>, Action<*>>()
 
@@ -60,6 +64,9 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
         fun <E : Event> fire(event: E) {
             val actionKey = Pair(currentState.type, event::class)
+            if (actionKey !in actions) {
+                throw ActionNotFound(actionKey)
+            }
             @Suppress("UNCHECKED_CAST")
             val a = actions[actionKey] as Action<E>
             currentState = a.execute(currentState, event)
@@ -279,11 +286,23 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             s.copy(type = State.Type.EDIT_NAME, name = e.name)
         })
 
+        fsm.transition(State.Type.EDIT, Event.Up::class, { s, e ->
+            hideKeyboard()
+            s
+        })
+
         fsm.transition(State.Type.EDIT, Event.CompleteEdit::class, { s, e ->
             stopEdit()
             listenForZoom()
             hideViews(editModeBackground, topDragView, bottomDragView)
+            editModeBackground.setOnTouchListener(null)
             s.copy(type = State.Type.VIEW, isScrollLocked = false)
+        })
+
+        fsm.transition(State.Type.EDIT_NAME, Event.Up::class, { s, e ->
+            hideKeyboard()
+            dragView?.requestFocus()
+            s.copy(type = State.Type.EDIT)
         })
 
         fsm.transition(State.Type.EDIT_NAME, Event.CompleteEditName::class, { s, e ->
@@ -747,4 +766,9 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     private fun toPx(dp: Int): Int =
         (dp * Resources.getSystem().displayMetrics.density).toInt()
+
+    fun View.hideKeyboard() {
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(windowToken, 0)
+    }
 }
