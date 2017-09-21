@@ -174,8 +174,10 @@ class DayViewController : Controller(), Injects<Module> {
 
         private fun tintList(@ColorRes color: Int) = ContextCompat.getColorStateList(context, color)
 
-        override fun onStartEdit(editView: View) {
+        override fun onStartEdit(dragView: View, startTime: Time, endTime: Time) {
             startActionMode()
+            dragView.startTime.text = startTime.toString()
+            dragView.endTime.text = endTime.toString()
         }
 
         override fun onStopEdit(editView: View) {

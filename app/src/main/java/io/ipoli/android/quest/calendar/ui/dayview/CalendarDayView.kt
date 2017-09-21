@@ -196,10 +196,15 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             setupDragViews(dragView!!)
             editModeBackground.bringToFront()
             setAdapterViewTouchListener(adapterView)
-            scheduledEventsAdapter?.onStartEdit(adapterView)
 
             val absPos = dragView!!.topLocationOnScreen.toFloat() - topLocationOnScreen
             val topPosition = roundPositionToMinutes(absPos)
+
+            val timeMapper = PositionToTimeMapper(s.minuteHeight)
+            val topRelativePos = topPosition - unscheduledQuests.height + scrollView.scrollY
+            scheduledEventsAdapter?.onStartEdit(dragView!!,
+                timeMapper.timeAt(topRelativePos),
+                timeMapper.timeAt(topRelativePos + dragView!!.height))
 
             s.copy(
                 type = State.Type.DRAG,
