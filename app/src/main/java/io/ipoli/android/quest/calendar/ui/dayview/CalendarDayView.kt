@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.res.Resources
 import android.database.DataSetObserver
 import android.graphics.drawable.Drawable
-import android.os.Handler
-import android.os.Looper
 import android.support.transition.AutoTransition
 import android.support.transition.TransitionManager
 import android.support.v7.widget.LinearLayoutManager
@@ -128,8 +126,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private var scheduledEventsAdapter: ScheduledEventsAdapter<*>? = null
     private var unscheduledEventsAdapter: UnscheduledEventsAdapter<*>? = null
 
-    private val autoScrollHandler = Handler(Looper.getMainLooper())
-
     private val dataSetObserver = object : DataSetObserver() {
         override fun onChanged() {
             refreshEventsFromAdapter()
@@ -190,16 +186,9 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         return distanceDelta > toPx(24)
     }
 
-    private lateinit var autoScrollUp: Runnable
-
     private fun setupFSM() {
         val hourHeight = getScreenHeight() / DEFAULT_VISIBLE_HOURS.toFloat()
         fsm = FSM(State(State.Type.VIEW, hourHeight = hourHeight), this)
-
-        autoScrollUp = Runnable {
-            scrollView.smoothScrollTo(scrollView.scrollX, scrollView.scrollY - fsm.state.hourHeight.toInt())
-            autoScrollHandler.postDelayed(autoScrollUp, 1000)
-        }
 
         listenForZoom()
 
@@ -226,12 +215,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fsm.transition(State.Type.DRAG, Event.Drag::class, { s, e ->
             val absPos = e.y - topLocationOnScreen
             val topPosition = roundPositionToMinutes(absPos)
-
-            val topScrollThreshold = unscheduledQuests.topLocationOnScreen + unscheduledQuests.height
-            if (e.y <= topScrollThreshold) {
-                
-                autoScrollHandler.postDelayed(autoScrollUp, 1000)
-            }
 
             s.copy(
                 topDragViewPosition = topPosition,
