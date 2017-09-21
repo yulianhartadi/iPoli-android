@@ -79,8 +79,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         data class ZoomStart(val zoomDistance: Float) : Event()
         data class Zoom(val zoomDistance: Float, val focusY: Float, val scaleFactor: Float) : Event()
         object ZoomEnd : Event()
-        object ScrollUp : Event()
-        object ScrollDown : Event()
     }
 
     companion object {
@@ -215,6 +213,12 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fsm.transition(State.Type.DRAG, Event.Drag::class, { s, e ->
             val absPos = e.y - topLocationOnScreen
             val topPosition = roundPositionToMinutes(absPos)
+
+            val timeMapper = PositionToTimeMapper(s.minuteHeight)
+            val topRelativePos = topPosition - unscheduledQuests.height + scrollView.scrollY
+            scheduledEventsAdapter?.onScheduledTimeChanged(dragView!!,
+                timeMapper.timeAt(topRelativePos),
+                timeMapper.timeAt(topRelativePos + s.height!!))
 
             s.copy(
                 topDragViewPosition = topPosition,

@@ -39,9 +39,12 @@ class DayViewController : Controller(), Injects<Module> {
         val view = inflater.inflate(R.layout.controller_day_view, container, false)
         view.calendar.setScheduledEventsAdapter(QuestScheduledEventsAdapter(activity!!,
             listOf(
-                QuestViewModel("Play COD", 15, Time.atHours(1).toMinuteOfDay(), Category.FUN.color500, Category.FUN.color800, true),
-                QuestViewModel("Study Bayesian Stats", 30, Time.atHours(3).toMinuteOfDay(), Category.LEARNING.color500, Category.LEARNING.color700, false),
-                QuestViewModel("Workout in the Gym with Vihar and his baba", 60, Time.atHours(7).toMinuteOfDay(), Category.WELLNESS.color500, Category.WELLNESS.color700, false)
+                QuestViewModel("Play COD", 15, Time.atHours(1).toMinuteOfDay(), "1:00", "1:15",
+                    Category.FUN.color500, Category.FUN.color800, true),
+                QuestViewModel("Study Bayesian Stats", 45, Time.atHours(3).toMinuteOfDay(), "3:00", "3:45",
+                    Category.LEARNING.color500, Category.LEARNING.color700, false),
+                QuestViewModel("Workout in the Gym with Vihar and his baba", 60, Time.atHours(7).toMinuteOfDay(), "7:00", "8:00",
+                    Category.WELLNESS.color500, Category.WELLNESS.color700, false)
             ),
             view.calendar
         ))
@@ -85,6 +88,8 @@ class DayViewController : Controller(), Injects<Module> {
     data class QuestViewModel(val name: String,
                               override var duration: Int,
                               override var startMinute: Int,
+                              val startTime: String,
+                              val endTime: String,
                               @ColorRes val backgroundColor: Int,
                               @ColorRes val textColor: Int,
                               var isCompleted: Boolean) : CalendarEvent
@@ -92,21 +97,19 @@ class DayViewController : Controller(), Injects<Module> {
     inner class QuestScheduledEventsAdapter(context: Context, events: List<QuestViewModel>, private val calendarDayView: CalendarDayView) :
         ScheduledEventsAdapter<QuestViewModel>(context, R.layout.item_calendar_quest, events) {
 
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-            var view = convertView
-            if (view == null) {
-                view = LayoutInflater.from(context).inflate(resource, parent, false)
-            }
-
+        override fun bindView(view: View, position: Int) {
             val vm = getItem(position)
 
-            view!!.setOnLongClickListener { v ->
+            view.setOnLongClickListener { v ->
 
                 //                v.visibility = View.GONE
                 calendarDayView.scheduleEvent(v)
 //                calendarDayView.startEditMode(v, position)
                 false
             }
+
+            view.startTime.text = vm.startTime
+            view.endTime.text = vm.endTime
 
             if (!vm.isCompleted) {
                 view.questName.text = vm.name
@@ -124,14 +127,11 @@ class DayViewController : Controller(), Injects<Module> {
 
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(view.questName, 8, 16, 1, TypedValue.COMPLEX_UNIT_SP)
 
-
-            (view.checkBox as TintableCompoundButton).supportButtonTintList = getTintList(vm.backgroundColor)
+            (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor)
 
             view.post {
-                adaptViewForHeight(view!!, ViewUtils.pxToDp(view!!.height, context))
+                adaptViewForHeight(view, ViewUtils.pxToDp(view.height, context))
             }
-
-            return view
         }
 
         override fun onEventZoomed(adapterView: View) {
@@ -142,7 +142,7 @@ class DayViewController : Controller(), Injects<Module> {
             with(adapterView) {
                 when {
                     height < 28 -> ViewUtils.hideViews(checkBox, indicatorContainer, startTime, endTime)
-                    height < 104 -> {
+                    height < 80 -> {
                         ViewUtils.showViews(checkBox, indicatorContainer)
                         ViewUtils.hideViews(startTime, endTime)
                         if (indicatorContainer.orientation == LinearLayout.VERTICAL) {
@@ -172,7 +172,7 @@ class DayViewController : Controller(), Injects<Module> {
             }
         }
 
-        private fun getTintList(@ColorRes color: Int) = ContextCompat.getColorStateList(context, color)
+        private fun tintList(@ColorRes color: Int) = ContextCompat.getColorStateList(context, color)
 
         override fun onStartEdit(editView: View) {
             startActionMode()
@@ -182,10 +182,9 @@ class DayViewController : Controller(), Injects<Module> {
             stopActionMode()
         }
 
-        override fun onStartTimeChanged(editView: View, startTime: Time) {
-//            editView.startTime.text = startTime.toString()
-//            editView.startTime.text = startTime.toString()
-//            editView.endTime.text = Time.plusMinutes(startTime, getItem(position).duration).toString()
+        override fun onScheduledTimeChanged(dragView: View, startTime: Time, endTime: Time) {
+            dragView.startTime.text = startTime.toString()
+            dragView.endTime.text = endTime.toString()
         }
     }
 
