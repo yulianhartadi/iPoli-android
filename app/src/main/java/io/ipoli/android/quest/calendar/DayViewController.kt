@@ -24,7 +24,6 @@ import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 import kotlinx.android.synthetic.main.unscheduled_quest_item.view.*
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -192,8 +191,7 @@ class DayViewController : Controller(), Injects<Module> {
                 duration = duration,
                 endTime = Time.plusMinutes(startTime, duration).toString()
             )
-            Timber.d("${events[position]}")
-            notifyDataSetChanged()
+            calendarDayView.updateEvent(position, startTime, duration)
         }
 
         override fun onScheduledTimeChanged(dragView: View, startTime: Time, endTime: Time) {

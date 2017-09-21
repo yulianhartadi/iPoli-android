@@ -20,7 +20,6 @@ import io.ipoli.android.common.datetime.Time
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.item_calendar_drag.view.*
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
-import timber.log.Timber
 import java.lang.Math.*
 import kotlin.reflect.KClass
 
@@ -145,7 +144,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         }
 
         override fun onInvalidated() {
-            Timber.d("Invalidated")
             for (v in eventViews) {
                 eventContainer.removeView(v)
             }
@@ -454,9 +452,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun stopEdit() {
-        val transition = AutoTransition()
-        transition.duration = 200
-        TransitionManager.beginDelayedTransition(this, transition)
         val state = fsm.state
         val timeMapper = PositionToTimeMapper(state.minuteHeight)
         val topRelativePos = state.topDragViewPosition!! - unscheduledQuests.height + scrollView.scrollY
@@ -556,7 +551,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val eventsInViewCount = eventViews.size
         val eventsInAdapterCount = a.count
         val reuseCount = min(eventsInViewCount, eventsInAdapterCount)
-        Timber.d("$eventsInAdapterCount $eventsInViewCount")
         for (i in 0 until reuseCount) {
             a.getView(i, getChildAt(i), eventContainer)
         }
@@ -800,5 +794,11 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     fun View.hideKeyboard() {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(windowToken, 0)
+    }
+
+    fun updateEvent(eventPosition: Int, startTime: Time, duration: Int) {
+        val eventView = eventViews[eventPosition]
+        eventView.setPositionAndHeight(startTime.toPosition(fsm.state.minuteHeight), (duration * fsm.state.minuteHeight).toInt())
+        scheduledEventsAdapter?.bindView(eventView, eventPosition)
     }
 }
