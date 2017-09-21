@@ -184,14 +184,17 @@ class DayViewController : Controller(), Injects<Module> {
 
         override fun onStopEdit(position: Int, startTime: Time, duration: Int) {
             stopActionMode()
-            val vm = getItem(position)
-            events[position] = vm.copy(
-                startMinute = startTime.toMinuteOfDay(),
-                startTime = startTime.toString(),
-                duration = duration,
-                endTime = Time.plusMinutes(startTime, duration).toString()
-            )
-            calendarDayView.updateEvent(position, startTime, duration)
+//            val vm = getItem(position)
+//            events[position] = vm.copy(
+//                startMinute = startTime.toMinuteOfDay(),
+//                startTime = startTime.toString(),
+//                duration = duration,
+//                endTime = Time.plusMinutes(startTime, duration).toString()
+//            )
+//            calendarDayView.updateEvent(position, startTime, duration)
+            
+            events.add(QuestViewModel("Hi", duration, startTime.toMinuteOfDay(), "", "", Category.WELLNESS.color500, Category.WELLNESS.color700, false))
+            notifyDataSetChanged()
         }
 
         override fun onScheduledTimeChanged(dragView: View, startTime: Time, endTime: Time) {

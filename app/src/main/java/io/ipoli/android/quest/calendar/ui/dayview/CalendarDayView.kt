@@ -801,4 +801,10 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         eventView.setPositionAndHeight(startTime.toPosition(fsm.state.minuteHeight), (duration * fsm.state.minuteHeight).toInt())
         scheduledEventsAdapter?.bindView(eventView, eventPosition)
     }
+
+//    fun addEvent(event: CalendarEvent) {
+//        val a = scheduledEventsAdapter!!
+//
+//        val eventView = a.getView(eventViews.size, null, eventContainer)
+//    }
 }
