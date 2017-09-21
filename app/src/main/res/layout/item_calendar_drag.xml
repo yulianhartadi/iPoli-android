@@ -5,40 +5,42 @@
     android:id="@+id/quest_details_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:focusableInTouchMode="true"
-    android:layout_marginStart="70dp"
     android:background="@color/md_green_500"
-    android:elevation="6dp">
+    android:elevation="6dp"
+    android:layout_marginStart="70dp"
+    android:focusableInTouchMode="true"
+    tools:layout_editor_absoluteX="70dp"
+    tools:layout_editor_absoluteY="25dp">
 
     <TextView
-        android:id="@+id/startTime"
+        android:id="@+id/dragStartTime"
+        style="@style/Calendar.Quest.StartTime.Drag"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
         android:text="10:30"
-        android:paddingStart="8dp"
-        android:paddingTop="8dp"
+        android:gravity="top"
         android:textColor="@color/md_light_text_87"
-        app:layout_constraintBottom_toTopOf="@+id/name"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        style="@style/Calendar.Quest.StartTime.Drag"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintVertical_bias="0.51" />
 
     <TextView
-        android:id="@+id/endTime"
-        android:layout_width="wrap_content"
+        android:id="@+id/dragEndTime"
         style="@style/Calendar.Quest.EndTime.Drag"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:gravity="bottom"
         android:text="11:30"
-        android:paddingBottom="8dp"
-        android:paddingStart="8dp"
         android:textColor="@color/md_light_text_87"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/name" />
+        app:layout_constraintTop_toTopOf="@+id/guideline" />
 
     <EditText
-        android:id="@+id/name"
+        android:id="@+id/dragName"
         style="@style/Calendar.Quest.Name.Drag"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -51,4 +53,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
 </android.support.constraint.ConstraintLayout>

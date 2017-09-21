@@ -19,6 +19,7 @@ import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.ui.dayview.*
 import io.ipoli.android.quest.data.Category
 import kotlinx.android.synthetic.main.controller_day_view.view.*
+import kotlinx.android.synthetic.main.item_calendar_drag.view.*
 import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 import kotlinx.android.synthetic.main.unscheduled_quest_item.view.*
 import space.traversal.kapsule.Injects
@@ -176,8 +177,10 @@ class DayViewController : Controller(), Injects<Module> {
 
         override fun onStartEdit(dragView: View, startTime: Time, endTime: Time) {
             startActionMode()
-            dragView.startTime.text = startTime.toString()
-            dragView.endTime.text = endTime.toString()
+            dragView.dragStartTime.text = startTime.toString()
+            dragView.dragEndTime.text = endTime.toString()
+            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragStartTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
+            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragEndTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
         }
 
         override fun onStopEdit(editView: View) {
@@ -185,8 +188,8 @@ class DayViewController : Controller(), Injects<Module> {
         }
 
         override fun onScheduledTimeChanged(dragView: View, startTime: Time, endTime: Time) {
-            dragView.startTime.text = startTime.toString()
-            dragView.endTime.text = endTime.toString()
+            dragView.dragStartTime.text = startTime.toString()
+            dragView.dragEndTime.text = endTime.toString()
         }
     }
 

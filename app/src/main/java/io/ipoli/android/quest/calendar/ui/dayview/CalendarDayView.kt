@@ -573,21 +573,19 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun setupDragViews(dragView: View) {
-//        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.startTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
-//        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.endTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
         setupTopDragView(dragView)
         setupBottomDragView(dragView)
         setupEventName(dragView)
     }
 
     private fun setupEventName(dragView: View) {
-        dragView.name.setOnFocusChangeListener { _, isFocused ->
+        dragView.dragName.setOnFocusChangeListener { _, isFocused ->
             if (isFocused) {
-                fsm.fire(Event.EditName(dragView.name.text.toString()))
+                fsm.fire(Event.EditName(dragView.dragName.text.toString()))
             }
         }
 
-        dragView.name.addTextChangedListener(object : TextWatcher {
+        dragView.dragName.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
 
             }
