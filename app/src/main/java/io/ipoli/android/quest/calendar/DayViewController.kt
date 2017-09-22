@@ -19,7 +19,6 @@ import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.ui.dayview.*
 import io.ipoli.android.quest.data.Category
 import kotlinx.android.synthetic.main.controller_day_view.view.*
-import kotlinx.android.synthetic.main.item_calendar_drag.view.*
 import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 import kotlinx.android.synthetic.main.unscheduled_quest_item.view.*
 import space.traversal.kapsule.Injects
@@ -103,7 +102,10 @@ class DayViewController : Controller(), Injects<Module> {
             view.setOnLongClickListener { v ->
 
                 //                v.visibility = View.GONE
-                calendarDayView.scheduleEvent(v, position)
+//                calendarDayView.scheduleEvent(v, position)
+
+                calendarDayView.startEventReschedule(vm)
+
 //                calendarDayView.startEditMode(v, position)
                 false
             }
@@ -134,9 +136,9 @@ class DayViewController : Controller(), Injects<Module> {
             }
         }
 
-        override fun onEventZoomed(adapterView: View) {
-            adaptViewForHeight(adapterView, ViewUtils.pxToDp(adapterView.height, context))
-        }
+//        override fun onEventZoomed(adapterView: View) {
+//            adaptViewForHeight(adapterView, ViewUtils.pxToDp(adapterView.height, context))
+//        }
 
         private fun adaptViewForHeight(adapterView: View, height: Float) {
             with(adapterView) {
@@ -174,16 +176,16 @@ class DayViewController : Controller(), Injects<Module> {
 
         private fun tintList(@ColorRes color: Int) = ContextCompat.getColorStateList(context, color)
 
-        override fun onStartEdit(dragView: View, startTime: Time, endTime: Time) {
-            startActionMode()
-            dragView.dragStartTime.text = startTime.toString()
-            dragView.dragEndTime.text = endTime.toString()
-            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragStartTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
-            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragEndTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
-        }
-
-        override fun onStopEdit(position: Int, startTime: Time, duration: Int) {
-            stopActionMode()
+//        override fun onStartEdit(dragView: View, startTime: Time, endTime: Time) {
+//            startActionMode()
+//            dragView.dragStartTime.text = startTime.toString()
+//            dragView.dragEndTime.text = endTime.toString()
+//            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragStartTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
+//            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragEndTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
+//        }
+//
+//        override fun onStopEdit(position: Int, startTime: Time, duration: Int) {
+//            stopActionMode()
 //            val vm = getItem(position)
 //            events[position] = vm.copy(
 //                startMinute = startTime.toMinuteOfDay(),
@@ -192,20 +194,20 @@ class DayViewController : Controller(), Injects<Module> {
 //                endTime = Time.plusMinutes(startTime, duration).toString()
 //            )
 //            calendarDayView.updateEvent(position, startTime, duration)
-            
-            events.add(QuestViewModel("Hi", duration, startTime.toMinuteOfDay(), "", "", Category.WELLNESS.color500, Category.WELLNESS.color700, false))
-            notifyDataSetChanged()
-        }
-
-        override fun onScheduledTimeChanged(dragView: View, startTime: Time, endTime: Time) {
-            dragView.dragStartTime.text = startTime.toString()
-            dragView.dragEndTime.text = endTime.toString()
-        }
+//
+////            events.add(QuestViewModel("Hi", duration, startTime.toMinuteOfDay(), "", "", Category.WELLNESS.color500, Category.WELLNESS.color700, false))
+////            notifyDataSetChanged()
+//        }
+//
+//        override fun onScheduledTimeChanged(dragView: View, startTime: Time, endTime: Time) {
+//            dragView.dragStartTime.text = startTime.toString()
+//            dragView.dragEndTime.text = endTime.toString()
+//        }
     }
 
     data class UnscheduledQuestViewModel(val name: String, val duration: Int) : UnscheduledEvent
 
-    inner class UnscheduledQuestsAdapter(items: List<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) :
+    inner class UnscheduledQuestsAdapter(val items: List<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) :
         UnscheduledEventsAdapter<UnscheduledQuestViewModel>
         (R.layout.unscheduled_quest_item, items, calendarDayView) {
 
@@ -214,7 +216,8 @@ class DayViewController : Controller(), Injects<Module> {
 
 //            calendarDayView.scheduleEvent(itemView)
             itemView.setOnLongClickListener {
-                calendarDayView.scheduleEvent(itemView, adapterPosition)
+                calendarDayView.startEventReschedule(items[adapterPosition])
+//                calendarDayView.scheduleEvent(itemView, adapterPosition)
                 true
             }
         }
