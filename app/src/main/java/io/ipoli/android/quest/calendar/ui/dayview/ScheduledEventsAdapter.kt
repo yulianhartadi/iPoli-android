@@ -37,7 +37,7 @@ abstract class ScheduledEventsAdapter<T : CalendarEvent>(context: Context, prote
     abstract fun bindView(view: View, position: Int)
     abstract fun adaptViewForHeight(adapterView: View, height: Float)
     abstract fun rescheduleEvent(position: Int, startTime: Time, duration: Int)
-//    abstract fun onStartEdit(dragView: View, startTime: Time, endTime: Time)
+//    abstract fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time)
 //    abstract fun onStopEdit(position: Int, startTime: Time, duration: Int)
 //    abstract fun onScheduledTimeChanged(dragView: View, startTime: Time, endTime: Time)
 //    abstract fun onEventZoomed(adapterView: View)

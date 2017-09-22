@@ -30,10 +30,18 @@ import space.traversal.kapsule.inject
  * on 9/2/17.
  */
 class DayViewController : Controller(), Injects<Module>, CalendarChangeListener {
-    override fun onStartEdit(dragView: View, startTime: Time, endTime: Time) {
+    override fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time) {
         startActionMode()
         dragView.dragStartTime.text = startTime.toString()
         dragView.dragEndTime.text = endTime.toString()
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragStartTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragEndTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
+    }
+
+    override fun onStartEditUnscheduledEvent(dragView: View) {
+        startActionMode()
+        dragView.dragStartTime.visibility = View.GONE
+        dragView.dragEndTime.visibility = View.GONE
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragStartTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragEndTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
     }
@@ -57,9 +65,16 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
         unscheduledEventsAdapter.addEvent(vm)
     }
 
-    override fun onMoveScheduledEvent(dragView: View, startTime: Time, endTime: Time) {
-        dragView.dragStartTime.text = startTime.toString()
-        dragView.dragEndTime.text = endTime.toString()
+    override fun onMoveEvent(dragView: View, startTime: Time?, endTime: Time?) {
+        if (startTime == null) {
+            dragView.dragStartTime.visibility = View.GONE
+            dragView.dragEndTime.visibility = View.GONE
+        } else {
+            dragView.dragStartTime.visibility = View.VISIBLE
+            dragView.dragEndTime.visibility = View.VISIBLE
+            dragView.dragStartTime.text = startTime.toString()
+            dragView.dragEndTime.text = endTime.toString()
+        }
     }
 
     override fun onZoomEvent(adapterView: View) {
@@ -230,7 +245,7 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
 
         private fun tintList(@ColorRes color: Int) = ContextCompat.getColorStateList(context, color)
 
-//        override fun onStartEdit(dragView: View, startTime: Time, endTime: Time) {
+//        override fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time) {
 //            startActionMode()
 //            dragView.dragStartTime.text = startTime.toString()
 //            dragView.dragEndTime.text = endTime.toString()
