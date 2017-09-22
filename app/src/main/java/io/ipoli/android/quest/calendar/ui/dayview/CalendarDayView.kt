@@ -49,7 +49,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             fun execute(state: State, event: E): State
         }
 
-        class ActionNotFound(private val actionKey: Pair<*, *>) :
+        class ActionNotFound(actionKey: Pair<*, *>) :
             RuntimeException("Action for state ${actionKey.first} when event ${actionKey.second} is not defined")
 
         private var currentState: State = initialState
@@ -102,6 +102,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val DEFAULT_VISIBLE_HOURS = 9
         val MIN_VISIBLE_HOURS = 6
         val MAX_VISIBLE_HOURS = 16
+        val MIN_EVENT_DURATION = 10
+        val MAX_EVENT_DURATION = Time.h2Min(4)
     }
 
     data class State(
@@ -129,9 +131,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     private lateinit var fsm: FSM
 
-    private val MIN_EVENT_DURATION = 10
-    private val MAX_EVENT_DURATION = Time.h2Min(4)
-
     private lateinit var dragImage: Drawable
     private var dragImageSize: Int = toPx(16)
 
@@ -146,11 +145,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private var listener: CalendarChangeListener? = null
 
     private val eventViews = mutableListOf<View>()
-
-//    data class IndexedView(val index: Int, val view: View)
-//
-//    private val calendarEventToView = mutableMapOf<CalendarEvent, IndexedView>()
-//    private val unscheduledEventToView = mutableMapOf<UnscheduledEvent, IndexedView>()
 
     private val dataSetObserver = object : DataSetObserver() {
         override fun onChanged() {
@@ -612,34 +606,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 event.startMinute * minuteHeight,
                 (event.duration * minuteHeight).toInt())
             eventViews.add(adapterView)
-//            calendarEventToView[event] = IndexedView(i, adapterView)
             eventContainer.addView(adapterView)
-        }
-    }
-
-    private fun refreshEventsFromAdapter() {
-//        val a = scheduledEventsAdapter!!
-//        val eventsInViewCount = calendarEventToView.size
-//        val eventsInAdapterCount = a.count
-//        val reuseCount = min(eventsInViewCount, eventsInAdapterCount)
-//        for (i in 0 until reuseCount) {
-//            a.getView(i, getChildAt(i), eventContainer)
-//        }
-//
-//        if (eventsInViewCount < eventsInAdapterCount) {
-//            for (i in eventsInViewCount until eventsInAdapterCount) {
-//                eventContainer.addView(a.getView(i, null, eventContainer), i)
-//            }
-//        } else if (eventsInViewCount > eventsInAdapterCount) {
-//            removeViews(eventsInAdapterCount, eventsInViewCount)
-//        }
-    }
-
-    fun scheduleEvent(adapterView: View, adapterPosition: Int) {
-        val dragView = addAndPositionDragView(adapterView)
-        dragView.post {
-            this.dragView = dragView
-            fsm.fire(Event.StartCalendarEventEdit(adapterView, adapterPosition))
         }
     }
 
@@ -799,12 +766,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private fun roundPositionToMinutes(position: Float, roundedToMinutes: Int = 5) =
         PositionToTimeMapper(fsm.state.minuteHeight).timeAt(position, roundedToMinutes).toPosition(fsm.state.minuteHeight)
 
-    private fun View.changePositionAndHeight(yDelta: Float, height: Int) =
-        changeLayoutParams<MarginLayoutParams> {
-            it.topMargin += yDelta.toInt()
-            it.height = height
-        }
-
     private fun View.setPositionAndHeight(yPosition: Float, height: Int) =
         changeLayoutParams<MarginLayoutParams> {
             it.topMargin = yPosition.toInt()
@@ -813,15 +774,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     private fun View.setTopPosition(yPosition: Float) =
         changeLayoutParams<MarginLayoutParams> { it.topMargin = yPosition.toInt() }
-
-    private fun View.changePosition(yDelta: Float) =
-        changePosition(yDelta.toInt())
-
-    private fun View.changePosition(yDelta: Int) =
-        changeLayoutParams<MarginLayoutParams> { it.topMargin += yDelta }
-
-    private fun View.changeHeight(height: Int) =
-        changeLayoutParams<MarginLayoutParams> { it.height = height }
 
     private fun <T : ViewGroup.LayoutParams> View.changeLayoutParams(cb: (layoutParams: T) -> Unit) {
         @Suppress("UNCHECKED_CAST")
@@ -867,14 +819,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         imm.hideSoftInputFromWindow(windowToken, 0)
     }
 
-//    fun updateEvent(eventPosition: Int, startTime: Time, duration: Int) {
-//        val eventView = eventViews[eventPosition]
-//        eventView.setPositionAndHeight(startTime.toPosition(fsm.state.minuteHeight), (duration * fsm.state.minuteHeight).toInt())
-//        scheduledEventsAdapter?.bindView(eventView, eventPosition)
-//    }
-
     fun startEventReschedule(calendarEvent: CalendarEvent) {
-
         val position = scheduledEventsAdapter!!.events.indexOf(calendarEvent)
         val adapterView = eventViews[position]
         val dragView = addAndPositionDragView(adapterView)
@@ -898,10 +843,4 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         eventViews.clear()
         super.onDetachedFromWindow()
     }
-
-//    fun addEvent(event: CalendarEvent) {
-//        val a = scheduledEventsAdapter!!
-//
-//        val eventView = a.getView(eventViews.size, null, eventContainer)
-//    }
 }
