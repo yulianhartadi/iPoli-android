@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import io.ipoli.android.common.datetime.Time
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -22,7 +23,20 @@ abstract class ScheduledEventsAdapter<T : CalendarEvent>(context: Context, prote
         return view
     }
 
+    fun addEvent(event: T) {
+        events.add(event)
+        notifyDataSetChanged()
+    }
+
+    fun removeEvent(position: Int): T {
+        val event = events.removeAt(position)
+        notifyDataSetChanged()
+        return event
+    }
+
     abstract fun bindView(view: View, position: Int)
+    abstract fun adaptViewForHeight(adapterView: View, height: Float)
+    abstract fun rescheduleEvent(position: Int, startTime: Time, duration: Int)
 //    abstract fun onStartEdit(dragView: View, startTime: Time, endTime: Time)
 //    abstract fun onStopEdit(position: Int, startTime: Time, duration: Int)
 //    abstract fun onScheduledTimeChanged(dragView: View, startTime: Time, endTime: Time)

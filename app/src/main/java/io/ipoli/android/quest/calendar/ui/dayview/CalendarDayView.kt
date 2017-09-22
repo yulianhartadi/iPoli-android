@@ -109,7 +109,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val topDragViewPosition: Float? = null,
         val topDragIndicatorPosition: Float? = null,
         val bottomDragIndicatorPosition: Float? = null,
-        val adapterPosition: Int? = null,
+        val eventAdapterPosition: Int? = null,
+        val unscheduledEventAdapterPosition: Int? = null,
         val height: Int? = null,
         val name: String? = null,
         val visibleHours: Int = DEFAULT_VISIBLE_HOURS,
@@ -226,27 +227,27 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         listenForZoom()
 
         fsm.transition(State.Type.VIEW, Event.StartCalendarEventEdit::class, { s, e ->
-            scrollView.setOnTouchListener(null)
-            val adapterView = e.view
-            setupDragViews(dragView!!)
-            editModeBackground.bringToFront()
-            setAdapterViewTouchListener(adapterView)
-
-            val absPos = dragView!!.topLocationOnScreen.toFloat() - topLocationOnScreen
-            val topPosition = roundPositionToMinutes(absPos)
-
-//            val timeMapper = PositionToTimeMapper(s.minuteHeight)
-//            val topRelativePos = topPosition - unscheduledQuests.height + scrollView.scrollY
-//            scheduledEventsAdapter?.onStartEdit(dragView!!,
-//                timeMapper.timeAt(topRelativePos),
-//                timeMapper.timeAt(topRelativePos + dragView!!.height))
+            val topPosition = startDrag(e.view)
 
             s.copy(
                 type = State.Type.DRAG,
                 topDragViewPosition = topPosition,
                 topDragIndicatorPosition = topPosition - dragImageSize / 2,
                 bottomDragIndicatorPosition = topPosition + dragView!!.height - dragImageSize / 2,
-                adapterPosition = e.position,
+                eventAdapterPosition = e.position,
+                height = dragView!!.height,
+                isScrollLocked = true)
+        })
+
+        fsm.transition(State.Type.VIEW, Event.StartUnscheduledEventEdit::class, { s, e ->
+            val topPosition = startDrag(e.view)
+
+            s.copy(
+                type = State.Type.DRAG,
+                topDragViewPosition = topPosition,
+                topDragIndicatorPosition = topPosition - dragImageSize / 2,
+                bottomDragIndicatorPosition = topPosition + dragView!!.height - dragImageSize / 2,
+                unscheduledEventAdapterPosition = e.position,
                 height = dragView!!.height,
                 isScrollLocked = true)
         })
@@ -319,12 +320,23 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
         fsm.transition(State.Type.EDIT, Event.CompleteEdit::class, { s, e ->
 
-            val timeMapper = PositionToTimeMapper(s.minuteHeight)
-            val topRelativePos = s.topDragViewPosition!! - unscheduledQuests.height + scrollView.scrollY
-            val startTime = timeMapper.timeAt(topRelativePos)
-            val duration = (s.height!! / s.minuteHeight).toInt()
+            if (shouldScheduleUnscheduleEvent(s)) {
+                listener?.onUnscheduleScheduledEvent(s.eventAdapterPosition!!)
+            }
+            if (shouldRescheduleScheduledEvent(s)) {
+                listener?.onRescheduleScheduledEvent(
+                    s.eventAdapterPosition!!,
+                    startTimeForEvent(s),
+                    durationForEvent(s)
+                )
+            }
+            if (schouldScheduleUnscheduledEvent(s)) {
+                listener?.onScheduleUnscheduledEvent(
+                    s.unscheduledEventAdapterPosition!!,
+                    startTimeForEvent(s)
+                )
+            }
 
-//            scheduledEventsAdapter?.onStopEdit(s.adapterPosition!!, startTime, duration)
             removeView(dragView)
             dragView = null
 
@@ -332,7 +344,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             hideViews(editModeBackground, topDragView, bottomDragView)
 
             editModeBackground.setOnTouchListener(null)
-            s.copy(type = State.Type.VIEW, isScrollLocked = false)
+            s.copy(type = State.Type.VIEW, isScrollLocked = false, eventAdapterPosition = null, unscheduledEventAdapterPosition = null)
         })
 
         fsm.transition(State.Type.EDIT_NAME, Event.Up::class, { s, e ->
@@ -381,6 +393,42 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             s.copy(type = State.Type.VIEW)
         })
 
+    }
+
+    private fun durationForEvent(s: State) =
+        (s.height!! / s.minuteHeight).toInt()
+
+    private fun startTimeForEvent(s: State): Time {
+        val timeMapper = PositionToTimeMapper(s.minuteHeight)
+        val topRelativePos = s.topDragViewPosition!! - unscheduledQuests.height + scrollView.scrollY
+        val startTime = timeMapper.timeAt(topRelativePos)
+        return startTime
+    }
+
+    private fun schouldScheduleUnscheduledEvent(s: State) =
+        s.unscheduledEventAdapterPosition != null
+
+    private fun shouldScheduleUnscheduleEvent(s: State) =
+        s.topDragViewPosition!! < eventContainer.topLocationOnScreen && s.eventAdapterPosition != null
+
+    private fun shouldRescheduleScheduledEvent(s: State) =
+        s.topDragViewPosition!! >= eventContainer.topLocationOnScreen && s.eventAdapterPosition != null
+
+    private fun startDrag(adapterView: View): Float {
+        scrollView.setOnTouchListener(null)
+        setupDragViews(dragView!!)
+        editModeBackground.bringToFront()
+        setAdapterViewTouchListener(adapterView)
+
+        val absPos = dragView!!.topLocationOnScreen.toFloat() - topLocationOnScreen
+        val topPosition = roundPositionToMinutes(absPos)
+
+        //            val timeMapper = PositionToTimeMapper(s.minuteHeight)
+        //            val topRelativePos = topPosition - unscheduledQuests.height + scrollView.scrollY
+        //            scheduledEventsAdapter?.onStartEdit(dragView!!,
+        //                timeMapper.timeAt(topRelativePos),
+        //                timeMapper.timeAt(topRelativePos + dragView!!.height))
+        return topPosition
     }
 
     private fun calculateBottomPosition(y: Float): Float {

@@ -19,6 +19,7 @@ import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.ui.dayview.*
 import io.ipoli.android.quest.data.Category
 import kotlinx.android.synthetic.main.controller_day_view.view.*
+import kotlinx.android.synthetic.main.item_calendar_drag.view.*
 import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 import kotlinx.android.synthetic.main.unscheduled_quest_item.view.*
 import space.traversal.kapsule.Injects
@@ -28,13 +29,52 @@ import space.traversal.kapsule.inject
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/2/17.
  */
-class DayViewController : Controller(), Injects<Module> {
+class DayViewController : Controller(), Injects<Module>, CalendarChangeListener {
+    override fun onStartEdit(dragView: View, startTime: Time, endTime: Time) {
+        startActionMode()
+        dragView.dragStartTime.text = startTime.toString()
+        dragView.dragEndTime.text = endTime.toString()
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragStartTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
+        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragEndTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
+    }
+
+    override fun onRescheduleScheduledEvent(position: Int, startTime: Time, duration: Int) {
+        stopActionMode()
+        eventsAdapter.rescheduleEvent(position, startTime, duration)
+    }
+
+    override fun onScheduleUnscheduledEvent(position: Int, startTime: Time) {
+        stopActionMode()
+        val ue = unscheduledEventsAdapter.removeEvent(position)
+        val vm = QuestViewModel(ue.name, ue.duration, startTime.toMinuteOfDay(), startTime.toString(), "12:00", Category.FUN.color500, Category.FUN.color800, false)
+        eventsAdapter.addEvent(vm)
+    }
+
+    override fun onUnscheduleScheduledEvent(position: Int) {
+        stopActionMode()
+        val e = eventsAdapter.removeEvent(position)
+        val vm = UnscheduledQuestViewModel(e.name, e.duration)
+        unscheduledEventsAdapter.addEvent(vm)
+    }
+
+    override fun onMoveScheduledEvent(dragView: View, startTime: Time, endTime: Time) {
+        dragView.dragStartTime.text = startTime.toString()
+        dragView.dragEndTime.text = endTime.toString()
+    }
+
+    override fun onZoomEvent(adapterView: View) {
+        eventsAdapter.adaptViewForHeight(adapterView, ViewUtils.pxToDp(adapterView.height, adapterView.context))
+    }
 
     private var actionMode: ActionMode? = null
 
+    private lateinit var eventsAdapter: QuestScheduledEventsAdapter
+
+    private lateinit var unscheduledEventsAdapter: DayViewController.UnscheduledQuestsAdapter
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val view = inflater.inflate(R.layout.controller_day_view, container, false)
-        view.calendar.setScheduledEventsAdapter(QuestScheduledEventsAdapter(activity!!,
+        eventsAdapter = QuestScheduledEventsAdapter(activity!!,
             mutableListOf(
                 QuestViewModel("Play COD", 15, Time.atHours(1).toMinuteOfDay(), "1:00", "1:15",
                     Category.FUN.color500, Category.FUN.color800, true),
@@ -46,11 +86,14 @@ class DayViewController : Controller(), Injects<Module> {
                     Category.WELLNESS.color500, Category.WELLNESS.color700, false)
             ),
             view.calendar
-        ))
-        view.calendar.setUnscheduledQuestsAdapter(UnscheduledQuestsAdapter(listOf(
+        )
+        view.calendar.setScheduledEventsAdapter(eventsAdapter)
+        unscheduledEventsAdapter = UnscheduledQuestsAdapter(mutableListOf(
             UnscheduledQuestViewModel("name 1", 45),
             UnscheduledQuestViewModel("name 2", 90)
-        ), view.calendar))
+        ), view.calendar)
+        view.calendar.setUnscheduledQuestsAdapter(unscheduledEventsAdapter)
+        view.calendar.setCalendarChangeListener(this)
         return view
     }
 
@@ -136,11 +179,22 @@ class DayViewController : Controller(), Injects<Module> {
             }
         }
 
+        override fun rescheduleEvent(position: Int, startTime: Time, duration: Int) {
+            val vm = getItem(position)
+            events[position] = vm.copy(
+                startMinute = startTime.toMinuteOfDay(),
+                startTime = startTime.toString(),
+                duration = duration,
+                endTime = Time.plusMinutes(startTime, duration).toString()
+            )
+            notifyDataSetChanged()
+        }
+
 //        override fun onEventZoomed(adapterView: View) {
 //            adaptViewForHeight(adapterView, ViewUtils.pxToDp(adapterView.height, context))
 //        }
 
-        private fun adaptViewForHeight(adapterView: View, height: Float) {
+        override fun adaptViewForHeight(adapterView: View, height: Float) {
             with(adapterView) {
                 when {
                     height < 28 -> ViewUtils.hideViews(checkBox, indicatorContainer, startTime, endTime)
@@ -207,7 +261,7 @@ class DayViewController : Controller(), Injects<Module> {
 
     data class UnscheduledQuestViewModel(val name: String, val duration: Int) : UnscheduledEvent
 
-    inner class UnscheduledQuestsAdapter(val items: List<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) :
+    inner class UnscheduledQuestsAdapter(val items: MutableList<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) :
         UnscheduledEventsAdapter<UnscheduledQuestViewModel>
         (R.layout.unscheduled_quest_item, items, calendarDayView) {
 

@@ -16,7 +16,7 @@ interface UnscheduledEvent {
 }
 
 abstract class UnscheduledEventsAdapter<E : UnscheduledEvent>(@LayoutRes private val unscheduledEventLayout: Int,
-                                                              private val items: List<E>,
+                                                              private val items: MutableList<E>,
                                                               private val calendarDayView: CalendarDayView)
     : RecyclerView.Adapter<UnscheduledEventsAdapter.ViewHolder>() {
 
@@ -35,4 +35,15 @@ abstract class UnscheduledEventsAdapter<E : UnscheduledEvent>(@LayoutRes private
     abstract fun ViewHolder.bind(event: E, calendarDayView: CalendarDayView)
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
+
+    fun addEvent(event: E) {
+        items.add(event)
+        notifyItemInserted(items.size - 1)
+    }
+
+    fun removeEvent(position: Int): E {
+        val event = items.removeAt(position)
+        notifyItemRemoved(position)
+        return event
+    }
 }
