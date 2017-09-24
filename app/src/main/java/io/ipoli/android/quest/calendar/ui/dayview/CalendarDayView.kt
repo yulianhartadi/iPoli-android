@@ -256,7 +256,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fsm.transition(State.Type.DRAG, Event.Drag::class, { s, e ->
             val topPosition = calculateTopPosition(e.y)
 
-            val (startTime: Time?, endTime: Time?) = calculateStartAndEndTime(dragView!!.topLocationOnScreen.toFloat(), s)
+            val (startTime: Time?, endTime: Time?) = calculateStartAndEndTime(topPosition, s)
             listener?.onMoveEvent(dragView!!,
                 startTime,
                 endTime)
@@ -319,7 +319,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
         fsm.transition(State.Type.EDIT, Event.CompleteEdit::class, { s, e ->
 
-            if (shouldScheduleUnscheduleEvent(s)) {
+            if (shouldScheduleUnscheduledEvent(s)) {
                 listener?.onUnscheduleScheduledEvent(s.eventAdapterPosition!!)
             }
             if (shouldRescheduleScheduledEvent(s)) {
@@ -329,9 +329,10 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                     durationForEvent(s)
                 )
             }
-            if (shouldScheduleUnscheduledEvent(s)) {
+
+            if (s.unscheduledEventAdapterPosition != null) {
                 listener?.onScheduleUnscheduledEvent(
-                    s.unscheduledEventAdapterPosition!!,
+                    s.unscheduledEventAdapterPosition,
                     startTimeForEvent(s)
                 )
             }
@@ -395,7 +396,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun calculateStartAndEndTime(topPosition: Float, s: State): Pair<Time?, Time?> {
-        if (isInUnscheduledEventsArea(topPosition)) {
+        if (isInUnscheduledEventsArea(dragView!!.topLocationOnScreen.toFloat())) {
             return Pair(null, null)
         }
         val timeMapper = PositionToTimeMapper(s.minuteHeight)
@@ -416,9 +417,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun shouldScheduleUnscheduledEvent(s: State) =
-        s.unscheduledEventAdapterPosition != null
-
-    private fun shouldScheduleUnscheduleEvent(s: State) =
         isInUnscheduledEventsArea(dragView!!.topLocationOnScreen.toFloat()) && s.eventAdapterPosition != null
 
     private fun shouldRescheduleScheduledEvent(s: State) =
