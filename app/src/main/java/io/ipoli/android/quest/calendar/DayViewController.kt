@@ -205,17 +205,13 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
             notifyDataSetChanged()
         }
 
-//        override fun onEventZoomed(adapterView: View) {
-//            adaptViewForHeight(adapterView, ViewUtils.pxToDp(adapterView.height, context))
-//        }
-
         override fun adaptViewForHeight(adapterView: View, height: Float) {
             with(adapterView) {
                 when {
                     height < 28 -> ViewUtils.hideViews(checkBox, indicatorContainer, startTime, endTime)
                     height < 80 -> {
-                        ViewUtils.showViews(checkBox, indicatorContainer)
-                        ViewUtils.hideViews(startTime, endTime)
+                        ViewUtils.showViews(startTime, endTime, indicatorContainer)
+                        ViewUtils.hideViews(checkBox)
                         if (indicatorContainer.orientation == LinearLayout.VERTICAL) {
                             indicatorContainer.orientation = LinearLayout.HORIZONTAL
                             reverseIndicators(indicatorContainer)
@@ -244,34 +240,6 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
         }
 
         private fun tintList(@ColorRes color: Int) = ContextCompat.getColorStateList(context, color)
-
-//        override fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time) {
-//            startActionMode()
-//            dragView.dragStartTime.text = startTime.toString()
-//            dragView.dragEndTime.text = endTime.toString()
-//            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragStartTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
-//            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragEndTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
-//        }
-//
-//        override fun onStopEdit(position: Int, startTime: Time, duration: Int) {
-//            stopActionMode()
-//            val vm = getItem(position)
-//            events[position] = vm.copy(
-//                startMinute = startTime.toMinuteOfDay(),
-//                startTime = startTime.toString(),
-//                duration = duration,
-//                endTime = Time.plusMinutes(startTime, duration).toString()
-//            )
-//            calendarDayView.updateEvent(position, startTime, duration)
-//
-////            events.add(QuestViewModel("Hi", duration, startTime.toMinuteOfDay(), "", "", Category.WELLNESS.color500, Category.WELLNESS.color700, false))
-////            notifyDataSetChanged()
-//        }
-//
-//        override fun onScheduledTimeChanged(dragView: View, startTime: Time, endTime: Time) {
-//            dragView.dragStartTime.text = startTime.toString()
-//            dragView.dragEndTime.text = endTime.toString()
-//        }
     }
 
     data class UnscheduledQuestViewModel(val name: String, val duration: Int) : UnscheduledEvent
