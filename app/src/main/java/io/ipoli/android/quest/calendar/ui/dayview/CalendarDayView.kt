@@ -99,6 +99,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         data class Drag(val y: Float) : Event()
         data class DragTopIndicator(val y: Float) : Event()
         data class DragBottomIndicator(val y: Float) : Event()
+        object StartEditName : Event()
+        data class UpdateName(val name: String) : Event()
         object CompleteEditName : Event()
         data class ZoomStart(val zoomDistance: Float) : Event()
         data class Zoom(val zoomDistance: Float, val focusY: Float, val scaleFactor: Float) : Event()
@@ -129,7 +131,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val zoomDistance: Float? = null,
         val isScrollLocked: Boolean = false) {
         enum class Type {
-            VIEW, EDIT, DRAG, EDIT_NAME, ZOOM
+            VIEW, EDIT, DRAG, ZOOM
         }
 
         val minuteHeight = hourHeight / 60f
@@ -349,9 +351,14 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             s.copy(type = State.Type.DRAG)
         })
 
-//        fsm.transition(State.Type.EDIT, Event.EditName::class, { s, e ->
-//            s.copy(type = State.Type.EDIT_NAME, name = e.name)
-//        })
+        fsm.transition(State.Type.EDIT, Event.StartEditName::class, { s, e ->
+            s
+        })
+
+        fsm.transition(State.Type.EDIT, Event.UpdateName::class, { s, e ->
+            s.copy(name = e.name)
+        })
+
 
         fsm.transition(State.Type.EDIT, Event.Up::class, { s, e ->
             hideKeyboard()
@@ -388,31 +395,27 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             s.copy(type = State.Type.VIEW, isScrollLocked = false, eventAdapterPosition = null, unscheduledEventAdapterPosition = null)
         })
 
-        fsm.transition(State.Type.EDIT_NAME, Event.Up::class, { s, e ->
-            hideKeyboard()
-            dragView?.requestFocus()
-            s.copy(type = State.Type.EDIT)
-        })
-
-        fsm.transition(State.Type.EDIT_NAME, Event.CompleteEditName::class, { s, e ->
-            s.copy(type = State.Type.EDIT)
-        })
-
-//        fsm.transition(State.Type.EDIT_NAME, Event.EditName::class, { s, e ->
-//            s.copy(type = State.Type.EDIT_NAME, name = e.name)
+//        fsm.transition(State.Type.EDIT_NAME, Event.Up::class, { s, e ->
+//            hideKeyboard()
+//            dragView?.requestFocus()
+//            s.copy(type = State.Type.EDIT)
 //        })
-
-        fsm.transition(State.Type.EDIT_NAME, Event.Drag::class, { s, e ->
-            s.copy(type = State.Type.DRAG)
-        })
-
-        fsm.transition(State.Type.EDIT_NAME, Event.DragTopIndicator::class, { s, e ->
-            s.copy(type = State.Type.DRAG)
-        })
-
-        fsm.transition(State.Type.EDIT_NAME, Event.DragBottomIndicator::class, { s, e ->
-            s.copy(type = State.Type.DRAG)
-        })
+//
+//        fsm.transition(State.Type.EDIT_NAME, Event.CompleteEditName::class, { s, e ->
+//            s.copy(type = State.Type.EDIT)
+//        })
+//
+//        fsm.transition(State.Type.EDIT_NAME, Event.Drag::class, { s, e ->
+//            s.copy(type = State.Type.DRAG)
+//        })
+//
+//        fsm.transition(State.Type.EDIT_NAME, Event.DragTopIndicator::class, { s, e ->
+//            s.copy(type = State.Type.DRAG)
+//        })
+//
+//        fsm.transition(State.Type.EDIT_NAME, Event.DragBottomIndicator::class, { s, e ->
+//            s.copy(type = State.Type.DRAG)
+//        })
 
 
         fsm.transition(State.Type.VIEW, Event.ZoomStart::class, { s, e ->
@@ -646,6 +649,12 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         addEventsFromAdapter()
     }
 
+    fun startEditDragEventName() =
+        fsm.fire(Event.StartEditName)
+
+    fun updateDragEventName(name: String) =
+        fsm.fire(Event.UpdateName(name))
+
     private fun addEventsFromAdapter() {
         val a = scheduledEventsAdapter!!
         val minuteHeight = fsm.state.minuteHeight
@@ -690,29 +699,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         setupTopDragView(dragView)
         setupBottomDragView(dragView)
     }
-
-//    private fun setupEventName(dragView: View) {
-//        dragView.dragName.setOnFocusChangeListener { _, isFocused ->
-//            if (isFocused) {
-//                fsm.fire(Event.EditName(dragView.dragName.text.toString()))
-//            }
-//        }
-//
-//        dragView.dragName.addTextChangedListener(object : TextWatcher {
-//            override fun afterTextChanged(s: Editable?) {
-//
-//            }
-//
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-//
-//            }
-//
-//            override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
-//                fsm.fire(Event.EditName(text.toString()))
-//            }
-//
-//        })
-//    }
 
     private fun setupBottomDragView(editView: View) {
         bottomDragView.elevation = editView.elevation

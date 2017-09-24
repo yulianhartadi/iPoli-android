@@ -5,7 +5,9 @@ import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.TextViewCompat
 import android.support.v4.widget.TintableCompoundButton
+import android.text.Editable
 import android.text.SpannableString
+import android.text.TextWatcher
 import android.text.style.StrikethroughSpan
 import android.util.TypedValue
 import android.view.*
@@ -31,24 +33,48 @@ import space.traversal.kapsule.inject
  * on 9/2/17.
  */
 class DayViewController : Controller(), Injects<Module>, CalendarChangeListener {
+    private lateinit var calendarDayView: CalendarDayView
+
     override fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: Int) {
         startActionMode()
         dragView.dragStartTime.text = startTime.toString()
         dragView.dragEndTime.text = endTime.toString()
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragStartTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragEndTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
+        setupDragViewNameAndColor(dragView, name, color)
+    }
+
+    private fun setupDragViewNameAndColor(dragView: View, name: String, color: Int) {
         dragView.dragName.setText(name)
         dragView.setBackgroundColor(ContextCompat.getColor(dragView.context, color))
+
+        dragView.dragName.setOnFocusChangeListener { _, isFocused ->
+            if (isFocused) {
+                calendarDayView.startEditDragEventName()
+            }
+        }
+
+        dragView.dragName.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
+                calendarDayView.updateDragEventName(text.toString())
+            }
+
+        })
     }
 
     override fun onStartEditUnscheduledEvent(dragView: View, name: String, color: Int) {
         startActionMode()
         dragView.dragStartTime.visibility = View.GONE
         dragView.dragEndTime.visibility = View.GONE
-        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragStartTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
-        TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragEndTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
-        dragView.dragName.setText(name)
-        dragView.setBackgroundColor(ContextCompat.getColor(dragView.context, color))
+        setupDragViewNameAndColor(dragView, name, color)
     }
 
     override fun onRescheduleScheduledEvent(position: Int, startTime: Time, duration: Int) {
@@ -94,6 +120,7 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val view = inflater.inflate(R.layout.controller_day_view, container, false)
+        calendarDayView = view.calendar
         eventsAdapter = QuestScheduledEventsAdapter(activity!!,
             mutableListOf(
                 QuestViewModel("Play COD", 15, Time.atHours(1).toMinuteOfDay(), Category.FUN.color500, "1:00", "1:15",
@@ -105,16 +132,16 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
                 QuestViewModel("Workout in the Gym with Vihar and his baba", 60, Time.atHours(22).toMinuteOfDay(), Category.WELLNESS.color500, "22:00", "23:00",
                     Category.WELLNESS.color500, Category.WELLNESS.color700, false)
             ),
-            view.calendar
+            calendarDayView
         )
-        view.calendar.setScheduledEventsAdapter(eventsAdapter)
+        calendarDayView.setScheduledEventsAdapter(eventsAdapter)
         unscheduledEventsAdapter = UnscheduledQuestsAdapter(mutableListOf(
             UnscheduledQuestViewModel("name 1", 45, Category.CHORES.color500),
             UnscheduledQuestViewModel("name 2", 90, Category.PERSONAL.color500)
-        ), view.calendar)
-        view.calendar.setUnscheduledQuestsAdapter(unscheduledEventsAdapter)
-        view.calendar.setCalendarChangeListener(this)
-        view.calendar.setHourAdapter(object : HourCellAdapter {
+        ), calendarDayView)
+        calendarDayView.setUnscheduledQuestsAdapter(unscheduledEventsAdapter)
+        calendarDayView.setCalendarChangeListener(this)
+        calendarDayView.setHourAdapter(object : HourCellAdapter {
             override fun bind(view: View, hour: Int) {
                 if (hour > 0) {
                     view.timeLabel.text = hour.toString() + ":00"
@@ -122,7 +149,7 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
             }
 
         })
-        view.calendar.scrollToNow()
+        calendarDayView.scrollToNow()
         return view
     }
 
