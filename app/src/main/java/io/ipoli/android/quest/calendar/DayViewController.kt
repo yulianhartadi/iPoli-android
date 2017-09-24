@@ -109,6 +109,7 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
         ), view.calendar)
         view.calendar.setUnscheduledQuestsAdapter(unscheduledEventsAdapter)
         view.calendar.setCalendarChangeListener(this)
+        view.calendar.scrollToNow()
         return view
     }
 
