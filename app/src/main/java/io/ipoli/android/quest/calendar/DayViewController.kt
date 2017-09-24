@@ -18,6 +18,7 @@ import io.ipoli.android.common.di.Module
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.ui.dayview.*
 import io.ipoli.android.quest.data.Category
+import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.controller_day_view.view.*
 import kotlinx.android.synthetic.main.item_calendar_drag.view.*
 import kotlinx.android.synthetic.main.item_calendar_quest.view.*
@@ -109,6 +110,14 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
         ), view.calendar)
         view.calendar.setUnscheduledQuestsAdapter(unscheduledEventsAdapter)
         view.calendar.setCalendarChangeListener(this)
+        view.calendar.setHourAdapter(object : HourCellAdapter {
+            override fun bind(view: View, hour: Int) {
+                if (hour > 0) {
+                    view.timeLabel.text = hour.toString() + ":00"
+                }
+            }
+
+        })
         view.calendar.scrollToNow()
         return view
     }

@@ -20,7 +20,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
-import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.item_calendar_drag.view.*
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.Duration
@@ -37,6 +36,10 @@ import kotlin.reflect.KClass
 
 interface StateChangeListener {
     fun onStateChanged(state: CalendarDayView.State)
+}
+
+interface HourCellAdapter {
+    fun bind(view: View, hour: Int)
 }
 
 interface CalendarChangeListener {
@@ -58,7 +61,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         }
 
         class ActionNotFound(actionKey: Pair<*, *>) :
-            RuntimeException("Action for state ${actionKey.first} when event ${actionKey.second} is not defined")
+            RuntimeException("Trying to execute undefined action for (${actionKey.first}, ${actionKey.second})")
 
         private var currentState: State = initialState
         private val actions = mutableMapOf<Pair<State.Type, KClass<*>>, Action<*>>()
@@ -112,7 +115,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val MAX_VISIBLE_HOURS = 16
         val MIN_EVENT_DURATION = 10
         val MAX_EVENT_DURATION = Time.h2Min(4)
-        val TIME_LINE_TAG = "time_line"
+        val HOURS_IN_A_DAY = 24
     }
 
     data class State(
@@ -157,6 +160,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private var listener: CalendarChangeListener? = null
 
     private val eventViews = mutableListOf<View>()
+    private val hourCellViews = mutableListOf<View>()
+    private lateinit var timeLineView: View
 
     private val minuteChangeHandler = Handler(Looper.getMainLooper())
 
@@ -215,7 +220,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     private fun moveTimeLineToNow(): Runnable =
         Runnable {
-            val timeLineView = eventContainer.findViewWithTag<View>(TIME_LINE_TAG)
             timeLineView.addToTopPosition(fsm.state.minuteHeight)
             minuteChangeHandler.postDelayed(moveTimeLineToNow(), TimeUnit.MINUTES.toMillis(1))
         }
@@ -240,10 +244,9 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         })
 
     private fun setupTimeLine() {
-        val timeLine = inflater.inflate(R.layout.calendar_time_line, eventContainer, false)
-        timeLine.tag = TIME_LINE_TAG
-        timeLine.setTopPosition(Time.now().toPosition(fsm.state.minuteHeight))
-        eventContainer.addView(timeLine)
+        timeLineView = inflater.inflate(R.layout.calendar_time_line, eventContainer, false)
+        timeLineView.setTopPosition(Time.now().toPosition(fsm.state.minuteHeight))
+        eventContainer.addView(timeLineView)
     }
 
     private fun hasZoomedEnough(previousDistance: Float, currentDistance: Float): Boolean {
@@ -507,22 +510,18 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     private fun resizeCalendar(hourHeight: Float, minuteHeight: Float) {
         startResizeAnimation()
-
-        val (hourCells, _, calendarEvents) = (0 until eventContainer.childCount)
-            .map { eventContainer.getChildAt(it) }.groupBy { it.tag }.map { it.value }
-        resizeHourCells(hourCells, hourHeight)
-        resizeCalendarEvents(calendarEvents, minuteHeight)
+        resizeHourCells(hourHeight)
+        resizeCalendarEvents(minuteHeight)
         resizeTimeLine(minuteHeight)
     }
 
     private fun resizeTimeLine(minuteHeight: Float) {
-        val timeLine = eventContainer.findViewWithTag<View>(TIME_LINE_TAG)
-        timeLine.setTopPosition(Time.now().toPosition(minuteHeight))
+        timeLineView.setTopPosition(Time.now().toPosition(minuteHeight))
     }
 
-    private fun resizeCalendarEvents(events: List<View>, minuteHeight: Float) {
+    private fun resizeCalendarEvents(minuteHeight: Float) {
         val a = scheduledEventsAdapter!!
-        events.forEachIndexed { i, adapterView ->
+        eventViews.forEachIndexed { i, adapterView ->
             val event = a.getItem(i)
             adapterView.setPositionAndHeight(
                 event.startMinute * minuteHeight,
@@ -533,8 +532,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         }
     }
 
-    private fun resizeHourCells(hourCells: List<View>, hourHeight: Float) {
-        hourCells.forEachIndexed { i, hc ->
+    private fun resizeHourCells(hourHeight: Float) {
+        hourCellViews.forEachIndexed { i, hc ->
             val topPosition = (i * hourHeight).toInt()
             hc.setPositionAndHeight(topPosition.toFloat(), hourHeight.toInt())
         }
@@ -602,15 +601,12 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     private fun setupHourCells() {
         val hourHeight = fsm.state.hourHeight
-        for (hour in 0..23) {
+        for (hour in 0 until HOURS_IN_A_DAY) {
             val hourView = inflater.inflate(R.layout.calendar_hour_cell, this, false)
-            if (hour > 0) {
-                hourView.timeLabel.text = hour.toString() + ":00"
-            }
             val layoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, hourHeight.toInt())
             layoutParams.topMargin = (hour * hourHeight).toInt()
             hourView.layoutParams = layoutParams
-            hourView.tag = "hour_cell"
+            hourCellViews.add(hourView)
             eventContainer.addView(hourView)
         }
     }
@@ -917,7 +913,14 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     override fun onDetachedFromWindow() {
         eventViews.clear()
+        hourCellViews.clear()
         minuteChangeHandler.removeCallbacksAndMessages(null)
         super.onDetachedFromWindow()
+    }
+
+    fun setHourAdapter(adapter: HourCellAdapter) {
+        hourCellViews.forEachIndexed { h, v ->
+            adapter.bind(v, h)
+        }
     }
 }
