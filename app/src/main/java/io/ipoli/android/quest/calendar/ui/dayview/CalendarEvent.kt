@@ -10,4 +10,10 @@ interface CalendarEvent {
 
     var startMinute: Int
         get
+
+    var name: String
+        get
+
+    var color: Int
+        get
 }

@@ -31,20 +31,24 @@ import space.traversal.kapsule.inject
  * on 9/2/17.
  */
 class DayViewController : Controller(), Injects<Module>, CalendarChangeListener {
-    override fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time) {
+    override fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: Int) {
         startActionMode()
         dragView.dragStartTime.text = startTime.toString()
         dragView.dragEndTime.text = endTime.toString()
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragStartTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragEndTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
+        dragView.dragName.setText(name)
+        dragView.setBackgroundColor(ContextCompat.getColor(dragView.context, color))
     }
 
-    override fun onStartEditUnscheduledEvent(dragView: View) {
+    override fun onStartEditUnscheduledEvent(dragView: View, name: String, color: Int) {
         startActionMode()
         dragView.dragStartTime.visibility = View.GONE
         dragView.dragEndTime.visibility = View.GONE
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragStartTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragEndTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
+        dragView.dragName.setText(name)
+        dragView.setBackgroundColor(ContextCompat.getColor(dragView.context, color))
     }
 
     override fun onRescheduleScheduledEvent(position: Int, startTime: Time, duration: Int) {
@@ -55,14 +59,14 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
     override fun onScheduleUnscheduledEvent(position: Int, startTime: Time) {
         stopActionMode()
         val ue = unscheduledEventsAdapter.removeEvent(position)
-        val vm = QuestViewModel(ue.name, ue.duration, startTime.toMinuteOfDay(), startTime.toString(), "12:00", Category.FUN.color500, Category.FUN.color800, false)
+        val vm = QuestViewModel(ue.name, ue.duration, startTime.toMinuteOfDay(), ue.color, startTime.toString(), "12:00", Category.FUN.color500, Category.FUN.color800, false)
         eventsAdapter.addEvent(vm)
     }
 
     override fun onUnscheduleScheduledEvent(position: Int) {
         stopActionMode()
         val e = eventsAdapter.removeEvent(position)
-        val vm = UnscheduledQuestViewModel(e.name, e.duration)
+        val vm = UnscheduledQuestViewModel(e.name, e.duration, e.color)
         unscheduledEventsAdapter.addEvent(vm)
     }
 
@@ -92,21 +96,21 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
         val view = inflater.inflate(R.layout.controller_day_view, container, false)
         eventsAdapter = QuestScheduledEventsAdapter(activity!!,
             mutableListOf(
-                QuestViewModel("Play COD", 15, Time.atHours(1).toMinuteOfDay(), "1:00", "1:15",
+                QuestViewModel("Play COD", 15, Time.atHours(1).toMinuteOfDay(), Category.FUN.color500, "1:00", "1:15",
                     Category.FUN.color500, Category.FUN.color800, true),
-                QuestViewModel("Study Bayesian Stats", 45, Time.atHours(3).toMinuteOfDay(), "3:00", "3:45",
+                QuestViewModel("Study Bayesian Stats", 45, Time.atHours(3).toMinuteOfDay(), Category.LEARNING.color500, "3:00", "3:45",
                     Category.LEARNING.color500, Category.LEARNING.color700, false),
-                QuestViewModel("Workout in the Gym with Vihar and his baba", 60, Time.atHours(7).toMinuteOfDay(), "7:00", "8:00",
+                QuestViewModel("Workout in the Gym with Vihar and his baba", 60, Time.atHours(7).toMinuteOfDay(), Category.WELLNESS.color500, "7:00", "8:00",
                     Category.WELLNESS.color500, Category.WELLNESS.color700, false),
-                QuestViewModel("Workout in the Gym with Vihar and his baba", 60, Time.atHours(22).toMinuteOfDay(), "7:00", "8:00",
+                QuestViewModel("Workout in the Gym with Vihar and his baba", 60, Time.atHours(22).toMinuteOfDay(), Category.WELLNESS.color500, "22:00", "23:00",
                     Category.WELLNESS.color500, Category.WELLNESS.color700, false)
             ),
             view.calendar
         )
         view.calendar.setScheduledEventsAdapter(eventsAdapter)
         unscheduledEventsAdapter = UnscheduledQuestsAdapter(mutableListOf(
-            UnscheduledQuestViewModel("name 1", 45),
-            UnscheduledQuestViewModel("name 2", 90)
+            UnscheduledQuestViewModel("name 1", 45, Category.CHORES.color500),
+            UnscheduledQuestViewModel("name 2", 90, Category.PERSONAL.color500)
         ), view.calendar)
         view.calendar.setUnscheduledQuestsAdapter(unscheduledEventsAdapter)
         view.calendar.setCalendarChangeListener(this)
@@ -152,9 +156,10 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
         actionMode?.finish()
     }
 
-    data class QuestViewModel(val name: String,
+    data class QuestViewModel(override var name: String,
                               override var duration: Int,
                               override var startMinute: Int,
+                              override var color: Int,
                               val startTime: String,
                               val endTime: String,
                               @ColorRes val backgroundColor: Int,
@@ -252,7 +257,9 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
         private fun tintList(@ColorRes color: Int) = ContextCompat.getColorStateList(context, color)
     }
 
-    data class UnscheduledQuestViewModel(val name: String, val duration: Int) : UnscheduledEvent
+    data class UnscheduledQuestViewModel(override var name: String,
+                                         override var duration: Int,
+                                         override var color: Int) : UnscheduledEvent
 
     inner class UnscheduledQuestsAdapter(val items: MutableList<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) :
         UnscheduledEventsAdapter<UnscheduledQuestViewModel>
