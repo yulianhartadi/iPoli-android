@@ -13,13 +13,10 @@ import android.view.ViewGroup
 
 interface UnscheduledEvent {
     var duration: Int
-        get
 
     var name: String
-        get
 
-    var color: Int
-        get
+    var backgroundColor: Int
 }
 
 abstract class UnscheduledEventsAdapter<E : UnscheduledEvent>(@LayoutRes private val unscheduledEventLayout: Int,

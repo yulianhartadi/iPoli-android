@@ -3,6 +3,7 @@ package io.ipoli.android.common
 import android.content.Context
 import android.util.TypedValue
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -21,4 +22,9 @@ object ViewUtils {
 
     fun hideViews(vararg views: View) =
         views.forEach { it.visibility = View.GONE }
+
+    fun hideKeyboard(view: View) {
+        val m = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        m.hideSoftInputFromWindow(view.windowToken, 0)
+    }
 }

@@ -13,7 +13,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.*
-import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import io.ipoli.android.R
@@ -24,7 +23,6 @@ import org.threeten.bp.LocalDateTime
 import java.lang.Math.*
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
-
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -42,6 +40,7 @@ interface HourCellAdapter {
 interface CalendarChangeListener {
     fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: Int)
     fun onStartEditUnscheduledEvent(dragView: View, name: String, color: Int)
+    fun onDragViewClick(dragView: View)
     fun onRescheduleScheduledEvent(position: Int, startTime: Time, duration: Int)
     fun onScheduleUnscheduledEvent(position: Int, startTime: Time)
     fun onUnscheduleScheduledEvent(position: Int)
@@ -101,7 +100,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         data class DragBottomIndicator(val y: Float) : Event()
         object StartEditName : Event()
         data class UpdateName(val name: String) : Event()
-        object CompleteEditName : Event()
         data class ZoomStart(val zoomDistance: Float) : Event()
         data class Zoom(val zoomDistance: Float, val focusY: Float, val scaleFactor: Float) : Event()
         object ZoomEnd : Event()
@@ -262,14 +260,13 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fsm.transition(State.Type.VIEW, Event.StartCalendarEventEdit::class, { s, e ->
             val topPosition = startDrag(e.view)
 
-
             val timeMapper = PositionToTimeMapper(s.minuteHeight)
             val topRelativePos = topPosition - unscheduledQuests.height + scrollView.scrollY
             val calendarEvent = scheduledEventsAdapter!!.events[e.position]
             listener?.onStartEditScheduledEvent(dragView!!,
                 timeMapper.timeAt(topRelativePos),
                 timeMapper.timeAt(topRelativePos + dragView!!.height),
-                calendarEvent.name, calendarEvent.color)
+                calendarEvent.name, calendarEvent.backgroundColor)
 
             s.copy(
                 type = State.Type.DRAG,
@@ -285,7 +282,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             val topPosition = startDrag(e.view)
 
             val unscheduledEvent = unscheduledEventsAdapter!!.events[e.position]
-            listener?.onStartEditUnscheduledEvent(dragView!!, unscheduledEvent.name, unscheduledEvent.color)
+            listener?.onStartEditUnscheduledEvent(dragView!!, unscheduledEvent.name, unscheduledEvent.backgroundColor)
             s.copy(
                 type = State.Type.DRAG,
                 topDragViewPosition = topPosition,
@@ -361,8 +358,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
 
         fsm.transition(State.Type.EDIT, Event.Up::class, { s, e ->
-            hideKeyboard()
-            dragView?.requestFocus()
+            listener?.onDragViewClick(dragView!!)
             s
         })
 
@@ -404,7 +400,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fsm.transition(State.Type.DRAG, Event.UpdateName::class, { s, e ->
             s.copy(type = State.Type.EDIT, name = e.name)
         })
-        
+
         fsm.transition(State.Type.VIEW, Event.ZoomStart::class, { s, e ->
             s.copy(type = State.Type.ZOOM, zoomDistance = e.zoomDistance)
         })
@@ -836,11 +832,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     private fun toPx(dp: Int): Int =
         (dp * Resources.getSystem().displayMetrics.density).toInt()
-
-    fun View.hideKeyboard() {
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(windowToken, 0)
-    }
 
     fun startEventReschedule(calendarEvent: CalendarEvent) {
         val position = scheduledEventsAdapter!!.events.indexOf(calendarEvent)

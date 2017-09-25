@@ -11,5 +11,5 @@ interface CalendarEvent {
 
     var name: String
 
-    var color: Int
+    var backgroundColor: Int
 }

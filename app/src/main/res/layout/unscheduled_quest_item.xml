@@ -23,13 +23,6 @@
         android:orientation="horizontal"
         android:weightSum="1">
 
-        <View
-            android:id="@+id/quest_category_indicator"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:layout_gravity="center_vertical"
-            android:background="@drawable/ic_context_indicator" />
-
         <TextView
             android:id="@+id/name"
             style="@style/TextAppearance.AppCompat.Medium"
@@ -37,7 +30,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
             android:layout_weight="1"
             android:ellipsize="end"
             android:maxLines="2"
@@ -50,8 +42,8 @@
 
         <ImageView
             android:id="@+id/quest_priority_indicator"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
             android:layout_gravity="center_vertical"
             android:scaleType="fitXY"
             android:src="@drawable/ic_star_accent_24dp" />
@@ -59,41 +51,22 @@
 
         <ImageView
             android:id="@+id/quest_repeating_indicator"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="4dp"
             android:scaleType="fitXY"
             android:src="@drawable/ic_repeating_quest_24dp_transparent" />
 
 
         <ImageView
             android:id="@+id/quest_challenge_indicator"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="4dp"
             android:scaleType="fitXY"
             android:src="@drawable/ic_sword_black_24dp" />
-
-        <com.lnikkila.extendedtouchview.ExtendedTouchView
-            android:id="@+id/quest_more_menu_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            app:touchHeight="@dimen/extended_touch_height"
-            app:touchWidth="@dimen/extended_touch_width">
-
-            <ImageButton
-                android:id="@+id/quest_more_menu"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:background="?android:attr/selectableItemBackground"
-                android:clickable="true"
-                android:scaleType="fitXY"
-                android:src="@drawable/ic_more_vert_black_24dp" />
-        </com.lnikkila.extendedtouchview.ExtendedTouchView>
-
 
         <android.support.v4.widget.Space
             android:layout_width="16dp"
