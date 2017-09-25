@@ -206,7 +206,7 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
         override fun bindView(view: View, position: Int) {
             val vm = getItem(position)
 
-            view.setOnLongClickListener { v ->
+            view.setOnLongClickListener {
 
                 //                v.visibility = View.GONE
 //                calendarDayView.scheduleEvent(v, position)
@@ -295,19 +295,20 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
                                          override var duration: Int,
                                          override var backgroundColor: Int) : UnscheduledEvent
 
-    inner class UnscheduledQuestsAdapter(val items: MutableList<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) :
+    inner class UnscheduledQuestsAdapter(private val items: MutableList<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) :
         UnscheduledEventsAdapter<UnscheduledQuestViewModel>
         (R.layout.unscheduled_quest_item, items, calendarDayView) {
 
         override fun ViewHolder.bind(event: UnscheduledQuestViewModel, calendarDayView: CalendarDayView) {
             itemView.name.text = event.name
 
-//            calendarDayView.scheduleEvent(itemView)
+            (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(event.backgroundColor, itemView.context)
             itemView.setOnLongClickListener {
                 calendarDayView.startEventReschedule(items[adapterPosition])
-//                calendarDayView.scheduleEvent(itemView, adapterPosition)
                 true
             }
         }
+
+        private fun tintList(@ColorRes color: Int, context: Context) = ContextCompat.getColorStateList(context, color)
     }
 }
