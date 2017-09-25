@@ -38,15 +38,24 @@ import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 import kotlinx.android.synthetic.main.unscheduled_quest_item.view.*
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/2/17.
  */
 
-class ColorPickerDialogController : BaseDialogController() {
+class ColorPickerDialogController : BaseDialogController {
     interface ColorPickedListener {
         fun onColorPicked(@ColorRes color: Int)
+    }
+
+    var listener: ColorPickedListener? = null
+
+    constructor()
+
+    constructor(listener: ColorPickedListener) {
+        this.listener = listener
     }
 
     override fun onCreateDialog(savedViewState: Bundle?): Dialog {
@@ -95,7 +104,7 @@ class ColorPickerDialogController : BaseDialogController() {
             }
 
             iv.setOnClickListener {
-//                listener.onColorPicked(vm.color)
+                listener?.onColorPicked(vm.color)
                 dismissDialog()
             }
         }
@@ -249,7 +258,12 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
             override fun onActionItemClicked(am: ActionMode, item: MenuItem): Boolean {
                 when (item.itemId) {
                     R.id.chooseColor -> {
-                        ColorPickerDialogController()
+                        ColorPickerDialogController(object : ColorPickerDialogController.ColorPickedListener {
+                            override fun onColorPicked(color: Int) {
+                                Timber.d("Color")
+                            }
+
+                        })
                             .showDialog(router, "pick_color_tag")
                     }
                 }
