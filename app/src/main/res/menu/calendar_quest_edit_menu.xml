@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_choose_color"
+        android:id="@+id/chooseColor"
         android:icon="@drawable/ic_color_palette_white_24dp"
         android:title="Color"
         app:showAsAction="always" />

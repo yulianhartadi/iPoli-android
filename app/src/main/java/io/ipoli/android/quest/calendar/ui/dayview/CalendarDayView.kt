@@ -1,14 +1,17 @@
 package io.ipoli.android.quest.calendar.ui.dayview
 
 import android.animation.ObjectAnimator
+import android.app.Dialog
 import android.content.Context
 import android.content.res.Resources
 import android.database.DataSetObserver
 import android.graphics.drawable.Drawable
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.support.transition.AutoTransition
 import android.support.transition.TransitionManager
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.util.DisplayMetrics
@@ -17,6 +20,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.ui.BaseDialogController
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalDateTime
@@ -261,7 +265,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             val topPosition = startDrag(e.view)
 
             val timeMapper = PositionToTimeMapper(s.minuteHeight)
-            val topRelativePos = topPosition - unscheduledQuests.height + scrollView.scrollY
+            val topRelativePos = topPosition - unscheduledEvents.height + scrollView.scrollY
             val calendarEvent = scheduledEventsAdapter!!.events[e.position]
             listener?.onStartEditScheduledEvent(dragView!!,
                 timeMapper.timeAt(topRelativePos),
@@ -427,7 +431,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             return Pair(null, null)
         }
         val timeMapper = PositionToTimeMapper(s.minuteHeight)
-        val topRelativePos = topPosition - unscheduledQuests.height + scrollView.scrollY
+        val topRelativePos = topPosition - unscheduledEvents.height + scrollView.scrollY
         return Pair(
             timeMapper.timeAt(topRelativePos),
             timeMapper.timeAt(topRelativePos + s.height!!)
@@ -439,7 +443,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     private fun startTimeForEvent(s: State): Time {
         val timeMapper = PositionToTimeMapper(s.minuteHeight)
-        val topRelativePos = s.topDragViewPosition!! - unscheduledQuests.height + scrollView.scrollY
+        val topRelativePos = s.topDragViewPosition!! - unscheduledEvents.height + scrollView.scrollY
         return timeMapper.timeAt(topRelativePos)
     }
 
@@ -609,7 +613,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun setupUnscheduledQuests() {
-        unscheduledQuests.layoutManager = object : LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false) {
+        unscheduledEvents.layoutManager = object : LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false) {
             override fun canScrollVertically(): Boolean {
                 return !fsm.state.isScrollLocked
             }
@@ -622,7 +626,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     fun setUnscheduledQuestsAdapter(adapter: UnscheduledEventsAdapter<*>) {
         unscheduledEventsAdapter = adapter
-        unscheduledQuests.adapter = adapter
+        unscheduledEvents.adapter = adapter
     }
 
     fun setScheduledEventsAdapter(adapter: ScheduledEventsAdapter<*>) {
@@ -845,7 +849,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     fun startEventReschedule(unscheduledEvent: UnscheduledEvent) {
         val position = unscheduledEventsAdapter!!.events.indexOf(unscheduledEvent)
-        val adapterView = unscheduledQuests.layoutManager.findViewByPosition(position)
+        val adapterView = unscheduledEvents.layoutManager.findViewByPosition(position)
         val dragView = addAndPositionDragView(adapterView)
         dragView.post {
             this.dragView = dragView

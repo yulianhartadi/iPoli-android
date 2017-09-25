@@ -1,27 +1,38 @@
 package io.ipoli.android.quest.calendar
 
+import android.app.Dialog
 import android.content.Context
+import android.graphics.drawable.GradientDrawable
+import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.TextViewCompat
 import android.support.v4.widget.TintableCompoundButton
+import android.support.v7.app.AlertDialog
+import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.SpannableString
 import android.text.TextWatcher
 import android.text.style.StrikethroughSpan
 import android.util.TypedValue
 import android.view.*
+import android.view.LayoutInflater
+import android.widget.ImageView
 import android.widget.LinearLayout
 import com.bluelinelabs.conductor.Controller
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.ui.BaseDialogController
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.ui.dayview.*
 import io.ipoli.android.quest.data.Category
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.controller_day_view.view.*
+import kotlinx.android.synthetic.main.dialog_color_picker.view.*
+import kotlinx.android.synthetic.main.fancy_dialog_header.view.*
 import kotlinx.android.synthetic.main.item_calendar_drag.view.*
 import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 import kotlinx.android.synthetic.main.unscheduled_quest_item.view.*
@@ -32,6 +43,66 @@ import space.traversal.kapsule.inject
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/2/17.
  */
+
+class ColorPickerDialogController : BaseDialogController() {
+
+    override fun onCreateDialog(savedViewState: Bundle?): Dialog {
+
+        val inflater = LayoutInflater.from(activity!!)
+
+        val headerView = inflater.inflate(R.layout.fancy_dialog_header, null)
+        headerView.title.text = "Pick color"
+        headerView.image.setImageResource(R.drawable.ic_color_palette_white_24dp)
+
+        val contentView = inflater.inflate(R.layout.dialog_color_picker, null)
+        val colors = contentView.colors
+        colors.layoutManager = GridLayoutManager(activity!!, 4)
+        colors.adapter = ColorAdapter(listOf(
+            ColorViewModel(R.color.md_red_500, true),
+            ColorViewModel(R.color.md_green_500, false),
+            ColorViewModel(R.color.md_blue_500, false),
+            ColorViewModel(R.color.md_purple_500, false),
+            ColorViewModel(R.color.md_brown_500, false),
+            ColorViewModel(R.color.md_orange_500, false),
+            ColorViewModel(R.color.md_pink_500, false),
+            ColorViewModel(R.color.md_teal_500, false),
+            ColorViewModel(R.color.md_deep_orange_500, false),
+            ColorViewModel(R.color.md_indigo_500, false),
+            ColorViewModel(R.color.md_blue_grey_500, false),
+            ColorViewModel(R.color.md_lime_500, false)))
+
+        return AlertDialog.Builder(activity!!)
+            .setView(contentView)
+            .setCustomTitle(headerView)
+            .setNegativeButton(R.string.cancel) { p0, p1 -> }
+            .create()
+    }
+
+    data class ColorViewModel(@ColorRes val color: Int, val isSelected: Boolean)
+
+    inner class ColorAdapter(private val colors: List<ColorViewModel>) : RecyclerView.Adapter<ColorAdapter.ViewHolder>() {
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val vm = colors[position]
+            val iv = holder.itemView as ImageView
+            val drawable = iv.background as GradientDrawable
+            drawable.setColor(ContextCompat.getColor(iv.context, vm.color))
+
+            if (vm.isSelected) {
+                iv.setImageResource(R.drawable.ic_done_white_24dp)
+            }
+        }
+
+        override fun getItemCount() = colors.size
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_color_picker, parent, false))
+        }
+
+        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
+
+    }
+}
+
 class DayViewController : Controller(), Injects<Module>, CalendarChangeListener {
     private lateinit var calendarDayView: CalendarDayView
 
@@ -136,7 +207,7 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
                 QuestViewModel("Study Bayesian Stats", 45, Time.atHours(3).toMinuteOfDay(), "3:00", "3:45",
                     Category.LEARNING.color500, Category.LEARNING.color700, false),
                 QuestViewModel("Workout in the Gym with Vihar and his baba", 60, Time.atHours(7).toMinuteOfDay(), "7:00", "8:00",
-                    Category.WELLNESS.color500, Category.WELLNESS.color700, false),
+                    R.color.md_lime_500, R.color.md_lime_700, false),
                 QuestViewModel("Workout in the Gym with Vihar and his baba", 60, Time.atHours(22).toMinuteOfDay(), "22:00", "23:00",
                     Category.WELLNESS.color500, Category.WELLNESS.color700, false)
             ),
@@ -167,7 +238,13 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
 
     private fun startActionMode() {
         parentController?.view?.startActionMode(object : ActionMode.Callback {
-            override fun onActionItemClicked(p0: ActionMode?, p1: MenuItem?): Boolean {
+            override fun onActionItemClicked(am: ActionMode, item: MenuItem): Boolean {
+                when (item.itemId) {
+                    R.id.chooseColor -> {
+                        ColorPickerDialogController()
+                            .showDialog(router, "pick_color_tag")
+                    }
+                }
                 return true
             }
 
