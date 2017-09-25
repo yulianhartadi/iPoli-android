@@ -362,6 +362,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
         fsm.transition(State.Type.EDIT, Event.Up::class, { s, e ->
             hideKeyboard()
+            dragView?.requestFocus()
             s
         })
 
@@ -395,29 +396,15 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             s.copy(type = State.Type.VIEW, isScrollLocked = false, eventAdapterPosition = null, unscheduledEventAdapterPosition = null)
         })
 
-//        fsm.transition(State.Type.EDIT_NAME, Event.Up::class, { s, e ->
-//            hideKeyboard()
-//            dragView?.requestFocus()
-//            s.copy(type = State.Type.EDIT)
-//        })
-//
-//        fsm.transition(State.Type.EDIT_NAME, Event.CompleteEditName::class, { s, e ->
-//            s.copy(type = State.Type.EDIT)
-//        })
-//
-//        fsm.transition(State.Type.EDIT_NAME, Event.Drag::class, { s, e ->
-//            s.copy(type = State.Type.DRAG)
-//        })
-//
-//        fsm.transition(State.Type.EDIT_NAME, Event.DragTopIndicator::class, { s, e ->
-//            s.copy(type = State.Type.DRAG)
-//        })
-//
-//        fsm.transition(State.Type.EDIT_NAME, Event.DragBottomIndicator::class, { s, e ->
-//            s.copy(type = State.Type.DRAG)
-//        })
 
+        fsm.transition(State.Type.DRAG, Event.StartEditName::class, { s, e ->
+            s.copy(type = State.Type.EDIT)
+        })
 
+        fsm.transition(State.Type.DRAG, Event.UpdateName::class, { s, e ->
+            s.copy(type = State.Type.EDIT, name = e.name)
+        })
+        
         fsm.transition(State.Type.VIEW, Event.ZoomStart::class, { s, e ->
             s.copy(type = State.Type.ZOOM, zoomDistance = e.zoomDistance)
         })
