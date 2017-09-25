@@ -44,10 +44,20 @@ import space.traversal.kapsule.inject
  * on 9/2/17.
  */
 
-class ColorPickerDialogController : BaseDialogController() {
+class ColorPickerDialogController : BaseDialogController {
     interface ColorPickedListener {
         fun onColorPicked(@ColorRes color: Int)
     }
+
+    private var listener: ColorPickedListener? = null
+
+    constructor(listener: ColorPickedListener) : super() {
+        this.listener = listener
+    }
+
+    protected constructor() : super()
+
+    protected constructor(args: Bundle?) : super(args)
 
     override fun onCreateDialog(savedViewState: Bundle?): Dialog {
 
@@ -95,7 +105,7 @@ class ColorPickerDialogController : BaseDialogController() {
             }
 
             iv.setOnClickListener {
-//                listener.onColorPicked(vm.color)
+                listener?.onColorPicked(vm.color)
                 dismissDialog()
             }
         }
@@ -249,8 +259,12 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
             override fun onActionItemClicked(am: ActionMode, item: MenuItem): Boolean {
                 when (item.itemId) {
                     R.id.chooseColor -> {
-                        ColorPickerDialogController()
-                            .showDialog(router, "pick_color_tag")
+                        ColorPickerDialogController(object : ColorPickerDialogController.ColorPickedListener {
+                            override fun onColorPicked(color: Int) {
+                                calendarDayView.updateDragBackgroundColor(color)
+                            }
+
+                        }).showDialog(router, "pick_color_tag")
                     }
                 }
                 return true
@@ -292,13 +306,7 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
             val vm = getItem(position)
 
             view.setOnLongClickListener {
-
-                //                v.visibility = View.GONE
-//                calendarDayView.scheduleEvent(v, position)
-
                 calendarDayView.startEventReschedule(vm)
-
-//                calendarDayView.startEditMode(v, position)
                 false
             }
 

@@ -1,17 +1,17 @@
 package io.ipoli.android.quest.calendar.ui.dayview
 
 import android.animation.ObjectAnimator
-import android.app.Dialog
 import android.content.Context
 import android.content.res.Resources
 import android.database.DataSetObserver
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.support.annotation.ColorRes
 import android.support.transition.AutoTransition
 import android.support.transition.TransitionManager
-import android.support.v7.app.AlertDialog
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.util.DisplayMetrics
@@ -20,7 +20,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.common.ui.BaseDialogController
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalDateTime
@@ -107,6 +106,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         data class ZoomStart(val zoomDistance: Float) : Event()
         data class Zoom(val zoomDistance: Float, val focusY: Float, val scaleFactor: Float) : Event()
         object ZoomEnd : Event()
+        data class ChangeBackgroundColor(@ColorRes val color: Int) : Event()
     }
 
     companion object {
@@ -358,6 +358,18 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
         fsm.transition(State.Type.EDIT, Event.UpdateName::class, { s, e ->
             s.copy(name = e.name)
+        })
+
+        fsm.transition(State.Type.EDIT, Event.ChangeBackgroundColor::class, { s, e ->
+            ObjectAnimator.ofArgb(
+                dragView!!,
+                "backgroundColor",
+                (dragView!!.background as ColorDrawable).color,
+                ContextCompat.getColor(context, e.color)
+            )
+                .setDuration(context.resources.getInteger(android.R.integer.config_longAnimTime).toLong())
+                .start()
+            s.copy(color = e.color)
         })
 
 
@@ -641,6 +653,10 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     fun updateDragEventName(name: String) =
         fsm.fire(Event.UpdateName(name))
+
+    fun updateDragBackgroundColor(@ColorRes color: Int) {
+        fsm.fire(Event.ChangeBackgroundColor(color))
+    }
 
     private fun addEventsFromAdapter() {
         val a = scheduledEventsAdapter!!
