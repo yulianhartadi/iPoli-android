@@ -45,6 +45,9 @@ import space.traversal.kapsule.inject
  */
 
 class ColorPickerDialogController : BaseDialogController() {
+    interface ColorPickedListener {
+        fun onColorPicked(@ColorRes color: Int)
+    }
 
     override fun onCreateDialog(savedViewState: Bundle?): Dialog {
 
@@ -89,6 +92,11 @@ class ColorPickerDialogController : BaseDialogController() {
 
             if (vm.isSelected) {
                 iv.setImageResource(R.drawable.ic_done_white_24dp)
+            }
+
+            iv.setOnClickListener {
+//                listener.onColorPicked(vm.color)
+                dismissDialog()
             }
         }
 
