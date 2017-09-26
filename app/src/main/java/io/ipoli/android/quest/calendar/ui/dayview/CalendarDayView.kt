@@ -4,14 +4,11 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.Resources
 import android.database.DataSetObserver
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
-import android.support.annotation.ColorRes
 import android.support.transition.AutoTransition
 import android.support.transition.TransitionManager
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.util.AttributeSet
 import android.util.DisplayMetrics
@@ -20,6 +17,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.ui.Color
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalDateTime
@@ -41,9 +39,10 @@ interface HourCellAdapter {
 }
 
 interface CalendarChangeListener {
-    fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: Int)
-    fun onStartEditUnscheduledEvent(dragView: View, name: String, color: Int)
+    fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: Color)
+    fun onStartEditUnscheduledEvent(dragView: View, name: String, color: Color)
     fun onDragViewClick(dragView: View)
+    fun onDragViewColorChange(dragView: View, color: Color)
     fun onRescheduleScheduledEvent(position: Int, startTime: Time, duration: Int)
     fun onScheduleUnscheduledEvent(position: Int, startTime: Time)
     fun onUnscheduleScheduledEvent(position: Int)
@@ -106,7 +105,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         data class ZoomStart(val zoomDistance: Float) : Event()
         data class Zoom(val zoomDistance: Float, val focusY: Float, val scaleFactor: Float) : Event()
         object ZoomEnd : Event()
-        data class ChangeBackgroundColor(@ColorRes val color: Int) : Event()
+        data class ChangeBackgroundColor(val color: Color) : Event()
     }
 
     companion object {
@@ -119,7 +118,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     data class State(
-        val type: State.Type,
+        val type: Type,
         val topDragViewPosition: Float? = null,
         val topDragIndicatorPosition: Float? = null,
         val bottomDragIndicatorPosition: Float? = null,
@@ -127,7 +126,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val unscheduledEventAdapterPosition: Int? = null,
         val height: Int? = null,
         val name: String? = null,
-        val color: Int? = null,
+        val color: Color? = null,
         val visibleHours: Int = DEFAULT_VISIBLE_HOURS,
         val hourHeight: Float = 0f,
         val zoomDistance: Float? = null,
@@ -266,34 +265,39 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
             val timeMapper = PositionToTimeMapper(s.minuteHeight)
             val topRelativePos = topPosition - unscheduledEvents.height + scrollView.scrollY
-            val calendarEvent = scheduledEventsAdapter!!.events[e.position]
+            val event = scheduledEventsAdapter!!.events[e.position]
             listener?.onStartEditScheduledEvent(dragView!!,
                 timeMapper.timeAt(topRelativePos),
                 timeMapper.timeAt(topRelativePos + dragView!!.height),
-                calendarEvent.name, calendarEvent.backgroundColor)
+                event.name, event.backgroundColor)
 
             s.copy(
                 type = State.Type.DRAG,
+                name = event.name,
                 topDragViewPosition = topPosition,
                 topDragIndicatorPosition = topPosition - dragImageSize / 2,
                 bottomDragIndicatorPosition = topPosition + dragView!!.height - dragImageSize / 2,
                 eventAdapterPosition = e.position,
                 height = dragView!!.height,
+                color = event.backgroundColor,
                 isScrollLocked = true)
         })
 
         fsm.transition(State.Type.VIEW, Event.StartUnscheduledEventEdit::class, { s, e ->
             val topPosition = startDrag(e.view)
 
-            val unscheduledEvent = unscheduledEventsAdapter!!.events[e.position]
-            listener?.onStartEditUnscheduledEvent(dragView!!, unscheduledEvent.name, unscheduledEvent.backgroundColor)
+            val event = unscheduledEventsAdapter!!.events[e.position]
+            listener?.onStartEditUnscheduledEvent(dragView!!, event.name,
+                event.backgroundColor)
             s.copy(
                 type = State.Type.DRAG,
+                name = event.name,
                 topDragViewPosition = topPosition,
                 topDragIndicatorPosition = topPosition - dragImageSize / 2,
                 bottomDragIndicatorPosition = topPosition + dragView!!.height - dragImageSize / 2,
                 unscheduledEventAdapterPosition = e.position,
                 height = dragView!!.height,
+                color = event.backgroundColor,
                 isScrollLocked = true)
         })
 
@@ -361,14 +365,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         })
 
         fsm.transition(State.Type.EDIT, Event.ChangeBackgroundColor::class, { s, e ->
-            ObjectAnimator.ofArgb(
-                dragView!!,
-                "backgroundColor",
-                (dragView!!.background as ColorDrawable).color,
-                ContextCompat.getColor(context, e.color)
-            )
-                .setDuration(context.resources.getInteger(android.R.integer.config_longAnimTime).toLong())
-                .start()
+            listener?.onDragViewColorChange(dragView!!, e.color)
             s.copy(color = e.color)
         })
 
@@ -654,9 +651,12 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     fun updateDragEventName(name: String) =
         fsm.fire(Event.UpdateName(name))
 
-    fun updateDragBackgroundColor(@ColorRes color: Int) {
+    fun updateDragBackgroundColor(color: Color) {
         fsm.fire(Event.ChangeBackgroundColor(color))
     }
+
+    fun getDragViewBackgroundColor() =
+        fsm.state.color
 
     private fun addEventsFromAdapter() {
         val a = scheduledEventsAdapter!!

@@ -1,7 +1,9 @@
 package io.ipoli.android.quest.calendar
 
+import android.animation.ObjectAnimator
 import android.app.Dialog
 import android.content.Context
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.annotation.ColorRes
@@ -26,6 +28,7 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.ui.BaseDialogController
+import io.ipoli.android.common.ui.Color
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.ui.dayview.*
 import io.ipoli.android.quest.data.Category
@@ -38,7 +41,6 @@ import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 import kotlinx.android.synthetic.main.unscheduled_quest_item.view.*
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -47,13 +49,15 @@ import timber.log.Timber
 
 class ColorPickerDialogController : BaseDialogController {
     interface ColorPickedListener {
-        fun onColorPicked(@ColorRes color: Int)
+        fun onColorPicked(color: Color)
     }
 
     private var listener: ColorPickedListener? = null
+    private var selectedColor: Color? = null
 
-    constructor(listener: ColorPickedListener) : super() {
+    constructor(listener: ColorPickedListener, selectedColor: Color? = null) : super() {
         this.listener = listener
+        this.selectedColor = selectedColor
     }
 
     protected constructor() : super()
@@ -69,37 +73,30 @@ class ColorPickerDialogController : BaseDialogController {
         headerView.image.setImageResource(R.drawable.ic_color_palette_white_24dp)
 
         val contentView = inflater.inflate(R.layout.dialog_color_picker, null)
-        val colors = contentView.colors
-        colors.layoutManager = GridLayoutManager(activity!!, 4)
-        colors.adapter = ColorAdapter(listOf(
-            ColorViewModel(R.color.md_red_500, true),
-            ColorViewModel(R.color.md_green_500, false),
-            ColorViewModel(R.color.md_blue_500, false),
-            ColorViewModel(R.color.md_purple_500, false),
-            ColorViewModel(R.color.md_brown_500, false),
-            ColorViewModel(R.color.md_orange_500, false),
-            ColorViewModel(R.color.md_pink_500, false),
-            ColorViewModel(R.color.md_teal_500, false),
-            ColorViewModel(R.color.md_deep_orange_500, false),
-            ColorViewModel(R.color.md_indigo_500, false),
-            ColorViewModel(R.color.md_blue_grey_500, false),
-            ColorViewModel(R.color.md_lime_500, false)))
+        val colorGrid = contentView.colorGrid
+        colorGrid.layoutManager = GridLayoutManager(activity!!, 4)
+
+        val colorViewModels = Color.values().map {
+            ColorViewModel(it, it == selectedColor ?: false)
+        }
+
+        colorGrid.adapter = ColorAdapter(colorViewModels)
 
         return AlertDialog.Builder(activity!!)
             .setView(contentView)
             .setCustomTitle(headerView)
-            .setNegativeButton(R.string.cancel) { p0, p1 -> }
+            .setNegativeButton(R.string.cancel, null)
             .create()
     }
 
-    data class ColorViewModel(@ColorRes val color: Int, val isSelected: Boolean)
+    data class ColorViewModel(val color: Color, val isSelected: Boolean)
 
     inner class ColorAdapter(private val colors: List<ColorViewModel>) : RecyclerView.Adapter<ColorAdapter.ViewHolder>() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val vm = colors[position]
             val iv = holder.itemView as ImageView
             val drawable = iv.background as GradientDrawable
-            drawable.setColor(ContextCompat.getColor(iv.context, vm.color))
+            drawable.setColor(ContextCompat.getColor(iv.context, vm.color.color500))
 
             if (vm.isSelected) {
                 iv.setImageResource(R.drawable.ic_done_white_24dp)
@@ -123,9 +120,10 @@ class ColorPickerDialogController : BaseDialogController {
 }
 
 class DayViewController : Controller(), Injects<Module>, CalendarChangeListener {
+
     private lateinit var calendarDayView: CalendarDayView
 
-    override fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: Int) {
+    override fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: Color) {
         startActionMode()
         dragView.dragStartTime.text = startTime.toString()
         dragView.dragEndTime.text = endTime.toString()
@@ -134,16 +132,16 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
         setupDragViewNameAndColor(dragView, name, color)
     }
 
-    override fun onStartEditUnscheduledEvent(dragView: View, name: String, color: Int) {
+    override fun onStartEditUnscheduledEvent(dragView: View, name: String, color: Color) {
         startActionMode()
         dragView.dragStartTime.visibility = View.GONE
         dragView.dragEndTime.visibility = View.GONE
         setupDragViewNameAndColor(dragView, name, color)
     }
 
-    private fun setupDragViewNameAndColor(dragView: View, name: String, color: Int) {
+    private fun setupDragViewNameAndColor(dragView: View, name: String, color: Color) {
         dragView.dragName.setText(name)
-        dragView.setBackgroundColor(ContextCompat.getColor(dragView.context, color))
+        dragView.setBackgroundColor(ContextCompat.getColor(dragView.context, color.color500))
 
         dragView.dragName.setOnFocusChangeListener { _, isFocused ->
             if (isFocused) {
@@ -170,6 +168,17 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
     override fun onDragViewClick(dragView: View) {
         ViewUtils.hideKeyboard(calendarDayView)
         dragView.requestFocus()
+    }
+
+    override fun onDragViewColorChange(dragView: View, color: Color) {
+        ObjectAnimator.ofArgb(
+            dragView,
+            "backgroundColor",
+            (dragView.background as ColorDrawable).color,
+            ContextCompat.getColor(dragView.context, color.color500)
+        )
+            .setDuration(dragView.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong())
+            .start()
     }
 
     override fun onRescheduleScheduledEvent(position: Int, startTime: Time, duration: Int) {
@@ -222,20 +231,20 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
         eventsAdapter = QuestScheduledEventsAdapter(activity!!,
             mutableListOf(
                 QuestViewModel("Play COD", 15, Time.atHours(1).toMinuteOfDay(), "1:00", "1:15",
-                    Category.FUN.color500, Category.FUN.color800, true),
+                    Color.PURPLE, Category.FUN.color800, true),
                 QuestViewModel("Study Bayesian Stats", 45, Time.atHours(3).toMinuteOfDay(), "3:00", "3:45",
-                    Category.LEARNING.color500, Category.LEARNING.color700, false),
+                    Color.BLUE, Category.LEARNING.color700, false),
                 QuestViewModel("Workout in the Gym with Vihar and his baba", 60, Time.atHours(7).toMinuteOfDay(), "7:00", "8:00",
-                    R.color.md_lime_500, R.color.md_lime_700, false),
+                    Color.LIME, R.color.md_lime_700, false),
                 QuestViewModel("Workout in the Gym with Vihar and his baba", 60, Time.atHours(22).toMinuteOfDay(), "22:00", "23:00",
-                    Category.WELLNESS.color500, Category.WELLNESS.color700, false)
+                    Color.GREEN, Category.WELLNESS.color700, false)
             ),
             calendarDayView
         )
         calendarDayView.setScheduledEventsAdapter(eventsAdapter)
         unscheduledEventsAdapter = UnscheduledQuestsAdapter(mutableListOf(
-            UnscheduledQuestViewModel("name 1", 45, Category.CHORES.color500),
-            UnscheduledQuestViewModel("name 2", 90, Category.PERSONAL.color500)
+            UnscheduledQuestViewModel("name 1", 45, Color.BROWN),
+            UnscheduledQuestViewModel("name 2", 90, Color.ORANGE)
         ), calendarDayView)
         calendarDayView.setUnscheduledQuestsAdapter(unscheduledEventsAdapter)
         calendarDayView.setCalendarChangeListener(this)
@@ -261,11 +270,12 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
                 when (item.itemId) {
                     R.id.chooseColor -> {
                         ColorPickerDialogController(object : ColorPickerDialogController.ColorPickedListener {
-                            override fun onColorPicked(color: Int) {
+                            override fun onColorPicked(color: Color) {
                                 calendarDayView.updateDragBackgroundColor(color)
                             }
 
-                        }).showDialog(router, "pick_color_tag")
+                        }, calendarDayView.getDragViewBackgroundColor())
+                            .showDialog(router, "pick_color_tag")
                     }
                 }
                 return true
@@ -296,7 +306,7 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
                               override var startMinute: Int,
                               val startTime: String,
                               val endTime: String,
-                              @ColorRes override var backgroundColor: Int,
+                              override var backgroundColor: Color,
                               @ColorRes val textColor: Int,
                               var isCompleted: Boolean) : CalendarEvent
 
@@ -317,8 +327,8 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
             if (!vm.isCompleted) {
                 view.questName.text = vm.name
                 view.questName.setTextColor(ContextCompat.getColor(context, vm.textColor))
-                view.questBackground.setBackgroundResource(vm.backgroundColor)
-                view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor)
+                view.questBackground.setBackgroundResource(vm.backgroundColor.color500)
+                view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color500)
             } else {
                 val span = SpannableString(vm.name)
                 span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
@@ -330,7 +340,7 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
 
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(view.questName, 8, 16, 1, TypedValue.COMPLEX_UNIT_SP)
 
-            (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor)
+            (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color500)
 
             view.post {
                 adaptViewForHeight(view, ViewUtils.pxToDp(view.height, context))
@@ -387,7 +397,7 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
 
     data class UnscheduledQuestViewModel(override var name: String,
                                          override var duration: Int,
-                                         override var backgroundColor: Int) : UnscheduledEvent
+                                         override var backgroundColor: Color) : UnscheduledEvent
 
     inner class UnscheduledQuestsAdapter(private val items: MutableList<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) :
         UnscheduledEventsAdapter<UnscheduledQuestViewModel>
@@ -396,7 +406,7 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
         override fun ViewHolder.bind(event: UnscheduledQuestViewModel, calendarDayView: CalendarDayView) {
             itemView.name.text = event.name
 
-            (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(event.backgroundColor, itemView.context)
+            (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(event.backgroundColor.color500, itemView.context)
             itemView.setOnLongClickListener {
                 calendarDayView.startEventReschedule(items[adapterPosition])
                 true
