@@ -10,6 +10,7 @@ import io.reactivex.disposables.Disposables
 import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.RealmQuery
+import io.realm.Sort
 import java.util.*
 
 /**
@@ -56,6 +57,23 @@ abstract class BaseRealmRepository<T> : Repository<T> where T : PersistedModel, 
             })
         }
 
+    protected fun listenForAllSorted(query: (RealmQuery<T>) -> Unit, sortOrder: List<Pair<String, Sort>>): Observable<List<T>> =
+        createObservable { emitter ->
+            val realm = Realm.getDefaultInstance()
+            val realmQuery = RealmQuery.createQuery(realm, getModelClass())
+            query(realmQuery)
+            val fieldNames = sortOrder.map { it.first }.toTypedArray()
+            val sorts = sortOrder.map { it.second }.toTypedArray()
+            val result = realmQuery.findAllSortedAsync(fieldNames, sorts)
+            result.addChangeListener { it ->
+                emitter.onNext(realm.copyFromRealm(it))
+            }
+            emitter.setDisposable(Disposables.fromAction {
+                result.removeAllChangeListeners()
+                realm.close()
+            })
+        }
+
     override fun find(): Single<T> = find { }
 
     protected fun find(query: (RealmQuery<T>) -> Unit): Single<T> =
@@ -72,7 +90,6 @@ abstract class BaseRealmRepository<T> : Repository<T> where T : PersistedModel, 
                 realm.close()
             })
         }
-
 
     protected fun getLooper(): Looper? {
         val backgroundThread = BackgroundThread()
@@ -106,7 +123,6 @@ abstract class BaseRealmRepository<T> : Repository<T> where T : PersistedModel, 
                 emitter.onComplete()
             }
         }
-
 
     protected fun <R> createObservable(emitter: (ObservableEmitter<R>) -> Unit): Observable<R> {
         val looper = getLooper()
