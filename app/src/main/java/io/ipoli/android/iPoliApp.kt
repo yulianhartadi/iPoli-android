@@ -9,6 +9,7 @@ import com.squareup.leakcanary.RefWatcher
 import io.fabric.sdk.android.Fabric
 import io.ipoli.android.common.di.*
 import io.realm.Realm
+import space.traversal.kapsule.transitive
 import timber.log.Timber
 
 /**
@@ -20,8 +21,10 @@ class iPoliApp : Application() {
 
     private val module = Module(
         androidModule = MainAndroidModule(this),
-        repositoryModule = RealmRepositoryModule()
-    )
+        repositoryModule = RealmRepositoryModule(),
+        useCaseModule = MainUseCaseModule(),
+        presenterModule = AndroidPresenterModule()
+    ).transitive()
 
     companion object {
         private var component: AppComponent? = null

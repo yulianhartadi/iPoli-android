@@ -19,5 +19,4 @@ class LoadScheduleForDateUseCase(private val questRepository: QuestRepository) :
                 .partition { it.isScheduled }
             Schedule(scheduled, unscheduled)
         }
-
 }

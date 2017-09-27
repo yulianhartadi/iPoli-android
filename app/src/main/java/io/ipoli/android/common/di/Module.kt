@@ -4,9 +4,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.view.LayoutInflater
+import io.ipoli.android.quest.calendar.DayViewPresenter
 import io.ipoli.android.quest.persistence.QuestRepository
 import io.ipoli.android.quest.persistence.RealmQuestRepository
+import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
 import space.traversal.kapsule.HasModules
+import space.traversal.kapsule.Injects
+import space.traversal.kapsule.required
 
 /**
  * Created by Venelin Valkov <venelin@curiousily.com>
@@ -33,10 +37,30 @@ class MainAndroidModule(private val context: Context) : AndroidModule {
     override val sharedPreferences: SharedPreferences get() = PreferenceManager.getDefaultSharedPreferences(context)
 }
 
-class Module(androidModule: AndroidModule, repositoryModule: RepositoryModule) :
+class MainUseCaseModule : UseCaseModule, Injects<Module> {
+    override val loadScheduleForDateUseCase by required { LoadScheduleForDateUseCase(questRepository) }
+}
+
+interface UseCaseModule {
+    val loadScheduleForDateUseCase: LoadScheduleForDateUseCase
+}
+
+interface PresenterModule {
+    val dayViewPresenter: DayViewPresenter
+}
+
+class AndroidPresenterModule : PresenterModule, Injects<Module> {
+    override val dayViewPresenter by required { DayViewPresenter(loadScheduleForDateUseCase) }
+}
+
+class Module(androidModule: AndroidModule,
+             repositoryModule: RepositoryModule,
+             useCaseModule: UseCaseModule,
+             presenterModule: PresenterModule) :
     AndroidModule by androidModule,
     RepositoryModule by repositoryModule,
+    UseCaseModule by useCaseModule,
+    PresenterModule by presenterModule,
     HasModules {
-
-    override val modules = setOf(androidModule, repositoryModule)
+    override val modules = setOf(androidModule, repositoryModule, useCaseModule, presenterModule)
 }

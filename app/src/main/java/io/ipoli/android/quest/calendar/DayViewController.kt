@@ -1,127 +1,91 @@
 package io.ipoli.android.quest.calendar
 
 import android.animation.ObjectAnimator
-import android.app.Dialog
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.GradientDrawable
-import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.TextViewCompat
 import android.support.v4.widget.TintableCompoundButton
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.SpannableString
 import android.text.TextWatcher
 import android.text.style.StrikethroughSpan
 import android.util.TypedValue
 import android.view.*
-import android.view.LayoutInflater
-import android.widget.ImageView
 import android.widget.LinearLayout
-import com.bluelinelabs.conductor.Controller
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.Module
-import io.ipoli.android.common.ui.BaseDialogController
+import io.ipoli.android.common.mvi.MviController
+import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.ui.Color
+import io.ipoli.android.common.ui.ColorPickerDialogController
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.ui.dayview.*
 import io.ipoli.android.quest.data.Category
+import io.reactivex.Observable
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.controller_day_view.view.*
-import kotlinx.android.synthetic.main.dialog_color_picker.view.*
-import kotlinx.android.synthetic.main.fancy_dialog_header.view.*
 import kotlinx.android.synthetic.main.item_calendar_drag.view.*
 import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 import kotlinx.android.synthetic.main.unscheduled_quest_item.view.*
+import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
+import space.traversal.kapsule.required
+import timber.log.Timber
 
-/**
- * Created by Venelin Valkov <venelin@ipoli.io>
- * on 9/2/17.
- */
-
-class ColorPickerDialogController : BaseDialogController {
-    interface ColorPickedListener {
-        fun onColorPicked(color: Color)
-    }
-
-    private var listener: ColorPickedListener? = null
-    private var selectedColor: Color? = null
-
-    constructor(listener: ColorPickedListener, selectedColor: Color? = null) : super() {
-        this.listener = listener
-        this.selectedColor = selectedColor
-    }
-
-    protected constructor() : super()
-
-    protected constructor(args: Bundle?) : super(args)
-
-    override fun onCreateDialog(savedViewState: Bundle?): Dialog {
-
-        val inflater = LayoutInflater.from(activity!!)
-
-        val headerView = inflater.inflate(R.layout.fancy_dialog_header, null)
-        headerView.title.text = "Pick color"
-        headerView.image.setImageResource(R.drawable.ic_color_palette_white_24dp)
-
-        val contentView = inflater.inflate(R.layout.dialog_color_picker, null)
-        val colorGrid = contentView.colorGrid
-        colorGrid.layoutManager = GridLayoutManager(activity!!, 4)
-
-        val colorViewModels = Color.values().map {
-            ColorViewModel(it, it == selectedColor ?: false)
-        }
-
-        colorGrid.adapter = ColorAdapter(colorViewModels)
-
-        return AlertDialog.Builder(activity!!)
-            .setView(contentView)
-            .setCustomTitle(headerView)
-            .setNegativeButton(R.string.cancel, null)
-            .create()
-    }
-
-    data class ColorViewModel(val color: Color, val isSelected: Boolean)
-
-    inner class ColorAdapter(private val colors: List<ColorViewModel>) : RecyclerView.Adapter<ColorAdapter.ViewHolder>() {
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val vm = colors[position]
-            val iv = holder.itemView as ImageView
-            val drawable = iv.background as GradientDrawable
-            drawable.setColor(ContextCompat.getColor(iv.context, vm.color.color500))
-
-            if (vm.isSelected) {
-                iv.setImageResource(R.drawable.ic_done_white_24dp)
-            }
-
-            iv.setOnClickListener {
-                listener?.onColorPicked(vm.color)
-                dismissDialog()
-            }
-        }
-
-        override fun getItemCount() = colors.size
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_color_picker, parent, false))
-        }
-
-        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
-
-    }
+interface DayView : ViewStateRenderer<DayViewState> {
+    fun loadDataIntent(): Observable<LocalDate>
 }
 
-class DayViewController : Controller(), Injects<Module>, CalendarChangeListener {
+sealed class DayViewState {
+    object Loading : DayViewState()
+}
+
+class DayViewController :
+    MviController<DayViewState, DayView, DayViewPresenter>(R.layout.controller_day_view),
+    Injects<Module>,
+    CalendarChangeListener,
+    DayView {
+
+    private val presenter by required { dayViewPresenter }
 
     private lateinit var calendarDayView: CalendarDayView
+
+    override fun bindView(view: View) {
+        calendarDayView = view.calendar
+        calendarDayView.setCalendarChangeListener(this)
+        calendarDayView.setHourAdapter(object : HourCellAdapter {
+            override fun bind(view: View, hour: Int) {
+                if (hour > 0) {
+                    view.timeLabel.text = hour.toString() + ":00"
+                }
+            }
+        })
+
+        eventsAdapter = QuestScheduledEventsAdapter(activity!!, mutableListOf(), calendarDayView)
+        calendarDayView.setScheduledEventsAdapter(eventsAdapter)
+        unscheduledEventsAdapter = UnscheduledQuestsAdapter(mutableListOf(), calendarDayView)
+        calendarDayView.setUnscheduledQuestsAdapter(unscheduledEventsAdapter)
+        calendarDayView.scrollToNow()
+    }
+
+    override fun loadDataIntent(): Observable<LocalDate> {
+        return Observable.just(LocalDate.now())
+            .filter { !isRestoring }
+    }
+
+    override fun createPresenter(): DayViewPresenter {
+        Timber.d("Create presenter")
+        return presenter
+    }
+
+    override fun render(state: DayViewState, view: View) {
+
+    }
 
     override fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: Color) {
         startActionMode()
@@ -225,42 +189,8 @@ class DayViewController : Controller(), Injects<Module>, CalendarChangeListener 
 
     private lateinit var unscheduledEventsAdapter: DayViewController.UnscheduledQuestsAdapter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
-        val view = inflater.inflate(R.layout.controller_day_view, container, false)
-        calendarDayView = view.calendar
-        eventsAdapter = QuestScheduledEventsAdapter(activity!!,
-            mutableListOf(
-                QuestViewModel("Play COD", 15, Time.atHours(1).toMinuteOfDay(), "1:00", "1:15",
-                    Color.PURPLE, Category.FUN.color800, true),
-                QuestViewModel("Study Bayesian Stats", 45, Time.atHours(3).toMinuteOfDay(), "3:00", "3:45",
-                    Color.BLUE, Category.LEARNING.color700, false),
-                QuestViewModel("Workout in the Gym with Vihar and his baba", 60, Time.atHours(7).toMinuteOfDay(), "7:00", "8:00",
-                    Color.LIME, R.color.md_lime_700, false),
-                QuestViewModel("Workout in the Gym with Vihar and his baba", 60, Time.atHours(22).toMinuteOfDay(), "22:00", "23:00",
-                    Color.GREEN, Category.WELLNESS.color700, false)
-            ),
-            calendarDayView
-        )
-        calendarDayView.setScheduledEventsAdapter(eventsAdapter)
-        unscheduledEventsAdapter = UnscheduledQuestsAdapter(mutableListOf(
-            UnscheduledQuestViewModel("name 1", 45, Color.BROWN),
-            UnscheduledQuestViewModel("name 2", 90, Color.ORANGE)
-        ), calendarDayView)
-        calendarDayView.setUnscheduledQuestsAdapter(unscheduledEventsAdapter)
-        calendarDayView.setCalendarChangeListener(this)
-        calendarDayView.setHourAdapter(object : HourCellAdapter {
-            override fun bind(view: View, hour: Int) {
-                if (hour > 0) {
-                    view.timeLabel.text = hour.toString() + ":00"
-                }
-            }
-
-        })
-        calendarDayView.scrollToNow()
-        return view
-    }
-
     override fun onContextAvailable(context: Context) {
+        Timber.d("Inject")
         inject(iPoliApp.module(context))
     }
 
