@@ -38,11 +38,13 @@ import space.traversal.kapsule.required
 import timber.log.Timber
 
 interface DayView : ViewStateRenderer<DayViewState> {
-    fun loadDataIntent(): Observable<LocalDate>
+    fun loadScheduleIntent(): Observable<LocalDate>
 }
 
 sealed class DayViewState {
     object Loading : DayViewState()
+    data class ScheduleLoaded(val scheduledQuests: List<DayViewController.QuestViewModel>,
+                              val unscheduledQuests: List<DayViewController.UnscheduledQuestViewModel>) : DayViewState()
 }
 
 class DayViewController :
@@ -66,14 +68,11 @@ class DayViewController :
             }
         })
 
-        eventsAdapter = QuestScheduledEventsAdapter(activity!!, mutableListOf(), calendarDayView)
-        calendarDayView.setScheduledEventsAdapter(eventsAdapter)
-        unscheduledEventsAdapter = UnscheduledQuestsAdapter(mutableListOf(), calendarDayView)
-        calendarDayView.setUnscheduledQuestsAdapter(unscheduledEventsAdapter)
+
         calendarDayView.scrollToNow()
     }
 
-    override fun loadDataIntent(): Observable<LocalDate> {
+    override fun loadScheduleIntent(): Observable<LocalDate> {
         return Observable.just(LocalDate.now())
             .filter { !isRestoring }
     }
@@ -84,6 +83,12 @@ class DayViewController :
     }
 
     override fun render(state: DayViewState, view: View) {
+        if (state is DayViewState.ScheduleLoaded) {
+            eventsAdapter = QuestScheduledEventsAdapter(activity!!, state.scheduledQuests, calendarDayView)
+            calendarDayView.setScheduledEventsAdapter(eventsAdapter)
+            unscheduledEventsAdapter = UnscheduledQuestsAdapter(state.unscheduledQuests, calendarDayView)
+            calendarDayView.setUnscheduledQuestsAdapter(unscheduledEventsAdapter)
+        }
 
     }
 
@@ -240,8 +245,8 @@ class DayViewController :
                               @ColorRes val textColor: Int,
                               var isCompleted: Boolean) : CalendarEvent
 
-    inner class QuestScheduledEventsAdapter(context: Context, events: MutableList<QuestViewModel>, private val calendarDayView: CalendarDayView) :
-        ScheduledEventsAdapter<QuestViewModel>(context, R.layout.item_calendar_quest, events) {
+    inner class QuestScheduledEventsAdapter(context: Context, events: List<QuestViewModel>, private val calendarDayView: CalendarDayView) :
+        ScheduledEventsAdapter<QuestViewModel>(context, R.layout.item_calendar_quest, events.toMutableList()) {
 
         override fun bindView(view: View, position: Int) {
             val vm = getItem(position)
@@ -329,9 +334,9 @@ class DayViewController :
                                          override var duration: Int,
                                          override var backgroundColor: Color) : UnscheduledEvent
 
-    inner class UnscheduledQuestsAdapter(private val items: MutableList<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) :
+    inner class UnscheduledQuestsAdapter(private val items: List<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) :
         UnscheduledEventsAdapter<UnscheduledQuestViewModel>
-        (R.layout.unscheduled_quest_item, items, calendarDayView) {
+        (R.layout.unscheduled_quest_item, items.toMutableList(), calendarDayView) {
 
         override fun ViewHolder.bind(event: UnscheduledQuestViewModel, calendarDayView: CalendarDayView) {
             itemView.name.text = event.name
