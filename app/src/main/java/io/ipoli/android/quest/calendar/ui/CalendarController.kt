@@ -58,6 +58,7 @@ class CalendarController : Controller() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
+
         val view = inflater.inflate(R.layout.controller_calendar, container, false)
 
         view.pager.adapter = pagerAdapter

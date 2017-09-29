@@ -54,7 +54,10 @@ class iPoliApp : Application() {
             .kits(Crashlytics())
             .debuggable(BuildConfig.DEBUG)
             .build())
+
+
         AndroidThreeTen.init(this)
+
         // Initialize Realm. Should only be done once when the application starts.
         Realm.init(this)
         Timber.plant(Timber.DebugTree())
@@ -66,6 +69,7 @@ class iPoliApp : Application() {
 //            }
 //        })
         refWatcher = LeakCanary.install(this)
+
 //        TinyDancer.create().show(this)
 
 //

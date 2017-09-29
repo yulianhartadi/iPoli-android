@@ -2,6 +2,7 @@ package io.ipoli.android.common.mvi
 
 import android.os.Bundle
 import android.support.annotation.LayoutRes
+import android.support.annotation.MainThread
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -95,6 +96,7 @@ abstract class MviController<VS, V : ViewStateRenderer<VS>, P : MviPresenter<V, 
         return PublishSubject.create<I>()
     }
 
+    @MainThread
     override fun render(state: VS) {
         render(state, view!!)
     }

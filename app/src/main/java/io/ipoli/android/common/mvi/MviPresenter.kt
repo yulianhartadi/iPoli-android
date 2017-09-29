@@ -14,6 +14,7 @@ import io.reactivex.subjects.PublishSubject
  */
 
 interface ViewStateRenderer<in ViewState> {
+    @MainThread
     fun render(state: ViewState)
 }
 

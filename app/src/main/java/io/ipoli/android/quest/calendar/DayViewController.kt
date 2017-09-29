@@ -25,6 +25,8 @@ import io.ipoli.android.common.ui.ColorPickerDialogController
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.ui.dayview.*
 import io.ipoli.android.quest.data.Category
+import io.ipoli.android.quest.persistence.RealmQuestRepository
+import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.controller_day_view.view.*
@@ -78,8 +80,9 @@ class DayViewController :
     }
 
     override fun createPresenter(): DayViewPresenter {
-        Timber.d("Create presenter")
-        return presenter
+        // @TODO fix me
+        return DayViewPresenter(LoadScheduleForDateUseCase(RealmQuestRepository()))
+//        return presenter
     }
 
     override fun render(state: DayViewState, view: View) {

@@ -4,7 +4,10 @@ import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.ui.Color
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
+import io.ipoli.android.quest.usecase.Schedule
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -18,34 +21,40 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
     }
 
     private fun bindLoadScheduleIntent(): Observable<DayViewState> =
-        intent { it.loadScheduleIntent() }
-            .switchMap {date -> loadScheduleUseCase.execute(date) }
-            .map { schedule ->
-                val scheduled = mutableListOf<DayViewController.QuestViewModel>()
-                val unscheduled = mutableListOf<DayViewController.UnscheduledQuestViewModel>()
-                schedule.scheduled.forEach {
-                    val endTime = Time.of(it.startMinute!! + it.actualDuration)
-                    scheduled.add(DayViewController.QuestViewModel(
-                        it.name,
-                        it.actualDuration,
-                        it.startMinute!!,
-                        it.startTime.toString(),
-                        endTime.toString(),
-                        Color.GREEN,
-                        it.categoryType.color800,
-                        it.isCompleted
-                    ))
+        intent {
+            it.loadScheduleIntent()
+        }.switchMap { date ->
+            loadScheduleUseCase.execute(date)
+                .map { schedule ->
+                    DayViewState.ScheduleLoaded(createScheduledViewModels(schedule), createUnscheduledViewModels(schedule))
                 }
+                .cast(DayViewState::class.java)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+        }
 
-                schedule.unscheduled.forEach {
-                    unscheduled.add(DayViewController.UnscheduledQuestViewModel(
-                        it.name,
-                        it.actualDuration,
-                        Color.ORANGE
-                    ))
-                }
+    private fun createUnscheduledViewModels(schedule: Schedule): List<DayViewController.UnscheduledQuestViewModel> =
+        schedule.unscheduled.map {
+            DayViewController.UnscheduledQuestViewModel(
+                it.name,
+                it.actualDuration,
+                Color.ORANGE
+            )
+        }
 
-                DayViewState.ScheduleLoaded(scheduled, unscheduled) }
-            .cast(DayViewState::class.java)
+    private fun createScheduledViewModels(schedule: Schedule): List<DayViewController.QuestViewModel> =
+        schedule.scheduled.map {
+            val endTime = Time.of(it.startMinute!! + it.actualDuration)
+            DayViewController.QuestViewModel(
+                it.name,
+                it.actualDuration,
+                it.startMinute!!,
+                it.startTime.toString(),
+                endTime.toString(),
+                Color.GREEN,
+                it.categoryType.color800,
+                it.isCompleted
+            )
+        }
 
 }
