@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.view.LayoutInflater
+import com.bluelinelabs.conductor.Router
+import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.quest.calendar.DayViewPresenter
 import io.ipoli.android.quest.persistence.QuestRepository
 import io.ipoli.android.quest.persistence.RealmQuestRepository
@@ -28,13 +30,17 @@ interface AndroidModule {
     val layoutInflater: LayoutInflater
 
     val sharedPreferences: SharedPreferences
+
+    val navigator: Navigator
 }
 
-class MainAndroidModule(private val context: Context) : AndroidModule {
+class MainAndroidModule(private val context: Context, private val router: Router) : AndroidModule {
 
     override val layoutInflater: LayoutInflater get() = LayoutInflater.from(context)
 
     override val sharedPreferences: SharedPreferences get() = PreferenceManager.getDefaultSharedPreferences(context)
+
+    override val navigator: Navigator get() = Navigator(router)
 }
 
 class MainUseCaseModule : UseCaseModule, Injects<Module> {

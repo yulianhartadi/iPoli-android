@@ -9,7 +9,7 @@ import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
-import io.ipoli.android.common.daggerComponent
+import io.ipoli.android.player.persistence.RealmPlayerRepository
 import io.ipoli.android.store.home.StoreHomeController
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_store.view.*
@@ -19,12 +19,12 @@ import timber.log.Timber
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 8/18/17.
  */
-class StoreController : BaseController<StoreController, StorePresenter, StoreComponent>() {
+class StoreController : BaseController<StoreController, StorePresenter>() {
 
-    override fun buildComponent(): StoreComponent =
-        DaggerStoreComponent.builder()
-            .controllerComponent(daggerComponent)
-            .build()
+//    override fun buildComponent(): StoreComponent =
+//        DaggerStoreComponent.builder()
+//            .controllerComponent(daggerComponent)
+//            .build()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         return inflater.inflate(R.layout.controller_store, container, false)
@@ -45,6 +45,11 @@ class StoreController : BaseController<StoreController, StorePresenter, StoreCom
                 .pushChangeHandler(handler)
                 .popChangeHandler(handler)
         )
+    }
+
+    override fun createPresenter(): StorePresenter {
+        // @TODO fix me
+        return StorePresenter(DisplayCoinsUseCase(RealmPlayerRepository()))
     }
 
     fun showCoinsIntent(): Observable<Boolean> {

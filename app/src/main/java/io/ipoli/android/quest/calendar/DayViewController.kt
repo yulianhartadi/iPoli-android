@@ -203,7 +203,7 @@ class DayViewController :
     private lateinit var unscheduledEventsAdapter: DayViewController.UnscheduledQuestsAdapter
 
     override fun onContextAvailable(context: Context) {
-        inject(iPoliApp.module(context))
+        inject(iPoliApp.module(context, router))
     }
 
     private fun startActionMode() {

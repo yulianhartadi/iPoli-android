@@ -1,4 +1,4 @@
-package io.ipoli.android.challenge.list.ui
+package io.ipoli.android.common.ui
 
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView

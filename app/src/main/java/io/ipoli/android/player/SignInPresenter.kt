@@ -1,6 +1,5 @@
 package io.ipoli.android.player
 
-import android.util.Log
 import com.hannesdorfmann.mosby3.mvi.MviBasePresenter
 import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.player.ui.SignInController
@@ -9,13 +8,12 @@ import io.ipoli.android.player.ui.SignInStatePartialChange
 import io.ipoli.android.player.ui.SignInViewState
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import javax.inject.Inject
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/8/17.
  */
-class SignInPresenter @Inject constructor(private val signInUseCase: SignInUseCase, private val navigator: Navigator) :
+class SignInPresenter constructor(private val signInUseCase: SignInUseCase, private val navigator: Navigator) :
     MviBasePresenter<SignInController, SignInViewState>() {
 
     override fun bindIntents() {

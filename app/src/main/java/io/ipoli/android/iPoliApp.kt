@@ -2,6 +2,7 @@ package io.ipoli.android
 
 import android.app.Application
 import android.content.Context
+import com.bluelinelabs.conductor.Router
 import com.crashlytics.android.Crashlytics
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.squareup.leakcanary.LeakCanary
@@ -19,27 +20,15 @@ import timber.log.Timber
 
 class iPoliApp : Application() {
 
-    private val module = Module(
-        androidModule = MainAndroidModule(this),
-        repositoryModule = RealmRepositoryModule(),
-        useCaseModule = MainUseCaseModule(),
-        presenterModule = AndroidPresenterModule()
-    ).transitive()
-
     companion object {
-        private var component: AppComponent? = null
         lateinit var refWatcher: RefWatcher
 
-        fun getComponent(c: Context): AppComponent {
-            if (component == null) {
-                component = DaggerAppComponent.builder()
-                    .appModule(AppModule(c.applicationContext))
-                    .build()
-            }
-            return component!!
-        }
-
-        fun module(context: Context) = (context.applicationContext as iPoliApp).module
+        fun module(context: Context, router: Router) = Module(
+            androidModule = MainAndroidModule(context, router),
+            repositoryModule = RealmRepositoryModule(),
+            useCaseModule = MainUseCaseModule(),
+            presenterModule = AndroidPresenterModule()
+        ).transitive()
     }
 
     override fun onCreate() {

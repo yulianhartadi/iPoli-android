@@ -10,14 +10,14 @@ import com.facebook.internal.CallbackManagerImpl
 import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
-import io.ipoli.android.common.daggerComponent
+import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.player.SignInPresenter
+import io.ipoli.android.player.SignInUseCase
 import io.ipoli.android.player.auth.AnonymousAuth
 import io.ipoli.android.player.auth.FacebookAuth
 import io.ipoli.android.player.auth.GoogleAuth
 import io.ipoli.android.player.auth.ProviderType
-import io.ipoli.android.player.di.DaggerSignInComponent
-import io.ipoli.android.player.di.SignInComponent
+import io.ipoli.android.player.persistence.RealmPlayerRepository
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_sign_in.view.*
 
@@ -26,16 +26,20 @@ import kotlinx.android.synthetic.main.controller_sign_in.view.*
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/8/17.
  */
-class SignInController : BaseController<SignInController, SignInPresenter, SignInComponent>() {
+class SignInController : BaseController<SignInController, SignInPresenter>() {
 
     init {
         registerForActivityResult(CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode())
     }
 
-    override fun buildComponent(): SignInComponent =
-        DaggerSignInComponent.builder()
-            .controllerComponent(daggerComponent)
-            .build()
+//    override fun buildComponent(): SignInComponent =
+//        DaggerSignInComponent.builder()
+//            .controllerComponent(daggerComponent)
+//            .build()
+
+    override fun createPresenter(): SignInPresenter {
+        return SignInPresenter(SignInUseCase(RealmPlayerRepository()), Navigator(router))
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         return inflater.inflate(R.layout.controller_sign_in, container, false)

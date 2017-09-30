@@ -2,26 +2,26 @@ package io.ipoli.android.store.avatars
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.support.annotation.ColorRes
+import android.support.v4.content.ContextCompat
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.widget.Toast
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegate
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
 import io.ipoli.android.common.BaseController
-import io.ipoli.android.common.daggerComponent
+import io.ipoli.android.player.persistence.RealmPlayerRepository
+import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.controller_avatar_list.view.*
 import kotlinx.android.synthetic.main.item_avatar_store.view.*
-import android.support.annotation.ColorRes
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.GridLayoutManager
-import io.reactivex.Observable
-import android.view.animation.AnimationUtils
-import android.widget.Toast
 import kotlinx.android.synthetic.main.view_error.view.*
 import kotlinx.android.synthetic.main.view_loading.view.*
 
@@ -29,7 +29,7 @@ import kotlinx.android.synthetic.main.view_loading.view.*
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 8/20/17.
  */
-class AvatarListController : BaseController<AvatarListController, AvatarListPresenter, AvatarListComponent>() {
+class AvatarListController : BaseController<AvatarListController, AvatarListPresenter>() {
 
     lateinit private var avatarList: RecyclerView
 
@@ -37,11 +37,6 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
     private var useSubject = PublishSubject.create<AvatarViewModel>()
 
     private lateinit var adapter: AvatarListAdapter
-
-    override fun buildComponent(): AvatarListComponent =
-        DaggerAvatarListComponent.builder()
-            .controllerComponent(daggerComponent)
-            .build()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_avatar_list, container, false)
@@ -55,6 +50,14 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
         avatarList.adapter = adapter
 
         return view
+    }
+
+    override fun createPresenter(): AvatarListPresenter {
+        return AvatarListPresenter(
+            DisplayAvatarListUseCase(RealmPlayerRepository()),
+            BuyAvatarUseCase(RealmPlayerRepository()),
+            UseAvatarUseCase(RealmPlayerRepository())
+        )
     }
 
     fun displayAvatarListIntent(): Observable<Boolean> =
