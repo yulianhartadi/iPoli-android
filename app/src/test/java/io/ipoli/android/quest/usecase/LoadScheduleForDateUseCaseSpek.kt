@@ -20,7 +20,11 @@ import org.threeten.bp.LocalDate
  * on 9/27/17.
  */
 object LoadScheduleForDateUseCaseSpek : Spek({
-    setupRxJava()
+//    setupRxJava()
+
+//    beforeGroup {
+//        setupRxJava()
+//    }
 
     val today = LocalDate.now()
 

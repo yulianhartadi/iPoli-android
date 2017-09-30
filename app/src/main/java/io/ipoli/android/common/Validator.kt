@@ -1,14 +1,25 @@
 package io.ipoli.android.common
 
-class Validator<in ValueType, out ErrorType>(private val rules: Map<String, PropertyValidator<ValueType, ErrorType>>) {
+class Validator<in Value, out Error>(private val rules: Map<String, PropertyValidator<Value, Error>>) {
 
-    companion object {
-        operator fun <ValueType, ErrorType> invoke(init: Builder<ValueType, ErrorType>.() -> Unit): Validator<ValueType, ErrorType> {
-            return Builder<ValueType, ErrorType>().apply(init).build()
+    class DSL<Value>(private val value: Value) {
+
+        fun <Error> check(init: Validator.Builder<Value, Error>.() -> Unit): List<Error> {
+            return Validator(init).validate(value)
         }
     }
 
-    fun validate(value: ValueType): List<ErrorType> {
+    companion object {
+        private operator fun <Value, Error> invoke(init: Builder<Value, Error>.() -> Unit): Validator<Value, Error> {
+            return Builder<Value, Error>().apply(init).build()
+        }
+
+        fun <Value> validate(value: Value): DSL<Value> {
+            return DSL(value)
+        }
+    }
+
+    fun validate(value: Value): List<Error> {
         return rules.map {
             it.value.validations
                 .filter { it.first.invoke(value) }
@@ -17,29 +28,25 @@ class Validator<in ValueType, out ErrorType>(private val rules: Map<String, Prop
     }
 
 
-    class Builder<ValueType, ErrorType> {
-        private val propertyValidators: MutableMap<String, PropertyValidator<ValueType, ErrorType>> = mutableMapOf()
+    class Builder<Value, Error> {
+        private val propertyValidators: MutableMap<String, PropertyValidator<Value, Error>> = mutableMapOf()
 
-        operator fun String.invoke(init: PropertyValidator<ValueType, ErrorType>.() -> Unit) {
-            propertyValidators.put(this, PropertyValidator<ValueType, ErrorType>().apply(init))
+        operator fun String.invoke(init: PropertyValidator<Value, Error>.() -> Unit) {
+            propertyValidators.put(this, PropertyValidator<Value, Error>().apply(init))
         }
 
-        fun build(): Validator<ValueType, ErrorType> {
+        fun build(): Validator<Value, Error> {
             return Validator(propertyValidators)
         }
     }
 
-    class PropertyValidator<ValueType, ErrorType> {
-        internal var validations: MutableList<Pair<ValueType.() -> Boolean, ErrorType>> = mutableListOf()
+    class PropertyValidator<Value, Error> {
+        internal var validations: MutableList<Pair<Value.() -> Boolean, Error>> = mutableListOf()
 
-        fun When(validate: ValueType.() -> Boolean) = validate
+        fun given(validate: Value.() -> Boolean) = validate
 
-        infix fun (ValueType.() -> Boolean).error(error: ErrorType) {
+        infix fun (Value.() -> Boolean).addError(error: Error) {
             validations.add(this to error)
         }
     }
-}
-
-fun <T, ErrorType> T.validate(init: Validator.Builder<T, ErrorType>.() -> Unit): List<ErrorType> {
-    return Validator(init).validate(this)
 }
