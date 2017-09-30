@@ -1,10 +1,14 @@
 package io.ipoli.android.common.mvi
 
 import android.support.annotation.MainThread
+import io.ipoli.android.common.RxUseCase
 import io.reactivex.Observable
+import io.reactivex.ObservableTransformer
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 
@@ -115,13 +119,13 @@ abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS>(initialViewState:
     }
 
     @MainThread
-    protected fun <I> intent(handler: (V) -> Observable<I>): Observable<I> =
-        intent(object : ViewIntentBinder<V, I> {
+    protected fun <I> on(handler: (V) -> Observable<I>): Observable<I> =
+        on(object : ViewIntentBinder<V, I> {
             override fun bind(view: V): Observable<I> =
                 handler(view)
         })
 
-    private fun <I> intent(binder: ViewIntentBinder<V, I>): Observable<I> {
+    private fun <I> on(binder: ViewIntentBinder<V, I>): Observable<I> {
         val intentRelay = PublishSubject.create<I>()
         intentRelaysBinders.add(RelayBinderPair(intentRelay, binder))
         return intentRelay
@@ -160,5 +164,29 @@ abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS>(initialViewState:
     private fun reset() {
         viewAttachedFirstTime = true
         intentRelaysBinders.clear()
+    }
+
+
+    protected fun <T, R> Observable<T>.execute(
+        useCase: RxUseCase<T, R>,
+        transformer: ObservableTransformer<R, R> = runOnIO()
+    ): Observable<R> =
+        switchMap {
+            useCase.execute(it)
+                .compose(transformer)
+        }
+
+    protected fun <T> runOnComputation(): ObservableTransformer<T, T> {
+        return ObservableTransformer { observable ->
+            observable.subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+        }
+    }
+
+    protected fun <T> runOnIO(): ObservableTransformer<T, T> {
+        return ObservableTransformer { observable ->
+            observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+        }
     }
 }

@@ -6,32 +6,35 @@ import io.ipoli.android.common.ui.Color
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
 import io.ipoli.android.quest.usecase.Schedule
 import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/27/17.
  */
-class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCase) : BaseMviPresenter<DayView, DayViewState>(DayViewState.Loading) {
+class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCase) :
+    BaseMviPresenter<DayView, DayViewState>(DayViewState.Loading) {
     override fun bindIntents(): List<Observable<DayViewState>> {
         return listOf(
-            bindLoadScheduleIntent()
+            bindLoadScheduleIntent() //,
+//            bindAddQuestIntent()
         )
     }
 
+//    private fun bindAddQuestIntent(): Observable<DayViewState> {
+//        on { it.addEventIntent() }
+//            .switchMap { event ->
+//
+//            }
+//    }
+
     private fun bindLoadScheduleIntent(): Observable<DayViewState> =
-        intent {
-            it.loadScheduleIntent()
-        }.switchMap { date ->
-            loadScheduleUseCase.execute(date)
-                .map { schedule ->
-                    DayViewState.ScheduleLoaded(createScheduledViewModels(schedule), createUnscheduledViewModels(schedule))
-                }
-                .cast(DayViewState::class.java)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-        }
+        on { it.loadScheduleIntent() }
+            .execute(loadScheduleUseCase)
+            .map { schedule ->
+                DayViewState.ScheduleLoaded(createScheduledViewModels(schedule), createUnscheduledViewModels(schedule))
+            }
+
 
     private fun createUnscheduledViewModels(schedule: Schedule): List<DayViewController.UnscheduledQuestViewModel> =
         schedule.unscheduled.map {

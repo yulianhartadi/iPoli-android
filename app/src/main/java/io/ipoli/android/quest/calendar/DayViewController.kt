@@ -38,6 +38,7 @@ import space.traversal.kapsule.required
 
 interface DayView : ViewStateRenderer<DayViewState> {
     fun loadScheduleIntent(): Observable<LocalDate>
+    fun addEventIntent(): Observable<CalendarEvent>
 }
 
 sealed class DayViewState {
@@ -51,6 +52,8 @@ class DayViewController :
     Injects<Module>,
     CalendarChangeListener,
     DayView {
+
+    private val addEventSubject = createIntentSubject<CalendarEvent>()
 
     private val presenter by required { dayViewPresenter }
 
@@ -73,6 +76,10 @@ class DayViewController :
     override fun loadScheduleIntent(): Observable<LocalDate> {
         return Observable.just(LocalDate.now())
             .filter { !isRestoring }
+    }
+
+    override fun addEventIntent(): Observable<CalendarEvent> {
+        return addEventSubject
     }
 
     override fun createPresenter(): DayViewPresenter {
@@ -186,7 +193,7 @@ class DayViewController :
     }
 
     override fun onAddNewScheduledEvent(event: CalendarEvent) {
-
+        addEventSubject.onNext(event)
     }
 
     private var actionMode: ActionMode? = null
