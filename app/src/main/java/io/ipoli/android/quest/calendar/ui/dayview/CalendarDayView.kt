@@ -21,6 +21,7 @@ import io.ipoli.android.common.ui.Color
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalDateTime
+import timber.log.Timber
 import java.lang.Math.*
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
@@ -97,6 +98,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         object Up : Event()
         data class StartCalendarEventEdit(val view: View, val position: Int) : Event()
         data class StartUnscheduledEventEdit(val view: View, val position: Int) : Event()
+        data class StartCalendarEventAdd(val startTime: Time, val duration: Int, val name: String, val backgroundColor: Color) : Event()
         data class Drag(val y: Float) : Event()
         data class DragTopIndicator(val y: Float) : Event()
         data class DragBottomIndicator(val y: Float) : Event()
@@ -127,6 +129,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val height: Int? = null,
         val name: String? = null,
         val color: Color? = null,
+        val isNewEvent: Boolean = false,
         val visibleHours: Int = DEFAULT_VISIBLE_HOURS,
         val hourHeight: Float = 0f,
         val zoomDistance: Float? = null,
@@ -216,6 +219,21 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         minuteChangeHandler.postDelayed(
             moveTimeLineToNow(),
             TimeUnit.SECONDS.toMillis(delaySec))
+
+        eventContainer.setOnLongClickListener {
+
+            val yPosition = lastY!! - topLocationOnScreen - unscheduledEvents.height + scrollView.scrollY
+            val minuteHeight = fsm.state.minuteHeight
+            val timeMapper = PositionToTimeMapper(minuteHeight)
+            val eventStartTime = timeMapper
+                .timeAt(yPosition, 15)
+            val dragView = addAndPositionDragView(timeMapper.timeAt(lastY!! - topLocationOnScreen).toPosition(minuteHeight), fsm.state.hourHeight.toInt())
+            dragView.post {
+                this.dragView = dragView
+                fsm.fire(Event.StartCalendarEventAdd(eventStartTime, 60, "", Color.GREEN))
+            }
+            true
+        }
     }
 
     private fun moveTimeLineToNow(): Runnable =
@@ -298,6 +316,34 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 unscheduledEventAdapterPosition = e.position,
                 height = dragView!!.height,
                 color = event.backgroundColor,
+                isScrollLocked = true)
+        })
+
+        fsm.transition(State.Type.VIEW, Event.StartCalendarEventAdd::class, { s, e ->
+            scrollView.setOnTouchListener(null)
+            setupDragViews(dragView!!)
+            editModeBackground.bringToFront()
+            setBackgroundTouchListener()
+            setDragViewTouchListener()
+            setTopDragViewListener()
+            setBottomDragViewListener()
+
+            val absPos = dragView!!.topLocationOnScreen.toFloat() - topLocationOnScreen
+            val topPosition = roundPositionToMinutes(absPos)
+
+            listener?.onStartEditScheduledEvent(dragView!!,
+                e.startTime,
+                Time.plusMinutes(e.startTime, e.duration),
+                e.name, e.backgroundColor)
+
+            s.copy(
+                type = State.Type.EDIT,
+                name = e.name,
+                topDragViewPosition = topPosition,
+                topDragIndicatorPosition = topPosition - dragImageSize / 2,
+                bottomDragIndicatorPosition = topPosition + dragView!!.height - dragImageSize / 2,
+                height = dragView!!.height,
+                color = e.backgroundColor,
                 isScrollLocked = true)
         })
 
@@ -565,7 +611,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
                 fsm.fire(Event.Up)
-                setOnTouchListener(null)
                 setDragViewTouchListener()
                 setTopDragViewListener()
                 setBottomDragViewListener()
@@ -683,11 +728,17 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun addAndPositionDragView(adapterView: View): View {
+        val yPosition = adapterView.topLocationOnScreen - topLocationOnScreen.toFloat()
+        return addAndPositionDragView(yPosition, adapterView.height)
+    }
+
+    private fun addAndPositionDragView(yPosition: Float, height: Int): View {
+        Timber.d(yPosition.toString())
         TransitionManager.beginDelayedTransition(this)
         val dragView = inflater.inflate(R.layout.item_calendar_drag, this, false)
         dragView.setPositionAndHeight(
-            adapterView.topLocationOnScreen - topLocationOnScreen.toFloat(),
-            adapterView.height
+            yPosition,
+            height
         )
         addView(dragView)
         return dragView
@@ -853,7 +904,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private fun toPx(dp: Int): Int =
         (dp * Resources.getSystem().displayMetrics.density).toInt()
 
-    fun startEventReschedule(calendarEvent: CalendarEvent) {
+    fun startEventRescheduling(calendarEvent: CalendarEvent) {
         val position = scheduledEventsAdapter!!.events.indexOf(calendarEvent)
         val adapterView = eventViews[position]
         val dragView = addAndPositionDragView(adapterView)
@@ -863,7 +914,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         }
     }
 
-    fun startEventReschedule(unscheduledEvent: UnscheduledEvent) {
+    fun startEventRescheduling(unscheduledEvent: UnscheduledEvent) {
         val position = unscheduledEventsAdapter!!.events.indexOf(unscheduledEvent)
         val adapterView = unscheduledEvents.layoutManager.findViewByPosition(position)
         val dragView = addAndPositionDragView(adapterView)

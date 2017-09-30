@@ -18,7 +18,7 @@ import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.Module
-import io.ipoli.android.common.mvi.MviController
+import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.ui.Color
 import io.ipoli.android.common.ui.ColorPickerDialogController
@@ -50,7 +50,7 @@ sealed class DayViewState {
 }
 
 class DayViewController :
-    MviController<DayViewState, DayView, DayViewPresenter>(R.layout.controller_day_view),
+    MviViewController<DayViewState, DayView, DayViewPresenter>(R.layout.controller_day_view),
     Injects<Module>,
     CalendarChangeListener,
     DayView {
@@ -255,7 +255,7 @@ class DayViewController :
             val vm = getItem(position)
 
             view.setOnLongClickListener {
-                calendarDayView.startEventReschedule(vm)
+                calendarDayView.startEventRescheduling(vm)
                 false
             }
 
@@ -346,7 +346,7 @@ class DayViewController :
 
             (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(event.backgroundColor.color500, itemView.context)
             itemView.setOnLongClickListener {
-                calendarDayView.startEventReschedule(items[adapterPosition])
+                calendarDayView.startEventRescheduling(items[adapterPosition])
                 true
             }
         }
