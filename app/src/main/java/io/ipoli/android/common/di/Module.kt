@@ -38,7 +38,8 @@ class MainAndroidModule(private val context: Context) : AndroidModule {
 }
 
 class MainUseCaseModule : UseCaseModule, Injects<Module> {
-    override val loadScheduleForDateUseCase by required { LoadScheduleForDateUseCase(questRepository) }
+    private val questRepository by required { questRepository }
+    override val loadScheduleForDateUseCase get() = LoadScheduleForDateUseCase(questRepository)
 }
 
 interface UseCaseModule {
@@ -50,7 +51,8 @@ interface PresenterModule {
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<Module> {
-    override val dayViewPresenter by required { DayViewPresenter(loadScheduleForDateUseCase) }
+    private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
+    override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase)
 }
 
 class Module(androidModule: AndroidModule,

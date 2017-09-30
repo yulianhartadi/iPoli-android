@@ -7,11 +7,11 @@ import io.ipoli.android.common.ui.Color
  * on 9/2/17.
  */
 interface CalendarEvent {
-    var duration: Int
+    val duration: Int
 
-    var startMinute: Int
+    val startMinute: Int
 
-    var name: String
+    val name: String
 
-    var backgroundColor: Color
+    val backgroundColor: Color
 }

@@ -49,6 +49,7 @@ interface CalendarChangeListener {
     fun onUnscheduleScheduledEvent(position: Int)
     fun onMoveEvent(dragView: View, startTime: Time?, endTime: Time?)
     fun onZoomEvent(adapterView: View)
+    fun onAddNewScheduledEvent(event: CalendarEvent)
 }
 
 class CalendarDayView : FrameLayout, StateChangeListener {
@@ -439,6 +440,15 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                     s.unscheduledEventAdapterPosition,
                     startTimeForEvent(s)
                 )
+            }
+
+            if (s.isNewEvent) {
+                listener?.onAddNewScheduledEvent(object : CalendarEvent {
+                    override val duration = durationForEvent(s)
+                    override val startMinute = startTimeForEvent(s).toMinuteOfDay()
+                    override val name = s.name!!
+                    override val backgroundColor = s.color!!
+                })
             }
 
             removeView(dragView)

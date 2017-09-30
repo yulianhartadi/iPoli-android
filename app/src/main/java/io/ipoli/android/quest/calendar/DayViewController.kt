@@ -25,8 +25,6 @@ import io.ipoli.android.common.ui.ColorPickerDialogController
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.ui.dayview.*
 import io.ipoli.android.quest.data.Category
-import io.ipoli.android.quest.persistence.RealmQuestRepository
-import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.controller_day_view.view.*
@@ -37,7 +35,6 @@ import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
-import timber.log.Timber
 
 interface DayView : ViewStateRenderer<DayViewState> {
     fun loadScheduleIntent(): Observable<LocalDate>
@@ -70,7 +67,6 @@ class DayViewController :
             }
         })
 
-
         calendarDayView.scrollToNow()
     }
 
@@ -80,9 +76,7 @@ class DayViewController :
     }
 
     override fun createPresenter(): DayViewPresenter {
-        // @TODO fix me
-        return DayViewPresenter(LoadScheduleForDateUseCase(RealmQuestRepository()))
-//        return presenter
+        return presenter
     }
 
     override fun render(state: DayViewState, view: View) {
@@ -191,6 +185,10 @@ class DayViewController :
         eventsAdapter.adaptViewForHeight(adapterView, ViewUtils.pxToDp(adapterView.height, adapterView.context))
     }
 
+    override fun onAddNewScheduledEvent(event: CalendarEvent) {
+
+    }
+
     private var actionMode: ActionMode? = null
 
     private lateinit var eventsAdapter: QuestScheduledEventsAdapter
@@ -198,7 +196,6 @@ class DayViewController :
     private lateinit var unscheduledEventsAdapter: DayViewController.UnscheduledQuestsAdapter
 
     override fun onContextAvailable(context: Context) {
-        Timber.d("Inject")
         inject(iPoliApp.module(context))
     }
 
