@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import com.bluelinelabs.conductor.Router
 import com.crashlytics.android.Crashlytics
+import com.github.moduth.blockcanary.BlockCanary
+import com.github.moduth.blockcanary.BlockCanaryContext
 import com.jakewharton.threetenabp.AndroidThreeTen
 import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
@@ -12,6 +14,7 @@ import io.ipoli.android.common.di.*
 import io.realm.Realm
 import space.traversal.kapsule.transitive
 import timber.log.Timber
+
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -38,12 +41,17 @@ class iPoliApp : Application() {
             // You should not init your app in this process.
             return
         }
-        Fabric.with(this, Crashlytics())
+
+        BlockCanary.install(this, object : BlockCanaryContext() {
+            override fun provideBlockThreshold(): Int {
+                return 500
+            }
+        }).start()
+
         Fabric.with(Fabric.Builder(this)
             .kits(Crashlytics())
             .debuggable(BuildConfig.DEBUG)
             .build())
-
 
         AndroidThreeTen.init(this)
 
