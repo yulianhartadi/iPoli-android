@@ -25,8 +25,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        val daggerComponent = iPoliApp.getComponent(applicationContext)
-//        daggerComponent.inject(this)
+//        ActivityCompat.requestPermissions(this,
+//            arrayOf(Manifest.permission.READ_PHONE_STATE),
+//            1231)
 
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         val hasNoRootController = !router.hasRootController()
