@@ -15,7 +15,7 @@ import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/10/17.
  */
 interface RepositoryModule {

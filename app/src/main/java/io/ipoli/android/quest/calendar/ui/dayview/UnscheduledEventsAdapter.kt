@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import io.ipoli.android.common.ui.Color
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/10/17.
  */
 

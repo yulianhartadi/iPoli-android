@@ -6,7 +6,7 @@ import android.view.MotionEvent
 import android.widget.ScrollView
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/17/17.
  */
 class LockableScrollView : ScrollView {

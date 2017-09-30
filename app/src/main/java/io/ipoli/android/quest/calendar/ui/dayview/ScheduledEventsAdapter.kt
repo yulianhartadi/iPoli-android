@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter
 import io.ipoli.android.common.datetime.Time
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/2/17.
  */
 abstract class ScheduledEventsAdapter<T : CalendarEvent>(context: Context, protected val resource: Int, val events: MutableList<T>) :

@@ -1,7 +1,7 @@
 package io.ipoli.android.common.data
 
 /**
- * Created by Venelin Valkov <venelin></venelin>@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/23/17.
  */
 enum class Difficulty private constructor(val value: Int) {

@@ -8,7 +8,7 @@ import io.ipoli.android.quest.usecase.Result.ValidationError.EMPTY_NAME
 import io.reactivex.Observable
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/30/17.
  */
 sealed class Result {

@@ -3,7 +3,7 @@ package io.ipoli.android.quest.calendar.ui.dayview
 import io.ipoli.android.common.datetime.Time
 
 /**
- * Created by Venelin Valkov <venelin@curiousily.com>
+ * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/6/17.
  */
 class PositionToTimeMapper(private val minuteHeight: Float) {
