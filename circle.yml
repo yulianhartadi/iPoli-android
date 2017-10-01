@@ -13,19 +13,19 @@ jobs:
       - checkout
       - run:
           name: Decrypt files
-          command: openssl version & openssl aes-256-cbc -d -in secrets.tar.enc -out secrets.tar -k $KEY
+          command: openssl aes-256-cbc -d -in secrets.tar.enc -out secrets.tar -k $KEY
       - run:
           name: Extract files
           command: tar xvf secrets.tar
-      - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      #- restore_cache:
+          #key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      #- save_cache:
+          #paths:
+            #- ~/.gradle
+          #key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
           name: Run Tests
           command: ./gradlew lint test
