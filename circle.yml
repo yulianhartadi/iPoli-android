@@ -13,7 +13,7 @@ jobs:
       - checkout
       - run:
           name: Decrypt files
-          command: echo $KEY & openssl enc -aes-256-cbc -d -in secrets.tar.enc -out secrets.tar -k $KEY
+          command: openssl enc -aes-256-cbc -d -in secrets.tar.enc -out secrets.tar -k $KEY
       - run:
           name: Extract files
           command: tar xvf secrets.tar
