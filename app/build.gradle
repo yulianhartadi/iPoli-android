@@ -5,6 +5,7 @@ apply plugin: 'realm-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'io.fabric'
+apply plugin: "de.mannodermaus.android-junit5"
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -29,6 +30,18 @@ android {
             // @TODO Fix proguard rules
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        test.java.srcDirs += 'src/test/java'
+    }
+}
+
+junitPlatform {
+    filters {
+        engines {
+            include 'spek'
         }
     }
 }
@@ -103,12 +116,15 @@ dependencies {
     testImplementation 'com.android.support.test:runner:1.0.1'
     testImplementation 'com.android.support.test:rules:1.0.1'
     testImplementation 'junit:junit:4.12'
+    testImplementation junit5()
 
-    testImplementation 'org.jetbrains.spek:spek-api:1.1.5'
-    testImplementation 'org.jetbrains.spek:spek-junit-platform-engine:1.1.5'
-    testImplementation 'org.jetbrains.spek:spek-subject-extension:1.1.5'
-    testImplementation "org.junit.vintage:junit-vintage-engine:4.12.0"
-    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.0.0"
+    testImplementation('org.jetbrains.spek:spek-api:1.1.5') {
+        exclude group: "org.jetbrains.kotlin"
+    }
+    testImplementation('org.jetbrains.spek:spek-junit-platform-engine:1.1.5') {
+        exclude group: "org.junit.platform"
+        exclude group: "org.jetbrains.kotlin"
+    }
     testImplementation 'org.amshove.kluent:kluent:1.29'
 
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
