@@ -81,17 +81,17 @@ dependencies {
 //    implementation "com.github.brianPlummer:tinydancer-noop:0.1.1"
 //    testImplementation "com.github.brianPlummer:tinydancer-noop:0.1.1"
 
-    debugCompile "com.github.brianPlummer:tinydancer:0.1.1"
-    releaseCompile "com.github.brianPlummer:tinydancer-noop:0.1.1"
-    testCompile "com.github.brianPlummer:tinydancer-noop:0.1.1"
+    debugImplementation "com.github.brianPlummer:tinydancer:0.1.1"
+    releaseImplementation "com.github.brianPlummer:tinydancer-noop:0.1.1"
+    testImplementation "com.github.brianPlummer:tinydancer-noop:0.1.1"
 
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.1'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
-    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.1'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+    testImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 
-    debugCompile 'com.github.markzhai:blockcanary-android:1.5.0'
-    releaseCompile 'com.github.markzhai:blockcanary-no-op:1.5.0'
-    testCompile 'com.github.markzhai:blockcanary-no-op:1.5.0'
+    debugImplementation 'com.github.markzhai:blockcanary-android:1.5.0'
+    releaseImplementation 'com.github.markzhai:blockcanary-no-op:1.5.0'
+    testImplementation 'com.github.markzhai:blockcanary-no-op:1.5.0'
 
     androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -110,12 +110,8 @@ dependencies {
     testImplementation "org.junit.vintage:junit-vintage-engine:4.12.0"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:5.0.0"
     testImplementation 'org.amshove.kluent:kluent:1.29'
-}
 
-android.variantFilter { variant ->
-    if (variant.buildType.name == 'release' && variant.getFlavors().get(0).name == 'vanilla') {
-        variant.setIgnore(true)
-    }
+    testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 }
 
 afterEvaluate {

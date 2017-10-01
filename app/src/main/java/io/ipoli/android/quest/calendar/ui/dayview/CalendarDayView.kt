@@ -391,19 +391,19 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 height = height)
         })
 
-        fsm.transition(State.Type.EDIT, Event.Drag::class, { s, e ->
+        fsm.transition(State.Type.EDIT, Event.Drag::class, { s, _ ->
             s.copy(type = State.Type.DRAG)
         })
 
-        fsm.transition(State.Type.EDIT, Event.DragTopIndicator::class, { s, e ->
+        fsm.transition(State.Type.EDIT, Event.DragTopIndicator::class, { s, _ ->
             s.copy(type = State.Type.DRAG)
         })
 
-        fsm.transition(State.Type.EDIT, Event.DragBottomIndicator::class, { s, e ->
+        fsm.transition(State.Type.EDIT, Event.DragBottomIndicator::class, { s, _ ->
             s.copy(type = State.Type.DRAG)
         })
 
-        fsm.transition(State.Type.EDIT, Event.StartEditName::class, { s, e ->
+        fsm.transition(State.Type.EDIT, Event.StartEditName::class, { s, _ ->
             s
         })
 
@@ -417,12 +417,12 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         })
 
 
-        fsm.transition(State.Type.EDIT, Event.Up::class, { s, e ->
+        fsm.transition(State.Type.EDIT, Event.Up::class, { s, _ ->
             listener?.onDragViewClick(dragView!!)
             s
         })
 
-        fsm.transition(State.Type.EDIT, Event.CompleteEdit::class, { s, e ->
+        fsm.transition(State.Type.EDIT, Event.CompleteEdit::class, { s, _ ->
 
             if (shouldScheduleUnscheduledEvent(s)) {
                 listener?.onUnscheduleScheduledEvent(s.eventAdapterPosition!!)
@@ -462,7 +462,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         })
 
 
-        fsm.transition(State.Type.DRAG, Event.StartEditName::class, { s, e ->
+        fsm.transition(State.Type.DRAG, Event.StartEditName::class, { s, _ ->
             s.copy(type = State.Type.EDIT)
         })
 
@@ -485,7 +485,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             newState
         })
 
-        fsm.transition(State.Type.ZOOM, Event.ZoomEnd::class, { s, e ->
+        fsm.transition(State.Type.ZOOM, Event.ZoomEnd::class, { s, _ ->
             s.copy(type = State.Type.VIEW)
         })
 
