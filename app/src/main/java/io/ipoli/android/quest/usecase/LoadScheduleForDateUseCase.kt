@@ -13,8 +13,8 @@ import org.threeten.bp.LocalDate
 data class Schedule(val scheduled: List<Quest>, val unscheduled: List<Quest>)
 
 class LoadScheduleForDateUseCase(private val questRepository: QuestRepository) : BaseRxUseCase<LocalDate, Schedule>() {
-    override fun createObservable(date: LocalDate): Observable<Schedule> {
-        return questRepository.listenForDate(date).map { quests ->
+    override fun createObservable(parameters: LocalDate): Observable<Schedule> {
+        return questRepository.listenForDate(parameters).map { quests ->
             val (scheduled, unscheduled) = quests
                 .partition { it.isScheduled }
             Schedule(scheduled, unscheduled)

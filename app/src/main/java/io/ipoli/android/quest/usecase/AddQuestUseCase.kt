@@ -22,7 +22,8 @@ sealed class Result {
 }
 
 class AddQuestUseCase(private val questRepository: QuestRepository) : BaseRxUseCase<Quest, Result>() {
-    override fun createObservable(quest: Quest): Observable<Result> {
+    override fun createObservable(parameters: Quest): Observable<Result> {
+        val quest = parameters
         val valErrors = validate(quest)
             .check<Result.ValidationError> {
                 "name" {
