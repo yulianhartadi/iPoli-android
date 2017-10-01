@@ -32,7 +32,7 @@ class AddQuestUseCase(private val questRepository: QuestRepository) : BaseRxUseC
             }
 
         if (valErrors.isEmpty()) {
-            questRepository.save(quest).subscribe({}, {})
+            questRepository.save(quest).subscribe()
         }
         return when {
             valErrors.isEmpty() -> Observable.just(Result.Added(quest))

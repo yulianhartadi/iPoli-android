@@ -1,11 +1,10 @@
 package io.ipoli.android.quest.usecase
 
-import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.quest.data.Category
 import io.ipoli.android.quest.data.Quest
 import io.ipoli.android.quest.persistence.QuestRepository
-import org.amshove.kluent.`should be instance of`
-import org.amshove.kluent.`should equal`
+import io.reactivex.Single
+import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -23,6 +22,16 @@ object AddQuestUseCaseSpek : Spek({
             val result = execute(repo, Quest("", Category.WELLNESS))
             result `should be instance of` Result.Invalid::class
             (result as Result.Invalid).errors `should equal` listOf(Result.ValidationError.EMPTY_NAME)
+        }
+
+        it("should save new quest") {
+            val q = Quest("name", Category.WELLNESS)
+            val repo = mock(QuestRepository::class)
+            When calling repo.save(q) `it returns` Single.just(q)
+
+            val result = execute(repo, q)
+            result `should be instance of` Result.Added::class
+            Verify on repo that repo.save(q) was called
         }
     }
 })

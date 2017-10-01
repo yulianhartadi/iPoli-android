@@ -124,7 +124,7 @@ dependencies {
         exclude group: "org.junit.platform"
         exclude group: "org.jetbrains.kotlin"
     }
-    testImplementation 'org.amshove.kluent:kluent:1.29'
+    testImplementation 'org.amshove.kluent:kluent:1.30'
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 }
 
