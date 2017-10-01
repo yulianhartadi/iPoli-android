@@ -112,6 +112,12 @@ dependencies {
     testImplementation 'org.amshove.kluent:kluent:1.29'
 }
 
+android.variantFilter { variant ->
+    if (variant.buildType.name == 'release' && variant.getFlavors().get(0).name == 'vanilla') {
+        variant.setIgnore(true)
+    }
+}
+
 afterEvaluate {
     android.buildTypes.all {
         def name = it.name
