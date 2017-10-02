@@ -21,7 +21,6 @@ import io.ipoli.android.common.ui.Color
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalDateTime
-import timber.log.Timber
 import java.lang.Math.*
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
@@ -429,22 +428,22 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
         fsm.transition(State.Type.EDIT, Event.CompleteEdit::class, { s, _ ->
 
-            if (shouldScheduleUnscheduledEvent(s)) {
-                listener?.onUnscheduleScheduledEvent(s.eventAdapterPosition!!)
-            }
-            if (shouldRescheduleScheduledEvent(s)) {
-                listener?.onRescheduleScheduledEvent(
-                    s.eventAdapterPosition!!,
-                    startTimeForEvent(s),
-                    durationForEvent(s)
-                )
-            }
+            when {
+                shouldUnscheduleScheduledEvent(s) ->
+                    listener?.onUnscheduleScheduledEvent(s.eventAdapterPosition!!)
 
-            if (s.unscheduledEventAdapterPosition != null) {
-                listener?.onScheduleUnscheduledEvent(
-                    s.unscheduledEventAdapterPosition,
-                    startTimeForEvent(s)
-                )
+                shouldRescheduleScheduledEvent(s) ->
+                    listener?.onRescheduleScheduledEvent(
+                        s.eventAdapterPosition!!,
+                        startTimeForEvent(s),
+                        durationForEvent(s)
+                    )
+
+                shouldScheduleUnscheduledEvent(s) ->
+                    listener?.onScheduleUnscheduledEvent(
+                        s.unscheduledEventAdapterPosition!!,
+                        startTimeForEvent(s)
+                    )
             }
 
             if (s.isNewEvent) {
@@ -501,6 +500,15 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     }
 
+    private fun shouldScheduleUnscheduledEvent(s: State) =
+        !isInUnscheduledEventsArea(dragView!!.topLocationOnScreen.toFloat()) && s.unscheduledEventAdapterPosition != null
+
+    private fun shouldRescheduleScheduledEvent(s: State) =
+        !isInUnscheduledEventsArea(dragView!!.topLocationOnScreen.toFloat()) && s.eventAdapterPosition != null
+
+    private fun shouldUnscheduleScheduledEvent(s: State) =
+        isInUnscheduledEventsArea(dragView!!.topLocationOnScreen.toFloat()) && s.eventAdapterPosition != null
+
     private fun calculateStartTime(topPosition: Float, s: State): Time? {
         return calculateStartAndEndTime(topPosition, s).first
     }
@@ -530,14 +538,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         return timeMapper.timeAt(topRelativePos)
     }
 
-    private fun shouldScheduleUnscheduledEvent(s: State) =
-        isInUnscheduledEventsArea(dragView!!.topLocationOnScreen.toFloat()) && s.eventAdapterPosition != null
-
-    private fun shouldRescheduleScheduledEvent(s: State) =
-        !isInUnscheduledEventsArea(dragView!!.topLocationOnScreen.toFloat()) && s.eventAdapterPosition != null
-
     private fun isInUnscheduledEventsArea(topPosition: Float) =
-        topPosition < eventContainer.topLocationOnScreen
+        topPosition < scrollView.topLocationOnScreen
 
     private fun startDrag(adapterView: View): Float {
         scrollView.setOnTouchListener(null)
@@ -761,7 +763,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun addAndPositionDragView(yPosition: Float, height: Int): View {
-        Timber.d(yPosition.toString())
         TransitionManager.beginDelayedTransition(this)
         val dragView = inflater.inflate(R.layout.item_calendar_drag, this, false)
         dragView.setPositionAndHeight(
@@ -904,6 +905,10 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         get() {
             val location = IntArray(2)
             getLocationOnScreen(location)
+//            Timber.d("screenLocation ${location.joinToString()}")
+//            val wLocation = IntArray(2)
+//            getLocationInWindow(wLocation)
+//            Timber.d("wLocation ${wLocation.joinToString()}")
             return location[1]
         }
 

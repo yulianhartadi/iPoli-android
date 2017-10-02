@@ -76,7 +76,7 @@ class iPoliApp : Application() {
 //        rewardRepository.save(Reward(name = "Reward 3", description = "desc 3", price = 300)).subscribe()
 
 //        val questRepository = RealmQuestRepository()
-//        val quest = Quest("Tomorrow", LocalDate.now().plusDays(1), Category.PERSONAL)
+//        val quest = Quest("Today", LocalDate.now(), Category.PERSONAL)
 //        quest.setDuration(30)
 //        quest.startMinute = Time.at(14, 0).toMinuteOfDay()
 //        quest.completedAtDate = LocalDate.now()

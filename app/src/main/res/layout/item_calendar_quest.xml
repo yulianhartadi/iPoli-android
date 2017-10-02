@@ -40,6 +40,7 @@
         style="@style/Calendar.Quest.StartTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="10:30"
@@ -54,6 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="2dp"
         android:text="12:30"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -62,9 +64,7 @@
         android:id="@+id/checkBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
         android:layout_marginStart="12dp"
-        android:layout_marginTop="4dp"
         app:layout_constraintBottom_toTopOf="@+id/endTime"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/startTime"
@@ -90,7 +90,6 @@
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
             android:scaleType="fitXY"
-            android:visibility="visible"
             app:srcCompat="@drawable/ic_sword_black_24dp" />
 
         <ImageView
@@ -100,7 +99,6 @@
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
             android:scaleType="fitXY"
-            android:visibility="visible"
             app:srcCompat="@drawable/ic_repeating_quest_24dp_transparent" />
 
         <ImageView
@@ -110,7 +108,6 @@
             android:layout_marginStart="4dp"
             android:layout_marginTop="4dp"
             android:scaleType="fitXY"
-            android:visibility="visible"
             app:srcCompat="@drawable/ic_star_accent_24dp" />
     </LinearLayout>
 
