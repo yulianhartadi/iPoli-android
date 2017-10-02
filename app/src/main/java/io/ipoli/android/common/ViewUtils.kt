@@ -3,6 +3,7 @@ package io.ipoli.android.common
 import android.content.Context
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 
 /**
@@ -26,5 +27,17 @@ object ViewUtils {
     fun hideKeyboard(view: View) {
         val m = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         m.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    fun setMarginTop(view: View, marginDp: Int) {
+        val lp = view.layoutParams as ViewGroup.MarginLayoutParams
+        lp.topMargin = dpToPx(marginDp.toFloat(), view.context).toInt()
+        view.layoutParams = lp
+    }
+
+    fun setMarginBottom(view: View, marginDp: Int) {
+        val lp = view.layoutParams as ViewGroup.MarginLayoutParams
+        lp.bottomMargin = dpToPx(marginDp.toFloat(), view.context).toInt()
+        view.layoutParams = lp
     }
 }

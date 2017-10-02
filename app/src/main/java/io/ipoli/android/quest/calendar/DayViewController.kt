@@ -319,12 +319,16 @@ class DayViewController :
         }
 
         override fun adaptViewForHeight(adapterView: View, height: Float) {
+            val heightDp = ViewUtils.pxToDp(height.toInt(), adapterView.context)
             with(adapterView) {
                 when {
-                    height < 28 -> ViewUtils.hideViews(checkBox, indicatorContainer, startTime, endTime)
-                    height < 80 -> {
+                    heightDp < 12 -> ViewUtils.hideViews(checkBox, indicatorContainer, startTime, endTime)
+                    heightDp < 26 -> {
                         ViewUtils.showViews(startTime, endTime, indicatorContainer)
                         ViewUtils.hideViews(checkBox)
+                        ViewUtils.setMarginTop(startTime, 0)
+                        ViewUtils.setMarginBottom(endTime, 0)
+
                         if (indicatorContainer.orientation == LinearLayout.VERTICAL) {
                             indicatorContainer.orientation = LinearLayout.HORIZONTAL
                             reverseIndicators(indicatorContainer)
@@ -332,6 +336,8 @@ class DayViewController :
                     }
                     else -> {
                         ViewUtils.showViews(checkBox, indicatorContainer, startTime, endTime)
+                        ViewUtils.setMarginTop(startTime, 8)
+                        ViewUtils.setMarginBottom(endTime, 8)
                         if (indicatorContainer.orientation == LinearLayout.HORIZONTAL) {
                             indicatorContainer.orientation = LinearLayout.VERTICAL
                             reverseIndicators(indicatorContainer)
