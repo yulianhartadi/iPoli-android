@@ -35,11 +35,10 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
             }
             .execute(addQuestUseCase)
             .map { result ->
-                if (result is Result.Invalid) {
-                    return@map DayViewState.EventValidationError
+                when (result) {
+                    is Result.Invalid -> DayViewState.EventValidationError
+                    else -> DayViewState.EventAdded
                 }
-
-                DayViewState.EventAdded
             }
 
     private fun bindLoadScheduleIntent(): Observable<DayViewState> =

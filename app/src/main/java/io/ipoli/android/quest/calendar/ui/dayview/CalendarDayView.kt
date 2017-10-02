@@ -372,6 +372,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             if (!isValidHeightForEvent(height)) {
                 return@transition s
             }
+            listener?.onMoveEvent(dragView!!, calculateStartTime(topPosition, s), null)
 
             s.copy(
                 topDragViewPosition = topPosition,
@@ -386,6 +387,9 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             if (!isValidHeightForEvent(height)) {
                 return@transition s
             }
+
+            listener?.onMoveEvent(dragView!!, null,
+                calculateEndTime(bottomPosition - height, s))
 
             s.copy(
                 bottomDragIndicatorPosition = bottomPosition - dragImageSize / 2,
@@ -495,6 +499,14 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             s.copy(type = State.Type.VIEW)
         })
 
+    }
+
+    private fun calculateStartTime(topPosition: Float, s: State): Time? {
+        return calculateStartAndEndTime(topPosition, s).first
+    }
+
+    private fun calculateEndTime(topPosition: Float, s: State): Time? {
+        return calculateStartAndEndTime(topPosition, s).second
     }
 
     private fun calculateStartAndEndTime(topPosition: Float, s: State): Pair<Time?, Time?> {

@@ -46,8 +46,9 @@ sealed class DayViewState {
     object Loading : DayViewState()
     data class ScheduleLoaded(val scheduledQuests: List<DayViewController.QuestViewModel>,
                               val unscheduledQuests: List<DayViewController.UnscheduledQuestViewModel>) : DayViewState()
-    object EventAdded: DayViewState()
-    object EventValidationError: DayViewState()
+
+    object EventAdded : DayViewState()
+    object EventValidationError : DayViewState()
 
 }
 
@@ -190,13 +191,16 @@ class DayViewController :
     }
 
     override fun onMoveEvent(dragView: View, startTime: Time?, endTime: Time?) {
-        if (startTime == null) {
+        if (startTime == null && endTime == null) {
             dragView.dragStartTime.visibility = View.GONE
             dragView.dragEndTime.visibility = View.GONE
-        } else {
+        }
+        if (startTime != null) {
             dragView.dragStartTime.visibility = View.VISIBLE
-            dragView.dragEndTime.visibility = View.VISIBLE
             dragView.dragStartTime.text = startTime.toString()
+        }
+        if (endTime != null) {
+            dragView.dragEndTime.visibility = View.VISIBLE
             dragView.dragEndTime.text = endTime.toString()
         }
     }
