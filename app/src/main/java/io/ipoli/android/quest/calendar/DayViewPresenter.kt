@@ -1,8 +1,10 @@
 package io.ipoli.android.quest.calendar
 
+import io.ipoli.android.R.string.on
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.ui.Color
+import io.ipoli.android.quest.usecase.AddQuestUseCase
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
 import io.ipoli.android.quest.usecase.Schedule
 import io.reactivex.Observable
@@ -12,7 +14,8 @@ import io.reactivex.Observable
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/27/17.
  */
-class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCase) :
+class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCase,
+                       private val addQuestUseCase: AddQuestUseCase) :
     BaseMviPresenter<DayView, DayViewState>(DayViewState.Loading) {
     override fun bindIntents(): List<Observable<DayViewState>> {
         return listOf(
@@ -21,10 +24,11 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
         )
     }
 
-//    private fun bindAddQuestIntent(): Observable<DayViewState> {
+//    private fun bindAddEventIntent(): Observable<DayViewState> {
 //        on { it.addEventIntent() }
-//            .switchMap { event ->
-//
+//            .execute(addQuestUseCase)
+//            .map { result ->
+////                DayViewState.ScheduleLoaded(listOf(), listOf())
 //            }
 //    }
 
