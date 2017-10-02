@@ -529,13 +529,21 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         )
     }
 
-    private fun durationForEvent(s: State) =
-        (s.height!! / s.minuteHeight).toInt()
+    private fun durationForEvent(s: State): Int {
+        val timeMapper = PositionToTimeMapper(s.minuteHeight)
+        val topRelativePos = dragTopRelativePosition(s)
+        val startTime = timeMapper.timeAt(topRelativePos)
+        val endTime = timeMapper.timeAt(topRelativePos + s.height!!)
+        return endTime.toMinuteOfDay() - startTime.toMinuteOfDay()
+    }
+
+    private fun dragTopRelativePosition(s: State): Float {
+        return s.topDragViewPosition!! - unscheduledEvents.height + scrollView.scrollY
+    }
 
     private fun startTimeForEvent(s: State): Time {
         val timeMapper = PositionToTimeMapper(s.minuteHeight)
-        val topRelativePos = s.topDragViewPosition!! - unscheduledEvents.height + scrollView.scrollY
-        return timeMapper.timeAt(topRelativePos)
+        return timeMapper.timeAt(dragTopRelativePosition(s))
     }
 
     private fun isInUnscheduledEventsArea(topPosition: Float) =
