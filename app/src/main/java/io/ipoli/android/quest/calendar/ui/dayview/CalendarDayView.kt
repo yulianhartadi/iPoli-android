@@ -340,6 +340,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             s.copy(
                 type = State.Type.EDIT,
                 name = e.name,
+                isNewEvent = true,
                 topDragViewPosition = topPosition,
                 topDragIndicatorPosition = topPosition - dragImageSize / 2,
                 bottomDragIndicatorPosition = topPosition + dragView!!.height - dragImageSize / 2,
@@ -458,7 +459,12 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             hideViews(editModeBackground, topDragView, bottomDragView)
 
             editModeBackground.setOnTouchListener(null)
-            s.copy(type = State.Type.VIEW, isScrollLocked = false, eventAdapterPosition = null, unscheduledEventAdapterPosition = null)
+            s.copy(
+                type = State.Type.VIEW,
+                isScrollLocked = false,
+                isNewEvent = false,
+                eventAdapterPosition = null,
+                unscheduledEventAdapterPosition = null)
         })
 
 

@@ -1,14 +1,15 @@
 package io.ipoli.android.quest.calendar
 
-import io.ipoli.android.R.string.on
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.ui.Color
+import io.ipoli.android.quest.data.Quest
 import io.ipoli.android.quest.usecase.AddQuestUseCase
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
+import io.ipoli.android.quest.usecase.Result
 import io.ipoli.android.quest.usecase.Schedule
 import io.reactivex.Observable
-
+import org.threeten.bp.LocalDate
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -19,18 +20,27 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
     BaseMviPresenter<DayView, DayViewState>(DayViewState.Loading) {
     override fun bindIntents(): List<Observable<DayViewState>> {
         return listOf(
-            bindLoadScheduleIntent() //,
-//            bindAddQuestIntent()
+            bindLoadScheduleIntent(),
+            bindAddEventIntent()
         )
     }
 
-//    private fun bindAddEventIntent(): Observable<DayViewState> {
-//        on { it.addEventIntent() }
-//            .execute(addQuestUseCase)
-//            .map { result ->
-////                DayViewState.ScheduleLoaded(listOf(), listOf())
-//            }
-//    }
+    private fun bindAddEventIntent(): Observable<DayViewState> =
+        on { it.addEventIntent() }
+            .map { event ->
+                val q = Quest(event.name, LocalDate.now())
+                q.startMinute = event.startMinute
+                q.setDuration(event.duration)
+                q
+            }
+            .execute(addQuestUseCase)
+            .map { result ->
+                if (result is Result.Invalid) {
+                    return@map DayViewState.EventValidationError
+                }
+
+                DayViewState.EventAdded
+            }
 
     private fun bindLoadScheduleIntent(): Observable<DayViewState> =
         on { it.loadScheduleIntent() }
@@ -38,7 +48,6 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
             .map { schedule ->
                 DayViewState.ScheduleLoaded(createScheduledViewModels(schedule), createUnscheduledViewModels(schedule))
             }
-
 
     private fun createUnscheduledViewModels(schedule: Schedule): List<DayViewController.UnscheduledQuestViewModel> =
         schedule.unscheduled.map {

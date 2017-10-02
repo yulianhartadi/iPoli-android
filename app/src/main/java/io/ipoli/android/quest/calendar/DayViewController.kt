@@ -35,6 +35,7 @@ import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 interface DayView : ViewStateRenderer<DayViewState> {
     fun loadScheduleIntent(): Observable<LocalDate>
@@ -45,6 +46,9 @@ sealed class DayViewState {
     object Loading : DayViewState()
     data class ScheduleLoaded(val scheduledQuests: List<DayViewController.QuestViewModel>,
                               val unscheduledQuests: List<DayViewController.UnscheduledQuestViewModel>) : DayViewState()
+    object EventAdded: DayViewState()
+    object EventValidationError: DayViewState()
+
 }
 
 class DayViewController :
@@ -87,13 +91,22 @@ class DayViewController :
     }
 
     override fun render(state: DayViewState, view: View) {
-        if (state is DayViewState.ScheduleLoaded) {
-            eventsAdapter = QuestScheduledEventsAdapter(activity!!, state.scheduledQuests, calendarDayView)
-            calendarDayView.setScheduledEventsAdapter(eventsAdapter)
-            unscheduledEventsAdapter = UnscheduledQuestsAdapter(state.unscheduledQuests, calendarDayView)
-            calendarDayView.setUnscheduledQuestsAdapter(unscheduledEventsAdapter)
-        }
+        when (state) {
+            is DayViewState.ScheduleLoaded -> {
+                eventsAdapter = QuestScheduledEventsAdapter(activity!!, state.scheduledQuests, calendarDayView)
+                calendarDayView.setScheduledEventsAdapter(eventsAdapter)
+                unscheduledEventsAdapter = UnscheduledQuestsAdapter(state.unscheduledQuests, calendarDayView)
+                calendarDayView.setUnscheduledQuestsAdapter(unscheduledEventsAdapter)
+            }
 
+            is DayViewState.EventAdded -> {
+                Timber.d("AAA Added")
+            }
+
+            is DayViewState.EventValidationError -> {
+                Timber.d("AAA Invalid")
+            }
+        }
     }
 
     override fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: Color) {
@@ -193,6 +206,7 @@ class DayViewController :
     }
 
     override fun onAddNewScheduledEvent(event: CalendarEvent) {
+        stopActionMode()
         addEventSubject.onNext(event)
     }
 
