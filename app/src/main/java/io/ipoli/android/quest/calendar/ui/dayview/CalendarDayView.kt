@@ -46,6 +46,7 @@ interface CalendarChangeListener {
     fun onRescheduleScheduledEvent(position: Int, startTime: Time, duration: Int)
     fun onScheduleUnscheduledEvent(position: Int, startTime: Time)
     fun onUnscheduleScheduledEvent(position: Int)
+    fun onCancelScheduling()
     fun onMoveEvent(dragView: View, startTime: Time?, endTime: Time?)
     fun onZoomEvent(adapterView: View)
     fun onAddNewScheduledEvent(event: CalendarEvent)
@@ -444,6 +445,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                         s.unscheduledEventAdapterPosition!!,
                         startTimeForEvent(s)
                     )
+
+                else -> listener?.onCancelScheduling()
             }
 
             if (s.isNewEvent) {
@@ -654,7 +657,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 setBottomDragViewListener()
                 adapterView.setOnTouchListener(null)
             }
-            true
+            false
         }
     }
 

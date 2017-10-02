@@ -190,6 +190,10 @@ class DayViewController :
         unscheduledEventsAdapter.addEvent(vm)
     }
 
+    override fun onCancelScheduling() {
+        stopActionMode()
+    }
+
     override fun onMoveEvent(dragView: View, startTime: Time?, endTime: Time?) {
         if (startTime == null && endTime == null) {
             dragView.dragStartTime.visibility = View.GONE
@@ -374,7 +378,7 @@ class DayViewController :
 
             (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(event.backgroundColor.color500, itemView.context)
             itemView.setOnLongClickListener {
-                calendarDayView.startEventRescheduling(items[adapterPosition])
+                calendarDayView.startEventRescheduling(events[adapterPosition])
                 true
             }
         }
