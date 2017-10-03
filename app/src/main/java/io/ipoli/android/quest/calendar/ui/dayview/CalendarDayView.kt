@@ -21,6 +21,7 @@ import io.ipoli.android.common.ui.Color
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalDateTime
+import timber.log.Timber
 import java.lang.Math.*
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
@@ -43,13 +44,16 @@ interface CalendarChangeListener {
     fun onStartEditUnscheduledEvent(dragView: View, name: String, color: Color)
     fun onDragViewClick(dragView: View)
     fun onDragViewColorChange(dragView: View, color: Color)
+    fun onEventValidationError(dragView: View)
     fun onRescheduleScheduledEvent(position: Int, startTime: Time, duration: Int)
     fun onScheduleUnscheduledEvent(position: Int, startTime: Time)
     fun onUnscheduleScheduledEvent(position: Int)
     fun onCancelScheduling()
     fun onMoveEvent(dragView: View, startTime: Time?, endTime: Time?)
     fun onZoomEvent(adapterView: View)
-    fun onAddNewScheduledEvent(event: CalendarEvent)
+    fun onAddEvent(event: CalendarEvent)
+    fun onEditCalendarEvent(event: CalendarEvent, position: Int)
+    fun onEditUnscheduledEvent(event: UnscheduledEvent, position: Int)
 }
 
 class CalendarDayView : FrameLayout, StateChangeListener {
@@ -96,6 +100,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     sealed class Event {
         object CompleteEdit : Event()
+        object CompleteEditRequest : Event()
         object Up : Event()
         data class StartCalendarEventEdit(val view: View, val position: Int) : Event()
         data class StartUnscheduledEventEdit(val view: View, val position: Int) : Event()
@@ -427,8 +432,27 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             s
         })
 
-        fsm.transition(State.Type.EDIT, Event.CompleteEdit::class, { s, _ ->
+        fsm.transition(State.Type.EDIT, Event.CompleteEditRequest::class, { s, _ ->
+            if (s.isNewEvent) {
+                listener?.onAddEvent(object : CalendarEvent {
+                    override val duration = durationForEvent(s)
+                    override val startMinute = startTimeForEvent(s).toMinuteOfDay()
+                    override val name = s.name!!
+                    override val backgroundColor = s.color!!
+                })
+            } else if (s.eventAdapterPosition != null) {
+                listener?.onEditCalendarEvent(object : CalendarEvent {
+                    override val duration = durationForEvent(s)
+                    override val startMinute = startTimeForEvent(s).toMinuteOfDay()
+                    override val name = s.name!!
+                    override val backgroundColor = s.color!!
+                }, s.eventAdapterPosition)
+            }
 
+            s
+        })
+
+        fsm.transition(State.Type.EDIT, Event.CompleteEdit::class, { s, _ ->
             when {
                 shouldUnscheduleScheduledEvent(s) ->
                     listener?.onUnscheduleScheduledEvent(s.eventAdapterPosition!!)
@@ -447,15 +471,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                     )
 
                 else -> listener?.onCancelScheduling()
-            }
-
-            if (s.isNewEvent) {
-                listener?.onAddNewScheduledEvent(object : CalendarEvent {
-                    override val duration = durationForEvent(s)
-                    override val startMinute = startTimeForEvent(s).toMinuteOfDay()
-                    override val name = s.name!!
-                    override val backgroundColor = s.color!!
-                })
             }
 
             removeView(dragView)
@@ -741,6 +756,15 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fsm.fire(Event.ChangeBackgroundColor(color))
     }
 
+    fun onEventUpdated() {
+        Timber.d("AAAA")
+        fsm.fire(Event.CompleteEdit)
+    }
+
+    fun onEventValidationError() {
+        listener?.onEventValidationError(dragView!!)
+    }
+
     fun getDragViewBackgroundColor() =
         fsm.state.color
 
@@ -762,7 +786,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         editModeBackground.setOnTouchListener { _, ev ->
             val action = ev.actionMasked
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
-                fsm.fire(Event.CompleteEdit)
+                fsm.fire(Event.CompleteEditRequest)
             }
             true
         }

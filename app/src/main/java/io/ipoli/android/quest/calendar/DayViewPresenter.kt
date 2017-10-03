@@ -10,6 +10,7 @@ import io.ipoli.android.quest.usecase.Result
 import io.ipoli.android.quest.usecase.Schedule
 import io.reactivex.Observable
 import org.threeten.bp.LocalDate
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -21,7 +22,8 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
     override fun bindIntents(): List<Observable<DayViewState>> {
         return listOf(
             bindLoadScheduleIntent(),
-            bindAddEventIntent()
+            bindAddEventIntent(),
+            bindEditEventIntent()
         )
     }
 
@@ -37,7 +39,25 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
             .map { result ->
                 when (result) {
                     is Result.Invalid -> DayViewState.EventValidationError
-                    else -> DayViewState.EventAdded
+                    else -> DayViewState.EventUpdated
+                }
+            }
+
+    private fun bindEditEventIntent(): Observable<DayViewState> =
+        on { it.editEventIntent() }
+            .map { (event, id) ->
+                Timber.d("AAAA intent")
+                val q = Quest(event.name, LocalDate.now())
+                q.id = id
+                q.startMinute = event.startMinute
+                q.setDuration(event.duration)
+                q
+            }
+            .execute(addQuestUseCase)
+            .map { result ->
+                when (result) {
+                    is Result.Invalid -> DayViewState.EventValidationError
+                    else -> DayViewState.EventUpdated
                 }
             }
 
@@ -51,6 +71,7 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
     private fun createUnscheduledViewModels(schedule: Schedule): List<DayViewController.UnscheduledQuestViewModel> =
         schedule.unscheduled.map {
             DayViewController.UnscheduledQuestViewModel(
+                it.id,
                 it.name,
                 it.actualDuration,
                 Color.ORANGE
@@ -61,6 +82,7 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
         schedule.scheduled.map {
             val endTime = Time.of(it.startMinute!! + it.actualDuration)
             DayViewController.QuestViewModel(
+                it.id,
                 it.name,
                 it.actualDuration,
                 it.startMinute!!,

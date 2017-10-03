@@ -35,11 +35,11 @@ import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
-import timber.log.Timber
 
 interface DayView : ViewStateRenderer<DayViewState> {
     fun loadScheduleIntent(): Observable<LocalDate>
     fun addEventIntent(): Observable<CalendarEvent>
+    fun editEventIntent(): Observable<Pair<CalendarEvent, String>>
 }
 
 sealed class DayViewState {
@@ -47,7 +47,7 @@ sealed class DayViewState {
     data class ScheduleLoaded(val scheduledQuests: List<DayViewController.QuestViewModel>,
                               val unscheduledQuests: List<DayViewController.UnscheduledQuestViewModel>) : DayViewState()
 
-    object EventAdded : DayViewState()
+    object EventUpdated : DayViewState()
     object EventValidationError : DayViewState()
 
 }
@@ -59,6 +59,8 @@ class DayViewController :
     DayView {
 
     private val addEventSubject = createIntentSubject<CalendarEvent>()
+
+    private val editEventSubject = createIntentSubject<Pair<CalendarEvent, String>>()
 
     private val presenter by required { dayViewPresenter }
 
@@ -87,6 +89,10 @@ class DayViewController :
         return addEventSubject
     }
 
+    override fun editEventIntent(): Observable<Pair<CalendarEvent, String>> {
+        return editEventSubject
+    }
+
     override fun createPresenter(): DayViewPresenter {
         return presenter
     }
@@ -100,12 +106,12 @@ class DayViewController :
                 calendarDayView.setUnscheduledQuestsAdapter(unscheduledEventsAdapter)
             }
 
-            is DayViewState.EventAdded -> {
-                Timber.d("AAA Added")
+            is DayViewState.EventUpdated -> {
+                calendarDayView.onEventUpdated()
             }
 
             is DayViewState.EventValidationError -> {
-                Timber.d("AAA Invalid")
+                calendarDayView.onEventValidationError()
             }
         }
     }
@@ -174,11 +180,15 @@ class DayViewController :
         eventsAdapter.rescheduleEvent(position, startTime, duration)
     }
 
+    override fun onEventValidationError(dragView: View) {
+        dragView.dragName.error = "Namyyy"
+    }
+
     override fun onScheduleUnscheduledEvent(position: Int, startTime: Time) {
         stopActionMode()
         ViewUtils.hideKeyboard(calendarDayView)
         val ue = unscheduledEventsAdapter.removeEvent(position)
-        val vm = QuestViewModel(ue.name, ue.duration, startTime.toMinuteOfDay(), startTime.toString(), "12:00", ue.backgroundColor, Category.FUN.color800, false)
+        val vm = QuestViewModel(ue.id, ue.name, ue.duration, startTime.toMinuteOfDay(), startTime.toString(), "12:00", ue.backgroundColor, Category.FUN.color800, false)
         eventsAdapter.addEvent(vm)
     }
 
@@ -186,7 +196,7 @@ class DayViewController :
         stopActionMode()
         ViewUtils.hideKeyboard(calendarDayView)
         val e = eventsAdapter.removeEvent(position)
-        val vm = UnscheduledQuestViewModel(e.name, e.duration, e.backgroundColor)
+        val vm = UnscheduledQuestViewModel(e.id, e.name, e.duration, e.backgroundColor)
         unscheduledEventsAdapter.addEvent(vm)
     }
 
@@ -213,9 +223,17 @@ class DayViewController :
         eventsAdapter.adaptViewForHeight(adapterView, ViewUtils.pxToDp(adapterView.height, adapterView.context))
     }
 
-    override fun onAddNewScheduledEvent(event: CalendarEvent) {
-        stopActionMode()
+    override fun onAddEvent(event: CalendarEvent) {
         addEventSubject.onNext(event)
+    }
+
+    override fun onEditCalendarEvent(event: CalendarEvent, position: Int) {
+        val vm = eventsAdapter.events.get(position)
+        editEventSubject.onNext(Pair<CalendarEvent, String>(event, vm.id))
+    }
+
+    override fun onEditUnscheduledEvent(event: UnscheduledEvent, position: Int) {
+
     }
 
     private var actionMode: ActionMode? = null
@@ -265,7 +283,8 @@ class DayViewController :
         actionMode?.finish()
     }
 
-    data class QuestViewModel(override var name: String,
+    data class QuestViewModel(var id: String,
+                              override var name: String,
                               override var duration: Int,
                               override var startMinute: Int,
                               val startTime: String,
@@ -365,7 +384,8 @@ class DayViewController :
         private fun tintList(@ColorRes color: Int) = ContextCompat.getColorStateList(context, color)
     }
 
-    data class UnscheduledQuestViewModel(override var name: String,
+    data class UnscheduledQuestViewModel(var id: String,
+                                         override var name: String,
                                          override var duration: Int,
                                          override var backgroundColor: Color) : UnscheduledEvent
 
