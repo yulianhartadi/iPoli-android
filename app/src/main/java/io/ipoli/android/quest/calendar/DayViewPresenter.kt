@@ -10,7 +10,6 @@ import io.ipoli.android.quest.usecase.Result
 import io.ipoli.android.quest.usecase.Schedule
 import io.reactivex.Observable
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -46,7 +45,6 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
     private fun bindEditEventIntent(): Observable<DayViewState> =
         on { it.editEventIntent() }
             .map { (event, id) ->
-                Timber.d("AAAA intent")
                 val q = Quest(event.name, LocalDate.now())
                 q.id = id
                 q.startMinute = event.startMinute

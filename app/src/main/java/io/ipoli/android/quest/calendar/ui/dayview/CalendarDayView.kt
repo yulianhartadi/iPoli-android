@@ -763,7 +763,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     fun onEventUpdated() {
-        Timber.d("AAAA")
         fsm.fire(Event.CompleteEdit)
     }
 
