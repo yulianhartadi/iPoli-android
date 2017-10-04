@@ -13,7 +13,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import io.ipoli.android.R
 import kotlinx.android.synthetic.main.dialog_color_picker.view.*
-import kotlinx.android.synthetic.main.fancy_dialog_header.view.*
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -41,10 +40,6 @@ class ColorPickerDialogController : BaseDialogController {
 
         val inflater = LayoutInflater.from(activity!!)
 
-        val headerView = inflater.inflate(R.layout.fancy_dialog_header, null)
-        headerView.title.text = "Pick color"
-        headerView.image.setImageResource(R.drawable.ic_color_palette_white_24dp)
-
         val contentView = inflater.inflate(R.layout.dialog_color_picker, null)
         val colorGrid = contentView.colorGrid
         colorGrid.layoutManager = GridLayoutManager(activity!!, 4)
@@ -57,7 +52,8 @@ class ColorPickerDialogController : BaseDialogController {
 
         return AlertDialog.Builder(activity!!)
             .setView(contentView)
-            .setCustomTitle(headerView)
+            .setTitle("Pick color")
+            .setIcon(R.drawable.pet_5_head)
             .setNegativeButton(R.string.cancel, null)
             .create()
     }
