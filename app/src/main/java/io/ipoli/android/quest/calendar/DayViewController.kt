@@ -301,7 +301,7 @@ class DayViewController :
 
             view.setOnLongClickListener {
                 calendarDayView.startEventRescheduling(vm)
-                false
+                true
             }
 
             view.startTime.text = vm.startTime

@@ -81,9 +81,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             val a = object : Action<E> {
                 override fun execute(state: State, event: E): State {
                     val newState = execute(state, event)
-
-                    Timber.d("Transition given ${state.type} when $event to ${newState.type}" )
-
+                    Timber.d("Transition given ${state.type} when $event to ${newState.type}")
                     return newState
                 }
             }
@@ -180,8 +178,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     private val dataSetObserver = object : DataSetObserver() {
         override fun onChanged() {
-            clearCalendarEvents()
-            addEventsFromAdapter()
+            clearAndAddEventsFromAdapter()
         }
 
         override fun onInvalidated() {
@@ -662,7 +659,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
         setBackgroundTouchListener()
 
-        Timber.d("${adapterView}")
         adapterView.setOnTouchListener { _, e ->
 
             val action = e.actionMasked
@@ -749,6 +745,11 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         this.scheduledEventsAdapter?.unregisterDataSetObserver(dataSetObserver)
         this.scheduledEventsAdapter = adapter
         this.scheduledEventsAdapter?.registerDataSetObserver(dataSetObserver)
+        clearAndAddEventsFromAdapter()
+    }
+
+    private fun clearAndAddEventsFromAdapter() {
+        clearCalendarEvents()
         addEventsFromAdapter()
     }
 
