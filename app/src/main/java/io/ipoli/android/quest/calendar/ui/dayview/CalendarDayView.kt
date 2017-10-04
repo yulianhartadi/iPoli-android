@@ -80,7 +80,11 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fun <E : Event> transition(given: State.Type, on: KClass<E>, execute: (state: State, event: E) -> State) {
             val a = object : Action<E> {
                 override fun execute(state: State, event: E): State {
-                    return execute(state, event)
+                    val newState = execute(state, event)
+
+                    Timber.d("Transition given ${state.type} when $event to ${newState.type}" )
+
+                    return newState
                 }
             }
             actions[Pair(given, on)] = a
@@ -656,9 +660,11 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private fun setAdapterViewTouchListener(adapterView: View) {
         val initialOffset = lastY!! - dragView!!.topLocationOnScreen
 
+        setBackgroundTouchListener()
+
+        Timber.d("${adapterView}")
         adapterView.setOnTouchListener { _, e ->
 
-            setBackgroundTouchListener()
             val action = e.actionMasked
 
             if (action == MotionEvent.ACTION_MOVE) {
@@ -940,10 +946,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         get() {
             val location = IntArray(2)
             getLocationOnScreen(location)
-//            Timber.d("screenLocation ${location.joinToString()}")
-//            val wLocation = IntArray(2)
-//            getLocationInWindow(wLocation)
-//            Timber.d("wLocation ${wLocation.joinToString()}")
             return location[1]
         }
 
