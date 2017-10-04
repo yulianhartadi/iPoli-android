@@ -10,10 +10,12 @@ import org.threeten.bp.LocalDate
  * on 10/4/17.
  */
 
+data class EditEventRequest(val event: CalendarEvent, val eventId: String)
+
 interface DayView : ViewStateRenderer<DayViewState> {
     fun loadScheduleIntent(): Observable<LocalDate>
     fun addEventIntent(): Observable<CalendarEvent>
-    fun editEventIntent(): Observable<Pair<CalendarEvent, String>>
+    fun editEventIntent(): Observable<EditEventRequest>
 }
 
 sealed class DayViewState {

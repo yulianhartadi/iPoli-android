@@ -44,7 +44,7 @@ class DayViewController :
 
     private val addEventSubject = createIntentSubject<CalendarEvent>()
 
-    private val editEventSubject = createIntentSubject<Pair<CalendarEvent, String>>()
+    private val editEventSubject = createIntentSubject<EditEventRequest>()
 
     private val presenter by required { dayViewPresenter }
 
@@ -73,7 +73,7 @@ class DayViewController :
         return addEventSubject
     }
 
-    override fun editEventIntent(): Observable<Pair<CalendarEvent, String>> {
+    override fun editEventIntent(): Observable<EditEventRequest> {
         return editEventSubject
     }
 
@@ -213,7 +213,7 @@ class DayViewController :
 
     override fun onEditCalendarEvent(event: CalendarEvent, position: Int) {
         val vm = eventsAdapter.events.get(position)
-        editEventSubject.onNext(Pair<CalendarEvent, String>(event, vm.id))
+        editEventSubject.onNext(EditEventRequest(event, vm.id))
     }
 
     override fun onEditUnscheduledEvent(event: UnscheduledEvent, position: Int) {
@@ -373,7 +373,7 @@ class DayViewController :
                                          override var duration: Int,
                                          override var backgroundColor: Color) : UnscheduledEvent
 
-    inner class UnscheduledQuestsAdapter(private val items: List<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) :
+    inner class UnscheduledQuestsAdapter(items: List<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) :
         UnscheduledEventsAdapter<UnscheduledQuestViewModel>
         (R.layout.unscheduled_quest_item, items.toMutableList(), calendarDayView) {
 
