@@ -13,11 +13,11 @@ import io.ipoli.android.common.ui.Color
  */
 
 interface UnscheduledEvent {
-    var duration: Int
+    val duration: Int
 
-    var name: String
+    val name: String
 
-    var backgroundColor: Color
+    val backgroundColor: Color
 }
 
 abstract class UnscheduledEventsAdapter<E : UnscheduledEvent>(@LayoutRes private val unscheduledEventLayout: Int,

@@ -25,7 +25,8 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
         return listOf(
             bindLoadScheduleIntent(),
             bindAddEventIntent(),
-            bindEditEventIntent()
+            bindEditEventIntent(),
+            bindEditUnscheduledEventIntent()
         )
     }
 
@@ -51,6 +52,22 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
                 val q = Quest(event.name, LocalDate.now())
                 q.id = id
                 q.startMinute = event.startMinute
+                q.setDuration(event.duration)
+                q
+            }
+            .execute(addQuestUseCase)
+            .map { result ->
+                when (result) {
+                    is Result.Invalid -> DayViewState.EventValidationError
+                    else -> DayViewState.EventUpdated
+                }
+            }
+
+    private fun bindEditUnscheduledEventIntent(): Observable<DayViewState> =
+        on { it.editUnscheduledEventIntent() }
+            .map { (event, id) ->
+                val q = Quest(event.name, LocalDate.now())
+                q.id = id
                 q.setDuration(event.duration)
                 q
             }

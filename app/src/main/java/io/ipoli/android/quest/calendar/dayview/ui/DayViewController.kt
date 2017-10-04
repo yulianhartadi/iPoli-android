@@ -46,6 +46,8 @@ class DayViewController :
 
     private val editEventSubject = createIntentSubject<EditEventRequest>()
 
+    private val editUnscheduledEventSubject = createIntentSubject<EditUnscheduledEventRequest>()
+
     private val presenter by required { dayViewPresenter }
 
     private lateinit var calendarDayView: CalendarDayView
@@ -75,6 +77,10 @@ class DayViewController :
 
     override fun editEventIntent(): Observable<EditEventRequest> {
         return editEventSubject
+    }
+
+    override fun editUnscheduledEventIntent(): Observable<EditUnscheduledEventRequest> {
+        return editUnscheduledEventSubject
     }
 
     override fun createPresenter(): DayViewPresenter {
@@ -209,15 +215,19 @@ class DayViewController :
 
     override fun onAddEvent(event: CalendarEvent) {
         addEventSubject.onNext(event)
+        ViewUtils.hideKeyboard(calendarDayView)
     }
 
     override fun onEditCalendarEvent(event: CalendarEvent, position: Int) {
         val vm = eventsAdapter.events.get(position)
         editEventSubject.onNext(EditEventRequest(event, vm.id))
+        ViewUtils.hideKeyboard(calendarDayView)
     }
 
     override fun onEditUnscheduledEvent(event: UnscheduledEvent, position: Int) {
-
+        val vm = unscheduledEventsAdapter.events.get(position)
+        editUnscheduledEventSubject.onNext(EditUnscheduledEventRequest(event, vm.id))
+        ViewUtils.hideKeyboard(calendarDayView)
     }
 
     private var actionMode: ActionMode? = null

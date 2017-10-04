@@ -36,7 +36,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     class FSM(initialState: State, private val listener: StateChangeListener) {
 
-
         interface Action<in E : Event> {
             fun execute(state: State, event: E): State
         }
@@ -425,8 +424,13 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                     override val name = s.name!!
                     override val backgroundColor = s.color!!
                 }, s.eventAdapterPosition)
+            } else if (s.unscheduledEventAdapterPosition != null) {
+                listener?.onEditUnscheduledEvent(object : UnscheduledEvent {
+                    override val duration = durationForEvent(s)
+                    override val name = s.name!!
+                    override val backgroundColor = s.color!!
+                }, s.unscheduledEventAdapterPosition)
             }
-
             s
         })
 
