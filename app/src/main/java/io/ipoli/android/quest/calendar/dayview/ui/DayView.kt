@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.calendar
+package io.ipoli.android.quest.calendar.dayview.ui
 
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.quest.calendar.dayview.ui.widget.CalendarEvent

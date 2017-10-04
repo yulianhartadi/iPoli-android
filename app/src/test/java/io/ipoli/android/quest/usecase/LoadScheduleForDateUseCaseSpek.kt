@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.quest.data.Quest
-import io.ipoli.android.quest.persistence.QuestRepository
+import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.reactivex.Observable
 import io.reactivex.android.plugins.RxAndroidPlugins
 import io.reactivex.plugins.RxJavaPlugins

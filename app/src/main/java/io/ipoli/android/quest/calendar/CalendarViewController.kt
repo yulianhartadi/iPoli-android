@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.calendar.dayview
+package io.ipoli.android.quest.calendar
 
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
@@ -12,7 +12,7 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
-import io.ipoli.android.quest.calendar.DayViewController
+import io.ipoli.android.quest.calendar.dayview.ui.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.controller_calendar_toolbar.view.*
 import org.threeten.bp.LocalDate
@@ -26,7 +26,7 @@ import sun.bob.mcalendarview.vo.DateData
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/8/17.
  */
-class CalendarController : Controller() {
+class CalendarViewController : Controller() {
 
     val MID_POSITION = 49
     val MAX_VISIBLE_DAYS = 100
@@ -93,7 +93,7 @@ class CalendarController : Controller() {
         var isOpen = false
 
         calendarToolbar.setOnClickListener {
-            calendarIndicator.animate().rotationBy(180f).setDuration(200)
+            calendarIndicator.animate().rotationBy(180f).duration = 200
             view.currentMonth.text = LocalDate.now().format(monthPattern)
 
             val layoutParams = view.pager.layoutParams as ViewGroup.MarginLayoutParams

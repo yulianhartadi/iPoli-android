@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.calendar.ui.dayview
+package io.ipoli.android.quest.calendar.dayview.ui.widget
 
 import android.support.annotation.LayoutRes
 import android.support.v7.widget.RecyclerView
@@ -21,8 +21,8 @@ interface UnscheduledEvent {
 }
 
 abstract class UnscheduledEventsAdapter<E : UnscheduledEvent>(@LayoutRes private val unscheduledEventLayout: Int,
-                                                              private val items: MutableList<E>,
-                                                              private val calendarDayView: CalendarDayView)
+                                                                                                                private val items: MutableList<E>,
+                                                                                                                private val calendarDayView: CalendarDayView)
     : RecyclerView.Adapter<UnscheduledEventsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =

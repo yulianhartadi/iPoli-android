@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.calendar.ui.dayview
+package io.ipoli.android.quest.calendar.dayview.ui.widget
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -37,8 +37,4 @@ abstract class ScheduledEventsAdapter<T : CalendarEvent>(context: Context, prote
     abstract fun bindView(view: View, position: Int)
     abstract fun adaptViewForHeight(adapterView: View, height: Float)
     abstract fun rescheduleEvent(position: Int, startTime: Time, duration: Int)
-//    abstract fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time)
-//    abstract fun onStopEdit(position: Int, startTime: Time, duration: Int)
-//    abstract fun onScheduledTimeChanged(dragView: View, startTime: Time, endTime: Time)
-//    abstract fun onEventZoomed(adapterView: View)
 }

@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.persistence
+package io.ipoli.android.quest.data.persistence
 
 import io.ipoli.android.common.datetime.toStartOfDayUTCMillis
 import io.ipoli.android.common.persistence.BaseRealmRepository

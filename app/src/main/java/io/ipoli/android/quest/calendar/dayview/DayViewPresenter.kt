@@ -1,8 +1,11 @@
-package io.ipoli.android.quest.calendar
+package io.ipoli.android.quest.calendar.dayview
 
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.ui.Color
+import io.ipoli.android.quest.calendar.dayview.ui.DayView
+import io.ipoli.android.quest.calendar.dayview.ui.DayViewController
+import io.ipoli.android.quest.calendar.dayview.ui.DayViewState
 import io.ipoli.android.quest.data.Quest
 import io.ipoli.android.quest.usecase.AddQuestUseCase
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase

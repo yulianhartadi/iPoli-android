@@ -6,9 +6,9 @@ import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import com.bluelinelabs.conductor.Router
 import io.ipoli.android.common.navigation.Navigator
-import io.ipoli.android.quest.calendar.DayViewPresenter
-import io.ipoli.android.quest.persistence.QuestRepository
-import io.ipoli.android.quest.persistence.RealmQuestRepository
+import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
+import io.ipoli.android.quest.data.persistence.QuestRepository
+import io.ipoli.android.quest.data.persistence.RealmQuestRepository
 import io.ipoli.android.quest.usecase.AddQuestUseCase
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
 import space.traversal.kapsule.HasModules

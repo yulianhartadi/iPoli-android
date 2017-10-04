@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.calendar
+package io.ipoli.android.quest.calendar.dayview.ui
 
 import android.animation.ObjectAnimator
 import android.content.Context
@@ -22,6 +22,7 @@ import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.ui.Color
 import io.ipoli.android.common.ui.ColorPickerDialogController
 import io.ipoli.android.iPoliApp
+import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.calendar.dayview.ui.widget.*
 import io.ipoli.android.quest.data.Category
 import io.reactivex.Observable
@@ -223,7 +224,7 @@ class DayViewController :
 
     private lateinit var eventsAdapter: QuestScheduledEventsAdapter
 
-    private lateinit var unscheduledEventsAdapter: DayViewController.UnscheduledQuestsAdapter
+    private lateinit var unscheduledEventsAdapter: UnscheduledQuestsAdapter
 
     override fun onContextAvailable(context: Context) {
         inject(iPoliApp.module(context, router))

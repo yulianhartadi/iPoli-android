@@ -3,7 +3,7 @@ package io.ipoli.android.quest.usecase
 import io.ipoli.android.common.BaseRxUseCase
 import io.ipoli.android.common.Validator.Companion.validate
 import io.ipoli.android.quest.data.Quest
-import io.ipoli.android.quest.persistence.QuestRepository
+import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.usecase.Result.ValidationError.EMPTY_NAME
 import io.reactivex.Observable
 

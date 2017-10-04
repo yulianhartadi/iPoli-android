@@ -2,7 +2,7 @@ package io.ipoli.android.quest.usecase
 
 import io.ipoli.android.quest.data.Category
 import io.ipoli.android.quest.data.Quest
-import io.ipoli.android.quest.persistence.QuestRepository
+import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.reactivex.Single
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
