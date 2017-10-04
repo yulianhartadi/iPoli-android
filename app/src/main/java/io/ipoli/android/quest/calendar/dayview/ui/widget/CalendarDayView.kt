@@ -31,34 +31,10 @@ import kotlin.reflect.KClass
  * on 9/2/17.
  */
 
-interface StateChangeListener {
-    fun onStateChanged(state: CalendarDayView.State)
-}
-
-interface HourCellAdapter {
-    fun bind(view: View, hour: Int)
-}
-
-interface CalendarChangeListener {
-    fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: Color)
-    fun onStartEditUnscheduledEvent(dragView: View, name: String, color: Color)
-    fun onDragViewClick(dragView: View)
-    fun onDragViewColorChange(dragView: View, color: Color)
-    fun onEventValidationError(dragView: View)
-    fun onRescheduleScheduledEvent(position: Int, startTime: Time, duration: Int)
-    fun onScheduleUnscheduledEvent(position: Int, startTime: Time)
-    fun onUnscheduleScheduledEvent(position: Int)
-    fun onCancelScheduling()
-    fun onMoveEvent(dragView: View, startTime: Time?, endTime: Time?)
-    fun onZoomEvent(adapterView: View)
-    fun onAddEvent(event: CalendarEvent)
-    fun onEditCalendarEvent(event: CalendarEvent, position: Int)
-    fun onEditUnscheduledEvent(event: UnscheduledEvent, position: Int)
-}
-
 class CalendarDayView : FrameLayout, StateChangeListener {
 
     class FSM(initialState: State, private val listener: StateChangeListener) {
+
 
         interface Action<in E : Event> {
             fun execute(state: State, event: E): State
@@ -1029,4 +1005,29 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             adapter.bind(v, h)
         }
     }
+
+    interface CalendarChangeListener {
+        fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: Color)
+        fun onStartEditUnscheduledEvent(dragView: View, name: String, color: Color)
+        fun onDragViewClick(dragView: View)
+        fun onDragViewColorChange(dragView: View, color: Color)
+        fun onEventValidationError(dragView: View)
+        fun onRescheduleScheduledEvent(position: Int, startTime: Time, duration: Int)
+        fun onScheduleUnscheduledEvent(position: Int, startTime: Time)
+        fun onUnscheduleScheduledEvent(position: Int)
+        fun onCancelScheduling()
+        fun onMoveEvent(dragView: View, startTime: Time?, endTime: Time?)
+        fun onZoomEvent(adapterView: View)
+        fun onAddEvent(event: CalendarEvent)
+        fun onEditCalendarEvent(event: CalendarEvent, position: Int)
+        fun onEditUnscheduledEvent(event: UnscheduledEvent, position: Int)
+    }
+
+    interface HourCellAdapter {
+        fun bind(view: View, hour: Int)
+    }
+}
+
+interface StateChangeListener {
+    fun onStateChanged(state: CalendarDayView.State)
 }

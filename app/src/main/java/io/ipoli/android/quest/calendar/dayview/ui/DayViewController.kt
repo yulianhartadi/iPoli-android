@@ -19,11 +19,10 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.mvi.MviViewController
-import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.ui.Color
 import io.ipoli.android.common.ui.ColorPickerDialogController
 import io.ipoli.android.iPoliApp
-import io.ipoli.android.quest.calendar.ui.dayview.*
+import io.ipoli.android.quest.calendar.dayview.ui.widget.*
 import io.ipoli.android.quest.data.Category
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
@@ -36,26 +35,10 @@ import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
 
-interface DayView : ViewStateRenderer<DayViewState> {
-    fun loadScheduleIntent(): Observable<LocalDate>
-    fun addEventIntent(): Observable<CalendarEvent>
-    fun editEventIntent(): Observable<Pair<CalendarEvent, String>>
-}
-
-sealed class DayViewState {
-    object Loading : DayViewState()
-    data class ScheduleLoaded(val scheduledQuests: List<DayViewController.QuestViewModel>,
-                              val unscheduledQuests: List<DayViewController.UnscheduledQuestViewModel>) : DayViewState()
-
-    object EventUpdated : DayViewState()
-    object EventValidationError : DayViewState()
-
-}
-
 class DayViewController :
     MviViewController<DayViewState, DayView, DayViewPresenter>(R.layout.controller_day_view),
     Injects<Module>,
-    CalendarChangeListener,
+    CalendarDayView.CalendarChangeListener,
     DayView {
 
     private val addEventSubject = createIntentSubject<CalendarEvent>()
@@ -69,7 +52,7 @@ class DayViewController :
     override fun bindView(view: View) {
         calendarDayView = view.calendar
         calendarDayView.setCalendarChangeListener(this)
-        calendarDayView.setHourAdapter(object : HourCellAdapter {
+        calendarDayView.setHourAdapter(object : CalendarDayView.HourCellAdapter {
             override fun bind(view: View, hour: Int) {
                 if (hour > 0) {
                     view.timeLabel.text = hour.toString() + ":00"

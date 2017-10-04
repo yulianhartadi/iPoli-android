@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.calendar.ui.dayview
+package io.ipoli.android.quest.calendar.dayview.ui.widget
 
 import io.ipoli.android.common.datetime.Time
 

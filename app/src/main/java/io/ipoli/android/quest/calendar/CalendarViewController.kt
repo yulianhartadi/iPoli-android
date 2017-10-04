@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.calendar.ui
+package io.ipoli.android.quest.calendar.dayview
 
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
