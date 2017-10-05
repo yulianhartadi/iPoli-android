@@ -1,6 +1,6 @@
 package io.ipoli.android.common.parser
 
-import io.ipoli.android.common.ui.TimeUnit
+import io.ipoli.android.reminder.ui.picker.TimeUnit
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>

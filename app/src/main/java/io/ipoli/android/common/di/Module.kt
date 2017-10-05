@@ -6,11 +6,13 @@ import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import com.bluelinelabs.conductor.Router
 import io.ipoli.android.common.navigation.Navigator
+import io.ipoli.android.common.text.ReminderTimeFormatter
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.data.persistence.RealmQuestRepository
 import io.ipoli.android.quest.usecase.AddQuestUseCase
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
+import io.ipoli.android.reminder.ui.picker.ReminderPickerDialogPresenter
 import space.traversal.kapsule.HasModules
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
@@ -33,6 +35,8 @@ interface AndroidModule {
     val sharedPreferences: SharedPreferences
 
     val navigator: Navigator
+
+    val reminderTimeFormatter: ReminderTimeFormatter
 }
 
 class MainAndroidModule(private val context: Context, private val router: Router) : AndroidModule {
@@ -41,7 +45,9 @@ class MainAndroidModule(private val context: Context, private val router: Router
 
     override val sharedPreferences: SharedPreferences get() = PreferenceManager.getDefaultSharedPreferences(context)
 
-    override val navigator: Navigator get() = Navigator(router)
+    override val navigator get() = Navigator(router)
+
+    override val reminderTimeFormatter get() = ReminderTimeFormatter(context)
 }
 
 class MainUseCaseModule : UseCaseModule, Injects<Module> {
@@ -57,12 +63,15 @@ interface UseCaseModule {
 
 interface PresenterModule {
     val dayViewPresenter: DayViewPresenter
+    val reminderPickerPresenter: ReminderPickerDialogPresenter
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
     private val addQuestUseCase by required { addQuestUseCase }
+    private val reminderTimeFormatter by required { reminderTimeFormatter }
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, addQuestUseCase)
+    override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter)
 }
 
 class Module(androidModule: AndroidModule,

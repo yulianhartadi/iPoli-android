@@ -21,12 +21,12 @@ import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.ui.Color
 import io.ipoli.android.common.ui.ColorPickerDialogController
-import io.ipoli.android.common.ui.ReminderPickerDialogController
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.calendar.dayview.ui.widget.*
 import io.ipoli.android.quest.data.Category
 import io.ipoli.android.quest.data.Reminder
+import io.ipoli.android.reminder.ui.picker.ReminderPickerDialogController
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.controller_day_view.view.*
