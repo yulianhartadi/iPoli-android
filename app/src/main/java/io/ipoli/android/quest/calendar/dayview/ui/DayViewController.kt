@@ -68,6 +68,16 @@ class DayViewController :
         calendarDayView.scrollToNow()
     }
 
+    override fun handleBack(): Boolean {
+        cancelEdit()
+        return super.handleBack()
+    }
+
+    private fun cancelEdit() {
+        ViewUtils.hideKeyboard(calendarDayView)
+        calendarDayView.cancelEdit()
+    }
+
     override fun loadScheduleIntent(): Observable<LocalDate> {
         return Observable.just(LocalDate.now())
             .filter { !isRestoring }
@@ -279,6 +289,7 @@ class DayViewController :
             }
 
             override fun onDestroyActionMode(p0: ActionMode?) {
+                cancelEdit()
                 actionMode = null
             }
         })

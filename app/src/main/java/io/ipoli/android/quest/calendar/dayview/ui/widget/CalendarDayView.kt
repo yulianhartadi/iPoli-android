@@ -79,6 +79,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     sealed class Event {
         object CompleteEdit : Event()
         object CompleteEditRequest : Event()
+        object CancelEdit: Event()
         object Up : Event()
         data class StartCalendarEventEdit(val view: View, val position: Int) : Event()
         data class StartUnscheduledEventEdit(val view: View, val position: Int) : Event()
@@ -455,13 +456,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 else -> listener?.onCancelScheduling()
             }
 
-            removeView(dragView)
-            dragView = null
-
-            listenForZoom()
-            hideViews(editModeBackground, topDragView, bottomDragView)
-
-            editModeBackground.setOnTouchListener(null)
+            prepareForViewState()
             s.copy(
                 type = State.Type.VIEW,
                 isScrollLocked = false,
@@ -470,6 +465,17 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 unscheduledEventAdapterPosition = null)
         })
 
+
+        fsm.transition(State.Type.EDIT, Event.CancelEdit::class, { s, _ ->
+            prepareForViewState()
+
+            s.copy(
+                type = State.Type.VIEW,
+                isScrollLocked = false,
+                isNewEvent = false,
+                eventAdapterPosition = null,
+                unscheduledEventAdapterPosition = null)
+        })
 
         fsm.transition(State.Type.DRAG, Event.StartEditName::class, { s, _ ->
             s.copy(type = State.Type.EDIT)
@@ -498,6 +504,16 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             s.copy(type = State.Type.VIEW)
         })
 
+    }
+
+    private fun prepareForViewState() {
+        removeView(dragView)
+        dragView = null
+
+        listenForZoom()
+        hideViews(editModeBackground, topDragView, bottomDragView)
+
+        editModeBackground.setOnTouchListener(null)
     }
 
     private fun shouldScheduleUnscheduledEvent(s: State) =
@@ -740,20 +756,21 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     fun updateDragEventName(name: String) =
         fsm.fire(Event.UpdateName(name))
 
-    fun updateDragBackgroundColor(color: Color) {
+    fun updateDragBackgroundColor(color: Color) =
         fsm.fire(Event.ChangeBackgroundColor(color))
-    }
 
-    fun onEventUpdated() {
+    fun onEventUpdated() =
         fsm.fire(Event.CompleteEdit)
-    }
 
-    fun onEventValidationError() {
+    fun onEventValidationError() =
         listener?.onEventValidationError(dragView!!)
-    }
 
     fun getDragViewBackgroundColor() =
         fsm.state.color
+
+    fun cancelEdit() {
+        fsm.fire(Event.CancelEdit)
+    }
 
     private fun addEventsFromAdapter() {
         val a = scheduledEventsAdapter!!
