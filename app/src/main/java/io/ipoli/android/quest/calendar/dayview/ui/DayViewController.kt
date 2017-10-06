@@ -7,6 +7,7 @@ import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.TextViewCompat
 import android.support.v4.widget.TintableCompoundButton
+import android.support.v7.widget.CardView
 import android.text.Editable
 import android.text.SpannableString
 import android.text.TextWatcher
@@ -136,7 +137,7 @@ class DayViewController :
 
     private fun setupDragViewNameAndColor(dragView: View, name: String, color: Color) {
         dragView.dragName.setText(name)
-        dragView.setBackgroundColor(ContextCompat.getColor(dragView.context, color.color500))
+        dragView.setBackgroundColor(ContextCompat.getColor(dragView.context, color.color200))
 
         dragView.dragName.setOnFocusChangeListener { _, isFocused ->
             if (isFocused) {
@@ -179,7 +180,7 @@ class DayViewController :
             dragView,
             "backgroundColor",
             (dragView.background as ColorDrawable).color,
-            ContextCompat.getColor(dragView.context, color.color500)
+            ContextCompat.getColor(dragView.context, color.color200)
         )
             .setDuration(dragView.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong())
             .start()
@@ -326,20 +327,20 @@ class DayViewController :
             if (!vm.isCompleted) {
                 view.questName.text = vm.name
                 view.questName.setTextColor(ContextCompat.getColor(context, vm.textColor))
-                view.questBackground.setBackgroundResource(vm.backgroundColor.color500)
-                view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color500)
+                (view as CardView).setCardBackgroundColor(ContextCompat.getColor(context, vm.backgroundColor.color200))
+                view.questCategoryIndicator.setBackgroundResource(R.color.md_green_700)
             } else {
                 val span = SpannableString(vm.name)
                 span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
                 view.questName.text = span
-                view.questBackground.setBackgroundResource(R.color.md_grey_500)
+                (view as CardView).setCardBackgroundColor(ContextCompat.getColor(context, R.color.md_grey_500))
                 view.questCategoryIndicator.setBackgroundResource(R.color.md_grey_500)
                 view.checkBox.isChecked = true
             }
 
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(view.questName, 8, 16, 1, TypedValue.COMPLEX_UNIT_SP)
 
-            (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color500)
+            (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color200)
 
             view.post {
                 adaptViewForHeight(view, ViewUtils.pxToDp(view.height, context))
@@ -412,7 +413,7 @@ class DayViewController :
         override fun ViewHolder.bind(event: UnscheduledQuestViewModel, calendarDayView: CalendarDayView) {
             itemView.name.text = event.name
 
-            (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(event.backgroundColor.color500, itemView.context)
+            (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(event.backgroundColor.color200, itemView.context)
             itemView.setOnLongClickListener {
                 calendarDayView.startEventRescheduling(events[adapterPosition])
                 true

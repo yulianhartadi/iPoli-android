@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.calendar.dayview
 
+import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.ui.Color
@@ -107,7 +108,7 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
                 it.startTime.toString(),
                 endTime.toString(),
                 Color.GREEN,
-                it.categoryType.color800,
+                R.color.md_green_900,
                 it.isCompleted
             )
         }
