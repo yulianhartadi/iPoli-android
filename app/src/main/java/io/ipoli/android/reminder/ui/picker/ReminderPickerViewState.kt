@@ -8,15 +8,23 @@ import io.reactivex.Observable
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 10/5/17.
  */
-data class ReminderPickerViewState(val message: String = "",
-                                   val predefinedValues: List<String> = listOf(),
-                                   val predefinedIndex: Int? = null,
-                                   val timeValue: String = "",
-                                   val timeUnits: List<String> = listOf(),
-                                   val timeValueIndex: Int? = null) {
+data class ReminderPickerViewState(
+    val type: StateType,
+    val message: String = "",
+    val predefinedValues: List<String> = listOf(),
+    val predefinedIndex: Int? = null,
+    val timeValue: String = "",
+    val timeUnits: List<String> = listOf(),
+    val timeValueIndex: Int? = null
+) {
+
+    enum class StateType {
+        LOADING, NEW_REMINDER, EDIT_REMINDER, CUSTOM_TIME
+    }
+
 //    object Loading : ReminderPickerViewState()
 //
-//    data class PredefinedTimeValueLoaded(
+//    data class NewReminderDataLoaded(
 //        val message: String,
 //        val predefinedValues: List<String>,
 //        val predefinedIndex: Int
@@ -34,10 +42,6 @@ data class ReminderPickerViewState(val message: String = "",
 //        val timeUnits: List<String>,
 //        val timeValueIndex: Int
 //    ) : ReminderPickerViewState()
-
-    companion object {
-        val Loading = ReminderPickerViewState()
-    }
 }
 
 interface ReminderPickerView : ViewStateRenderer<ReminderPickerViewState> {
