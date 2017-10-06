@@ -1,4 +1,4 @@
-package io.ipoli.android.common.text
+package io.ipoli.android.reminder.ui.formatter
 
 import android.content.Context
 import io.ipoli.android.Constants

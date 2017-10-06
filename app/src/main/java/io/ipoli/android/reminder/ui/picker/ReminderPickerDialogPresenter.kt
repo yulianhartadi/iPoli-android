@@ -2,14 +2,15 @@ package io.ipoli.android.reminder.ui.picker
 
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.parser.ReminderMinutesParser
-import io.ipoli.android.common.text.ReminderTimeFormatter
+import io.ipoli.android.reminder.ui.formatter.ReminderTimeFormatter
+import io.ipoli.android.reminder.ui.formatter.TimeUnitFormatter
 import io.reactivex.Observable
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 10/5/17.
  */
-class ReminderPickerDialogPresenter(private val reminderTimeFormatter: ReminderTimeFormatter) : BaseMviPresenter<ReminderPickerDialogController, ReminderPickerViewState>(ReminderPickerViewState.Loading) {
+class ReminderPickerDialogPresenter(private val reminderTimeFormatter: ReminderTimeFormatter, private val timeUnitFormatter: TimeUnitFormatter) : BaseMviPresenter<ReminderPickerDialogController, ReminderPickerViewState>(ReminderPickerViewState.Loading) {
     override fun bindIntents(): List<Observable<ReminderPickerViewState>> {
         return listOf(
             on { it.newReminderIntent() }.map { _ ->
@@ -20,20 +21,12 @@ class ReminderPickerDialogPresenter(private val reminderTimeFormatter: ReminderT
 
             on { it.editReminderIntent() }.map { reminder ->
                 val (timeValue, timeUnit) = ReminderMinutesParser.parseCustomMinutes(reminder.getMinutesFromStart())
-                var selectedIndex = -1
-
-                val timeUnits = TimeUnit.values().mapIndexed { i, unit ->
-                    if (unit == timeUnit) {
-                        selectedIndex = i
-                    }
-                    unit.toString()
-                }
 
                 ReminderPickerViewState.CustomTimeValueLoaded(
                     reminder.message!!,
                     timeValue.toString(),
-                    timeUnits,
-                    selectedIndex
+                    timeUnitFormatter.customTimeUnits,
+                    timeUnit.ordinal
                 )
 
             }.cast(ReminderPickerViewState::class.java)

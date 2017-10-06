@@ -6,12 +6,13 @@ import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import com.bluelinelabs.conductor.Router
 import io.ipoli.android.common.navigation.Navigator
-import io.ipoli.android.common.text.ReminderTimeFormatter
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.data.persistence.RealmQuestRepository
 import io.ipoli.android.quest.usecase.AddQuestUseCase
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
+import io.ipoli.android.reminder.ui.formatter.ReminderTimeFormatter
+import io.ipoli.android.reminder.ui.formatter.TimeUnitFormatter
 import io.ipoli.android.reminder.ui.picker.ReminderPickerDialogPresenter
 import space.traversal.kapsule.HasModules
 import space.traversal.kapsule.Injects
@@ -37,6 +38,8 @@ interface AndroidModule {
     val navigator: Navigator
 
     val reminderTimeFormatter: ReminderTimeFormatter
+
+    val timeUnitFormatter: TimeUnitFormatter
 }
 
 class MainAndroidModule(private val context: Context, private val router: Router) : AndroidModule {
@@ -48,6 +51,9 @@ class MainAndroidModule(private val context: Context, private val router: Router
     override val navigator get() = Navigator(router)
 
     override val reminderTimeFormatter get() = ReminderTimeFormatter(context)
+
+    override val timeUnitFormatter get() = TimeUnitFormatter(context)
+
 }
 
 class MainUseCaseModule : UseCaseModule, Injects<Module> {
@@ -70,8 +76,9 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
     private val addQuestUseCase by required { addQuestUseCase }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
+    private val timeUnitFormatter by required { timeUnitFormatter }
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, addQuestUseCase)
-    override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter)
+    override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter)
 }
 
 class Module(androidModule: AndroidModule,

@@ -457,10 +457,14 @@
     <string name="reminder_time_format_offset">%1$d %2$s before</string>
     <string name="custom">Custom</string>
 
-    <string name="minutes_before">minutes before</string>
-    <string name="hours_before">hours before</string>
-    <string name="weeks_before">weeks before</string>
-    <string name="days_before">days before</string>
+    <string-array name="time_before">
+        <item>minutes before</item>
+        <item>hours before</item>
+        <item>weeks before</item>
+        <item>days before</item>
+    </string-array>
+
+
     <string name="duration_minutes_or_less">%d minutes or less</string>
     <string name="duration_format_full">%1$d h and %2$d min</string>
     <string name="duration_format_short">%1$dh %2$dm</string>

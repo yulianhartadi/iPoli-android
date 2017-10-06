@@ -6,7 +6,6 @@ import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ArrayAdapter
-import com.jakewharton.rxbinding2.widget.selection
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.Module
@@ -18,7 +17,6 @@ import kotlinx.android.synthetic.main.dialog_reminder_picker.view.*
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
-import kotlin.text.Typography.times
 
 typealias TimeUnitConverter = java.util.concurrent.TimeUnit
 
@@ -40,8 +38,8 @@ class ReminderPickerDialogController :
     , ReminderPickerView, Injects<Module> {
 
     override fun editReminderIntent(): Observable<Reminder> {
-        return Observable.just(reminder!!)
-            .filter { !isRestoring && reminder != null }
+        return Observable.just(reminder != null)
+            .filter { !isRestoring && it }.map { reminder!! }
     }
 
     override fun newReminderIntent(): Observable<Boolean> {
