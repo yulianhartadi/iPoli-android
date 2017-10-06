@@ -137,7 +137,7 @@ class DayViewController :
 
     private fun setupDragViewNameAndColor(dragView: View, name: String, color: Color) {
         dragView.dragName.setText(name)
-        dragView.setBackgroundColor(ContextCompat.getColor(dragView.context, color.color200))
+        dragView.setBackgroundColor(ContextCompat.getColor(dragView.context, color.color500))
 
         dragView.dragName.setOnFocusChangeListener { _, isFocused ->
             if (isFocused) {
