@@ -4,7 +4,5 @@
     android:id="@+id/calendar"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingEnd="16dp"
-    android:paddingStart="0dp"
     app:dragImage="@drawable/circle_accent"
     app:dragImageSize="16dp" />

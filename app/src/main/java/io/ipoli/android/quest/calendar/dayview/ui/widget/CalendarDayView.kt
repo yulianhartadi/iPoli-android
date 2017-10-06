@@ -704,9 +704,9 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val hourHeight = fsm.state.hourHeight
         for (hour in 0 until HOURS_IN_A_DAY) {
             val hourView = inflater.inflate(R.layout.calendar_hour_cell, this, false)
-            val layoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, hourHeight.toInt())
+            val layoutParams = hourView.layoutParams as MarginLayoutParams
+            layoutParams.height = hourHeight.toInt()
             layoutParams.topMargin = (hour * hourHeight).toInt()
-            hourView.layoutParams = layoutParams
             hourCellViews.add(hourView)
             eventContainer.addView(hourView)
         }
