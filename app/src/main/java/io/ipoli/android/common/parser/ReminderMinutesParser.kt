@@ -8,13 +8,14 @@ import io.ipoli.android.reminder.ui.picker.TimeUnit
  */
 object ReminderMinutesParser {
 
-    fun parseCustomMinutes(minutes: Long): Pair<Long, TimeUnit>? {
-        if (minutes == 0L) {
-            return Pair(minutes, TimeUnit.MINUTES)
-        }
-
-        return TimeUnit.values().reversed()
+    fun parseCustomMinutes(minutes: Long): Pair<Long, TimeUnit> {
+        val timeUnit = TimeUnit.values().reversed()
             .firstOrNull { minutes % it.minutes == 0L }
-            ?.let { Pair(minutes / it.minutes, it) }
+
+        return if (timeUnit == null) {
+            Pair(minutes, TimeUnit.MINUTES)
+        } else {
+            Pair(minutes / timeUnit.minutes, timeUnit)
+        }
     }
 }

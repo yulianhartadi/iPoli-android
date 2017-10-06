@@ -6,7 +6,9 @@ import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ArrayAdapter
+import com.jakewharton.rxbinding2.widget.selection
 import io.ipoli.android.R
+import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.ui.MviDialogController
 import io.ipoli.android.iPoliApp
@@ -16,6 +18,7 @@ import kotlinx.android.synthetic.main.dialog_reminder_picker.view.*
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
+import kotlin.text.Typography.times
 
 typealias TimeUnitConverter = java.util.concurrent.TimeUnit
 
@@ -53,6 +56,8 @@ class ReminderPickerDialogController :
     override fun render(state: ReminderPickerViewState, dialogView: View) {
         when (state) {
             is ReminderPickerViewState.PredefinedTimeValueLoaded -> {
+                ViewUtils.showViews(dialogView.predefinedTimes)
+                ViewUtils.hideViews(dialogView.customTimeContainer)
                 dialogView.message.setText(state.message)
                 dialogView.message.setSelection(state.message.length)
 
@@ -60,6 +65,20 @@ class ReminderPickerDialogController :
                 predefinedTimesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 dialogView.predefinedTimes.adapter = predefinedTimesAdapter
                 dialogView.predefinedTimes.setSelection(state.predefinedIndex)
+            }
+
+            is ReminderPickerViewState.CustomTimeValueLoaded -> {
+                ViewUtils.showViews(dialogView.customTimeContainer)
+                ViewUtils.hideViews(dialogView.predefinedTimes)
+
+                dialogView.message.setText(state.message)
+                dialogView.message.setSelection(state.message.length)
+
+                val customTimeAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.timeUnits)
+                customTimeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                dialogView.customTimeUnits.adapter = customTimeAdapter
+                dialogView.customTimeUnits.setSelection(state.timeValueIndex)
+                dialogView.customTime.setText(state.timeValue)
             }
         }
     }

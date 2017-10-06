@@ -164,7 +164,7 @@ class DayViewController :
                 override fun onReminderPicked(reminder: Reminder) {
 
                 }
-            }, null)
+            }, Reminder(10))
                 .showDialog(router, "pick_reminder_tag")
         }
     }

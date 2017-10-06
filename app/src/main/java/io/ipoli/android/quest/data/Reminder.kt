@@ -23,6 +23,7 @@ open class Reminder : RealmObject {
     @JvmOverloads constructor(minutesFromStart: Long, notificationId: String = Random().nextInt().toString()) {
         this.minutesFromStart = minutesFromStart
         this.notificationId = notificationId
+        message = ""
     }
 
     fun getMinutesFromStart(): Long {
