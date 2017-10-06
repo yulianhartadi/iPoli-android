@@ -2,6 +2,7 @@ package io.ipoli.android.common.mvi
 
 import android.support.annotation.MainThread
 import io.ipoli.android.common.RxUseCase
+import io.ipoli.android.reminder.ui.picker.StateChange
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -31,7 +32,7 @@ interface MviPresenter<in V : ViewStateRenderer<VS>, in VS> {
     fun onDestroy() {}
 }
 
-abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS>(private val initialState: VS) : MviPresenter<V, VS> {
+abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS, SC : StateChange<VS>>(private val initialState: VS) : MviPresenter<V, VS> {
 
     private var viewAttachedFirstTime = true
 
@@ -90,7 +91,9 @@ abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS>(private val initi
     override fun onAttachView(view: V) {
         if (viewAttachedFirstTime) {
             val allIntents = Observable.merge(bindIntents())
-            subscribeViewState(allIntents)
+                .observeOn(AndroidSchedulers.mainThread())
+
+            subscribeViewState(allIntents.scan<VS>(initialState, this::stateReducer).distinctUntilChanged())
         }
 
         subscribeViewStateConsumer(view)
@@ -98,6 +101,9 @@ abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS>(private val initi
 
         viewAttachedFirstTime = false
     }
+
+    private fun stateReducer(prevState: VS, stateChange: SC): VS =
+        stateChange.createState(prevState)
 
     private fun subscribeIntents(view: V) {
         intentRelaysBinders.forEach {
@@ -112,7 +118,7 @@ abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS>(private val initi
     }
 
     @MainThread
-    protected abstract fun bindIntents(): List<Observable<VS>>
+    protected abstract fun bindIntents(): List<Observable<SC>>
 
     @MainThread
     private fun subscribeViewStateConsumer(view: V) {

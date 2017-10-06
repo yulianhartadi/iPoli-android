@@ -55,50 +55,55 @@ class ReminderPickerDialogController :
     override fun createPresenter() = presenter
 
     override fun render(state: ReminderPickerViewState, dialogView: View) {
-        when (state) {
-            is ReminderPickerViewState.PredefinedTimeValueLoaded -> {
-                ViewUtils.showViews(dialogView.predefinedTimes)
-                ViewUtils.hideViews(dialogView.customTimeContainer)
-                dialogView.message.setText(state.message)
-                dialogView.message.setSelection(state.message.length)
 
-                val predefinedTimesAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.predefinedValues)
-                predefinedTimesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                dialogView.predefinedTimes.adapter = predefinedTimesAdapter
-                dialogView.predefinedTimes.setSelection(state.predefinedIndex)
-
-                RxAdapterView.itemSelections(dialogView.predefinedTimes)
-                    .filter { it == state.predefinedValues.size - 1 }
-                    .map { Unit }
-                    .subscribe(showCustomTimeSubject)
-            }
-
-            is ReminderPickerViewState.CustomTimeValueLoaded -> {
-                showCustomTimeViews(dialogView)
-
-                dialogView.message.setText(state.message)
-                dialogView.message.setSelection(state.message.length)
-
-                val customTimeAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.timeUnits)
-                customTimeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                dialogView.customTimeUnits.adapter = customTimeAdapter
-                dialogView.customTimeUnits.setSelection(state.timeValueIndex)
-                dialogView.customTime.setText(state.timeValue)
-            }
-
-            is ReminderPickerViewState.ShowCustomTimeValue -> {
-                showCustomTimeViews(dialogView)
-
-                val customTimeAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.timeUnits)
-                customTimeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                dialogView.customTimeUnits.adapter = customTimeAdapter
-                dialogView.customTimeUnits.setSelection(state.timeValueIndex)
-                dialogView.customTime.setText(state.timeValue)
-
-                dialogView.customTime.requestFocus()
-                ViewUtils.showKeyboard(activity!!, dialogView.customTime)
-            }
+        if (state == ReminderPickerViewState.Loading) {
+            return
         }
+
+//        when (state) {
+//            is ReminderPickerViewState.PredefinedTimeValueLoaded -> {
+        ViewUtils.showViews(dialogView.predefinedTimes)
+        ViewUtils.hideViews(dialogView.customTimeContainer)
+        dialogView.message.setText(state.message)
+        dialogView.message.setSelection(state.message.length)
+
+        val predefinedTimesAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.predefinedValues)
+        predefinedTimesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        dialogView.predefinedTimes.adapter = predefinedTimesAdapter
+        dialogView.predefinedTimes.setSelection(state.predefinedIndex!!)
+
+        RxAdapterView.itemSelections(dialogView.predefinedTimes)
+            .filter { it == state.predefinedValues.size - 1 }
+            .map { Unit }
+            .subscribe(showCustomTimeSubject)
+//            }
+
+//            is ReminderPickerViewState.CustomTimeValueLoaded -> {
+//                showCustomTimeViews(dialogView)
+//
+//                dialogView.message.setText(state.message)
+//                dialogView.message.setSelection(state.message.length)
+//
+//                val customTimeAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.timeUnits)
+//                customTimeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+//                dialogView.customTimeUnits.adapter = customTimeAdapter
+//                dialogView.customTimeUnits.setSelection(state.timeValueIndex)
+//                dialogView.customTime.setText(state.timeValue)
+//            }
+//
+//            is ReminderPickerViewState.ShowCustomTimeValue -> {
+//                showCustomTimeViews(dialogView)
+//
+//                val customTimeAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.timeUnits)
+//                customTimeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+//                dialogView.customTimeUnits.adapter = customTimeAdapter
+//                dialogView.customTimeUnits.setSelection(state.timeValueIndex)
+//                dialogView.customTime.setText(state.timeValue)
+//
+//                dialogView.customTime.requestFocus()
+//                ViewUtils.showKeyboard(activity!!, dialogView.customTime)
+//            }
+//        }
     }
 
     private fun showCustomTimeViews(dialogView: View) {

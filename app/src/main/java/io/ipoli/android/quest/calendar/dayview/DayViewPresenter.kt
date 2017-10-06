@@ -7,6 +7,7 @@ import io.ipoli.android.common.ui.Color
 import io.ipoli.android.quest.calendar.dayview.ui.DayView
 import io.ipoli.android.quest.calendar.dayview.ui.DayViewController
 import io.ipoli.android.quest.calendar.dayview.ui.DayViewState
+import io.ipoli.android.quest.calendar.dayview.ui.DayViewStateChange
 import io.ipoli.android.quest.data.Quest
 import io.ipoli.android.quest.usecase.AddQuestUseCase
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
@@ -21,14 +22,15 @@ import org.threeten.bp.LocalDate
  */
 class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCase,
                        private val addQuestUseCase: AddQuestUseCase) :
-    BaseMviPresenter<DayView, DayViewState>(DayViewState.Loading) {
-    override fun bindIntents(): List<Observable<DayViewState>> {
-        return listOf(
-            bindLoadScheduleIntent(),
-            bindAddEventIntent(),
-            bindEditEventIntent(),
-            bindEditUnscheduledEventIntent()
-        )
+    BaseMviPresenter<DayView, DayViewState, DayViewStateChange>(DayViewState.Loading) {
+    override fun bindIntents(): List<Observable<DayViewStateChange>> {
+        return listOf()
+//        return listOf(
+//            bindLoadScheduleIntent(),
+//            bindAddEventIntent(),
+//            bindEditEventIntent(),
+//            bindEditUnscheduledEventIntent()
+//        )
     }
 
     private fun bindAddEventIntent(): Observable<DayViewState> =

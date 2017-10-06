@@ -3,6 +3,7 @@ package io.ipoli.android.quest.calendar.dayview.ui
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.quest.calendar.dayview.ui.widget.CalendarEvent
 import io.ipoli.android.quest.calendar.dayview.ui.widget.UnscheduledEvent
+import io.ipoli.android.reminder.ui.picker.StateChange
 import io.reactivex.Observable
 import org.threeten.bp.LocalDate
 
@@ -12,6 +13,7 @@ import org.threeten.bp.LocalDate
  */
 
 data class EditEventRequest(val event: CalendarEvent, val eventId: String)
+
 data class EditUnscheduledEventRequest(val event: UnscheduledEvent, val eventId: String)
 
 interface DayView : ViewStateRenderer<DayViewState> {
@@ -29,3 +31,5 @@ sealed class DayViewState {
     object EventUpdated : DayViewState()
     object EventValidationError : DayViewState()
 }
+
+interface DayViewStateChange : StateChange<DayViewState>
