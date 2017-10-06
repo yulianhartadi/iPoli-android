@@ -23,11 +23,18 @@ sealed class ReminderPickerViewState {
         val timeUnits: List<String>,
         val timeValueIndex: Int
     ) : ReminderPickerViewState()
+
+    data class ShowCustomTimeValue(
+        val timeValue: String,
+        val timeUnits: List<String>,
+        val timeValueIndex: Int
+    ) : ReminderPickerViewState()
 }
 
 interface ReminderPickerView : ViewStateRenderer<ReminderPickerViewState> {
     fun editReminderIntent(): Observable<Reminder>
-    fun newReminderIntent(): Observable<Boolean>
+    fun newReminderIntent(): Observable<Unit>
+    fun showCustomTimeIntent(): Observable<Unit>
 }
 
 

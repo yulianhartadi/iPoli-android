@@ -31,13 +31,13 @@ interface MviPresenter<in V : ViewStateRenderer<VS>, in VS> {
     fun onDestroy() {}
 }
 
-abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS>(initialViewState: VS) : MviPresenter<V, VS> {
+abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS>(private val initialState: VS) : MviPresenter<V, VS> {
 
     private var viewAttachedFirstTime = true
 
     private val intentRelaysBinders = mutableListOf<RelayBinderPair<V, *>>()
 
-    private val viewStateBehaviorSubject = BehaviorSubject.createDefault(initialViewState)
+    private val viewStateBehaviorSubject = BehaviorSubject.createDefault(initialState)
 
     private var intentDisposables: CompositeDisposable? = null
 
@@ -89,7 +89,8 @@ abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS>(initialViewState:
 
     override fun onAttachView(view: V) {
         if (viewAttachedFirstTime) {
-            subscribeViewState(Observable.merge(bindIntents()))
+            val allIntents = Observable.merge(bindIntents())
+            subscribeViewState(allIntents)
         }
 
         subscribeViewStateConsumer(view)

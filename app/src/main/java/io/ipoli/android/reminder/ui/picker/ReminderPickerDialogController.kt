@@ -6,6 +6,7 @@ import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ArrayAdapter
+import com.jakewharton.rxbinding2.widget.RxAdapterView
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.Module
@@ -37,15 +38,17 @@ class ReminderPickerDialogController :
     MviDialogController<ReminderPickerViewState, ReminderPickerDialogController, ReminderPickerDialogPresenter>
     , ReminderPickerView, Injects<Module> {
 
-    override fun editReminderIntent(): Observable<Reminder> {
-        return Observable.just(reminder != null)
-            .filter { !isRestoring && it }.map { reminder!! }
-    }
+    private val showCustomTimeSubject = createIntentSubject<Unit>()
 
-    override fun newReminderIntent(): Observable<Boolean> {
-        return Observable.just(true)
+    override fun editReminderIntent(): Observable<Reminder> =
+        Observable.just(reminder != null)
+            .filter { !isRestoring && it }.map { reminder!! }
+
+    override fun newReminderIntent(): Observable<Unit> =
+        Observable.just(Unit)
             .filter { !isRestoring && reminder == null }
-    }
+
+    override fun showCustomTimeIntent() = showCustomTimeSubject
 
     private val presenter by required { reminderPickerPresenter }
 
@@ -63,11 +66,15 @@ class ReminderPickerDialogController :
                 predefinedTimesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 dialogView.predefinedTimes.adapter = predefinedTimesAdapter
                 dialogView.predefinedTimes.setSelection(state.predefinedIndex)
+
+                RxAdapterView.itemSelections(dialogView.predefinedTimes)
+                    .filter { it == state.predefinedValues.size - 1 }
+                    .map { Unit }
+                    .subscribe(showCustomTimeSubject)
             }
 
             is ReminderPickerViewState.CustomTimeValueLoaded -> {
-                ViewUtils.showViews(dialogView.customTimeContainer)
-                ViewUtils.hideViews(dialogView.predefinedTimes)
+                showCustomTimeViews(dialogView)
 
                 dialogView.message.setText(state.message)
                 dialogView.message.setSelection(state.message.length)
@@ -78,24 +85,30 @@ class ReminderPickerDialogController :
                 dialogView.customTimeUnits.setSelection(state.timeValueIndex)
                 dialogView.customTime.setText(state.timeValue)
             }
+
+            is ReminderPickerViewState.ShowCustomTimeValue -> {
+                showCustomTimeViews(dialogView)
+
+                val customTimeAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.timeUnits)
+                customTimeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                dialogView.customTimeUnits.adapter = customTimeAdapter
+                dialogView.customTimeUnits.setSelection(state.timeValueIndex)
+                dialogView.customTime.setText(state.timeValue)
+
+                dialogView.customTime.requestFocus()
+                ViewUtils.showKeyboard(activity!!, dialogView.customTime)
+            }
         }
+    }
+
+    private fun showCustomTimeViews(dialogView: View) {
+        ViewUtils.showViews(dialogView.customTimeContainer)
+        ViewUtils.hideViews(dialogView.predefinedTimes)
     }
 
     override fun onContextAvailable(context: Context) {
         inject(iPoliApp.module(context, router))
     }
-
-//    private lateinit var messageView: TextInputEditText
-//
-//    private lateinit var predefinedTimesView: Spinner
-//
-//    private lateinit var customTimeContainer: ViewGroup
-//
-//    private lateinit var customTimeView: TextInputEditText
-//
-//    private lateinit var customTimeUnitsView: Spinner
-
-//    private var isCustom: Boolean = false
 
     private var listener: ReminderPickedListener? = null
 
