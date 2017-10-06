@@ -35,7 +35,7 @@ class ReminderPickerDialogPresenter(
                 )
             }.cast(ReminderPickerStateChange::class.java),
 
-            on { it.showCustomTimeIntent() }.map { _ ->
+            on { it.showCustomValuesIntent() }.map { _ ->
                 ShowCustomValues(
                     "",
                     timeUnitFormatter.customTimeUnits,

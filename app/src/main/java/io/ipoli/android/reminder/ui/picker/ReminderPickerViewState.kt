@@ -21,33 +21,12 @@ data class ReminderPickerViewState(
     enum class StateType {
         LOADING, NEW_REMINDER, EDIT_REMINDER, CUSTOM_TIME
     }
-
-//    object Loading : ReminderPickerViewState()
-//
-//    data class NewReminderDataLoaded(
-//        val message: String,
-//        val predefinedValues: List<String>,
-//        val predefinedIndex: Int
-//    ) : ReminderPickerViewState()
-//
-//    data class CustomTimeValueLoaded(
-//        val message: String,
-//        val timeValue: String,
-//        val timeUnits: List<String>,
-//        val timeValueIndex: Int
-//    ) : ReminderPickerViewState()
-//
-//    data class ShowCustomTimeValue(
-//        val timeValue: String,
-//        val timeUnits: List<String>,
-//        val timeValueIndex: Int
-//    ) : ReminderPickerViewState()
 }
 
 interface ReminderPickerView : ViewStateRenderer<ReminderPickerViewState> {
     fun editReminderIntent(): Observable<Reminder>
     fun newReminderIntent(): Observable<Unit>
-    fun showCustomTimeIntent(): Observable<Unit>
+    fun showCustomValuesIntent(): Observable<Unit>
 }
 
 

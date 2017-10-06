@@ -38,7 +38,7 @@ class ReminderPickerDialogController :
     MviDialogController<ReminderPickerViewState, ReminderPickerDialogController, ReminderPickerDialogPresenter>
     , ReminderPickerView, Injects<Module> {
 
-    private val showCustomTimeSubject = createIntentSubject<Unit>()
+    private val showCustomValues = createIntentSubject<Unit>()
 
     override fun editReminderIntent(): Observable<Reminder> =
         Observable.just(reminder != null)
@@ -48,14 +48,13 @@ class ReminderPickerDialogController :
         Observable.just(Unit)
             .filter { !isRestoring && reminder == null }
 
-    override fun showCustomTimeIntent() = showCustomTimeSubject
+    override fun showCustomValuesIntent() = showCustomValues
 
     private val presenter by required { reminderPickerPresenter }
 
     override fun createPresenter() = presenter
 
     override fun render(state: ReminderPickerViewState, dialogView: View) {
-
         when (state.type) {
             ReminderPickerViewState.StateType.NEW_REMINDER -> {
                 ViewUtils.showViews(dialogView.predefinedTimes)
@@ -71,7 +70,7 @@ class ReminderPickerDialogController :
                 RxAdapterView.itemSelections(dialogView.predefinedTimes)
                     .filter { it == state.predefinedValues.size - 1 }
                     .map { Unit }
-                    .subscribe(showCustomTimeSubject)
+                    .subscribe(showCustomValues)
             }
 
             ReminderPickerViewState.StateType.EDIT_REMINDER -> {
@@ -99,27 +98,6 @@ class ReminderPickerDialogController :
                 ViewUtils.showKeyboard(activity!!, dialogView.customTime)
             }
         }
-//            is ReminderPickerViewState.NewReminderDataLoaded -> {
-
-//            }
-
-//            is ReminderPickerViewState.CustomTimeValueLoaded -> {
-//
-//            }
-//
-//            is ReminderPickerViewState.ShowCustomTimeValue -> {
-//                showCustomTimeViews(dialogView)
-//
-//                val customTimeAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.timeUnits)
-//                customTimeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-//                dialogView.customTimeUnits.adapter = customTimeAdapter
-//                dialogView.customTimeUnits.setSelection(state.timeValueIndex)
-//                dialogView.customTime.setText(state.timeValue)
-//
-//                dialogView.customTime.requestFocus()
-//                ViewUtils.showKeyboard(activity!!, dialogView.customTime)
-//            }
-//        }
     }
 
     private fun showCustomTimeViews(dialogView: View) {
@@ -149,26 +127,6 @@ class ReminderPickerDialogController :
 
         val contentView = inflater.inflate(R.layout.dialog_reminder_picker, null)
 
-//        messageView = contentView.message
-//        predefinedTimesView = contentView.predefinedTimes
-//        customTimeContainer = contentView.customTimeContainer
-//        customTimeView = contentView.customTime
-//        customTimeUnitsView = contentView.customTimeUnits
-
-//        if (reminder != null) {
-//            val message = reminder!!.message!!
-//            if (message.isNotEmpty()) {
-//                messageView.setText(message)
-//                messageView.setSelection(message.length)
-//            }
-//            if (reminder!!.getMinutesFromStart() != 0L) {
-//                showCustomTimeForm()
-//            }
-//        }
-//
-//        initPredefinedTimes()
-//        initCustomTimes()
-
         val dialog = AlertDialog.Builder(activity!!)
             .setView(contentView)
             .setTitle(R.string.reminder_dialog_title)
@@ -180,52 +138,6 @@ class ReminderPickerDialogController :
 
         return DialogView(dialog, contentView)
     }
-//
-//    private fun showCustomTimeForm() {
-//        predefinedTimesView.visibility = View.GONE
-//        customTimeContainer.visibility = View.VISIBLE
-//        isCustom = true
-//    }
-//
-//    private fun initCustomTimes() {
-//        val times = TimeUnit.values().map {
-//            //            times.add(context!!.getString(TimeOffsetType.getNameBeforeRes(type)).toLowerCase())
-//            it.name
-//        }
-//        val customTimeAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, times)
-//        customTimeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-//        customTimeUnitsView.adapter = customTimeAdapter
-//
-//        if (reminder != null) {
-//            val parsedResult = ReminderMinutesParser.parseCustomMinutes(Math.abs(reminder!!.getMinutesFromStart()))
-//            if (parsedResult != null) {
-//                customTimeView.setText(parsedResult.first.toString())
-//                customTimeUnitsView.setSelection(parsedResult.second.ordinal)
-//            }
-//        }
-//    }
-//
-//    private fun initPredefinedTimes() {
-//        val predefinedTimes = mutableListOf<String>()
-//        for (m in REMINDER_PREDEFINED_MINUTES) {
-//            predefinedTimes.add(m.toString())
-////            predefinedTimes.add(ReminderTimeFormatter.formatMinutesBeforeReadable(context, REMINDER_PREDEFINED_MINUTE))
-//        }
-//        predefinedTimes.add(activity!!.getString(R.string.custom))
-//
-//        val predefinedTimesAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, predefinedTimes)
-//        predefinedTimesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-//        predefinedTimesView.adapter = predefinedTimesAdapter
-//        predefinedTimesView.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-//            override fun onItemSelected(adapterView: AdapterView<*>, view: View, position: Int, l: Long) {
-//                if (position == predefinedTimesAdapter.count - 1) {
-//                    showCustomTimeForm()
-//                }
-//            }
-//
-//            override fun onNothingSelected(adapterView: AdapterView<*>) {}
-//        }
-//    }
 
     interface ReminderPickedListener {
         fun onReminderPicked(reminder: Reminder)
