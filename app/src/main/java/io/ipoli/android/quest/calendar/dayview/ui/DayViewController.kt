@@ -101,19 +101,19 @@ class DayViewController :
     }
 
     override fun render(state: DayViewState, view: View) {
-        when (state) {
-            is DayViewState.ScheduleLoaded -> {
+        when (state.type) {
+            DayViewState.StateType.SCHEDULE_LOADED -> {
                 eventsAdapter = QuestScheduledEventsAdapter(activity!!, state.scheduledQuests, calendarDayView)
                 calendarDayView.setScheduledEventsAdapter(eventsAdapter)
                 unscheduledEventsAdapter = UnscheduledQuestsAdapter(state.unscheduledQuests, calendarDayView)
                 calendarDayView.setUnscheduledQuestsAdapter(unscheduledEventsAdapter)
             }
 
-            is DayViewState.EventUpdated -> {
+            DayViewState.StateType.EVENT_UPDATED -> {
                 calendarDayView.onEventUpdated()
             }
 
-            is DayViewState.EventValidationError -> {
+            DayViewState.StateType.EVENT_VALIDATION_ERROR -> {
                 calendarDayView.onEventValidationError()
             }
         }

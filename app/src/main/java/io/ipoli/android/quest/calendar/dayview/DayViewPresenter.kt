@@ -4,10 +4,7 @@ import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.ui.Color
-import io.ipoli.android.quest.calendar.dayview.ui.DayView
-import io.ipoli.android.quest.calendar.dayview.ui.DayViewController
-import io.ipoli.android.quest.calendar.dayview.ui.DayViewState
-import io.ipoli.android.quest.calendar.dayview.ui.DayViewStateChange
+import io.ipoli.android.quest.calendar.dayview.ui.*
 import io.ipoli.android.quest.data.Quest
 import io.ipoli.android.quest.usecase.AddQuestUseCase
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
@@ -24,16 +21,15 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
                        private val addQuestUseCase: AddQuestUseCase) :
     BaseMviPresenter<DayView, DayViewState, DayViewStateChange>(DayViewState.Loading) {
     override fun bindIntents(): List<Observable<DayViewStateChange>> {
-        return listOf()
-//        return listOf(
-//            bindLoadScheduleIntent(),
-//            bindAddEventIntent(),
-//            bindEditEventIntent(),
-//            bindEditUnscheduledEventIntent()
-//        )
+        return listOf(
+            bindLoadScheduleIntent(),
+            bindAddEventIntent(),
+            bindEditEventIntent(),
+            bindEditUnscheduledEventIntent()
+        )
     }
 
-    private fun bindAddEventIntent(): Observable<DayViewState> =
+    private fun bindAddEventIntent(): Observable<DayViewStateChange> =
         on { it.addEventIntent() }
             .map { event ->
                 val q = Quest(event.name, LocalDate.now())
@@ -44,12 +40,12 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
             .execute(addQuestUseCase)
             .map { result ->
                 when (result) {
-                    is Result.Invalid -> DayViewState.EventValidationError
-                    else -> DayViewState.EventUpdated
+                    is Result.Invalid -> EventValidationError
+                    else -> EventUpdated
                 }
             }
 
-    private fun bindEditEventIntent(): Observable<DayViewState> =
+    private fun bindEditEventIntent(): Observable<DayViewStateChange> =
         on { it.editEventIntent() }
             .map { (event, id) ->
                 val q = Quest(event.name, LocalDate.now())
@@ -61,12 +57,12 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
             .execute(addQuestUseCase)
             .map { result ->
                 when (result) {
-                    is Result.Invalid -> DayViewState.EventValidationError
-                    else -> DayViewState.EventUpdated
+                    is Result.Invalid -> EventValidationError
+                    else -> EventUpdated
                 }
             }
 
-    private fun bindEditUnscheduledEventIntent(): Observable<DayViewState> =
+    private fun bindEditUnscheduledEventIntent(): Observable<DayViewStateChange> =
         on { it.editUnscheduledEventIntent() }
             .map { (event, id) ->
                 val q = Quest(event.name, LocalDate.now())
@@ -77,16 +73,16 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
             .execute(addQuestUseCase)
             .map { result ->
                 when (result) {
-                    is Result.Invalid -> DayViewState.EventValidationError
-                    else -> DayViewState.EventUpdated
+                    is Result.Invalid -> EventValidationError
+                    else -> EventUpdated
                 }
             }
 
-    private fun bindLoadScheduleIntent(): Observable<DayViewState> =
+    private fun bindLoadScheduleIntent(): Observable<DayViewStateChange> =
         on { it.loadScheduleIntent() }
             .execute(loadScheduleUseCase)
             .map { schedule ->
-                DayViewState.ScheduleLoaded(createScheduledViewModels(schedule), createUnscheduledViewModels(schedule))
+                ScheduleLoaded(createScheduledViewModels(schedule), createUnscheduledViewModels(schedule))
             }
 
     private fun createUnscheduledViewModels(schedule: Schedule): List<DayViewController.UnscheduledQuestViewModel> =

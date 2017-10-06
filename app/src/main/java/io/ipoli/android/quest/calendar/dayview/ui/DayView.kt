@@ -23,13 +23,43 @@ interface DayView : ViewStateRenderer<DayViewState> {
     fun editUnscheduledEventIntent(): Observable<EditUnscheduledEventRequest>
 }
 
-sealed class DayViewState {
-    object Loading : DayViewState()
-    data class ScheduleLoaded(val scheduledQuests: List<DayViewController.QuestViewModel>,
-                              val unscheduledQuests: List<DayViewController.UnscheduledQuestViewModel>) : DayViewState()
+data class DayViewState(
+    val type: StateType,
+    val scheduledQuests: List<DayViewController.QuestViewModel> = listOf(),
+    val unscheduledQuests: List<DayViewController.UnscheduledQuestViewModel> = listOf()
+) {
 
-    object EventUpdated : DayViewState()
-    object EventValidationError : DayViewState()
+    companion object {
+        val Loading = DayViewState(type = StateType.LOADING)
+    }
+
+    enum class StateType {
+        LOADING, SCHEDULE_LOADED, EVENT_UPDATED, EVENT_VALIDATION_ERROR
+    }
 }
 
 interface DayViewStateChange : StateChange<DayViewState>
+
+data class ScheduleLoaded(
+    private val scheduledQuests: List<DayViewController.QuestViewModel>,
+    private val unscheduledQuests: List<DayViewController.UnscheduledQuestViewModel>
+) : DayViewStateChange {
+
+    override fun createState(prevState: DayViewState) =
+        prevState.copy(
+            scheduledQuests = scheduledQuests,
+            unscheduledQuests = unscheduledQuests
+        )
+}
+
+object EventUpdated : DayViewStateChange {
+
+    override fun createState(prevState: DayViewState) =
+        prevState.copy(type = DayViewState.StateType.EVENT_UPDATED)
+}
+
+object EventValidationError : DayViewStateChange {
+
+    override fun createState(prevState: DayViewState) =
+        prevState.copy(type = DayViewState.StateType.EVENT_VALIDATION_ERROR)
+}
