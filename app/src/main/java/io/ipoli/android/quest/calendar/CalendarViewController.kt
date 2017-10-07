@@ -85,11 +85,10 @@ class CalendarViewController : Controller() {
     private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
         val monthPattern = DateTimeFormatter.ofPattern("MMMM")
         view.dayPickerContainer.visibility = View.GONE
-        val dayPicker = view.dayPicker
         val calendarIndicator = calendarToolbar.calendarIndicator
 
         var currentDate = LocalDate.now()
-        dayPicker.markDate(DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth))
+        view.dayPicker.markDate(DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth))
         var isOpen = false
 
         calendarToolbar.setOnClickListener {
@@ -100,7 +99,7 @@ class CalendarViewController : Controller() {
             if (!isOpen) {
                 CellConfig.Month2WeekPos = CellConfig.middlePosition
                 CellConfig.ifMonth = false
-                dayPicker.shrink()
+                view.dayPicker.shrink()
                 isOpen = true
                 layoutParams.topMargin = ViewUtils.dpToPx(-12f, view.context).toInt()
                 view.pager.layoutParams = layoutParams
@@ -119,25 +118,25 @@ class CalendarViewController : Controller() {
                 CellConfig.Month2WeekPos = CellConfig.middlePosition
                 CellConfig.ifMonth = false
                 CellConfig.weekAnchorPointDate = DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
-                dayPicker.shrink()
+                view.dayPicker.shrink()
             } else {
                 CellConfig.ifMonth = true
                 CellConfig.Week2MonthPos = CellConfig.middlePosition
-                dayPicker.expand()
+                view.dayPicker.expand()
             }
         })
 
 
-        dayPicker.setOnDateClickListener(object : OnDateClickListener() {
+        view.dayPicker.setOnDateClickListener(object : OnDateClickListener() {
             override fun onDateClick(v: View, date: DateData) {
-                dayPicker.markedDates.removeAdd()
-                dayPicker.markDate(date)
+                view.dayPicker.markedDates.removeAdd()
+                view.dayPicker.markDate(date)
                 currentDate = LocalDate.of(date.year, date.month, date.day)
                 view.currentMonth.text = currentDate.format(monthPattern)
             }
         })
 
-        dayPicker.setOnMonthScrollListener(object : OnMonthScrollListener() {
+        view.dayPicker.setOnMonthScrollListener(object : OnMonthScrollListener() {
             override fun onMonthChange(year: Int, month: Int) {
                 val localDate = LocalDate.of(year, month, 1)
                 view.currentMonth.text = localDate.format(monthPattern)

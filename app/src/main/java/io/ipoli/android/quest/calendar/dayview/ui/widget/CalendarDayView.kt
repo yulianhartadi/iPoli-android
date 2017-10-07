@@ -79,7 +79,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     sealed class Event {
         object CompleteEdit : Event()
         object CompleteEditRequest : Event()
-        object CancelEdit: Event()
+        object CancelEdit : Event()
         object Up : Event()
         data class StartCalendarEventEdit(val view: View, val position: Int) : Event()
         data class StartUnscheduledEventEdit(val view: View, val position: Int) : Event()
@@ -211,7 +211,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             val timeMapper = PositionToTimeMapper(minuteHeight)
             val eventStartTime = timeMapper
                 .timeAt(yPosition, 15)
-            val dragView = addAndPositionDragView(timeMapper.timeAt(lastY!! - topLocationOnScreen).toPosition(minuteHeight), fsm.state.hourHeight.toInt())
+            val dragView = addAndPositionDragView(eventStartTime.toPosition(minuteHeight) - unscheduledEvents.height - scrollView.scrollY, fsm.state.hourHeight.toInt())
             dragView.post {
                 this.dragView = dragView
                 fsm.fire(Event.StartCalendarEventAdd(eventStartTime, 60, "", Color.GREEN))
