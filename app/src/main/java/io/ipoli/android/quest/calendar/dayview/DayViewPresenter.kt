@@ -30,13 +30,15 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
     }
 
     private fun bindAddEventIntent(): Observable<DayViewStateChange> =
-        on { it.addEventIntent() }
-            .map { (state, event) ->
-                val q = Quest(event.name, LocalDate.now())
-                q.startMinute = event.startMinute
-                q.setDuration(event.duration)
-                Pair(state, q)
-            }
+        on {
+            it.addEventIntent()
+                .map { event ->
+                    val q = Quest(event.name, LocalDate.now())
+                    q.startMinute = event.startMinute
+                    q.setDuration(event.duration)
+                    q
+                }
+        }
             .execute(addQuestUseCase)
             .map { result ->
                 when (result) {
@@ -46,14 +48,15 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
             }
 
     private fun bindEditEventIntent(): Observable<DayViewStateChange> =
-        on { it.editEventIntent() }
-            .map { (state, editRequest) ->
-                val q = Quest(editRequest.event.name, LocalDate.now())
-                q.id = editRequest.eventId
-                q.startMinute = editRequest.event.startMinute
-                q.setDuration(editRequest.event.duration)
-                Pair(state, q)
+        on {
+            it.editEventIntent().map {
+                val q = Quest(it.event.name, LocalDate.now())
+                q.id = it.eventId
+                q.startMinute = it.event.startMinute
+                q.setDuration(it.event.duration)
+                q
             }
+        }
             .execute(addQuestUseCase)
             .map { result ->
                 when (result) {
@@ -63,13 +66,14 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
             }
 
     private fun bindEditUnscheduledEventIntent(): Observable<DayViewStateChange> =
-        on { it.editUnscheduledEventIntent() }
-            .map { (state, editRequest) ->
-                val q = Quest(editRequest.event.name, LocalDate.now())
-                q.id = editRequest.eventId
-                q.setDuration(editRequest.event.duration)
-                Pair(state, q)
+        on {
+            it.editUnscheduledEventIntent().map {
+                val q = Quest(it.event.name, LocalDate.now())
+                q.id = it.eventId
+                q.setDuration(it.event.duration)
+                q
             }
+        }
             .execute(addQuestUseCase)
             .map { result ->
                 when (result) {
