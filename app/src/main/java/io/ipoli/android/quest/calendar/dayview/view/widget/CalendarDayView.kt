@@ -216,7 +216,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 this.dragView = dragView
                 fsm.fire(Event.StartCalendarEventAdd(eventStartTime, 60, "", Color.GREEN))
             }
-            true
+            false
         }
     }
 
@@ -589,7 +589,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private fun listenForZoom() {
         scrollView.setOnTouchListener { _, e ->
             scaleDetector.onTouchEvent(e)
-            true
+            false
         }
     }
 

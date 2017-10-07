@@ -28,12 +28,12 @@ class ReminderPickerDialogPresenter(
         )
 
     private fun bindTimeUnitChangeIntent() =
-        on { it.timeUnitChangeIntent() }.map { index ->
+        on { it.timeUnitChangeIntent() }.map { (_, index) ->
             TimeUnitChange(index)
         }.cast(ReminderPickerStateChange::class.java)
 
     private fun bindPredefinedValueChangeIntent() =
-        on { it.predefinedValueChangeIntent() }.map { index ->
+        on { it.predefinedValueChangeIntent() }.map { (_, index) ->
             if (index == reminderTimeFormatter.predefinedTimes.size - 1) {
                 ShowCustomValues("", timeUnitFormatter.customTimeUnits, 0)
             } else {
@@ -42,17 +42,17 @@ class ReminderPickerDialogPresenter(
         }.cast(ReminderPickerStateChange::class.java)
 
     private fun bindMessageChangeIntent() =
-        on { it.messageChangeIntent() }.map { text ->
+        on { it.messageChangeIntent() }.map { (_, text) ->
             MessageChange(text)
         }.cast(ReminderPickerStateChange::class.java)
 
     private fun bindCustomTimeChangeIntent() =
-        on { it.customTimeChangeIntent() }.map { text ->
+        on { it.customTimeChangeIntent() }.map { (_, text) ->
             CustomTimeChange(text)
         }.cast(ReminderPickerStateChange::class.java)
 
     private fun bindPickReminderIntent() =
-        on { it.pickReminderIntent() }.map { _ ->
+        on { it.pickReminderIntent() }.map { (state, _) ->
             if (state.timeUnitIndex != null && state.timeValue.isEmpty()) {
                 TimeValueValidationError
             } else {
@@ -61,7 +61,7 @@ class ReminderPickerDialogPresenter(
         }.cast(ReminderPickerStateChange::class.java)
 
     private fun bindEditReminderIntent() =
-        on { it.loadReminderData() }.map { reminder ->
+        on { it.loadReminderData() }.map { (_, reminder) ->
             val (timeValue, timeUnit) = ReminderMinutesParser
                 .parseCustomMinutes(reminder.getMinutesFromStart())
             EditReminderDataLoaded(

@@ -31,11 +31,11 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
 
     private fun bindAddEventIntent(): Observable<DayViewStateChange> =
         on { it.addEventIntent() }
-            .map { event ->
+            .map { (state, event) ->
                 val q = Quest(event.name, LocalDate.now())
                 q.startMinute = event.startMinute
                 q.setDuration(event.duration)
-                q
+                Pair(state, q)
             }
             .execute(addQuestUseCase)
             .map { result ->
@@ -47,12 +47,12 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
 
     private fun bindEditEventIntent(): Observable<DayViewStateChange> =
         on { it.editEventIntent() }
-            .map { (event, id) ->
-                val q = Quest(event.name, LocalDate.now())
-                q.id = id
-                q.startMinute = event.startMinute
-                q.setDuration(event.duration)
-                q
+            .map { (state, editRequest) ->
+                val q = Quest(editRequest.event.name, LocalDate.now())
+                q.id = editRequest.eventId
+                q.startMinute = editRequest.event.startMinute
+                q.setDuration(editRequest.event.duration)
+                Pair(state, q)
             }
             .execute(addQuestUseCase)
             .map { result ->
@@ -64,11 +64,11 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
 
     private fun bindEditUnscheduledEventIntent(): Observable<DayViewStateChange> =
         on { it.editUnscheduledEventIntent() }
-            .map { (event, id) ->
-                val q = Quest(event.name, LocalDate.now())
-                q.id = id
-                q.setDuration(event.duration)
-                q
+            .map { (state, editRequest) ->
+                val q = Quest(editRequest.event.name, LocalDate.now())
+                q.id = editRequest.eventId
+                q.setDuration(editRequest.event.duration)
+                Pair(state, q)
             }
             .execute(addQuestUseCase)
             .map { result ->

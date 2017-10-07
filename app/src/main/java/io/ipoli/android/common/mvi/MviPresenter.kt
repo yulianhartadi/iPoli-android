@@ -12,6 +12,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 
+
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/8/17.
@@ -36,13 +37,14 @@ interface StateChange<VS> {
 }
 
 abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS, SC : StateChange<VS>>(private val initialState: VS) : MviPresenter<V, VS> {
-    protected var state: VS = initialState
 
     private var viewAttachedFirstTime = true
 
     private val intentRelaysBinders = mutableListOf<RelayBinderPair<V, *>>()
 
     private val viewStateBehaviorSubject = BehaviorSubject.createDefault(initialState)
+
+//    private var viewStateChangeSubject = BehaviorSubject.createDefault(initialState)
 
     private var intentDisposables: CompositeDisposable? = null
 
@@ -97,7 +99,7 @@ abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS, SC : StateChange<
             val allIntents = Observable.merge(bindIntents())
                 .observeOn(AndroidSchedulers.mainThread())
 
-            subscribeViewState(allIntents.scan<VS>(initialState, this::stateReducer).distinctUntilChanged())
+            subscribeViewState(allIntents.scan(initialState, this::stateReducer).distinctUntilChanged())
         }
 
         subscribeViewStateConsumer(view)
@@ -117,6 +119,8 @@ abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS, SC : StateChange<
 
     @MainThread
     private fun subscribeViewState(viewStateObservable: Observable<VS>) {
+//        viewStateChangeSubject.subscribe(viewStateChangeSubject)
+//        viewStateObservable.subscribe(viewStateChangeSubject)
         viewStateDisposable = viewStateObservable.subscribeWith(
             DisposableViewStateObserver(viewStateBehaviorSubject))
     }
@@ -127,17 +131,18 @@ abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS, SC : StateChange<
     @MainThread
     private fun subscribeViewStateConsumer(view: V) {
         viewRelayConsumerDisposable = viewStateBehaviorSubject.subscribe {
-            state = it
             view.render(it)
         }
     }
 
     @MainThread
-    protected fun <I> on(handler: (V) -> Observable<I>): Observable<I> =
+    protected fun <I> on(handler: (V) -> Observable<I>): Observable<Pair<VS, I>> =
         on(object : ViewIntentBinder<V, I> {
             override fun bind(view: V): Observable<I> =
                 handler(view)
-        })
+        }).map { intentParams ->
+            Pair(viewStateBehaviorSubject.value, intentParams)
+        }
 
     private fun <I> on(binder: ViewIntentBinder<V, I>): Observable<I> {
         val intentRelay = PublishSubject.create<I>()
@@ -181,12 +186,12 @@ abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS, SC : StateChange<
     }
 
 
-    protected fun <T, R> Observable<T>.execute(
+    protected fun <T, R> Observable<Pair<VS, T>>.execute(
         useCase: RxUseCase<T, R>,
         transformer: ObservableTransformer<R, R> = runOnIO()
     ): Observable<R> =
         switchMap {
-            useCase.execute(it)
+            useCase.execute(it.second)
                 .compose(transformer)
         }
 
