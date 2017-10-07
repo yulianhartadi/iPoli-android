@@ -61,7 +61,7 @@ class ReminderPickerDialogPresenter(
         }.cast(ReminderPickerStateChange::class.java)
 
     private fun bindEditReminderIntent() =
-        on { it.editReminderIntent() }.map { reminder ->
+        on { it.loadReminderData() }.map { reminder ->
             val (timeValue, timeUnit) = ReminderMinutesParser
                 .parseCustomMinutes(reminder.getMinutesFromStart())
             EditReminderDataLoaded(
@@ -73,7 +73,7 @@ class ReminderPickerDialogPresenter(
         }.cast(ReminderPickerStateChange::class.java)
 
     private fun bindLoadNewReminderIntent() =
-        on { it.newReminderIntent() }.map { _ ->
+        on { it.loadNewReminderData() }.map { _ ->
             NewReminderDataLoaded(
                 reminderTimeFormatter.predefinedTimes,
                 0
@@ -131,17 +131,17 @@ data class ShowCustomValues(
         )
 }
 
-data class CustomTimeChange(val text: String) : ReminderPickerStateChange {
+data class CustomTimeChange(private val text: String) : ReminderPickerStateChange {
     override fun createState(prevState: ReminderPickerViewState) =
         prevState.copy(type = NEW_VALUES, timeValue = text)
 }
 
-data class MessageChange(val text: String) : ReminderPickerStateChange {
+data class MessageChange(private val text: String) : ReminderPickerStateChange {
     override fun createState(prevState: ReminderPickerViewState) =
         prevState.copy(type = NEW_VALUES, message = text)
 }
 
-data class PredefinedValueChange(val index: Int) : ReminderPickerStateChange {
+data class PredefinedValueChange(private val index: Int) : ReminderPickerStateChange {
     override fun createState(prevState: ReminderPickerViewState) =
         prevState.copy(type = NEW_VALUES, predefinedIndex = index)
 }

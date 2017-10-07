@@ -49,11 +49,11 @@ class ReminderPickerDialogController :
     private val customTimeChangeSubject = createIntentSubject<String>()
     private val timeUnitChangeSubject = createIntentSubject<Int>()
 
-    override fun editReminderIntent(): Observable<Reminder> =
+    override fun loadReminderData(): Observable<Reminder> =
         Observable.just(reminder != null)
             .filter { !isRestoring && it }.map { reminder!! }
 
-    override fun newReminderIntent(): Observable<Unit> =
+    override fun loadNewReminderData(): Observable<Unit> =
         Observable.just(Unit)
             .filter { !isRestoring && reminder == null }
 
