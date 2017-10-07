@@ -182,7 +182,7 @@ class DayViewController :
             dragView,
             "backgroundColor",
             (dragView.background as ColorDrawable).color,
-            ContextCompat.getColor(dragView.context, color.color200)
+            ContextCompat.getColor(dragView.context, color.color500)
         )
             .setDuration(dragView.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong())
             .start()
@@ -330,7 +330,7 @@ class DayViewController :
                 view.questName.text = vm.name
                 view.questName.setTextColor(ContextCompat.getColor(context, vm.textColor))
                 (view as CardView).setCardBackgroundColor(ContextCompat.getColor(context, vm.backgroundColor.color200))
-                view.questCategoryIndicator.setBackgroundResource(R.color.md_green_700)
+                view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color700)
             } else {
                 val span = SpannableString(vm.name)
                 span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)

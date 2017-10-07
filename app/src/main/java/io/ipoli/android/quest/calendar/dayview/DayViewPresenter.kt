@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.calendar.dayview
 
 import io.ipoli.android.R
+import io.ipoli.android.common.data.ColorName
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.view.Color
@@ -35,7 +36,8 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
         on {
             it.addEventIntent()
                 .map { event ->
-                    val q = Quest(event.name, LocalDate.now())
+                    val colorName = event.backgroundColor.colorName
+                    val q = Quest(event.name, LocalDate.now(), colorName = colorName)
                     q.startMinute = event.startMinute
                     q.setDuration(event.duration)
                     q
@@ -50,7 +52,8 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
     private fun bindEditEventIntent() =
         on {
             it.editEventIntent().map {
-                val q = Quest(it.event.name, LocalDate.now())
+                val colorName = it.event.backgroundColor.colorName
+                val q = Quest(it.event.name, LocalDate.now(), colorName = colorName)
                 q.id = it.eventId
                 q.startMinute = it.event.startMinute
                 q.setDuration(it.event.duration)
@@ -83,7 +86,8 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
     private fun bindEditUnscheduledEventIntent() =
         on {
             it.editUnscheduledEventIntent().map {
-                val q = Quest(it.event.name, LocalDate.now())
+                val colorName = it.event.backgroundColor.colorName
+                val q = Quest(it.event.name, LocalDate.now(), colorName = colorName)
                 q.id = it.eventId
                 q.setDuration(it.event.duration)
                 q
@@ -124,13 +128,14 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
                 it.id,
                 it.name,
                 it.actualDuration,
-                Color.ORANGE
+                Color.get(it.colorName!!)
             )
         }
 
     private fun createScheduledViewModels(schedule: Schedule): List<DayViewController.QuestViewModel> =
         schedule.scheduled.map {
             val endTime = Time.of(it.startMinute!! + it.actualDuration)
+            val color = Color.get(it.colorName!!)
             DayViewController.QuestViewModel(
                 it.id,
                 it.name,
@@ -138,8 +143,8 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
                 it.startMinute!!,
                 it.startTime.toString(),
                 endTime.toString(),
-                Color.GREEN,
-                R.color.md_green_900,
+                color,
+                color.color900,
                 it.isCompleted
             )
         }

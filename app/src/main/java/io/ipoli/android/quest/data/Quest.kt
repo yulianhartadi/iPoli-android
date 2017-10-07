@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.data
 
 import io.ipoli.android.Constants
+import io.ipoli.android.common.data.ColorName
 import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.TimePreference
@@ -32,6 +33,8 @@ open class Quest : RealmObject, PersistedModel {
     var name: String = ""
 
     var category: String? = null
+
+    var colorName: String? = null
 
     var isAllDay: Boolean? = null
         private set
@@ -90,7 +93,12 @@ open class Quest : RealmObject, PersistedModel {
 
     constructor(name: String, category: Category) : this(name, null, category) {}
 
-    @JvmOverloads constructor(name: String, endDate: LocalDate? = null, category: Category = Category.PERSONAL) {
+    @JvmOverloads constructor(
+        name: String,
+        endDate: LocalDate? = null,
+        category: Category = Category.PERSONAL,
+        colorName: ColorName = ColorName.ORANGE) {
+
         this.name = name
         this.endDate = endDate
         startDate = endDate
@@ -99,6 +107,7 @@ open class Quest : RealmObject, PersistedModel {
         createdAt = DateUtils.nowUTC().time
         updatedAt = DateUtils.nowUTC().time
         this.category = category.name
+        this.colorName = colorName.name
         this.source = Constants.API_RESOURCE_SOURCE
         this.isAllDay = false
     }

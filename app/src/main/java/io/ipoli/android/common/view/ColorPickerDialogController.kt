@@ -65,7 +65,7 @@ class ColorPickerDialogController : BaseDialogController {
             val vm = colors[position]
             val iv = holder.itemView as ImageView
             val drawable = iv.background as GradientDrawable
-            drawable.setColor(ContextCompat.getColor(iv.context, vm.color.color200))
+            drawable.setColor(ContextCompat.getColor(iv.context, vm.color.color500))
 
             if (vm.isSelected) {
                 iv.setImageResource(R.drawable.ic_done_white_24dp)
