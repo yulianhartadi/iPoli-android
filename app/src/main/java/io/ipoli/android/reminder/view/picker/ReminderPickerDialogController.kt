@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter
 import com.jakewharton.rxbinding2.widget.RxAdapterView
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.ipoli.android.R
+import io.ipoli.android.R.id.reminder
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.view.MviDialogController
@@ -39,6 +40,8 @@ enum class TimeUnit(val minutes: Long) {
     WEEKS(TimeUnitConverter.DAYS.toMinutes(7))
 }
 
+data class ReminderViewModel(val message: String, val minutesFromStart: Long)
+
 class ReminderPickerDialogController :
     MviDialogController<ReminderPickerViewState, ReminderPickerDialogController, ReminderPickerDialogPresenter>
     , ReminderPickerView, Injects<Module> {
@@ -49,7 +52,20 @@ class ReminderPickerDialogController :
     private val customTimeChangeSubject = createIntentSubject<String>()
     private val timeUnitChangeSubject = createIntentSubject<Int>()
 
-    override fun loadReminderData(): Observable<Reminder> =
+    private var listener: ReminderPickedListener? = null
+
+    private var reminder: ReminderViewModel? = null
+
+    constructor(listener: ReminderPickedListener, selectedReminder: ReminderViewModel? = null) : super() {
+        this.listener = listener
+        this.reminder = selectedReminder
+    }
+
+    protected constructor() : super()
+
+    protected constructor(args: Bundle?) : super(args)
+
+    override fun loadReminderData(): Observable<ReminderViewModel> =
         Observable.just(reminder != null)
             .filter { !isRestoring && it }.map { reminder!! }
 
@@ -114,6 +130,7 @@ class ReminderPickerDialogController :
 
             ReminderPickerViewState.StateType.FINISHED -> {
                 ViewUtils.hideKeyboard(dialogView)
+                listener?.onReminderPicked(state.viewModel!!)
                 dismissDialog()
             }
 
@@ -131,19 +148,6 @@ class ReminderPickerDialogController :
     override fun onContextAvailable(context: Context) {
         inject(iPoliApp.module(context, router))
     }
-
-    private var listener: ReminderPickedListener? = null
-
-    private var reminder: Reminder? = null
-
-    constructor(listener: ReminderPickedListener, selectedReminder: Reminder? = null) : super() {
-        this.listener = listener
-        this.reminder = selectedReminder
-    }
-
-    protected constructor() : super()
-
-    protected constructor(args: Bundle?) : super(args)
 
     override fun onCreateDialog(savedViewState: Bundle?): DialogView {
 
@@ -169,7 +173,10 @@ class ReminderPickerDialogController :
             .setIcon(R.drawable.pet_5_head)
             .setPositiveButton(R.string.dialog_ok, null)
             .setNegativeButton(R.string.cancel, { p0, p1 -> ViewUtils.hideKeyboard(contentView) })
-            .setNeutralButton(R.string.do_not_remind, { p0, p1 -> ViewUtils.hideKeyboard(contentView) })
+            .setNeutralButton(R.string.do_not_remind, { p0, p1 ->
+                ViewUtils.hideKeyboard(contentView)
+                listener?.onReminderPicked(null)
+            })
             .create()
 
         dialog.setOnShowListener {
@@ -182,6 +189,6 @@ class ReminderPickerDialogController :
     }
 
     interface ReminderPickedListener {
-        fun onReminderPicked(reminder: Reminder)
+        fun onReminderPicked(reminder: ReminderViewModel?)
     }
 }

@@ -28,6 +28,7 @@ import io.ipoli.android.quest.calendar.dayview.view.widget.*
 import io.ipoli.android.quest.data.Category
 import io.ipoli.android.quest.data.Reminder
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogController
+import io.ipoli.android.reminder.view.picker.ReminderViewModel
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.controller_day_view.view.*
@@ -38,6 +39,7 @@ import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 class DayViewController :
     MviViewController<DayViewState, DayView, DayViewPresenter>(R.layout.controller_day_view),
@@ -162,8 +164,8 @@ class DayViewController :
 
         dragView.reminder.setOnClickListener {
             ReminderPickerDialogController(object : ReminderPickerDialogController.ReminderPickedListener {
-                override fun onReminderPicked(reminder: Reminder) {
-
+                override fun onReminderPicked(reminder: ReminderViewModel?) {
+                    Timber.d("AAAAA $reminder")
                 }
             }, null)
                 .showDialog(router, "pick_reminder_tag")
