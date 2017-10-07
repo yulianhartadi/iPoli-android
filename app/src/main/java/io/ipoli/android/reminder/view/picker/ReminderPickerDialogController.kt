@@ -73,7 +73,6 @@ class ReminderPickerDialogController :
     override fun createPresenter() = presenter
 
     override fun render(state: ReminderPickerViewState, dialogView: View) {
-        Timber.d("${state}")
 
         when (state.type) {
             ReminderPickerViewState.StateType.NEW_REMINDER -> {

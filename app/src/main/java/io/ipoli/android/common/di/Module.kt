@@ -9,7 +9,7 @@ import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.data.persistence.RealmQuestRepository
-import io.ipoli.android.quest.usecase.AddQuestUseCase
+import io.ipoli.android.quest.usecase.SaveQuestUseCase
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
 import io.ipoli.android.reminder.view.formatter.ReminderTimeFormatter
 import io.ipoli.android.reminder.view.formatter.TimeUnitFormatter
@@ -59,12 +59,12 @@ class MainAndroidModule(private val context: Context, private val router: Router
 class MainUseCaseModule : UseCaseModule, Injects<Module> {
     private val questRepository by required { questRepository }
     override val loadScheduleForDateUseCase get() = LoadScheduleForDateUseCase(questRepository)
-    override val addQuestUseCase get() = AddQuestUseCase(questRepository)
+    override val saveQuestUseCase get() = SaveQuestUseCase(questRepository)
 }
 
 interface UseCaseModule {
     val loadScheduleForDateUseCase: LoadScheduleForDateUseCase
-    val addQuestUseCase: AddQuestUseCase
+    val saveQuestUseCase: SaveQuestUseCase
 }
 
 interface PresenterModule {
@@ -74,10 +74,10 @@ interface PresenterModule {
 
 class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
-    private val addQuestUseCase by required { addQuestUseCase }
+    private val saveQuestUseCase by required { saveQuestUseCase }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
     private val timeUnitFormatter by required { timeUnitFormatter }
-    override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, addQuestUseCase)
+    override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase)
     override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter)
 }
 

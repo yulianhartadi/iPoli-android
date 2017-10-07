@@ -13,9 +13,9 @@ import org.jetbrains.spek.api.dsl.it
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/30/17.
  */
-object AddQuestUseCaseSpek : Spek({
+object SaveQuestUseCaseSpek : Spek({
 
-    describe("AddQuestUseCase") {
+    describe("SaveQuestUseCase") {
 
         it("should give validation error when quest name is empty") {
             val repo = mock<QuestRepository>()
@@ -37,4 +37,4 @@ object AddQuestUseCaseSpek : Spek({
 })
 
 private fun execute(repo: QuestRepository, quest: Quest) =
-    AddQuestUseCase(repo).execute(quest).blockingIterable().first()
+    SaveQuestUseCase(repo).execute(quest).blockingIterable().first()

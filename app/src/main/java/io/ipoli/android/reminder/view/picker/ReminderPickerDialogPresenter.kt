@@ -5,6 +5,7 @@ import io.ipoli.android.common.parser.ReminderMinutesParser
 import io.ipoli.android.reminder.view.formatter.ReminderTimeFormatter
 import io.ipoli.android.reminder.view.formatter.TimeUnitFormatter
 import io.ipoli.android.reminder.view.picker.ReminderPickerViewState.StateType.*
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>

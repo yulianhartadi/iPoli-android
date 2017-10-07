@@ -9,7 +9,7 @@ import io.ipoli.android.quest.calendar.dayview.view.DayViewController
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
 import io.ipoli.android.quest.data.Quest
-import io.ipoli.android.quest.usecase.AddQuestUseCase
+import io.ipoli.android.quest.usecase.SaveQuestUseCase
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
 import io.ipoli.android.quest.usecase.Result
 import io.ipoli.android.quest.usecase.Schedule
@@ -21,7 +21,7 @@ import org.threeten.bp.LocalDate
  * on 9/27/17.
  */
 class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCase,
-                       private val addQuestUseCase: AddQuestUseCase) :
+                       private val saveQuestUseCase: SaveQuestUseCase) :
     BaseMviPresenter<DayView, DayViewState>(DayViewState.Loading) {
     override fun bindIntents(): List<Observable<DayViewState>> =
         listOf(
@@ -40,14 +40,12 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
                     q.setDuration(event.duration)
                     q
                 }
-        }
-            .execute(addQuestUseCase)
-            .map { (state, result) ->
-                when (result) {
-                    is Result.Invalid -> state.copy(type = EVENT_VALIDATION_ERROR)
-                    else -> state.copy(type = EVENT_UPDATED)
-                }
+        }.executeAndReduce(
+            saveQuestUseCase,
+            { state, result ->
+                getSavedQuestViewState(result, state)
             }
+        )
 
     private fun bindEditEventIntent() =
         on {
@@ -58,8 +56,12 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
                 q.setDuration(it.event.duration)
                 q
             }
-        }.switchMap { (state, params) ->
-            addQuestUseCase.execute(params).map { result ->
+        }.executeAndReduce(
+            saveQuestUseCase,
+            { state, result ->
+                getSavedQuestViewState(result, state)
+            }
+        )
 
 //                transformation {
 //                    mapIntent: { intentParams ->
@@ -69,7 +71,7 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
 //                        q.setDuration(it.event.duration)
 //                        q
 //                    }
-//                    useCase: addQuestUseCase
+//                    useCase: saveQuestUseCase
 //                    reducer: { (state, params) ->
 //                        when (result) {
 //                            is Result.Invalid -> state.copy(type = EVENT_VALIDATION_ERROR)
@@ -77,13 +79,6 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
 //                        }
 //                    }
 //                }
-
-                when (result) {
-                    is Result.Invalid -> state.copy(type = EVENT_VALIDATION_ERROR)
-                    else -> state.copy(type = EVENT_UPDATED)
-                }
-            }.compose(runOnIO())
-        }
 
     private fun bindEditUnscheduledEventIntent() =
         on {
@@ -94,24 +89,34 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
                 q
             }
         }.executeAndReduce(
-            addQuestUseCase,
+            saveQuestUseCase,
             { state, result ->
-                when (result) {
-                    is Result.Invalid -> state.copy(type = EVENT_VALIDATION_ERROR)
-                    else -> state.copy(type = EVENT_UPDATED)
-                }
-            })
+                getSavedQuestViewState(result, state)
+            }
+        )
+
+    private fun getSavedQuestViewState(result: Result, state: DayViewState): DayViewState {
+        return when (result) {
+            is Result.Invalid -> state.copy(type = EVENT_VALIDATION_ERROR)
+            else -> state.copy(type = EVENT_UPDATED)
+        }
+    }
 
     private fun bindLoadScheduleIntent() =
-        on { it.loadScheduleIntent() }
-            .execute(loadScheduleUseCase)
-            .map { (state, schedule) ->
+        on {
+            it.loadScheduleIntent()
+        }.executeAndReduce(
+            loadScheduleUseCase,
+            { state, schedule ->
                 state.copy(
                     type = SCHEDULE_LOADED,
                     scheduledQuests = createScheduledViewModels(schedule),
                     unscheduledQuests = createUnscheduledViewModels(schedule)
                 )
+
             }
+        )
+
 
     private fun createUnscheduledViewModels(schedule: Schedule): List<DayViewController.UnscheduledQuestViewModel> =
         schedule.unscheduled.map {
@@ -138,5 +143,4 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
                 it.isCompleted
             )
         }
-
 }

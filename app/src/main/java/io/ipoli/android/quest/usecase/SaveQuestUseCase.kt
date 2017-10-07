@@ -21,7 +21,7 @@ sealed class Result {
     data class Invalid(val errors: List<ValidationError>) : Result()
 }
 
-class AddQuestUseCase(private val questRepository: QuestRepository) : BaseRxUseCase<Quest, Result>() {
+class SaveQuestUseCase(private val questRepository: QuestRepository) : BaseRxUseCase<Quest, Result>() {
     override fun createObservable(parameters: Quest): Observable<Result> {
         val quest = parameters
         val valErrors = validate(quest)
