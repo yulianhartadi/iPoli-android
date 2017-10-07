@@ -115,7 +115,7 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
 abstract class MviDialogController<VS, V : ViewStateRenderer<VS>, P : MviPresenter<V, VS>> : RestoreViewOnCreateController, ViewStateRenderer<VS> {
     data class DialogView(val dialog: Dialog, val view: View)
 
-    private lateinit var dialog: Dialog
+    protected lateinit var dialog: Dialog
     private lateinit var contentView: View
     private var dismissed: Boolean = false
 

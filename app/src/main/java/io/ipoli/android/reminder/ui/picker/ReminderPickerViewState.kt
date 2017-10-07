@@ -15,11 +15,21 @@ data class ReminderPickerViewState(
     val predefinedIndex: Int? = null,
     val timeValue: String = "",
     val timeUnits: List<String> = listOf(),
-    val timeValueIndex: Int? = null
+    val timeUnitIndex: Int? = null
 ) {
 
     enum class StateType {
-        LOADING, NEW_REMINDER, EDIT_REMINDER, CUSTOM_TIME
+        LOADING,
+        NEW_REMINDER,
+        EDIT_REMINDER,
+        CUSTOM_TIME,
+        NEW_VALUES,
+        TIME_VALUE_VALIDATION_ERROR,
+        FINISHED
+    }
+
+    companion object {
+        val Loading = ReminderPickerViewState(StateType.LOADING)
     }
 }
 
@@ -27,6 +37,8 @@ interface ReminderPickerView : ViewStateRenderer<ReminderPickerViewState> {
     fun editReminderIntent(): Observable<Reminder>
     fun newReminderIntent(): Observable<Unit>
     fun showCustomValuesIntent(): Observable<Unit>
+    fun pickReminderIntent(): Observable<Unit>
+    fun customTimeChangeIntent(): Observable<String>
 }
 
 

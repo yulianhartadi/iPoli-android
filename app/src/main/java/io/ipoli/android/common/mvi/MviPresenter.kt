@@ -2,7 +2,6 @@ package io.ipoli.android.common.mvi
 
 import android.support.annotation.MainThread
 import io.ipoli.android.common.RxUseCase
-import io.ipoli.android.reminder.ui.picker.StateChange
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -32,7 +31,12 @@ interface MviPresenter<in V : ViewStateRenderer<VS>, in VS> {
     fun onDestroy() {}
 }
 
+interface StateChange<VS> {
+    fun createState(prevState: VS): VS
+}
+
 abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS, SC : StateChange<VS>>(private val initialState: VS) : MviPresenter<V, VS> {
+    protected var state: VS = initialState
 
     private var viewAttachedFirstTime = true
 
@@ -122,7 +126,10 @@ abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS, SC : StateChange<
 
     @MainThread
     private fun subscribeViewStateConsumer(view: V) {
-        viewRelayConsumerDisposable = viewStateBehaviorSubject.subscribe { view.render(it) }
+        viewRelayConsumerDisposable = viewStateBehaviorSubject.subscribe {
+            state = it
+            view.render(it)
+        }
     }
 
     @MainThread
