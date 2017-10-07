@@ -589,7 +589,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private fun listenForZoom() {
         scrollView.setOnTouchListener { _, e ->
             scaleDetector.onTouchEvent(e)
-            false
+            true
         }
     }
 
@@ -671,7 +671,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 setBottomDragViewListener()
                 adapterView.setOnTouchListener(null)
             }
-            false
+            true
         }
     }
 

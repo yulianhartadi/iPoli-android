@@ -36,9 +36,11 @@ data class ReminderPickerViewState(
 interface ReminderPickerView : ViewStateRenderer<ReminderPickerViewState> {
     fun editReminderIntent(): Observable<Reminder>
     fun newReminderIntent(): Observable<Unit>
-    fun showCustomValuesIntent(): Observable<Unit>
     fun pickReminderIntent(): Observable<Unit>
+    fun messageChangeIntent(): Observable<String>
+    fun predefinedValueChangeIntent(): Observable<Int>
     fun customTimeChangeIntent(): Observable<String>
+    fun timeUnitChangeIntent(): Observable<Int>
 }
 
 

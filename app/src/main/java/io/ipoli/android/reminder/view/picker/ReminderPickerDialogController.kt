@@ -21,6 +21,7 @@ import kotlinx.android.synthetic.main.dialog_reminder_picker.view.*
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 
 typealias TimeUnitConverter = java.util.concurrent.TimeUnit
@@ -42,9 +43,11 @@ class ReminderPickerDialogController :
     MviDialogController<ReminderPickerViewState, ReminderPickerDialogController, ReminderPickerDialogPresenter>
     , ReminderPickerView, Injects<Module> {
 
-    private val showCustomValuesSubject = createIntentSubject<Unit>()
     private val pickReminderSubject = createIntentSubject<Unit>()
+    private val messageChangeSubject = createIntentSubject<String>()
+    private val predefinedValueChangeSubject = createIntentSubject<Int>()
     private val customTimeChangeSubject = createIntentSubject<String>()
+    private val timeUnitChangeSubject = createIntentSubject<Int>()
 
     override fun editReminderIntent(): Observable<Reminder> =
         Observable.just(reminder != null)
@@ -54,17 +57,24 @@ class ReminderPickerDialogController :
         Observable.just(Unit)
             .filter { !isRestoring && reminder == null }
 
-    override fun showCustomValuesIntent() = showCustomValuesSubject
 
     override fun pickReminderIntent() = pickReminderSubject
 
+    override fun messageChangeIntent() = messageChangeSubject
+
+    override fun predefinedValueChangeIntent() = predefinedValueChangeSubject
+
     override fun customTimeChangeIntent() = customTimeChangeSubject
+
+    override fun timeUnitChangeIntent() = timeUnitChangeSubject
 
     private val presenter by required { reminderPickerPresenter }
 
     override fun createPresenter() = presenter
 
     override fun render(state: ReminderPickerViewState, dialogView: View) {
+        Timber.d("${state}")
+
         when (state.type) {
             ReminderPickerViewState.StateType.NEW_REMINDER -> {
                 ViewUtils.showViews(dialogView.predefinedTimes)
@@ -76,11 +86,6 @@ class ReminderPickerDialogController :
                 predefinedTimesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 dialogView.predefinedTimes.adapter = predefinedTimesAdapter
                 dialogView.predefinedTimes.setSelection(state.predefinedIndex!!)
-
-                RxAdapterView.itemSelections(dialogView.predefinedTimes)
-                    .filter { it == state.predefinedValues.size - 1 }
-                    .map { Unit }
-                    .subscribe(showCustomValuesSubject)
             }
 
             ReminderPickerViewState.StateType.EDIT_REMINDER -> {
@@ -145,15 +150,27 @@ class ReminderPickerDialogController :
 
         val contentView = LayoutInflater.from(activity!!).inflate(R.layout.dialog_reminder_picker, null)
 
-        RxTextView.textChanges(contentView.customTime).map { it.toString() }.subscribe(customTimeChangeSubject)
+        with(contentView) {
+            RxTextView.textChanges(message).map { it.toString() }.subscribe(messageChangeSubject)
+
+            RxAdapterView.itemSelections(predefinedTimes)
+                .skipInitialValue()
+                .subscribe(predefinedValueChangeSubject)
+
+            RxAdapterView.itemSelections(customTimeUnits)
+                .skipInitialValue()
+                .subscribe(timeUnitChangeSubject)
+
+            RxTextView.textChanges(customTime).map { it.toString() }.subscribe(customTimeChangeSubject)
+        }
 
         val dialog = AlertDialog.Builder(activity!!)
             .setView(contentView)
             .setTitle(R.string.reminder_dialog_title)
             .setIcon(R.drawable.pet_5_head)
             .setPositiveButton(R.string.dialog_ok, null)
-            .setNegativeButton(R.string.cancel, null)
-            .setNeutralButton(R.string.do_not_remind, null)
+            .setNegativeButton(R.string.cancel, { p0, p1 -> ViewUtils.hideKeyboard(contentView) })
+            .setNeutralButton(R.string.do_not_remind, { p0, p1 -> ViewUtils.hideKeyboard(contentView) })
             .create()
 
         dialog.setOnShowListener {

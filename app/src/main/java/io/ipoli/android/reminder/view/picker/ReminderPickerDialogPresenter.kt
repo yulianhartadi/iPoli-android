@@ -20,10 +20,31 @@ class ReminderPickerDialogPresenter(
         listOf(
             bindLoadNewReminderIntent(),
             bindEditReminderIntent(),
-            bindShowCustomValuesIntent(),
             bindPickReminderIntent(),
-            bindCustomTimeChangeIntent()
+            bindMessageChangeIntent(),
+            bindPredefinedValueChangeIntent(),
+            bindCustomTimeChangeIntent(),
+            bindTimeUnitChangeIntent()
         )
+
+    private fun bindTimeUnitChangeIntent() =
+        on { it.timeUnitChangeIntent() }.map { index ->
+            TimeUnitChange(index)
+        }.cast(ReminderPickerStateChange::class.java)
+
+    private fun bindPredefinedValueChangeIntent() =
+        on { it.predefinedValueChangeIntent() }.map { index ->
+            if (index == reminderTimeFormatter.predefinedTimes.size - 1) {
+                ShowCustomValues("", timeUnitFormatter.customTimeUnits, 0)
+            } else {
+                PredefinedValueChange(index)
+            }
+        }.cast(ReminderPickerStateChange::class.java)
+
+    private fun bindMessageChangeIntent() =
+        on { it.messageChangeIntent() }.map { text ->
+            MessageChange(text)
+        }.cast(ReminderPickerStateChange::class.java)
 
     private fun bindCustomTimeChangeIntent() =
         on { it.customTimeChangeIntent() }.map { text ->
@@ -37,16 +58,6 @@ class ReminderPickerDialogPresenter(
             } else {
                 ReminderPicked
             }
-        }.cast(ReminderPickerStateChange::class.java)
-
-
-    private fun bindShowCustomValuesIntent() =
-        on { it.showCustomValuesIntent() }.map { _ ->
-            ShowCustomValues(
-                "",
-                timeUnitFormatter.customTimeUnits,
-                0
-            )
         }.cast(ReminderPickerStateChange::class.java)
 
     private fun bindEditReminderIntent() =
@@ -125,6 +136,16 @@ data class CustomTimeChange(val text: String) : ReminderPickerStateChange {
         prevState.copy(type = NEW_VALUES, timeValue = text)
 }
 
+data class MessageChange(val text: String) : ReminderPickerStateChange {
+    override fun createState(prevState: ReminderPickerViewState) =
+        prevState.copy(type = NEW_VALUES, message = text)
+}
+
+data class PredefinedValueChange(val index: Int) : ReminderPickerStateChange {
+    override fun createState(prevState: ReminderPickerViewState) =
+        prevState.copy(type = NEW_VALUES, predefinedIndex = index)
+}
+
 object TimeValueValidationError : ReminderPickerStateChange {
     override fun createState(prevState: ReminderPickerViewState) =
         prevState.copy(type = TIME_VALUE_VALIDATION_ERROR)
@@ -133,4 +154,9 @@ object TimeValueValidationError : ReminderPickerStateChange {
 object ReminderPicked : ReminderPickerStateChange {
     override fun createState(prevState: ReminderPickerViewState) =
         prevState.copy(type = FINISHED)
+}
+
+data class TimeUnitChange(val index: Int) : ReminderPickerStateChange {
+    override fun createState(prevState: ReminderPickerViewState) =
+        prevState.copy(type = NEW_VALUES, timeUnitIndex = index)
 }
