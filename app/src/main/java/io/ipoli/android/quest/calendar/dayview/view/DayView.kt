@@ -1,6 +1,5 @@
 package io.ipoli.android.quest.calendar.dayview.view
 
-import io.ipoli.android.common.mvi.StateChange
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
 import io.ipoli.android.quest.calendar.dayview.view.widget.CalendarEvent
@@ -37,31 +36,4 @@ data class DayViewState(
     enum class StateType {
         LOADING, SCHEDULE_LOADED, EVENT_UPDATED, EVENT_VALIDATION_ERROR
     }
-}
-
-interface DayViewStateChange : StateChange<DayViewState>
-
-data class ScheduleLoaded(
-    private val scheduledQuests: List<DayViewController.QuestViewModel>,
-    private val unscheduledQuests: List<DayViewController.UnscheduledQuestViewModel>
-) : DayViewStateChange {
-
-    override fun createState(prevState: DayViewState) =
-        prevState.copy(
-            type = SCHEDULE_LOADED,
-            scheduledQuests = scheduledQuests,
-            unscheduledQuests = unscheduledQuests
-        )
-}
-
-object EventUpdated : DayViewStateChange {
-
-    override fun createState(prevState: DayViewState) =
-        prevState.copy(type = EVENT_UPDATED)
-}
-
-object EventValidationError : DayViewStateChange {
-
-    override fun createState(prevState: DayViewState) =
-        prevState.copy(type = EVENT_VALIDATION_ERROR)
 }

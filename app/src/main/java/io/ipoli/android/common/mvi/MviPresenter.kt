@@ -2,6 +2,8 @@ package io.ipoli.android.common.mvi
 
 import android.support.annotation.MainThread
 import io.ipoli.android.common.RxUseCase
+import io.ipoli.android.quest.calendar.dayview.view.DayViewState
+import io.ipoli.android.quest.usecase.Result
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -32,19 +34,14 @@ interface MviPresenter<in V : ViewStateRenderer<VS>, in VS> {
     fun onDestroy() {}
 }
 
-interface StateChange<VS> {
-    fun createState(prevState: VS): VS
-}
-
-abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS, SC : StateChange<VS>>(private val initialState: VS) : MviPresenter<V, VS> {
+abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS>(private val initialState: VS) :
+    MviPresenter<V, VS> {
 
     private var viewAttachedFirstTime = true
 
     private val intentRelaysBinders = mutableListOf<RelayBinderPair<V, *>>()
 
     private val viewStateBehaviorSubject = BehaviorSubject.createDefault(initialState)
-
-//    private var viewStateChangeSubject = BehaviorSubject.createDefault(initialState)
 
     private var intentDisposables: CompositeDisposable? = null
 
@@ -99,7 +96,7 @@ abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS, SC : StateChange<
             val allIntents = Observable.merge(bindIntents())
                 .observeOn(AndroidSchedulers.mainThread())
 
-            subscribeViewState(allIntents.scan(initialState, this::stateReducer).distinctUntilChanged())
+            subscribeViewState(allIntents.distinctUntilChanged())
         }
 
         subscribeViewStateConsumer(view)
@@ -107,9 +104,6 @@ abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS, SC : StateChange<
 
         viewAttachedFirstTime = false
     }
-
-    private fun stateReducer(prevState: VS, stateChange: SC): VS =
-        stateChange.createState(prevState)
 
     private fun subscribeIntents(view: V) {
         intentRelaysBinders.forEach {
@@ -119,14 +113,12 @@ abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS, SC : StateChange<
 
     @MainThread
     private fun subscribeViewState(viewStateObservable: Observable<VS>) {
-//        viewStateChangeSubject.subscribe(viewStateChangeSubject)
-//        viewStateObservable.subscribe(viewStateChangeSubject)
         viewStateDisposable = viewStateObservable.subscribeWith(
             DisposableViewStateObserver(viewStateBehaviorSubject))
     }
 
     @MainThread
-    protected abstract fun bindIntents(): List<Observable<SC>>
+    protected abstract fun bindIntents(): List<Observable<VS>>
 
     @MainThread
     private fun subscribeViewStateConsumer(view: V) {
@@ -189,9 +181,23 @@ abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS, SC : StateChange<
     protected fun <T, R> Observable<Pair<VS, T>>.execute(
         useCase: RxUseCase<T, R>,
         transformer: ObservableTransformer<R, R> = runOnIO()
-    ): Observable<R> =
-        switchMap {
-            useCase.execute(it.second)
+    ): Observable<Pair<VS, R>> =
+        switchMap { (state, params) ->
+            useCase.execute(params)
+                .compose(transformer)
+                .map { result ->
+                    Pair(state, result)
+                }
+        }
+
+    protected fun <T, R> Observable<Pair<VS, T>>.executeAndReduce(
+        useCase: RxUseCase<T, R>,
+        reducer: (VS, R) -> VS,
+        transformer: ObservableTransformer<VS, VS> = runOnIO()
+    ): Observable<VS> =
+        switchMap { (state, params) ->
+            useCase.execute(params)
+                .map { reducer(state, it) }
                 .compose(transformer)
         }
 
