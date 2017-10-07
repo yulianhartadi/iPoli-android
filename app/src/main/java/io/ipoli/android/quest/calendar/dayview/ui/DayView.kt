@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.calendar.dayview.ui
 
 import io.ipoli.android.common.mvi.ViewStateRenderer
+import io.ipoli.android.quest.calendar.dayview.ui.DayViewState.StateType.*
 import io.ipoli.android.quest.calendar.dayview.ui.widget.CalendarEvent
 import io.ipoli.android.quest.calendar.dayview.ui.widget.UnscheduledEvent
 import io.ipoli.android.reminder.ui.picker.StateChange
@@ -30,7 +31,7 @@ data class DayViewState(
 ) {
 
     companion object {
-        val Loading = DayViewState(type = StateType.LOADING)
+        val Loading = DayViewState(type = LOADING)
     }
 
     enum class StateType {
@@ -47,6 +48,7 @@ data class ScheduleLoaded(
 
     override fun createState(prevState: DayViewState) =
         prevState.copy(
+            type = SCHEDULE_LOADED,
             scheduledQuests = scheduledQuests,
             unscheduledQuests = unscheduledQuests
         )
@@ -55,11 +57,11 @@ data class ScheduleLoaded(
 object EventUpdated : DayViewStateChange {
 
     override fun createState(prevState: DayViewState) =
-        prevState.copy(type = DayViewState.StateType.EVENT_UPDATED)
+        prevState.copy(type = EVENT_UPDATED)
 }
 
 object EventValidationError : DayViewStateChange {
 
     override fun createState(prevState: DayViewState) =
-        prevState.copy(type = DayViewState.StateType.EVENT_VALIDATION_ERROR)
+        prevState.copy(type = EVENT_VALIDATION_ERROR)
 }
