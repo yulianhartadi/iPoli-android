@@ -13,6 +13,7 @@ import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.view.MviDialogController
+import io.ipoli.android.common.view.string
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.data.Reminder
 import io.reactivex.Observable
@@ -113,7 +114,7 @@ class ReminderPickerDialogController :
             }
 
             ReminderPickerViewState.StateType.TIME_VALUE_VALIDATION_ERROR -> {
-                dialogView.customTime.error = "Wagaga"
+                dialogView.customTime.error = string(R.string.invalid_reminder_time)
             }
         }
     }
@@ -141,9 +142,8 @@ class ReminderPickerDialogController :
     protected constructor(args: Bundle?) : super(args)
 
     override fun onCreateDialog(savedViewState: Bundle?): DialogView {
-        val inflater = LayoutInflater.from(activity!!)
 
-        val contentView = inflater.inflate(R.layout.dialog_reminder_picker, null)
+        val contentView = LayoutInflater.from(activity!!).inflate(R.layout.dialog_reminder_picker, null)
 
         RxTextView.textChanges(contentView.customTime).map { it.toString() }.subscribe(customTimeChangeSubject)
 
