@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.calendar.dayview.ui
+package io.ipoli.android.quest.calendar.dayview.view
 
 import android.animation.ObjectAnimator
 import android.content.Context
@@ -20,14 +20,14 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.mvi.MviViewController
-import io.ipoli.android.common.ui.Color
-import io.ipoli.android.common.ui.ColorPickerDialogController
+import io.ipoli.android.common.view.Color
+import io.ipoli.android.common.view.ColorPickerDialogController
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
-import io.ipoli.android.quest.calendar.dayview.ui.widget.*
+import io.ipoli.android.quest.calendar.dayview.view.widget.*
 import io.ipoli.android.quest.data.Category
 import io.ipoli.android.quest.data.Reminder
-import io.ipoli.android.reminder.ui.picker.ReminderPickerDialogController
+import io.ipoli.android.reminder.view.picker.ReminderPickerDialogController
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.controller_day_view.view.*

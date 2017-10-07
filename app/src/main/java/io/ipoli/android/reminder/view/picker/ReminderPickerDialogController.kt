@@ -1,4 +1,4 @@
-package io.ipoli.android.reminder.ui.picker
+package io.ipoli.android.reminder.view.picker
 
 import android.content.Context
 import android.content.DialogInterface
@@ -12,7 +12,7 @@ import com.jakewharton.rxbinding2.widget.RxTextView
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.Module
-import io.ipoli.android.common.ui.MviDialogController
+import io.ipoli.android.common.view.MviDialogController
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.data.Reminder
 import io.reactivex.Observable

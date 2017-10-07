@@ -1,4 +1,4 @@
-package io.ipoli.android.common.ui
+package io.ipoli.android.common.view
 
 import android.support.annotation.ColorRes
 import io.ipoli.android.R

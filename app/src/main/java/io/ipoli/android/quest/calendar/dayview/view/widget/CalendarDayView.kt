@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.calendar.dayview.ui.widget
+package io.ipoli.android.quest.calendar.dayview.view.widget
 
 import android.animation.ObjectAnimator
 import android.content.Context
@@ -17,8 +17,8 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.common.ui.Color
-import io.ipoli.android.quest.calendar.dayview.ui.widget.util.PositionToTimeMapper
+import io.ipoli.android.common.view.Color
+import io.ipoli.android.quest.calendar.dayview.view.widget.util.PositionToTimeMapper
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.Duration
 import org.threeten.bp.LocalDateTime

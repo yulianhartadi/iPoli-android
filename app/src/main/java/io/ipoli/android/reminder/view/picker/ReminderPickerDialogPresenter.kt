@@ -1,11 +1,11 @@
-package io.ipoli.android.reminder.ui.picker
+package io.ipoli.android.reminder.view.picker
 
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.StateChange
 import io.ipoli.android.common.parser.ReminderMinutesParser
-import io.ipoli.android.reminder.ui.formatter.ReminderTimeFormatter
-import io.ipoli.android.reminder.ui.formatter.TimeUnitFormatter
-import io.ipoli.android.reminder.ui.picker.ReminderPickerViewState.StateType.*
+import io.ipoli.android.reminder.view.formatter.ReminderTimeFormatter
+import io.ipoli.android.reminder.view.formatter.TimeUnitFormatter
+import io.ipoli.android.reminder.view.picker.ReminderPickerViewState.StateType.*
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -15,6 +15,7 @@ class ReminderPickerDialogPresenter(
     private val reminderTimeFormatter: ReminderTimeFormatter,
     private val timeUnitFormatter: TimeUnitFormatter
 ) : BaseMviPresenter<ReminderPickerDialogController, ReminderPickerViewState, ReminderPickerStateChange>(ReminderPickerViewState.Loading) {
+
     override fun bindIntents() =
         listOf(
             bindLoadNewReminderIntent(),

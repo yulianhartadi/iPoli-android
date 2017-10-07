@@ -1,4 +1,4 @@
-package io.ipoli.android.common
+package io.ipoli.android.common.view
 
 import android.os.Bundle
 import com.bluelinelabs.conductor.ControllerChangeHandler

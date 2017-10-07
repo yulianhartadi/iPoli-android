@@ -1,4 +1,4 @@
-package io.ipoli.android.common.ui
+package io.ipoli.android.common.view.widget
 
 import android.content.Context
 import android.util.AttributeSet

@@ -16,7 +16,7 @@ import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
-import io.ipoli.android.common.BaseController
+import io.ipoli.android.common.view.BaseController
 import io.ipoli.android.player.persistence.RealmPlayerRepository
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject

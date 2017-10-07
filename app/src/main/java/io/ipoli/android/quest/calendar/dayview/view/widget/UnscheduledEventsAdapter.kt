@@ -1,11 +1,11 @@
-package io.ipoli.android.quest.calendar.dayview.ui.widget
+package io.ipoli.android.quest.calendar.dayview.view.widget
 
 import android.support.annotation.LayoutRes
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import io.ipoli.android.common.ui.Color
+import io.ipoli.android.common.view.Color
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>

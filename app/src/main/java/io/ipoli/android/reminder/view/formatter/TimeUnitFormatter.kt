@@ -1,4 +1,4 @@
-package io.ipoli.android.reminder.ui.formatter
+package io.ipoli.android.reminder.view.formatter
 
 import android.content.Context
 import io.ipoli.android.R

@@ -9,7 +9,7 @@ import android.widget.Toast
 import com.facebook.internal.CallbackManagerImpl
 import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
-import io.ipoli.android.common.BaseController
+import io.ipoli.android.common.view.BaseController
 import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.player.SignInPresenter
 import io.ipoli.android.player.SignInUseCase

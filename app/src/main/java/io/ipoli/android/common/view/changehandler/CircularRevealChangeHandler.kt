@@ -1,4 +1,4 @@
-package io.ipoli.android.common.ui.changehandler
+package io.ipoli.android.common.view.changehandler
 
 import android.animation.Animator
 import android.os.Bundle

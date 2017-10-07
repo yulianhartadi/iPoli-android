@@ -12,7 +12,7 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
-import io.ipoli.android.quest.calendar.dayview.ui.DayViewController
+import io.ipoli.android.quest.calendar.dayview.view.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.controller_calendar_toolbar.view.*
 import org.threeten.bp.LocalDate

@@ -1,4 +1,4 @@
-package io.ipoli.android.quest.calendar.dayview.ui.widget
+package io.ipoli.android.quest.calendar.dayview.view.widget
 
 import android.content.Context
 import android.view.LayoutInflater

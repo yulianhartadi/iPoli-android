@@ -11,9 +11,9 @@ import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.data.persistence.RealmQuestRepository
 import io.ipoli.android.quest.usecase.AddQuestUseCase
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
-import io.ipoli.android.reminder.ui.formatter.ReminderTimeFormatter
-import io.ipoli.android.reminder.ui.formatter.TimeUnitFormatter
-import io.ipoli.android.reminder.ui.picker.ReminderPickerDialogPresenter
+import io.ipoli.android.reminder.view.formatter.ReminderTimeFormatter
+import io.ipoli.android.reminder.view.formatter.TimeUnitFormatter
+import io.ipoli.android.reminder.view.picker.ReminderPickerDialogPresenter
 import space.traversal.kapsule.HasModules
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required

@@ -1,4 +1,4 @@
-package io.ipoli.android.common.ui
+package io.ipoli.android.common.view
 
 import android.app.Dialog
 import android.os.Bundle

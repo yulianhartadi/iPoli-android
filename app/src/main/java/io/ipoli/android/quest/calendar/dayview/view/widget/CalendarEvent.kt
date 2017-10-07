@@ -1,6 +1,6 @@
-package io.ipoli.android.quest.calendar.dayview.ui.widget
+package io.ipoli.android.quest.calendar.dayview.view.widget
 
-import io.ipoli.android.common.ui.Color
+import io.ipoli.android.common.view.Color
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>

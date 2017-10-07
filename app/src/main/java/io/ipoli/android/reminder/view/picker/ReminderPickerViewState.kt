@@ -1,4 +1,4 @@
-package io.ipoli.android.reminder.ui.picker
+package io.ipoli.android.reminder.view.picker
 
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.quest.data.Reminder

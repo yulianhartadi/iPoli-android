@@ -1,10 +1,10 @@
-package io.ipoli.android.quest.calendar.dayview.ui
+package io.ipoli.android.quest.calendar.dayview.view
 
 import io.ipoli.android.common.mvi.StateChange
 import io.ipoli.android.common.mvi.ViewStateRenderer
-import io.ipoli.android.quest.calendar.dayview.ui.DayViewState.StateType.*
-import io.ipoli.android.quest.calendar.dayview.ui.widget.CalendarEvent
-import io.ipoli.android.quest.calendar.dayview.ui.widget.UnscheduledEvent
+import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
+import io.ipoli.android.quest.calendar.dayview.view.widget.CalendarEvent
+import io.ipoli.android.quest.calendar.dayview.view.widget.UnscheduledEvent
 import io.reactivex.Observable
 import org.threeten.bp.LocalDate
 
