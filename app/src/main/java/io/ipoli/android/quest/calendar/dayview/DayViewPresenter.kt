@@ -30,7 +30,9 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
             bindAddEventIntent(),
             bindEditEventIntent(),
             bindEditUnscheduledEventIntent()
+//            bindDeleteEventIntent()
         )
+
 
     private fun bindAddEventIntent() =
         on {

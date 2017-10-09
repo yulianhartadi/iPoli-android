@@ -26,7 +26,6 @@ import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.calendar.dayview.view.widget.*
 import io.ipoli.android.quest.data.Category
-import io.ipoli.android.quest.data.Reminder
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogController
 import io.ipoli.android.reminder.view.picker.ReminderViewModel
 import io.reactivex.Observable
@@ -52,6 +51,8 @@ class DayViewController :
     private val editEventSubject = createIntentSubject<EditEventRequest>()
 
     private val editUnscheduledEventSubject = createIntentSubject<EditUnscheduledEventRequest>()
+
+    private val deleteEventSubject = createIntentSubject<String>()
 
     private val presenter by required { dayViewPresenter }
 
@@ -86,17 +87,13 @@ class DayViewController :
             .filter { !isRestoring }
     }
 
-    override fun addEventIntent(): Observable<CalendarEvent> {
-        return addEventSubject
-    }
+    override fun addEventIntent() = addEventSubject
 
-    override fun editEventIntent(): Observable<EditEventRequest> {
-        return editEventSubject
-    }
+    override fun editEventIntent() = editEventSubject
 
-    override fun editUnscheduledEventIntent(): Observable<EditUnscheduledEventRequest> {
-        return editUnscheduledEventSubject
-    }
+    override fun editUnscheduledEventIntent() = editUnscheduledEventSubject
+
+    override fun deleteEventIntent() = deleteEventSubject
 
     override fun createPresenter(): DayViewPresenter {
         return presenter
@@ -195,7 +192,7 @@ class DayViewController :
     }
 
     override fun onEventValidationError(dragView: View) {
-        dragView.dragName.error = "Namyyy"
+        dragView.dragName.error = "Think of a name"
     }
 
     override fun onScheduleUnscheduledEvent(position: Int, startTime: Time) {
@@ -276,6 +273,20 @@ class DayViewController :
 
                         }, calendarDayView.getDragViewBackgroundColor())
                             .showDialog(router, "pick_color_tag")
+                    }
+
+                    R.id.deleteEvent -> {
+                        if(calendarDayView.isEditedEventNew()) {
+                            stopActionMode()
+                        } else {
+                            val editedEvent = calendarDayView.getEditedEvent()
+                            val eventId = if(editedEvent.isScheduled) {
+                                eventsAdapter.events[editedEvent.adapterPosition].id
+                            } else {
+                                unscheduledEventsAdapter.events[editedEvent.adapterPosition].id
+                            }
+                            deleteEventSubject.onNext(eventId)
+                        }
                     }
                 }
                 return true

@@ -21,6 +21,8 @@ interface DayView : ViewStateRenderer<DayViewState> {
     fun addEventIntent(): Observable<CalendarEvent>
     fun editEventIntent(): Observable<EditEventRequest>
     fun editUnscheduledEventIntent(): Observable<EditUnscheduledEventRequest>
+    fun deleteEventIntent(): Observable<String>
+
 }
 
 data class DayViewState(

@@ -768,6 +768,17 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     fun getDragViewBackgroundColor() =
         fsm.state.color
 
+    fun isEditedEventNew(): Boolean =
+        fsm.state.isNewEvent
+
+    fun getEditedEvent(): EditedEvent {
+        return if (fsm.state.eventAdapterPosition != null) {
+            EditedEvent(true, fsm.state.eventAdapterPosition!!)
+        } else {
+            EditedEvent(false, fsm.state.unscheduledEventAdapterPosition!!)
+        }
+    }
+
     fun cancelEdit() {
         fsm.fire(Event.CancelEdit)
     }
@@ -1049,6 +1060,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fun bind(view: View, hour: Int)
     }
 }
+
+data class EditedEvent(val isScheduled: Boolean, val adapterPosition: Int)
 
 interface StateChangeListener {
     fun onStateChanged(state: CalendarDayView.State)
