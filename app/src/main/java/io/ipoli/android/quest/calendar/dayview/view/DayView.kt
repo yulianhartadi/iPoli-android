@@ -1,7 +1,7 @@
 package io.ipoli.android.quest.calendar.dayview.view
 
 import io.ipoli.android.common.mvi.ViewStateRenderer
-import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
+import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.LOADING
 import io.ipoli.android.quest.calendar.dayview.view.widget.CalendarEvent
 import io.ipoli.android.quest.calendar.dayview.view.widget.UnscheduledEvent
 import io.reactivex.Observable
@@ -12,15 +12,12 @@ import org.threeten.bp.LocalDate
  * on 10/4/17.
  */
 
-data class EditEventRequest(val event: CalendarEvent, val eventId: String)
-
-data class EditUnscheduledEventRequest(val event: UnscheduledEvent, val eventId: String)
 
 interface DayView : ViewStateRenderer<DayViewState> {
     fun loadScheduleIntent(): Observable<LocalDate>
     fun addEventIntent(): Observable<CalendarEvent>
-    fun editEventIntent(): Observable<EditEventRequest>
-    fun editUnscheduledEventIntent(): Observable<EditUnscheduledEventRequest>
+    fun editEventIntent(): Observable<CalendarEvent>
+    fun editUnscheduledEventIntent(): Observable<UnscheduledEvent>
     fun deleteEventIntent(): Observable<String>
 
 }

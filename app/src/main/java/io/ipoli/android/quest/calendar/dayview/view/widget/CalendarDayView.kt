@@ -93,6 +93,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         data class Zoom(val zoomDistance: Float, val focusY: Float, val scaleFactor: Float) : Event()
         object ZoomEnd : Event()
         data class ChangeBackgroundColor(val color: Color) : Event()
+        object RemoveEvent : Event()
     }
 
     companion object {
@@ -111,6 +112,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val bottomDragIndicatorPosition: Float? = null,
         val eventAdapterPosition: Int? = null,
         val unscheduledEventAdapterPosition: Int? = null,
+        val eventId: String = "",
         val height: Int? = null,
         val name: String? = null,
         val color: Color? = null,
@@ -275,6 +277,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
             s.copy(
                 type = State.Type.DRAG,
+                eventId = event.id,
                 name = event.name,
                 topDragViewPosition = topPosition,
                 topDragIndicatorPosition = topPosition - dragImageSize / 2,
@@ -293,6 +296,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 event.backgroundColor)
             s.copy(
                 type = State.Type.DRAG,
+                eventId = event.id,
                 name = event.name,
                 topDragViewPosition = topPosition,
                 topDragIndicatorPosition = topPosition - dragImageSize / 2,
@@ -322,6 +326,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
             s.copy(
                 type = State.Type.EDIT,
+                eventId = "",
                 name = e.name,
                 isNewEvent = true,
                 topDragViewPosition = topPosition,
@@ -413,6 +418,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fsm.transition(State.Type.EDIT, Event.CompleteEditRequest::class, { s, _ ->
             if (s.isNewEvent) {
                 listener?.onAddEvent(object : CalendarEvent {
+                    override val id = ""
                     override val duration = durationForEvent(s)
                     override val startMinute = startTimeForEvent(s).toMinuteOfDay()
                     override val name = s.name!!
@@ -420,6 +426,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 })
             } else if (s.eventAdapterPosition != null) {
                 listener?.onEditCalendarEvent(object : CalendarEvent {
+                    override val id = s.eventId
                     override val duration = durationForEvent(s)
                     override val startMinute = startTimeForEvent(s).toMinuteOfDay()
                     override val name = s.name!!
@@ -427,6 +434,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 }, s.eventAdapterPosition)
             } else if (s.unscheduledEventAdapterPosition != null) {
                 listener?.onEditUnscheduledEvent(object : UnscheduledEvent {
+                    override val id = s.eventId
                     override val duration = durationForEvent(s)
                     override val name = s.name!!
                     override val backgroundColor = s.color!!
@@ -453,7 +461,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                         startTimeForEvent(s)
                     )
 
-                else -> listener?.onCancelScheduling()
+                else -> listener?.onCancelRescheduleUnscheduledEvent()
             }
 
             prepareForViewState()
@@ -468,7 +476,18 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
         fsm.transition(State.Type.EDIT, Event.CancelEdit::class, { s, _ ->
             prepareForViewState()
+            listener?.onRemoveEvent(s.eventId)
+            s.copy(
+                type = State.Type.VIEW,
+                isScrollLocked = false,
+                isNewEvent = false,
+                eventAdapterPosition = null,
+                unscheduledEventAdapterPosition = null)
+        })
 
+        fsm.transition(State.Type.EDIT, Event.RemoveEvent::class, { s, _ ->
+            prepareForViewState()
+            listener?.onRemoveEvent(s.eventId)
             s.copy(
                 type = State.Type.VIEW,
                 isScrollLocked = false,
@@ -783,6 +802,10 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fsm.fire(Event.CancelEdit)
     }
 
+    fun onRemoveEvent() {
+        fsm.fire(Event.RemoveEvent)
+    }
+
     private fun addEventsFromAdapter() {
         val a = scheduledEventsAdapter!!
         val minuteHeight = fsm.state.minuteHeight
@@ -1048,12 +1071,13 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fun onRescheduleScheduledEvent(position: Int, startTime: Time, duration: Int)
         fun onScheduleUnscheduledEvent(position: Int, startTime: Time)
         fun onUnscheduleScheduledEvent(position: Int)
-        fun onCancelScheduling()
+        fun onCancelRescheduleUnscheduledEvent()
         fun onMoveEvent(dragView: View, startTime: Time?, endTime: Time?)
         fun onZoomEvent(adapterView: View)
         fun onAddEvent(event: CalendarEvent)
         fun onEditCalendarEvent(event: CalendarEvent, position: Int)
         fun onEditUnscheduledEvent(event: UnscheduledEvent, position: Int)
+        fun onRemoveEvent(eventId: String)
     }
 
     interface HourCellAdapter {

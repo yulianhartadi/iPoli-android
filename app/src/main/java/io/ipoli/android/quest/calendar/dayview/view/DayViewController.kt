@@ -48,11 +48,11 @@ class DayViewController :
 
     private val addEventSubject = createIntentSubject<CalendarEvent>()
 
-    private val editEventSubject = createIntentSubject<EditEventRequest>()
+    private val editEventSubject = createIntentSubject<CalendarEvent>()
 
-    private val editUnscheduledEventSubject = createIntentSubject<EditUnscheduledEventRequest>()
+    private val editUnscheduledEventSubject = createIntentSubject<UnscheduledEvent>()
 
-    private val deleteEventSubject = createIntentSubject<String>()
+    private val removeEventSubject = createIntentSubject<String>()
 
     private val presenter by required { dayViewPresenter }
 
@@ -93,7 +93,7 @@ class DayViewController :
 
     override fun editUnscheduledEventIntent() = editUnscheduledEventSubject
 
-    override fun deleteEventIntent() = deleteEventSubject
+    override fun deleteEventIntent() = removeEventSubject
 
     override fun createPresenter(): DayViewPresenter {
         return presenter
@@ -211,8 +211,13 @@ class DayViewController :
         unscheduledEventsAdapter.addEvent(vm)
     }
 
-    override fun onCancelScheduling() {
+    override fun onCancelRescheduleUnscheduledEvent() {
         stopActionMode()
+    }
+
+    override fun onRemoveEvent(eventId: String) {
+        stopActionMode()
+        removeEventSubject.onNext(eventId)
     }
 
     override fun onMoveEvent(dragView: View, startTime: Time?, endTime: Time?) {
@@ -241,13 +246,13 @@ class DayViewController :
 
     override fun onEditCalendarEvent(event: CalendarEvent, position: Int) {
         val vm = eventsAdapter.events.get(position)
-        editEventSubject.onNext(EditEventRequest(event, vm.id))
+        editEventSubject.onNext(event)
         ViewUtils.hideKeyboard(calendarDayView)
     }
 
     override fun onEditUnscheduledEvent(event: UnscheduledEvent, position: Int) {
         val vm = unscheduledEventsAdapter.events.get(position)
-        editUnscheduledEventSubject.onNext(EditUnscheduledEventRequest(event, vm.id))
+        editUnscheduledEventSubject.onNext(event)
         ViewUtils.hideKeyboard(calendarDayView)
     }
 
@@ -275,18 +280,8 @@ class DayViewController :
                             .showDialog(router, "pick_color_tag")
                     }
 
-                    R.id.deleteEvent -> {
-                        if(calendarDayView.isEditedEventNew()) {
-                            stopActionMode()
-                        } else {
-                            val editedEvent = calendarDayView.getEditedEvent()
-                            val eventId = if(editedEvent.isScheduled) {
-                                eventsAdapter.events[editedEvent.adapterPosition].id
-                            } else {
-                                unscheduledEventsAdapter.events[editedEvent.adapterPosition].id
-                            }
-                            deleteEventSubject.onNext(eventId)
-                        }
+                    R.id.removeEvent -> {
+                        calendarDayView.onRemoveEvent()
                     }
                 }
                 return true
@@ -313,15 +308,15 @@ class DayViewController :
         actionMode?.finish()
     }
 
-    data class QuestViewModel(var id: String,
-                              override var name: String,
-                              override var duration: Int,
-                              override var startMinute: Int,
+    data class QuestViewModel(override val id: String,
+                              override val name: String,
+                              override val duration: Int,
+                              override val startMinute: Int,
                               val startTime: String,
                               val endTime: String,
-                              override var backgroundColor: Color,
+                              override val backgroundColor: Color,
                               @ColorRes val textColor: Int,
-                              var isCompleted: Boolean) : CalendarEvent
+                              val isCompleted: Boolean) : CalendarEvent
 
     inner class QuestScheduledEventsAdapter(context: Context, events: List<QuestViewModel>, private val calendarDayView: CalendarDayView) :
         ScheduledEventsAdapter<QuestViewModel>(context, R.layout.item_calendar_quest, events.toMutableList()) {
@@ -414,10 +409,10 @@ class DayViewController :
         private fun tintList(@ColorRes color: Int) = ContextCompat.getColorStateList(context, color)
     }
 
-    data class UnscheduledQuestViewModel(var id: String,
-                                         override var name: String,
-                                         override var duration: Int,
-                                         override var backgroundColor: Color) : UnscheduledEvent
+    data class UnscheduledQuestViewModel(override val id: String,
+                                         override val name: String,
+                                         override val duration: Int,
+                                         override val backgroundColor: Color) : UnscheduledEvent
 
     inner class UnscheduledQuestsAdapter(items: List<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) :
         UnscheduledEventsAdapter<UnscheduledQuestViewModel>

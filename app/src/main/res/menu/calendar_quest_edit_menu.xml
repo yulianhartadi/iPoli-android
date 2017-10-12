@@ -8,7 +8,7 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/deleteEvent"
+        android:id="@+id/removeEvent"
         android:icon="@drawable/ic_delete_white_24dp"
         android:title="Remove"
         app:showAsAction="always" />

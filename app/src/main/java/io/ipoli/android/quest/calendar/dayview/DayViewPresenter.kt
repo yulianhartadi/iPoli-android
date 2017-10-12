@@ -1,6 +1,5 @@
 package io.ipoli.android.quest.calendar.dayview
 
-import io.ipoli.android.R
 import io.ipoli.android.common.data.ColorName
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.mvi.BaseMviPresenter
@@ -10,9 +9,9 @@ import io.ipoli.android.quest.calendar.dayview.view.DayViewController
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
 import io.ipoli.android.quest.data.Quest
-import io.ipoli.android.quest.usecase.SaveQuestUseCase
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
 import io.ipoli.android.quest.usecase.Result
+import io.ipoli.android.quest.usecase.SaveQuestUseCase
 import io.ipoli.android.quest.usecase.Schedule
 import io.reactivex.Observable
 import org.threeten.bp.LocalDate
@@ -54,11 +53,11 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
     private fun bindEditEventIntent() =
         on {
             it.editEventIntent().map {
-                val colorName = ColorName.valueOf(it.event.backgroundColor.name)
-                val q = Quest(it.event.name, LocalDate.now(), colorName = colorName)
-                q.id = it.eventId
-                q.startMinute = it.event.startMinute
-                q.setDuration(it.event.duration)
+                val colorName = ColorName.valueOf(it.backgroundColor.name)
+                val q = Quest(it.name, LocalDate.now(), colorName = colorName)
+                q.id = it.id
+                q.startMinute = it.startMinute
+                q.setDuration(it.duration)
                 q
             }
         }.executeAndReduce(
@@ -88,10 +87,10 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
     private fun bindEditUnscheduledEventIntent() =
         on {
             it.editUnscheduledEventIntent().map {
-                val colorName = ColorName.valueOf(it.event.backgroundColor.name)
-                val q = Quest(it.event.name, LocalDate.now(), colorName = colorName)
-                q.id = it.eventId
-                q.setDuration(it.event.duration)
+                val colorName = ColorName.valueOf(it.backgroundColor.name)
+                val q = Quest(it.name, LocalDate.now(), colorName = colorName)
+                q.id = it.id
+                q.setDuration(it.duration)
                 q
             }
         }.executeAndReduce(

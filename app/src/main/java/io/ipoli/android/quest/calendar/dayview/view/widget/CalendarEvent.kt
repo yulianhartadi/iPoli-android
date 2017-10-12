@@ -7,6 +7,9 @@ import io.ipoli.android.common.view.Color
  * on 9/2/17.
  */
 interface CalendarEvent {
+
+    val id: String
+
     val duration: Int
 
     val startMinute: Int

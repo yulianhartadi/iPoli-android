@@ -8,7 +8,7 @@ import io.reactivex.Observable
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 10/9/17.
  */
-class DeleteQuestUseCase(private val questRepository: QuestRepository) : BaseRxUseCase<String, Unit>() {
+class RemoveQuestUseCase(private val questRepository: QuestRepository) : BaseRxUseCase<String, Unit>() {
     override fun createObservable(parameters: String): Observable<Unit> {
         questRepository.delete(parameters)
         return Observable.just(Unit)
