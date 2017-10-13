@@ -1,17 +1,20 @@
 package io.ipoli.android.quest.calendar
 
+import android.os.Build
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
+import io.ipoli.android.common.view.BaseOverlayViewController
 import io.ipoli.android.quest.calendar.dayview.view.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.controller_calendar_toolbar.view.*
@@ -21,6 +24,7 @@ import sun.bob.mcalendarview.CellConfig
 import sun.bob.mcalendarview.listeners.OnDateClickListener
 import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
+
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -79,7 +83,23 @@ class CalendarViewController : Controller() {
             }
         })
 
+//        val popupView = TextView(activity!!)
+//        popupView.text = "Hello World"
+
+        object : BaseOverlayViewController() {
+            override fun createOverlayView(inflater: LayoutInflater) =
+                inflater.inflate(R.layout.view_pet_message, null)
+
+        }.show(router)
+
         return view
+    }
+
+    internal object WindowOverlayCompat {
+        private val ANDROID_OREO = 26
+        private val TYPE_APPLICATION_OVERLAY = 2038
+
+        val TYPE_SYSTEM_ERROR = if (Build.VERSION.SDK_INT < ANDROID_OREO) WindowManager.LayoutParams.TYPE_SYSTEM_ERROR else TYPE_APPLICATION_OVERLAY
     }
 
     private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
