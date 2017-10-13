@@ -47,8 +47,10 @@ open class Quest : RealmObject, PersistedModel {
 
     private var duration: Int? = null
 
-    private var createdAt: Long? = null
-    private var updatedAt: Long? = null
+    override var createdAt: Long = Date().time
+    override var updatedAt: Long = Date().time
+
+    override var removedAt: Long? = null
 
     var start: Long? = null
     var end: Long? = null
@@ -208,7 +210,6 @@ open class Quest : RealmObject, PersistedModel {
     val isScheduledForToday: Boolean
         get() = isScheduledFor(LocalDate.now())
 
-
     fun isScheduledFor(date: LocalDate): Boolean {
         return date.isEqual(DateUtils.fromMillis(scheduled!!))
     }
@@ -265,22 +266,18 @@ open class Quest : RealmObject, PersistedModel {
         notes.add(note)
     }
 
-
     fun removeTextNote() {
         val txtNotes = textNotes
         notes.removeAll(txtNotes)
     }
 
-
     fun addSubQuest(subQuest: SubQuest) {
         subQuests.add(subQuest)
     }
 
-
     fun removeSubQuest(subQuest: SubQuest) {
         subQuests.remove(subQuest)
     }
-
 
     fun hasStartTime(): Boolean {
         return startMinute != null
@@ -299,7 +296,6 @@ open class Quest : RealmObject, PersistedModel {
                 this.preferredStartTime = timePreference.name
             }
         }
-
 
     fun getStartDateTimeMillis(): Long? {
         if (startMinute == null || scheduled == null) {

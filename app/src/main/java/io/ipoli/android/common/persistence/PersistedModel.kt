@@ -6,4 +6,7 @@ package io.ipoli.android.common.persistence
  */
 interface PersistedModel {
     var id: String
+    var updatedAt: Long
+    var createdAt: Long
+    var removedAt: Long?
 }

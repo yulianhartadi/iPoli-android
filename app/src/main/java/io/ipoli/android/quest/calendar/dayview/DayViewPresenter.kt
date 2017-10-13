@@ -28,10 +28,20 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
             bindLoadScheduleIntent(),
             bindAddEventIntent(),
             bindEditEventIntent(),
-            bindEditUnscheduledEventIntent()
-//            bindDeleteEventIntent()
+            bindEditUnscheduledEventIntent(),
+            bindRemoveEventIntent()
         )
 
+    private fun bindRemoveEventIntent() =
+        on {
+            it.removeEventIntent()
+        }.map { (state, eventId) ->
+            val scheduledQuests = state.scheduledQuests.toMutableList()
+            val unscheduledQuests = state.unscheduledQuests.toMutableList()
+            scheduledQuests.find { it.id == eventId }?.let { scheduledQuests.remove(it) }
+            unscheduledQuests.find { it.id == eventId }?.let { unscheduledQuests.remove(it) }
+            state.copy(scheduledQuests = scheduledQuests, unscheduledQuests = unscheduledQuests)
+        }
 
     private fun bindAddEventIntent() =
         on {
@@ -121,7 +131,6 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
 
             }
         )
-
 
     private fun createUnscheduledViewModels(schedule: Schedule): List<DayViewController.UnscheduledQuestViewModel> =
         schedule.unscheduled.map {

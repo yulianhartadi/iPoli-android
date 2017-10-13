@@ -96,7 +96,7 @@ class DayViewController :
 
     override fun editUnscheduledEventIntent() = editUnscheduledEventSubject
 
-    override fun deleteEventIntent() = removeEventSubject
+    override fun removeEventIntent() = removeEventSubject
 
     override fun createPresenter(): DayViewPresenter {
         return presenter
