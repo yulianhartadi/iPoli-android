@@ -476,7 +476,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
         fsm.transition(State.Type.EDIT, Event.CancelEdit::class, { s, _ ->
             prepareForViewState()
-            listener?.onRemoveEvent(s.eventId)
             s.copy(
                 type = State.Type.VIEW,
                 isScrollLocked = false,

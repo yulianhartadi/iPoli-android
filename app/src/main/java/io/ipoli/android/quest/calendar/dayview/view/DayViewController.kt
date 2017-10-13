@@ -22,6 +22,7 @@ import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.view.Color
 import io.ipoli.android.common.view.ColorPickerDialogController
+import io.ipoli.android.common.view.widget.PetMessage
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.calendar.dayview.view.widget.*
@@ -55,6 +56,8 @@ class DayViewController :
     private val removeEventSubject = createIntentSubject<String>()
 
     private val presenter by required { dayViewPresenter }
+
+    private val inflater by required { layoutInflater }
 
     private lateinit var calendarDayView: CalendarDayView
 
@@ -217,6 +220,9 @@ class DayViewController :
 
     override fun onRemoveEvent(eventId: String) {
         stopActionMode()
+        PetMessage.show(view!!, R.drawable.ic_done_white_24dp, "Quest removed", "Undo", {
+            Timber.d("Click")
+        })
         removeEventSubject.onNext(eventId)
     }
 
