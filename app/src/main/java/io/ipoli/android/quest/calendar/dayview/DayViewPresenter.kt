@@ -8,7 +8,7 @@ import io.ipoli.android.quest.calendar.dayview.view.DayView
 import io.ipoli.android.quest.calendar.dayview.view.DayViewController
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
-import io.ipoli.android.quest.data.Quest
+import io.ipoli.android.quest.data.RealmQuest
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
 import io.ipoli.android.quest.usecase.Result
 import io.ipoli.android.quest.usecase.SaveQuestUseCase
@@ -48,7 +48,7 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
             it.addEventIntent()
                 .map { event ->
                     val colorName = ColorName.valueOf(event.backgroundColor.name)
-                    val q = Quest(event.name, LocalDate.now(), colorName = colorName)
+                    val q = RealmQuest(event.name, LocalDate.now(), colorName = colorName)
                     q.startMinute = event.startMinute
                     q.setDuration(event.duration)
                     q
@@ -64,7 +64,7 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
         on {
             it.editEventIntent().map {
                 val colorName = ColorName.valueOf(it.backgroundColor.name)
-                val q = Quest(it.name, LocalDate.now(), colorName = colorName)
+                val q = RealmQuest(it.name, LocalDate.now(), colorName = colorName)
                 q.id = it.id
                 q.startMinute = it.startMinute
                 q.setDuration(it.duration)
@@ -98,7 +98,7 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
         on {
             it.editUnscheduledEventIntent().map {
                 val colorName = ColorName.valueOf(it.backgroundColor.name)
-                val q = Quest(it.name, LocalDate.now(), colorName = colorName)
+                val q = RealmQuest(it.name, LocalDate.now(), colorName = colorName)
                 q.id = it.id
                 q.setDuration(it.duration)
                 q

@@ -37,8 +37,8 @@ open class Reminder : RealmObject {
     val notificationNum: Int
         get() = Integer.valueOf(notificationId)!!
 
-    fun calculateStartTime(quest: Quest) {
-        val questStartTime = quest.getStartDateTimeMillis()
+    fun calculateStartTime(realmQuest: RealmQuest) {
+        val questStartTime = realmQuest.getStartDateTimeMillis()
         if (questStartTime == null) {
             start = null
             return

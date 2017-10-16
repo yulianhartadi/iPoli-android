@@ -83,9 +83,6 @@ class CalendarViewController : Controller() {
             }
         })
 
-//        val popupView = TextView(activity!!)
-//        popupView.text = "Hello World"
-
         object : BaseOverlayViewController() {
             override fun createOverlayView(inflater: LayoutInflater) =
                 inflater.inflate(R.layout.view_pet_message, null)

@@ -1,7 +1,7 @@
 package io.ipoli.android.quest.usecase
 
 import io.ipoli.android.quest.data.Category
-import io.ipoli.android.quest.data.Quest
+import io.ipoli.android.quest.data.RealmQuest
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.reactivex.Single
 import org.amshove.kluent.*
@@ -19,13 +19,13 @@ object SaveQuestUseCaseSpek : Spek({
 
         it("should give validation error when quest name is empty") {
             val repo = mock<QuestRepository>()
-            val result = execute(repo, Quest("", Category.WELLNESS))
+            val result = execute(repo, RealmQuest("", Category.WELLNESS))
             result `should be instance of` Result.Invalid::class
             (result as Result.Invalid).errors `should equal` listOf(Result.ValidationError.EMPTY_NAME)
         }
 
         it("should save new quest") {
-            val q = Quest("name", Category.WELLNESS)
+            val q = RealmQuest("name", Category.WELLNESS)
             val repo = mock(QuestRepository::class)
             When calling repo.save(q) `it returns` Single.just(q)
 
@@ -36,5 +36,5 @@ object SaveQuestUseCaseSpek : Spek({
     }
 })
 
-private fun execute(repo: QuestRepository, quest: Quest) =
-    SaveQuestUseCase(repo).execute(quest).blockingIterable().first()
+private fun execute(repo: QuestRepository, realmQuest: RealmQuest) =
+    SaveQuestUseCase(repo).execute(realmQuest).blockingIterable().first()

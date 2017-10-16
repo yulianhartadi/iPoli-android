@@ -3,7 +3,7 @@ package io.ipoli.android.quest.usecase
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import io.ipoli.android.quest.data.Quest
+import io.ipoli.android.quest.data.RealmQuest
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.reactivex.Observable
 import io.reactivex.android.plugins.RxAndroidPlugins
@@ -42,12 +42,12 @@ object LoadScheduleForDateUseCaseSpek : Spek({
     it("should give schedule with 1 scheduled & 1 unscheduled quest") {
 
         val repo = mock<QuestRepository> {
-            val quest = Quest("name", today)
+            val quest = RealmQuest("name", today)
             quest.startMinute = 10
             on { listenForDate(any()) } doReturn Observable.just(
                 listOf(
                     quest,
-                    Quest("unscheduled", today)
+                    RealmQuest("unscheduled", today)
                 )
             )
         }

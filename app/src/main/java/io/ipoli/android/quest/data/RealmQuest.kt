@@ -23,7 +23,7 @@ import kotlin.collections.ArrayList
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/19/17.
  */
-open class Quest : RealmObject, PersistedModel {
+open class RealmQuest : RealmObject, PersistedModel {
 
     @PrimaryKey
     override var id: String = ""
@@ -166,7 +166,7 @@ open class Quest : RealmObject, PersistedModel {
     }
 
     fun getPriority(): Int =
-        if (priority != null) priority!! else Quest.PRIORITY_NOT_IMPORTANT_NOT_URGENT
+        if (priority != null) priority!! else RealmQuest.PRIORITY_NOT_IMPORTANT_NOT_URGENT
 
     fun setPriority(priority: Int?) {
         this.priority = priority
@@ -313,8 +313,8 @@ open class Quest : RealmObject, PersistedModel {
         val PRIORITY_NOT_IMPORTANT_URGENT = 1
         val PRIORITY_NOT_IMPORTANT_NOT_URGENT = 0
 
-        fun isStarted(quest: Quest): Boolean {
-            return quest.actualStartDate != null && quest.completedAtDate == null
+        fun isStarted(realmQuest: RealmQuest): Boolean {
+            return realmQuest.actualStartDate != null && realmQuest.completedAtDate == null
         }
     }
 }
