@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import io.ipoli.android.common.view.Color
+import io.ipoli.android.common.view.AndroidColor
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -20,7 +20,7 @@ interface UnscheduledEvent {
 
     val name: String
 
-    val backgroundColor: Color
+    val backgroundColor: AndroidColor
 }
 
 abstract class UnscheduledEventsAdapter<E : UnscheduledEvent>(@LayoutRes private val unscheduledEventLayout: Int,

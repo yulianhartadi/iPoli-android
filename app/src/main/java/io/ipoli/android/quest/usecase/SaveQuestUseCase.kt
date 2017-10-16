@@ -2,7 +2,7 @@ package io.ipoli.android.quest.usecase
 
 import io.ipoli.android.common.BaseRxUseCase
 import io.ipoli.android.common.Validator.Companion.validate
-import io.ipoli.android.quest.data.RealmQuest
+import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.usecase.Result.ValidationError.EMPTY_NAME
 import io.reactivex.Observable
@@ -17,12 +17,12 @@ sealed class Result {
         EMPTY_NAME
     }
 
-    data class Added(val realmQuest: RealmQuest) : Result()
+    data class Added(val quest: Quest) : Result()
     data class Invalid(val errors: List<ValidationError>) : Result()
 }
 
-class SaveQuestUseCase(private val questRepository: QuestRepository) : BaseRxUseCase<RealmQuest, Result>() {
-    override fun createObservable(parameters: RealmQuest): Observable<Result> {
+class SaveQuestUseCase(private val questRepository: QuestRepository) : BaseRxUseCase<Quest, Result>() {
+    override fun createObservable(parameters: Quest): Observable<Result> {
         val quest = parameters
         val valErrors = validate(quest)
             .check<Result.ValidationError> {

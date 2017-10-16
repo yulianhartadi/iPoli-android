@@ -1,6 +1,6 @@
 package io.ipoli.android.quest.calendar.dayview.view.widget
 
-import io.ipoli.android.common.view.Color
+import io.ipoli.android.common.view.AndroidColor
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -16,5 +16,5 @@ interface CalendarEvent {
 
     val name: String
 
-    val backgroundColor: Color
+    val backgroundColor: AndroidColor
 }

@@ -1,22 +1,84 @@
 package io.ipoli.android.quest
 
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.common.view.Color
-import io.ipoli.android.quest.data.Category
+import io.ipoli.android.player.auth.AuthProvider
+import io.ipoli.android.player.data.Inventory
+import io.ipoli.android.store.avatars.data.Avatar
+import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 10/15/17.
  */
+
+interface Entity {
+    val id: String
+}
+
+data class Reminder(
+    val notificationId: String,
+    val message: String,
+    val remindTime: Time,
+    val remindDate: LocalDate
+)
+
+data class Category(
+    val name: String,
+    val color: Color
+)
+
+enum class Color {
+    RED,
+    GREEN,
+    BLUE,
+    PURPLE,
+    BROWN,
+    ORANGE,
+    PINK,
+    TEAL,
+    DEEP_ORANGE,
+    INDIGO,
+    BLUE_GREY,
+    LIME
+}
+
+data class QuestSchedule(val date: LocalDate? = null, val time: Time? = null, val duration: Int)
+
 data class Quest(
-    val id: String,
+    override val id: String = "",
     val name: String,
     val color: Color,
     val category: Category,
-    val startTime: Time?,
-    val duration: Int,
-    val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime,
-    val removedAt: LocalDateTime?
-)
+    val plannedSchedule: QuestSchedule,
+    val actualSchedule: QuestSchedule? = null,
+    val originalStartTime: Time? = plannedSchedule.time,
+    val reminders: List<Reminder> = listOf(),
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val completedAtDate: LocalDate? = null
+) : Entity {
+    val isScheduled = plannedSchedule.date != null && plannedSchedule.time != null
+    val isCompleted = completedAtDate != null
+    val endTime: Time?
+        get() {
+            if (actualSchedule != null) {
+                return Time.of(actualSchedule.time!!.toMinuteOfDay() + actualSchedule.duration)
+            }
+
+            if (plannedSchedule.time != null) {
+                return Time.of(plannedSchedule.time.toMinuteOfDay() + plannedSchedule.duration)
+            }
+
+            return null
+        }
+}
+
+data class Player(
+    override val id: String = "",
+    var coins: Int = 0,
+    var experience: Int = 0,
+    var authProvider: AuthProvider? = null,
+    var inventory: Inventory? = Inventory(),
+    var avatar: Avatar = Avatar.IPOLI_CLASSIC,
+    val createdAt: LocalDateTime = LocalDateTime.now()
+) : Entity

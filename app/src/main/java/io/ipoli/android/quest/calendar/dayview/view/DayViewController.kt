@@ -20,7 +20,7 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.mvi.MviViewController
-import io.ipoli.android.common.view.Color
+import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.ColorPickerDialogController
 import io.ipoli.android.common.view.widget.PetMessage
 import io.ipoli.android.iPoliApp
@@ -121,7 +121,7 @@ class DayViewController :
         }
     }
 
-    override fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: Color) {
+    override fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: AndroidColor) {
         startActionMode()
         dragView.dragStartTime.text = startTime.toString()
         dragView.dragEndTime.text = endTime.toString()
@@ -130,14 +130,14 @@ class DayViewController :
         setupDragViewNameAndColor(dragView, name, color)
     }
 
-    override fun onStartEditUnscheduledEvent(dragView: View, name: String, color: Color) {
+    override fun onStartEditUnscheduledEvent(dragView: View, name: String, color: AndroidColor) {
         startActionMode()
         dragView.dragStartTime.visibility = View.GONE
         dragView.dragEndTime.visibility = View.GONE
         setupDragViewNameAndColor(dragView, name, color)
     }
 
-    private fun setupDragViewNameAndColor(dragView: View, name: String, color: Color) {
+    private fun setupDragViewNameAndColor(dragView: View, name: String, color: AndroidColor) {
         dragView.dragName.setText(name)
         dragView.setBackgroundColor(ContextCompat.getColor(dragView.context, color.color500))
 
@@ -177,7 +177,7 @@ class DayViewController :
         dragView.requestFocus()
     }
 
-    override fun onDragViewColorChange(dragView: View, color: Color) {
+    override fun onDragViewColorChange(dragView: View, color: AndroidColor) {
         ObjectAnimator.ofArgb(
             dragView,
             "backgroundColor",
@@ -278,7 +278,7 @@ class DayViewController :
                 when (item.itemId) {
                     R.id.chooseColor -> {
                         ColorPickerDialogController(object : ColorPickerDialogController.ColorPickedListener {
-                            override fun onColorPicked(color: Color) {
+                            override fun onColorPicked(color: AndroidColor) {
                                 calendarDayView.updateDragBackgroundColor(color)
                             }
 
@@ -320,7 +320,7 @@ class DayViewController :
                               override val startMinute: Int,
                               val startTime: String,
                               val endTime: String,
-                              override val backgroundColor: Color,
+                              override val backgroundColor: AndroidColor,
                               @ColorRes val textColor: Int,
                               val isCompleted: Boolean) : CalendarEvent
 
@@ -418,7 +418,7 @@ class DayViewController :
     data class UnscheduledQuestViewModel(override val id: String,
                                          override val name: String,
                                          override val duration: Int,
-                                         override val backgroundColor: Color) : UnscheduledEvent
+                                         override val backgroundColor: AndroidColor) : UnscheduledEvent
 
     inner class UnscheduledQuestsAdapter(items: List<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) :
         UnscheduledEventsAdapter<UnscheduledQuestViewModel>

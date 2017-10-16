@@ -11,7 +11,7 @@ import java.util.*
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/2/17.
  */
-open class Player(
+open class RealmPlayer(
 
     @PrimaryKey
     override var id: String = "",

@@ -1,14 +1,16 @@
 package io.ipoli.android.quest.calendar.dayview
 
-import io.ipoli.android.common.data.ColorName
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.mvi.BaseMviPresenter
-import io.ipoli.android.common.view.Color
+import io.ipoli.android.common.view.AndroidColor
+import io.ipoli.android.quest.Category
+import io.ipoli.android.quest.Color
+import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.QuestSchedule
 import io.ipoli.android.quest.calendar.dayview.view.DayView
 import io.ipoli.android.quest.calendar.dayview.view.DayViewController
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
-import io.ipoli.android.quest.data.RealmQuest
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
 import io.ipoli.android.quest.usecase.Result
 import io.ipoli.android.quest.usecase.SaveQuestUseCase
@@ -47,11 +49,9 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
         on {
             it.addEventIntent()
                 .map { event ->
-                    val colorName = ColorName.valueOf(event.backgroundColor.name)
-                    val q = RealmQuest(event.name, LocalDate.now(), colorName = colorName)
-                    q.startMinute = event.startMinute
-                    q.setDuration(event.duration)
-                    q
+                    val colorName = Color.valueOf(event.backgroundColor.name)
+                    Quest(name = event.name, color = colorName, category = Category("WELLNESS", Color.GREEN),
+                        plannedSchedule = QuestSchedule(LocalDate.now(), Time.of(event.startMinute), event.duration))
                 }
         }.executeAndReduce(
             saveQuestUseCase,
@@ -63,12 +63,9 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
     private fun bindEditEventIntent() =
         on {
             it.editEventIntent().map {
-                val colorName = ColorName.valueOf(it.backgroundColor.name)
-                val q = RealmQuest(it.name, LocalDate.now(), colorName = colorName)
-                q.id = it.id
-                q.startMinute = it.startMinute
-                q.setDuration(it.duration)
-                q
+                val colorName = Color.valueOf(it.backgroundColor.name)
+                Quest(id = it.id, name = it.name, color = colorName, category = Category("WELLNESS", Color.GREEN),
+                    plannedSchedule = QuestSchedule(date = LocalDate.now(), time = Time.of(it.startMinute), duration = it.duration))
             }
         }.executeAndReduce(
             saveQuestUseCase,
@@ -97,11 +94,9 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
     private fun bindEditUnscheduledEventIntent() =
         on {
             it.editUnscheduledEventIntent().map {
-                val colorName = ColorName.valueOf(it.backgroundColor.name)
-                val q = RealmQuest(it.name, LocalDate.now(), colorName = colorName)
-                q.id = it.id
-                q.setDuration(it.duration)
-                q
+                val colorName = Color.valueOf(it.backgroundColor.name)
+                Quest(id = it.id, name = it.name, color = colorName, category = Category("WELLNESS", Color.GREEN),
+                    plannedSchedule = QuestSchedule(date = LocalDate.now(), duration = it.duration))
             }
         }.executeAndReduce(
             saveQuestUseCase,
@@ -138,24 +133,38 @@ class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCa
                 it.id,
                 it.name,
                 it.actualDuration,
-                Color.valueOf(it.colorName!!)
+                AndroidColor.valueOf(it.color.name)
             )
         }
 
     private fun createScheduledViewModels(schedule: Schedule): List<DayViewController.QuestViewModel> =
         schedule.scheduled.map {
-            val endTime = Time.of(it.startMinute!! + it.actualDuration)
-            val color = Color.valueOf(it.colorName!!)
+            val color = AndroidColor.valueOf(it.color.name)
+
+            var startTime = it.plannedSchedule.time
+            if (it.actualSchedule != null && it.actualSchedule.time != null && startTime == it.originalStartTime) {
+                startTime = it.actualSchedule.time
+            }
+
             DayViewController.QuestViewModel(
                 it.id,
                 it.name,
                 it.actualDuration,
-                it.startMinute!!,
-                it.startTime.toString(),
-                endTime.toString(),
+                startTime!!.toMinuteOfDay(),
+                startTime.toString(),
+                it.endTime.toString(),
                 color,
                 color.color900,
                 it.isCompleted
             )
+        }
+
+    private val Quest.actualDuration: Int
+        get() {
+            var duration = plannedSchedule.duration
+            if (actualSchedule != null) {
+                duration = actualSchedule.duration
+            }
+            return duration
         }
 }

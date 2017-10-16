@@ -21,13 +21,13 @@ import kotlinx.android.synthetic.main.dialog_color_picker.view.*
 
 class ColorPickerDialogController : BaseDialogController {
     interface ColorPickedListener {
-        fun onColorPicked(color: Color)
+        fun onColorPicked(color: AndroidColor)
     }
 
     private var listener: ColorPickedListener? = null
-    private var selectedColor: Color? = null
+    private var selectedColor: AndroidColor? = null
 
-    constructor(listener: ColorPickedListener, selectedColor: Color? = null) : super() {
+    constructor(listener: ColorPickedListener, selectedColor: AndroidColor? = null) : super() {
         this.listener = listener
         this.selectedColor = selectedColor
     }
@@ -44,7 +44,7 @@ class ColorPickerDialogController : BaseDialogController {
         val colorGrid = contentView.colorGrid
         colorGrid.layoutManager = GridLayoutManager(activity!!, 4)
 
-        val colorViewModels = Color.values().map {
+        val colorViewModels = AndroidColor.values().map {
             ColorViewModel(it, it == selectedColor ?: false)
         }
 
@@ -58,7 +58,7 @@ class ColorPickerDialogController : BaseDialogController {
             .create()
     }
 
-    data class ColorViewModel(val color: Color, val isSelected: Boolean)
+    data class ColorViewModel(val color: AndroidColor, val isSelected: Boolean)
 
     inner class ColorAdapter(private val colors: List<ColorViewModel>) : RecyclerView.Adapter<ColorAdapter.ViewHolder>() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {

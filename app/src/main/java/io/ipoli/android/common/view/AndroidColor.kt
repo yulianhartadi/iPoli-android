@@ -2,16 +2,15 @@ package io.ipoli.android.common.view
 
 import android.support.annotation.ColorRes
 import io.ipoli.android.R
-import io.ipoli.android.common.data.ColorName
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/26/17.
  */
-enum class Color(@ColorRes val color200: Int,
-                 @ColorRes val color500: Int,
-                 @ColorRes val color700: Int,
-                 @ColorRes val color900: Int) {
+enum class AndroidColor(@ColorRes val color200: Int,
+                        @ColorRes val color500: Int,
+                        @ColorRes val color700: Int,
+                        @ColorRes val color900: Int) {
     RED(
         R.color.md_red_200,
         R.color.md_red_500,

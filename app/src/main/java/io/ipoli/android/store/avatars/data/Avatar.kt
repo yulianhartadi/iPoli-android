@@ -26,4 +26,10 @@ enum class Avatar(val code: Int,
     DWIGHT(10, 500, R.string.avatar_name_dwight, R.drawable.avatar_03),
     MICHAEL(11, 500, R.string.avatar_name_michael, R.drawable.avatar_02),
     TOBBY(12, 500, R.string.avatar_name_tobby, R.drawable.avatar_01);
+
+    companion object {
+        fun fromCode(code: Int): Avatar? =
+            values().firstOrNull { it.code == code }
+
+    }
 }

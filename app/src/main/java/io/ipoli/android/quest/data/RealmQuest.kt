@@ -1,12 +1,12 @@
 package io.ipoli.android.quest.data
 
 import io.ipoli.android.Constants
-import io.ipoli.android.common.data.ColorName
 import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.TimePreference
 import io.ipoli.android.common.datetime.toStartOfDayUTCMillis
 import io.ipoli.android.common.persistence.PersistedModel
+import io.ipoli.android.quest.Color
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
@@ -14,7 +14,6 @@ import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
-
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
@@ -75,6 +74,8 @@ open class RealmQuest : RealmObject, PersistedModel {
 
     var actualStart: Long? = null
 
+    var originalStart: Long? = null
+
     var challengeId: String? = null
 
     var coins: Long? = null
@@ -99,7 +100,7 @@ open class RealmQuest : RealmObject, PersistedModel {
         name: String,
         endDate: LocalDate? = null,
         category: Category = Category.PERSONAL,
-        colorName: ColorName = ColorName.ORANGE) {
+        colorName: Color = Color.ORANGE) {
 
         this.name = name
         this.endDate = endDate

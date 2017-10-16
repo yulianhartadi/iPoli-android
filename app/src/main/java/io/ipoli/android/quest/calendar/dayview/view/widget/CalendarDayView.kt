@@ -17,7 +17,7 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.common.view.Color
+import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.quest.calendar.dayview.view.widget.util.PositionToTimeMapper
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.Duration
@@ -83,7 +83,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         object Up : Event()
         data class StartCalendarEventEdit(val view: View, val position: Int) : Event()
         data class StartUnscheduledEventEdit(val view: View, val position: Int) : Event()
-        data class StartCalendarEventAdd(val startTime: Time, val duration: Int, val name: String, val backgroundColor: Color) : Event()
+        data class StartCalendarEventAdd(val startTime: Time, val duration: Int, val name: String, val backgroundColor: AndroidColor) : Event()
         data class Drag(val y: Float) : Event()
         data class DragTopIndicator(val y: Float) : Event()
         data class DragBottomIndicator(val y: Float) : Event()
@@ -92,7 +92,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         data class ZoomStart(val zoomDistance: Float) : Event()
         data class Zoom(val zoomDistance: Float, val focusY: Float, val scaleFactor: Float) : Event()
         object ZoomEnd : Event()
-        data class ChangeBackgroundColor(val color: Color) : Event()
+        data class ChangeBackgroundColor(val color: AndroidColor) : Event()
         object RemoveEvent : Event()
     }
 
@@ -115,7 +115,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val eventId: String = "",
         val height: Int? = null,
         val name: String? = null,
-        val color: Color? = null,
+        val color: AndroidColor? = null,
         val isNewEvent: Boolean = false,
         val visibleHours: Int = DEFAULT_VISIBLE_HOURS,
         val hourHeight: Float = 0f,
@@ -216,7 +216,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             val dragView = addAndPositionDragView(eventStartTime.toPosition(minuteHeight) - unscheduledEvents.height - scrollView.scrollY, fsm.state.hourHeight.toInt())
             dragView.post {
                 this.dragView = dragView
-                fsm.fire(Event.StartCalendarEventAdd(eventStartTime, 60, "", Color.GREEN))
+                fsm.fire(Event.StartCalendarEventAdd(eventStartTime, 60, "", AndroidColor.GREEN))
             }
             false
         }
@@ -774,7 +774,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     fun updateDragEventName(name: String) =
         fsm.fire(Event.UpdateName(name))
 
-    fun updateDragBackgroundColor(color: Color) =
+    fun updateDragBackgroundColor(color: AndroidColor) =
         fsm.fire(Event.ChangeBackgroundColor(color))
 
     fun onEventUpdated() =
@@ -1062,10 +1062,10 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     interface CalendarChangeListener {
-        fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: Color)
-        fun onStartEditUnscheduledEvent(dragView: View, name: String, color: Color)
+        fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: AndroidColor)
+        fun onStartEditUnscheduledEvent(dragView: View, name: String, color: AndroidColor)
         fun onDragViewClick(dragView: View)
-        fun onDragViewColorChange(dragView: View, color: Color)
+        fun onDragViewColorChange(dragView: View, color: AndroidColor)
         fun onEventValidationError(dragView: View)
         fun onRescheduleScheduledEvent(position: Int, startTime: Time, duration: Int)
         fun onScheduleUnscheduledEvent(position: Int, startTime: Time)

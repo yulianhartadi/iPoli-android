@@ -3,35 +3,33 @@ package io.ipoli.android.common.persistence
 import android.os.HandlerThread
 import android.os.Looper
 import android.os.Process
+import io.ipoli.android.quest.Entity
 import io.reactivex.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposables
-import io.realm.Realm
-import io.realm.RealmObject
-import io.realm.RealmQuery
-import io.realm.Sort
+import io.realm.*
 import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/18/17.
  */
-abstract class BaseRealmRepository<T> : Repository<T> where T : PersistedModel, T : RealmObject {
+abstract class BaseRealmRepository<E, T> : Repository<E>  where E : Entity, T : RealmObject, T : PersistedModel {
 
     protected abstract fun getModelClass(): Class<T>
 
-    override fun listenById(id: String): Observable<T> = listen { it.equalTo("id", id) }
+    override fun listenById(id: String): Observable<E> = listen { it.equalTo("id", id) }
 
-    override fun listen(): Observable<T> = listen { it }
+    override fun listen(): Observable<E> = listen { it }
 
-    protected fun listen(query: (RealmQuery<T>) -> RealmQuery<T>): Observable<T> =
+    protected fun listen(query: (RealmQuery<T>) -> RealmQuery<T>): Observable<E> =
         createObservable { emitter ->
             val (realm, q) = createRealmAndQuery(query)
             val result = q.findFirstAsync()
             result.addChangeListener<T> { it ->
                 if (it.isLoaded && !emitter.isDisposed) {
-                    emitter.onNext(realm.copyFromRealm(it))
+                    emitter.onNext(convertToEntity(it))
                 }
             }
             emitter.setDisposable(Disposables.fromAction {
@@ -40,15 +38,15 @@ abstract class BaseRealmRepository<T> : Repository<T> where T : PersistedModel, 
             })
         }
 
-    override fun listenForAll(): Observable<List<T>> = listenForAll { it }
+    override fun listenForAll(): Observable<List<E>> = listenForAll { it }
 
-    protected fun listenForAll(query: (RealmQuery<T>) -> RealmQuery<T>): Observable<List<T>> =
+    protected fun listenForAll(query: (RealmQuery<T>) -> RealmQuery<T>): Observable<List<E>> =
         createObservable { emitter ->
             val (realm, q) = createRealmAndQuery(query)
             val result = q.findAllAsync()
             result.addChangeListener { it ->
                 if (it.isLoaded && !emitter.isDisposed) {
-                    emitter.onNext(realm.copyFromRealm(it))
+                    emitter.onNext(convertAll(it))
                 }
             }
             emitter.setDisposable(Disposables.fromAction {
@@ -57,10 +55,12 @@ abstract class BaseRealmRepository<T> : Repository<T> where T : PersistedModel, 
             })
         }
 
+    private fun convertAll(realmResults: RealmResults<T>) = realmResults.map { convertToEntity(it) }
+
     protected fun listenForAllSorted(
         query: (RealmQuery<T>) -> RealmQuery<T>,
         sortOrder: List<Pair<String, Sort>>
-    ): Observable<List<T>> =
+    ): Observable<List<E>> =
         createObservable { emitter ->
             val (realm, q) = createRealmAndQuery(query)
             val fieldNames = sortOrder.map { it.first }.toTypedArray()
@@ -68,7 +68,7 @@ abstract class BaseRealmRepository<T> : Repository<T> where T : PersistedModel, 
             val result = q.findAllSortedAsync(fieldNames, sorts)
             result.addChangeListener { it ->
                 if (it.isLoaded && !emitter.isDisposed) {
-                    emitter.onNext(realm.copyFromRealm(it))
+                    emitter.onNext(convertAll(it))
                 }
             }
             emitter.setDisposable(Disposables.fromAction {
@@ -77,15 +77,15 @@ abstract class BaseRealmRepository<T> : Repository<T> where T : PersistedModel, 
             })
         }
 
-    override fun find(): Single<T> = findOne { it }
+    override fun find(): Single<E> = findOne { it }
 
-    protected fun findOne(query: (RealmQuery<T>) -> RealmQuery<T>): Single<T> =
+    protected fun findOne(query: (RealmQuery<T>) -> RealmQuery<T>): Single<E> =
         createSingle { emitter ->
             val (realm, q) = createRealmAndQuery(query)
             val result = q.findFirstAsync()
             result.addChangeListener<T> { it ->
                 if (it.isLoaded && !emitter.isDisposed) {
-                    emitter.onSuccess(realm.copyFromRealm(it))
+                    emitter.onSuccess(convertToEntity(it))
                 }
             }
             emitter.setDisposable(Disposables.fromAction {
@@ -100,21 +100,26 @@ abstract class BaseRealmRepository<T> : Repository<T> where T : PersistedModel, 
         return backgroundThread.looper
     }
 
-    override fun save(model: T): Single<T> =
+    override fun save(entity: E): Single<E> =
         createSingle { emitter ->
             Realm.getDefaultInstance().use {
+                val realmModel = convertToRealmModel(entity)
                 it.executeTransaction {
-                    if (model.id.isEmpty()) {
-                        model.id = UUID.randomUUID().toString()
+                    if (realmModel.id.isEmpty()) {
+                        realmModel.id = UUID.randomUUID().toString()
                     }
-                    it.copyToRealmOrUpdate(model)
+                    it.copyToRealmOrUpdate(realmModel)
                 }
-                emitter.onSuccess(model)
+                emitter.onSuccess(convertToEntity(realmModel))
             }
         }
 
-    override fun delete(model: T): Completable =
-        delete(model.id)
+    abstract fun convertToRealmModel(entity: E): T
+
+    abstract fun convertToEntity(realmModel: T): E
+
+    override fun delete(entity: E): Completable =
+        delete(entity.id)
 
     override fun delete(id: String): Completable =
         createCompletable { emitter ->
