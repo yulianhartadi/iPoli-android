@@ -2,7 +2,7 @@ package io.ipoli.android.player.persistence
 
 import com.couchbase.lite.Database
 import io.ipoli.android.common.persistence.Repository
-import io.ipoli.android.player.auth.AuthProvider
+import io.ipoli.android.quest.AuthProvider
 import io.ipoli.android.quest.Player
 import io.ipoli.android.quest.data.persistence.BaseCouchbaseRepository
 import io.ipoli.android.quest.data.persistence.CouchbasePersistedModel
@@ -34,6 +34,21 @@ data class CouchbasePlayer(override val map: MutableMap<String, Any?> = mutableM
     }
 }
 
+data class CouchbaseAuthProvider(val map: MutableMap<String, Any?> = mutableMapOf()) {
+    var id: String by map
+    var provider: String by map
+    var firstName: String by map
+    var lastName: String by map
+    var username: String by map
+    var email: String by map
+    var image: String by map
+}
+
+
+enum class ProviderType {
+    FACEBOOK, GOOGLE, ANONYMOUS
+}
+
 class CouchbasePlayerRepository(database: Database) : BaseCouchbaseRepository<Player, CouchbasePlayer>(database), PlayerRepository {
     override val modelType = CouchbasePlayer.TYPE
 
@@ -41,7 +56,15 @@ class CouchbasePlayerRepository(database: Database) : BaseCouchbaseRepository<Pl
         val cp = CouchbasePlayer(dataMap)
         var authProvider: AuthProvider? = null
         if (cp.authProvider != null) {
-            authProvider = AuthProvider(cp.authProvider as MutableMap<String, Any?>)
+        val cap = CouchbaseAuthProvider(cp.authProvider!!)
+            authProvider = AuthProvider(
+                id = cap.id,
+                provider = cap.provider,
+                firstName = cap.firstName,
+                lastName = cap.lastName,
+                email = cap.email,
+                image = cap.image
+            )
         }
         return Player(
             id = cp.id,
@@ -54,11 +77,23 @@ class CouchbasePlayerRepository(database: Database) : BaseCouchbaseRepository<Pl
     }
 
     override fun toCouchbaseObject(entity: Player): CouchbasePlayer {
+        val cap = CouchbaseAuthProvider()
+        if(entity.authProvider != null) {
+            val authProvider = entity.authProvider!!
+            cap.id = authProvider.id
+            cap.email = authProvider.email
+            cap.firstName = authProvider.firstName
+            cap.lastName = authProvider.lastName
+            cap.username = authProvider.username
+            cap.image = authProvider.image
+            cap.provider = authProvider.provider
+        }
+
         val cp = CouchbasePlayer()
         cp.id = entity.id
         cp.coins = entity.coins
         cp.experience = entity.experience
-        cp.authProvider = entity.authProvider?.map
+        cp.authProvider = cap.map
         cp.avatarCode = entity.avatar.code
         cp.createdAt = entity.createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         return cp

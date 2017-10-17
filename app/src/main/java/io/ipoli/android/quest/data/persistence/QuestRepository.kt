@@ -2,6 +2,8 @@ package io.ipoli.android.quest.data.persistence
 
 import com.couchbase.lite.*
 import com.couchbase.lite.Expression.property
+import com.facebook.internal.Utility.map
+import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.persistence.PersistedModel
 import io.ipoli.android.common.persistence.Repository
@@ -31,6 +33,7 @@ data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMa
     var color: String by map
     var category: String by map
     var duration: Int by map
+    var reminders: MutableMap<String, Any?>? by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
@@ -38,6 +41,13 @@ data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMa
     companion object {
         const val TYPE = "Quest"
     }
+}
+
+data class CouchbaseReminder(val map: MutableMap<String, Any?> = mutableMapOf()) {
+    val notificationId: String by map
+    val message: String by map
+    val remindTime: Int by map
+    val remindDate: Long by map
 }
 
 abstract class BaseCouchbaseRepository<E, out T>(private val database: Database) : Repository<E> where E : Entity, T : CouchbasePersistedModel {
@@ -48,13 +58,11 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database)
             where = property("id").equalTo(id)
         )
 
-    protected fun listenForChange(where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null): Channel<E?> {
-        return sendLiveResult(createQuery(where, limit, orderBy))
-    }
+    protected fun listenForChange(where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null) =
+        sendLiveResult(createQuery(where, limit, orderBy))
 
-    protected fun listenForChanges(where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null): Channel<List<E>> {
-        return sendLiveResults(createQuery(where, limit, orderBy))
-    }
+    protected fun listenForChanges(where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null) =
+        sendLiveResults(createQuery(where, limit, orderBy))
 
     protected fun createQuery(where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null): Query {
         val typeWhere = property("type").equalTo(modelType)
@@ -200,40 +208,3 @@ class CouchbaseQuestRepository(database: Database) : BaseCouchbaseRepository<Que
         return q
     }
 }
-
-//class RealmQuestRepository : BaseRealmRepository<Quest, RealmQuest>(), QuestRepository {
-//    override fun listenForDate(date: LocalDate): Observable<List<Quest>> =
-//        listenForAllSorted({ q ->
-//            q.equalTo("scheduled", date.toStartOfDayUTCMillis())
-//        }, listOf(
-//            Pair("startMinute", Sort.ASCENDING),
-//            Pair("completedAtMinute", Sort.ASCENDING)
-//        ))
-//
-//    override fun listenForScheduledBetween(startDate: LocalDate, endDate: LocalDate): Observable<List<Quest>> =
-//        listenForAll { query ->
-//            query.between("scheduled", startDate.toStartOfDayUTCMillis(), endDate.toStartOfDayUTCMillis())
-//        }
-//
-//    override fun getModelClass() = RealmQuest::class.java
-//
-//    override fun convertToEntity(realmModel: RealmQuest) =
-//        Quest(
-//            id = realmModel.id,
-//            name = realmModel.name,
-//            color = Color.valueOf(realmModel.colorName!!),
-//            category = Category(realmModel.category!!, Color.BLUE),
-//            plannedSchedule = QuestSchedule(realmModel.scheduledDate, realmModel.startTime, realmModel.getDuration()),
-//            reminders = listOf(),
-//            createdAt = LocalDateTime.now()
-//        )
-//
-//    override fun convertToRealmModel(entity: Quest): RealmQuest {
-//        return entity.let {
-//            val rq = RealmQuest(it.name, io.ipoli.android.quest.data.Category.CHORES)
-//            rq.id = entity.id
-//            rq.scheduledDate = entity.plannedSchedule.date
-//            rq
-//        }
-//    }
-//}

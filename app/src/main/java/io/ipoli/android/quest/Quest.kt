@@ -1,7 +1,6 @@
 package io.ipoli.android.quest
 
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.player.auth.AuthProvider
 import io.ipoli.android.store.avatars.data.Avatar
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -80,3 +79,13 @@ data class Player(
     var avatar: Avatar = Avatar.IPOLI_CLASSIC,
     val createdAt: LocalDateTime = LocalDateTime.now()
 ) : Entity
+
+data class AuthProvider(
+    var id: String = "",
+    var provider: String = "",
+    var firstName: String = "",
+    var lastName: String = "",
+    var username: String = "",
+    var email: String = "",
+    var image: String = ""
+)
