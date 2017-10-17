@@ -1,20 +1,17 @@
 package io.ipoli.android.common.persistence
 
 import io.ipoli.android.quest.Entity
-import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.Single
+import kotlinx.coroutines.experimental.channels.Channel
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/18/17.
  */
 interface Repository<T> where T : Entity {
-    fun listenById(id: String): Observable<T>
-    fun listen(): Observable<T>
-    fun listenForAll(): Observable<List<T>>
-    fun find(): Single<T>
-    fun save(entity: T): Single<T>
-    fun delete(entity: T): Completable
-    fun delete(id: String): Completable
+    fun listenById(id: String): Channel<T?>
+    fun listenForAll(): Channel<List<T>>
+    fun find(): T?
+    fun save(entity: T): T
+    fun delete(entity: T)
+    fun delete(id: String)
 }

@@ -11,7 +11,6 @@ import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
 import io.fabric.sdk.android.Fabric
 import io.ipoli.android.common.di.*
-import io.realm.Realm
 import space.traversal.kapsule.transitive
 import timber.log.Timber
 
@@ -28,7 +27,7 @@ class iPoliApp : Application() {
 
         fun module(context: Context, router: Router) = Module(
             androidModule = MainAndroidModule(context, router),
-            repositoryModule = RealmRepositoryModule(),
+            repositoryModule = CouchbaseRepositoryModule(),
             useCaseModule = MainUseCaseModule(),
             presenterModule = AndroidPresenterModule()
         ).transitive()
@@ -56,7 +55,8 @@ class iPoliApp : Application() {
         AndroidThreeTen.init(this)
 
         // Initialize Realm. Should only be done once when the application starts.
-        Realm.init(this)
+//        Realm.init(this)
+//        val db = Database()
         Timber.plant(Timber.DebugTree())
 //        Logger.addLogAdapter(AndroidLogAdapter())
 

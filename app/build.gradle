@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'realm-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'io.fabric'
@@ -46,10 +45,6 @@ junitPlatform {
     }
 }
 
-realm {
-    syncEnabled = true
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
@@ -90,7 +85,8 @@ dependencies {
     implementation 'sun.bob:mcalendarview:1.1.0'
     implementation "space.traversal.kapsule:kapsule-core:0.3"
 
-    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.19.1"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.19.1'
+    implementation 'com.couchbase.lite:couchbase-lite-android:2.0.0-DB018'
 
 //    debugImplementation "com.github.brianPlummer:tinydancer:0.1.1"
 //    implementation "com.github.brianPlummer:tinydancer-noop:0.1.1"

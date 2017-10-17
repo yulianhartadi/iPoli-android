@@ -16,7 +16,7 @@ class DisplayAvatarListUseCase(private val playerRepository: PlayerRepository) :
             .map { player ->
                 AvatarListPartialChange.DataLoaded(Avatar.values().map {
                     AvatarViewModel(it.code, it.avatarName,
-                        it.price, it.picture, player.inventory!!.hasAvatar(it.code))
+                        it.price, it.picture, false)
                 })
             }.cast(AvatarListPartialChange::class.java)
             .startWith(AvatarListPartialChange.Loading())

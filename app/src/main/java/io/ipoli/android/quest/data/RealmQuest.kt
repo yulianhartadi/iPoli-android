@@ -7,24 +7,19 @@ import io.ipoli.android.common.datetime.TimePreference
 import io.ipoli.android.common.datetime.toStartOfDayUTCMillis
 import io.ipoli.android.common.persistence.PersistedModel
 import io.ipoli.android.quest.Color
-import io.realm.RealmList
-import io.realm.RealmObject
-import io.realm.annotations.PrimaryKey
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/19/17.
  */
-open class RealmQuest : RealmObject, PersistedModel {
+open class RealmQuest : PersistedModel {
 
-    @PrimaryKey
     override var id: String = ""
 
     var rawText: String? = null
@@ -64,9 +59,6 @@ open class RealmQuest : RealmObject, PersistedModel {
 
     var repeatingQuestId: String? = null
 
-    var reminders: RealmList<Reminder> = RealmList()
-    var subQuests: RealmList<SubQuest> = RealmList()
-
     var difficulty: Int? = null
 
     var completedAt: Long? = null
@@ -81,11 +73,7 @@ open class RealmQuest : RealmObject, PersistedModel {
     var coins: Long? = null
     var experience: Long? = null
 
-    var notes: RealmList<Note> = RealmList()
-
     var source: String? = null
-
-    var sourceMapping: SourceMapping? = null
 
     var previousScheduledDate: Long? = null
 
@@ -252,40 +240,8 @@ open class RealmQuest : RealmObject, PersistedModel {
             }
         } else startMinute
 
-    val textNotes: List<Note>
-        get() {
-            val textNotes: MutableList<Note> = ArrayList()
-            for (note in notes) {
-                if (note.noteType.equals(Note.NoteType.TEXT.name)) {
-                    textNotes.add(note)
-                }
-            }
-            return textNotes
-        }
-
-    fun addNote(note: Note) {
-        notes.add(note)
-    }
-
-    fun removeTextNote() {
-        val txtNotes = textNotes
-        notes.removeAll(txtNotes)
-    }
-
-    fun addSubQuest(subQuest: SubQuest) {
-        subQuests.add(subQuest)
-    }
-
-    fun removeSubQuest(subQuest: SubQuest) {
-        subQuests.remove(subQuest)
-    }
-
     fun hasStartTime(): Boolean {
         return startMinute != null
-    }
-
-    fun addReminder(reminder: Reminder) {
-        reminders.add(reminder)
     }
 
     var startTimePreference: TimePreference?

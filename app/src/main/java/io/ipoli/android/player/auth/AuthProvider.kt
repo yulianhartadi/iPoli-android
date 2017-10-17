@@ -1,7 +1,5 @@
 package io.ipoli.android.player.auth
 
-import io.realm.RealmObject
-
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/14/17.
@@ -14,7 +12,7 @@ open class AuthProvider(
     var username: String = "",
     var email: String = "",
     var image: String = ""
-) : RealmObject()
+)
 
 enum class ProviderType {
     FACEBOOK, GOOGLE, ANONYMOUS

@@ -6,10 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import com.couchbase.lite.Database
+import com.couchbase.lite.DatabaseConfiguration
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.view.BaseController
-import io.ipoli.android.player.persistence.RealmPlayerRepository
+import io.ipoli.android.player.persistence.CouchbasePlayerRepository
 import io.ipoli.android.store.home.StoreHomeController
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_store.view.*
@@ -49,7 +51,7 @@ class StoreController : BaseController<StoreController, StorePresenter>() {
 
     override fun createPresenter(): StorePresenter {
         // @TODO fix me
-        return StorePresenter(DisplayCoinsUseCase(RealmPlayerRepository()))
+        return StorePresenter(DisplayCoinsUseCase(CouchbasePlayerRepository(Database("iPoli", DatabaseConfiguration(applicationContext)))))
     }
 
     fun showCoinsIntent(): Observable<Boolean> {

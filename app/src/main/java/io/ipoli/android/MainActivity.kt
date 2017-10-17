@@ -6,8 +6,10 @@ import android.support.v7.app.AppCompatActivity
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import com.couchbase.lite.Database
+import com.couchbase.lite.DatabaseConfiguration
 import io.ipoli.android.home.HomeController
-import io.ipoli.android.player.persistence.RealmPlayerRepository
+import io.ipoli.android.player.persistence.CouchbasePlayerRepository
 import io.ipoli.android.player.ui.SignInController
 
 /**
@@ -31,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         val hasNoRootController = !router.hasRootController()
-        if (hasNoRootController && RealmPlayerRepository().get() == null) {
+        if (hasNoRootController && CouchbasePlayerRepository(Database("iPoli", DatabaseConfiguration(applicationContext))).get() == null) {
             router.setRoot(RouterTransaction.with(SignInController()))
         } else if (hasNoRootController) {
             router.setRoot(RouterTransaction.with(HomeController()))

@@ -5,12 +5,18 @@ import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import com.bluelinelabs.conductor.Router
+import com.couchbase.lite.Database
+import com.couchbase.lite.DatabaseConfiguration
 import io.ipoli.android.common.navigation.Navigator
+import io.ipoli.android.player.SignInPresenter
+import io.ipoli.android.player.SignInUseCase
+import io.ipoli.android.player.persistence.CouchbasePlayerRepository
+import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
+import io.ipoli.android.quest.data.persistence.CouchbaseQuestRepository
 import io.ipoli.android.quest.data.persistence.QuestRepository
-import io.ipoli.android.quest.data.persistence.RealmQuestRepository
-import io.ipoli.android.quest.usecase.SaveQuestUseCase
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
+import io.ipoli.android.quest.usecase.SaveQuestUseCase
 import io.ipoli.android.reminder.view.formatter.ReminderTimeFormatter
 import io.ipoli.android.reminder.view.formatter.TimeUnitFormatter
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogPresenter
@@ -24,10 +30,13 @@ import space.traversal.kapsule.required
  */
 interface RepositoryModule {
     val questRepository: QuestRepository
+    val playerRepository: PlayerRepository
 }
 
-class RealmRepositoryModule : RepositoryModule {
-    override val questRepository = RealmQuestRepository()
+class CouchbaseRepositoryModule : RepositoryModule, Injects<Module> {
+    private val database by required { database }
+    override val questRepository = CouchbaseQuestRepository(database)
+    override val playerRepository = CouchbasePlayerRepository(database)
 }
 
 interface AndroidModule {
@@ -40,6 +49,8 @@ interface AndroidModule {
     val reminderTimeFormatter: ReminderTimeFormatter
 
     val timeUnitFormatter: TimeUnitFormatter
+
+    val database: Database
 }
 
 class MainAndroidModule(private val context: Context, private val router: Router) : AndroidModule {
@@ -54,31 +65,41 @@ class MainAndroidModule(private val context: Context, private val router: Router
 
     override val timeUnitFormatter get() = TimeUnitFormatter(context)
 
+    override val database
+        get() =
+            Database("iPoli", DatabaseConfiguration(context.applicationContext))
 }
 
 class MainUseCaseModule : UseCaseModule, Injects<Module> {
     private val questRepository by required { questRepository }
+    private val playerRepository by required { playerRepository }
     override val loadScheduleForDateUseCase get() = LoadScheduleForDateUseCase(questRepository)
     override val saveQuestUseCase get() = SaveQuestUseCase(questRepository)
+    override val signInUseCase get() = SignInUseCase(playerRepository)
 }
 
 interface UseCaseModule {
     val loadScheduleForDateUseCase: LoadScheduleForDateUseCase
     val saveQuestUseCase: SaveQuestUseCase
+    val signInUseCase: SignInUseCase
 }
 
 interface PresenterModule {
     val dayViewPresenter: DayViewPresenter
     val reminderPickerPresenter: ReminderPickerDialogPresenter
+    val signInPresenter: SignInPresenter
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
     private val saveQuestUseCase by required { saveQuestUseCase }
+    private val signInUseCase by required { signInUseCase }
+    private val navigator by required { navigator }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
     private val timeUnitFormatter by required { timeUnitFormatter }
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase)
     override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter)
+    override val signInPresenter get() = SignInPresenter(signInUseCase, navigator)
 }
 
 class Module(androidModule: AndroidModule,

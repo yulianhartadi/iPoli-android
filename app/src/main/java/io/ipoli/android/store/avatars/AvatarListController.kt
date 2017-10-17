@@ -11,13 +11,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Toast
+import com.couchbase.lite.Database
+import com.couchbase.lite.DatabaseConfiguration
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegate
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
 import io.ipoli.android.common.view.BaseController
-import io.ipoli.android.player.persistence.RealmPlayerRepository
+import io.ipoli.android.player.persistence.CouchbasePlayerRepository
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.controller_avatar_list.view.*
@@ -54,9 +56,9 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
 
     override fun createPresenter(): AvatarListPresenter {
         return AvatarListPresenter(
-            DisplayAvatarListUseCase(RealmPlayerRepository()),
-            BuyAvatarUseCase(RealmPlayerRepository()),
-            UseAvatarUseCase(RealmPlayerRepository())
+            DisplayAvatarListUseCase(CouchbasePlayerRepository(Database("iPoli", DatabaseConfiguration(applicationContext)))),
+            BuyAvatarUseCase(CouchbasePlayerRepository(Database("iPoli", DatabaseConfiguration(applicationContext)))),
+            UseAvatarUseCase(CouchbasePlayerRepository(Database("iPoli", DatabaseConfiguration(applicationContext))))
         )
     }
 

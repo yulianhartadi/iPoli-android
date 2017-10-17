@@ -1,5 +1,6 @@
 package io.ipoli.android.player.ui
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,24 +10,28 @@ import android.widget.Toast
 import com.facebook.internal.CallbackManagerImpl
 import com.jakewharton.rxbinding2.view.RxView
 import io.ipoli.android.R
+import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.view.BaseController
-import io.ipoli.android.common.navigation.Navigator
+import io.ipoli.android.iPoliApp
 import io.ipoli.android.player.SignInPresenter
-import io.ipoli.android.player.SignInUseCase
 import io.ipoli.android.player.auth.AnonymousAuth
 import io.ipoli.android.player.auth.FacebookAuth
 import io.ipoli.android.player.auth.GoogleAuth
 import io.ipoli.android.player.auth.ProviderType
-import io.ipoli.android.player.persistence.RealmPlayerRepository
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.controller_sign_in.view.*
+import space.traversal.kapsule.Injects
+import space.traversal.kapsule.inject
+import space.traversal.kapsule.required
 
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/8/17.
  */
-class SignInController : BaseController<SignInController, SignInPresenter>() {
+class SignInController : BaseController<SignInController, SignInPresenter>(), Injects<Module> {
+
+    private val presenter by required { signInPresenter }
 
     init {
         registerForActivityResult(CallbackManagerImpl.RequestCodeOffset.Login.toRequestCode())
@@ -37,8 +42,13 @@ class SignInController : BaseController<SignInController, SignInPresenter>() {
 //            .controllerComponent(daggerComponent)
 //            .build()
 
-    override fun createPresenter(): SignInPresenter {
-        return SignInPresenter(SignInUseCase(RealmPlayerRepository()), Navigator(router))
+    override fun createPresenter() = presenter
+//    : SignInPresenter {
+//        return SignInPresenter(SignInUseCase(RealmPlayerRepository()), Navigator(router))
+//    }
+
+    override fun onContextAvailable(context: Context) {
+        inject(iPoliApp.module(context, router))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {

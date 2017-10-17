@@ -2,7 +2,6 @@ package io.ipoli.android.quest
 
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.player.auth.AuthProvider
-import io.ipoli.android.player.data.Inventory
 import io.ipoli.android.store.avatars.data.Avatar
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -78,7 +77,6 @@ data class Player(
     var coins: Int = 0,
     var experience: Int = 0,
     var authProvider: AuthProvider? = null,
-    var inventory: Inventory? = Inventory(),
     var avatar: Avatar = Avatar.IPOLI_CLASSIC,
     val createdAt: LocalDateTime = LocalDateTime.now()
 ) : Entity

@@ -1,6 +1,5 @@
 package io.ipoli.android.quest.data
 
-import io.realm.RealmObject
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -8,7 +7,7 @@ import java.util.concurrent.TimeUnit
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/19/17.
  */
-open class Reminder : RealmObject {
+open class Reminder {
 
     var message: String? = null
 
