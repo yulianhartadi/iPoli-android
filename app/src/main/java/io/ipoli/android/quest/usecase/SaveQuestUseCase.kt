@@ -1,11 +1,11 @@
 package io.ipoli.android.quest.usecase
 
-import io.ipoli.android.common.BaseRxUseCase
+import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.Validator.Companion.validate
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.data.persistence.QuestRepository
+import io.ipoli.android.quest.usecase.Result.*
 import io.ipoli.android.quest.usecase.Result.ValidationError.EMPTY_NAME
-import io.reactivex.Observable
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -21,22 +21,19 @@ sealed class Result {
     data class Invalid(val errors: List<ValidationError>) : Result()
 }
 
-class SaveQuestUseCase(private val questRepository: QuestRepository) : BaseRxUseCase<Quest, Result>() {
-    override fun createObservable(parameters: Quest): Observable<Result> {
+class SaveQuestUseCase(private val questRepository: QuestRepository) : UseCase<Quest, Result> {
+    override fun execute(parameters: Quest): Result {
         val quest = parameters
-        val valErrors = validate(quest)
-            .check<Result.ValidationError> {
-                "name" {
-                    given { name.isEmpty() } addError EMPTY_NAME
-                }
+        val errors = validate(quest).check<ValidationError> {
+            "name" {
+                given { name.isEmpty() } addError EMPTY_NAME
             }
+        }
 
-        if (valErrors.isEmpty()) {
-            questRepository.save(quest).subscribe()
+        if (errors.isEmpty()) {
+            questRepository.save(quest)
+            return Added(quest)
         }
-        return when {
-            valErrors.isEmpty() -> Observable.just(Result.Added(quest))
-            else -> Observable.just(Result.Invalid(valErrors))
-        }
+        return Invalid(errors)
     }
 }
