@@ -2,7 +2,7 @@ package io.ipoli.android.quest.data.persistence
 
 import com.couchbase.lite.*
 import com.couchbase.lite.Expression.property
-import com.facebook.internal.Utility.map
+import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.persistence.PersistedModel
@@ -33,7 +33,7 @@ data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMa
     var color: String by map
     var category: String by map
     var duration: Int by map
-    var reminders: MutableMap<String, Any?>? by map
+    var reminders: List<MutableMap<String, Any?>> by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
@@ -44,10 +44,10 @@ data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMa
 }
 
 data class CouchbaseReminder(val map: MutableMap<String, Any?> = mutableMapOf()) {
-    val notificationId: String by map
-    val message: String by map
-    val remindTime: Int by map
-    val remindDate: Long by map
+    var notificationId: String by map
+    var message: String by map
+    var remindMinute: Int by map
+    var remindDate: Long by map
 }
 
 abstract class BaseCouchbaseRepository<E, out T>(private val database: Database) : Repository<E> where E : Entity, T : CouchbasePersistedModel {
@@ -187,13 +187,25 @@ class CouchbaseQuestRepository(database: Database) : BaseCouchbaseRepository<Que
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Quest {
         val cq = CouchbaseQuest(dataMap)
+
+        val reminders = cq.reminders
+            .map { CouchbaseReminder(it) }
+            .map {
+                Reminder(
+                    notificationId = it.notificationId,
+                    message = it.message,
+                    remindTime = Time.of(it.remindMinute),
+                    remindDate = DateUtils.fromMillis(it.remindDate)
+                )
+            }
+
         return Quest(
             id = cq.id,
             name = cq.name,
             color = Color.valueOf(cq.color),
             category = Category(cq.category, Color.GREEN),
             plannedSchedule = QuestSchedule(null, null, cq.duration),
-            reminders = listOf()
+            reminders = reminders
         )
     }
 
@@ -205,6 +217,19 @@ class CouchbaseQuestRepository(database: Database) : BaseCouchbaseRepository<Que
         q.color = entity.color.name
         q.duration = entity.plannedSchedule.duration
         q.type = CouchbaseQuest.TYPE
+
+        q.reminders = entity.reminders.map { r ->
+            createCouchbaseReminder(r).map
+        }
         return q
+    }
+
+    private fun createCouchbaseReminder(reminder: Reminder): CouchbaseReminder {
+        val cr = CouchbaseReminder()
+        cr.notificationId = reminder.notificationId
+        cr.message = reminder.message
+        cr.remindDate = reminder.remindDate.startOfDayUTC()
+        cr.remindMinute = reminder.remindTime.toMinuteOfDay()
+        return cr
     }
 }

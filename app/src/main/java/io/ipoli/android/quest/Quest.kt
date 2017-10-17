@@ -75,7 +75,7 @@ data class Player(
     override val id: String = "",
     var coins: Int = 0,
     var experience: Int = 0,
-    var authProvider: AuthProvider? = null,
+    var authProvider: AuthProvider,
     var avatar: Avatar = Avatar.IPOLI_CLASSIC,
     val createdAt: LocalDateTime = LocalDateTime.now()
 ) : Entity

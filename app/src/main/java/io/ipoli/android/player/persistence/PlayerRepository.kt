@@ -23,7 +23,7 @@ data class CouchbasePlayer(override val map: MutableMap<String, Any?> = mutableM
     override var id: String by map
     var coins: Int by map
     var experience: Int by map
-    var authProvider: MutableMap<String, Any?>? by map
+    var authProvider: MutableMap<String, Any?> by map
     var avatarCode: Int by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
@@ -54,18 +54,16 @@ class CouchbasePlayerRepository(database: Database) : BaseCouchbaseRepository<Pl
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Player {
         val cp = CouchbasePlayer(dataMap)
-        var authProvider: AuthProvider? = null
-        if (cp.authProvider != null) {
-        val cap = CouchbaseAuthProvider(cp.authProvider!!)
-            authProvider = AuthProvider(
-                id = cap.id,
-                provider = cap.provider,
-                firstName = cap.firstName,
-                lastName = cap.lastName,
-                email = cap.email,
-                image = cap.image
-            )
-        }
+
+        val cap = CouchbaseAuthProvider(cp.authProvider)
+        val authProvider = AuthProvider(
+            id = cap.id,
+            provider = cap.provider,
+            firstName = cap.firstName,
+            lastName = cap.lastName,
+            email = cap.email,
+            image = cap.image
+        )
         return Player(
             id = cp.id,
             coins = cp.coins,
@@ -77,26 +75,27 @@ class CouchbasePlayerRepository(database: Database) : BaseCouchbaseRepository<Pl
     }
 
     override fun toCouchbaseObject(entity: Player): CouchbasePlayer {
-        val cap = CouchbaseAuthProvider()
-        if(entity.authProvider != null) {
-            val authProvider = entity.authProvider!!
-            cap.id = authProvider.id
-            cap.email = authProvider.email
-            cap.firstName = authProvider.firstName
-            cap.lastName = authProvider.lastName
-            cap.username = authProvider.username
-            cap.image = authProvider.image
-            cap.provider = authProvider.provider
-        }
-
         val cp = CouchbasePlayer()
         cp.id = entity.id
         cp.coins = entity.coins
         cp.experience = entity.experience
-        cp.authProvider = cap.map
+        cp.authProvider = createCouchbaseAuthProvider(entity).map
         cp.avatarCode = entity.avatar.code
         cp.createdAt = entity.createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         return cp
     }
 
+    private fun createCouchbaseAuthProvider(entity: Player): CouchbaseAuthProvider {
+        val authProvider = entity.authProvider
+
+        val cap = CouchbaseAuthProvider()
+        cap.id = authProvider.id
+        cap.email = authProvider.email
+        cap.firstName = authProvider.firstName
+        cap.lastName = authProvider.lastName
+        cap.username = authProvider.username
+        cap.image = authProvider.image
+        cap.provider = authProvider.provider
+        return cap
+    }
 }
