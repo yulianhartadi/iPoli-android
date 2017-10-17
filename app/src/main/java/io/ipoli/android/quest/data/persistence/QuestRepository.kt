@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.data.persistence
 
 import com.couchbase.lite.*
+import io.ipoli.android.common.datetime.toStartOfDayUTCMillis
 import io.ipoli.android.common.persistence.PersistedModel
 import io.ipoli.android.common.persistence.Repository
 import io.ipoli.android.quest.*
@@ -13,12 +14,18 @@ import org.threeten.bp.LocalDate
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/20/17.
  */
+
+interface CouchbasePersistedModel : PersistedModel {
+    var type: String
+}
+
 interface QuestRepository : Repository<Quest> {
     fun listenForScheduledBetween(startDate: LocalDate, endDate: LocalDate): Channel<List<Quest>>
     fun listenForDate(date: LocalDate): Channel<List<Quest>>
 }
 
-data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) : PersistedModel {
+data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) : CouchbasePersistedModel {
+    override var type: String by map
     override var id: String by map
     var name: String by map
     var color: String by map
@@ -33,7 +40,7 @@ data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMa
     }
 }
 
-abstract class BaseCouchbaseRepository<E, T>(private val database: Database) : Repository<E> where E : Entity, T : PersistedModel {
+abstract class BaseCouchbaseRepository<E, T>(private val database: Database) : Repository<E> where E : Entity, T : CouchbasePersistedModel {
     protected abstract val modelType: String
 
     override fun listenById(id: String): Channel<E?> {
@@ -46,12 +53,12 @@ abstract class BaseCouchbaseRepository<E, T>(private val database: Database) : R
 
     override fun listenForAll(): Channel<List<E>> {
         val query = selectAll()
-            .where(Expression.property("type").equalTo(CouchbaseQuest.TYPE))
+            .where(Expression.property("type").equalTo(modelType))
             .toLive()
         return sendResults(query)
     }
 
-    private fun sendResults(query: LiveQuery): Channel<List<E>> {
+    protected fun sendResults(query: LiveQuery): Channel<List<E>> {
         val channel = Channel<List<E>>()
         val changeListener = createChangeListener(query, channel) { changes ->
             val result = toEntities(changes)
@@ -105,7 +112,7 @@ abstract class BaseCouchbaseRepository<E, T>(private val database: Database) : R
 
     override fun find(): E? {
         val query = selectAll()
-            .where(Expression.property("type").equalTo(CouchbaseQuest.TYPE))
+            .where(Expression.property("type").equalTo(modelType))
             .limit(1)
         val iterator = query.run().iterator()
         return when {
@@ -114,7 +121,7 @@ abstract class BaseCouchbaseRepository<E, T>(private val database: Database) : R
         }
     }
 
-    private fun selectAll() =
+    protected fun selectAll() =
         Query.select(SelectResult.all())
             .from(DataSource.database(database))
 
@@ -128,6 +135,14 @@ abstract class BaseCouchbaseRepository<E, T>(private val database: Database) : R
         return toEntityObject(doc.toMap().toMutableMap())
     }
 
+    override fun delete(entity: E) {
+
+    }
+
+    override fun delete(id: String) {
+
+    }
+
     protected fun toEntityObject(row: Result): E =
         toEntityObject(row.toMap().toMutableMap())
 
@@ -137,6 +152,28 @@ abstract class BaseCouchbaseRepository<E, T>(private val database: Database) : R
 }
 
 class CouchbaseQuestRepository(database: Database) : BaseCouchbaseRepository<Quest, CouchbaseQuest>(database), QuestRepository {
+    override val modelType = CouchbaseQuest.TYPE
+
+    override fun listenForScheduledBetween(startDate: LocalDate, endDate: LocalDate): Channel<List<Quest>> {
+        val query = selectAll()
+            .where(
+                Expression.property("type").equalTo(modelType)
+                    .and(Expression.property("scheduled"))
+                    .between(startDate.toStartOfDayUTCMillis(), endDate.toStartOfDayUTCMillis())
+            )
+            .toLive()
+        return sendResults(query)
+    }
+
+    override fun listenForDate(date: LocalDate): Channel<List<Quest>> {
+        val query = selectAll()
+            .where(
+                Expression.property("type").equalTo(modelType)
+                    .and(Expression.property("scheduled"))
+                    .equalTo(date.toStartOfDayUTCMillis()))
+            .toLive()
+        return sendResults(query)
+    }
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Quest {
         val cq = CouchbaseQuest(dataMap)
@@ -157,6 +194,7 @@ class CouchbaseQuestRepository(database: Database) : BaseCouchbaseRepository<Que
         q.category = entity.category.name
         q.color = entity.color.name
         q.duration = entity.plannedSchedule.duration
+        q.type = CouchbaseQuest.TYPE
         return q
     }
 }
