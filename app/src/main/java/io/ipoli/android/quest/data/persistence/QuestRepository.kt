@@ -136,11 +136,11 @@ abstract class BaseCouchbaseRepository<E, T>(private val database: Database) : R
     }
 
     override fun delete(entity: E) {
-
+        delete(entity.id)
     }
 
     override fun delete(id: String) {
-
+        database.delete(database.getDocument(id))
     }
 
     protected fun toEntityObject(row: Result): E =
