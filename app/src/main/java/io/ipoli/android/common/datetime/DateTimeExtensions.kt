@@ -8,7 +8,7 @@ import java.util.*
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/20/17.
  */
-fun LocalDate.toStartOfDayUTCMillis(): Long {
+fun LocalDate.startOfDayUTC(): Long {
     return toStartOfDayUTC().time
 }
 
