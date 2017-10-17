@@ -7,6 +7,9 @@ import io.ipoli.android.quest.Player
 import io.ipoli.android.quest.data.persistence.BaseCouchbaseRepository
 import io.ipoli.android.quest.data.persistence.CouchbasePersistedModel
 import io.ipoli.android.store.avatars.data.Avatar
+import org.threeten.bp.Instant
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.ZoneId
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -20,8 +23,8 @@ data class CouchbasePlayer(override val map: MutableMap<String, Any?> = mutableM
     override var id: String by map
     var coins: Int by map
     var experience: Int by map
-    var authProvider: AuthProvider? by map
-    var avatar: Avatar by map
+    var authProvider: MutableMap<String, Any?>? by map
+    var avatarCode: Int by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
@@ -35,41 +38,30 @@ class CouchbasePlayerRepository(database: Database) : BaseCouchbaseRepository<Pl
     override val modelType = CouchbasePlayer.TYPE
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Player {
+        val cp = CouchbasePlayer(dataMap)
+        var authProvider: AuthProvider? = null
+        if (cp.authProvider != null) {
+            authProvider = AuthProvider(cp.authProvider as MutableMap<String, Any?>)
+        }
+        return Player(
+            id = cp.id,
+            coins = cp.coins,
+            experience = cp.experience,
+            authProvider = authProvider,
+            avatar = Avatar.fromCode(cp.avatarCode)!!,
+            createdAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(cp.createdAt), ZoneId.systemDefault())
+        )
     }
 
     override fun toCouchbaseObject(entity: Player): CouchbasePlayer {
+        val cp = CouchbasePlayer()
+        cp.id = entity.id
+        cp.coins = entity.coins
+        cp.experience = entity.experience
+        cp.authProvider = entity.authProvider?.map
+        cp.avatarCode = entity.avatar.code
+        cp.createdAt = entity.createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        return cp
     }
 
 }
-
-
-//class RealmPlayerRepository : BaseRealmRepository<Player, RealmPlayer>(), PlayerRepository {
-//    override fun convertToRealmModel(entity: Player): RealmPlayer =
-//        entity.let {
-//            RealmPlayer(
-//                id = it.id,
-//                coins = it.coins,
-//                experience = it.experience,
-//                authProvider = it.authProvider)
-//        }
-//
-//    override fun convertToEntity(realmModel: RealmPlayer): Player =
-//        realmModel.let {
-//            Player(
-//                id = it.id,
-//                coins = it.coins,
-//                experience = it.experience,
-//                authProvider = it.authProvider,
-//                createdAt = LocalDateTime.now()
-//            )
-//        }
-//
-//    override fun get(): Player? =
-//        Realm.getDefaultInstance().use { realm ->
-//            val realmModel = realm.where(getModelClass()).findFirst() ?: return@use null
-//            convertToEntity(realmModel)
-//        }
-//
-//    override fun getModelClass(): Class<RealmPlayer> = RealmPlayer::class.java
-//
-//}
