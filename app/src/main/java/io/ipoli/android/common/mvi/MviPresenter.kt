@@ -2,8 +2,7 @@ package io.ipoli.android.common.mvi
 
 import android.support.annotation.MainThread
 import io.ipoli.android.common.RxUseCase
-import io.ipoli.android.quest.calendar.dayview.view.DayViewState
-import io.ipoli.android.quest.usecase.Result
+import io.ipoli.android.quest.calendar.dayview.view.DayViewIntent
 import io.reactivex.Observable
 import io.reactivex.ObservableTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -13,7 +12,11 @@ import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
-
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.channels.ReceiveChannel
+import kotlinx.coroutines.experimental.channels.actor
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -34,7 +37,33 @@ interface MviPresenter<in V : ViewStateRenderer<VS>, in VS> {
     fun onDestroy() {}
 }
 
-abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS>(private val initialState: VS) :
+abstract class CoroutineMviPresenter<V : ViewStateRenderer<VS>, VS>(private val intentChannel: ReceiveChannel<DayViewIntent>, private val initialState: VS) :
+    MviPresenter<V, VS> {
+
+    private fun stateReduceActor(view: V) = actor<DayViewIntent> {
+        val state = initialState
+        view.render(state)
+        channel.consumeEach { intent ->
+            val newState = reduceState(intent, state)
+            launch(UI) {
+                view.render(newState)
+            }
+        }
+    }
+
+    override fun onAttachView(view: V) {
+        val actor = stateReduceActor(view)
+        launch {
+            intentChannel.consumeEach {
+                actor.send(it)
+            }
+        }
+    }
+
+    abstract fun reduceState(intent: DayViewIntent, state: VS): VS
+}
+
+abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS>(initialState: VS) :
     MviPresenter<V, VS> {
 
     private var viewAttachedFirstTime = true
@@ -176,7 +205,6 @@ abstract class BaseMviPresenter<V : ViewStateRenderer<VS>, VS>(private val initi
         viewAttachedFirstTime = true
         intentRelaysBinders.clear()
     }
-
 
     protected fun <T, R> Observable<Pair<VS, T>>.execute(
         useCase: RxUseCase<T, R>,

@@ -2,26 +2,44 @@ package io.ipoli.android.quest.calendar.dayview
 
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.mvi.BaseMviPresenter
+import io.ipoli.android.common.mvi.CoroutineMviPresenter
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.quest.Category
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.QuestSchedule
-import io.ipoli.android.quest.calendar.dayview.view.DayView
-import io.ipoli.android.quest.calendar.dayview.view.DayViewController
-import io.ipoli.android.quest.calendar.dayview.view.DayViewState
+import io.ipoli.android.quest.calendar.dayview.view.*
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
 import io.ipoli.android.quest.usecase.Result
 import io.ipoli.android.quest.usecase.SaveQuestUseCase
 import io.ipoli.android.quest.usecase.Schedule
 import io.reactivex.Observable
+import kotlinx.coroutines.experimental.channels.ReceiveChannel
+import kotlinx.coroutines.experimental.channels.SendChannel
 import org.threeten.bp.LocalDate
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/27/17.
  */
+
+class DayViewPres(intentChannel: ReceiveChannel<DayViewIntent>) : CoroutineMviPresenter<DayView, DayViewState>(intentChannel, DayViewState.Loading) {
+
+    override fun reduceState(intent: DayViewIntent, state: DayViewState): DayViewState {
+        when (intent) {
+            is AddEventIntent -> {
+
+            }
+
+            is LoadScheduleIntent -> {
+
+            }
+        }
+    }
+
+}
+
 class DayViewPresenter(private val loadScheduleUseCase: LoadScheduleForDateUseCase,
                        private val saveQuestUseCase: SaveQuestUseCase) :
     BaseMviPresenter<DayView, DayViewState>(DayViewState.Loading) {

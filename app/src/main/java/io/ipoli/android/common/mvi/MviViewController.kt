@@ -7,13 +7,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bluelinelabs.conductor.Controller
-import io.reactivex.subjects.PublishSubject
+import io.ipoli.android.quest.calendar.dayview.view.DayViewIntent
+import kotlinx.coroutines.experimental.channels.Channel
+import kotlinx.coroutines.experimental.channels.ReceiveChannel
+import kotlinx.coroutines.experimental.launch
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/8/17.
  */
 abstract class MviViewController<VS, V : ViewStateRenderer<VS>, P : MviPresenter<V, VS>> : Controller, ViewStateRenderer<VS> {
+
+    private val presenterChannel: Channel<DayViewIntent> = Channel()
 
     init {
         val lifecycleListener = object : LifecycleListener() {
@@ -25,10 +30,8 @@ abstract class MviViewController<VS, V : ViewStateRenderer<VS>, P : MviPresenter
                 val isRestoringViewState = presenter != null
 
                 if (!isRestoringViewState) {
-                    presenter = createPresenter()
-                }
-
-                if (isRestoringViewState) {
+                    presenter = createPresenter(presenterChannel)
+                } else {
                     setRestoringViewState(true)
                 }
 
@@ -89,11 +92,17 @@ abstract class MviViewController<VS, V : ViewStateRenderer<VS>, P : MviPresenter
         this.isRestoring = isRestoring
     }
 
-    protected abstract fun createPresenter(): P
+    protected abstract fun createPresenter(channel: ReceiveChannel<DayViewIntent>): P
 
-    protected fun <I> createIntentSubject(): PublishSubject<I> {
-        return PublishSubject.create<I>()
+    fun sendIntent(intent: DayViewIntent) {
+        launch {
+            presenterChannel.send(intent)
+        }
     }
+
+//    protected fun <I> createIntentSubject(): PublishSubject<I> {
+//        return PublishSubject.create<I>()
+//    }
 
     @MainThread
     override fun render(state: VS) {

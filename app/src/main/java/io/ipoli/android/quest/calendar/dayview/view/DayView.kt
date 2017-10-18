@@ -12,15 +12,18 @@ import org.threeten.bp.LocalDate
  * on 10/4/17.
  */
 
-
 interface DayView : ViewStateRenderer<DayViewState> {
     fun loadScheduleIntent(): Observable<LocalDate>
     fun addEventIntent(): Observable<CalendarEvent>
     fun editEventIntent(): Observable<CalendarEvent>
     fun editUnscheduledEventIntent(): Observable<UnscheduledEvent>
     fun removeEventIntent(): Observable<String>
-
 }
+
+sealed class DayViewIntent
+
+data class LoadScheduleIntent(val date: LocalDate) : DayViewIntent()
+data class AddEventIntent(val event: CalendarEvent) : DayViewIntent()
 
 data class DayViewState(
     val type: StateType,

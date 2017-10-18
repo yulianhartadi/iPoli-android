@@ -246,7 +246,9 @@ class DayViewController :
     }
 
     override fun onAddEvent(event: CalendarEvent) {
-        addEventSubject.onNext(event)
+        sendIntent(AddEventIntent(event))
+
+//        addEventSubject.onNext(event)
         ViewUtils.hideKeyboard(calendarDayView)
     }
 
