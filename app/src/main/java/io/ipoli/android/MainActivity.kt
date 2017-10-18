@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         val hasNoRootController = !router.hasRootController()
-        if (hasNoRootController && CouchbasePlayerRepository(Database("iPoli", DatabaseConfiguration(applicationContext))).find() == null) {
+        if (hasNoRootController && CouchbasePlayerRepository(Database("iPoli", DatabaseConfiguration(applicationContext)), job).find() == null) {
             router.setRoot(RouterTransaction.with(SignInController()))
         } else if (hasNoRootController) {
             router.setRoot(RouterTransaction.with(HomeController()))

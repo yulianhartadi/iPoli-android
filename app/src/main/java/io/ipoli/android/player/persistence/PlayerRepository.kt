@@ -10,6 +10,7 @@ import io.ipoli.android.store.avatars.data.Avatar
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
+import kotlin.coroutines.experimental.CoroutineContext
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -49,7 +50,7 @@ enum class ProviderType {
     FACEBOOK, GOOGLE, ANONYMOUS
 }
 
-class CouchbasePlayerRepository(database: Database) : BaseCouchbaseRepository<Player, CouchbasePlayer>(database), PlayerRepository {
+class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineContext) : BaseCouchbaseRepository<Player, CouchbasePlayer>(database, coroutineContext), PlayerRepository {
     override val modelType = CouchbasePlayer.TYPE
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Player {

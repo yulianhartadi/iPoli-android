@@ -8,9 +8,12 @@ import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.persistence.PersistedModel
 import io.ipoli.android.common.persistence.Repository
 import io.ipoli.android.quest.*
-import kotlinx.coroutines.experimental.channels.Channel
+import kotlinx.coroutines.experimental.channels.ReceiveChannel
+import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.experimental.channels.produce
 import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
+import kotlin.coroutines.experimental.CoroutineContext
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -22,8 +25,8 @@ interface CouchbasePersistedModel : PersistedModel {
 }
 
 interface QuestRepository : Repository<Quest> {
-    fun listenForScheduledBetween(startDate: LocalDate, endDate: LocalDate): Channel<List<Quest>>
-    fun listenForDate(date: LocalDate): Channel<List<Quest>>
+    fun listenForScheduledBetween(startDate: LocalDate, endDate: LocalDate): ReceiveChannel<List<Quest>>
+    fun listenForDate(date: LocalDate): ReceiveChannel<List<Quest>>
 }
 
 data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) : CouchbasePersistedModel {
@@ -50,7 +53,7 @@ data class CouchbaseReminder(val map: MutableMap<String, Any?> = mutableMapOf())
     var remindDate: Long by map
 }
 
-abstract class BaseCouchbaseRepository<E, out T>(private val database: Database) : Repository<E> where E : Entity, T : CouchbasePersistedModel {
+abstract class BaseCouchbaseRepository<E, out T>(private val database: Database, private val coroutineContext: CoroutineContext) : Repository<E> where E : Entity, T : CouchbasePersistedModel {
     protected abstract val modelType: String
 
     override fun listenById(id: String) =
@@ -76,17 +79,15 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database)
 
     override fun listenForAll() = listenForChanges()
 
-    protected fun sendLiveResults(query: Query): Channel<List<E>> {
-        val channel = Channel<List<E>>()
+    protected fun sendLiveResults(query: Query): ReceiveChannel<List<E>> = produce(coroutineContext) {
         val liveQuery = query.toLive()
         val changeListener = createChangeListener(liveQuery, channel) { changes ->
-            val result = toEntities(changes)
-            launch {
-                channel.send(result.toList())
+            launch(this@BaseCouchbaseRepository.coroutineContext) {
+                val result = toEntities(changes)
+                send(result.toList())
             }
         }
         runLiveQuery(liveQuery, changeListener)
-        return channel
     }
 
     private fun toEntities(changes: LiveQueryChange): Sequence<E> =
@@ -95,30 +96,28 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database)
     private fun toEntities(iterator: MutableIterator<Result>): Sequence<E> =
         iterator.asSequence().map { toEntityObject(it) }
 
-    private fun sendLiveResult(query: Query): Channel<E?> {
-        val channel = Channel<E?>()
+    private fun sendLiveResult(query: Query): ReceiveChannel<E?> = produce(coroutineContext) {
         val liveQuery = query.toLive()
 
         val changeListener = createChangeListener(liveQuery, channel) { changes ->
-            launch {
+            launch(this@BaseCouchbaseRepository.coroutineContext) {
                 val result = toEntities(changes)
-                channel.send(result.firstOrNull())
+                send(result.firstOrNull())
             }
         }
 
         runLiveQuery(liveQuery, changeListener)
-        return channel
     }
 
     private fun <E> createChangeListener(
         query: LiveQuery,
-        channel: Channel<E>,
+        channel: SendChannel<E>,
         handler: (changes: LiveQueryChange) -> Unit
     ): LiveQueryChangeListener {
         var changeListener: LiveQueryChangeListener? = null
 
         changeListener = LiveQueryChangeListener { changes ->
-            if (channel.isClosedForReceive) {
+            if (channel.isClosedForSend) {
                 query.removeChangeListener(changeListener)
                 query.stop()
             } else {
@@ -173,7 +172,7 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database)
     protected abstract fun toCouchbaseObject(entity: E): T
 }
 
-class CouchbaseQuestRepository(database: Database) : BaseCouchbaseRepository<Quest, CouchbaseQuest>(database), QuestRepository {
+class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineContext) : BaseCouchbaseRepository<Quest, CouchbaseQuest>(database, coroutineContext), QuestRepository {
     override val modelType = CouchbaseQuest.TYPE
 
     override fun listenForScheduledBetween(startDate: LocalDate, endDate: LocalDate) =

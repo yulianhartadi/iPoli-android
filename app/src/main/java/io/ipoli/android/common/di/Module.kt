@@ -20,6 +20,8 @@ import io.ipoli.android.quest.usecase.SaveQuestUseCase
 import io.ipoli.android.reminder.view.formatter.ReminderTimeFormatter
 import io.ipoli.android.reminder.view.formatter.TimeUnitFormatter
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogPresenter
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Job
 import space.traversal.kapsule.HasModules
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
@@ -35,8 +37,9 @@ interface RepositoryModule {
 
 class CouchbaseRepositoryModule : RepositoryModule, Injects<Module> {
     private val database by required { database }
-    override val questRepository = CouchbaseQuestRepository(database)
-    override val playerRepository = CouchbasePlayerRepository(database)
+    private val job by required { job }
+    override val questRepository = CouchbaseQuestRepository(database, job + CommonPool)
+    override val playerRepository = CouchbasePlayerRepository(database, job + CommonPool)
 }
 
 interface AndroidModule {
@@ -51,10 +54,11 @@ interface AndroidModule {
     val timeUnitFormatter: TimeUnitFormatter
 
     val database: Database
+
+    val job: Job
 }
 
 class MainAndroidModule(private val context: Context, private val router: Router) : AndroidModule {
-
     override val layoutInflater: LayoutInflater get() = LayoutInflater.from(context)
 
     override val sharedPreferences: SharedPreferences get() = PreferenceManager.getDefaultSharedPreferences(context)
@@ -68,12 +72,15 @@ class MainAndroidModule(private val context: Context, private val router: Router
     override val database
         get() =
             Database("iPoli", DatabaseConfiguration(context.applicationContext))
+
+    override val job get() = Job()
 }
 
 class MainUseCaseModule : UseCaseModule, Injects<Module> {
     private val questRepository by required { questRepository }
     private val playerRepository by required { playerRepository }
-    override val loadScheduleForDateUseCase get() = LoadScheduleForDateUseCase(questRepository)
+    private val job by required { job }
+    override val loadScheduleForDateUseCase get() = LoadScheduleForDateUseCase(questRepository, job + CommonPool)
     override val saveQuestUseCase get() = SaveQuestUseCase(questRepository)
     override val signInUseCase get() = SignInUseCase(playerRepository)
 }

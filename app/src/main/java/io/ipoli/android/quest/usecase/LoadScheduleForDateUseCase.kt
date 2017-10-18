@@ -3,10 +3,11 @@ package io.ipoli.android.quest.usecase
 import io.ipoli.android.common.StreamingUseCase
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.data.persistence.QuestRepository
-import kotlinx.coroutines.experimental.channels.Channel
+import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.channels.produce
 import org.threeten.bp.LocalDate
+import kotlin.coroutines.experimental.CoroutineContext
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -14,18 +15,15 @@ import org.threeten.bp.LocalDate
  */
 data class Schedule(val scheduled: List<Quest>, val unscheduled: List<Quest>)
 
-class LoadScheduleForDateUseCase(private val questRepository: QuestRepository) : StreamingUseCase<LocalDate, Schedule>() {
-    override fun execute(parameters: LocalDate): Channel<Schedule> {
-        val channel = Channel<Schedule>()
-        launch {
-            val repoChannel = questRepository.listenForDate(parameters)
-            repoChannel
-                .consumeEach { quests ->
-                    val (scheduled, unscheduled) = quests
-                        .partition { it.isScheduled }
-                    channel.send(Schedule(scheduled, unscheduled))
-                }
+class LoadScheduleForDateUseCase(private val questRepository: QuestRepository, coroutineContext: CoroutineContext) : StreamingUseCase<LocalDate, Schedule>(coroutineContext) {
+    override fun execute(parameters: LocalDate) =
+        createSchedule(questRepository.listenForDate(parameters))
+
+    private fun createSchedule(channel: ReceiveChannel<List<Quest>>) = produce(coroutineContext) {
+        channel.consumeEach { quests ->
+            val (scheduled, unscheduled) = quests
+                .partition { it.isScheduled }
+            send(Schedule(scheduled, unscheduled))
         }
-        return channel
     }
 }

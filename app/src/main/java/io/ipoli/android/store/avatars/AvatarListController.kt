@@ -56,9 +56,9 @@ class AvatarListController : BaseController<AvatarListController, AvatarListPres
 
     override fun createPresenter(): AvatarListPresenter {
         return AvatarListPresenter(
-            DisplayAvatarListUseCase(CouchbasePlayerRepository(Database("iPoli", DatabaseConfiguration(applicationContext)))),
-            BuyAvatarUseCase(CouchbasePlayerRepository(Database("iPoli", DatabaseConfiguration(applicationContext)))),
-            UseAvatarUseCase(CouchbasePlayerRepository(Database("iPoli", DatabaseConfiguration(applicationContext))))
+            DisplayAvatarListUseCase(CouchbasePlayerRepository(Database("iPoli", DatabaseConfiguration(applicationContext)), job)),
+            BuyAvatarUseCase(CouchbasePlayerRepository(Database("iPoli", DatabaseConfiguration(applicationContext)), job)),
+            UseAvatarUseCase(CouchbasePlayerRepository(Database("iPoli", DatabaseConfiguration(applicationContext)), job))
         )
     }
 

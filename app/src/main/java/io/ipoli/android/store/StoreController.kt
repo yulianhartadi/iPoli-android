@@ -51,7 +51,7 @@ class StoreController : BaseController<StoreController, StorePresenter>() {
 
     override fun createPresenter(): StorePresenter {
         // @TODO fix me
-        return StorePresenter(DisplayCoinsUseCase(CouchbasePlayerRepository(Database("iPoli", DatabaseConfiguration(applicationContext)))))
+        return StorePresenter(DisplayCoinsUseCase(CouchbasePlayerRepository(Database("iPoli", DatabaseConfiguration(applicationContext)), job)))
     }
 
     fun showCoinsIntent(): Observable<Boolean> {
