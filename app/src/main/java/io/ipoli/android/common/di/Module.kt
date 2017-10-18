@@ -104,7 +104,8 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val navigator by required { navigator }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
     private val timeUnitFormatter by required { timeUnitFormatter }
-    override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase)
+    private val job by required { job }
+    override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, job)
     override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter)
     override val signInPresenter get() = SignInPresenter(signInUseCase, navigator)
 }

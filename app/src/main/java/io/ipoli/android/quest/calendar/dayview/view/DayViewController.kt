@@ -20,6 +20,7 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.mvi.MviViewController
+import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.ColorPickerDialogController
 import io.ipoli.android.common.view.widget.PetMessage
@@ -29,7 +30,6 @@ import io.ipoli.android.quest.calendar.dayview.view.widget.*
 import io.ipoli.android.quest.data.Category
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogController
 import io.ipoli.android.reminder.view.picker.ReminderViewModel
-import io.reactivex.Observable
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.controller_day_view.view.*
 import kotlinx.android.synthetic.main.item_calendar_drag.view.*
@@ -41,23 +41,19 @@ import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
 import timber.log.Timber
 
-class DayViewController :
-    MviViewController<DayViewState, DayView, DayViewPresenter>(R.layout.controller_day_view),
+class DayViewController(date: LocalDate) :
+    MviViewController<DayViewState, ViewStateRenderer<DayViewState>, DayViewPresenter, DayViewIntent>(
+        DayViewState(
+            type = DayViewState.StateType.LOADING,
+            scheduledDate = date
+        ),
+        R.layout.controller_day_view
+    ),
     Injects<Module>,
     CalendarDayView.CalendarChangeListener,
-    DayView {
-
-    private val addEventSubject = createIntentSubject<CalendarEvent>()
-
-    private val editEventSubject = createIntentSubject<CalendarEvent>()
-
-    private val editUnscheduledEventSubject = createIntentSubject<UnscheduledEvent>()
-
-    private val removeEventSubject = createIntentSubject<String>()
+    ViewStateRenderer<DayViewState> {
 
     private val presenter by required { dayViewPresenter }
-
-    private val inflater by required { layoutInflater }
 
     private lateinit var calendarDayView: CalendarDayView
 
@@ -84,19 +80,6 @@ class DayViewController :
         ViewUtils.hideKeyboard(calendarDayView)
         calendarDayView.cancelEdit()
     }
-
-    override fun loadScheduleIntent(): Observable<LocalDate> {
-        return Observable.just(LocalDate.now())
-            .filter { !isRestoring }
-    }
-
-    override fun addEventIntent() = addEventSubject
-
-    override fun editEventIntent() = editEventSubject
-
-    override fun editUnscheduledEventIntent() = editUnscheduledEventSubject
-
-    override fun removeEventIntent() = removeEventSubject
 
     override fun createPresenter(): DayViewPresenter {
         return presenter
@@ -223,7 +206,7 @@ class DayViewController :
         PetMessage.show(view!!, R.drawable.ic_done_white_24dp, "Quest removed", "Undo", {
             Timber.d("Click")
         })
-        removeEventSubject.onNext(eventId)
+        send(RemoveEventIntent(eventId))
     }
 
     override fun onMoveEvent(dragView: View, startTime: Time?, endTime: Time?) {
@@ -246,21 +229,19 @@ class DayViewController :
     }
 
     override fun onAddEvent(event: CalendarEvent) {
-        sendIntent(AddEventIntent(event))
-
-//        addEventSubject.onNext(event)
+        send(AddEventIntent(event))
         ViewUtils.hideKeyboard(calendarDayView)
     }
 
     override fun onEditCalendarEvent(event: CalendarEvent, position: Int) {
-        val vm = eventsAdapter.events.get(position)
-        editEventSubject.onNext(event)
+        val vm = eventsAdapter.events[position]
+        send(EditEventIntent(event))
         ViewUtils.hideKeyboard(calendarDayView)
     }
 
     override fun onEditUnscheduledEvent(event: UnscheduledEvent, position: Int) {
-        val vm = unscheduledEventsAdapter.events.get(position)
-        editUnscheduledEventSubject.onNext(event)
+        val vm = unscheduledEventsAdapter.events[position]
+        send(EditUnscheduledEventIntent(event))
         ViewUtils.hideKeyboard(calendarDayView)
     }
 

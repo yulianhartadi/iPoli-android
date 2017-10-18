@@ -16,7 +16,7 @@ import kotlin.coroutines.experimental.CoroutineContext
 data class Schedule(val scheduled: List<Quest>, val unscheduled: List<Quest>)
 
 class LoadScheduleForDateUseCase(private val questRepository: QuestRepository, coroutineContext: CoroutineContext) : StreamingUseCase<LocalDate, Schedule>(coroutineContext) {
-    override fun execute(parameters: LocalDate) =
+    override fun execute(parameters: LocalDate): ReceiveChannel<Schedule> =
         createSchedule(questRepository.listenForDate(parameters))
 
     private fun createSchedule(channel: ReceiveChannel<List<Quest>>) = produce(coroutineContext) {

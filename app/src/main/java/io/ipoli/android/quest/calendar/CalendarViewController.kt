@@ -44,7 +44,7 @@ class CalendarViewController : Controller() {
             if (!router.hasRootController()) {
                 val plusDays = position - MID_POSITION
 
-                val page = DayViewController()
+                val page = DayViewController(currentMidDate)
                 router.setRoot(RouterTransaction.with(page))
             }
         }

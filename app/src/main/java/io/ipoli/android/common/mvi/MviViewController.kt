@@ -7,18 +7,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bluelinelabs.conductor.Controller
-import io.ipoli.android.quest.calendar.dayview.view.DayViewIntent
-import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.channels.ReceiveChannel
+import io.ipoli.android.quest.calendar.dayview.view.Intent
+import io.ipoli.android.quest.calendar.dayview.view.ViewState
+import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.launch
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/8/17.
  */
-abstract class MviViewController<VS, V : ViewStateRenderer<VS>, P : MviPresenter<V, VS>> : Controller, ViewStateRenderer<VS> {
+abstract class MviViewController<VS : ViewState, in V : ViewStateRenderer<VS>, out P : MviPresenter<V, VS, I>, in I : Intent>(
+    private val initialState: VS,
+    @LayoutRes private val viewLayout: Int,
+    args: Bundle? = null
+) : Controller(args), ViewStateRenderer<VS> {
 
-    private val presenterChannel: Channel<DayViewIntent> = Channel()
+    private lateinit var intentChannel: SendChannel<I>
 
     init {
         val lifecycleListener = object : LifecycleListener() {
@@ -30,7 +34,9 @@ abstract class MviViewController<VS, V : ViewStateRenderer<VS>, P : MviPresenter
                 val isRestoringViewState = presenter != null
 
                 if (!isRestoringViewState) {
-                    presenter = createPresenter(presenterChannel)
+                    presenter = createPresenter()
+                    presenter?.initialState = initialState
+                    intentChannel = presenter!!.intentChannel()
                 } else {
                     setRestoringViewState(true)
                 }
@@ -66,19 +72,7 @@ abstract class MviViewController<VS, V : ViewStateRenderer<VS>, P : MviPresenter
         addLifecycleListener(lifecycleListener)
     }
 
-    @LayoutRes
-    private val viewLayout: Int
-
     protected var isRestoring = false
-
-    constructor(@LayoutRes viewLayout: Int) : super() {
-        this.viewLayout = viewLayout
-    }
-
-    @Suppress("UNUSED")
-    constructor(@LayoutRes viewLayout: Int, args: Bundle) : super(args) {
-        this.viewLayout = viewLayout
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val v = inflater.inflate(viewLayout, container, false)
@@ -92,17 +86,11 @@ abstract class MviViewController<VS, V : ViewStateRenderer<VS>, P : MviPresenter
         this.isRestoring = isRestoring
     }
 
-    protected abstract fun createPresenter(channel: ReceiveChannel<DayViewIntent>): P
+    protected abstract fun createPresenter(): P
 
-    fun sendIntent(intent: DayViewIntent) {
-        launch {
-            presenterChannel.send(intent)
-        }
+    protected fun send(intent: I) {
+        launch { intentChannel.send(intent) }
     }
-
-//    protected fun <I> createIntentSubject(): PublishSubject<I> {
-//        return PublishSubject.create<I>()
-//    }
 
     @MainThread
     override fun render(state: VS) {

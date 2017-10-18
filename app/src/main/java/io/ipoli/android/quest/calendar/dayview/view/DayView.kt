@@ -1,10 +1,8 @@
 package io.ipoli.android.quest.calendar.dayview.view
 
-import io.ipoli.android.common.mvi.ViewStateRenderer
-import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.LOADING
 import io.ipoli.android.quest.calendar.dayview.view.widget.CalendarEvent
 import io.ipoli.android.quest.calendar.dayview.view.widget.UnscheduledEvent
-import io.reactivex.Observable
+import io.ipoli.android.quest.usecase.Schedule
 import org.threeten.bp.LocalDate
 
 /**
@@ -12,28 +10,24 @@ import org.threeten.bp.LocalDate
  * on 10/4/17.
  */
 
-interface DayView : ViewStateRenderer<DayViewState> {
-    fun loadScheduleIntent(): Observable<LocalDate>
-    fun addEventIntent(): Observable<CalendarEvent>
-    fun editEventIntent(): Observable<CalendarEvent>
-    fun editUnscheduledEventIntent(): Observable<UnscheduledEvent>
-    fun removeEventIntent(): Observable<String>
-}
+sealed class DayViewIntent : Intent
 
-sealed class DayViewIntent
-
-data class LoadScheduleIntent(val date: LocalDate) : DayViewIntent()
 data class AddEventIntent(val event: CalendarEvent) : DayViewIntent()
+data class EditEventIntent(val event: CalendarEvent) : DayViewIntent()
+data class EditUnscheduledEventIntent(val event: UnscheduledEvent) : DayViewIntent()
+data class RemoveEventIntent(val eventId: String) : DayViewIntent()
+data class ScheduleLoadedIntent(val schedule: Schedule) : DayViewIntent()
+
+interface ViewState
+
+interface Intent
 
 data class DayViewState(
     val type: StateType,
+    val scheduledDate: LocalDate = LocalDate.now(),
     val scheduledQuests: List<DayViewController.QuestViewModel> = listOf(),
     val unscheduledQuests: List<DayViewController.UnscheduledQuestViewModel> = listOf()
-) {
-
-    companion object {
-        val Loading = DayViewState(type = LOADING)
-    }
+) : ViewState {
 
     enum class StateType {
         LOADING, SCHEDULE_LOADED, EVENT_UPDATED, EVENT_VALIDATION_ERROR
