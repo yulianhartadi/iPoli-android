@@ -3,7 +3,6 @@ package io.ipoli.android.common.di
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
-import android.util.Log
 import android.view.LayoutInflater
 import com.bluelinelabs.conductor.Router
 import com.couchbase.lite.Database
@@ -37,8 +36,8 @@ interface RepositoryModule {
 class CouchbaseRepositoryModule : RepositoryModule, Injects<Module> {
     private val database by required { database }
     private val job by required { job }
-    override val questRepository = CouchbaseQuestRepository(database, job + CommonPool)
-    override val playerRepository = CouchbasePlayerRepository(database, job + CommonPool)
+    override val questRepository get() = CouchbaseQuestRepository(database, job + CommonPool)
+    override val playerRepository get() = CouchbasePlayerRepository(database, job + CommonPool)
 }
 
 interface AndroidModule {
@@ -70,9 +69,7 @@ class MainAndroidModule(private val context: Context, private val router: Router
     override val timeUnitFormatter get() = TimeUnitFormatter(context)
 
     override val database: Database
-        get() {
-            Log.d("AAAAAA", "AAAS")
-            return Database("iPoli", DatabaseConfiguration(context.applicationContext))}
+        get() = Database("iPoli", DatabaseConfiguration(context.applicationContext))
 
     override val job get() = Job()
 
