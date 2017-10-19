@@ -42,12 +42,12 @@ import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
 import timber.log.Timber
 
-class DayViewController(private val date: LocalDate) :
-    MviViewController<DayViewState, ViewStateRenderer<DayViewState>, DayViewPresenter, DayViewIntent>(),
+class DayViewController(bundle: Bundle? = null) :
+    MviViewController<DayViewState, ViewStateRenderer<DayViewState>, DayViewPresenter, DayViewIntent>(bundle),
     Injects<Module>,
     CalendarDayView.CalendarChangeListener,
     ViewStateRenderer<DayViewState> {
-    override val initialState = DayViewState(type = DayViewState.StateType.LOADING, scheduledDate = date)
+    override val initialState = DayViewState(type = DayViewState.StateType.LOADING, scheduledDate = LocalDate.now())
 
 //    private val inflater by required { layoutInflater }
 
