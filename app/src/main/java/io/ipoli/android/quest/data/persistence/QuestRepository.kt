@@ -84,26 +84,30 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database,
     protected fun sendLiveResults(query: Query): ReceiveChannel<List<E>> = produce(coroutineContext) {
         val liveQuery = query.toLive()
         val changeListener = createChangeListener(liveQuery, channel) { changes ->
-            launch(this@BaseCouchbaseRepository.coroutineContext) {
+            launch(coroutineContext) {
                 val result = toEntities(changes)
-                Timber.d("AAAA results ${result.toList()}")
                 send(result.toList())
             }
         }
         runLiveQuery(liveQuery, changeListener)
     }
 
-    private fun toEntities(changes: LiveQueryChange): Sequence<E> =
+    private fun toEntities(changes: LiveQueryChange): List<E> =
         toEntities(changes.rows.iterator())
 
-    private fun toEntities(iterator: MutableIterator<Result>): Sequence<E> =
-        iterator.asSequence().map { toEntityObject(it) }
+    private fun toEntities(iterator: MutableIterator<Result>): List<E> {
+        val list = mutableListOf<E>()
+        iterator.forEach {
+            list.add(toEntityObject(it))
+        }
+        return list
+    }
 
     private fun sendLiveResult(query: Query): ReceiveChannel<E?> = produce(coroutineContext) {
         val liveQuery = query.toLive()
 
         val changeListener = createChangeListener(liveQuery, channel) { changes ->
-            launch(this@BaseCouchbaseRepository.coroutineContext) {
+            launch(coroutineContext) {
                 val result = toEntities(changes)
                 send(result.firstOrNull())
             }
@@ -195,7 +199,6 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         listenForChanges(property("scheduledDate").equalTo(date.startOfDayUTC()))
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Quest {
-        Timber.d("AAAA ${dataMap}")
         val cq = CouchbaseQuest(dataMap)
 
         val reminders = cq.reminders
