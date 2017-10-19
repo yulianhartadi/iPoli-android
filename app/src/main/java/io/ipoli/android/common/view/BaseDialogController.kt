@@ -13,6 +13,8 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
 import io.ipoli.android.common.mvi.MviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
+import io.ipoli.android.quest.calendar.dayview.view.Intent
+import io.ipoli.android.quest.calendar.dayview.view.ViewState
 import io.reactivex.subjects.PublishSubject
 
 /**
@@ -112,7 +114,7 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
     }
 }
 
-abstract class MviDialogController<VS, V : ViewStateRenderer<VS>, P : MviPresenter<V, VS>> : RestoreViewOnCreateController, ViewStateRenderer<VS> {
+abstract class MviDialogController<VS : ViewState, V : ViewStateRenderer<VS>, P : MviPresenter<V, VS, I>, I : Intent> : RestoreViewOnCreateController, ViewStateRenderer<VS> {
     data class DialogView(val dialog: Dialog, val view: View)
 
     protected lateinit var dialog: Dialog

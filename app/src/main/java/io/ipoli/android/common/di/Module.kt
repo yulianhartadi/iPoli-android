@@ -8,8 +8,6 @@ import com.bluelinelabs.conductor.Router
 import com.couchbase.lite.Database
 import com.couchbase.lite.DatabaseConfiguration
 import io.ipoli.android.common.navigation.Navigator
-import io.ipoli.android.player.SignInPresenter
-import io.ipoli.android.player.SignInUseCase
 import io.ipoli.android.player.persistence.CouchbasePlayerRepository
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
@@ -82,32 +80,27 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
     private val job by required { job }
     override val loadScheduleForDateUseCase get() = LoadScheduleForDateUseCase(questRepository, job + CommonPool)
     override val saveQuestUseCase get() = SaveQuestUseCase(questRepository)
-    override val signInUseCase get() = SignInUseCase(playerRepository)
 }
 
 interface UseCaseModule {
     val loadScheduleForDateUseCase: LoadScheduleForDateUseCase
     val saveQuestUseCase: SaveQuestUseCase
-    val signInUseCase: SignInUseCase
 }
 
 interface PresenterModule {
     val dayViewPresenter: DayViewPresenter
     val reminderPickerPresenter: ReminderPickerDialogPresenter
-    val signInPresenter: SignInPresenter
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
     private val saveQuestUseCase by required { saveQuestUseCase }
-    private val signInUseCase by required { signInUseCase }
     private val navigator by required { navigator }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
     private val timeUnitFormatter by required { timeUnitFormatter }
     private val job by required { job }
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, job)
     override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter)
-    override val signInPresenter get() = SignInPresenter(signInUseCase, navigator)
 }
 
 class Module(androidModule: AndroidModule,

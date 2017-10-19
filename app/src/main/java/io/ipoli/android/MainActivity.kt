@@ -6,22 +6,24 @@ import android.support.v7.app.AppCompatActivity
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import com.couchbase.lite.Database
-import com.couchbase.lite.DatabaseConfiguration
+import io.ipoli.android.common.di.Module
 import io.ipoli.android.home.HomeController
-import io.ipoli.android.player.persistence.CouchbasePlayerRepository
-import io.ipoli.android.player.ui.SignInController
+import io.ipoli.android.player.persistence.ProviderType
+import io.ipoli.android.quest.AuthProvider
+import io.ipoli.android.quest.Player
+import space.traversal.kapsule.Injects
+import space.traversal.kapsule.inject
+import space.traversal.kapsule.required
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 7/6/17.
  */
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), Injects<Module> {
 
     lateinit var router: Router
-//
-//    @Inject
-//    lateinit var playerRepository: PlayerRepository
+
+    private val playerRepository by required { playerRepository }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,10 +34,15 @@ class MainActivity : AppCompatActivity() {
 //            1231)
 
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
+        inject(iPoliApp.module(this, router))
         val hasNoRootController = !router.hasRootController()
-        if (hasNoRootController && CouchbasePlayerRepository(Database("iPoli", DatabaseConfiguration(applicationContext)), job).find() == null) {
-            router.setRoot(RouterTransaction.with(SignInController()))
-        } else if (hasNoRootController) {
+
+        if (playerRepository.find() == null) {
+            val player = Player(authProvider = AuthProvider(provider = ProviderType.ANONYMOUS.name))
+            playerRepository.save(player)
+        }
+
+        if (hasNoRootController) {
             router.setRoot(RouterTransaction.with(HomeController()))
         }
     }
