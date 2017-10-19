@@ -85,7 +85,9 @@ protected constructor(args: Bundle? = null)
     protected abstract fun createPresenter(): P
 
     protected fun send(intent: I) {
-        launch { intentChannel.send(intent) }
+        launch {
+            intentChannel.send(intent)
+        }
     }
 
     abstract protected val initialState: VS

@@ -11,7 +11,6 @@ import io.ipoli.android.quest.*
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.SendChannel
-import kotlinx.coroutines.experimental.channels.produce
 import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
 import timber.log.Timber
@@ -82,17 +81,6 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database,
 
     override fun listenForAll() = listenForChanges()
 
-//    protected fun sendLiveResults(query: Query): ReceiveChannel<List<E>> = produce(coroutineContext) {
-//        val liveQuery = query.toLive()
-//        val changeListener = createChangeListener(liveQuery, channel) { changes ->
-//            launch(coroutineContext) {
-//                val result = toEntities(changes)
-//                send(result.toList())
-//            }
-//        }
-//        runLiveQuery(liveQuery, changeListener)
-//    }
-
     protected fun sendLiveResults(query: Query): ReceiveChannel<List<E>> {
         val liveQuery = query.toLive()
         val channel = Channel<List<E>>()
@@ -117,17 +105,17 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database,
         return list
     }
 
-    private fun sendLiveResult(query: Query): ReceiveChannel<E?> = produce(coroutineContext) {
+    private fun sendLiveResult(query: Query): ReceiveChannel<E?> {
         val liveQuery = query.toLive()
-
+        val channel = Channel<E?>()
         val changeListener = createChangeListener(liveQuery, channel) { changes ->
+            val result = toEntities(changes)
             launch(coroutineContext) {
-                val result = toEntities(changes)
-                send(result.firstOrNull())
+                channel.send(result.firstOrNull())
             }
         }
-
         runLiveQuery(liveQuery, changeListener)
+        return channel
     }
 
     private fun <E> createChangeListener(
