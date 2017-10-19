@@ -13,6 +13,7 @@ import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.channels.produce
 import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
+import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -85,6 +86,7 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database,
         val changeListener = createChangeListener(liveQuery, channel) { changes ->
             launch(this@BaseCouchbaseRepository.coroutineContext) {
                 val result = toEntities(changes)
+                Timber.d("AAAA results ${result.toList()}")
                 send(result.toList())
             }
         }
@@ -144,7 +146,7 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database,
         ).firstOrNull()
 
     protected fun selectAll(): From =
-        Query.select(SelectResult.all())
+        Query.select(SelectResult.all(), SelectResult.expression(Expression.meta().id))
             .from(DataSource.database(database))
 
     override fun save(entity: E): E {
@@ -167,8 +169,13 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database,
         database.delete(database.getDocument(id))
     }
 
-    protected fun toEntityObject(row: Result): E =
-        toEntityObject(row.toMap().toMutableMap())
+    protected fun toEntityObject(row: Result): E {
+        val rowMap = row.toMap()
+        @Suppress("UNCHECKED_CAST")
+        val map = rowMap.get("iPoli") as MutableMap<String, Any?>
+        map.put("id", rowMap.get("_id"))
+        return toEntityObject(map)
+    }
 
     protected abstract fun toEntityObject(dataMap: MutableMap<String, Any?>): E
 
@@ -188,11 +195,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         listenForChanges(property("scheduledDate").equalTo(date.startOfDayUTC()))
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Quest {
-
-//        val cq = CouchbaseQuest(dataMap.withDefault { "reminders" to listOf<MutableMap<String, Any?>>() })
-
-        dataMap["reminders"] = listOf<MutableMap<String, Any?>>()
-        dataMap["id"] = "123ydhadj"
+        Timber.d("AAAA ${dataMap}")
         val cq = CouchbaseQuest(dataMap)
 
         val reminders = cq.reminders
@@ -213,7 +216,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             name = cq.name,
             color = Color.valueOf(cq.color),
             category = Category(cq.category, Color.GREEN),
-            plannedSchedule = QuestSchedule(null, null, cq.duration),
+            plannedSchedule = QuestSchedule(DateUtils.fromMillis(cq.scheduledDate), null, cq.duration),
             reminders = reminders
         )
     }

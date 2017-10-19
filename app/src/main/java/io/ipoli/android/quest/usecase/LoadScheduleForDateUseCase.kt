@@ -7,6 +7,7 @@ import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.channels.produce
 import org.threeten.bp.LocalDate
+import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -21,6 +22,7 @@ class LoadScheduleForDateUseCase(private val questRepository: QuestRepository, c
 
     private fun createSchedule(channel: ReceiveChannel<List<Quest>>) = produce(coroutineContext) {
         channel.consumeEach { quests ->
+            Timber.d("AAA quests ${quests.size}")
             val (scheduled, unscheduled) = quests
                 .partition { it.isScheduled }
             send(Schedule(scheduled, unscheduled))
