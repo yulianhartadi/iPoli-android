@@ -8,6 +8,7 @@ import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.persistence.PersistedModel
 import io.ipoli.android.common.persistence.Repository
 import io.ipoli.android.quest.*
+import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.channels.produce
@@ -81,15 +82,28 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database,
 
     override fun listenForAll() = listenForChanges()
 
-    protected fun sendLiveResults(query: Query): ReceiveChannel<List<E>> = produce(coroutineContext) {
+//    protected fun sendLiveResults(query: Query): ReceiveChannel<List<E>> = produce(coroutineContext) {
+//        val liveQuery = query.toLive()
+//        val changeListener = createChangeListener(liveQuery, channel) { changes ->
+//            launch(coroutineContext) {
+//                val result = toEntities(changes)
+//                send(result.toList())
+//            }
+//        }
+//        runLiveQuery(liveQuery, changeListener)
+//    }
+
+    protected fun sendLiveResults(query: Query): ReceiveChannel<List<E>> {
         val liveQuery = query.toLive()
+        val channel = Channel<List<E>>()
         val changeListener = createChangeListener(liveQuery, channel) { changes ->
+            val result = toEntities(changes)
             launch(coroutineContext) {
-                val result = toEntities(changes)
-                send(result.toList())
+                channel.send(result.toList())
             }
         }
         runLiveQuery(liveQuery, changeListener)
+        return channel
     }
 
     private fun toEntities(changes: LiveQueryChange): List<E> =
@@ -124,6 +138,7 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database,
         var changeListener: LiveQueryChangeListener? = null
 
         changeListener = LiveQueryChangeListener { changes ->
+            Timber.d("AAAA change listener ${channel.isClosedForSend}")
             if (channel.isClosedForSend) {
                 query.removeChangeListener(changeListener)
                 query.stop()
