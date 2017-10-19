@@ -1,12 +1,10 @@
 package io.ipoli.android.common.mvi
 
 import android.os.Bundle
-import android.support.annotation.LayoutRes
 import android.support.annotation.MainThread
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.bluelinelabs.conductor.Controller
+import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import io.ipoli.android.quest.calendar.dayview.view.Intent
 import io.ipoli.android.quest.calendar.dayview.view.ViewState
 import kotlinx.coroutines.experimental.channels.SendChannel
@@ -16,11 +14,9 @@ import kotlinx.coroutines.experimental.launch
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/8/17.
  */
-abstract class MviViewController<VS : ViewState, in V : ViewStateRenderer<VS>, out P : MviPresenter<V, VS, I>, in I : Intent>(
-    private val initialState: VS,
-    @LayoutRes private val viewLayout: Int,
-    args: Bundle? = null
-) : Controller(args), ViewStateRenderer<VS> {
+abstract class MviViewController<VS : ViewState, in V : ViewStateRenderer<VS>, out P : MviPresenter<V, VS, I>, in I : Intent>
+protected constructor(args: Bundle? = null)
+    : RestoreViewOnCreateController(args), ViewStateRenderer<VS> {
 
     private lateinit var intentChannel: SendChannel<I>
 
@@ -74,13 +70,13 @@ abstract class MviViewController<VS : ViewState, in V : ViewStateRenderer<VS>, o
 
     protected var isRestoring = false
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
-        val v = inflater.inflate(viewLayout, container, false)
-        bindView(v)
-        return v
-    }
-
-    abstract fun bindView(view: View)
+//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
+//        val v = inflater.inflate(viewLayout, container, false)
+//        bindView(v)
+//        return v
+//    }
+//
+//    abstract fun bindView(view: View)
 
     private fun setRestoringViewState(isRestoring: Boolean) {
         this.isRestoring = isRestoring
@@ -91,6 +87,8 @@ abstract class MviViewController<VS : ViewState, in V : ViewStateRenderer<VS>, o
     protected fun send(intent: I) {
         launch { intentChannel.send(intent) }
     }
+
+    abstract protected val initialState: VS
 
     @MainThread
     override fun render(state: VS) {

@@ -3,6 +3,7 @@ package io.ipoli.android.common.di
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import android.util.Log
 import android.view.LayoutInflater
 import com.bluelinelabs.conductor.Router
 import com.couchbase.lite.Database
@@ -59,7 +60,8 @@ interface AndroidModule {
 class MainAndroidModule(private val context: Context, private val router: Router) : AndroidModule {
     override val layoutInflater: LayoutInflater get() = LayoutInflater.from(context)
 
-    override val sharedPreferences: SharedPreferences get() = PreferenceManager.getDefaultSharedPreferences(context)
+    override val sharedPreferences: SharedPreferences
+        get() = PreferenceManager.getDefaultSharedPreferences(context)
 
     override val navigator get() = Navigator(router)
 
@@ -67,18 +69,21 @@ class MainAndroidModule(private val context: Context, private val router: Router
 
     override val timeUnitFormatter get() = TimeUnitFormatter(context)
 
-    override val database
-        get() =
-            Database("iPoli", DatabaseConfiguration(context.applicationContext))
+    override val database: Database
+        get() {
+            Log.d("AAAAAA", "AAAS")
+            return Database("iPoli", DatabaseConfiguration(context.applicationContext))}
 
     override val job get() = Job()
+
 }
 
 class MainUseCaseModule : UseCaseModule, Injects<Module> {
     private val questRepository by required { questRepository }
     private val playerRepository by required { playerRepository }
     private val job by required { job }
-    override val loadScheduleForDateUseCase get() = LoadScheduleForDateUseCase(questRepository, job + CommonPool)
+    override val loadScheduleForDateUseCase
+        get() = LoadScheduleForDateUseCase(questRepository, job + CommonPool)
     override val saveQuestUseCase get() = SaveQuestUseCase(questRepository)
 }
 
@@ -100,7 +105,7 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val timeUnitFormatter by required { timeUnitFormatter }
     private val job by required { job }
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, job)
-    override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter)
+    override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter, job)
 }
 
 class Module(androidModule: AndroidModule,

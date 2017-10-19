@@ -12,7 +12,6 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
-import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.quest.calendar.CalendarViewController
 import kotlinx.android.synthetic.main.controller_home.view.*
 
@@ -76,9 +75,9 @@ class HomeController : Controller(), NavigationView.OnNavigationItemSelectedList
     }
 
     private fun onItemSelectedFromDrawer() {
-        when (navigationItemSelected?.itemId) {
-            R.id.store -> Navigator(router).showStore()
-        }
+//        when (navigationItemSelected?.itemId) {
+//            R.id.store -> Navigator(router).showStore()
+//        }
 
     }
 

@@ -3,6 +3,7 @@ package io.ipoli.android.quest.calendar.dayview.view
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
+import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.TextViewCompat
@@ -41,23 +42,21 @@ import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
 import timber.log.Timber
 
-class DayViewController(date: LocalDate) :
-    MviViewController<DayViewState, ViewStateRenderer<DayViewState>, DayViewPresenter, DayViewIntent>(
-        DayViewState(
-            type = DayViewState.StateType.LOADING,
-            scheduledDate = date
-        ),
-        R.layout.controller_day_view
-    ),
+class DayViewController(private val date: LocalDate) :
+    MviViewController<DayViewState, ViewStateRenderer<DayViewState>, DayViewPresenter, DayViewIntent>(),
     Injects<Module>,
     CalendarDayView.CalendarChangeListener,
     ViewStateRenderer<DayViewState> {
+    override val initialState = DayViewState(type = DayViewState.StateType.LOADING, scheduledDate = date)
+
+//    private val inflater by required { layoutInflater }
 
     private val presenter by required { dayViewPresenter }
 
     private lateinit var calendarDayView: CalendarDayView
 
-    override fun bindView(view: View) {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
+        val view = inflater.inflate(R.layout.controller_day_view, container, false)
         calendarDayView = view.calendar
         calendarDayView.setCalendarChangeListener(this)
         calendarDayView.setHourAdapter(object : CalendarDayView.HourCellAdapter {
@@ -69,6 +68,7 @@ class DayViewController(date: LocalDate) :
         })
 
         calendarDayView.scrollToNow()
+        return view
     }
 
     override fun handleBack(): Boolean {

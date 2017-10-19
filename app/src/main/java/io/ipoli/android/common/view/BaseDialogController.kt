@@ -2,20 +2,18 @@ package io.ipoli.android.common.view
 
 import android.app.Dialog
 import android.os.Bundle
-import android.support.annotation.MainThread
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
 import io.ipoli.android.common.mvi.MviPresenter
+import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.quest.calendar.dayview.view.Intent
 import io.ipoli.android.quest.calendar.dayview.view.ViewState
-import io.reactivex.subjects.PublishSubject
 
 /**
  * A controller that displays a dialog window, floating on top of its activity's window.
@@ -114,24 +112,14 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
     }
 }
 
-abstract class MviDialogController<VS : ViewState, V : ViewStateRenderer<VS>, P : MviPresenter<V, VS, I>, I : Intent> : RestoreViewOnCreateController, ViewStateRenderer<VS> {
+abstract class MviDialogController<VS : ViewState, in V : ViewStateRenderer<VS>, out P : MviPresenter<V, VS, I>, in I : Intent>(
+    args: Bundle? = null
+) : MviViewController<VS, V, P, I>(args) {
     data class DialogView(val dialog: Dialog, val view: View)
 
     protected lateinit var dialog: Dialog
     private lateinit var contentView: View
     private var dismissed: Boolean = false
-
-    /**
-     * Convenience constructor for use when no arguments are needed.
-     */
-    protected constructor() : super()
-
-    /**
-     * Constructor that takes arguments that need to be retained across restarts.
-     *
-     * @param args Any arguments that need to be retained.
-     */
-    protected constructor(args: Bundle?) : super(args)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val dv = onCreateDialog(savedViewState)
@@ -207,71 +195,4 @@ abstract class MviDialogController<VS : ViewState, V : ViewStateRenderer<VS>, P 
 
         private val SAVED_DIALOG_STATE_TAG = "android:savedDialogState"
     }
-
-    init {
-        val lifecycleListener = object : LifecycleListener() {
-
-            private var presenter: P? = null
-
-            override fun postCreateView(controller: Controller, view: View) {
-
-                val isRestoringViewState = presenter != null
-
-                if (!isRestoringViewState) {
-                    presenter = createPresenter()
-                }
-
-                if (isRestoringViewState) {
-                    setRestoringViewState(true)
-                }
-
-                try {
-                    @Suppress("UNCHECKED_CAST")
-                    presenter?.onAttachView(this@MviDialogController as V)
-                } catch (e: ClassCastException) {
-                    throw RuntimeException("Your view " + this@MviDialogController.javaClass.simpleName + " must implement the View interface ")
-                }
-
-                if (isRestoringViewState) {
-                    setRestoringViewState(false)
-                }
-            }
-
-            override fun preDestroyView(controller: Controller, view: View) {
-                val shouldRetainInstance = (controller.activity!!.isChangingConfigurations
-                    || !controller.activity!!.isFinishing) && !controller.isBeingDestroyed
-
-                if (shouldRetainInstance) {
-                    presenter?.onDetachView()
-                } else {
-                    presenter?.onDestroy()
-                    presenter = null
-                }
-            }
-
-            override fun postDestroy(controller: Controller) {
-                presenter = null
-            }
-        }
-        addLifecycleListener(lifecycleListener)
-    }
-
-    protected var isRestoring = false
-
-    private fun setRestoringViewState(isRestoring: Boolean) {
-        this.isRestoring = isRestoring
-    }
-
-    protected abstract fun createPresenter(): P
-
-    protected fun <I> createIntentSubject(): PublishSubject<I> {
-        return PublishSubject.create<I>()
-    }
-
-    @MainThread
-    override fun render(state: VS) {
-        render(state, contentView)
-    }
-
-    abstract fun render(state: VS, dialogView: View)
 }
