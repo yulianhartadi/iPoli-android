@@ -57,16 +57,9 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.0-beta3'
     implementation 'com.google.android.gms:play-services-auth:11.4.2'
     implementation 'com.facebook.android:facebook-android-sdk:4.25.0'
-    implementation 'com.hannesdorfmann.mosby3:mvi:3.0.4'
     implementation 'com.bluelinelabs:conductor:2.1.4'
     implementation 'com.bluelinelabs:conductor-support:2.1.4'
     implementation 'com.jakewharton.timber:timber:4.5.1'
-    implementation 'com.jakewharton.rxbinding2:rxbinding-kotlin:2.0.0'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    implementation "io.reactivex.rxjava2:rxjava:2.1.4"
-    implementation 'com.hannesdorfmann.mosby3:mvi-conductor:3.0.0', {
-        exclude group: 'com.bluelinelabs'
-    }
     implementation 'com.jakewharton.threetenabp:threetenabp:1.0.5'
     implementation('org.mnode.ical4j:ical4j:2.0.3') {
         ['org.codehaus.groovy', 'commons-codec', 'org.apache.commons', 'biz.aQute.bnd', 'org.threeten'].each {
@@ -78,7 +71,6 @@ dependencies {
     }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
-    implementation 'com.hannesdorfmann:adapterdelegates3:3.0.1'
     implementation 'com.github.medyo:fancybuttons:1.8.4'
     implementation 'de.hdodenhof:circleimageview:2.1.0'
     implementation 'com.lnikkila:extendedtouchview:0.1.1'
