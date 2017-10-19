@@ -37,6 +37,7 @@ data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMa
     var category: String by map
     var duration: Int by map
     var reminders: List<MutableMap<String, Any?>> by map
+    var scheduledDate: Long by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
@@ -153,7 +154,9 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database,
         }
         val doc = Document(cbObject.map)
         database.save(doc)
-        return toEntityObject(doc.toMap().toMutableMap())
+        val docMap = doc.toMap().toMutableMap()
+        docMap["id"] = doc.id
+        return toEntityObject(docMap)
     }
 
     override fun delete(entity: E) {
@@ -177,18 +180,25 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
 
     override fun listenForScheduledBetween(startDate: LocalDate, endDate: LocalDate) =
         listenForChanges(
-            property("scheduled")
+            property("scheduledDate")
                 .between(startDate.startOfDayUTC(), endDate.startOfDayUTC())
         )
 
     override fun listenForDate(date: LocalDate) =
-        listenForChanges(property("scheduled").equalTo(date.startOfDayUTC()))
+        listenForChanges(property("scheduledDate").equalTo(date.startOfDayUTC()))
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Quest {
+
+//        val cq = CouchbaseQuest(dataMap.withDefault { "reminders" to listOf<MutableMap<String, Any?>>() })
+
+        dataMap["reminders"] = listOf<MutableMap<String, Any?>>()
+        dataMap["id"] = "123ydhadj"
         val cq = CouchbaseQuest(dataMap)
 
         val reminders = cq.reminders
-            .map { CouchbaseReminder(it) }
+            .map {
+                CouchbaseReminder(it)
+            }
             .map {
                 Reminder(
                     notificationId = it.notificationId,
@@ -216,7 +226,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         q.color = entity.color.name
         q.duration = entity.plannedSchedule.duration
         q.type = CouchbaseQuest.TYPE
-
+        q.scheduledDate = DateUtils.toMillis(entity.plannedSchedule.date!!)
         q.reminders = entity.reminders.map { r ->
             createCouchbaseReminder(r).map
         }

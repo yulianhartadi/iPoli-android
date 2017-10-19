@@ -17,6 +17,7 @@ import io.ipoli.android.quest.usecase.Schedule
 import kotlinx.coroutines.experimental.channels.ActorJob
 import kotlinx.coroutines.experimental.channels.consumeEach
 import org.threeten.bp.LocalDate
+import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -112,6 +113,7 @@ class DayViewPresenter(
         }
 
     override suspend fun loadStreamingData(actor: ActorJob<DayViewIntent>, initialState: DayViewState) {
+        Timber.d("LoadStreamingData")
         loadScheduleUseCase.execute(initialState.scheduledDate).consumeEach {
             actor.send(ScheduleLoadedIntent(it))
         }

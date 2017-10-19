@@ -14,7 +14,6 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
-import io.ipoli.android.common.view.BaseOverlayViewController
 import io.ipoli.android.quest.calendar.dayview.view.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.controller_calendar_toolbar.view.*
@@ -83,11 +82,11 @@ class CalendarViewController : Controller() {
             }
         })
 
-        object : BaseOverlayViewController() {
-            override fun createOverlayView(inflater: LayoutInflater) =
-                inflater.inflate(R.layout.view_pet_message, null)
-
-        }.show(router)
+//        object : BaseOverlayViewController() {
+//            override fun createOverlayView(inflater: LayoutInflater) =
+//                inflater.inflate(R.layout.view_pet_message, null)
+//
+//        }.show(router)
 
         return view
     }

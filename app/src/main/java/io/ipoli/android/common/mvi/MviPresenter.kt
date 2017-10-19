@@ -54,10 +54,10 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
     override fun onAttachView(view: V) {
         val actor = stateReduceActor(view)
         launch(coroutineContext + CommonPool) {
+            loadStreamingData(actor, initialState)
             intentChannel.consumeEach {
                 actor.send(it)
             }
-            loadStreamingData(actor, initialState)
         }
     }
 
