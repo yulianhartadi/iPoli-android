@@ -431,14 +431,14 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                     override val startMinute = startTimeForEvent(s).toMinuteOfDay()
                     override val name = s.name!!
                     override val backgroundColor = s.color!!
-                }, s.eventAdapterPosition)
+                })
             } else if (s.unscheduledEventAdapterPosition != null) {
                 listener?.onEditUnscheduledEvent(object : UnscheduledEvent {
                     override val id = s.eventId
                     override val duration = durationForEvent(s)
                     override val name = s.name!!
                     override val backgroundColor = s.color!!
-                }, s.unscheduledEventAdapterPosition)
+                })
             }
             s
         })
@@ -1074,8 +1074,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fun onMoveEvent(dragView: View, startTime: Time?, endTime: Time?)
         fun onZoomEvent(adapterView: View)
         fun onAddEvent(event: CalendarEvent)
-        fun onEditCalendarEvent(event: CalendarEvent, position: Int)
-        fun onEditUnscheduledEvent(event: UnscheduledEvent, position: Int)
+        fun onEditCalendarEvent(event: CalendarEvent)
+        fun onEditUnscheduledEvent(event: UnscheduledEvent)
         fun onRemoveEvent(eventId: String)
     }
 

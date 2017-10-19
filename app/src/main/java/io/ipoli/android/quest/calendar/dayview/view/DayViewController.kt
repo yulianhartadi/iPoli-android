@@ -233,14 +233,12 @@ class DayViewController(date: LocalDate) :
         ViewUtils.hideKeyboard(calendarDayView)
     }
 
-    override fun onEditCalendarEvent(event: CalendarEvent, position: Int) {
-        val vm = eventsAdapter.events[position]
+    override fun onEditCalendarEvent(event: CalendarEvent) {
         send(EditEventIntent(event))
         ViewUtils.hideKeyboard(calendarDayView)
     }
 
-    override fun onEditUnscheduledEvent(event: UnscheduledEvent, position: Int) {
-        val vm = unscheduledEventsAdapter.events[position]
+    override fun onEditUnscheduledEvent(event: UnscheduledEvent) {
         send(EditUnscheduledEventIntent(event))
         ViewUtils.hideKeyboard(calendarDayView)
     }

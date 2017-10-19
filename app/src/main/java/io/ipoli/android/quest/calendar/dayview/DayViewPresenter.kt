@@ -30,8 +30,8 @@ class DayViewPresenter(
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<DayViewState>, DayViewState, DayViewIntent>(coroutineContext) {
 
-    override fun reduceState(intent: DayViewIntent, state: DayViewState): DayViewState {
-        return when (intent) {
+    override fun reduceState(intent: DayViewIntent, state: DayViewState) =
+        when (intent) {
 
             is ScheduleLoadedIntent -> {
                 val schedule = intent.schedule
@@ -104,14 +104,12 @@ class DayViewPresenter(
                 state.copy(scheduledQuests = scheduledQuests, unscheduledQuests = unscheduledQuests)
             }
         }
-    }
 
-    private fun savedQuestViewState(result: Result, state: DayViewState): DayViewState {
-        return when (result) {
+    private fun savedQuestViewState(result: Result, state: DayViewState) =
+        when (result) {
             is Result.Invalid -> state.copy(type = EVENT_VALIDATION_ERROR)
             else -> state.copy(type = EVENT_UPDATED)
         }
-    }
 
     override suspend fun loadStreamingData(actor: ActorJob<DayViewIntent>, initialState: DayViewState) {
         loadScheduleUseCase.execute(initialState.scheduledDate).consumeEach {
