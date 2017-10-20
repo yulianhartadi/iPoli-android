@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
 
     private val playerRepository by required { playerRepository }
 
-    private val database by required { database }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

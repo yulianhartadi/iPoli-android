@@ -163,13 +163,19 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database,
 
         val doc = if (cbObject.id.isNotEmpty()) {
             cbObject.updatedAt = System.currentTimeMillis()
-            Document(cbObject.id, cbObject.map)
+            database.getDocument(cbObject.id)
         } else {
-            Document(cbObject.map)
+            Document()
         }
+
+        val cbMap = cbObject.map.toMutableMap()
+        cbMap.remove("id")
+        doc.set(cbMap)
         database.save(doc)
+
         val docMap = doc.toMap().toMutableMap()
         docMap["id"] = doc.id
+
         return toEntityObject(docMap)
     }
 
