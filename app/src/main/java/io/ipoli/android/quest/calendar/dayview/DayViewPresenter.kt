@@ -25,6 +25,7 @@ class DayViewPresenter(
     private val loadScheduleUseCase: LoadScheduleForDateUseCase,
     private val saveQuestUseCase: SaveQuestUseCase,
     private val removeQuestUseCase: RemoveQuestUseCase,
+    private val undoRemovedQuestUseCase: UndoRemovedQuestUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<DayViewState>, DayViewState, DayViewIntent>(coroutineContext) {
 
@@ -100,7 +101,17 @@ class DayViewPresenter(
                 scheduledQuests.find { it.id == eventId }?.let { scheduledQuests.remove(it) }
                 unscheduledQuests.find { it.id == eventId }?.let { unscheduledQuests.remove(it) }
                 removeQuestUseCase.execute(eventId)
-                state.copy(scheduledQuests = scheduledQuests, unscheduledQuests = unscheduledQuests)
+                state.copy(
+                    type = DayViewState.StateType.EVENT_REMOVED,
+                    removedEventId = eventId,
+                    scheduledQuests = scheduledQuests,
+                    unscheduledQuests = unscheduledQuests)
+            }
+
+            is UndoRemoveEventIntent -> {
+                val eventId = intent.eventId
+                undoRemovedQuestUseCase.execute(eventId)
+                state.copy(type = DayViewState.StateType.UNDO_REMOVED_EVENT, removedEventId = "")
             }
         }
 
@@ -115,7 +126,6 @@ class DayViewPresenter(
             actor.send(ScheduleLoadedIntent(it))
         }
     }
-
 
     private fun createUnscheduledViewModels(schedule: Schedule): List<DayViewController.UnscheduledQuestViewModel> =
         schedule.unscheduled.map {

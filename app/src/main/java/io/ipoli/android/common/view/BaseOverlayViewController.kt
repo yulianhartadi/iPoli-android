@@ -5,27 +5,59 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.PixelFormat
+import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
-import com.bluelinelabs.conductor.Controller
+import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
+import io.ipoli.android.R
 import io.ipoli.android.quest.calendar.CalendarViewController
+import kotlinx.android.synthetic.main.view_pet_message.view.*
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 10/13/17.
  */
-abstract class BaseOverlayViewController : Controller() {
+
+class PetMessage : BaseOverlayViewController {
+
+    interface UndoClickedListener {
+        fun onClick()
+    }
+
+    private lateinit var listener: UndoClickedListener
+
+    constructor(listener: UndoClickedListener) : this() {
+        this.listener = listener
+    }
+
+    protected constructor(args: Bundle? = null) : super(args)
+
+    override fun createOverlayView(inflater: LayoutInflater): View {
+        val view = inflater.inflate(R.layout.view_pet_message, null)
+        view.undoAction.setOnClickListener {
+            listener.onClick()
+            dismiss()
+        }
+        return view
+    }
+}
+
+abstract class BaseOverlayViewController protected constructor(args: Bundle? = null) : RestoreViewOnCreateController(args) {
 
     private lateinit var overlayView: View
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
+    private val windowManager by lazy { activity!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager }
+
+    abstract fun createOverlayView(inflater: LayoutInflater): View
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         overlayView = createOverlayView(inflater)
 
         val focusable = WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED.
@@ -74,7 +106,9 @@ abstract class BaseOverlayViewController : Controller() {
         return View(activity!!)
     }
 
-    abstract fun createOverlayView(inflater: LayoutInflater): View
+    protected fun dismiss() {
+        router.popController(this)
+    }
 
     override fun onDestroyView(view: View) {
         windowManager.removeView(overlayView)
@@ -84,9 +118,7 @@ abstract class BaseOverlayViewController : Controller() {
     fun show(router: Router) {
         router.pushController(RouterTransaction.with(this)
             .pushChangeHandler(SimpleSwapChangeHandler(false))
-            .popChangeHandler(SimpleSwapChangeHandler(false)))
+            .popChangeHandler(SimpleSwapChangeHandler(false)).tag("AAA"))
+
     }
-
-    private val windowManager by lazy { activity!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager }
-
 }

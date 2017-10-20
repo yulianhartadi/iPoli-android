@@ -14,4 +14,5 @@ interface Repository<T> where T : Entity {
     fun save(entity: T): T
     fun remove(entity: T)
     fun remove(id: String)
+    fun undoRemove(id: String)
 }

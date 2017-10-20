@@ -189,6 +189,12 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database,
         database.save(doc)
     }
 
+    override fun undoRemove(id: String) {
+        val doc = database.getDocument(id)
+        doc.remove("removedAt")
+        database.save(doc)
+    }
+
     protected fun toEntityObject(row: Result): E {
         val rowMap = row.toMap()
         @Suppress("UNCHECKED_CAST")

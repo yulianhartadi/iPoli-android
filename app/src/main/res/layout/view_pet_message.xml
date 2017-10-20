@@ -27,12 +27,12 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="8dp"
         android:layout_toEndOf="@id/pet"
-        android:layout_toStartOf="@id/action"
+        android:layout_toStartOf="@id/undoAction"
         android:text="How ya doing?"
         android:textColor="@color/md_white" />
 
     <Button
-        android:id="@+id/action"
+        android:id="@+id/undoAction"
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

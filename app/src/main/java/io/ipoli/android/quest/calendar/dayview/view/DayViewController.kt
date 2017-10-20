@@ -24,7 +24,7 @@ import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.ColorPickerDialogController
-import io.ipoli.android.common.view.widget.PetMessage
+import io.ipoli.android.common.view.PetMessage
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.calendar.dayview.view.widget.*
@@ -114,7 +114,19 @@ class DayViewController :
             DayViewState.StateType.EVENT_VALIDATION_ERROR -> {
                 calendarDayView.onEventValidationError()
             }
+
+            DayViewState.StateType.EVENT_REMOVED -> {
+               PetMessage(object : PetMessage.UndoClickedListener {
+                    override fun onClick() {
+                        sendUndoRemovedEventIntent( state.removedEventId)
+                    }
+                }).show(router)
+            }
         }
+    }
+
+    private fun sendUndoRemovedEventIntent(eventId: String) {
+        send(UndoRemoveEventIntent(eventId))
     }
 
     override fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: AndroidColor) {
@@ -216,9 +228,6 @@ class DayViewController :
 
     override fun onRemoveEvent(eventId: String) {
         stopActionMode()
-        PetMessage.show(view!!, R.drawable.ic_done_white_24dp, "Quest removed", "Undo", {
-            Timber.d("Click")
-        })
         send(RemoveEventIntent(eventId))
     }
 
@@ -278,6 +287,40 @@ class DayViewController :
 
                         }, calendarDayView.getDragViewBackgroundColor())
                             .showDialog(router, "pick_color_tag")
+
+//                        object : BaseOverlayViewController(object : UndoClickedListener {
+//                            override fun onClick() {
+//
+//                            }
+//
+//                        }) {
+//                            override fun createOverlayView(inflater: LayoutInflater): View {
+//                                Timber.d("Main thread createOverlay ${Looper.getMainLooper().isCurrentThread}")
+//                                val v = inflater.inflate(R.layout.view_pet_message, null)
+////                        v.undoAction.setOnClickListener({
+//////                            sendUndoRemovedEventIntent(state.removedEventId)
+////                            test()
+////                        })
+////                        v.undoAction.setOnClickListener {
+////                            v.undoAction.text = "AAAA"
+////                            Timber.d("AAAA click")
+//////                            activity!!.runOnUiThread {
+//////                            launch(CommonPool) {
+//////                                sendUndoRemovedEventIntent(state.removedEventId)
+//////                            }
+//////                            }
+////
+//////                            DayViewController@send(UndoRemoveEventIntent(eventId = state.removedEventId))
+////                        }
+//                                return v
+//                            }
+
+//                    override fun onClick() {
+//                        test()
+//                        sendUndoRemovedEventIntent(state.removedEventId)
+//                    }
+
+//                        }.show(router)
                     }
 
                     R.id.removeEvent -> {
