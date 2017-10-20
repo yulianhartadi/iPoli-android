@@ -47,11 +47,20 @@ class DayViewController :
     Injects<Module>,
     CalendarDayView.CalendarChangeListener,
     ViewStateRenderer<DayViewState> {
-    override val initialState = DayViewState(type = DayViewState.StateType.LOADING, scheduledDate = LocalDate.now())
+//    override val initialState = DayViewState(type = DayViewState.StateType.LOADING, scheduledDate = currentDate)
 
-    constructor(): super()
+    private lateinit var currentDate: LocalDate
 
-    protected constructor(args: Bundle): super(args)
+    constructor(currentDate: LocalDate) : this() {
+        this.currentDate = currentDate
+    }
+
+    constructor() : super()
+
+    protected constructor(args: Bundle) : super(args)
+
+    override fun initialState() =
+        DayViewState(type = DayViewState.StateType.LOADING, scheduledDate = currentDate)
 
 //    private val inflater by required { layoutInflater }
 

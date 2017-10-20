@@ -31,7 +31,7 @@ protected constructor(args: Bundle? = null)
 
                 if (!isRestoringViewState) {
                     presenter = createPresenter()
-                    presenter?.initialState = initialState
+                    presenter?.initialState = initialState()
                     intentChannel = presenter!!.intentChannel()
                 } else {
                     setRestoringViewState(true)
@@ -90,7 +90,7 @@ protected constructor(args: Bundle? = null)
         }
     }
 
-    abstract protected val initialState: VS
+    abstract protected fun initialState(): VS
 
     @MainThread
     override fun render(state: VS) {

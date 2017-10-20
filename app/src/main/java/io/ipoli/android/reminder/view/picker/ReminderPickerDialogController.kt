@@ -19,7 +19,6 @@ import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
 
-
 typealias TimeUnitConverter = java.util.concurrent.TimeUnit
 
 /**
@@ -41,14 +40,6 @@ class ReminderPickerDialogController :
     MviDialogController<ReminderPickerViewState, ReminderPickerDialogController, ReminderPickerDialogPresenter, ReminderPickerIntent>
     , ViewStateRenderer<ReminderPickerViewState>, Injects<Module> {
 
-    override val initialState = ReminderPickerViewState(type = ReminderPickerViewState.StateType.LOADING)
-
-//    private val pickReminderSubject = createIntentSubject<Unit>()
-//    private val messageChangeSubject = createIntentSubject<String>()
-//    private val predefinedValueChangeSubject = createIntentSubject<Int>()
-//    private val customTimeChangeSubject = createIntentSubject<String>()
-//    private val timeUnitChangeSubject = createIntentSubject<Int>()
-
     private var listener: ReminderPickedListener? = null
 
     private var reminder: ReminderViewModel? = null
@@ -57,6 +48,9 @@ class ReminderPickerDialogController :
         this.listener = listener
         this.reminder = selectedReminder
     }
+
+    override fun initialState() =
+        ReminderPickerViewState(type = ReminderPickerViewState.StateType.LOADING)
 
     protected constructor() : super()
 
@@ -69,7 +63,6 @@ class ReminderPickerDialogController :
 //    override fun loadNewReminderData(): Observable<Unit> =
 //        Observable.just(Unit)
 //            .filter { !isRestoring && reminder == null }
-
 
 //    override fun pickReminderIntent() = pickReminderSubject
 //
@@ -151,7 +144,7 @@ class ReminderPickerDialogController :
         val contentView = LayoutInflater.from(activity!!).inflate(R.layout.dialog_reminder_picker, null)
 
         with(contentView) {
-//            RxTextView.textChanges(message).map { it.toString() }.subscribe(messageChangeSubject)
+            //            RxTextView.textChanges(message).map { it.toString() }.subscribe(messageChangeSubject)
 //
 //            RxAdapterView.itemSelections(predefinedTimes)
 //                .skipInitialValue()
@@ -178,7 +171,7 @@ class ReminderPickerDialogController :
 
         dialog.setOnShowListener {
             dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
-//                pickReminderSubject.onNext(Unit)
+                //                pickReminderSubject.onNext(Unit)
             }
         }
 

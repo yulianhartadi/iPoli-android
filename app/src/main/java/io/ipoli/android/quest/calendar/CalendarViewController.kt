@@ -24,7 +24,6 @@ import sun.bob.mcalendarview.listeners.OnDateClickListener
 import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
 
-
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/8/17.
@@ -42,8 +41,8 @@ class CalendarViewController : Controller() {
         override fun configureRouter(router: Router, position: Int) {
             if (!router.hasRootController()) {
                 val plusDays = position - MID_POSITION
-
-                val page = DayViewController()
+                val dayViewDate = currentMidDate.plusDays(plusDays.toLong())
+                val page = DayViewController(dayViewDate)
                 router.setRoot(RouterTransaction.with(page))
             }
         }

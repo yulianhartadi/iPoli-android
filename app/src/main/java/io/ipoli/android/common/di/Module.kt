@@ -14,6 +14,7 @@ import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.data.persistence.CouchbaseQuestRepository
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
+import io.ipoli.android.quest.usecase.RemoveQuestUseCase
 import io.ipoli.android.quest.usecase.SaveQuestUseCase
 import io.ipoli.android.reminder.view.formatter.ReminderTimeFormatter
 import io.ipoli.android.reminder.view.formatter.TimeUnitFormatter
@@ -82,11 +83,13 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
     override val loadScheduleForDateUseCase
         get() = LoadScheduleForDateUseCase(questRepository, job + CommonPool)
     override val saveQuestUseCase get() = SaveQuestUseCase(questRepository)
+    override val removeQuestUseCase get() = RemoveQuestUseCase(questRepository)
 }
 
 interface UseCaseModule {
     val loadScheduleForDateUseCase: LoadScheduleForDateUseCase
     val saveQuestUseCase: SaveQuestUseCase
+    val removeQuestUseCase: RemoveQuestUseCase
 }
 
 interface PresenterModule {
@@ -97,11 +100,12 @@ interface PresenterModule {
 class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
     private val saveQuestUseCase by required { saveQuestUseCase }
+    private val removeQuestUseCase by required { removeQuestUseCase }
     private val navigator by required { navigator }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
     private val timeUnitFormatter by required { timeUnitFormatter }
     private val job by required { job }
-    override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, job)
+    override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, job)
     override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter, job)
 }
 

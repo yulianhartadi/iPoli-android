@@ -10,14 +10,10 @@ import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.QuestSchedule
 import io.ipoli.android.quest.calendar.dayview.view.*
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
-import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
-import io.ipoli.android.quest.usecase.Result
-import io.ipoli.android.quest.usecase.SaveQuestUseCase
-import io.ipoli.android.quest.usecase.Schedule
+import io.ipoli.android.quest.usecase.*
 import kotlinx.coroutines.experimental.channels.ActorJob
 import kotlinx.coroutines.experimental.channels.consumeEach
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -28,6 +24,7 @@ import kotlin.coroutines.experimental.CoroutineContext
 class DayViewPresenter(
     private val loadScheduleUseCase: LoadScheduleForDateUseCase,
     private val saveQuestUseCase: SaveQuestUseCase,
+    private val removeQuestUseCase: RemoveQuestUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<DayViewState>, DayViewState, DayViewIntent>(coroutineContext) {
 
@@ -52,7 +49,7 @@ class DayViewPresenter(
                     category = Category("WELLNESS", Color.GREEN),
                     plannedSchedule = QuestSchedule(
                         date = LocalDate.now(),
-                        time = null,
+                        time = Time.of(event.startMinute),
                         duration = event.duration
                     )
                 )
@@ -102,6 +99,7 @@ class DayViewPresenter(
                 val unscheduledQuests = state.unscheduledQuests.toMutableList()
                 scheduledQuests.find { it.id == eventId }?.let { scheduledQuests.remove(it) }
                 unscheduledQuests.find { it.id == eventId }?.let { unscheduledQuests.remove(it) }
+                removeQuestUseCase.execute(eventId)
                 state.copy(scheduledQuests = scheduledQuests, unscheduledQuests = unscheduledQuests)
             }
         }
@@ -113,7 +111,6 @@ class DayViewPresenter(
         }
 
     override suspend fun loadStreamingData(actor: ActorJob<DayViewIntent>, initialState: DayViewState) {
-        Timber.d("LoadStreamingData")
         loadScheduleUseCase.execute(initialState.scheduledDate).consumeEach {
             actor.send(ScheduleLoadedIntent(it))
         }

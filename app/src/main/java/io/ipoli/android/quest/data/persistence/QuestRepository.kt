@@ -38,7 +38,8 @@ data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMa
     var category: String by map
     var duration: Int by map
     var reminders: List<MutableMap<String, Any?>> by map
-    var scheduledDate: Long by map
+    var startMinute: Long? by map
+    var scheduledDate: Long? by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
@@ -71,6 +72,7 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database,
 
     protected fun createQuery(where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null): Query {
         val typeWhere = property("type").equalTo(modelType)
+            .and(property("removedAt").isNullOrMissing)
         val w = if (where == null) typeWhere else typeWhere.and(where)
 
         val q = selectAll().where(w)
@@ -87,6 +89,7 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database,
         val changeListener = createChangeListener(liveQuery, channel) { changes ->
             val result = toEntities(changes)
             launch(coroutineContext) {
+                Timber.d("Sending changes ${changes.rows}")
                 channel.send(result.toList())
             }
         }
@@ -126,7 +129,6 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database,
         var changeListener: LiveQueryChangeListener? = null
 
         changeListener = LiveQueryChangeListener { changes ->
-            Timber.d("AAAA change listener ${channel.isClosedForSend}")
             if (channel.isClosedForSend) {
                 query.removeChangeListener(changeListener)
                 query.stop()
@@ -158,29 +160,34 @@ abstract class BaseCouchbaseRepository<E, out T>(private val database: Database,
 
     override fun save(entity: E): E {
         val cbObject = toCouchbaseObject(entity)
-        if (cbObject.id.isNotEmpty()) {
+
+        val doc = if (cbObject.id.isNotEmpty()) {
             cbObject.updatedAt = System.currentTimeMillis()
+            Document(cbObject.id, cbObject.map)
+        } else {
+            Document(cbObject.map)
         }
-        val doc = Document(cbObject.map)
         database.save(doc)
         val docMap = doc.toMap().toMutableMap()
         docMap["id"] = doc.id
         return toEntityObject(docMap)
     }
 
-    override fun delete(entity: E) {
-        delete(entity.id)
+    override fun remove(entity: E) {
+        remove(entity.id)
     }
 
-    override fun delete(id: String) {
-        database.delete(database.getDocument(id))
+    override fun remove(id: String) {
+        val doc = database.getDocument(id)
+        doc.setLong("removedAt", DateUtils.nowUTC().time)
+        database.save(doc)
     }
 
     protected fun toEntityObject(row: Result): E {
         val rowMap = row.toMap()
         @Suppress("UNCHECKED_CAST")
-        val map = rowMap.get("iPoli") as MutableMap<String, Any?>
-        map.put("id", rowMap.get("_id"))
+        val map = rowMap["iPoli"] as MutableMap<String, Any?>
+        map.put("id", rowMap["_id"])
         return toEntityObject(map)
     }
 
@@ -217,12 +224,15 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
                 )
             }
 
+        val plannedDate = cq.scheduledDate?.let { DateUtils.fromMillis(it) }
+        val plannedTime = cq.startMinute?.let { Time.of(it.toInt()) }
+
         return Quest(
             id = cq.id,
             name = cq.name,
             color = Color.valueOf(cq.color),
             category = Category(cq.category, Color.GREEN),
-            plannedSchedule = QuestSchedule(DateUtils.fromMillis(cq.scheduledDate), null, cq.duration),
+            plannedSchedule = QuestSchedule(plannedDate, plannedTime, cq.duration),
             reminders = reminders
         )
     }
@@ -239,6 +249,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         q.reminders = entity.reminders.map { r ->
             createCouchbaseReminder(r).map
         }
+        entity.plannedSchedule.time?.let { q.startMinute = it.toMinuteOfDay().toLong() }
         return q
     }
 

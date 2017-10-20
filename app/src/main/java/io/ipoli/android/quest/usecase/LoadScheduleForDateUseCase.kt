@@ -1,6 +1,5 @@
 package io.ipoli.android.quest.usecase
 
-import io.ipoli.android.R.string.quests
 import io.ipoli.android.common.StreamingUseCase
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.data.persistence.QuestRepository
@@ -8,7 +7,6 @@ import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.channels.produce
 import org.threeten.bp.LocalDate
-import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -18,14 +16,11 @@ import kotlin.coroutines.experimental.CoroutineContext
 data class Schedule(val scheduled: List<Quest>, val unscheduled: List<Quest>)
 
 class LoadScheduleForDateUseCase(private val questRepository: QuestRepository, coroutineContext: CoroutineContext) : StreamingUseCase<LocalDate, Schedule>(coroutineContext) {
-    override fun execute(parameters: LocalDate): ReceiveChannel<Schedule> {
-        Timber.d("AAA use case")
-        return createSchedule(questRepository.listenForDate(parameters))
-    }
+    override fun execute(parameters: LocalDate) =
+        createSchedule(questRepository.listenForDate(parameters))
 
     private fun createSchedule(channel: ReceiveChannel<List<Quest>>) = produce(coroutineContext) {
         channel.consumeEach { quests ->
-            Timber.d("AAA quests ${quests.size}")
             val (scheduled, unscheduled) = quests
                 .partition { it.isScheduled }
             send(Schedule(scheduled, unscheduled))

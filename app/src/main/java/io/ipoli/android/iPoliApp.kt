@@ -14,7 +14,6 @@ import io.ipoli.android.common.di.*
 import space.traversal.kapsule.transitive
 import timber.log.Timber
 
-
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 7/7/17.
@@ -41,16 +40,6 @@ class iPoliApp : Application() {
             return
         }
 
-        BlockCanary.install(this, object : BlockCanaryContext() {
-            override fun provideBlockThreshold(): Int {
-                return 500
-            }
-        }).start()
-
-        Fabric.with(Fabric.Builder(this)
-            .kits(Crashlytics())
-            .debuggable(BuildConfig.DEBUG)
-            .build())
 
         AndroidThreeTen.init(this)
 
@@ -65,7 +54,22 @@ class iPoliApp : Application() {
 //                Logger.log(priority, tag, message, t)
 //            }
 //        })
-        refWatcher = LeakCanary.install(this)
+
+        if (!BuildConfig.DEBUG) {
+
+            BlockCanary.install(this, object : BlockCanaryContext() {
+                override fun provideBlockThreshold(): Int {
+                    return 500
+                }
+            }).start()
+
+            Fabric.with(Fabric.Builder(this)
+                .kits(Crashlytics())
+                .debuggable(BuildConfig.DEBUG)
+                .build())
+
+            refWatcher = LeakCanary.install(this)
+        }
 
 //        TinyDancer.create().show(this)
 
