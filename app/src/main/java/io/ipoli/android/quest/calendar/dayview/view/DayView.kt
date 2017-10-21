@@ -14,6 +14,7 @@ import org.threeten.bp.LocalDate
 
 sealed class DayViewIntent : Intent
 
+data class LoadDataIntent(val currentDate: LocalDate) : DayViewIntent()
 data class AddEventIntent(val event: CalendarEvent) : DayViewIntent()
 data class EditEventIntent(val event: CalendarEvent) : DayViewIntent()
 data class EditUnscheduledEventIntent(val event: UnscheduledEvent) : DayViewIntent()

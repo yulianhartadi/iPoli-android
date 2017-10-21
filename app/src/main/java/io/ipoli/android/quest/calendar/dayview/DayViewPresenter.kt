@@ -11,8 +11,8 @@ import io.ipoli.android.quest.QuestSchedule
 import io.ipoli.android.quest.calendar.dayview.view.*
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
 import io.ipoli.android.quest.usecase.*
-import kotlinx.coroutines.experimental.channels.ActorJob
 import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -31,6 +31,15 @@ class DayViewPresenter(
 
     override fun reduceState(intent: DayViewIntent, state: DayViewState) =
         when (intent) {
+
+            is LoadDataIntent -> {
+                launch {
+                    loadScheduleUseCase.execute(intent.currentDate).consumeEach {
+                        actor.send(ScheduleLoadedIntent(it))
+                    }
+                }
+                state
+            }
 
             is ScheduleLoadedIntent -> {
                 val schedule = intent.schedule
@@ -105,7 +114,8 @@ class DayViewPresenter(
                     type = DayViewState.StateType.EVENT_REMOVED,
                     removedEventId = eventId,
                     scheduledQuests = scheduledQuests,
-                    unscheduledQuests = unscheduledQuests)
+                    unscheduledQuests = unscheduledQuests
+                )
             }
 
             is UndoRemoveEventIntent -> {
@@ -121,11 +131,11 @@ class DayViewPresenter(
             else -> state.copy(type = EVENT_UPDATED)
         }
 
-    override suspend fun loadStreamingData(actor: ActorJob<DayViewIntent>, initialState: DayViewState) {
-        loadScheduleUseCase.execute(initialState.scheduledDate).consumeEach {
-            actor.send(ScheduleLoadedIntent(it))
-        }
-    }
+//    override suspend fun loadStreamingData(actor: ActorJob<DayViewIntent>, initialState: DayViewState) {
+//        loadScheduleUseCase.execute(initialState.scheduledDate).consumeEach {
+//            actor.send(ScheduleLoadedIntent(it))
+//        }
+//    }
 
     private fun createUnscheduledViewModels(schedule: Schedule): List<DayViewController.UnscheduledQuestViewModel> =
         schedule.unscheduled.map {

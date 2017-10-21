@@ -84,6 +84,11 @@ class DayViewController :
         return view
     }
 
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        send(LoadDataIntent(currentDate))
+    }
+
     override fun handleBack(): Boolean {
         cancelEdit()
         return super.handleBack()

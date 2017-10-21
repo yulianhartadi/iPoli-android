@@ -38,6 +38,8 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
 
     override fun intentChannel() = intentChannel
 
+    protected lateinit var actor: ActorJob<I>
+
     private fun stateReduceActor(view: V) = actor<I> {
         var state = initialState
         view.render(state)
@@ -50,7 +52,7 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
     }
 
     override fun onAttachView(view: V) {
-        val actor = stateReduceActor(view)
+        actor = stateReduceActor(view)
         launch(coroutineContext + CommonPool) {
             intentChannel.consumeEach {
                 actor.send(it)

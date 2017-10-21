@@ -13,4 +13,8 @@ sealed class CalendarIntent : Intent
 
 data class SwipeChangeDateIntent(val position: Int) : CalendarIntent()
 
-data class CalendarViewState(val currentDate: LocalDate) : ViewState
+data class CalendarViewState(
+    val currentDate: LocalDate,
+    val dayText: String,
+    val dateText: String
+) : ViewState

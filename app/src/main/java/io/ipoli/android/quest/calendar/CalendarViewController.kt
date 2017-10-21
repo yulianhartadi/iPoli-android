@@ -34,21 +34,25 @@ import sun.bob.mcalendarview.vo.DateData
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/8/17.
  */
-class CalendarViewController : MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>, Injects<Module>, ViewStateRenderer<CalendarViewState> {
+class CalendarViewController :
+    MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>,
+    Injects<Module>,
+    ViewStateRenderer<CalendarViewState> {
+
 
     private val presenter by required { calendarPresenter }
+
+    private lateinit var calendarToolbar: ViewGroup
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
 
         val view = inflater.inflate(R.layout.controller_calendar, container, false)
 
         view.pager.adapter = pagerAdapter
-        view.pager.currentItem = MID_POSITION
+        view.pager.currentItem = Companion.MID_POSITION
 
         val toolbar = activity!!.findViewById<Toolbar>(R.id.toolbar)
-        val calendarToolbar = inflater.inflate(R.layout.controller_calendar_toolbar, toolbar, false) as ViewGroup
-        calendarToolbar.day.text = "Today"
-        calendarToolbar.date.text = "Sept 8th 17"
+        calendarToolbar = inflater.inflate(R.layout.controller_calendar_toolbar, toolbar, false) as ViewGroup
         toolbar.addView(calendarToolbar)
 
         initDayPicker(view, calendarToolbar)
@@ -60,25 +64,8 @@ class CalendarViewController : MviViewController<CalendarViewState, CalendarView
             }
         })
 
-//        object : BaseOverlayViewController() {
-//            override fun createOverlayView(inflater: LayoutInflater) =
-//                inflater.inflate(R.layout.view_pet_message, null)
-//
-//        }.show(router)
-
         return view
     }
-
-    override fun createPresenter() = presenter
-
-    override fun initialState() = CalendarViewState(LocalDate.now())
-
-    override fun render(state: CalendarViewState, view: View) {
-
-    }
-
-    val MID_POSITION = 49
-    val MAX_VISIBLE_DAYS = 100
 
     private var pickerState = 0
 
@@ -91,14 +78,14 @@ class CalendarViewController : MviViewController<CalendarViewState, CalendarView
     private val pagerAdapter = object : RouterPagerAdapter(this) {
         override fun configureRouter(router: Router, position: Int) {
             if (!router.hasRootController()) {
-                val plusDays = position - MID_POSITION
+                val plusDays = position - Companion.MID_POSITION
                 val dayViewDate = currentMidDate.plusDays(plusDays.toLong())
                 val page = DayViewController(dayViewDate)
                 router.setRoot(RouterTransaction.with(page))
             }
         }
 
-        override fun getCount(): Int = MAX_VISIBLE_DAYS
+        override fun getCount(): Int = Companion.MAX_VISIBLE_DAYS
 
         override fun getItemPosition(item: Any?): Int =
             PagerAdapter.POSITION_NONE
@@ -107,7 +94,7 @@ class CalendarViewController : MviViewController<CalendarViewState, CalendarView
     private fun changeCurrentDay(date: LocalDate) {
         currentMidDate = date
         pagerAdapter.notifyDataSetChanged()
-        view!!.pager.setCurrentItem(MID_POSITION, false)
+        view!!.pager.setCurrentItem(Companion.MID_POSITION, false)
     }
 
     private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
@@ -176,6 +163,19 @@ class CalendarViewController : MviViewController<CalendarViewState, CalendarView
         })
     }
 
+    override fun createPresenter() = presenter
+
+    override fun initialState() = CalendarViewState(
+        currentDate = LocalDate.now(),
+        dayText = "",
+        dateText = ""
+    )
+
+    override fun render(state: CalendarViewState, view: View) {
+        calendarToolbar.day.text = state.dayText
+        calendarToolbar.date.text = state.dateText
+    }
+
     override fun onDestroyView(view: View) {
         if (!activity!!.isChangingConfigurations) {
             view.pager.adapter = null
@@ -185,5 +185,10 @@ class CalendarViewController : MviViewController<CalendarViewState, CalendarView
 
     override fun onContextAvailable(context: Context) {
         inject(iPoliApp.module(context, router))
+    }
+
+    companion object {
+        const val MID_POSITION = 49
+        const val MAX_VISIBLE_DAYS = 100
     }
 }
