@@ -1,7 +1,9 @@
 package io.ipoli.android
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
@@ -14,6 +16,7 @@ import io.ipoli.android.quest.Player
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
+
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -30,9 +33,10 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        ActivityCompat.requestPermissions(this,
-//            arrayOf(Manifest.permission.READ_PHONE_STATE),
-//            1231)
+        if (!Settings.canDrawOverlays(this)) {
+            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + packageName))
+            startActivityForResult(intent, 0)
+        }
 
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         inject(iPoliApp.module(this, router))
