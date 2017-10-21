@@ -14,6 +14,7 @@ sealed class CalendarIntent : Intent
 data class LoadDataIntent(val currentDate: LocalDate) : CalendarIntent()
 data class SwipeChangeDateIntent(val position: Int) : CalendarIntent()
 object ExpandToolbarIntent : CalendarIntent()
+object ExpandToolbarWeekIntent : CalendarIntent()
 
 data class CalendarViewState(
     val currentDate: LocalDate,

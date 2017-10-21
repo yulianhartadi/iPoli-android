@@ -17,8 +17,7 @@ import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.iPoliApp
-import io.ipoli.android.quest.calendar.CalendarViewState.ToolbarState.SHOW_WEEK
-import io.ipoli.android.quest.calendar.CalendarViewState.ToolbarState.SHRINKED
+import io.ipoli.android.quest.calendar.CalendarViewState.ToolbarState.*
 import io.ipoli.android.quest.calendar.dayview.view.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.controller_calendar_toolbar.view.*
@@ -117,27 +116,12 @@ class CalendarViewController :
             calendarIndicator.animate().rotationBy(180f).duration = 200
             view.currentMonth.text = LocalDate.now().format(monthPattern)
 
-            val layoutParams = view.pager.layoutParams as ViewGroup.MarginLayoutParams
-            if (!isOpen) {
-                CellConfig.Month2WeekPos = CellConfig.middlePosition
-                CellConfig.ifMonth = false
-                view.dayPicker.shrink()
-                isOpen = true
-                layoutParams.topMargin = ViewUtils.dpToPx(-12f, view.context).toInt()
-                view.pager.layoutParams = layoutParams
-                view.dayPickerContainer.visibility = View.VISIBLE
-            } else {
-                view.dayPickerContainer.visibility = View.GONE
-                isOpen = false
-                layoutParams.topMargin = 0
-            }
-            view.pager.layoutParams = layoutParams
-        }
-
-        view.expander.setOnClickListener {
             send(ExpandToolbarIntent)
         }
 
+        view.expander.setOnClickListener {
+            send(ExpandToolbarWeekIntent)
+        }
 
         view.dayPicker.setOnDateClickListener(object : OnDateClickListener() {
             override fun onDateClick(v: View, date: DateData) {
@@ -166,18 +150,35 @@ class CalendarViewController :
         calendarToolbar.day.text = state.dayText
         calendarToolbar.date.text = state.dateText
 
+        if (state.toolbarState == SHOW_MONTH) {
+            CellConfig.ifMonth = true
+            CellConfig.Week2MonthPos = CellConfig.middlePosition
+            view.dayPicker.expand()
+        }
+
         if (state.toolbarState == SHRINKED) {
+            view.dayPickerContainer.visibility = View.GONE
+            val layoutParams = view.pager.layoutParams as ViewGroup.MarginLayoutParams
+            layoutParams.topMargin = 0
+            view.pager.layoutParams = layoutParams
+
             CellConfig.Month2WeekPos = CellConfig.middlePosition
             CellConfig.ifMonth = false
             CellConfig.weekAnchorPointDate = DateData(state.currentDate.year, state.currentDate.monthValue, state.currentDate.dayOfMonth)
             view.dayPicker.shrink()
         }
-
         if (state.toolbarState == SHOW_WEEK) {
-            CellConfig.ifMonth = true
-            CellConfig.Week2MonthPos = CellConfig.middlePosition
-            view.dayPicker.expand()
+            val layoutParams = view.pager.layoutParams as ViewGroup.MarginLayoutParams
+            CellConfig.Month2WeekPos = CellConfig.middlePosition
+            CellConfig.ifMonth = false
+            CellConfig.weekAnchorPointDate = DateData(state.currentDate.year, state.currentDate.monthValue, state.currentDate.dayOfMonth)
+            view.dayPicker.shrink()
+            layoutParams.topMargin = ViewUtils.dpToPx(-12f, view.context).toInt()
+            view.pager.layoutParams = layoutParams
+            view.dayPickerContainer.visibility = View.VISIBLE
+            view.pager.layoutParams = layoutParams
         }
+
     }
 
     override fun onDestroyView(view: View) {

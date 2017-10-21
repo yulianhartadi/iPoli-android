@@ -33,8 +33,13 @@ class CalendarPresenter(
             is ExpandToolbarIntent -> {
                 when (state.toolbarState) {
                     SHRINKED -> state.copy(toolbarState = SHOW_WEEK)
+                    else -> state.copy(toolbarState = SHRINKED)
+                }
+            }
+            is ExpandToolbarWeekIntent -> {
+                when (state.toolbarState) {
                     SHOW_WEEK -> state.copy(toolbarState = SHOW_MONTH)
-                    SHOW_MONTH -> state.copy(toolbarState = SHRINKED)
+                    else -> state.copy(toolbarState = SHOW_WEEK)
                 }
             }
             else -> {
