@@ -10,6 +10,7 @@ import com.couchbase.lite.DatabaseConfiguration
 import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.player.persistence.CouchbasePlayerRepository
 import io.ipoli.android.player.persistence.PlayerRepository
+import io.ipoli.android.quest.calendar.CalendarPresenter
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.data.persistence.CouchbaseQuestRepository
 import io.ipoli.android.quest.data.persistence.QuestRepository
@@ -98,6 +99,7 @@ interface UseCaseModule {
 interface PresenterModule {
     val dayViewPresenter: DayViewPresenter
     val reminderPickerPresenter: ReminderPickerDialogPresenter
+    val calendarPresenter: CalendarPresenter
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<Module> {
@@ -111,6 +113,7 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val job by required { job }
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, undoRemoveQuestUseCase, job)
     override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter, job)
+    override val calendarPresenter get() = CalendarPresenter(job)
 }
 
 class Module(androidModule: AndroidModule,

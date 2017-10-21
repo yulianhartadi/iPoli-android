@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.calendar.dayview.view
 
+import io.ipoli.android.common.mvi.Intent
+import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.quest.calendar.dayview.view.widget.CalendarEvent
 import io.ipoli.android.quest.calendar.dayview.view.widget.UnscheduledEvent
 import io.ipoli.android.quest.usecase.Schedule
@@ -18,10 +20,6 @@ data class EditUnscheduledEventIntent(val event: UnscheduledEvent) : DayViewInte
 data class RemoveEventIntent(val eventId: String) : DayViewIntent()
 data class ScheduleLoadedIntent(val schedule: Schedule) : DayViewIntent()
 data class UndoRemoveEventIntent(val eventId: String) : DayViewIntent()
-
-interface ViewState
-
-interface Intent
 
 data class DayViewState(
     val type: StateType,

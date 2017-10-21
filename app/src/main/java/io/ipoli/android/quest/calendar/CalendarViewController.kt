@@ -1,24 +1,30 @@
 package io.ipoli.android.quest.calendar
 
-import android.os.Build
+import android.content.Context
+import android.os.Bundle
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
+import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.mvi.MviViewController
+import io.ipoli.android.common.mvi.ViewStateRenderer
+import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.dayview.view.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.controller_calendar_toolbar.view.*
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
+import space.traversal.kapsule.Injects
+import space.traversal.kapsule.inject
+import space.traversal.kapsule.required
 import sun.bob.mcalendarview.CellConfig
 import sun.bob.mcalendarview.listeners.OnDateClickListener
 import sun.bob.mcalendarview.listeners.OnMonthScrollListener
@@ -28,38 +34,11 @@ import sun.bob.mcalendarview.vo.DateData
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/8/17.
  */
-class CalendarViewController : Controller() {
+class CalendarViewController : MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>, Injects<Module>, ViewStateRenderer<CalendarViewState> {
 
-    val MID_POSITION = 49
-    val MAX_VISIBLE_DAYS = 100
+    private val presenter by required { calendarPresenter }
 
-    private var pickerState = 0
-
-    private var currentMidDate = LocalDate.now()
-
-    private val pagerAdapter = object : RouterPagerAdapter(this) {
-        override fun configureRouter(router: Router, position: Int) {
-            if (!router.hasRootController()) {
-                val plusDays = position - MID_POSITION
-                val dayViewDate = currentMidDate.plusDays(plusDays.toLong())
-                val page = DayViewController(dayViewDate)
-                router.setRoot(RouterTransaction.with(page))
-            }
-        }
-
-        override fun getCount(): Int = MAX_VISIBLE_DAYS
-
-        override fun getItemPosition(item: Any?): Int =
-            PagerAdapter.POSITION_NONE
-    }
-
-    private fun changeCurrentDay(date: LocalDate) {
-        currentMidDate = date
-        pagerAdapter.notifyDataSetChanged()
-        view!!.pager.setCurrentItem(MID_POSITION, false)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
 
         val view = inflater.inflate(R.layout.controller_calendar, container, false)
 
@@ -90,11 +69,45 @@ class CalendarViewController : Controller() {
         return view
     }
 
-    internal object WindowOverlayCompat {
-        private val ANDROID_OREO = 26
-        private val TYPE_APPLICATION_OVERLAY = 2038
+    override fun createPresenter() = presenter
 
-        val TYPE_SYSTEM_ERROR = if (Build.VERSION.SDK_INT < ANDROID_OREO) WindowManager.LayoutParams.TYPE_SYSTEM_ERROR else TYPE_APPLICATION_OVERLAY
+    override fun initialState() = CalendarViewState(LocalDate.now())
+
+    override fun render(state: CalendarViewState, view: View) {
+
+    }
+
+    val MID_POSITION = 49
+    val MAX_VISIBLE_DAYS = 100
+
+    private var pickerState = 0
+
+    private var currentMidDate = LocalDate.now()
+
+    constructor() : super()
+
+    protected constructor(args: Bundle) : super(args)
+
+    private val pagerAdapter = object : RouterPagerAdapter(this) {
+        override fun configureRouter(router: Router, position: Int) {
+            if (!router.hasRootController()) {
+                val plusDays = position - MID_POSITION
+                val dayViewDate = currentMidDate.plusDays(plusDays.toLong())
+                val page = DayViewController(dayViewDate)
+                router.setRoot(RouterTransaction.with(page))
+            }
+        }
+
+        override fun getCount(): Int = MAX_VISIBLE_DAYS
+
+        override fun getItemPosition(item: Any?): Int =
+            PagerAdapter.POSITION_NONE
+    }
+
+    private fun changeCurrentDay(date: LocalDate) {
+        currentMidDate = date
+        pagerAdapter.notifyDataSetChanged()
+        view!!.pager.setCurrentItem(MID_POSITION, false)
     }
 
     private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
@@ -168,5 +181,9 @@ class CalendarViewController : Controller() {
             view.pager.adapter = null
         }
         super.onDestroyView(view)
+    }
+
+    override fun onContextAvailable(context: Context) {
+        inject(iPoliApp.module(context, router))
     }
 }

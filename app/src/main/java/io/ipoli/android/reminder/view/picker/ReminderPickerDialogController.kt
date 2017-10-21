@@ -78,54 +78,54 @@ class ReminderPickerDialogController :
 
     override fun createPresenter() = presenter
 
-    override fun render(state: ReminderPickerViewState, dialogView: View) {
+    override fun render(state: ReminderPickerViewState, view: View) {
 
         when (state.type) {
             ReminderPickerViewState.StateType.NEW_REMINDER -> {
-                ViewUtils.showViews(dialogView.predefinedTimes)
-                ViewUtils.hideViews(dialogView.customTimeContainer)
-                dialogView.message.setText(state.message)
-                dialogView.message.setSelection(state.message.length)
+                ViewUtils.showViews(view.predefinedTimes)
+                ViewUtils.hideViews(view.customTimeContainer)
+                view.message.setText(state.message)
+                view.message.setSelection(state.message.length)
 
                 val predefinedTimesAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.predefinedValues)
                 predefinedTimesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                dialogView.predefinedTimes.adapter = predefinedTimesAdapter
-                dialogView.predefinedTimes.setSelection(state.predefinedIndex!!)
+                view.predefinedTimes.adapter = predefinedTimesAdapter
+                view.predefinedTimes.setSelection(state.predefinedIndex!!)
             }
 
             ReminderPickerViewState.StateType.EDIT_REMINDER -> {
-                showCustomTimeViews(dialogView)
-                dialogView.message.setText(state.message)
-                dialogView.message.setSelection(state.message.length)
+                showCustomTimeViews(view)
+                view.message.setText(state.message)
+                view.message.setSelection(state.message.length)
 
                 val customTimeAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.timeUnits)
                 customTimeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                dialogView.customTimeUnits.adapter = customTimeAdapter
-                dialogView.customTimeUnits.setSelection(state.timeUnitIndex!!)
-                dialogView.customTime.setText(state.timeValue)
+                view.customTimeUnits.adapter = customTimeAdapter
+                view.customTimeUnits.setSelection(state.timeUnitIndex!!)
+                view.customTime.setText(state.timeValue)
             }
 
             ReminderPickerViewState.StateType.CUSTOM_TIME -> {
-                showCustomTimeViews(dialogView)
+                showCustomTimeViews(view)
 
                 val customTimeAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.timeUnits)
                 customTimeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                dialogView.customTimeUnits.adapter = customTimeAdapter
-                dialogView.customTimeUnits.setSelection(state.timeUnitIndex!!)
-                dialogView.customTime.setText(state.timeValue)
+                view.customTimeUnits.adapter = customTimeAdapter
+                view.customTimeUnits.setSelection(state.timeUnitIndex!!)
+                view.customTime.setText(state.timeValue)
 
-                dialogView.customTime.requestFocus()
-                ViewUtils.showKeyboard(activity!!, dialogView.customTime)
+                view.customTime.requestFocus()
+                ViewUtils.showKeyboard(activity!!, view.customTime)
             }
 
             ReminderPickerViewState.StateType.FINISHED -> {
-                ViewUtils.hideKeyboard(dialogView)
+                ViewUtils.hideKeyboard(view)
                 listener?.onReminderPicked(state.viewModel!!)
                 dismissDialog()
             }
 
             ReminderPickerViewState.StateType.TIME_VALUE_VALIDATION_ERROR -> {
-                dialogView.customTime.error = string(R.string.invalid_reminder_time)
+                view.customTime.error = string(R.string.invalid_reminder_time)
             }
         }
     }

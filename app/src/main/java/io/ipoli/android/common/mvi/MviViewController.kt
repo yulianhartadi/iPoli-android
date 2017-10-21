@@ -5,8 +5,6 @@ import android.support.annotation.MainThread
 import android.view.View
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
-import io.ipoli.android.quest.calendar.dayview.view.Intent
-import io.ipoli.android.quest.calendar.dayview.view.ViewState
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.launch
 
@@ -14,6 +12,10 @@ import kotlinx.coroutines.experimental.launch
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/8/17.
  */
+interface ViewState
+
+interface Intent
+
 abstract class MviViewController<VS : ViewState, in V : ViewStateRenderer<VS>, out P : MviPresenter<V, VS, I>, in I : Intent>
 protected constructor(args: Bundle? = null)
     : RestoreViewOnCreateController(args), ViewStateRenderer<VS> {

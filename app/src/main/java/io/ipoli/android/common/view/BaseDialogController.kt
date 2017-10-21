@@ -9,11 +9,7 @@ import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
-import io.ipoli.android.common.mvi.MviPresenter
-import io.ipoli.android.common.mvi.MviViewController
-import io.ipoli.android.common.mvi.ViewStateRenderer
-import io.ipoli.android.quest.calendar.dayview.view.Intent
-import io.ipoli.android.quest.calendar.dayview.view.ViewState
+import io.ipoli.android.common.mvi.*
 
 /**
  * A controller that displays a dialog window, floating on top of its activity's window.

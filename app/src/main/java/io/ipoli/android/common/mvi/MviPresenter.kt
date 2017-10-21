@@ -1,8 +1,6 @@
 package io.ipoli.android.common.mvi
 
 import android.support.annotation.MainThread
-import io.ipoli.android.quest.calendar.dayview.view.Intent
-import io.ipoli.android.quest.calendar.dayview.view.ViewState
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.*

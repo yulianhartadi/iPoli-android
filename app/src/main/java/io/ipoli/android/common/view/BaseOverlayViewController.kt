@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.PixelFormat
+import android.os.Build
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
@@ -17,7 +18,6 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
 import io.ipoli.android.R
-import io.ipoli.android.quest.calendar.CalendarViewController
 import kotlinx.android.synthetic.main.view_pet_message.view.*
 
 /**
@@ -71,7 +71,7 @@ abstract class BaseOverlayViewController protected constructor(args: Bundle? = n
         val layoutParams = WindowManager.LayoutParams(
             (metrics.widthPixels * 0.95f).toInt(),
             WindowManager.LayoutParams.WRAP_CONTENT,
-            CalendarViewController.WindowOverlayCompat.TYPE_SYSTEM_ERROR,
+            WindowOverlayCompat.TYPE_SYSTEM_ERROR,
             focusable,
             PixelFormat.TRANSLUCENT)
         layoutParams.y = 800
@@ -120,5 +120,13 @@ abstract class BaseOverlayViewController protected constructor(args: Bundle? = n
             .pushChangeHandler(SimpleSwapChangeHandler(false))
             .popChangeHandler(SimpleSwapChangeHandler(false)).tag("AAA"))
 
+    }
+
+
+    internal object WindowOverlayCompat {
+        private val ANDROID_OREO = 26
+        private val TYPE_APPLICATION_OVERLAY = 2038
+
+        val TYPE_SYSTEM_ERROR = if (Build.VERSION.SDK_INT < ANDROID_OREO) WindowManager.LayoutParams.TYPE_SYSTEM_ERROR else TYPE_APPLICATION_OVERLAY
     }
 }

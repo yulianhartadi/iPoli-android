@@ -1,7 +1,7 @@
 package io.ipoli.android.reminder.view.picker
 
-import io.ipoli.android.quest.calendar.dayview.view.Intent
-import io.ipoli.android.quest.calendar.dayview.view.ViewState
+import io.ipoli.android.common.mvi.Intent
+import io.ipoli.android.common.mvi.ViewState
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>

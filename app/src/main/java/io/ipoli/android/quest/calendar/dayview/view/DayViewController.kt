@@ -43,7 +43,7 @@ import space.traversal.kapsule.required
 import timber.log.Timber
 
 class DayViewController :
-    MviViewController<DayViewState, ViewStateRenderer<DayViewState>, DayViewPresenter, DayViewIntent>,
+    MviViewController<DayViewState, DayViewController, DayViewPresenter, DayViewIntent>,
     Injects<Module>,
     CalendarDayView.CalendarChangeListener,
     ViewStateRenderer<DayViewState> {
