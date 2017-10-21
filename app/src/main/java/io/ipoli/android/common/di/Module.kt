@@ -8,6 +8,7 @@ import com.bluelinelabs.conductor.Router
 import com.couchbase.lite.Database
 import com.couchbase.lite.DatabaseConfiguration
 import io.ipoli.android.common.navigation.Navigator
+import io.ipoli.android.common.text.CalendarFormatter
 import io.ipoli.android.player.persistence.CouchbasePlayerRepository
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.quest.calendar.CalendarPresenter
@@ -54,6 +55,8 @@ interface AndroidModule {
 
     val timeUnitFormatter: TimeUnitFormatter
 
+    val calendarFormatter: CalendarFormatter
+
     val database: Database
 
     val job: Job
@@ -70,6 +73,8 @@ class MainAndroidModule(private val context: Context, private val router: Router
     override val reminderTimeFormatter get() = ReminderTimeFormatter(context)
 
     override val timeUnitFormatter get() = TimeUnitFormatter(context)
+
+    override val calendarFormatter get() = CalendarFormatter(context)
 
     override val database: Database
         get() = Database("iPoli", DatabaseConfiguration(context.applicationContext))
@@ -110,10 +115,11 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val navigator by required { navigator }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
     private val timeUnitFormatter by required { timeUnitFormatter }
+    private val calendarFormatter by required { calendarFormatter }
     private val job by required { job }
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, undoRemoveQuestUseCase, job)
     override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter, job)
-    override val calendarPresenter get() = CalendarPresenter(job)
+    override val calendarPresenter get() = CalendarPresenter(calendarFormatter, job)
 }
 
 class Module(androidModule: AndroidModule,

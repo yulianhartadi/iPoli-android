@@ -28,7 +28,7 @@ class DayViewPresenter(
     private val undoRemovedQuestUseCase: UndoRemovedQuestUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<DayViewState>, DayViewState, DayViewIntent>(
-    coroutineContext, DayViewState(type = DayViewState.StateType.LOADING)) {
+    DayViewState(type = DayViewState.StateType.LOADING), coroutineContext) {
 
     override fun reduceState(intent: DayViewIntent, state: DayViewState) =
         when (intent) {

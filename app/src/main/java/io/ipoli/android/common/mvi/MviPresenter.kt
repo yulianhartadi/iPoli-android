@@ -29,8 +29,9 @@ interface MviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, in I : Inte
 }
 
 abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I : Intent>(
-    private val coroutineContext: CoroutineContext,
-    private val initialState: VS) : MviPresenter<V, VS, I> {
+    private val initialState: VS,
+    private val coroutineContext: CoroutineContext
+) : MviPresenter<V, VS, I> {
 
     private val intentChannel = Channel<I>()
 

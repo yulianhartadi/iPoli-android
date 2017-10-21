@@ -47,7 +47,7 @@ object DateFormatter {
         }
         if (currentDate != null) {
             if (currentDate.with(DayOfWeek.MONDAY).isEqual(date.with(DayOfWeek.MONDAY))) {
-                return date.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault())
+                return date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
             }
         }
         return DATE_NO_YEAR_FORMAT.format(DateUtils.toStartOfDay(date))

@@ -37,7 +37,7 @@
     <string name="yesterday_calendar_format">\'Yesterday - \'d MMM</string>
     <string name="today_calendar_format">\'Today - \'EEE, d MMM</string>
     <string name="tomorrow_calendar_format">\'Tomorrow - \'d MMM</string>
-    <string name="calendar_format">EEE, d MMM</string>
+    <string name="calendar_format">MMM d YY</string>
     <string name="agenda_calendar_format">EEEE, d MMM</string>
     <string name="widget_agenda_title_format">EEE, d MMM</string>
     <string name="quest_scheduled_for_today">Quest scheduled for today</string>

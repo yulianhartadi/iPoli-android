@@ -17,7 +17,7 @@ class ReminderPickerDialogPresenter(
     private val timeUnitFormatter: TimeUnitFormatter,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<ReminderPickerViewState>, ReminderPickerViewState, ReminderPickerIntent>(
-    coroutineContext, ReminderPickerViewState(type = ReminderPickerViewState.StateType.LOADING)) {
+    ReminderPickerViewState(type = ReminderPickerViewState.StateType.LOADING), coroutineContext) {
 
 
     override fun reduceState(intent: ReminderPickerIntent, state: ReminderPickerViewState): ReminderPickerViewState {
