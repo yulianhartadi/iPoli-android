@@ -17,6 +17,8 @@ import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.iPoliApp
+import io.ipoli.android.quest.calendar.CalendarViewState.ToolbarState.SHOW_WEEK
+import io.ipoli.android.quest.calendar.CalendarViewState.ToolbarState.SHRINKED
 import io.ipoli.android.quest.calendar.dayview.view.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.controller_calendar_toolbar.view.*
@@ -132,19 +134,9 @@ class CalendarViewController :
             view.pager.layoutParams = layoutParams
         }
 
-        view.expander.setOnClickListener({
-
-            if (CellConfig.ifMonth) {
-                CellConfig.Month2WeekPos = CellConfig.middlePosition
-                CellConfig.ifMonth = false
-                CellConfig.weekAnchorPointDate = DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
-                view.dayPicker.shrink()
-            } else {
-                CellConfig.ifMonth = true
-                CellConfig.Week2MonthPos = CellConfig.middlePosition
-                view.dayPicker.expand()
-            }
-        })
+        view.expander.setOnClickListener {
+            send(ExpandToolbarIntent)
+        }
 
 
         view.dayPicker.setOnDateClickListener(object : OnDateClickListener() {
@@ -173,6 +165,19 @@ class CalendarViewController :
     override fun render(state: CalendarViewState, view: View) {
         calendarToolbar.day.text = state.dayText
         calendarToolbar.date.text = state.dateText
+
+        if (state.toolbarState == SHRINKED) {
+            CellConfig.Month2WeekPos = CellConfig.middlePosition
+            CellConfig.ifMonth = false
+            CellConfig.weekAnchorPointDate = DateData(state.currentDate.year, state.currentDate.monthValue, state.currentDate.dayOfMonth)
+            view.dayPicker.shrink()
+        }
+
+        if (state.toolbarState == SHOW_WEEK) {
+            CellConfig.ifMonth = true
+            CellConfig.Week2MonthPos = CellConfig.middlePosition
+            view.dayPicker.expand()
+        }
     }
 
     override fun onDestroyView(view: View) {

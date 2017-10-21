@@ -2,12 +2,22 @@ package io.ipoli.android.common.datetime
 
 import org.threeten.bp.LocalDate
 import org.threeten.bp.ZonedDateTime
+import org.threeten.bp.format.TextStyle
 import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/20/17.
  */
+
+val LocalDate.isToday get() = LocalDate.now().isEqual(this)
+
+val LocalDate.isTomorrow get() = LocalDate.now().plusDays(1).isEqual(this)
+
+val LocalDate.isYesterday get() = LocalDate.now().minusDays(1).isEqual(this)
+
+val LocalDate.dayOfWeekText: String get() = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
+
 fun LocalDate.startOfDayUTC(): Long {
     return toStartOfDayUTC().time
 }
