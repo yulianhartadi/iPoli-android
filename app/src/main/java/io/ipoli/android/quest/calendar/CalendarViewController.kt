@@ -67,6 +67,11 @@ class CalendarViewController :
         return view
     }
 
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        send(LoadDataIntent(LocalDate.now()))
+    }
+
     private var pickerState = 0
 
     private var currentMidDate = LocalDate.now()
@@ -164,12 +169,6 @@ class CalendarViewController :
     }
 
     override fun createPresenter() = presenter
-
-    override fun initialState() = CalendarViewState(
-        currentDate = LocalDate.now(),
-        dayText = "",
-        dateText = ""
-    )
 
     override fun render(state: CalendarViewState, view: View) {
         calendarToolbar.day.text = state.dayText

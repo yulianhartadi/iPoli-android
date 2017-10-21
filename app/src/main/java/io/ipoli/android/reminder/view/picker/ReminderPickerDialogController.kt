@@ -49,9 +49,6 @@ class ReminderPickerDialogController :
         this.reminder = selectedReminder
     }
 
-    override fun initialState() =
-        ReminderPickerViewState(type = ReminderPickerViewState.StateType.LOADING)
-
     protected constructor() : super()
 
     protected constructor(args: Bundle?) : super(args)

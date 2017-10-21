@@ -21,8 +21,6 @@ interface MviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, in I : Inte
 
     fun intentChannel(): SendChannel<I>
 
-    var initialState: VS
-
     fun onAttachView(view: V)
 
     fun onDetachView() {}
@@ -30,11 +28,11 @@ interface MviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, in I : Inte
     fun onDestroy() {}
 }
 
-abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I : Intent>(private val coroutineContext: CoroutineContext) : MviPresenter<V, VS, I> {
+abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I : Intent>(
+    private val coroutineContext: CoroutineContext,
+    private val initialState: VS) : MviPresenter<V, VS, I> {
 
     private val intentChannel = Channel<I>()
-
-    override lateinit var initialState: VS
 
     override fun intentChannel() = intentChannel
 
