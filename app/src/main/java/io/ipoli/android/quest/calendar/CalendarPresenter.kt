@@ -23,12 +23,12 @@ class CalendarPresenter(
         when (intent) {
             is LoadDataIntent -> {
                 val date = intent.currentDate
-                val dayText = calendarFormatter.day(date)
-                val dateText = calendarFormatter.date(date)
+                val (dayText, dateText) = formatDayAndDate(date)
                 state.copy(
                     currentDate = intent.currentDate,
                     dayText = dayText,
-                    dateText = dateText)
+                    dateText = dateText
+                )
             }
             is ExpandToolbarIntent -> {
                 when (state.toolbarState) {
@@ -42,8 +42,28 @@ class CalendarPresenter(
                     else -> state.copy(toolbarState = SHOW_WEEK)
                 }
             }
+            is SwipeChangeDateIntent -> {
+                val newDate = state.currentDate.plusDays((intent.position - MID_POSITION).toLong())
+                val (dayText, dateText) = formatDayAndDate(newDate)
+                state.copy(
+                    currentDate = newDate,
+                    dayText = dayText,
+                    dateText = dateText
+                )
+            }
             else -> {
                 state
             }
         }
+
+    private fun formatDayAndDate(date: LocalDate): Pair<String, String> {
+        val dayText = calendarFormatter.day(date)
+        val dateText = calendarFormatter.date(date)
+        return Pair(dayText, dateText)
+    }
+
+    companion object {
+        const val MID_POSITION = 49
+        const val MAX_VISIBLE_DAYS = 100
+    }
 }

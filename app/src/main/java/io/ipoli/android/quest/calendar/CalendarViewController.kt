@@ -39,8 +39,7 @@ class CalendarViewController :
     MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>,
     Injects<Module>,
     ViewStateRenderer<CalendarViewState> {
-
-
+    
     private val presenter by required { calendarPresenter }
 
     private lateinit var calendarToolbar: ViewGroup
@@ -60,8 +59,7 @@ class CalendarViewController :
 
         view.pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
             override fun onPageSelected(position: Int) {
-
-//                view.calendar.visibility = if (Random().nextDouble() > 0.5) View.GONE else View.VISIBLE
+                send(SwipeChangeDateIntent(position))
             }
         })
 
@@ -73,13 +71,9 @@ class CalendarViewController :
         send(LoadDataIntent(LocalDate.now()))
     }
 
-    private var pickerState = 0
-
     private var currentMidDate = LocalDate.now()
 
-    constructor() : super()
-
-    protected constructor(args: Bundle) : super(args)
+    constructor(args: Bundle? = null) : super(args)
 
     private val pagerAdapter = object : RouterPagerAdapter(this) {
         override fun configureRouter(router: Router, position: Int) {
@@ -110,7 +104,6 @@ class CalendarViewController :
 
         var currentDate = LocalDate.now()
         view.dayPicker.markDate(DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth))
-        var isOpen = false
 
         calendarToolbar.setOnClickListener {
             calendarIndicator.animate().rotationBy(180f).duration = 200
