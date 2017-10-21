@@ -59,9 +59,6 @@ class DayViewController :
 
     protected constructor(args: Bundle) : super(args)
 
-    override fun initialState() =
-        DayViewState(type = DayViewState.StateType.LOADING, scheduledDate = currentDate)
-
 //    private val inflater by required { layoutInflater }
 
     private val presenter by required { dayViewPresenter }
@@ -121,9 +118,9 @@ class DayViewController :
             }
 
             DayViewState.StateType.EVENT_REMOVED -> {
-               PetMessage(object : PetMessage.UndoClickedListener {
+                PetMessage(object : PetMessage.UndoClickedListener {
                     override fun onClick() {
-                        sendUndoRemovedEventIntent( state.removedEventId)
+                        sendUndoRemovedEventIntent(state.removedEventId)
                     }
                 }).show(router)
             }

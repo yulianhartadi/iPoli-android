@@ -11,6 +11,7 @@ import org.threeten.bp.LocalDate
 
 sealed class CalendarIntent : Intent
 
+data class LoadDataIntent(val currentDate: LocalDate) : CalendarIntent()
 data class SwipeChangeDateIntent(val position: Int) : CalendarIntent()
 
 data class CalendarViewState(

@@ -27,7 +27,8 @@ class DayViewPresenter(
     private val removeQuestUseCase: RemoveQuestUseCase,
     private val undoRemovedQuestUseCase: UndoRemovedQuestUseCase,
     coroutineContext: CoroutineContext
-) : BaseMviPresenter<ViewStateRenderer<DayViewState>, DayViewState, DayViewIntent>(coroutineContext) {
+) : BaseMviPresenter<ViewStateRenderer<DayViewState>, DayViewState, DayViewIntent>(
+    coroutineContext, DayViewState(type = DayViewState.StateType.LOADING)) {
 
     override fun reduceState(intent: DayViewIntent, state: DayViewState) =
         when (intent) {
@@ -130,12 +131,6 @@ class DayViewPresenter(
             is Result.Invalid -> state.copy(type = EVENT_VALIDATION_ERROR)
             else -> state.copy(type = EVENT_UPDATED)
         }
-
-//    override suspend fun loadStreamingData(actor: ActorJob<DayViewIntent>, initialState: DayViewState) {
-//        loadScheduleUseCase.execute(initialState.scheduledDate).consumeEach {
-//            actor.send(ScheduleLoadedIntent(it))
-//        }
-//    }
 
     private fun createUnscheduledViewModels(schedule: Schedule): List<DayViewController.UnscheduledQuestViewModel> =
         schedule.unscheduled.map {
