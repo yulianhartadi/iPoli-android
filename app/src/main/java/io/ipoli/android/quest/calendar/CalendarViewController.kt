@@ -17,12 +17,12 @@ import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.iPoliApp
-import io.ipoli.android.quest.calendar.CalendarViewState.ToolbarState.*
+import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
+import io.ipoli.android.quest.calendar.CalendarViewState.StateType.DATE_CHANGED
 import io.ipoli.android.quest.calendar.dayview.view.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.controller_calendar_toolbar.view.*
 import org.threeten.bp.LocalDate
-import org.threeten.bp.format.DateTimeFormatter
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -39,7 +39,7 @@ class CalendarViewController :
     MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>,
     Injects<Module>,
     ViewStateRenderer<CalendarViewState> {
-    
+
     private val presenter by required { calendarPresenter }
 
     private lateinit var calendarToolbar: ViewGroup
@@ -98,7 +98,7 @@ class CalendarViewController :
     }
 
     private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
-        val monthPattern = DateTimeFormatter.ofPattern("MMMM")
+//        val monthPattern = DateTimeFormatter.ofPattern("MMMM")
         view.dayPickerContainer.visibility = View.GONE
         val calendarIndicator = calendarToolbar.calendarIndicator
 
@@ -107,7 +107,7 @@ class CalendarViewController :
 
         calendarToolbar.setOnClickListener {
             calendarIndicator.animate().rotationBy(180f).duration = 200
-            view.currentMonth.text = LocalDate.now().format(monthPattern)
+//            view.currentMonth.text = LocalDate.now().format(monthPattern)
 
             send(ExpandToolbarIntent)
         }
@@ -118,17 +118,18 @@ class CalendarViewController :
 
         view.dayPicker.setOnDateClickListener(object : OnDateClickListener() {
             override fun onDateClick(v: View, date: DateData) {
-                view.dayPicker.markedDates.removeAdd()
-                view.dayPicker.markDate(date)
-                currentDate = LocalDate.of(date.year, date.month, date.day)
-                view.currentMonth.text = currentDate.format(monthPattern)
+
+                send(ChangeDateIntent(date.year, date.month, date.day))
+//                currentDate = LocalDate.of(date.year, date.month, date.day)
+//                view.currentMonth.text = currentDate.format(monthPattern)
             }
         })
 
         view.dayPicker.setOnMonthScrollListener(object : OnMonthScrollListener() {
             override fun onMonthChange(year: Int, month: Int) {
-                val localDate = LocalDate.of(year, month, 1)
-                view.currentMonth.text = localDate.format(monthPattern)
+                send(ChangeMonthIntent(year, month))
+//                val localDate = LocalDate.of(year, month, 1)
+//                view.currentMonth.text = localDate.format(monthPattern)
             }
 
             override fun onMonthScroll(positionOffset: Float) {
@@ -142,14 +143,16 @@ class CalendarViewController :
     override fun render(state: CalendarViewState, view: View) {
         calendarToolbar.day.text = state.dayText
         calendarToolbar.date.text = state.dateText
+        view.currentMonth.text = state.monthText
+        val currentDate = state.currentDate
 
-        if (state.toolbarState == SHOW_MONTH) {
+        if (state.datePickerState == SHOW_MONTH) {
             CellConfig.ifMonth = true
             CellConfig.Week2MonthPos = CellConfig.middlePosition
             view.dayPicker.expand()
         }
 
-        if (state.toolbarState == SHRINKED) {
+        if (state.datePickerState == INVISIBLE) {
             view.dayPickerContainer.visibility = View.GONE
             val layoutParams = view.pager.layoutParams as ViewGroup.MarginLayoutParams
             layoutParams.topMargin = 0
@@ -157,19 +160,27 @@ class CalendarViewController :
 
             CellConfig.Month2WeekPos = CellConfig.middlePosition
             CellConfig.ifMonth = false
-            CellConfig.weekAnchorPointDate = DateData(state.currentDate.year, state.currentDate.monthValue, state.currentDate.dayOfMonth)
+            CellConfig.weekAnchorPointDate = DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
             view.dayPicker.shrink()
         }
-        if (state.toolbarState == SHOW_WEEK) {
+        if (state.datePickerState == SHOW_WEEK) {
             val layoutParams = view.pager.layoutParams as ViewGroup.MarginLayoutParams
             CellConfig.Month2WeekPos = CellConfig.middlePosition
             CellConfig.ifMonth = false
-            CellConfig.weekAnchorPointDate = DateData(state.currentDate.year, state.currentDate.monthValue, state.currentDate.dayOfMonth)
+            CellConfig.weekAnchorPointDate = DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
             view.dayPicker.shrink()
             layoutParams.topMargin = ViewUtils.dpToPx(-12f, view.context).toInt()
             view.pager.layoutParams = layoutParams
             view.dayPickerContainer.visibility = View.VISIBLE
             view.pager.layoutParams = layoutParams
+        }
+
+        if (state.type == DATE_CHANGED) {
+            view.dayPicker.markedDates.removeAdd()
+            view.dayPicker.markDate(DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth))
+
+            view.pager.adapter.notifyDataSetChanged()
+            view.pager.setCurrentItem(state.adapterPosition, false)
         }
 
     }

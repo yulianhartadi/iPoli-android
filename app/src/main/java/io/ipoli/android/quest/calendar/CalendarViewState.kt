@@ -2,6 +2,7 @@ package io.ipoli.android.quest.calendar
 
 import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.quest.calendar.CalendarViewState.StateType.DATA_LOADED
 import org.threeten.bp.LocalDate
 
 /**
@@ -13,16 +14,26 @@ sealed class CalendarIntent : Intent
 
 data class LoadDataIntent(val currentDate: LocalDate) : CalendarIntent()
 data class SwipeChangeDateIntent(val position: Int) : CalendarIntent()
+data class ChangeDateIntent(val year: Int, val month: Int, val day: Int) : CalendarIntent()
+data class ChangeMonthIntent(val year: Int, val month: Int) : CalendarIntent()
 object ExpandToolbarIntent : CalendarIntent()
 object ExpandToolbarWeekIntent : CalendarIntent()
 
 data class CalendarViewState(
+    val type: StateType = DATA_LOADED,
     val currentDate: LocalDate,
+    val monthText: String = "",
     val dayText: String = "",
     val dateText: String = "",
-    val toolbarState: ToolbarState
+    val datePickerState: DatePickerState,
+    val adapterPosition: Int
 ) : ViewState {
-    enum class ToolbarState {
-        SHRINKED, SHOW_WEEK, SHOW_MONTH
+
+    enum class StateType {
+        DATA_LOADED, DATE_CHANGED
+    }
+
+    enum class DatePickerState {
+        INVISIBLE, SHOW_WEEK, SHOW_MONTH
     }
 }

@@ -3,8 +3,10 @@ package io.ipoli.android.quest.calendar
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.text.CalendarFormatter
-import io.ipoli.android.quest.calendar.CalendarViewState.ToolbarState.*
+import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
+import io.ipoli.android.quest.calendar.CalendarViewState.StateType.DATE_CHANGED
 import org.threeten.bp.LocalDate
+import org.threeten.bp.format.DateTimeFormatter
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -15,9 +17,15 @@ class CalendarPresenter(
     private val calendarFormatter: CalendarFormatter,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<CalendarViewState>, CalendarViewState, CalendarIntent>(
-    CalendarViewState(currentDate = LocalDate.now(), toolbarState = SHRINKED),
+    CalendarViewState(
+        currentDate = LocalDate.now(),
+        datePickerState = INVISIBLE,
+        adapterPosition = MID_POSITION
+    ),
     coroutineContext
 ) {
+
+    private val monthFormatter = DateTimeFormatter.ofPattern("MMMM")
 
     override fun reduceState(intent: CalendarIntent, state: CalendarViewState): CalendarViewState =
         when (intent) {
@@ -27,20 +35,33 @@ class CalendarPresenter(
                 state.copy(
                     currentDate = intent.currentDate,
                     dayText = dayText,
+                    monthText = monthFormatter.format(date),
                     dateText = dateText
                 )
             }
             is ExpandToolbarIntent -> {
-                when (state.toolbarState) {
-                    SHRINKED -> state.copy(toolbarState = SHOW_WEEK)
-                    else -> state.copy(toolbarState = SHRINKED)
+                when (state.datePickerState) {
+                    INVISIBLE -> state.copy(datePickerState = SHOW_WEEK)
+                    else -> state.copy(datePickerState = INVISIBLE)
                 }
             }
             is ExpandToolbarWeekIntent -> {
-                when (state.toolbarState) {
-                    SHOW_WEEK -> state.copy(toolbarState = SHOW_MONTH)
-                    else -> state.copy(toolbarState = SHOW_WEEK)
+                when (state.datePickerState) {
+                    SHOW_WEEK -> state.copy(datePickerState = SHOW_MONTH)
+                    else -> state.copy(datePickerState = SHOW_WEEK)
                 }
+            }
+            is ChangeDateIntent -> {
+                val newDate = LocalDate.of(intent.year, intent.month, intent.day)
+                val (dayText, dateText) = formatDayAndDate(newDate)
+                state.copy(
+                    type = DATE_CHANGED,
+                    adapterPosition = MID_POSITION,
+                    currentDate = newDate,
+                    dayText = dayText,
+                    monthText = monthFormatter.format(newDate),
+                    dateText = dateText
+                )
             }
             is SwipeChangeDateIntent -> {
                 val newDate = state.currentDate.plusDays((intent.position - MID_POSITION).toLong())
@@ -48,7 +69,14 @@ class CalendarPresenter(
                 state.copy(
                     currentDate = newDate,
                     dayText = dayText,
+                    monthText = monthFormatter.format(newDate),
                     dateText = dateText
+                )
+            }
+            is ChangeMonthIntent -> {
+                val newDate = LocalDate.of(intent.year, intent.month, 1)
+                state.copy(
+                    monthText = monthFormatter.format(newDate)
                 )
             }
             else -> {
