@@ -35,8 +35,8 @@ import sun.bob.mcalendarview.vo.DateData
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/8/17.
  */
-class CalendarViewController :
-    MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>,
+class CalendarViewController(args: Bundle? = null) :
+    MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>(args),
     Injects<Module>,
     ViewStateRenderer<CalendarViewState> {
 
@@ -72,8 +72,6 @@ class CalendarViewController :
     }
 
     private var currentMidDate = LocalDate.now()
-
-    constructor(args: Bundle? = null) : super(args)
 
     private val pagerAdapter = object : RouterPagerAdapter(this) {
         override fun configureRouter(router: Router, position: Int) {
