@@ -36,8 +36,8 @@ import timber.log.Timber
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/8/17.
  */
-class CalendarViewController :
-    MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>,
+class CalendarViewController(args: Bundle? = null) :
+    MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>(args),
     Injects<Module>,
     ViewStateRenderer<CalendarViewState> {
 
@@ -46,9 +46,7 @@ class CalendarViewController :
     private lateinit var calendarToolbar: ViewGroup
 
     private var currentMidDate = LocalDate.now()
-
-    constructor(args: Bundle? = null) : super(args)
-
+    
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
 
         val view = inflater.inflate(R.layout.controller_calendar, container, false)
@@ -183,7 +181,6 @@ class CalendarViewController :
             view.dayPicker.markDate(DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth))
 
 
-            currentMidDate = currentDate
             view.pager.adapter.notifyDataSetChanged()
             view.pager.setCurrentItem(state.adapterPosition, false)
         }
