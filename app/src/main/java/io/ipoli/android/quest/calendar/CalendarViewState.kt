@@ -30,7 +30,7 @@ data class CalendarViewState(
 ) : ViewState {
 
     enum class StateType {
-        DATA_LOADED, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED
+        LOADING, DATA_LOADED, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED, DEFAULT
     }
 
     enum class DatePickerState {

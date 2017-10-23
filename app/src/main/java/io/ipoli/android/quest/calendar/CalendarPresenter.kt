@@ -18,6 +18,7 @@ class CalendarPresenter(
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<CalendarViewState>, CalendarViewState, CalendarIntent>(
     CalendarViewState(
+        type = LOADING,
         currentDate = LocalDate.now(),
         datePickerState = INVISIBLE,
         adapterPosition = MID_POSITION
@@ -33,6 +34,8 @@ class CalendarPresenter(
                 val date = intent.currentDate
                 val (dayText, dateText) = formatDayAndDate(date)
                 state.copy(
+                    type = DATA_LOADED,
+                    adapterPosition = MID_POSITION,
                     currentDate = intent.currentDate,
                     dayText = dayText,
                     monthText = monthFormatter.format(date),
@@ -41,14 +44,14 @@ class CalendarPresenter(
             }
             is ExpandToolbarIntent -> {
                 when (state.datePickerState) {
-                    INVISIBLE -> state.copy(datePickerState = SHOW_WEEK)
-                    else -> state.copy(datePickerState = INVISIBLE)
+                    INVISIBLE -> state.copy(type = DEFAULT, datePickerState = SHOW_WEEK)
+                    else -> state.copy(type = DEFAULT, datePickerState = INVISIBLE)
                 }
             }
             is ExpandToolbarWeekIntent -> {
                 when (state.datePickerState) {
-                    SHOW_WEEK -> state.copy(datePickerState = SHOW_MONTH)
-                    else -> state.copy(datePickerState = SHOW_WEEK)
+                    SHOW_WEEK -> state.copy(type = DEFAULT, datePickerState = SHOW_MONTH)
+                    else -> state.copy(type = DEFAULT, datePickerState = SHOW_WEEK)
                 }
             }
             is CalendarChangeDateIntent -> {
@@ -78,7 +81,7 @@ class CalendarPresenter(
             is ChangeMonthIntent -> {
                 val newDate = LocalDate.of(intent.year, intent.month, 1)
                 state.copy(
-                    type = DATA_LOADED,
+                    type = DEFAULT,
                     monthText = monthFormatter.format(newDate)
                 )
             }
@@ -95,6 +98,5 @@ class CalendarPresenter(
 
     companion object {
         const val MID_POSITION = 49
-        const val MAX_VISIBLE_DAYS = 100
     }
 }

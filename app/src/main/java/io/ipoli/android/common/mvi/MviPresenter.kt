@@ -41,7 +41,9 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
 
     private fun stateReduceActor(view: V) = actor<I> {
         var state = initialState
-        view.render(state)
+        launch(coroutineContext + UI) {
+            view.render(initialState)
+        }
         channel.consumeEach { intent ->
             state = reduceState(intent, state)
             launch(coroutineContext + UI) {

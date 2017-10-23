@@ -2,71 +2,72 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clipChildren="false"
     android:orientation="vertical"
-    android:weightSum="1"
-    android:clipChildren="false">
+    android:weightSum="1">
 
     <RelativeLayout
-        android:id="@+id/dayPickerContainer"
+        android:id="@+id/datePickerContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="8dp"
-        android:clipChildren="false">
+        android:clipChildren="false"
+        android:elevation="8dp">
 
         <TextView
+            android:id="@+id/currentMonth"
             style="@android:style/TextAppearance.Material.Subhead"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
             android:background="@color/md_white"
             android:gravity="center"
-            android:id="@+id/currentMonth"/>
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp" />
 
         <sun.bob.mcalendarview.views.WeekColumnView
-            android:paddingTop="8dp"
+            android:id="@+id/weekColumnView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="8dp"
             android:layout_below="@+id/currentMonth"
-            android:id="@+id/weekColumnView"/>
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp" />
 
         <View
+            android:id="@+id/separator"
             android:layout_width="match_parent"
             android:layout_height="1px"
-            android:background="#ccc"
-            android:id="@+id/separator"
-            android:layout_below="@+id/weekColumnView"/>
+            android:layout_below="@+id/weekColumnView"
+            android:background="#ccc" />
 
         <sun.bob.mcalendarview.views.ExpCalendarView
-            android:id="@+id/dayPicker"
-            android:layout_below="@+id/separator"
+            android:id="@+id/datePicker"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/separator" />
 
         <ImageView
-            android:layout_alignBottom="@+id/dayPicker"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
             android:id="@+id/expander"
-            android:elevation="8dp"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_alignBottom="@+id/datePicker"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="-12dp"
-            android:src="@drawable/circle_accent"/>
+            android:layout_marginBottom="-14dp"
+            android:background="@drawable/circle_white"
+            android:elevation="4dp"
+            android:scaleType="fitXY" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="12dp"
-            android:background="@android:color/transparent"
-            android:layout_below="@+id/dayPicker"/>
+            android:layout_below="@+id/datePicker"
+            android:background="@android:color/transparent" />
     </RelativeLayout>
 
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
-        android:elevation="2dp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:elevation="2dp" />
 </LinearLayout>
