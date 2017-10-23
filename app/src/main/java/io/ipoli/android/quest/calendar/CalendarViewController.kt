@@ -18,7 +18,8 @@ import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
-import io.ipoli.android.quest.calendar.CalendarViewState.StateType.DATE_CHANGED
+import io.ipoli.android.quest.calendar.CalendarViewState.StateType.CALENDAR_DATE_CHANGED
+import io.ipoli.android.quest.calendar.CalendarViewState.StateType.SWIPE_DATE_CHANGED
 import io.ipoli.android.quest.calendar.dayview.view.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.controller_calendar_toolbar.view.*
@@ -30,7 +31,6 @@ import sun.bob.mcalendarview.CellConfig
 import sun.bob.mcalendarview.listeners.OnDateClickListener
 import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -46,12 +46,12 @@ class CalendarViewController(args: Bundle? = null) :
     private lateinit var calendarToolbar: ViewGroup
 
     private var currentMidDate = LocalDate.now()
-    
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
 
         val view = inflater.inflate(R.layout.controller_calendar, container, false)
 
-        view.pager.adapter = pagerAdapter
+        view.pager.adapter = createPagerAdapter()
         view.pager.currentItem = Companion.MID_POSITION
 
         val toolbar = activity!!.findViewById<Toolbar>(R.id.toolbar)
@@ -60,43 +60,45 @@ class CalendarViewController(args: Bundle? = null) :
 
         initDayPicker(view, calendarToolbar)
 
-        view.pager.addOnPageChangeListener(object : ViewPager.SimpleOnPageChangeListener() {
-            override fun onPageSelected(position: Int) {
-                send(SwipeChangeDateIntent(position))
-            }
-        })
+        view.pager.addOnPageChangeListener(pageChangeListener)
 
         return view
+    }
+
+    private val pageChangeListener = object : ViewPager.SimpleOnPageChangeListener() {
+
+        override fun onPageSelected(position: Int) {
+            send(SwipeChangeDateIntent(position))
+        }
+    }
+
+    private val dummyAdapter: PagerAdapter = object : PagerAdapter() {
+        override fun isViewFromObject(view: View, `object`: Any) = false
+        override fun getCount() = 0
+    }
+
+    private fun createPagerAdapter(): RouterPagerAdapter {
+        return object : RouterPagerAdapter(this) {
+            override fun configureRouter(router: Router, position: Int) {
+                if (!router.hasRootController()) {
+                    val plusDays = position - view!!.pager.currentItem
+                    val dayViewDate = currentMidDate.plusDays(plusDays.toLong())
+                    val page = DayViewController(dayViewDate)
+                    router.setRoot(RouterTransaction.with(page))
+                }
+            }
+
+            override fun getCount(): Int = MAX_VISIBLE_DAYS
+
+            override fun getItemPosition(item: Any?): Int =
+                PagerAdapter.POSITION_NONE
+        }
     }
 
     override fun onAttach(view: View) {
         super.onAttach(view)
         send(LoadDataIntent(LocalDate.now()))
     }
-
-    private val pagerAdapter = object : RouterPagerAdapter(this) {
-        override fun configureRouter(router: Router, position: Int) {
-            Timber.d("AAA before ")
-//            if (!router.hasRootController()) {
-                Timber.d("AAA in")
-                val plusDays = position - Companion.MID_POSITION
-                val dayViewDate = currentMidDate.plusDays(plusDays.toLong())
-                val page = DayViewController(dayViewDate)
-                router.setRoot(RouterTransaction.with(page))
-//            }
-        }
-
-        override fun getCount(): Int = Companion.MAX_VISIBLE_DAYS
-
-        override fun getItemPosition(item: Any?): Int =
-            PagerAdapter.POSITION_NONE
-    }
-
-//    private fun changeCurrentDay(date: LocalDate) {
-//        currentMidDate = date
-//        pagerAdapter.notifyDataSetChanged()
-//        view!!.pager.setCurrentItem(Companion.MID_POSITION, false)
-//    }
 
     private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
 //        val monthPattern = DateTimeFormatter.ofPattern("MMMM")
@@ -119,8 +121,7 @@ class CalendarViewController(args: Bundle? = null) :
 
         view.dayPicker.setOnDateClickListener(object : OnDateClickListener() {
             override fun onDateClick(v: View, date: DateData) {
-                Timber.d("AAAA ${date.dayString}")
-                send(ChangeDateIntent(date.year, date.month, date.day))
+                send(CalendarChangeDateIntent(date.year, date.month, date.day))
 //                curre§ntDate = LocalDate.of(date.year, date.month, date.day)
 //                view.currentMonth.text = currentDate.format(monthPattern)
             }
@@ -164,6 +165,7 @@ class CalendarViewController(args: Bundle? = null) :
             CellConfig.weekAnchorPointDate = DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
             view.dayPicker.shrink()
         }
+
         if (state.datePickerState == SHOW_WEEK) {
             val layoutParams = view.pager.layoutParams as ViewGroup.MarginLayoutParams
             CellConfig.Month2WeekPos = CellConfig.middlePosition
@@ -176,13 +178,22 @@ class CalendarViewController(args: Bundle? = null) :
             view.pager.layoutParams = layoutParams
         }
 
-        if (state.type == DATE_CHANGED) {
+        if (state.type == CALENDAR_DATE_CHANGED) {
             view.dayPicker.markedDates.removeAdd()
             view.dayPicker.markDate(DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth))
+            currentMidDate = state.currentDate
 
+            view.pager.removeOnPageChangeListener(pageChangeListener)
+            view.pager.adapter = dummyAdapter
+            view.pager.adapter = createPagerAdapter()
+            view.pager.currentItem = state.adapterPosition
+            view.pager.addOnPageChangeListener(pageChangeListener)
+        }
 
-            view.pager.adapter.notifyDataSetChanged()
-            view.pager.setCurrentItem(state.adapterPosition, false)
+        if (state.type == SWIPE_DATE_CHANGED) {
+            view.dayPicker.markedDates.removeAdd()
+            view.dayPicker.markDate(DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth))
+            currentMidDate = state.currentDate
         }
 
     }

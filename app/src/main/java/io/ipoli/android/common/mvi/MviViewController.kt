@@ -71,14 +71,6 @@ protected constructor(args: Bundle? = null)
 
     protected var isRestoring = false
 
-//    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
-//        val v = inflater.inflate(viewLayout, container, false)
-//        bindView(v)
-//        return v
-//    }
-//
-//    abstract fun bindView(view: View)
-
     private fun setRestoringViewState(isRestoring: Boolean) {
         this.isRestoring = isRestoring
     }

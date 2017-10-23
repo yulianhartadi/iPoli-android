@@ -14,7 +14,7 @@ sealed class CalendarIntent : Intent
 
 data class LoadDataIntent(val currentDate: LocalDate) : CalendarIntent()
 data class SwipeChangeDateIntent(val position: Int) : CalendarIntent()
-data class ChangeDateIntent(val year: Int, val month: Int, val day: Int) : CalendarIntent()
+data class CalendarChangeDateIntent(val year: Int, val month: Int, val day: Int) : CalendarIntent()
 data class ChangeMonthIntent(val year: Int, val month: Int) : CalendarIntent()
 object ExpandToolbarIntent : CalendarIntent()
 object ExpandToolbarWeekIntent : CalendarIntent()
@@ -30,7 +30,7 @@ data class CalendarViewState(
 ) : ViewState {
 
     enum class StateType {
-        DATA_LOADED, DATE_CHANGED
+        DATA_LOADED, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED
     }
 
     enum class DatePickerState {

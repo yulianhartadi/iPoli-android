@@ -118,8 +118,8 @@ abstract class BaseOverlayViewController protected constructor(args: Bundle? = n
     fun show(router: Router) {
         router.pushController(RouterTransaction.with(this)
             .pushChangeHandler(SimpleSwapChangeHandler(false))
-            .popChangeHandler(SimpleSwapChangeHandler(false)).tag("AAA"))
-
+            .popChangeHandler(SimpleSwapChangeHandler(false))
+        )
     }
 
 

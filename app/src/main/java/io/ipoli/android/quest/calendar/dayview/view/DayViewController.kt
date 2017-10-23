@@ -18,7 +18,9 @@ import android.view.*
 import android.widget.LinearLayout
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
+import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.di.Module
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
@@ -49,16 +51,13 @@ class DayViewController :
     ViewStateRenderer<DayViewState> {
 //    override val initialState = DayViewState(type = DayViewState.StateType.LOADING, scheduledDate = currentDate)
 
-    private var currentDate: LocalDate = LocalDate.now()
+    private lateinit var currentDate: LocalDate
 
     constructor(currentDate: LocalDate) {
-        Timber.d("AAAA constructor ${currentDate.toString()}")
         this.currentDate = currentDate
     }
 
-    constructor() : super()
-
-    protected constructor(args: Bundle) : super(args)
+    protected constructor(args: Bundle? = null) : super(args)
 
 //    private val inflater by required { layoutInflater }
 
@@ -66,8 +65,18 @@ class DayViewController :
 
     private lateinit var calendarDayView: CalendarDayView
 
+    override fun onSaveViewState(view: View, outState: Bundle) {
+        outState.putLong("current_date", currentDate.startOfDayUTC())
+    }
+
+    override fun onRestoreViewState(view: View, savedViewState: Bundle) {
+        currentDate = DateUtils.fromMillis(savedViewState.getLong("current_date"))
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
+
         val view = inflater.inflate(R.layout.controller_day_view, container, false)
+
         calendarDayView = view.calendar
         calendarDayView.setCalendarChangeListener(this)
         calendarDayView.setHourAdapter(object : CalendarDayView.HourCellAdapter {
@@ -290,40 +299,6 @@ class DayViewController :
 
                         }, calendarDayView.getDragViewBackgroundColor())
                             .showDialog(router, "pick_color_tag")
-
-//                        object : BaseOverlayViewController(object : UndoClickedListener {
-//                            override fun onClick() {
-//
-//                            }
-//
-//                        }) {
-//                            override fun createOverlayView(inflater: LayoutInflater): View {
-//                                Timber.d("Main thread createOverlay ${Looper.getMainLooper().isCurrentThread}")
-//                                val v = inflater.inflate(R.layout.view_pet_message, null)
-////                        v.undoAction.setOnClickListener({
-//////                            sendUndoRemovedEventIntent(state.removedEventId)
-////                            test()
-////                        })
-////                        v.undoAction.setOnClickListener {
-////                            v.undoAction.text = "AAAA"
-////                            Timber.d("AAAA click")
-//////                            activity!!.runOnUiThread {
-//////                            launch(CommonPool) {
-//////                                sendUndoRemovedEventIntent(state.removedEventId)
-//////                            }
-//////                            }
-////
-//////                            DayViewController@send(UndoRemoveEventIntent(eventId = state.removedEventId))
-////                        }
-//                                return v
-//                            }
-
-//                    override fun onClick() {
-//                        test()
-//                        sendUndoRemovedEventIntent(state.removedEventId)
-//                    }
-
-//                        }.show(router)
                     }
 
                     R.id.removeEvent -> {

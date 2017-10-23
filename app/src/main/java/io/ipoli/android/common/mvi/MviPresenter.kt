@@ -51,6 +51,7 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
     }
 
     override fun onAttachView(view: V) {
+
         actor = stateReduceActor(view)
         launch(coroutineContext + CommonPool) {
             intentChannel.consumeEach {
