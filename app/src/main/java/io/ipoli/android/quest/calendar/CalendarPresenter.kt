@@ -7,6 +7,7 @@ import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import io.ipoli.android.quest.calendar.CalendarViewState.StateType.DATE_CHANGED
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
+import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -53,6 +54,7 @@ class CalendarPresenter(
             }
             is ChangeDateIntent -> {
                 val newDate = LocalDate.of(intent.year, intent.month, intent.day)
+                Timber.d("AAA click newDate ${newDate.toString()}")
                 val (dayText, dateText) = formatDayAndDate(newDate)
                 state.copy(
                     type = DATE_CHANGED,
@@ -64,13 +66,16 @@ class CalendarPresenter(
                 )
             }
             is SwipeChangeDateIntent -> {
-                val newDate = state.currentDate.plusDays((intent.position - MID_POSITION).toLong())
+//                val newDate = state.currentDate.plusDays((intent.position - MID_POSITION).toLong())
+                val newDate = state.currentDate.plusDays((intent.position - state.adapterPosition).toLong())
+                Timber.d("AAA swipe newDate ${newDate.toString()}")
                 val (dayText, dateText) = formatDayAndDate(newDate)
                 state.copy(
                     currentDate = newDate,
                     dayText = dayText,
                     monthText = monthFormatter.format(newDate),
-                    dateText = dateText
+                    dateText = dateText,
+                    adapterPosition = intent.position
                 )
             }
             is ChangeMonthIntent -> {

@@ -30,6 +30,7 @@ import sun.bob.mcalendarview.CellConfig
 import sun.bob.mcalendarview.listeners.OnDateClickListener
 import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -43,6 +44,10 @@ class CalendarViewController :
     private val presenter by required { calendarPresenter }
 
     private lateinit var calendarToolbar: ViewGroup
+
+    private var currentMidDate = LocalDate.now()
+
+    constructor(args: Bundle? = null) : super(args)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
 
@@ -71,18 +76,16 @@ class CalendarViewController :
         send(LoadDataIntent(LocalDate.now()))
     }
 
-    private var currentMidDate = LocalDate.now()
-
-    constructor(args: Bundle? = null) : super(args)
-
     private val pagerAdapter = object : RouterPagerAdapter(this) {
         override fun configureRouter(router: Router, position: Int) {
-            if (!router.hasRootController()) {
+            Timber.d("AAA before ")
+//            if (!router.hasRootController()) {
+                Timber.d("AAA in")
                 val plusDays = position - Companion.MID_POSITION
                 val dayViewDate = currentMidDate.plusDays(plusDays.toLong())
                 val page = DayViewController(dayViewDate)
                 router.setRoot(RouterTransaction.with(page))
-            }
+//            }
         }
 
         override fun getCount(): Int = Companion.MAX_VISIBLE_DAYS
@@ -91,11 +94,11 @@ class CalendarViewController :
             PagerAdapter.POSITION_NONE
     }
 
-    private fun changeCurrentDay(date: LocalDate) {
-        currentMidDate = date
-        pagerAdapter.notifyDataSetChanged()
-        view!!.pager.setCurrentItem(Companion.MID_POSITION, false)
-    }
+//    private fun changeCurrentDay(date: LocalDate) {
+//        currentMidDate = date
+//        pagerAdapter.notifyDataSetChanged()
+//        view!!.pager.setCurrentItem(Companion.MID_POSITION, false)
+//    }
 
     private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
 //        val monthPattern = DateTimeFormatter.ofPattern("MMMM")
@@ -118,9 +121,9 @@ class CalendarViewController :
 
         view.dayPicker.setOnDateClickListener(object : OnDateClickListener() {
             override fun onDateClick(v: View, date: DateData) {
-
+                Timber.d("AAAA ${date.dayString}")
                 send(ChangeDateIntent(date.year, date.month, date.day))
-//                currentDate = LocalDate.of(date.year, date.month, date.day)
+//                curre§ntDate = LocalDate.of(date.year, date.month, date.day)
 //                view.currentMonth.text = currentDate.format(monthPattern)
             }
         })
@@ -179,6 +182,8 @@ class CalendarViewController :
             view.dayPicker.markedDates.removeAdd()
             view.dayPicker.markDate(DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth))
 
+
+            currentMidDate = currentDate
             view.pager.adapter.notifyDataSetChanged()
             view.pager.setCurrentItem(state.adapterPosition, false)
         }

@@ -90,7 +90,7 @@ protected constructor(args: Bundle? = null)
             intentChannel.send(intent)
         }
     }
-    
+
     @MainThread
     override fun render(state: VS) {
         render(state, view!!)

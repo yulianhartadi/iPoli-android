@@ -49,9 +49,10 @@ class DayViewController :
     ViewStateRenderer<DayViewState> {
 //    override val initialState = DayViewState(type = DayViewState.StateType.LOADING, scheduledDate = currentDate)
 
-    private lateinit var currentDate: LocalDate
+    private var currentDate: LocalDate = LocalDate.now()
 
-    constructor(currentDate: LocalDate) : this() {
+    constructor(currentDate: LocalDate) {
+        Timber.d("AAAA constructor ${currentDate.toString()}")
         this.currentDate = currentDate
     }
 
