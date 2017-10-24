@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:background="#8A9E9E9E">
 
-
     <View
         android:id="@+id/view"
         android:layout_width="wrap_content"
@@ -24,6 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        android:elevation="2dp"
         android:text="Dismiss"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/dismiss"
@@ -51,7 +51,6 @@
         app:layout_constraintEnd_toEndOf="@+id/done"
         app:layout_constraintStart_toStartOf="@+id/done" />
 
-
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/dismiss"
         android:layout_width="56dp"
@@ -72,7 +71,7 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:src="@drawable/ic_snooze_white_24dp"
         app:backgroundTint="@color/md_orange_500"
         app:layout_constraintBottom_toTopOf="@+id/snoozeHint"
@@ -175,148 +174,3 @@
         app:layout_constraintGuide_percent="0.25" />
 
 </android.support.constraint.ConstraintLayout>
-
-<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
-<!--android:layout_width="match_parent"-->
-<!--android:layout_height="match_parent"-->
-<!--android:background="#8A9E9E9E">-->
-
-
-    <!--<RelativeLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="250dp"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:layout_gravity="center"-->
-        <!--android:layout_marginBottom="180dp">-->
-
-        <!--<ImageView-->
-            <!--android:id="@+id/pet_picture"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_centerInParent="true"-->
-            <!--android:adjustViewBounds="true"-->
-            <!--android:src="@drawable/pet_5"-->
-            <!--android:scaleType="fitXY" />-->
-
-        <!--<ImageView-->
-            <!--android:id="@+id/pet_picture_state"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_centerInParent="true"-->
-            <!--android:adjustViewBounds="true"-->
-            <!--android:src="@drawable/pet_5_happy"-->
-            <!--android:scaleType="fitXY" />-->
-    <!--</RelativeLayout>-->
-
-    <!--<LinearLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="230dp"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:background="@color/md_white"-->
-        <!--android:orientation="vertical"-->
-        <!--android:padding="16dp">-->
-
-        <!--<TextView-->
-            <!--style="@style/Base.TextAppearance.AppCompat.Headline"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:gravity="center_horizontal"-->
-            <!--android:text="Workout" />-->
-
-        <!--<TextView-->
-            <!--style="@style/Base.TextAppearance.AppCompat.Subhead"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginTop="4dp"-->
-            <!--android:gravity="center_horizontal"-->
-            <!--android:text="Don't be lazy" />-->
-
-        <!--<TextView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginTop="4dp"-->
-            <!--android:gravity="center_horizontal"-->
-            <!--android:text="Starts in 5 minutes" />-->
-
-
-        <!--<LinearLayout-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center_horizontal"-->
-            <!--android:layout_marginTop="32dp"-->
-            <!--android:orientation="horizontal">-->
-
-
-            <!--<LinearLayout-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:orientation="vertical">-->
-
-                <!--<android.support.design.widget.FloatingActionButton-->
-                    <!--android:layout_width="56dp"-->
-                    <!--android:layout_height="56dp"-->
-                    <!--android:layout_gravity="center_horizontal"-->
-                    <!--android:src="@drawable/ic_clear_white_24dp"-->
-                    <!--app:backgroundTint="@color/md_red_500" />-->
-
-                <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_gravity="center_horizontal"-->
-                    <!--android:layout_marginTop="4dp"-->
-                    <!--android:text="Dismiss" />-->
-
-            <!--</LinearLayout>-->
-
-
-            <!--<LinearLayout-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginStart="32dp"-->
-                <!--android:orientation="vertical">-->
-
-                <!--<android.support.design.widget.FloatingActionButton-->
-                    <!--android:layout_width="56dp"-->
-                    <!--android:layout_height="56dp"-->
-                    <!--android:layout_gravity="center_horizontal"-->
-                    <!--android:src="@drawable/ic_snooze_white_24dp"-->
-                    <!--app:backgroundTint="@color/md_orange_500" />-->
-
-                <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_gravity="center_horizontal"-->
-                    <!--android:layout_marginTop="4dp"-->
-                    <!--android:text="Snooze" />-->
-
-            <!--</LinearLayout>-->
-
-
-            <!--<LinearLayout-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginStart="32dp"-->
-                <!--android:orientation="vertical">-->
-
-                <!--<android.support.design.widget.FloatingActionButton-->
-                    <!--android:layout_width="56dp"-->
-                    <!--android:layout_height="56dp"-->
-                    <!--android:layout_gravity="center_horizontal"-->
-                    <!--android:src="@drawable/ic_done_white_24dp"-->
-                    <!--app:backgroundTint="@color/md_green_500" />-->
-
-                <!--<TextView-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_gravity="center_horizontal"-->
-                    <!--android:layout_marginTop="4dp"-->
-                    <!--android:text="Done" />-->
-            <!--</LinearLayout>-->
-
-
-        <!--</LinearLayout>-->
-
-    <!--</LinearLayout>-->
-
-<!--</RelativeLayout>-->
