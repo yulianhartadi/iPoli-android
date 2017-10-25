@@ -15,7 +15,7 @@ interface Entity {
 }
 
 data class Reminder(
-    val notificationId: String,
+    val id: String,
     val message: String,
     val remindTime: Time,
     val remindDate: LocalDate
@@ -51,7 +51,7 @@ data class Quest(
     val plannedSchedule: QuestSchedule,
     val actualSchedule: QuestSchedule? = null,
     val originalStartTime: Time? = plannedSchedule.time,
-    val reminders: List<Reminder> = listOf(),
+    val reminder: Reminder? = null,
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val completedAtDate: LocalDate? = null
 ) : Entity {
