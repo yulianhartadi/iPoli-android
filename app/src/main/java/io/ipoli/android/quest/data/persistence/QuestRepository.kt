@@ -76,9 +76,12 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             SelectResult.expression(minDate),
             SelectResult.expression(minMinute)
         )
-            .where(property("reminder.date").greaterThanOrEqualTo(remindDate).and(
-                property("reminder.minute").greaterThan(time.toMinuteOfDay())
-            ))
+            .where(
+                property("reminder.date").greaterThanOrEqualTo(remindDate)
+                    .and(property("reminder.minute").greaterThan(time.toMinuteOfDay()))
+                    .and(property("type").equalTo(modelType)
+                    )
+            )
             .groupBy(property("_id"))
             .having(
                 property("reminder.minute").equalTo(minMinute).and(
