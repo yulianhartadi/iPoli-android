@@ -68,35 +68,62 @@ class ReminderNotificationOverlay(private val listener: OnClickListener) {
         }
     }
 
+    data class RevealAnimationProperties(val centerX : Int, val centerY : Int, val radius : Float)
+
     private fun startShowAnimation(view: ViewGroup, context: Context) {
 
-        val backgroundView = view.view
-
-        val bounds = Rect()
-        backgroundView.getDrawingRect(bounds)
-
-        val location = IntArray(2)
-        backgroundView.getLocationOnScreen(location)
-
-        val startRadius = (getScreenHeight(context) - location[1]).toFloat()
-        val centerX = bounds.centerX()
-        val centerY = startRadius.toInt() / 2
+        val props = calculateRevealAnimationProperties(view.backgroundView)
 
         val anim = ViewAnimationUtils.createCircularReveal(
-            backgroundView,
-            centerX, centerY,
-            0f, startRadius
+            view.backgroundView,
+            props.centerX, props.centerY,
+            0f, props.radius
         )
         anim.interpolator = AnticipateInterpolator(2.0f)
         anim.duration = context.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
-//        anim.duration = 2000
         anim.start()
 
-        val petAnimator = createPetAnimator(view.pet, context)
-        val petStateAnimator = createPetAnimator(view.petState, context)
+        val petAnimator = createPetAnimator(view.pet)
+        val petStateAnimator = createPetAnimator(view.petState)
         petAnimator.start()
         petStateAnimator.start()
     }
+
+    private fun startHideAnimation(view: ViewGroup, context: Context) {
+
+
+
+        val props = calculateRevealAnimationProperties(view.backgroundView)
+
+        val anim = ViewAnimationUtils.createCircularReveal(
+            view.backgroundView,
+            props.centerX, props.centerY,
+            props.radius, 0f
+        )
+        anim.interpolator = AnticipateInterpolator(2.0f)
+        anim.duration = context.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+        anim.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                view.backgroundView.visibility = View.INVISIBLE
+            }
+        })
+        anim.start()
+    }
+
+    private fun calculateRevealAnimationProperties(view : View) : RevealAnimationProperties {
+        val bounds = Rect()
+        view.getDrawingRect(bounds)
+
+        val location = IntArray(2)
+        view.getLocationOnScreen(location)
+
+        val radius = (getScreenHeight(view.context) - location[1]).toFloat()
+        val centerX = bounds.centerX()
+        val centerY = radius.toInt() / 2
+
+        return RevealAnimationProperties(centerX, centerY, radius)
+    }
+
 
     private fun getScreenHeight(context: Context): Int {
         val metrics = DisplayMetrics()
@@ -105,65 +132,9 @@ class ReminderNotificationOverlay(private val listener: OnClickListener) {
         return metrics.heightPixels
     }
 
-    private fun startHideAnimation(view: ViewGroup, context: Context) {
-        val backgroundView = view.view
-
-        val bounds = Rect()
-        backgroundView.getDrawingRect(bounds)
-
-        val location = IntArray(2)
-        backgroundView.getLocationOnScreen(location)
-
-        val startRadius = (getScreenHeight(context) - location[1]).toFloat()
-        val centerX = bounds.centerX()
-        val centerY = startRadius.toInt() / 2
-
-        val anim = ViewAnimationUtils.createCircularReveal(
-            backgroundView,
-            centerX, centerY,
-            startRadius, 0f
-        )
-        anim.interpolator = AnticipateInterpolator(2.0f)
-
-        anim.duration = context.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
-        anim.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-                backgroundView.visibility = View.INVISIBLE
-            }
-        })
-
-        anim.start()
-    }
-
-    private fun createShowBackgroundAnimator(view: View, context: Context): AnimatorSet =
-        createBackgroundAnimator(view, context, 0f, 1f)
-
-    private fun createHideBackgroundAnimator(view: View, context: Context): AnimatorSet =
-        createBackgroundAnimator(view, context, 1f, 0f)
-
-    private fun createBackgroundAnimator(view: View, context: Context, fromValue: Float, toValue: Float): AnimatorSet {
-        val duration = context.resources.getInteger(android.R.integer.config_longAnimTime).toLong()
-
-        val fadeAnimator = ObjectAnimator.ofFloat(view, "alpha", fromValue, toValue)
-        fadeAnimator.duration = duration
-        fadeAnimator.interpolator = AccelerateDecelerateInterpolator()
-
-        val scaleXAnimator = ObjectAnimator.ofFloat(view, "scaleX", fromValue, toValue)
-        scaleXAnimator.duration = duration
-        scaleXAnimator.interpolator = AccelerateDecelerateInterpolator()
-
-        val scaleYAnimator = ObjectAnimator.ofFloat(view, "scaleY", fromValue, toValue)
-        scaleYAnimator.duration = duration
-        scaleYAnimator.interpolator = AccelerateDecelerateInterpolator()
-
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(fadeAnimator, scaleXAnimator, scaleYAnimator)
-        return animatorSet
-    }
-
-    private fun createPetAnimator(view: View, context: Context): ObjectAnimator {
+    private fun createPetAnimator(view: View): ObjectAnimator {
         val animator = ObjectAnimator.ofFloat(view, "y", view.y + view.height, view.y)
-        animator.duration = context.resources.getInteger(android.R.integer.config_longAnimTime).toLong()
+        animator.duration = view.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong()
         animator.interpolator = AccelerateDecelerateInterpolator()
         animator.startDelay = 300
         animator.addListener(object : AnimatorListenerAdapter() {
