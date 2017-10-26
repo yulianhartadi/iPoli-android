@@ -190,4 +190,11 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.8" />
 
+    <android.support.constraint.Group
+        android:id="@+id/group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="time,message,name,done,snooze,dismiss,doneHint,snoozeHint,dismissHint" />
+
+
 </android.support.constraint.ConstraintLayout>
