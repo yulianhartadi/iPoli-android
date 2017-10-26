@@ -13,17 +13,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
+import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
 import io.ipoli.android.R
 import kotlinx.android.synthetic.main.view_pet_message.view.*
-
-/**
- * Created by Venelin Valkov <venelin@ipoli.io>
- * on 10/13/17.
- */
+import timber.log.Timber
 
 class PetMessage : BaseOverlayViewController {
 
@@ -122,6 +119,15 @@ abstract class BaseOverlayViewController protected constructor(args: Bundle? = n
         )
     }
 
+    fun show() {
+//        router
+        Timber.d("AAA activity $activity")
+        val router = Conductor.attachRouter(activity!!, view as ViewGroup, null)
+        router.pushController(RouterTransaction.with(this)
+            .pushChangeHandler(SimpleSwapChangeHandler(false))
+            .popChangeHandler(SimpleSwapChangeHandler(false))
+        )
+    }
 
     internal object WindowOverlayCompat {
         private val ANDROID_OREO = 26

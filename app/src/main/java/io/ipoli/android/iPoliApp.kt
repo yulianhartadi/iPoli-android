@@ -6,6 +6,7 @@ import com.bluelinelabs.conductor.Router
 import com.couchbase.lite.Database
 import com.couchbase.lite.DatabaseConfiguration
 import com.crashlytics.android.Crashlytics
+import com.evernote.android.job.JobManager
 import com.github.moduth.blockcanary.BlockCanary
 import com.github.moduth.blockcanary.BlockCanaryContext
 import com.jakewharton.threetenabp.AndroidThreeTen
@@ -17,6 +18,8 @@ import io.ipoli.android.quest.data.persistence.CouchbaseQuestRepository
 import kotlinx.coroutines.experimental.android.UI
 import space.traversal.kapsule.transitive
 import timber.log.Timber
+
+
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -75,6 +78,8 @@ class iPoliApp : Application() {
             refWatcher = LeakCanary.install(this)
         }
 
+        JobManager.create(this).addJobCreator(DemoJobCreator())
+
         val repo = CouchbaseQuestRepository(Database("iPoli", DatabaseConfiguration(this)), UI)
 //        val q = Quest(
 //            name = "Welcome",
@@ -90,7 +95,7 @@ class iPoliApp : Application() {
         quests.forEach {
             Timber.d("AAAA $it")
         }
-//        Timber.d("AAAAA $quests")
+        Timber.d("AAAAA $quests")
 
 //        TinyDancer.create().show(this)
 

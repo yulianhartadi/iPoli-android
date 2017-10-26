@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#8A9E9E9E">
+    android:background="@android:color/transparent">
 
     <View
         android:id="@+id/view"
@@ -146,6 +146,7 @@
         android:elevation="1dp"
         android:scaleType="fitXY"
         android:src="@drawable/pet_5"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -160,6 +161,7 @@
         android:elevation="1dp"
         android:scaleType="fitXY"
         android:src="@drawable/pet_5_happy"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -171,7 +173,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.35" />
+        app:layout_constraintGuide_percent="0.45" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline3"
