@@ -370,7 +370,7 @@ class DayViewController :
 
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(view.questName, 8, 16, 1, TypedValue.COMPLEX_UNIT_SP)
 
-            (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color200)
+            (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color500)
 
             view.post {
                 adaptViewForHeight(view, ViewUtils.pxToDp(view.height, context))

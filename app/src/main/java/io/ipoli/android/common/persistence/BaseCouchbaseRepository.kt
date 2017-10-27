@@ -12,6 +12,12 @@ import kotlin.coroutines.experimental.CoroutineContext
 abstract class BaseCouchbaseRepository<E, out T>(protected val database: Database, private val coroutineContext: CoroutineContext) : Repository<E> where E : Entity, T : CouchbasePersistedModel {
     protected abstract val modelType: String
 
+    override fun findById(id: String): E? {
+        val map = database.getDocument(id).toMap()
+        map.put("id", id)
+        return toEntityObject(map)
+    }
+
     override fun listenById(id: String) =
         listenForChange(
             where = Expression.property("id").equalTo(id)

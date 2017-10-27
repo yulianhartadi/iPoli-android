@@ -61,7 +61,6 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
 
                         override fun onDone() {
                             completeQuestUseCase.execute(it.id)
-                            Timber.d("DonnnyyyYYY")
                         }
                     }).show(c)
             }

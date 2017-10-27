@@ -11,6 +11,7 @@ interface Repository<T> where T : Entity {
     fun listenById(id: String): ReceiveChannel<T?>
     fun listenForAll(): ReceiveChannel<List<T>>
     fun find(): T?
+    fun findById(id: String): T?
     fun save(entity: T): T
     fun remove(entity: T)
     fun remove(id: String)

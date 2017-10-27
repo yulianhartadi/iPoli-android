@@ -35,6 +35,7 @@ data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMa
     var reminder: MutableMap<String, Any?>? by map
     var startMinute: Long? by map
     var scheduledDate: Long? by map
+    var completedDate: Long? by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
@@ -122,6 +123,9 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             color = Color.valueOf(cq.color),
             category = Category(cq.category, Color.GREEN),
             plannedSchedule = QuestSchedule(plannedDate, plannedTime, cq.duration),
+            completedAtDate = cq.completedDate?.let {
+                DateUtils.fromMillis(it)
+            },
             reminder = cq.reminder?.let {
                 val cr = CouchbaseReminder(it)
                 Reminder(cr.id, cr.message, Time.of(cr.minute), DateUtils.fromMillis(cr.date))
@@ -142,6 +146,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             createCouchbaseReminder(it).map
         }
         entity.plannedSchedule.time?.let { q.startMinute = it.toMinuteOfDay().toLong() }
+        entity.completedAtDate?.let { q.completedDate = it.startOfDayUTC() }
         return q
     }
 
