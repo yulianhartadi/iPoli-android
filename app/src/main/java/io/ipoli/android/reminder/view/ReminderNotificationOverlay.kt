@@ -31,20 +31,26 @@ class ReminderNotificationOverlay(private val listener: OnClickListener) {
         fun onDone()
     }
 
+    private lateinit var overlayView: ViewGroup
+    private lateinit var windowManager: WindowManager
+
     fun show(context: Context) {
         val inflater = LayoutInflater.from(context)
-        val view = inflater.inflate(R.layout.view_reminder, null) as ViewGroup
+        overlayView = inflater.inflate(R.layout.view_reminder, null) as ViewGroup
 
-        view.dismiss.setOnClickListener {
+        overlayView.dismiss.setOnClickListener {
             listener.onDismiss()
+            hide()
         }
 
-        view.snooze.setOnClickListener {
+        overlayView.snooze.setOnClickListener {
             listener.onSnooze()
+            hide()
         }
 
-        view.done.setOnClickListener {
+        overlayView.done.setOnClickListener {
             listener.onDone()
+            hide()
         }
 
         val focusable = WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED.
@@ -53,7 +59,7 @@ class ReminderNotificationOverlay(private val listener: OnClickListener) {
             or(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
 
         val metrics = DisplayMetrics()
-        val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         windowManager.defaultDisplay.getRealMetrics(metrics)
 
         val layoutParams = WindowManager.LayoutParams(
@@ -63,12 +69,15 @@ class ReminderNotificationOverlay(private val listener: OnClickListener) {
             focusable,
             PixelFormat.TRANSLUCENT)
 
-        windowManager.addView(view, layoutParams)
+        windowManager.addView(overlayView, layoutParams)
 
-        view.post {
-            //                                    startShowAnimation(view)
-            startHideAnimation(view)
+        overlayView.post {
+            startShowAnimation(overlayView)
         }
+    }
+
+    private fun hide() {
+        startHideAnimation(overlayView)
     }
 
     data class RevealAnimationProperties(val centerX: Int, val centerY: Int, val radius: Float)
@@ -109,7 +118,7 @@ class ReminderNotificationOverlay(private val listener: OnClickListener) {
         )
         backgroundAnim.interpolator = AccelerateDecelerateInterpolator()
 //        anim.duration = view.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
-        backgroundAnim.duration = 2000
+        backgroundAnim.duration = 1000
         backgroundAnim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 view.backgroundView.visibility = View.INVISIBLE
@@ -120,13 +129,19 @@ class ReminderNotificationOverlay(private val listener: OnClickListener) {
         val views = listOf<View>(view.dismiss, view.snooze, view.done,
             view.dismissHint, view.snoozeHint, view.doneHint,
             view.name, view.message, view.time)
-        val animators = views.map { ObjectAnimator.ofFloat(it, "alpha", 1f, 0f).setDuration(1000) }
+        val animators = views.map { ObjectAnimator.ofFloat(it, "alpha", 1f, 0f).setDuration(600) }
             .toMutableList() as MutableList<Animator>
         animators.add(backgroundAnim)
 
         val set = AnimatorSet()
         set.playTogether(animators)
         set.startDelay = 500
+        set.addListener(object: AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                super.onAnimationEnd(animation)
+                windowManager.removeViewImmediate(overlayView)
+            }
+        })
         set.start()
     }
 
@@ -169,8 +184,8 @@ class ReminderNotificationOverlay(private val listener: OnClickListener) {
 
     private fun createHidePetAnimator(view: View): ObjectAnimator {
         val animator = ObjectAnimator.ofFloat(view, "y", view.y, view.y + view.height)
-//        animator.duration = view.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong()
-        animator.duration = 1000
+        animator.duration = view.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong()
+//        animator.duration = 1000
         animator.interpolator = AccelerateDecelerateInterpolator()
         animator.addListener(object : AnimatorListenerAdapter() {
 
