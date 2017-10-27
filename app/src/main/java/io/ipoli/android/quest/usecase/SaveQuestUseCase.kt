@@ -1,8 +1,6 @@
 package io.ipoli.android.quest.usecase
 
-import com.evernote.android.job.JobRequest
-import com.evernote.android.job.util.support.PersistableBundleCompat
-import io.ipoli.android.ReminderNotificationJob
+import io.ipoli.android.ReminderNotificationScheduler
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.Validator.Companion.validate
 import io.ipoli.android.common.datetime.DateUtils
@@ -46,16 +44,7 @@ class SaveQuestUseCase(private val questRepository: QuestRepository) : UseCase<Q
                 val date = reminder.remindDate
                 val time = reminder.remindTime
                 val dateTime = LocalDateTime.of(date, LocalTime.of(time.hours, time.getMinutes()))
-
-                val bundle = PersistableBundleCompat()
-                bundle.putLong("start", dateTime.toMillis())
-
-                JobRequest.Builder(ReminderNotificationJob.TAG)
-                    .setExtras(bundle)
-//                    .setExact(dateTime.toMillis() - System.currentTimeMillis())
-                    .setExact(100)
-                    .build()
-                    .schedule()
+                ReminderNotificationScheduler().scheduleReminder(dateTime.toMillis())
             }
             return Added(quest)
         }

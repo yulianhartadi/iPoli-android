@@ -101,16 +101,22 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val removeQuestUseCase get() = RemoveQuestUseCase(questRepository)
     override val undoRemoveQuestUseCase get() = UndoRemovedQuestUseCase(questRepository)
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
+    override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository)
+    override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository)
 }
 
 
 interface JobUseCaseModule {
     val findQuestToRemindUseCase: FindQuestsToRemindUseCase
+    val snoozeQuestUseCase: SnoozeQuestUseCase
+    val completeQuestUseCase: CompleteQuestUseCase
 }
 
 class AndroidJobUseCaseModule : JobUseCaseModule, Injects<JobModule> {
     private val questRepository by required { questRepository }
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
+    override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository)
+    override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository)
 }
 
 interface UseCaseModule {
@@ -119,6 +125,8 @@ interface UseCaseModule {
     val removeQuestUseCase: RemoveQuestUseCase
     val undoRemoveQuestUseCase: UndoRemovedQuestUseCase
     val findQuestToRemindUseCase: FindQuestsToRemindUseCase
+    val snoozeQuestUseCase: SnoozeQuestUseCase
+    val completeQuestUseCase: CompleteQuestUseCase
 }
 
 interface PresenterModule {

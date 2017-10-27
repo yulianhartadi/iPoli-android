@@ -3,7 +3,9 @@ package io.ipoli.android
 import android.view.ContextThemeWrapper
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobCreator
+import com.evernote.android.job.JobManager
 import com.evernote.android.job.JobRequest
+import com.evernote.android.job.util.support.PersistableBundleCompat
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.di.JobModule
 import io.ipoli.android.reminder.view.ReminderNotificationOverlay
@@ -32,10 +34,10 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
     override fun onRunJob(params: Job.Params): Job.Result {
 
         val kap = Kapsule<JobModule>()
-        val delegate = kap.required { findQuestToRemindUseCase }
+        val findQuestsToRemindUseCase by kap.required { findQuestToRemindUseCase }
+        val snoozeQuestUseCase by kap.required { snoozeQuestUseCase }
+        val completeQuestUseCase by kap.required { completeQuestUseCase }
         kap.inject(iPoliApp.jobModule(context))
-
-        val findQuestsToRemindUseCase = delegate.value!!
 
         val c = ContextThemeWrapper(context, R.style.Theme_iPoli)
 
@@ -54,9 +56,11 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
                         }
 
                         override fun onSnooze() {
+                            snoozeQuestUseCase.execute(it.id)
                         }
 
                         override fun onDone() {
+                            completeQuestUseCase.execute(it.id)
                             Timber.d("DonnnyyyYYY")
                         }
                     }).show(c)
@@ -67,15 +71,22 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
     }
 
     companion object {
-
         val TAG = "job_reminder_notification_tag"
-
-        fun scheduleJob() {
-            JobRequest.Builder(ReminderNotificationJob.TAG)
-                .setExact(200)
-                .build()
-                .schedule()
-
-        }
     }
+}
+
+class ReminderNotificationScheduler {
+    fun scheduleReminder(time: Long) {
+        JobManager.instance().cancelAllForTag(ReminderNotificationJob.TAG)
+
+        val bundle = PersistableBundleCompat()
+        bundle.putLong("start", time)
+        JobRequest.Builder(ReminderNotificationJob.TAG)
+            .setExtras(bundle)
+//                    .setExact(dateTime.toMillis() - System.currentTimeMillis())
+            .setExact(100)
+            .build()
+            .schedule()
+    }
+
 }
