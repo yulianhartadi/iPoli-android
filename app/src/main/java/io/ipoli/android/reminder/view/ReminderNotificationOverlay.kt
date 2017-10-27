@@ -15,7 +15,6 @@ import io.ipoli.android.R
 import io.ipoli.android.common.view.BaseOverlayViewController
 import kotlinx.android.synthetic.main.view_reminder.view.*
 import android.view.ViewAnimationUtils
-import timber.log.Timber
 
 
 /**
@@ -37,7 +36,21 @@ class ReminderNotificationOverlay(private val listener: OnClickListener) {
     fun show(context: Context) {
         val inflater = LayoutInflater.from(context)
         overlayView = inflater.inflate(R.layout.view_reminder, null) as ViewGroup
+        windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
+        initButtons()
+        addViewToWindowManager(overlayView)
+
+        show()
+    }
+
+    private fun show() {
+        overlayView.post {
+            startShowAnimation(overlayView)
+        }
+    }
+
+    private fun initButtons() {
         overlayView.dismiss.setOnClickListener {
             listener.onDismiss()
             hide()
@@ -52,14 +65,15 @@ class ReminderNotificationOverlay(private val listener: OnClickListener) {
             listener.onDone()
             hide()
         }
+    }
 
+    private fun addViewToWindowManager(view: ViewGroup) {
         val focusable = WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED.
             or(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN).
             or(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL).
             or(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
 
         val metrics = DisplayMetrics()
-        windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         windowManager.defaultDisplay.getRealMetrics(metrics)
 
         val layoutParams = WindowManager.LayoutParams(
@@ -69,47 +83,67 @@ class ReminderNotificationOverlay(private val listener: OnClickListener) {
             focusable,
             PixelFormat.TRANSLUCENT)
 
-        windowManager.addView(overlayView, layoutParams)
+        windowManager.addView(view, layoutParams)
+    }
 
-        overlayView.post {
-            startShowAnimation(overlayView)
-        }
+    private fun removeViewFromWindowManager(view: ViewGroup) {
+        windowManager.removeViewImmediate(view)
     }
 
     private fun hide() {
-        startHideAnimation(overlayView)
+        startHideAnimation(overlayView, object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                removeViewFromWindowManager(overlayView)
+            }
+        })
     }
 
-    data class RevealAnimationProperties(val centerX: Int, val centerY: Int, val radius: Float)
-
     private fun startShowAnimation(view: ViewGroup) {
+        playShowBackgroundAnimation(view)
+        playShowPetAnimation(view)
+    }
 
+    private fun playShowPetAnimation(view: ViewGroup) {
+        val petSet = AnimatorSet()
+        val petAnimator = createShowPetAnimator(view.pet)
+        val petStateAnimator = createShowPetAnimator(view.petState)
+        petSet.playTogether(petAnimator, petStateAnimator)
+        petSet.startDelay = 300
+        petSet.start()
+    }
+
+    private fun playShowBackgroundAnimation(view: ViewGroup) {
         val props = calculateRevealAnimationProperties(view.backgroundView)
 
-        val anim = ViewAnimationUtils.createCircularReveal(
+        val backgroundAnim = ViewAnimationUtils.createCircularReveal(
             view.backgroundView,
             props.centerX, props.centerY,
             0f, props.radius
         )
-        anim.interpolator = AnticipateInterpolator(2.0f)
-        anim.duration = view.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
-        anim.start()
+        backgroundAnim.interpolator = AnticipateInterpolator(2.0f)
+        backgroundAnim.duration = view.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
 
-        val petAnimator = createShowPetAnimator(view.pet)
-        val petStateAnimator = createShowPetAnimator(view.petState)
-        petAnimator.start()
-        petStateAnimator.start()
+        val views = listOf<View>(view.dismiss, view.snooze, view.done,
+            view.dismissHint, view.snoozeHint, view.doneHint,
+            view.name, view.message, view.time)
+        val animators = views.map { ObjectAnimator.ofFloat(it, "alpha", 0f, 1f).setDuration(800) }
+            .toMutableList() as MutableList<Animator>
+        animators.add(backgroundAnim)
+
+        val set = AnimatorSet()
+        set.playTogether(animators)
+        set.start()
     }
 
-    private fun startHideAnimation(view: ViewGroup) {
+    private fun startHideAnimation(view: ViewGroup, listener: AnimatorListenerAdapter) {
         view.pet.visibility = View.VISIBLE
         view.petState.visibility = View.VISIBLE
 
-        val petAnimator = createHidePetAnimator(view.pet)
-        val petStateAnimator = createHidePetAnimator(view.petState)
-        petAnimator.start()
-        petStateAnimator.start()
+        playHidePetAnimation(view)
+        playHideBackgroundAnimation(view, listener)
+    }
 
+    private fun playHideBackgroundAnimation(view: ViewGroup, listener: AnimatorListenerAdapter) {
         val props = calculateRevealAnimationProperties(view.backgroundView)
         val backgroundAnim = ViewAnimationUtils.createCircularReveal(
             view.backgroundView,
@@ -117,14 +151,13 @@ class ReminderNotificationOverlay(private val listener: OnClickListener) {
             props.radius, 0f
         )
         backgroundAnim.interpolator = AccelerateDecelerateInterpolator()
-//        anim.duration = view.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+        //        anim.duration = view.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
         backgroundAnim.duration = 1000
         backgroundAnim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 view.backgroundView.visibility = View.INVISIBLE
             }
         })
-
 
         val views = listOf<View>(view.dismiss, view.snooze, view.done,
             view.dismissHint, view.snoozeHint, view.doneHint,
@@ -136,42 +169,22 @@ class ReminderNotificationOverlay(private val listener: OnClickListener) {
         val set = AnimatorSet()
         set.playTogether(animators)
         set.startDelay = 500
-        set.addListener(object: AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
-                super.onAnimationEnd(animation)
-                windowManager.removeViewImmediate(overlayView)
-            }
-        })
+        set.addListener(listener)
         set.start()
     }
 
-    private fun calculateRevealAnimationProperties(view: View): RevealAnimationProperties {
-        val bounds = Rect()
-        view.getDrawingRect(bounds)
-
-        val location = IntArray(2)
-        view.getLocationOnScreen(location)
-
-        val radius = (getScreenHeight(view.context) - location[1]).toFloat()
-        val centerX = bounds.centerX()
-        val centerY = radius.toInt() / 2
-
-        return RevealAnimationProperties(centerX, centerY, radius)
-    }
-
-
-    private fun getScreenHeight(context: Context): Int {
-        val metrics = DisplayMetrics()
-        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        wm.defaultDisplay.getMetrics(metrics)
-        return metrics.heightPixels
+    private fun playHidePetAnimation(view: ViewGroup) {
+        val petSet = AnimatorSet()
+        val petAnimator = createHidePetAnimator(view.pet)
+        val petStateAnimator = createHidePetAnimator(view.petState)
+        petSet.playTogether(petAnimator, petStateAnimator)
+        petSet.start()
     }
 
     private fun createShowPetAnimator(view: View): ObjectAnimator {
         val animator = ObjectAnimator.ofFloat(view, "y", view.y + view.height, view.y)
         animator.duration = view.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong()
         animator.interpolator = AccelerateDecelerateInterpolator()
-        animator.startDelay = 300
         animator.addListener(object : AnimatorListenerAdapter() {
 
             override fun onAnimationStart(animation: Animator?) {
@@ -196,4 +209,28 @@ class ReminderNotificationOverlay(private val listener: OnClickListener) {
 
         return animator
     }
+
+    private fun calculateRevealAnimationProperties(view: View): RevealAnimationProperties {
+        val bounds = Rect()
+        view.getDrawingRect(bounds)
+
+        val location = IntArray(2)
+        view.getLocationOnScreen(location)
+
+        val radius = (getScreenHeight(view.context) - location[1]).toFloat()
+        val centerX = bounds.centerX()
+        val centerY = radius.toInt() / 2
+
+        return RevealAnimationProperties(centerX, centerY, radius)
+    }
+
+
+    private fun getScreenHeight(context: Context): Int {
+        val metrics = DisplayMetrics()
+        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        wm.defaultDisplay.getMetrics(metrics)
+        return metrics.heightPixels
+    }
+
+    data class RevealAnimationProperties(val centerX: Int, val centerY: Int, val radius: Float)
 }
