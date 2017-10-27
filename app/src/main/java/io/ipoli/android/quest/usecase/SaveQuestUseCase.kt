@@ -53,7 +53,7 @@ class SaveQuestUseCase(private val questRepository: QuestRepository) : UseCase<Q
                 JobRequest.Builder(ReminderNotificationJob.TAG)
                     .setExtras(bundle)
 //                    .setExact(dateTime.toMillis() - System.currentTimeMillis())
-                    .setExact(1000)
+                    .setExact(100)
                     .build()
                     .schedule()
             }

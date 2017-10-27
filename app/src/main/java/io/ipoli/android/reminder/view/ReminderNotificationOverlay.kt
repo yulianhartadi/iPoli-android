@@ -118,11 +118,12 @@ class ReminderNotificationOverlay(private val reminder: ReminderNotificationView
     }
 
     private fun playShowPetAnimation(view: ViewGroup) {
+        val duration = view.resources.getInteger(android.R.integer.config_longAnimTime).toLong()
         val petSet = AnimatorSet()
         val petAnimator = createShowPetAnimator(view.pet)
         val petStateAnimator = createShowPetAnimator(view.petState)
         petSet.playTogether(petAnimator, petStateAnimator)
-        petSet.startDelay = 300
+        petSet.startDelay = (duration / 1.2).toLong()
         petSet.start()
     }
 
@@ -135,12 +136,13 @@ class ReminderNotificationOverlay(private val reminder: ReminderNotificationView
             0f, props.radius
         )
         backgroundAnim.interpolator = AnticipateInterpolator(2.0f)
-        backgroundAnim.duration = view.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+        val duration = view.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+        backgroundAnim.duration = duration
 
         val views = listOf<View>(view.dismiss, view.snooze, view.done,
             view.dismissHint, view.snoozeHint, view.doneHint,
             view.name, view.message, view.time)
-        val animators = views.map { ObjectAnimator.ofFloat(it, "alpha", 0f, 1f).setDuration(800) }
+        val animators = views.map { ObjectAnimator.ofFloat(it, "alpha", 0f, 1f).setDuration(duration * 4 / 5 ) }
             .toMutableList() as MutableList<Animator>
         animators.add(backgroundAnim)
 
@@ -165,8 +167,8 @@ class ReminderNotificationOverlay(private val reminder: ReminderNotificationView
             props.radius, 0f
         )
         backgroundAnim.interpolator = AccelerateDecelerateInterpolator()
-        //        anim.duration = view.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
-        backgroundAnim.duration = 1000
+        val duration = view.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+        backgroundAnim.duration = duration
         backgroundAnim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 view.backgroundView.visibility = View.INVISIBLE
@@ -176,13 +178,13 @@ class ReminderNotificationOverlay(private val reminder: ReminderNotificationView
         val views = listOf<View>(view.dismiss, view.snooze, view.done,
             view.dismissHint, view.snoozeHint, view.doneHint,
             view.name, view.message, view.time)
-        val animators = views.map { ObjectAnimator.ofFloat(it, "alpha", 1f, 0f).setDuration(600) }
+        val animators = views.map { ObjectAnimator.ofFloat(it, "alpha", 1f, 0f).setDuration((duration / 1.5).toLong()) }
             .toMutableList() as MutableList<Animator>
         animators.add(backgroundAnim)
 
         val set = AnimatorSet()
         set.playTogether(animators)
-        set.startDelay = 500
+        set.startDelay = duration
         set.addListener(listener)
         set.start()
     }
@@ -212,7 +214,6 @@ class ReminderNotificationOverlay(private val reminder: ReminderNotificationView
     private fun createHidePetAnimator(view: View): ObjectAnimator {
         val animator = ObjectAnimator.ofFloat(view, "y", view.y, view.y + view.height)
         animator.duration = view.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong()
-//        animator.duration = 1000
         animator.interpolator = AccelerateDecelerateInterpolator()
         animator.addListener(object : AnimatorListenerAdapter() {
 
