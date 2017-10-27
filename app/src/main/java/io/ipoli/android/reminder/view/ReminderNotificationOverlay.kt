@@ -15,6 +15,7 @@ import io.ipoli.android.R
 import io.ipoli.android.common.view.BaseOverlayViewController
 import kotlinx.android.synthetic.main.view_reminder.view.*
 import android.view.ViewAnimationUtils
+import timber.log.Timber
 
 
 /**
@@ -65,7 +66,7 @@ class ReminderNotificationOverlay(private val listener: OnClickListener) {
         windowManager.addView(view, layoutParams)
 
         view.post {
-            //                        startShowAnimation(view)
+            //                                    startShowAnimation(view)
             startHideAnimation(view)
         }
     }
@@ -127,8 +128,6 @@ class ReminderNotificationOverlay(private val listener: OnClickListener) {
         set.playTogether(animators)
         set.startDelay = 500
         set.start()
-
-
     }
 
     private fun calculateRevealAnimationProperties(view: View): RevealAnimationProperties {
@@ -169,7 +168,7 @@ class ReminderNotificationOverlay(private val listener: OnClickListener) {
     }
 
     private fun createHidePetAnimator(view: View): ObjectAnimator {
-        val animator = ObjectAnimator.ofFloat(view.pet, "y", view.y, view.y + view.height)
+        val animator = ObjectAnimator.ofFloat(view, "y", view.y, view.y + view.height)
 //        animator.duration = view.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong()
         animator.duration = 1000
         animator.interpolator = AccelerateDecelerateInterpolator()
