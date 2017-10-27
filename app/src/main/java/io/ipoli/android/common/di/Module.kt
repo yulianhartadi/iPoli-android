@@ -15,10 +15,7 @@ import io.ipoli.android.quest.calendar.CalendarPresenter
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.data.persistence.CouchbaseQuestRepository
 import io.ipoli.android.quest.data.persistence.QuestRepository
-import io.ipoli.android.quest.usecase.LoadScheduleForDateUseCase
-import io.ipoli.android.quest.usecase.RemoveQuestUseCase
-import io.ipoli.android.quest.usecase.SaveQuestUseCase
-import io.ipoli.android.quest.usecase.UndoRemovedQuestUseCase
+import io.ipoli.android.quest.usecase.*
 import io.ipoli.android.reminder.view.formatter.ReminderTimeFormatter
 import io.ipoli.android.reminder.view.formatter.TimeUnitFormatter
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogPresenter
@@ -92,6 +89,7 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
     override val saveQuestUseCase get() = SaveQuestUseCase(questRepository)
     override val removeQuestUseCase get() = RemoveQuestUseCase(questRepository)
     override val undoRemoveQuestUseCase get() = UndoRemovedQuestUseCase(questRepository)
+    override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
 }
 
 interface UseCaseModule {
@@ -99,6 +97,7 @@ interface UseCaseModule {
     val saveQuestUseCase: SaveQuestUseCase
     val removeQuestUseCase: RemoveQuestUseCase
     val undoRemoveQuestUseCase: UndoRemovedQuestUseCase
+    val findQuestToRemindUseCase: FindQuestsToRemindUseCase
 }
 
 interface PresenterModule {

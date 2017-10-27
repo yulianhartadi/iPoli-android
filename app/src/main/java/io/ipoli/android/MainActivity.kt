@@ -7,10 +7,8 @@ import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import com.bluelinelabs.conductor.Router
 import io.ipoli.android.common.di.Module
-import io.ipoli.android.reminder.view.ReminderNotificationOverlay
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -32,7 +30,7 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
             startActivityForResult(intent, 0)
         }
 
-        DemoSyncJob.scheduleJob()
+        ReminderNotificationJob.scheduleJob()
 
         finish()
 

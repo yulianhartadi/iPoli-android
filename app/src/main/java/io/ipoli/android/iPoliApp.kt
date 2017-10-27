@@ -78,7 +78,7 @@ class iPoliApp : Application() {
             refWatcher = LeakCanary.install(this)
         }
 
-        JobManager.create(this).addJobCreator(DemoJobCreator())
+        JobManager.create(this).addJobCreator(iPoliJobCreator())
 
         val repo = CouchbaseQuestRepository(Database("iPoli", DatabaseConfiguration(this)), UI)
 //        val q = Quest(
@@ -91,7 +91,7 @@ class iPoliApp : Application() {
 //
 //        repo.save(q)
 
-        val quests = repo.findQuestsToRemind(System.currentTimeMillis())
+        val quests = repo.findNextQuestsToRemind(System.currentTimeMillis())
         quests.forEach {
             Timber.d("AAAA $it")
         }

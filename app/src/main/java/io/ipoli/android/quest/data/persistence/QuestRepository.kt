@@ -21,7 +21,8 @@ import kotlin.coroutines.experimental.CoroutineContext
 interface QuestRepository : Repository<Quest> {
     fun listenForScheduledBetween(startDate: LocalDate, endDate: LocalDate): ReceiveChannel<List<Quest>>
     fun listenForDate(date: LocalDate): ReceiveChannel<List<Quest>>
-    fun findQuestsToRemind(afterTime: Long): List<Quest>
+    fun findNextQuestsToRemind(afterTime: Long): List<Quest>
+    fun findQuestsToRemind(time: Long): List<Quest>
 }
 
 data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) : CouchbasePersistedModel {
@@ -51,6 +52,7 @@ data class CouchbaseReminder(val map: MutableMap<String, Any?> = mutableMapOf())
 }
 
 class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineContext) : BaseCouchbaseRepository<Quest, CouchbaseQuest>(database, coroutineContext), QuestRepository {
+
     override val modelType = CouchbaseQuest.TYPE
 
     override fun listenForScheduledBetween(startDate: LocalDate, endDate: LocalDate) =
@@ -62,7 +64,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
     override fun listenForDate(date: LocalDate) =
         listenForChanges(property("scheduledDate").equalTo(date.startOfDayUTC()))
 
-    override fun findQuestsToRemind(afterTime: Long): List<Quest> {
+    override fun findNextQuestsToRemind(afterTime: Long): List<Quest> {
 
         val remindDate = DateUtils.fromMillis(afterTime).startOfDayUTC()
 
@@ -89,6 +91,21 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
                 )
             )
         return toEntities(query.run().iterator())
+    }
+
+    override fun findQuestsToRemind(time: Long): List<Quest> {
+        val remindDate = DateUtils.fromMillis(time).startOfDayUTC()
+        val e = Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault())
+        val remindTime = Time.at(e.hour, e.minute)
+        val query = selectAll()
+            .where(
+                property("reminder.date").equalTo(remindDate)
+                    .and(property("reminder.minute").equalTo(remindTime.toMinuteOfDay()))
+                    .and(property("type").equalTo(modelType)
+                    )
+            )
+        return toEntities(query.run().iterator())
+
     }
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Quest {

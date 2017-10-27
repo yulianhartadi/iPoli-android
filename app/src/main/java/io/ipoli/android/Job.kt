@@ -4,9 +4,6 @@ import android.view.ContextThemeWrapper
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobCreator
 import com.evernote.android.job.JobRequest
-import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.data.persistence.CouchbaseQuestRepository
-import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.reminder.view.ReminderNotificationOverlay
 import io.ipoli.android.reminder.view.ReminderNotificationViewModel
 import kotlinx.coroutines.experimental.android.UI
@@ -17,17 +14,17 @@ import timber.log.Timber
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 10/26/17.
  */
-class DemoJobCreator : JobCreator {
+class iPoliJobCreator : JobCreator {
     override fun create(tag: String): Job? {
         when (tag) {
-            DemoSyncJob.TAG -> return DemoSyncJob()
+            ReminderNotificationJob.TAG -> return ReminderNotificationJob()
             else -> return null
         }
     }
 
 }
 
-class DemoSyncJob : Job() {
+class ReminderNotificationJob : Job() {
 
     override fun onRunJob(params: Job.Params): Job.Result {
         val c = ContextThemeWrapper(context, R.style.Theme_iPoli)
@@ -53,10 +50,10 @@ class DemoSyncJob : Job() {
 
     companion object {
 
-        val TAG = "job_demo_tag"
+        val TAG = "job_reminder_notification_tag"
 
         fun scheduleJob() {
-            JobRequest.Builder(DemoSyncJob.TAG)
+            JobRequest.Builder(ReminderNotificationJob.TAG)
                 .setExact(200)
                 .build()
                 .schedule()

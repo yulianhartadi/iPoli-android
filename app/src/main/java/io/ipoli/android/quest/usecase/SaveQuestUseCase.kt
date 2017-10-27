@@ -2,7 +2,7 @@ package io.ipoli.android.quest.usecase
 
 import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
-import io.ipoli.android.DemoSyncJob
+import io.ipoli.android.ReminderNotificationJob
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.Validator.Companion.validate
 import io.ipoli.android.common.datetime.DateUtils
@@ -14,7 +14,6 @@ import io.ipoli.android.quest.usecase.Result.ValidationError.EMPTY_NAME
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
-import org.threeten.bp.ZoneId
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -41,7 +40,7 @@ class SaveQuestUseCase(private val questRepository: QuestRepository) : UseCase<Q
 
         if (errors.isEmpty()) {
             questRepository.save(quest)
-            val quests = questRepository.findQuestsToRemind(DateUtils.toMillis(LocalDate.now()))
+            val quests = questRepository.findNextQuestsToRemind(DateUtils.toMillis(LocalDate.now()))
             if (quests.isNotEmpty()) {
                 val reminder = quests[0].reminder!!
                 val date = reminder.remindDate
@@ -50,7 +49,7 @@ class SaveQuestUseCase(private val questRepository: QuestRepository) : UseCase<Q
 
                 val bundle = PersistableBundleCompat()
                 bundle.putLong("start", dateTime.toMillis())
-                JobRequest.Builder(DemoSyncJob.TAG)
+                JobRequest.Builder(ReminderNotificationJob.TAG)
                     .setExtras(bundle)
                     .setExact(dateTime.toMillis() - System.currentTimeMillis())
                     .build()
