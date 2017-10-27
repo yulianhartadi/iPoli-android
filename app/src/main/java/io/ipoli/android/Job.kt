@@ -4,7 +4,11 @@ import android.view.ContextThemeWrapper
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobCreator
 import com.evernote.android.job.JobRequest
+import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.data.persistence.CouchbaseQuestRepository
+import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.reminder.view.ReminderNotificationOverlay
+import io.ipoli.android.reminder.view.ReminderNotificationViewModel
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import timber.log.Timber
@@ -30,17 +34,18 @@ class DemoSyncJob : Job() {
 
         launch(UI) {
 
-            ReminderNotificationOverlay(object : ReminderNotificationOverlay.OnClickListener {
-                override fun onDismiss() {
-                }
+            ReminderNotificationOverlay(ReminderNotificationViewModel("Read a book", "Uga buga buga", "After 5 min"),
+                object : ReminderNotificationOverlay.OnClickListener {
+                    override fun onDismiss() {
+                    }
 
-                override fun onSnooze() {
-                }
+                    override fun onSnooze() {
+                    }
 
-                override fun onDone() {
-                    Timber.d("DonnnyyyYYY")
-                }
-            }).show(c)
+                    override fun onDone() {
+                        Timber.d("DonnnyyyYYY")
+                    }
+                }).show(c)
         }
 
         return Job.Result.SUCCESS

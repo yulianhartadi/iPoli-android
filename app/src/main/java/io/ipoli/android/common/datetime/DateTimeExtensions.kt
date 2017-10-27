@@ -1,6 +1,8 @@
 package io.ipoli.android.common.datetime
 
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.TextStyle
 import java.util.*
@@ -18,20 +20,18 @@ val LocalDate.isYesterday get() = LocalDate.now().minusDays(1).isEqual(this)
 
 val LocalDate.dayOfWeekText: String get() = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
 
-fun LocalDate.startOfDayUTC(): Long {
-    return toStartOfDayUTC().time
-}
+fun LocalDate.startOfDayUTC() = toStartOfDayUTC().time
 
-fun LocalDate.toStartOfDayUTC(): Date {
-    return fromZonedDateTime(this.atStartOfDay(DateUtils.ZONE_UTC))
-}
+fun LocalDate.toStartOfDayUTC() = fromZonedDateTime(this.atStartOfDay(DateUtils.ZONE_UTC))
 
-fun LocalDate.fromZonedDateTime(dateTime: ZonedDateTime): Date {
-    return Date(dateTime.toInstant().toEpochMilli())
-}
+fun LocalDate.fromZonedDateTime(dateTime: ZonedDateTime) = Date(dateTime.toInstant().toEpochMilli())
 
 fun LocalDate.isBetween(start: LocalDate?, end: LocalDate?): Boolean {
     return if (start == null || end == null) {
         false
     } else !isBefore(start) && !isAfter(end)
 }
+
+fun LocalDateTime.toMillis(zoneId: ZoneId) = atZone(zoneId).toInstant().toEpochMilli()
+
+fun LocalDateTime.toMillis() = atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()

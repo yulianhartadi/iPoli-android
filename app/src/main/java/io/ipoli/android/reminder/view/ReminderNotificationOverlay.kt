@@ -22,7 +22,12 @@ import android.view.ViewAnimationUtils
  * on 10/13/17.
  */
 
-class ReminderNotificationOverlay(private val listener: OnClickListener) {
+data class ReminderNotificationViewModel(
+    val name: String,
+    val message: String,
+    val timeMessage: String)
+
+class ReminderNotificationOverlay(private val reminder: ReminderNotificationViewModel, val listener: OnClickListener) {
 
     interface OnClickListener {
         fun onDismiss()
@@ -34,14 +39,22 @@ class ReminderNotificationOverlay(private val listener: OnClickListener) {
     private lateinit var windowManager: WindowManager
 
     fun show(context: Context) {
-        val inflater = LayoutInflater.from(context)
-        overlayView = inflater.inflate(R.layout.view_reminder, null) as ViewGroup
+        overlayView = LayoutInflater.from(context).inflate(R.layout.view_reminder, null) as ViewGroup
         windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-
-        initButtons()
         addViewToWindowManager(overlayView)
 
+        initUI()
         show()
+    }
+
+    private fun initUI() {
+        with(overlayView) {
+            name.text = reminder.name
+            message.text = reminder.message
+            time.text = reminder.timeMessage
+
+        }
+        initButtons()
     }
 
     private fun show() {

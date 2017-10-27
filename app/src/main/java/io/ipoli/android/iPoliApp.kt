@@ -98,42 +98,5 @@ class iPoliApp : Application() {
         Timber.d("AAAAA $quests")
 
 //        TinyDancer.create().show(this)
-
-//
-//        val rewardRepository = RealmRewardRepository()
-//        rewardRepository.save(Reward(name = "Reward 1", description = "desc1", price = 100)).subscribe()
-//        rewardRepository.save(Reward(name = "Reward 2", description = "desc 2", price = 200)).subscribe()
-//        rewardRepository.save(Reward(name = "Reward 3", description = "desc 3", price = 300)).subscribe()
-//
-//        val questRepository = RealmQuestRepository()
-//        val quest = Quest("Today123", LocalDate.now(), Category.PERSONAL)
-//        quest.setDuration(30)
-//        quest.startMinute = Time.at(14, 0).toMinuteOfDay()
-//        quest.completedAtDate = LocalDate.now()
-//        quest.completedAtMinute = 380
-//        questRepository.save(quest).subscribe()
-
-//        val repeatingQuestRepository = RealmRepeatingQuestRepository()
-//
-//        val rq = RepeatingQuest("Wakka")
-//        rq.name = "Doodle"
-//        rq.setDuration(20)
-//        rq.recurrence = Recurrence.create()
-//        val quest = Quest("Piki")
-//        quest.id = UUID.randomUUID().toString()
-//        quest.scheduledDate = LocalDate.now().plusDays(1)
-////        quest.completedAt = System.currentTimeMillis()
-//        rq.quests.add(quest)
-//        repeatingQuestRepository.save(rq).subscribe()
-
-//        val challenge = Challenge("Hello")
-//        challenge.endDate = LocalDate.now().plusDays(2)
-//        challenge.quests.add(Quest("Welcome to China", Category.CHORES))
-//
-//        val repeatingQuest = RepeatingQuest("Hi")
-//        repeatingQuest.quests.add(Quest("Hi", Category.LEARNING))
-//        challenge.repeatingQuests.add(repeatingQuest)
-//
-//        RealmChallengeRepository().save(challenge).subscribe()
     }
 }

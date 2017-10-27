@@ -34,17 +34,6 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
 
         DemoSyncJob.scheduleJob()
 
-//        ReminderNotificationOverlay(object : ReminderNotificationOverlay.OnClickListener {
-//            override fun onDismiss() {
-//            }
-//
-//            override fun onSnooze() {
-//            }
-//
-//            override fun onDone() {
-//                Timber.d("DonnnyyyYYY")
-//            }
-//        }).show(this)
         finish()
 
 //        router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
