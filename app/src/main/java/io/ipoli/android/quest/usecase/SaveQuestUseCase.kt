@@ -49,9 +49,11 @@ class SaveQuestUseCase(private val questRepository: QuestRepository) : UseCase<Q
 
                 val bundle = PersistableBundleCompat()
                 bundle.putLong("start", dateTime.toMillis())
+
                 JobRequest.Builder(ReminderNotificationJob.TAG)
                     .setExtras(bundle)
-                    .setExact(dateTime.toMillis() - System.currentTimeMillis())
+//                    .setExact(dateTime.toMillis() - System.currentTimeMillis())
+                    .setExact(1000)
                     .build()
                     .schedule()
             }

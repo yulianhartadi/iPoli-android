@@ -21,7 +21,7 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.startOfDayUTC
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.AndroidColor
@@ -46,7 +46,7 @@ import timber.log.Timber
 
 class DayViewController :
     MviViewController<DayViewState, DayViewController, DayViewPresenter, DayViewIntent>,
-    Injects<Module>,
+    Injects<ControllerModule>,
     CalendarDayView.CalendarChangeListener,
     ViewStateRenderer<DayViewState> {
 //    override val initialState = DayViewState(type = DayViewState.StateType.LOADING, scheduledDate = currentDate)
@@ -111,6 +111,7 @@ class DayViewController :
     }
 
     override fun render(state: DayViewState, view: View) {
+        Timber.d("AAAAA state $state")
         when (state.type) {
             DayViewState.StateType.SCHEDULE_LOADED -> {
                 eventsAdapter = QuestScheduledEventsAdapter(activity!!, state.scheduledQuests, calendarDayView)
@@ -284,7 +285,7 @@ class DayViewController :
     private lateinit var unscheduledEventsAdapter: UnscheduledQuestsAdapter
 
     override fun onContextAvailable(context: Context) {
-        inject(iPoliApp.module(context, router))
+        inject(iPoliApp.controllerModule(context, router))
     }
 
     private fun startActionMode() {

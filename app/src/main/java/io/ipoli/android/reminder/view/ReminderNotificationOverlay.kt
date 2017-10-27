@@ -14,7 +14,6 @@ import android.view.animation.AnticipateInterpolator
 import io.ipoli.android.R
 import io.ipoli.android.common.view.BaseOverlayViewController
 import kotlinx.android.synthetic.main.view_reminder.view.*
-import android.view.ViewAnimationUtils
 
 
 /**
@@ -23,9 +22,11 @@ import android.view.ViewAnimationUtils
  */
 
 data class ReminderNotificationViewModel(
+    val questId: String,
     val name: String,
     val message: String,
-    val timeMessage: String)
+    val timeMessage: String
+)
 
 class ReminderNotificationOverlay(private val reminder: ReminderNotificationViewModel, val listener: OnClickListener) {
 

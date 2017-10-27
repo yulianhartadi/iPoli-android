@@ -4,16 +4,14 @@ import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.AndroidColor
-import io.ipoli.android.quest.Category
-import io.ipoli.android.quest.Color
-import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.QuestSchedule
+import io.ipoli.android.quest.*
 import io.ipoli.android.quest.calendar.dayview.view.*
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
 import io.ipoli.android.quest.usecase.*
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
+import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -36,10 +34,11 @@ class DayViewPresenter(
             is LoadDataIntent -> {
                 launch {
                     loadScheduleUseCase.execute(intent.currentDate).consumeEach {
+//                        Timber.d("AAA Schedule Loaded")
                         actor.send(ScheduleLoadedIntent(it))
                     }
                 }
-                state
+                state.copy(type = LOADING)
             }
 
             is ScheduleLoadedIntent -> {
@@ -47,7 +46,8 @@ class DayViewPresenter(
                 state.copy(
                     type = SCHEDULE_LOADED,
                     scheduledQuests = createScheduledViewModels(schedule),
-                    unscheduledQuests = createUnscheduledViewModels(schedule)
+                    unscheduledQuests = createUnscheduledViewModels(schedule),
+                    scheduledDate = schedule.date
                 )
             }
 
@@ -62,9 +62,11 @@ class DayViewPresenter(
                         date = LocalDate.now(),
                         time = Time.of(event.startMinute),
                         duration = event.duration
-                    )
+                    ),
+                    reminder = Reminder("1234", "Waga waga wag", Time.at(18, 0), LocalDate.now())
                 )
                 val result = saveQuestUseCase.execute(quest)
+                Timber.d("AAAAA presenter $result")
                 savedQuestViewState(result, state)
             }
 

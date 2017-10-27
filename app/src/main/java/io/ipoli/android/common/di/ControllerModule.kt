@@ -34,7 +34,14 @@ interface RepositoryModule {
     val playerRepository: PlayerRepository
 }
 
-class CouchbaseRepositoryModule : RepositoryModule, Injects<Module> {
+class CouchbaseRepositoryModule : RepositoryModule, Injects<ControllerModule> {
+    private val database by required { database }
+    private val job by required { job }
+    override val questRepository get() = CouchbaseQuestRepository(database, job + CommonPool)
+    override val playerRepository get() = CouchbasePlayerRepository(database, job + CommonPool)
+}
+
+class CouchbaseJobRepositoryModule : RepositoryModule, Injects<JobModule> {
     private val database by required { database }
     private val job by required { job }
     override val questRepository get() = CouchbaseQuestRepository(database, job + CommonPool)
@@ -45,8 +52,6 @@ interface AndroidModule {
     val layoutInflater: LayoutInflater
 
     val sharedPreferences: SharedPreferences
-
-    val navigator: Navigator
 
     val reminderTimeFormatter: ReminderTimeFormatter
 
@@ -59,13 +64,19 @@ interface AndroidModule {
     val job: Job
 }
 
-class MainAndroidModule(private val context: Context, private val router: Router) : AndroidModule {
+interface NavigationModule {
+    val navigator: Navigator
+}
+
+class AndroidNavigationModule(private val router: Router?) : NavigationModule {
+    override val navigator get() = Navigator(router)
+}
+
+class MainAndroidModule(private val context: Context) : AndroidModule {
     override val layoutInflater: LayoutInflater get() = LayoutInflater.from(context)
 
     override val sharedPreferences: SharedPreferences
         get() = PreferenceManager.getDefaultSharedPreferences(context)
-
-    override val navigator get() = Navigator(router)
 
     override val reminderTimeFormatter get() = ReminderTimeFormatter(context)
 
@@ -80,7 +91,7 @@ class MainAndroidModule(private val context: Context, private val router: Router
 
 }
 
-class MainUseCaseModule : UseCaseModule, Injects<Module> {
+class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     private val questRepository by required { questRepository }
     private val playerRepository by required { playerRepository }
     private val job by required { job }
@@ -89,6 +100,16 @@ class MainUseCaseModule : UseCaseModule, Injects<Module> {
     override val saveQuestUseCase get() = SaveQuestUseCase(questRepository)
     override val removeQuestUseCase get() = RemoveQuestUseCase(questRepository)
     override val undoRemoveQuestUseCase get() = UndoRemovedQuestUseCase(questRepository)
+    override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
+}
+
+
+interface JobUseCaseModule {
+    val findQuestToRemindUseCase: FindQuestsToRemindUseCase
+}
+
+class AndroidJobUseCaseModule : JobUseCaseModule, Injects<JobModule> {
+    private val questRepository by required { questRepository }
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
 }
 
@@ -106,7 +127,7 @@ interface PresenterModule {
     val calendarPresenter: CalendarPresenter
 }
 
-class AndroidPresenterModule : PresenterModule, Injects<Module> {
+class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
     private val saveQuestUseCase by required { saveQuestUseCase }
     private val removeQuestUseCase by required { removeQuestUseCase }
@@ -121,14 +142,26 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
     override val calendarPresenter get() = CalendarPresenter(calendarFormatter, job)
 }
 
-class Module(androidModule: AndroidModule,
-             repositoryModule: RepositoryModule,
-             useCaseModule: UseCaseModule,
-             presenterModule: PresenterModule) :
+class ControllerModule(androidModule: AndroidModule,
+                       navigationModule: NavigationModule,
+                       repositoryModule: RepositoryModule,
+                       useCaseModule: UseCaseModule,
+                       presenterModule: PresenterModule) :
     AndroidModule by androidModule,
+    NavigationModule by navigationModule,
     RepositoryModule by repositoryModule,
     UseCaseModule by useCaseModule,
     PresenterModule by presenterModule,
     HasModules {
-    override val modules = setOf(androidModule, repositoryModule, useCaseModule, presenterModule)
+    override val modules = setOf(androidModule, navigationModule, repositoryModule, useCaseModule, presenterModule)
+}
+
+class JobModule(androidModule: AndroidModule,
+                repositoryModule: RepositoryModule,
+                useCaseModule: JobUseCaseModule) :
+    AndroidModule by androidModule,
+    RepositoryModule by repositoryModule,
+    JobUseCaseModule by useCaseModule,
+    HasModules {
+    override val modules = setOf(androidModule, repositoryModule, useCaseModule)
 }

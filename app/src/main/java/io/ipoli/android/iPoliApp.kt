@@ -3,8 +3,6 @@ package io.ipoli.android
 import android.app.Application
 import android.content.Context
 import com.bluelinelabs.conductor.Router
-import com.couchbase.lite.Database
-import com.couchbase.lite.DatabaseConfiguration
 import com.crashlytics.android.Crashlytics
 import com.evernote.android.job.JobManager
 import com.github.moduth.blockcanary.BlockCanary
@@ -14,11 +12,8 @@ import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
 import io.fabric.sdk.android.Fabric
 import io.ipoli.android.common.di.*
-import io.ipoli.android.quest.data.persistence.CouchbaseQuestRepository
-import kotlinx.coroutines.experimental.android.UI
 import space.traversal.kapsule.transitive
 import timber.log.Timber
-
 
 
 /**
@@ -31,11 +26,18 @@ class iPoliApp : Application() {
     companion object {
         lateinit var refWatcher: RefWatcher
 
-        fun module(context: Context, router: Router) = Module(
-            androidModule = MainAndroidModule(context, router),
+        fun controllerModule(context: Context, router: Router?) = ControllerModule(
+            androidModule = MainAndroidModule(context),
+            navigationModule = AndroidNavigationModule(router),
             repositoryModule = CouchbaseRepositoryModule(),
             useCaseModule = MainUseCaseModule(),
             presenterModule = AndroidPresenterModule()
+        ).transitive()
+
+        fun jobModule(context: Context) = JobModule(
+            androidModule = MainAndroidModule(context),
+            repositoryModule = CouchbaseJobRepositoryModule(),
+            useCaseModule = AndroidJobUseCaseModule()
         ).transitive()
     }
 
@@ -80,7 +82,7 @@ class iPoliApp : Application() {
 
         JobManager.create(this).addJobCreator(iPoliJobCreator())
 
-        val repo = CouchbaseQuestRepository(Database("iPoli", DatabaseConfiguration(this)), UI)
+//        val repo = CouchbaseQuestRepository(Database("iPoli", DatabaseConfiguration(this)), UI)
 //        val q = Quest(
 //            name = "Welcome",
 //            color = Color.GREEN,
@@ -90,12 +92,14 @@ class iPoliApp : Application() {
 //        )
 //
 //        repo.save(q)
-
-        val quests = repo.findNextQuestsToRemind(System.currentTimeMillis())
-        quests.forEach {
-            Timber.d("AAAA $it")
-        }
-        Timber.d("AAAAA $quests")
+//
+//
+//
+//        val quests = repo.findNextQuestsToRemind(System.currentTimeMillis())
+//        quests.forEach {
+//            Timber.d("AAAA $it")
+//        }
+//        Timber.d("AAAAA $quests")
 
 //        TinyDancer.create().show(this)
     }

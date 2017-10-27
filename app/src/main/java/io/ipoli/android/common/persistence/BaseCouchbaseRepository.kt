@@ -7,7 +7,6 @@ import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.launch
-import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 abstract class BaseCouchbaseRepository<E, out T>(protected val database: Database, private val coroutineContext: CoroutineContext) : Repository<E> where E : Entity, T : CouchbasePersistedModel {
@@ -43,7 +42,6 @@ abstract class BaseCouchbaseRepository<E, out T>(protected val database: Databas
         val changeListener = createChangeListener(liveQuery, channel) { changes ->
             val result = toEntities(changes)
             launch(coroutineContext) {
-                Timber.d("Sending changes ${changes.rows}")
                 channel.send(result.toList())
             }
         }

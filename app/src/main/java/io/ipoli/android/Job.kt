@@ -4,10 +4,14 @@ import android.view.ContextThemeWrapper
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobCreator
 import com.evernote.android.job.JobRequest
+import io.ipoli.android.common.di.ControllerModule
+import io.ipoli.android.common.di.JobModule
 import io.ipoli.android.reminder.view.ReminderNotificationOverlay
 import io.ipoli.android.reminder.view.ReminderNotificationViewModel
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import space.traversal.kapsule.Injects
+import space.traversal.kapsule.Kapsule
 import timber.log.Timber
 
 /**
@@ -21,28 +25,42 @@ class iPoliJobCreator : JobCreator {
             else -> return null
         }
     }
-
 }
 
-class ReminderNotificationJob : Job() {
+class ReminderNotificationJob : Job(), Injects<ControllerModule> {
 
     override fun onRunJob(params: Job.Params): Job.Result {
+
+        val kap = Kapsule<JobModule>()
+        val delegate = kap.required { findQuestToRemindUseCase }
+        kap.inject(iPoliApp.jobModule(context))
+
+        val findQuestsToRemindUseCase = delegate.value!!
+
         val c = ContextThemeWrapper(context, R.style.Theme_iPoli)
 
         launch(UI) {
 
-            ReminderNotificationOverlay(ReminderNotificationViewModel("Read a book", "Uga buga buga", "After 5 min"),
-                object : ReminderNotificationOverlay.OnClickListener {
-                    override fun onDismiss() {
-                    }
+            val quests = findQuestsToRemindUseCase.execute(params.extras.getLong("start", -1))
 
-                    override fun onSnooze() {
-                    }
+            quests.forEach {
 
-                    override fun onDone() {
-                        Timber.d("DonnnyyyYYY")
-                    }
-                }).show(c)
+                val reminder = it.reminder!!
+                val message = reminder.message.let { if (it.isEmpty()) "Ready for a quest?" else it }
+
+                ReminderNotificationOverlay(ReminderNotificationViewModel(it.id, it.name, message, "After 5 min"),
+                    object : ReminderNotificationOverlay.OnClickListener {
+                        override fun onDismiss() {
+                        }
+
+                        override fun onSnooze() {
+                        }
+
+                        override fun onDone() {
+                            Timber.d("DonnnyyyYYY")
+                        }
+                    }).show(c)
+            }
         }
 
         return Job.Result.SUCCESS

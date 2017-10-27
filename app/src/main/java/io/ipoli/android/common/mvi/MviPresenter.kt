@@ -41,12 +41,16 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
 
     private fun stateReduceActor(view: V) = actor<I> {
         var state = initialState
+//        launch(coroutineContext + UI) {
+//            view.render(initialState)
+//        }
         launch(coroutineContext + UI) {
-            view.render(initialState)
-        }
-        channel.consumeEach { intent ->
-            state = reduceState(intent, state)
-            launch(coroutineContext + UI) {
+            channel.consumeEach { intent ->
+
+                state = reduceState(intent, state)
+//            Timber.d("AAA " + Looper.getMainLooper().isCurrentThread)
+
+//                Timber.d("AAA Intent $intent")
                 view.render(state)
             }
         }

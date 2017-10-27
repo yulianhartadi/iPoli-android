@@ -9,11 +9,11 @@ import io.ipoli.android.home.HomeController
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/2/17.
  */
-class Navigator(private val router: Router) {
+class Navigator(private val router: Router?) {
 
     fun showHome() {
         val handler = FadeChangeHandler()
-        router.pushController(RouterTransaction.with(HomeController())
+        router?.pushController(RouterTransaction.with(HomeController())
             .pushChangeHandler(handler)
             .popChangeHandler(handler)
         )

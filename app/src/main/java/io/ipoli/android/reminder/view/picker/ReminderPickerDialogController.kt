@@ -9,7 +9,7 @@ import android.view.View
 import android.widget.ArrayAdapter
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.MviDialogController
 import io.ipoli.android.common.view.string
@@ -38,7 +38,7 @@ data class ReminderViewModel(val message: String, val minutesFromStart: Long)
 
 class ReminderPickerDialogController :
     MviDialogController<ReminderPickerViewState, ReminderPickerDialogController, ReminderPickerDialogPresenter, ReminderPickerIntent>
-    , ViewStateRenderer<ReminderPickerViewState>, Injects<Module> {
+    , ViewStateRenderer<ReminderPickerViewState>, Injects<ControllerModule> {
 
     private var listener: ReminderPickedListener? = null
 
@@ -133,7 +133,7 @@ class ReminderPickerDialogController :
     }
 
     override fun onContextAvailable(context: Context) {
-        inject(iPoliApp.module(context, router))
+        inject(iPoliApp.controllerModule(context, router))
     }
 
     override fun onCreateDialog(savedViewState: Bundle?): DialogView {

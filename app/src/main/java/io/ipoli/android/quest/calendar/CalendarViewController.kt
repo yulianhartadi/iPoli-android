@@ -14,7 +14,7 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
-import io.ipoli.android.common.di.Module
+import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.color
@@ -41,7 +41,7 @@ import sun.bob.mcalendarview.vo.DateData
  */
 class CalendarViewController(args: Bundle? = null) :
     MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>(args),
-    Injects<Module>,
+    Injects<ControllerModule>,
     ViewStateRenderer<CalendarViewState> {
 
     companion object {
@@ -128,6 +128,7 @@ class CalendarViewController(args: Bundle? = null) :
         renderDatePicker(state.datePickerState, view, state.currentDate)
 
         if (state.type == CalendarViewState.StateType.DATA_LOADED) {
+            removeDayViewPagerAdapter(view)
             createDayViewPagerAdapter(state, view)
         }
 
@@ -213,7 +214,7 @@ class CalendarViewController(args: Bundle? = null) :
     }
 
     override fun onContextAvailable(context: Context) {
-        inject(iPoliApp.module(context, router))
+        inject(iPoliApp.controllerModule(context, router))
     }
 
     class DayViewPagerAdapter(var date: LocalDate, var pagerPosition: Int, controller: Controller) : RouterPagerAdapter(controller) {
