@@ -431,9 +431,9 @@ class DayViewController :
             val heightDp = ViewUtils.pxToDp(height.toInt(), adapterView.context)
             with(adapterView) {
                 when {
-                    heightDp < 12 -> ViewUtils.hideViews(checkBox, indicatorContainer, startTime, endTime)
+                    heightDp < 12 -> ViewUtils.hideViews(checkBox, startTime, endTime)
                     heightDp < 26 -> {
-                        ViewUtils.showViews(startTime, endTime, indicatorContainer)
+                        ViewUtils.showViews(startTime, endTime)
                         ViewUtils.hideViews(checkBox)
                         ViewUtils.setMarginTop(startTime, 0)
                         ViewUtils.setMarginBottom(endTime, 0)
@@ -444,7 +444,7 @@ class DayViewController :
                         }
                     }
                     else -> {
-                        ViewUtils.showViews(checkBox, indicatorContainer, startTime, endTime)
+                        ViewUtils.showViews(checkBox, startTime, endTime)
                         ViewUtils.setMarginTop(startTime, 8)
                         ViewUtils.setMarginBottom(endTime, 8)
                         if (indicatorContainer.orientation == LinearLayout.HORIZONTAL) {
