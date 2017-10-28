@@ -32,6 +32,8 @@ fun LocalDate.isBetween(start: LocalDate?, end: LocalDate?): Boolean {
     } else !isBefore(start) && !isAfter(end)
 }
 
+fun LocalDate.isNotEqual(otherDate: LocalDate) = !isEqual(otherDate)
+
 fun LocalDateTime.toMillis(zoneId: ZoneId) = atZone(zoneId).toInstant().toEpochMilli()
 
 fun LocalDateTime.toMillis() = atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()

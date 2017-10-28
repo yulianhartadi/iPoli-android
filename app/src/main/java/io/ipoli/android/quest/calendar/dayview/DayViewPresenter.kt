@@ -64,7 +64,7 @@ class DayViewPresenter(
                     scheduleDate = state.scheduledDate,
                     startTime =Time.of(event.startMinute),
                     duration = event.duration,
-                    reminder = Reminder("Waga waga wag", Time.at(18, 0), LocalDate.now())
+                    reminder = Reminder("Waga waga wag", Time.at(15, 0), LocalDate.now())
                 )
                 val result = saveQuestUseCase.execute(quest)
                 Timber.d("AAAAA presenter $result")
@@ -81,7 +81,8 @@ class DayViewPresenter(
                     category = Category("WELLNESS", Color.GREEN),
                     scheduleDate = state.scheduledDate,
                     startTime =Time.of(event.startMinute),
-                    duration = event.duration
+                    duration = event.duration,
+                    reminder = Reminder("Waga waga wag", Time.at(15, 0), LocalDate.now())
                 )
                 val result = saveQuestUseCase.execute(quest)
                 savedQuestViewState(result, state)

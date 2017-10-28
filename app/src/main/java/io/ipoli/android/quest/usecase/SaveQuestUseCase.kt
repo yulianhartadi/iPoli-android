@@ -8,7 +8,6 @@ import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.usecase.Result.*
 import io.ipoli.android.quest.usecase.Result.ValidationError.EMPTY_NAME
 import io.ipoli.android.reminder.ReminderScheduler
-import org.threeten.bp.LocalDate
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -41,7 +40,7 @@ class SaveQuestUseCase(
         }
         questRepository.save(quest)
 
-        val quests = questRepository.findNextQuestsToRemind(DateUtils.toMillis(LocalDate.now()))
+        val quests = questRepository.findNextQuestsToRemind(DateUtils.nowUTC().time)
         if (quests.isNotEmpty()) {
             reminderScheduler.schedule(quests.first().reminder!!.toMillis())
         }

@@ -25,7 +25,7 @@ data class ReminderNotificationViewModel(
     val questId: String,
     val name: String,
     val message: String,
-    val timeMessage: String
+    val startTimeMessage: String
 )
 
 class ReminderNotificationOverlay(private val reminder: ReminderNotificationViewModel, val listener: OnClickListener) {
@@ -52,7 +52,7 @@ class ReminderNotificationOverlay(private val reminder: ReminderNotificationView
         with(overlayView) {
             name.text = reminder.name
             message.text = reminder.message
-            time.text = reminder.timeMessage
+            startTimeMessage.text = reminder.startTimeMessage
 
         }
         initButtons()
@@ -141,7 +141,7 @@ class ReminderNotificationOverlay(private val reminder: ReminderNotificationView
 
         val views = listOf<View>(view.dismiss, view.snooze, view.done,
             view.dismissHint, view.snoozeHint, view.doneHint,
-            view.name, view.message, view.time)
+            view.name, view.message, view.startTimeMessage)
         val animators = views.map { ObjectAnimator.ofFloat(it, "alpha", 0f, 1f).setDuration(duration * 4 / 5 ) }
             .toMutableList() as MutableList<Animator>
         animators.add(backgroundAnim)
@@ -177,7 +177,7 @@ class ReminderNotificationOverlay(private val reminder: ReminderNotificationView
 
         val views = listOf<View>(view.dismiss, view.snooze, view.done,
             view.dismissHint, view.snoozeHint, view.doneHint,
-            view.name, view.message, view.time)
+            view.name, view.message, view.startTimeMessage)
         val animators = views.map { ObjectAnimator.ofFloat(it, "alpha", 1f, 0f).setDuration((duration / 1.5).toLong()) }
             .toMutableList() as MutableList<Animator>
         animators.add(backgroundAnim)

@@ -22,7 +22,7 @@ class CompleteQuestUseCase(
         )
         questRepository.save(newQuest)
 
-        val quests = questRepository.findNextQuestsToRemind(DateUtils.toMillis(LocalDate.now()))
+        val quests = questRepository.findNextQuestsToRemind(DateUtils.nowUTC().time)
         if (quests.isNotEmpty()) {
             reminderScheduler.schedule(quests.first().reminder!!.toMillis())
         }

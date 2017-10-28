@@ -53,7 +53,8 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
 
     companion object {
 
-        val MINUTES_IN_A_DAY = 24 * 60
+        val MINUTES_IN_AN_HOUR = 60
+        val MINUTES_IN_A_DAY = 24 * MINUTES_IN_AN_HOUR
 
         fun of(minutesAfterMidnight: Int): Time {
             return Time(minutesAfterMidnight)

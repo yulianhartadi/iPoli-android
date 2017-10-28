@@ -7,13 +7,17 @@ import com.evernote.android.job.JobManager
 import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
 import io.ipoli.android.R
+import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.di.JobModule
 import io.ipoli.android.iPoliApp
+import io.ipoli.android.quest.Quest
 import io.ipoli.android.reminder.view.ReminderNotificationOverlay
 import io.ipoli.android.reminder.view.ReminderNotificationViewModel
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import org.threeten.bp.LocalDate
+import org.threeten.bp.temporal.ChronoUnit
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.Kapsule
 
@@ -43,7 +47,9 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
                 val reminder = it.reminder!!
                 val message = reminder.message.let { if (it.isEmpty()) "Ready for a quest?" else it }
 
-                ReminderNotificationOverlay(ReminderNotificationViewModel(it.id, it.name, message, "After 5 min"),
+                val startTimeMessage = startTimeMessage(it)
+
+                ReminderNotificationOverlay(ReminderNotificationViewModel(it.id, it.name, message, startTimeMessage),
                     object : ReminderNotificationOverlay.OnClickListener {
                         override fun onDismiss() {
                         }
@@ -62,6 +68,21 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
         }
 
         return Job.Result.SUCCESS
+    }
+
+    private fun startTimeMessage(quest: Quest): String {
+        val daysDiff = ChronoUnit.DAYS.between(quest.scheduleDate, LocalDate.now())
+        return if (daysDiff > 0) {
+            "Starts in $daysDiff day(s)"
+        } else {
+            val minutesDiff = quest.startTime!!.toMinuteOfDay() - Time.now().toMinuteOfDay()
+
+            if (minutesDiff > Time.MINUTES_IN_AN_HOUR) {
+                "Starts at ${quest.startTime.toString(false)}"
+            } else {
+                "Starts in $minutesDiff min"
+            }
+        }
     }
 
     companion object {
