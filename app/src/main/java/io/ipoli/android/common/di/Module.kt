@@ -92,9 +92,7 @@ class MainAndroidModule(private val context: Context) : AndroidModule {
     override val database: Database
         get() = Database("iPoli", DatabaseConfiguration(context.applicationContext))
 
-
     override val job get() = Job()
-
 }
 
 class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
@@ -110,6 +108,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
     override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, reminderScheduler)
+    override val undoCompleteQuestUseCase get() = UndoCompleteQuestUseCase(questRepository, reminderScheduler)
 }
 
 interface JobUseCaseModule {
@@ -134,6 +133,7 @@ interface UseCaseModule {
     val findQuestToRemindUseCase: FindQuestsToRemindUseCase
     val snoozeQuestUseCase: SnoozeQuestUseCase
     val completeQuestUseCase: CompleteQuestUseCase
+    val undoCompleteQuestUseCase: UndoCompleteQuestUseCase
 }
 
 interface PresenterModule {
@@ -147,12 +147,14 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val saveQuestUseCase by required { saveQuestUseCase }
     private val removeQuestUseCase by required { removeQuestUseCase }
     private val undoRemoveQuestUseCase by required { undoRemoveQuestUseCase }
+    private val completeQuestUseCase by required { completeQuestUseCase }
+    private val undoCompleteQuestUseCase by required { undoCompleteQuestUseCase }
     private val navigator by required { navigator }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
     private val timeUnitFormatter by required { timeUnitFormatter }
     private val calendarFormatter by required { calendarFormatter }
     private val job by required { job }
-    override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, undoRemoveQuestUseCase, job)
+    override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, undoRemoveQuestUseCase, completeQuestUseCase, undoCompleteQuestUseCase, job)
     override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter, job)
     override val calendarPresenter get() = CalendarPresenter(calendarFormatter, job)
 }

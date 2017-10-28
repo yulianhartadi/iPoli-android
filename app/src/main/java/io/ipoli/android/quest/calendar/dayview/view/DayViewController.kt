@@ -16,6 +16,7 @@ import android.text.style.StrikethroughSpan
 import android.util.TypedValue
 import android.view.*
 import android.widget.LinearLayout
+import android.widget.Toast
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.DateUtils
@@ -29,6 +30,7 @@ import io.ipoli.android.common.view.ColorPickerDialogController
 import io.ipoli.android.common.view.PetMessage
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
+import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
 import io.ipoli.android.quest.calendar.dayview.view.widget.*
 import io.ipoli.android.quest.data.Category
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogController
@@ -113,28 +115,37 @@ class DayViewController :
     override fun render(state: DayViewState, view: View) {
         Timber.d("AAAAA state $state")
         when (state.type) {
-            DayViewState.StateType.SCHEDULE_LOADED -> {
+            SCHEDULE_LOADED -> {
                 eventsAdapter = QuestScheduledEventsAdapter(activity!!, state.scheduledQuests, calendarDayView)
                 calendarDayView.setScheduledEventsAdapter(eventsAdapter)
                 unscheduledEventsAdapter = UnscheduledQuestsAdapter(state.unscheduledQuests, calendarDayView)
                 calendarDayView.setUnscheduledQuestsAdapter(unscheduledEventsAdapter)
             }
 
-            DayViewState.StateType.EVENT_UPDATED -> {
+            EVENT_UPDATED -> {
                 calendarDayView.onEventUpdated()
             }
 
-            DayViewState.StateType.EVENT_VALIDATION_ERROR -> {
+            EVENT_VALIDATION_ERROR -> {
                 calendarDayView.onEventValidationError()
             }
 
-            DayViewState.StateType.EVENT_REMOVED -> {
+            EVENT_REMOVED -> {
                 PetMessage(object : PetMessage.UndoClickedListener {
                     override fun onClick() {
                         sendUndoRemovedEventIntent(state.removedEventId)
                     }
                 }).show(router)
             }
+
+            QUEST_COMPLETED -> {
+                Toast.makeText(applicationContext, R.string.quest_complete, Toast.LENGTH_SHORT).show()
+            }
+
+            UNDO_QUEST_COMPLETED -> {
+
+            }
+
         }
     }
 
@@ -379,6 +390,7 @@ class DayViewController :
                 view.questName.setTextColor(ContextCompat.getColor(context, vm.textColor))
                 (view as CardView).setCardBackgroundColor(ContextCompat.getColor(context, vm.backgroundColor.color200))
                 view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color700)
+                (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color500)
             } else {
                 val span = SpannableString(vm.name)
                 span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
@@ -386,11 +398,18 @@ class DayViewController :
                 (view as CardView).setCardBackgroundColor(ContextCompat.getColor(context, R.color.md_grey_500))
                 view.questCategoryIndicator.setBackgroundResource(R.color.md_grey_500)
                 view.checkBox.isChecked = true
+                (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(R.color.md_grey_700)
+            }
+
+            view.checkBox.setOnCheckedChangeListener { _, checked ->
+                if (checked) {
+                    send(CompleteQuestIntent(vm.id))
+                } else {
+                    send(UndoCompleteQuestIntent(vm.id))
+                }
             }
 
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(view.questName, 8, 16, 1, TypedValue.COMPLEX_UNIT_SP)
-
-            (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color500)
 
             view.post {
                 adaptViewForHeight(view, ViewUtils.pxToDp(view.height, context))

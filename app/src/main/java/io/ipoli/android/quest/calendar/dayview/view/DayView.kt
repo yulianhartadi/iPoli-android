@@ -23,6 +23,8 @@ data class RemoveEventIntent(val eventId: String) : DayViewIntent()
 data class ScheduleLoadedIntent(val schedule: Schedule) : DayViewIntent()
 data class UndoRemoveEventIntent(val eventId: String) : DayViewIntent()
 data class ReminderPickedIntent(val reminder: ReminderViewModel?) : DayViewIntent()
+data class CompleteQuestIntent(val questId: String) : DayViewIntent()
+data class UndoCompleteQuestIntent(val questId: String) : DayViewIntent()
 
 data class DayViewState(
     val type: StateType,
@@ -37,6 +39,8 @@ data class DayViewState(
     enum class StateType {
         LOADING, SCHEDULE_LOADED, EVENT_UPDATED, EVENT_VALIDATION_ERROR, EVENT_REMOVED,
 
-        UNDO_REMOVED_EVENT
+        UNDO_REMOVED_EVENT,
+        QUEST_COMPLETED,
+        UNDO_QUEST_COMPLETED
     }
 }
