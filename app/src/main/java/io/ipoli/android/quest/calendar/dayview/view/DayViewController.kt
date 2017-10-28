@@ -142,13 +142,22 @@ class DayViewController :
         send(UndoRemoveEventIntent(eventId))
     }
 
-    override fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: AndroidColor) {
+    override fun onStartEditNewScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: AndroidColor) {
+        startEditScheduledEvent(dragView, startTime, endTime)
+        setupDragViewNameAndColor(dragView, name, color)
+    }
+
+    override fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: AndroidColor, adapterPosition: Int) {
+        startEditScheduledEvent(dragView, startTime, endTime)
+        setupDragViewNameAndColor(dragView, name, color, eventsAdapter.events[adapterPosition].reminder)
+    }
+
+    private fun startEditScheduledEvent(dragView: View, startTime: Time, endTime: Time) {
         startActionMode()
         dragView.dragStartTime.text = startTime.toString()
         dragView.dragEndTime.text = endTime.toString()
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragStartTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragEndTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
-        setupDragViewNameAndColor(dragView, name, color)
     }
 
     override fun onStartEditUnscheduledEvent(dragView: View, name: String, color: AndroidColor) {
@@ -158,7 +167,7 @@ class DayViewController :
         setupDragViewNameAndColor(dragView, name, color)
     }
 
-    private fun setupDragViewNameAndColor(dragView: View, name: String, color: AndroidColor) {
+    private fun setupDragViewNameAndColor(dragView: View, name: String, color: AndroidColor, reminder: ReminderViewModel? = null) {
         dragView.dragName.setText(name)
         dragView.setBackgroundColor(ContextCompat.getColor(dragView.context, color.color500))
 
@@ -186,9 +195,9 @@ class DayViewController :
         dragView.reminder.setOnClickListener {
             ReminderPickerDialogController(object : ReminderPickerDialogController.ReminderPickedListener {
                 override fun onReminderPicked(reminder: ReminderViewModel?) {
-                    Timber.d("AAAAA $reminder")
+                    send(ReminderPickedIntent(reminder))
                 }
-            }, null)
+            }, reminder)
                 .showDialog(router, "pick_reminder_tag")
         }
     }
@@ -223,7 +232,17 @@ class DayViewController :
         stopActionMode()
         ViewUtils.hideKeyboard(calendarDayView)
         val ue = unscheduledEventsAdapter.removeEvent(position)
-        val vm = QuestViewModel(ue.id, ue.name, ue.duration, startTime.toMinuteOfDay(), startTime.toString(), "12:00", ue.backgroundColor, Category.FUN.color800, false)
+        val vm = QuestViewModel(
+            ue.id,
+            ue.name,
+            ue.duration,
+            startTime.toMinuteOfDay(),
+            startTime.toString(),
+            "12:00",
+            ue.backgroundColor,
+            Category.FUN.color800,
+            null,
+            false)
         eventsAdapter.addEvent(vm)
     }
 
@@ -268,8 +287,8 @@ class DayViewController :
         ViewUtils.hideKeyboard(calendarDayView)
     }
 
-    override fun onEditCalendarEvent(event: CalendarEvent) {
-        send(EditEventIntent(event))
+    override fun onEditCalendarEvent(event: CalendarEvent, adapterPosition: Int) {
+        send(EditEventIntent(event, eventsAdapter.events[adapterPosition].reminder))
         ViewUtils.hideKeyboard(calendarDayView)
     }
 
@@ -338,6 +357,7 @@ class DayViewController :
                               val endTime: String,
                               override val backgroundColor: AndroidColor,
                               @ColorRes val textColor: Int,
+                              val reminder: ReminderViewModel?,
                               val isCompleted: Boolean) : CalendarEvent
 
     inner class QuestScheduledEventsAdapter(context: Context, events: List<QuestViewModel>, private val calendarDayView: CalendarDayView) :

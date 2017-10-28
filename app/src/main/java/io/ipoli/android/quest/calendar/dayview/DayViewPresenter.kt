@@ -10,11 +10,15 @@ import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.calendar.dayview.view.*
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
+import io.ipoli.android.quest.calendar.dayview.view.widget.CalendarEvent
 import io.ipoli.android.quest.usecase.*
+import io.ipoli.android.reminder.view.picker.ReminderViewModel
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
-import timber.log.Timber
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalTime
+import org.threeten.bp.temporal.ChronoUnit
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -37,7 +41,7 @@ class DayViewPresenter(
             is LoadDataIntent -> {
                 launch {
                     loadScheduleUseCase.execute(intent.currentDate).consumeEach {
-//                        Timber.d("AAA Schedule Loaded")
+                        //                        Timber.d("AAA Schedule Loaded")
                         actor.send(ScheduleLoadedIntent(it))
                     }
                 }
@@ -57,32 +61,37 @@ class DayViewPresenter(
             is AddEventIntent -> {
                 val event = intent.event
                 val colorName = Color.valueOf(event.backgroundColor.name)
+
+                val reminder = createQuestReminder(state.reminder, state.scheduledDate, event)
+
                 val quest = Quest(
                     name = event.name,
                     color = colorName,
                     category = Category("WELLNESS", Color.GREEN),
                     scheduleDate = state.scheduledDate,
-                    startTime =Time.of(event.startMinute),
+                    startTime = Time.of(event.startMinute),
                     duration = event.duration,
-                    reminder = Reminder("Waga waga wag", Time.at(15, 0), LocalDate.now())
+                    reminder = reminder
                 )
                 val result = saveQuestUseCase.execute(quest)
-                Timber.d("AAAAA presenter $result")
                 savedQuestViewState(result, state)
             }
 
             is EditEventIntent -> {
                 val event = intent.event
                 val colorName = Color.valueOf(event.backgroundColor.name)
+
+                val reminderVM = if (state.isReminderEdited) state.reminder else intent.reminder
+
                 val quest = Quest(
                     id = event.id,
                     name = event.name,
                     color = colorName,
                     category = Category("WELLNESS", Color.GREEN),
                     scheduleDate = state.scheduledDate,
-                    startTime =Time.of(event.startMinute),
+                    startTime = Time.of(event.startMinute),
                     duration = event.duration,
-                    reminder = Reminder("Waga waga wag", Time.at(15, 0), LocalDate.now())
+                    reminder = createQuestReminder(reminderVM, state.scheduledDate, event)
                 )
                 val result = saveQuestUseCase.execute(quest)
                 savedQuestViewState(result, state)
@@ -115,7 +124,9 @@ class DayViewPresenter(
                     type = DayViewState.StateType.EVENT_REMOVED,
                     removedEventId = eventId,
                     scheduledQuests = scheduledQuests,
-                    unscheduledQuests = unscheduledQuests
+                    unscheduledQuests = unscheduledQuests,
+                    reminder = null,
+                    isReminderEdited = false
                 )
             }
 
@@ -124,12 +135,26 @@ class DayViewPresenter(
                 undoRemovedQuestUseCase.execute(eventId)
                 state.copy(type = DayViewState.StateType.UNDO_REMOVED_EVENT, removedEventId = "")
             }
+
+            is ReminderPickedIntent -> {
+                state.copy(reminder = intent.reminder, isReminderEdited = true)
+            }
         }
+
+    private fun createQuestReminder(reminder: ReminderViewModel?, scheduledDate: LocalDate, event: CalendarEvent): Reminder? {
+        return reminder?.let {
+            val time = Time.of(event.startMinute)
+            val questDateTime = LocalDateTime.of(scheduledDate, LocalTime.of(time.hours, time.getMinutes()))
+            val reminderDateTime = questDateTime.minusMinutes(it.minutesFromStart)
+            val toLocalTime = reminderDateTime.toLocalTime()
+            Reminder(it.message, Time.at(toLocalTime.hour, toLocalTime.minute), reminderDateTime.toLocalDate())
+        }
+    }
 
     private fun savedQuestViewState(result: Result, state: DayViewState) =
         when (result) {
             is Result.Invalid -> state.copy(type = EVENT_VALIDATION_ERROR)
-            else -> state.copy(type = EVENT_UPDATED)
+            else -> state.copy(type = EVENT_UPDATED, reminder = null)
         }
 
     private fun createUnscheduledViewModels(schedule: Schedule): List<DayViewController.UnscheduledQuestViewModel> =
@@ -143,19 +168,26 @@ class DayViewPresenter(
         }
 
     private fun createScheduledViewModels(schedule: Schedule): List<DayViewController.QuestViewModel> =
-        schedule.scheduled.map {
-            val color = AndroidColor.valueOf(it.color.name)
+        schedule.scheduled.map { q ->
+            val color = AndroidColor.valueOf(q.color.name)
+
+            val reminder = q.reminder?.let {
+                val daysDiff = ChronoUnit.DAYS.between(q.scheduleDate, it.remindDate)
+                val minutesDiff = q.startTime!!.toMinuteOfDay() - it.remindTime.toMinuteOfDay()
+                ReminderViewModel(it.message, minutesDiff + Time.MINUTES_IN_A_DAY * daysDiff)
+            }
 
             DayViewController.QuestViewModel(
-                it.id,
-                it.name,
-                it.duration,
-                it.startTime!!.toMinuteOfDay(),
-                it.startTime.toString(),
-                it.endTime.toString(),
+                q.id,
+                q.name,
+                q.duration,
+                q.startTime!!.toMinuteOfDay(),
+                q.startTime.toString(),
+                q.endTime.toString(),
                 color,
                 color.color900,
-                it.isCompleted
+                reminder,
+                q.isCompleted
             )
         }
 }

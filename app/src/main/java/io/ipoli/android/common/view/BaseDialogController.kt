@@ -2,6 +2,7 @@ package io.ipoli.android.common.view
 
 import android.app.Dialog
 import android.os.Bundle
+import android.support.annotation.MainThread
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -177,6 +178,11 @@ abstract class MviDialogController<VS : ViewState, in V : ViewStateRenderer<VS>,
         }
         router.popController(this)
         dismissed = true
+    }
+
+    @MainThread
+    override fun render(state: VS) {
+        render(state, contentView)
     }
 
     /**

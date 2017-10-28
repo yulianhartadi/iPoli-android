@@ -3,6 +3,7 @@ package io.ipoli.android.reminder.view.picker
 import io.ipoli.android.Constants
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
+import io.ipoli.android.common.parser.ReminderMinutesParser
 import io.ipoli.android.reminder.view.formatter.ReminderTimeFormatter
 import io.ipoli.android.reminder.view.formatter.TimeUnitFormatter
 import io.ipoli.android.reminder.view.picker.ReminderPickerViewState.StateType.*
@@ -19,9 +20,17 @@ class ReminderPickerDialogPresenter(
 ) : BaseMviPresenter<ViewStateRenderer<ReminderPickerViewState>, ReminderPickerViewState, ReminderPickerIntent>(
     ReminderPickerViewState(type = ReminderPickerViewState.StateType.LOADING), coroutineContext) {
 
-
     override fun reduceState(intent: ReminderPickerIntent, state: ReminderPickerViewState): ReminderPickerViewState {
         return when (intent) {
+
+            is LoadReminderDataIntent -> {
+                if (intent.reminder == null) {
+                    loadNewReminderData(state)
+                } else {
+                    loadExistingReminderData(intent.reminder, state)
+                }
+            }
+
             is PickReminderIntent -> {
                 if (state.timeUnitIndex != null && state.timeValue.isEmpty()) {
                     state.copy(type = TIME_VALUE_VALIDATION_ERROR)
@@ -34,11 +43,11 @@ class ReminderPickerDialogPresenter(
                     )
                 }
             }
-            is MessageChangeIntent -> {
+            is ChangeMessageIntent -> {
                 state.copy(type = NEW_VALUES, message = intent.message)
             }
 
-            is PredefinedTimeChangeIntent -> {
+            is ChangePredefinedTimeIntent -> {
                 if (intent.index == reminderTimeFormatter.predefinedTimes.size - 1) {
                     state.copy(
                         type = CUSTOM_TIME,
@@ -53,14 +62,45 @@ class ReminderPickerDialogPresenter(
                 }
             }
 
-            is CustomTimeChangeIntent -> {
+            is ChangeCustomTimeIntent -> {
                 state.copy(type = NEW_VALUES, timeValue = intent.timeValue)
             }
 
-            is TimeUnitChangeIntent -> {
+            is ChangeTimeUnitIntent -> {
                 state.copy(type = NEW_VALUES, timeUnitIndex = intent.index)
             }
         }
+    }
+
+    private fun loadNewReminderData(state: ReminderPickerViewState): ReminderPickerViewState {
+        return state.copy(
+            type = NEW_REMINDER,
+            predefinedValues = reminderTimeFormatter.predefinedTimes,
+            predefinedIndex = 0
+        )
+    }
+
+    private fun loadExistingReminderData(reminder: ReminderViewModel, state: ReminderPickerViewState): ReminderPickerViewState {
+
+        if (reminder.minutesFromStart == 0L) {
+            return state.copy(
+                type = EDIT_REMINDER,
+                message = reminder.message,
+                predefinedValues = reminderTimeFormatter.predefinedTimes,
+                predefinedIndex = 0
+            )
+        }
+
+        val (timeValue, timeUnit) = ReminderMinutesParser
+            .parseCustomMinutes(reminder.minutesFromStart)
+
+        return state.copy(
+            type = EDIT_REMINDER,
+            message = reminder.message,
+            timeValue = timeValue.toString(),
+            timeUnits = timeUnitFormatter.customTimeUnits,
+            timeUnitIndex = timeUnit.ordinal
+        )
     }
 
     private fun calculateMinutesFromStart(state: ReminderPickerViewState): Long {
@@ -71,27 +111,4 @@ class ReminderPickerDialogPresenter(
             Constants.REMINDER_PREDEFINED_MINUTES[state.predefinedIndex!!].toLong()
         }
     }
-
-//    private fun bindEditReminderIntent() =
-//        on { it.loadReminderData() }.map { (state, reminder) ->
-//            val (timeValue, timeUnit) = ReminderMinutesParser
-//                .parseCustomMinutes(reminder.minutesFromStart)
-//
-//            state.copy(
-//                type = EDIT_REMINDER,
-//                message = reminder.message!!,
-//                timeValue = timeValue.toString(),
-//                timeUnits = timeUnitFormatter.customTimeUnits,
-//                timeUnitIndex = timeUnit.ordinal
-//            )
-//        }.cast(ReminderPickerViewState::class.java)
-//
-//    private fun bindLoadNewReminderIntent() =
-//        on { it.loadNewReminderData() }.map { (state, _) ->
-//            state.copy(
-//                type = NEW_REMINDER,
-//                predefinedValues = reminderTimeFormatter.predefinedTimes,
-//                predefinedIndex = 0
-//            )
-//        }.cast(ReminderPickerViewState::class.java)
 }

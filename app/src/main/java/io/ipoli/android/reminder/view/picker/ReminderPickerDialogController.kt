@@ -4,8 +4,11 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
@@ -53,24 +56,6 @@ class ReminderPickerDialogController :
 
     protected constructor(args: Bundle?) : super(args)
 
-//    override fun loadReminderData(): Observable<ReminderViewModel> =
-//        Observable.just(reminder != null)
-//            .filter { !isRestoring && it }.map { reminder!! }
-//
-//    override fun loadNewReminderData(): Observable<Unit> =
-//        Observable.just(Unit)
-//            .filter { !isRestoring && reminder == null }
-
-//    override fun pickReminderIntent() = pickReminderSubject
-//
-//    override fun messageChangeIntent() = messageChangeSubject
-//
-//    override fun predefinedValueChangeIntent() = predefinedValueChangeSubject
-//
-//    override fun customTimeChangeIntent() = customTimeChangeSubject
-//
-//    override fun timeUnitChangeIntent() = timeUnitChangeSubject
-
     private val presenter by required { reminderPickerPresenter }
 
     override fun createPresenter() = presenter
@@ -91,15 +76,28 @@ class ReminderPickerDialogController :
             }
 
             ReminderPickerViewState.StateType.EDIT_REMINDER -> {
-                showCustomTimeViews(view)
                 view.message.setText(state.message)
                 view.message.setSelection(state.message.length)
 
-                val customTimeAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.timeUnits)
-                customTimeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                view.customTimeUnits.adapter = customTimeAdapter
-                view.customTimeUnits.setSelection(state.timeUnitIndex!!)
-                view.customTime.setText(state.timeValue)
+                if (state.predefinedIndex != null) {
+                    ViewUtils.showViews(view.predefinedTimes)
+                    ViewUtils.hideViews(view.customTimeContainer)
+                    val predefinedTimesAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.predefinedValues)
+                    predefinedTimesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    view.predefinedTimes.adapter = predefinedTimesAdapter
+                    view.predefinedTimes.setSelection(state.predefinedIndex)
+                }
+
+                if (state.timeUnitIndex != null) {
+
+                    showCustomTimeViews(view)
+
+                    val customTimeAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.timeUnits)
+                    customTimeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    view.customTimeUnits.adapter = customTimeAdapter
+                    view.customTimeUnits.setSelection(state.timeUnitIndex)
+                    view.customTime.setText(state.timeValue)
+                }
             }
 
             ReminderPickerViewState.StateType.CUSTOM_TIME -> {
@@ -136,22 +134,61 @@ class ReminderPickerDialogController :
         inject(iPoliApp.controllerModule(context, router))
     }
 
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        send(LoadReminderDataIntent(reminder))
+    }
+
     override fun onCreateDialog(savedViewState: Bundle?): DialogView {
 
         val contentView = LayoutInflater.from(activity!!).inflate(R.layout.dialog_reminder_picker, null)
 
         with(contentView) {
-            //            RxTextView.textChanges(message).map { it.toString() }.subscribe(messageChangeSubject)
-//
-//            RxAdapterView.itemSelections(predefinedTimes)
-//                .skipInitialValue()
-//                .subscribe(predefinedValueChangeSubject)
-//
-//            RxAdapterView.itemSelections(customTimeUnits)
-//                .skipInitialValue()
-//                .subscribe(timeUnitChangeSubject)
-//
-//            RxTextView.textChanges(customTime).map { it.toString() }.subscribe(customTimeChangeSubject)
+
+            message.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    send(ChangeMessageIntent(s.toString()))
+                }
+
+            })
+
+            predefinedTimes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    send(ChangePredefinedTimeIntent(position))
+                }
+            }
+
+            customTimeUnits.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    send(ChangeTimeUnitIntent(position))
+                }
+
+            }
+
+            customTime.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    send(ChangeCustomTimeIntent(s.toString()))
+                }
+
+            })
         }
 
         val dialog = AlertDialog.Builder(activity!!)
@@ -159,8 +196,8 @@ class ReminderPickerDialogController :
             .setTitle(R.string.reminder_dialog_title)
             .setIcon(R.drawable.pet_5_head)
             .setPositiveButton(R.string.dialog_ok, null)
-            .setNegativeButton(R.string.cancel, { p0, p1 -> ViewUtils.hideKeyboard(contentView) })
-            .setNeutralButton(R.string.do_not_remind, { p0, p1 ->
+            .setNegativeButton(R.string.cancel, { _, _ -> ViewUtils.hideKeyboard(contentView) })
+            .setNeutralButton(R.string.do_not_remind, { _, _ ->
                 ViewUtils.hideKeyboard(contentView)
                 listener?.onReminderPicked(null)
             })
@@ -168,7 +205,7 @@ class ReminderPickerDialogController :
 
         dialog.setOnShowListener {
             dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
-                //                pickReminderSubject.onNext(Unit)
+                send(PickReminderIntent)
             }
         }
 

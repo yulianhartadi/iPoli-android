@@ -10,10 +10,11 @@ import io.ipoli.android.common.mvi.ViewState
 
 sealed class ReminderPickerIntent : Intent
 
-data class MessageChangeIntent(val message: String) : ReminderPickerIntent()
-data class CustomTimeChangeIntent(val timeValue: String) : ReminderPickerIntent()
-data class PredefinedTimeChangeIntent(val index: Int) : ReminderPickerIntent()
-data class TimeUnitChangeIntent(val index: Int) : ReminderPickerIntent()
+data class LoadReminderDataIntent(val reminder: ReminderViewModel?) : ReminderPickerIntent()
+data class ChangeMessageIntent(val message: String) : ReminderPickerIntent()
+data class ChangeCustomTimeIntent(val timeValue: String) : ReminderPickerIntent()
+data class ChangePredefinedTimeIntent(val index: Int) : ReminderPickerIntent()
+data class ChangeTimeUnitIntent(val index: Int) : ReminderPickerIntent()
 object PickReminderIntent : ReminderPickerIntent()
 
 data class ReminderPickerViewState(
@@ -41,13 +42,3 @@ data class ReminderPickerViewState(
         val Loading = ReminderPickerViewState(StateType.LOADING)
     }
 }
-
-//interface ReminderPickerView : ViewStateRenderer<ReminderPickerViewState> {
-//    fun loadNewReminderData(): Observable<Unit>
-//    fun loadReminderData(): Observable<ReminderViewModel>
-//    fun pickReminderIntent(): Observable<Unit>
-//    fun messageChangeIntent(): Observable<String>
-//    fun predefinedValueChangeIntent(): Observable<Int>
-//    fun customTimeChangeIntent(): Observable<String>
-//    fun timeUnitChangeIntent(): Observable<Int>
-//}
