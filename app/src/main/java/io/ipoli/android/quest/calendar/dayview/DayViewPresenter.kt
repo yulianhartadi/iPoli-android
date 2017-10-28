@@ -122,14 +122,18 @@ class DayViewPresenter(
                 scheduledQuests.find { it.id == eventId }?.let { scheduledQuests.remove(it) }
                 unscheduledQuests.find { it.id == eventId }?.let { unscheduledQuests.remove(it) }
                 removeQuestUseCase.execute(eventId)
-                state.copy(
-                    type = DayViewState.StateType.EVENT_REMOVED,
-                    removedEventId = eventId,
-                    scheduledQuests = scheduledQuests,
-                    unscheduledQuests = unscheduledQuests,
-                    reminder = null,
-                    isReminderEdited = false
-                )
+                if (eventId.isEmpty()) {
+                    state
+                } else {
+                    state.copy(
+                        type = DayViewState.StateType.EVENT_REMOVED,
+                        removedEventId = eventId,
+                        scheduledQuests = scheduledQuests,
+                        unscheduledQuests = unscheduledQuests,
+                        reminder = null,
+                        isReminderEdited = false
+                    )
+                }
             }
 
             is UndoRemoveEventIntent -> {
