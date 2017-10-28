@@ -4,7 +4,10 @@ import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.AndroidColor
-import io.ipoli.android.quest.*
+import io.ipoli.android.quest.Category
+import io.ipoli.android.quest.Color
+import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.calendar.dayview.view.*
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
 import io.ipoli.android.quest.usecase.*
@@ -58,12 +61,10 @@ class DayViewPresenter(
                     name = event.name,
                     color = colorName,
                     category = Category("WELLNESS", Color.GREEN),
-                    plannedSchedule = QuestSchedule(
-                        date = LocalDate.now(),
-                        time = Time.of(event.startMinute),
-                        duration = event.duration
-                    ),
-                    reminder = Reminder("1234", "Waga waga wag", Time.at(18, 0), LocalDate.now())
+                    scheduleDate = state.scheduledDate,
+                    startTime =Time.of(event.startMinute),
+                    duration = event.duration,
+                    reminder = Reminder("Waga waga wag", Time.at(18, 0), LocalDate.now())
                 )
                 val result = saveQuestUseCase.execute(quest)
                 Timber.d("AAAAA presenter $result")
@@ -78,11 +79,9 @@ class DayViewPresenter(
                     name = event.name,
                     color = colorName,
                     category = Category("WELLNESS", Color.GREEN),
-                    plannedSchedule = QuestSchedule(
-                        date = LocalDate.now(),
-                        time = Time.of(event.startMinute),
-                        duration = event.duration
-                    )
+                    scheduleDate = state.scheduledDate,
+                    startTime =Time.of(event.startMinute),
+                    duration = event.duration
                 )
                 val result = saveQuestUseCase.execute(quest)
                 savedQuestViewState(result, state)
@@ -96,11 +95,9 @@ class DayViewPresenter(
                     name = event.name,
                     color = colorName,
                     category = Category("WELLNESS", Color.GREEN),
-                    plannedSchedule = QuestSchedule(
-                        date = LocalDate.now(),
-                        time = null,
-                        duration = event.duration
-                    )
+                    scheduleDate = state.scheduledDate,
+                    startTime = null,
+                    duration = event.duration
                 )
                 val result = saveQuestUseCase.execute(quest)
                 savedQuestViewState(result, state)
@@ -139,7 +136,7 @@ class DayViewPresenter(
             DayViewController.UnscheduledQuestViewModel(
                 it.id,
                 it.name,
-                it.actualDuration,
+                it.duration,
                 AndroidColor.valueOf(it.color.name)
             )
         }
@@ -148,30 +145,16 @@ class DayViewPresenter(
         schedule.scheduled.map {
             val color = AndroidColor.valueOf(it.color.name)
 
-            var startTime = it.plannedSchedule.time
-            if (it.actualSchedule != null && it.actualSchedule.time != null && startTime == it.originalStartTime) {
-                startTime = it.actualSchedule.time
-            }
-
             DayViewController.QuestViewModel(
                 it.id,
                 it.name,
-                it.actualDuration,
-                startTime!!.toMinuteOfDay(),
-                startTime.toString(),
+                it.duration,
+                it.startTime!!.toMinuteOfDay(),
+                it.startTime.toString(),
                 it.endTime.toString(),
                 color,
                 color.color900,
                 it.isCompleted
             )
-        }
-
-    private val Quest.actualDuration: Int
-        get() {
-            var duration = plannedSchedule.duration
-            if (actualSchedule != null) {
-                duration = actualSchedule.duration
-            }
-            return duration
         }
 }

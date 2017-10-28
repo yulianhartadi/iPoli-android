@@ -16,6 +16,7 @@ import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.data.persistence.CouchbaseQuestRepository
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.usecase.*
+import io.ipoli.android.reminder.ReminderScheduler
 import io.ipoli.android.reminder.view.formatter.ReminderTimeFormatter
 import io.ipoli.android.reminder.view.formatter.TimeUnitFormatter
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogPresenter
@@ -61,6 +62,8 @@ interface AndroidModule {
 
     val database: Database
 
+    val reminderScheduler: ReminderScheduler
+
     val job: Job
 }
 
@@ -84,6 +87,8 @@ class MainAndroidModule(private val context: Context) : AndroidModule {
 
     override val calendarFormatter get() = CalendarFormatter(context)
 
+    override val reminderScheduler get() = ReminderScheduler()
+
     override val database: Database
         get() = Database("iPoli", DatabaseConfiguration(context.applicationContext))
 
@@ -94,17 +99,17 @@ class MainAndroidModule(private val context: Context) : AndroidModule {
 class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     private val questRepository by required { questRepository }
     private val playerRepository by required { playerRepository }
+    private val reminderScheduler by required { reminderScheduler }
     private val job by required { job }
     override val loadScheduleForDateUseCase
         get() = LoadScheduleForDateUseCase(questRepository, job + CommonPool)
-    override val saveQuestUseCase get() = SaveQuestUseCase(questRepository)
+    override val saveQuestUseCase get() = SaveQuestUseCase(questRepository, reminderScheduler)
     override val removeQuestUseCase get() = RemoveQuestUseCase(questRepository)
     override val undoRemoveQuestUseCase get() = UndoRemovedQuestUseCase(questRepository)
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
-    override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository)
-    override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository)
+    override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
+    override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, reminderScheduler)
 }
-
 
 interface JobUseCaseModule {
     val findQuestToRemindUseCase: FindQuestsToRemindUseCase
@@ -114,9 +119,10 @@ interface JobUseCaseModule {
 
 class AndroidJobUseCaseModule : JobUseCaseModule, Injects<JobModule> {
     private val questRepository by required { questRepository }
+    private val reminderScheduler by required { reminderScheduler }
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
-    override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository)
-    override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository)
+    override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
+    override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, reminderScheduler)
 }
 
 interface UseCaseModule {

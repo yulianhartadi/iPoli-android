@@ -2,6 +2,7 @@ package io.ipoli.android
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import com.bluelinelabs.conductor.Router
 import com.crashlytics.android.Crashlytics
 import com.evernote.android.job.JobManager
@@ -12,6 +13,7 @@ import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
 import io.fabric.sdk.android.Fabric
 import io.ipoli.android.common.di.*
+import io.ipoli.android.common.job.iPoliJobCreator
 import space.traversal.kapsule.transitive
 import timber.log.Timber
 
@@ -81,6 +83,13 @@ class iPoliApp : Application() {
         }
 
         JobManager.create(this).addJobCreator(iPoliJobCreator())
+
+        val currentUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler({ thread, exception ->
+            Log.println(Log.ERROR, thread.name, Log.getStackTraceString(exception))
+            currentUncaughtExceptionHandler.uncaughtException(thread, exception)
+        })
+
 
 //        val repo = CouchbaseQuestRepository(Database("iPoli", DatabaseConfiguration(this)), UI)
 //        val q = Quest(

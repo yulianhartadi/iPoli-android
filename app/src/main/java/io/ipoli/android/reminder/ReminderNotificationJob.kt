@@ -1,33 +1,26 @@
-package io.ipoli.android
+package io.ipoli.android.reminder
 
 import android.view.ContextThemeWrapper
+import android.widget.Toast
 import com.evernote.android.job.Job
-import com.evernote.android.job.JobCreator
 import com.evernote.android.job.JobManager
 import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
+import io.ipoli.android.R
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.di.JobModule
+import io.ipoli.android.iPoliApp
 import io.ipoli.android.reminder.view.ReminderNotificationOverlay
 import io.ipoli.android.reminder.view.ReminderNotificationViewModel
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.Kapsule
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 10/26/17.
  */
-class iPoliJobCreator : JobCreator {
-    override fun create(tag: String): Job? {
-        when (tag) {
-            ReminderNotificationJob.TAG -> return ReminderNotificationJob()
-            else -> return null
-        }
-    }
-}
 
 class ReminderNotificationJob : Job(), Injects<ControllerModule> {
 
@@ -57,10 +50,12 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
 
                         override fun onSnooze() {
                             snoozeQuestUseCase.execute(it.id)
+                            Toast.makeText(c, "Quest snoozed", Toast.LENGTH_SHORT).show()
                         }
 
                         override fun onDone() {
                             completeQuestUseCase.execute(it.id)
+                            Toast.makeText(c, "Quest completed", Toast.LENGTH_SHORT).show()
                         }
                     }).show(c)
             }
@@ -74,8 +69,8 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
     }
 }
 
-class ReminderNotificationScheduler {
-    fun scheduleReminder(time: Long) {
+class ReminderScheduler {
+    fun schedule(time: Long) {
         JobManager.instance().cancelAllForTag(ReminderNotificationJob.TAG)
 
         val bundle = PersistableBundleCompat()

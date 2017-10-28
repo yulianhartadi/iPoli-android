@@ -1,17 +1,14 @@
 package io.ipoli.android.quest.usecase
 
-import io.ipoli.android.ReminderNotificationScheduler
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.Validator.Companion.validate
 import io.ipoli.android.common.datetime.DateUtils
-import io.ipoli.android.common.datetime.toMillis
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.usecase.Result.*
 import io.ipoli.android.quest.usecase.Result.ValidationError.EMPTY_NAME
+import io.ipoli.android.reminder.ReminderScheduler
 import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.LocalTime
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -27,7 +24,10 @@ sealed class Result {
     data class Invalid(val errors: List<ValidationError>) : Result()
 }
 
-class SaveQuestUseCase(private val questRepository: QuestRepository) : UseCase<Quest, Result> {
+class SaveQuestUseCase(
+    private val questRepository: QuestRepository,
+    private val reminderScheduler: ReminderScheduler
+) : UseCase<Quest, Result> {
     override fun execute(parameters: Quest): Result {
         val quest = parameters
         val errors = validate(quest).check<ValidationError> {
@@ -36,18 +36,15 @@ class SaveQuestUseCase(private val questRepository: QuestRepository) : UseCase<Q
             }
         }
 
-        if (errors.isEmpty()) {
-            questRepository.save(quest)
-            val quests = questRepository.findNextQuestsToRemind(DateUtils.toMillis(LocalDate.now()))
-            if (quests.isNotEmpty()) {
-                val reminder = quests[0].reminder!!
-                val date = reminder.remindDate
-                val time = reminder.remindTime
-                val dateTime = LocalDateTime.of(date, LocalTime.of(time.hours, time.getMinutes()))
-                ReminderNotificationScheduler().scheduleReminder(dateTime.toMillis())
-            }
-            return Added(quest)
+        if (errors.isNotEmpty()) {
+            return Invalid(errors)
         }
-        return Invalid(errors)
+        questRepository.save(quest)
+
+        val quests = questRepository.findNextQuestsToRemind(DateUtils.toMillis(LocalDate.now()))
+        if (quests.isNotEmpty()) {
+            reminderScheduler.schedule(quests.first().reminder!!.toMillis())
+        }
+        return Added(quest)
     }
 }

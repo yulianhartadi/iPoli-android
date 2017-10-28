@@ -1,7 +1,10 @@
 package io.ipoli.android.quest.usecase
 
+import io.ipoli.android.reminder.ReminderScheduler
 import io.ipoli.android.common.UseCase
+import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.quest.data.persistence.QuestRepository
+import org.threeten.bp.LocalDate
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -10,5 +13,10 @@ import io.ipoli.android.quest.data.persistence.QuestRepository
 class RemoveQuestUseCase(private val questRepository: QuestRepository) : UseCase<String, Unit> {
     override fun execute(parameters: String) {
         questRepository.remove(parameters)
+        val quests = questRepository.findNextQuestsToRemind(DateUtils.toMillis(LocalDate.now()))
+        if (quests.isNotEmpty()) {
+            val reminder = quests[0].reminder!!
+            ReminderScheduler().schedule(reminder.toMillis())
+        }
     }
 }

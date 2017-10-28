@@ -1,9 +1,11 @@
 package io.ipoli.android.quest
 
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.datetime.toMillis
 import io.ipoli.android.store.avatars.data.Avatar
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalTime
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -15,11 +17,14 @@ interface Entity {
 }
 
 data class Reminder(
-    val id: String,
     val message: String,
     val remindTime: Time,
     val remindDate: LocalDate
-)
+) {
+    fun toMillis() =
+        LocalDateTime.of(remindDate, LocalTime.of(remindTime.hours, remindTime.getMinutes())).toMillis()
+
+}
 
 data class Category(
     val name: String,
@@ -41,34 +46,23 @@ enum class Color {
     LIME
 }
 
-data class QuestSchedule(val date: LocalDate? = null, val time: Time? = null, val duration: Int)
-
 data class Quest(
     override val id: String = "",
     val name: String,
     val color: Color,
     val category: Category,
-    val plannedSchedule: QuestSchedule,
-    val actualSchedule: QuestSchedule? = null,
-    val originalStartTime: Time? = plannedSchedule.time,
+    val startTime: Time? = null,
+    val scheduleDate: LocalDate,
+    val duration: Int,
     val reminder: Reminder? = null,
     val createdAt: LocalDateTime = LocalDateTime.now(),
-    val completedAtDate: LocalDate? = null
+    val completedAtDate: LocalDate? = null,
+    val completedAtTime: Time? = null
 ) : Entity {
-    val isScheduled = plannedSchedule.date != null && plannedSchedule.time != null
     val isCompleted = completedAtDate != null
     val endTime: Time?
-        get() {
-            if (actualSchedule != null) {
-                return Time.of(actualSchedule.time!!.toMinuteOfDay() + actualSchedule.duration)
-            }
-
-            if (plannedSchedule.time != null) {
-                return Time.of(plannedSchedule.time.toMinuteOfDay() + plannedSchedule.duration)
-            }
-
-            return null
-        }
+        get() = startTime?.let { Time.of(it.toMinuteOfDay() + duration)}
+    val isScheduled = true
 }
 
 data class Player(

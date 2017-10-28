@@ -11,7 +11,10 @@ import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.persistence.BaseCouchbaseRepository
 import io.ipoli.android.common.persistence.CouchbasePersistedModel
 import io.ipoli.android.common.persistence.Repository
-import io.ipoli.android.quest.*
+import io.ipoli.android.quest.Category
+import io.ipoli.android.quest.Color
+import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.Reminder
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
@@ -34,8 +37,9 @@ data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMa
     var duration: Int by map
     var reminder: MutableMap<String, Any?>? by map
     var startMinute: Long? by map
-    var scheduledDate: Long? by map
-    var completedDate: Long? by map
+    var scheduledDate: Long by map
+    var completedAtDate: Long? by map
+    var completedAtMinute: Long? by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
@@ -46,7 +50,6 @@ data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMa
 }
 
 data class CouchbaseReminder(val map: MutableMap<String, Any?> = mutableMapOf()) {
-    var id: String by map
     var message: String by map
     var minute: Int by map
     var date: Long by map
@@ -82,8 +85,8 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             .where(
                 property("reminder.date").greaterThanOrEqualTo(remindDate)
                     .and(property("reminder.minute").greaterThan(time.toMinuteOfDay()))
-                    .and(property("type").equalTo(modelType)
-                    )
+                    .and(property("type").equalTo(modelType))
+                    .and(property("completedAtDate").isNullOrMissing)
             )
             .groupBy(property("_id"))
             .having(
@@ -102,8 +105,8 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             .where(
                 property("reminder.date").equalTo(remindDate)
                     .and(property("reminder.minute").equalTo(remindTime.toMinuteOfDay()))
-                    .and(property("type").equalTo(modelType)
-                    )
+                    .and(property("type").equalTo(modelType))
+                    .and(property("completedAtDate").isNullOrMissing)
             )
         return toEntities(query.run().iterator())
 
@@ -114,7 +117,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             null
         })
 
-        val plannedDate = cq.scheduledDate?.let { DateUtils.fromMillis(it) }
+        val plannedDate = DateUtils.fromMillis(cq.scheduledDate)
         val plannedTime = cq.startMinute?.let { Time.of(it.toInt()) }
 
         return Quest(
@@ -122,13 +125,18 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             name = cq.name,
             color = Color.valueOf(cq.color),
             category = Category(cq.category, Color.GREEN),
-            plannedSchedule = QuestSchedule(plannedDate, plannedTime, cq.duration),
-            completedAtDate = cq.completedDate?.let {
+            scheduleDate = plannedDate,
+            startTime = plannedTime,
+            duration = cq.duration,
+            completedAtDate = cq.completedAtDate?.let {
                 DateUtils.fromMillis(it)
+            },
+            completedAtTime = cq.completedAtMinute?.let {
+                Time.of(it.toInt())
             },
             reminder = cq.reminder?.let {
                 val cr = CouchbaseReminder(it)
-                Reminder(cr.id, cr.message, Time.of(cr.minute), DateUtils.fromMillis(cr.date))
+                Reminder(cr.message, Time.of(cr.minute), DateUtils.fromMillis(cr.date))
             }
         )
     }
@@ -139,20 +147,20 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         q.name = entity.name
         q.category = entity.category.name
         q.color = entity.color.name
-        q.duration = entity.plannedSchedule.duration
+        q.duration = entity.duration
         q.type = CouchbaseQuest.TYPE
-        q.scheduledDate = DateUtils.toMillis(entity.plannedSchedule.date!!)
+        q.scheduledDate = DateUtils.toMillis(entity.scheduleDate)
         q.reminder = entity.reminder?.let {
             createCouchbaseReminder(it).map
         }
-        entity.plannedSchedule.time?.let { q.startMinute = it.toMinuteOfDay().toLong() }
-        entity.completedAtDate?.let { q.completedDate = it.startOfDayUTC() }
+        q.startMinute = entity.startTime?.toMinuteOfDay()?.toLong()
+        q.completedAtDate = entity.completedAtDate?.startOfDayUTC()
+        q.completedAtMinute = entity.startTime?.toMinuteOfDay()?.toLong()
         return q
     }
 
     private fun createCouchbaseReminder(reminder: Reminder): CouchbaseReminder {
         val cr = CouchbaseReminder()
-        cr.id = reminder.id
         cr.message = reminder.message
         cr.date = reminder.remindDate.startOfDayUTC()
         cr.minute = reminder.remindTime.toMinuteOfDay()
