@@ -131,6 +131,11 @@ abstract class BaseCouchbaseRepository<E, out T>(protected val database: Databas
         val cbMap = cbObject.map.toMutableMap()
         cbMap.remove("id")
         doc.set(cbMap)
+
+        cbMap.filterValues { it == null }.keys.forEach {
+            doc.remove(it)
+        }
+
         database.save(doc)
 
         val docMap = doc.toMap().toMutableMap()

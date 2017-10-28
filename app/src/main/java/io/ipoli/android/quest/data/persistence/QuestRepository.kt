@@ -155,7 +155,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         }
         q.startMinute = entity.startTime?.toMinuteOfDay()?.toLong()
         q.completedAtDate = entity.completedAtDate?.startOfDayUTC()
-        q.completedAtMinute = entity.startTime?.toMinuteOfDay()?.toLong()
+        q.completedAtMinute = entity.completedAtTime?.toMinuteOfDay()?.toLong()
         return q
     }
 
