@@ -45,35 +45,6 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
             startActivityForResult(intent, 0)
         }
 
-//        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-//        val id = "iPoli"
-//        val channelName = "iPoli"
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            val importance = NotificationManager.IMPORTANCE_MIN
-//            val channel = NotificationChannel(id, channelName, importance)
-//            channel.description = "Reminder notification"
-//            channel.enableLights(true)
-//            channel.enableVibration(true)
-//            notificationManager.createNotificationChannel(channel)
-//        }
-//
-//
-//        val notification = NotificationCompat.Builder(this, "iPoli")
-//            .setSmallIcon(R.drawable.ic_notification_small)
-//            .setContentTitle("Reminder")
-//            .setContentText("Reminder")
-//            .setDefaults(NotificationCompat.DEFAULT_ALL)
-////            .setDefaults(Notification.DEFAULT_SOUND or Notification.DEFAULT_LIGHTS or Notification.DEFAULT_VIBRATE)
-////            .setPriority(NotificationCompat.PRIORITY_MIN)
-////            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-//            .build()
-//
-//        notificationManager.notify(1, notification)
-
-//        ReminderNotificationJob.scheduleJob()
-//
-//        finish()
-
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         inject(iPoliApp.controllerModule(this, router))
         val hasNoRootController = !router.hasRootController()
