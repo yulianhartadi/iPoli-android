@@ -1,21 +1,13 @@
 package io.ipoli.android
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
-import android.support.v4.app.NotificationCompat
 import android.support.v7.app.AppCompatActivity
 import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import io.ipoli.android.common.di.ControllerModule
-import io.ipoli.android.common.view.PetMessage
 import io.ipoli.android.home.HomeController
 import io.ipoli.android.player.persistence.ProviderType
 import io.ipoli.android.quest.AuthProvider
@@ -38,12 +30,18 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Amplitude.getInstance().initialize(this, AnalyticsConstants.AMPLITUDE_KEY).enableForegroundTracking(application);
-
-        if (!Settings.canDrawOverlays(this)) {
-            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + packageName))
-            startActivityForResult(intent, 0)
+        val amplitudeClient = Amplitude.getInstance().initialize(this, AnalyticsConstants.AMPLITUDE_KEY)
+        amplitudeClient.enableForegroundTracking(application)
+        if (BuildConfig.DEBUG) {
+            amplitudeClient.setOptOut(true)
+        } else {
+            amplitudeClient.setOptOut(false)
         }
+
+//        if (!Settings.canDrawOverlays(this)) {
+//            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + packageName))
+//            startActivityForResult(intent, 0)
+//        }
 
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         inject(iPoliApp.controllerModule(this, router))

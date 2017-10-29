@@ -1,10 +1,12 @@
 package io.ipoli.android.common.mvi
 
 import android.support.annotation.MainThread
+import com.amplitude.api.Amplitude
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.*
 import kotlinx.coroutines.experimental.launch
+import org.json.JSONObject
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -41,14 +43,23 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
 
     private fun stateReduceActor(view: V) = actor<I>(coroutineContext + CommonPool, Channel.CONFLATED) {
         var state = initialState
-//        launch(coroutineContext + UI) {
-//            view.render(initialState)
-//        }
+        launch(coroutineContext + UI) {
+            val data = JSONObject()
+            data.put("initial", initialState)
+            Amplitude.getInstance().logEvent("change_state", data)
+            view.render(initialState)
+        }
         launch(coroutineContext + UI) {
             channel.consumeEach { intent ->
 
+                val oldState = state
                 state = reduceState(intent, state)
-//            Timber.d("AAA " + Looper.getMainLooper().isCurrentThread)
+
+                val data = JSONObject()
+                data.put("previous_state", oldState)
+                data.put("intent", intent)
+                data.put("new_state", state)
+                Amplitude.getInstance().logEvent("change_state", data)
 
                 view.render(state)
             }
