@@ -12,6 +12,7 @@ import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnticipateInterpolator
 import io.ipoli.android.R
+import io.ipoli.android.R.id.dismiss
 import io.ipoli.android.common.view.BaseOverlayViewController
 import kotlinx.android.synthetic.main.view_reminder.view.*
 
@@ -65,20 +66,26 @@ class ReminderNotificationOverlay(private val reminder: ReminderNotificationView
     }
 
     private fun initButtons() {
-        overlayView.dismiss.setOnClickListener {
-            listener.onDismiss()
-            hide()
+        with(overlayView) {
+            dismiss.setOnClickListener {
+                dismiss.isEnabled = false
+                listener.onDismiss()
+                hide()
+            }
+
+            snooze.setOnClickListener {
+                snooze.isEnabled = false
+                listener.onSnooze()
+                hide()
+            }
+
+            done.setOnClickListener {
+                done.isEnabled = false
+                listener.onDone()
+                hide()
+            }
         }
 
-        overlayView.snooze.setOnClickListener {
-            listener.onSnooze()
-            hide()
-        }
-
-        overlayView.done.setOnClickListener {
-            listener.onDone()
-            hide()
-        }
     }
 
     private fun addViewToWindowManager(view: ViewGroup) {
@@ -142,7 +149,7 @@ class ReminderNotificationOverlay(private val reminder: ReminderNotificationView
         val views = listOf<View>(view.dismiss, view.snooze, view.done,
             view.dismissHint, view.snoozeHint, view.doneHint,
             view.name, view.message, view.startTimeMessage)
-        val animators = views.map { ObjectAnimator.ofFloat(it, "alpha", 0f, 1f).setDuration(duration * 4 / 5 ) }
+        val animators = views.map { ObjectAnimator.ofFloat(it, "alpha", 0f, 1f).setDuration(duration * 4 / 5) }
             .toMutableList() as MutableList<Animator>
         animators.add(backgroundAnim)
 

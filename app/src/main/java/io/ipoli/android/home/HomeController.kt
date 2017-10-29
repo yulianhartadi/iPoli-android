@@ -12,6 +12,7 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
+import io.ipoli.android.R.string.view
 import io.ipoli.android.quest.calendar.CalendarViewController
 import kotlinx.android.synthetic.main.controller_home.view.*
 
@@ -20,15 +21,15 @@ import kotlinx.android.synthetic.main.controller_home.view.*
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/19/17.
  */
-class HomeController : Controller(), NavigationView.OnNavigationItemSelectedListener {
+class HomeController : Controller() {
 
-    private var navigationItemSelected: MenuItem? = null
+//    private var navigationItemSelected: MenuItem? = null
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        navigationItemSelected = item
-        view?.drawerLayout?.closeDrawer(GravityCompat.START)
-        return false
-    }
+//    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+//        navigationItemSelected = item
+//        view?.drawerLayout?.closeDrawer(GravityCompat.START)
+//        return false
+//    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         setHasOptionsMenu(true)
@@ -42,25 +43,25 @@ class HomeController : Controller(), NavigationView.OnNavigationItemSelectedList
         activity.setSupportActionBar(view.toolbar)
 
         val actionBar = activity.supportActionBar
-        actionBar?.setDisplayHomeAsUpEnabled(true)
+//        actionBar?.setDisplayHomeAsUpEnabled(true)
 
-        view.navigationView.setNavigationItemSelectedListener(this)
+//        view.navigationView.setNavigationItemSelectedListener(this)
 
-        val actionBarDrawerToggle = object : ActionBarDrawerToggle(activity, view.drawerLayout, view.toolbar, R.string.drawer_open, R.string.drawer_close) {
+//        val actionBarDrawerToggle = object : ActionBarDrawerToggle(activity, view.drawerLayout, view.toolbar, R.string.drawer_open, R.string.drawer_close) {
 
-            override fun onDrawerOpened(drawerView: View) {
-                navigationItemSelected = null
-            }
-
-            override fun onDrawerClosed(drawerView: View) {
-                if (navigationItemSelected == null) {
-                    return
-                }
-                onItemSelectedFromDrawer()
-            }
-        }
-
-        view.drawerLayout.addDrawerListener(actionBarDrawerToggle)
+//            override fun onDrawerOpened(drawerView: View) {
+//                navigationItemSelected = null
+//            }
+//
+//            override fun onDrawerClosed(drawerView: View) {
+//                if (navigationItemSelected == null) {
+//                    return
+//                }
+//                onItemSelectedFromDrawer()
+//            }
+//        }
+//
+//        view.drawerLayout.addDrawerListener(actionBarDrawerToggle)
 
         val handler = FadeChangeHandler()
         val childRouter = getChildRouter(view.controllerContainer, null)
@@ -70,23 +71,23 @@ class HomeController : Controller(), NavigationView.OnNavigationItemSelectedList
                 .popChangeHandler(handler)
         )
 
-        actionBarDrawerToggle.syncState()
+//        actionBarDrawerToggle.syncState()
 
     }
 
-    private fun onItemSelectedFromDrawer() {
+//    private fun onItemSelectedFromDrawer() {
 //        when (navigationItemSelected?.itemId) {
 //            R.id.store -> Navigator(router).showStore()
 //        }
 
-    }
+//    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            view?.drawerLayout?.openDrawer(GravityCompat.START)
-            return true
-        }
-        return super.onOptionsItemSelected(item)
-    }
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        if (item.itemId == android.R.id.home) {
+//            view?.drawerLayout?.openDrawer(GravityCompat.START)
+//            return true
+//        }
+//        return super.onOptionsItemSelected(item)
+//    }
 
 }
