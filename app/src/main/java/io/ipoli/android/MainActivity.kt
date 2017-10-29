@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.support.v4.app.NotificationCompat
 import android.support.v7.app.AppCompatActivity
+import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
@@ -37,6 +38,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        Amplitude.getInstance().initialize(this, AnalyticsConstants.AMPLITUDE_KEY).enableForegroundTracking(application);
 
         if (!Settings.canDrawOverlays(this)) {
             val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + packageName))
