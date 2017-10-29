@@ -39,7 +39,7 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
 
     protected lateinit var actor: ActorJob<I>
 
-    private fun stateReduceActor(view: V) = actor<I> {
+    private fun stateReduceActor(view: V) = actor<I>(coroutineContext + CommonPool, Channel.CONFLATED) {
         var state = initialState
 //        launch(coroutineContext + UI) {
 //            view.render(initialState)
@@ -50,7 +50,6 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
                 state = reduceState(intent, state)
 //            Timber.d("AAA " + Looper.getMainLooper().isCurrentThread)
 
-//                Timber.d("AAA Intent $intent")
                 view.render(state)
             }
         }
@@ -64,12 +63,7 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
                 actor.send(it)
             }
         }
-        launch(coroutineContext + CommonPool) {
-            loadStreamingData(actor, initialState)
-        }
     }
-
-    open suspend fun loadStreamingData(actor: ActorJob<I>, initialState: VS) {}
 
     abstract fun reduceState(intent: I, state: VS): VS
 }

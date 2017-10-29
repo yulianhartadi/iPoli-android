@@ -21,7 +21,6 @@ import io.ipoli.android.common.view.color
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import io.ipoli.android.quest.calendar.CalendarViewState.StateType.CALENDAR_DATE_CHANGED
-import io.ipoli.android.quest.calendar.CalendarViewState.StateType.SWIPE_DATE_CHANGED
 import io.ipoli.android.quest.calendar.dayview.view.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.controller_calendar_toolbar.view.*
@@ -120,6 +119,7 @@ class CalendarViewController(args: Bundle? = null) :
     override fun createPresenter() = presenter
 
     override fun render(state: CalendarViewState, view: View) {
+
         calendarToolbar.day.text = state.dayText
         calendarToolbar.date.text = state.dateText
 
@@ -138,7 +138,7 @@ class CalendarViewController(args: Bundle? = null) :
             createDayViewPagerAdapter(state, view)
         }
 
-        if (state.type == SWIPE_DATE_CHANGED) {
+        if (state.type == CalendarViewState.StateType.SWIPE_DATE_CHANGED) {
             markSelectedDate(view, state.currentDate)
             updateDayViewPagerAdapter(state)
         }

@@ -136,3 +136,8 @@ dependencies {
 //}
 
 apply from: 'quality.gradle'
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}

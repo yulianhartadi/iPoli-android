@@ -114,6 +114,7 @@ class DayViewController :
     }
 
     override fun render(state: DayViewState, view: View) {
+
         when (state.type) {
             SCHEDULE_LOADED -> {
                 eventsAdapter = QuestScheduledEventsAdapter(activity!!, state.scheduledQuests, calendarDayView)

@@ -6,7 +6,6 @@ import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.quest.Category
 import io.ipoli.android.quest.Color
-import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.calendar.dayview.view.*
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
@@ -43,7 +42,6 @@ class DayViewPresenter(
             is LoadDataIntent -> {
                 launch {
                     loadScheduleUseCase.execute(intent.currentDate).consumeEach {
-                        //                        Timber.d("AAA Schedule Loaded")
                         actor.send(ScheduleLoadedIntent(it))
                     }
                 }
@@ -66,16 +64,16 @@ class DayViewPresenter(
 
                 val reminder = createQuestReminder(state.reminder, state.scheduledDate, event)
 
-                val quest = Quest(
+                val questParams = SaveQuestUseCase.Parameters(
                     name = event.name,
                     color = colorName,
                     category = Category("WELLNESS", Color.GREEN),
-                    scheduleDate = state.scheduledDate,
+                    scheduledDate = state.scheduledDate,
                     startTime = Time.of(event.startMinute),
                     duration = event.duration,
                     reminder = reminder
                 )
-                val result = saveQuestUseCase.execute(quest)
+                val result = saveQuestUseCase.execute(questParams)
                 savedQuestViewState(result, state)
             }
 
@@ -85,33 +83,33 @@ class DayViewPresenter(
 
                 val reminderVM = if (state.isReminderEdited) state.reminder else intent.reminder
 
-                val quest = Quest(
+                val questParams = SaveQuestUseCase.Parameters(
                     id = event.id,
                     name = event.name,
                     color = colorName,
                     category = Category("WELLNESS", Color.GREEN),
-                    scheduleDate = state.scheduledDate,
+                    scheduledDate = state.scheduledDate,
                     startTime = Time.of(event.startMinute),
                     duration = event.duration,
                     reminder = createQuestReminder(reminderVM, state.scheduledDate, event)
                 )
-                val result = saveQuestUseCase.execute(quest)
+                val result = saveQuestUseCase.execute(questParams)
                 savedQuestViewState(result, state)
             }
 
             is EditUnscheduledEventIntent -> {
                 val event = intent.event
                 val colorName = Color.valueOf(event.backgroundColor.name)
-                val quest = Quest(
+                val questParams = SaveQuestUseCase.Parameters(
                     id = event.id,
                     name = event.name,
                     color = colorName,
                     category = Category("WELLNESS", Color.GREEN),
-                    scheduleDate = state.scheduledDate,
+                    scheduledDate = state.scheduledDate,
                     startTime = null,
                     duration = event.duration
                 )
-                val result = saveQuestUseCase.execute(quest)
+                val result = saveQuestUseCase.execute(questParams)
                 savedQuestViewState(result, state)
             }
 
@@ -170,7 +168,7 @@ class DayViewPresenter(
     private fun savedQuestViewState(result: Result, state: DayViewState) =
         when (result) {
             is Result.Invalid -> state.copy(type = EVENT_VALIDATION_ERROR)
-            else -> state.copy(type = EVENT_UPDATED, reminder = null)
+            else -> state.copy(type = EVENT_UPDATED, reminder = null, isReminderEdited = false)
         }
 
     private fun createUnscheduledViewModels(schedule: Schedule): List<DayViewController.UnscheduledQuestViewModel> =
@@ -188,7 +186,7 @@ class DayViewPresenter(
             val color = AndroidColor.valueOf(q.color.name)
 
             val reminder = q.reminder?.let {
-                val daysDiff = ChronoUnit.DAYS.between(q.scheduleDate, it.remindDate)
+                val daysDiff = ChronoUnit.DAYS.between(q.scheduledDate, it.remindDate)
                 val minutesDiff = q.startTime!!.toMinuteOfDay() - it.remindTime.toMinuteOfDay()
                 ReminderViewModel(it.message, minutesDiff + Time.MINUTES_IN_A_DAY * daysDiff)
             }

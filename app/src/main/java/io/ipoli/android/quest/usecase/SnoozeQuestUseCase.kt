@@ -24,12 +24,12 @@ class SnoozeQuestUseCase(
 
     private fun updateQuest(parameters: String) {
         val newQuest = questRepository.findById(parameters)!!.let {
-            val (scheduledDate, startTime) = calculateNewDateTime(it.scheduleDate, it.startTime!!)
+            val (scheduledDate, startTime) = calculateNewDateTime(it.scheduledDate, it.startTime!!)
             val (remindDate, remindTime) = calculateNewDateTime(it.reminder!!.remindDate, it.reminder.remindTime)
 
             it.copy(
                 startTime = startTime,
-                scheduleDate = scheduledDate,
+                scheduledDate = scheduledDate,
                 reminder = it.reminder.copy(remindTime = remindTime, remindDate = remindDate)
             )
         }

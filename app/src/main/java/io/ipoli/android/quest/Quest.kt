@@ -52,7 +52,7 @@ data class Quest(
     val color: Color,
     val category: Category,
     val startTime: Time? = null,
-    val scheduleDate: LocalDate,
+    val scheduledDate: LocalDate,
     val duration: Int,
     val reminder: Reminder? = null,
     val createdAt: LocalDateTime = LocalDateTime.now(),

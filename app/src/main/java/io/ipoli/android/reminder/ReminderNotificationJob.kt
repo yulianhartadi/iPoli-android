@@ -71,7 +71,7 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
     }
 
     private fun startTimeMessage(quest: Quest): String {
-        val daysDiff = ChronoUnit.DAYS.between(quest.scheduleDate, LocalDate.now())
+        val daysDiff = ChronoUnit.DAYS.between(quest.scheduledDate, LocalDate.now())
         return if (daysDiff > 0) {
             "Starts in $daysDiff day(s)"
         } else {

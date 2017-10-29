@@ -125,7 +125,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             name = cq.name,
             color = Color.valueOf(cq.color),
             category = Category(cq.category, Color.GREEN),
-            scheduleDate = plannedDate,
+            scheduledDate = plannedDate,
             startTime = plannedTime,
             duration = cq.duration,
             completedAtDate = cq.completedAtDate?.let {
@@ -149,7 +149,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         q.color = entity.color.name
         q.duration = entity.duration
         q.type = CouchbaseQuest.TYPE
-        q.scheduledDate = DateUtils.toMillis(entity.scheduleDate)
+        q.scheduledDate = DateUtils.toMillis(entity.scheduledDate)
         q.reminder = entity.reminder?.let {
             createCouchbaseReminder(it).map
         }
