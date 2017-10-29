@@ -1,7 +1,9 @@
 package io.ipoli.android.reminder
 
-import android.app.Notification
 import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.view.ContextThemeWrapper
 import android.widget.Toast
@@ -23,9 +25,6 @@ import org.threeten.bp.LocalDate
 import org.threeten.bp.temporal.ChronoUnit
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.Kapsule
-import android.app.NotificationManager
-import android.content.Context
-import android.os.Build
 import java.util.*
 
 
@@ -63,16 +62,16 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
             val quests = findQuestsToRemindUseCase.execute(params.extras.getLong("start", -1))
 
             quests.forEach {
-                val notification = createNotification(c)
-                val notificationId = Random().nextInt()
-                notificationManager.notify(notificationId, notification)
 
                 val reminder = it.reminder!!
                 val message = reminder.message.let { if (it.isEmpty()) "Ready for a quest?" else it }
 
                 val startTimeMessage = startTimeMessage(it)
 
-                ReminderNotificationOverlay(ReminderNotificationViewModel(it.id, it.name, message, startTimeMessage),
+                val questName = it.name
+                val notificationId = showNotification(questName, message, notificationManager)
+
+                ReminderNotificationOverlay(ReminderNotificationViewModel(it.id, questName, message, startTimeMessage),
                     object : ReminderNotificationOverlay.OnClickListener {
                         override fun onDismiss() {
                             notificationManager.cancel(notificationId)
@@ -96,16 +95,22 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
         return Job.Result.SUCCESS
     }
 
-    private fun createNotification(c: ContextThemeWrapper): Notification? {
-        return NotificationCompat.Builder(c, "iPoli")
+    private fun showNotification(questName: String, message: String, notificationManager: NotificationManager): Int {
+        val notification = createNotification(questName, message)
+        val notificationId = Random().nextInt()
+        notificationManager.notify(notificationId, notification)
+        return notificationId
+    }
+
+    private fun createNotification(title: String, message: String) =
+        NotificationCompat.Builder(context, "iPoli")
             .setSmallIcon(R.drawable.ic_notification_small)
-            .setContentTitle("Reminder")
-            .setContentText("Reminder")
+            .setContentTitle(title)
+            .setContentText(message)
             .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setAutoCancel(true)
             .build()
-    }
 
     private fun startTimeMessage(quest: Quest): String {
         val daysDiff = ChronoUnit.DAYS.between(quest.scheduledDate, LocalDate.now())
@@ -135,8 +140,7 @@ class ReminderScheduler {
         bundle.putLong("start", time)
         JobRequest.Builder(ReminderNotificationJob.TAG)
             .setExtras(bundle)
-//                    .setExact(dateTime.toMillis() - System.currentTimeMillis())
-            .setExact(100)
+            .setExact(time - System.currentTimeMillis())
             .build()
             .schedule()
     }
