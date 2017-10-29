@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.calendar.dayview.view
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
@@ -113,7 +115,6 @@ class DayViewController :
     }
 
     override fun render(state: DayViewState, view: View) {
-        Timber.d("AAAAA state $state")
         when (state.type) {
             SCHEDULE_LOADED -> {
                 eventsAdapter = QuestScheduledEventsAdapter(activity!!, state.scheduledQuests, calendarDayView)
@@ -385,17 +386,20 @@ class DayViewController :
             view.startTime.text = vm.startTime
             view.endTime.text = vm.endTime
 
+            val notCompletedBackgroundColor = ContextCompat.getColor(context, vm.backgroundColor.color200)
+            val completedBackgroundColor = ContextCompat.getColor(context, R.color.md_grey_500)
+
             if (!vm.isCompleted) {
                 view.questName.text = vm.name
                 view.questName.setTextColor(ContextCompat.getColor(context, vm.textColor))
-                (view as CardView).setCardBackgroundColor(ContextCompat.getColor(context, vm.backgroundColor.color200))
+                (view as CardView).setCardBackgroundColor(notCompletedBackgroundColor)
                 view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color700)
                 (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color500)
             } else {
                 val span = SpannableString(vm.name)
                 span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
                 view.questName.text = span
-                (view as CardView).setCardBackgroundColor(ContextCompat.getColor(context, R.color.md_grey_500))
+                (view as CardView).setCardBackgroundColor(completedBackgroundColor)
                 view.questCategoryIndicator.setBackgroundResource(R.color.md_grey_500)
                 view.checkBox.isChecked = true
                 (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(R.color.md_grey_700)
@@ -403,9 +407,19 @@ class DayViewController :
 
             view.checkBox.setOnCheckedChangeListener { _, checked ->
                 if (checked) {
-                    send(CompleteQuestIntent(vm.id))
+                    animateBackground(
+                        view,
+                        notCompletedBackgroundColor,
+                        completedBackgroundColor,
+                        { send(CompleteQuestIntent(vm.id)) }
+                    )
                 } else {
-                    send(UndoCompleteQuestIntent(vm.id))
+                    animateBackground(
+                        view,
+                        completedBackgroundColor,
+                        notCompletedBackgroundColor,
+                        { send(UndoCompleteQuestIntent(vm.id)) }
+                    )
                 }
             }
 
@@ -414,6 +428,21 @@ class DayViewController :
             view.post {
                 adaptViewForHeight(view, ViewUtils.pxToDp(view.height, context))
             }
+        }
+
+        private fun animateBackground(view: View, fromColor: Int, toColor: Int, endListener: () -> Unit) {
+            val animator = ObjectAnimator.ofArgb(
+                view,
+                "cardBackgroundColor",
+                fromColor,
+                toColor
+            )
+            animator.addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator?) {
+                    endListener()
+                }
+            })
+            animator.start()
         }
 
         override fun rescheduleEvent(position: Int, startTime: Time, duration: Int) {
