@@ -10,7 +10,6 @@ import android.support.annotation.ColorRes
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.TextViewCompat
 import android.support.v4.widget.TintableCompoundButton
-import android.support.v7.widget.CardView
 import android.text.Editable
 import android.text.SpannableString
 import android.text.TextWatcher
@@ -30,6 +29,7 @@ import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.ColorPickerDialogController
 import io.ipoli.android.common.view.PetMessage
+import io.ipoli.android.common.view.color
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
@@ -46,7 +46,6 @@ import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
-import timber.log.Timber
 
 class DayViewController :
     MviViewController<DayViewState, DayViewController, DayViewPresenter, DayViewIntent>,
@@ -383,43 +382,59 @@ class DayViewController :
                 true
             }
 
+
             view.startTime.text = vm.startTime
             view.endTime.text = vm.endTime
 
-            val notCompletedBackgroundColor = ContextCompat.getColor(context, vm.backgroundColor.color200)
-            val completedBackgroundColor = ContextCompat.getColor(context, R.color.md_grey_500)
+            view.backgroundView.setBackgroundColor(color(vm.backgroundColor.color200))
 
             if (!vm.isCompleted) {
                 view.questName.text = vm.name
                 view.questName.setTextColor(ContextCompat.getColor(context, vm.textColor))
-                (view as CardView).setCardBackgroundColor(notCompletedBackgroundColor)
                 view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color700)
                 (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color500)
+                view.completedBackgroundView.visibility = View.INVISIBLE
             } else {
                 val span = SpannableString(vm.name)
                 span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
                 view.questName.text = span
-                (view as CardView).setCardBackgroundColor(completedBackgroundColor)
                 view.questCategoryIndicator.setBackgroundResource(R.color.md_grey_500)
                 view.checkBox.isChecked = true
                 (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(R.color.md_grey_700)
+                view.completedBackgroundView.visibility = View.VISIBLE
             }
 
-            view.checkBox.setOnCheckedChangeListener { _, checked ->
+            view.checkBox.setOnCheckedChangeListener { cb, checked ->
                 if (checked) {
-                    animateBackground(
-                        view,
-                        notCompletedBackgroundColor,
-                        completedBackgroundColor,
-                        { send(CompleteQuestIntent(vm.id)) }
-                    )
+                    val anim = createRevealAnimator(view.completedBackgroundView, cb)
+                    anim.addListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationStart(animation: Animator?) {
+                            view.completedBackgroundView.visibility = View.VISIBLE
+                        }
+
+                        override fun onAnimationEnd(animation: Animator?) {
+                            send(CompleteQuestIntent(vm.id))
+                        }
+
+                    })
+                    anim.start()
                 } else {
-                    animateBackground(
-                        view,
-                        completedBackgroundColor,
-                        notCompletedBackgroundColor,
-                        { send(UndoCompleteQuestIntent(vm.id)) }
+
+                    val anim = createRevealAnimator(
+                        view.completedBackgroundView,
+                        cb,
+                        reverse = true
                     )
+
+                    anim.addListener(object : AnimatorListenerAdapter() {
+
+                        override fun onAnimationEnd(animation: Animator?) {
+                            view.completedBackgroundView.visibility = View.INVISIBLE
+                            send(UndoCompleteQuestIntent(vm.id))
+                        }
+                    })
+                    anim.start()
+
                 }
             }
 
@@ -430,19 +445,14 @@ class DayViewController :
             }
         }
 
-        private fun animateBackground(view: View, fromColor: Int, toColor: Int, endListener: () -> Unit) {
-            val animator = ObjectAnimator.ofArgb(
-                view,
-                "cardBackgroundColor",
-                fromColor,
-                toColor
+        private fun createRevealAnimator(view: View, anchorView: View, reverse: Boolean = false): Animator {
+            val finalRadius = Math.sqrt((view.width * view.width + view.height * view.height).toDouble()).toFloat()
+            return ViewAnimationUtils.createCircularReveal(view,
+                anchorView.x.toInt() + anchorView.width / 2,
+                anchorView.y.toInt() + anchorView.height / 2,
+                if (reverse) finalRadius else 0f,
+                if (reverse) 0f else finalRadius
             )
-            animator.addListener(object : AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator?) {
-                    endListener()
-                }
-            })
-            animator.start()
         }
 
         override fun rescheduleEvent(position: Int, startTime: Time, duration: Int) {
