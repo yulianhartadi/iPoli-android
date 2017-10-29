@@ -1,5 +1,8 @@
 package io.ipoli.android.reminder
 
+import android.app.Notification
+import android.support.v4.app.NotificationCompat
+import android.support.v4.app.NotificationManagerCompat
 import android.view.ContextThemeWrapper
 import android.widget.Toast
 import com.evernote.android.job.Job
@@ -29,6 +32,16 @@ import space.traversal.kapsule.Kapsule
 class ReminderNotificationJob : Job(), Injects<ControllerModule> {
 
     override fun onRunJob(params: Job.Params): Job.Result {
+
+        val notification = NotificationCompat.Builder(context, "Sound")
+            .setSmallIcon(R.drawable.ic_notification_small)
+            .setDefaults(Notification.DEFAULT_SOUND or Notification.DEFAULT_LIGHTS or Notification.DEFAULT_VIBRATE)
+            .setPriority(NotificationCompat.PRIORITY_MIN)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build()
+
+        val notificationManager = NotificationManagerCompat.from(context)
+        notificationManager.notify(1, notification)
+//        notificationManager.cancelAll()
 
         val kap = Kapsule<JobModule>()
         val findQuestsToRemindUseCase by kap.required { findQuestToRemindUseCase }

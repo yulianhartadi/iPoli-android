@@ -18,7 +18,8 @@ class CalendarFormatter(private val context: Context) {
             .format(date.toStartOfDayUTC())
 
     private fun formatter(dayOfMonth: Int) =
-        SimpleDateFormat(pattern(dayOfMonth), Locale.getDefault())
+//        SimpleDateFormat(pattern(dayOfMonth), Locale.US)
+        SimpleDateFormat("yyyy-MM-dd", Locale.US)
 
     private fun pattern(day: Int): String {
         if (day !in 11..18)

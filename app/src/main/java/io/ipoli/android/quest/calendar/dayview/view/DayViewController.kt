@@ -52,17 +52,14 @@ class DayViewController :
     Injects<ControllerModule>,
     CalendarDayView.CalendarChangeListener,
     ViewStateRenderer<DayViewState> {
-//    override val initialState = DayViewState(type = DayViewState.StateType.LOADING, scheduledDate = currentDate)
 
     private lateinit var currentDate: LocalDate
 
-    constructor(currentDate: LocalDate) {
+    constructor(currentDate: LocalDate) : this() {
         this.currentDate = currentDate
     }
 
-    protected constructor(args: Bundle? = null) : super(args)
-
-//    private val inflater by required { layoutInflater }
+    constructor(args: Bundle? = null) : super(args)
 
     private val presenter by required { dayViewPresenter }
 

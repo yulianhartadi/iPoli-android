@@ -47,16 +47,14 @@ class ReminderPickerDialogController :
 
     private var reminder: ReminderViewModel? = null
 
-    constructor(listener: ReminderPickedListener, selectedReminder: ReminderViewModel? = null) : super() {
+    private val presenter by required { reminderPickerPresenter }
+
+    constructor(listener: ReminderPickedListener, selectedReminder: ReminderViewModel? = null) : this() {
         this.listener = listener
         this.reminder = selectedReminder
     }
 
-    protected constructor() : super()
-
-    protected constructor(args: Bundle?) : super(args)
-
-    private val presenter by required { reminderPickerPresenter }
+    constructor(args: Bundle? = null) : super(args)
 
     override fun createPresenter() = presenter
 
