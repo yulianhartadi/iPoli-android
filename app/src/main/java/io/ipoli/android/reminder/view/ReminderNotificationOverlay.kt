@@ -68,19 +68,19 @@ class ReminderNotificationOverlay(private val reminder: ReminderNotificationView
     private fun initButtons() {
         with(overlayView) {
             dismiss.setOnClickListener {
-                dismiss.isEnabled = false
+                dismiss.isClickable = false
                 listener.onDismiss()
                 hide()
             }
 
             snooze.setOnClickListener {
-                snooze.isEnabled = false
+                snooze.isClickable = false
                 listener.onSnooze()
                 hide()
             }
 
             done.setOnClickListener {
-                done.isEnabled = false
+                done.isClickable = false
                 listener.onDone()
                 hide()
             }

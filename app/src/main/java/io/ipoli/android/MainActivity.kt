@@ -1,9 +1,14 @@
 package io.ipoli.android
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.support.v4.app.NotificationCompat
 import android.support.v7.app.AppCompatActivity
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
@@ -38,6 +43,31 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
             startActivityForResult(intent, 0)
         }
 
+//        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+//        val id = "iPoli"
+//        val channelName = "iPoli"
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            val importance = NotificationManager.IMPORTANCE_MIN
+//            val channel = NotificationChannel(id, channelName, importance)
+//            channel.description = "Reminder notification"
+//            channel.enableLights(true)
+//            channel.enableVibration(true)
+//            notificationManager.createNotificationChannel(channel)
+//        }
+//
+//
+//        val notification = NotificationCompat.Builder(this, "iPoli")
+//            .setSmallIcon(R.drawable.ic_notification_small)
+//            .setContentTitle("Reminder")
+//            .setContentText("Reminder")
+//            .setDefaults(NotificationCompat.DEFAULT_ALL)
+////            .setDefaults(Notification.DEFAULT_SOUND or Notification.DEFAULT_LIGHTS or Notification.DEFAULT_VIBRATE)
+////            .setPriority(NotificationCompat.PRIORITY_MIN)
+////            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+//            .build()
+//
+//        notificationManager.notify(1, notification)
+
 //        ReminderNotificationJob.scheduleJob()
 //
 //        finish()
@@ -46,11 +76,6 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         inject(iPoliApp.controllerModule(this, router))
         val hasNoRootController = !router.hasRootController()
 
-//        PetMessage(object : PetMessage.UndoClickedListener{
-//            override fun onClick() {
-//            }
-//
-//        }).show(router)
 
         if (playerRepository.find() == null) {
             val player = Player(authProvider = AuthProvider(provider = ProviderType.ANONYMOUS.name))

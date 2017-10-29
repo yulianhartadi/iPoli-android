@@ -1,8 +1,8 @@
 package io.ipoli.android.reminder
 
 import android.app.Notification
+import android.app.NotificationChannel
 import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
 import android.view.ContextThemeWrapper
 import android.widget.Toast
 import com.evernote.android.job.Job
@@ -23,6 +23,11 @@ import org.threeten.bp.LocalDate
 import org.threeten.bp.temporal.ChronoUnit
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.Kapsule
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
+import java.util.*
+
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -33,15 +38,17 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
 
     override fun onRunJob(params: Job.Params): Job.Result {
 
-        val notification = NotificationCompat.Builder(context, "Sound")
-            .setSmallIcon(R.drawable.ic_notification_small)
-            .setDefaults(Notification.DEFAULT_SOUND or Notification.DEFAULT_LIGHTS or Notification.DEFAULT_VIBRATE)
-            .setPriority(NotificationCompat.PRIORITY_MIN)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC).build()
-
-        val notificationManager = NotificationManagerCompat.from(context)
-        notificationManager.notify(1, notification)
-//        notificationManager.cancelAll()
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val id = "iPoli"
+        val channelName = "iPoli"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val importance = NotificationManager.IMPORTANCE_MIN
+            val channel = NotificationChannel(id, channelName, importance)
+            channel.description = "Reminder notification"
+            channel.enableLights(true)
+            channel.enableVibration(true)
+            notificationManager.createNotificationChannel(channel)
+        }
 
         val kap = Kapsule<JobModule>()
         val findQuestsToRemindUseCase by kap.required { findQuestToRemindUseCase }
@@ -56,6 +63,9 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
             val quests = findQuestsToRemindUseCase.execute(params.extras.getLong("start", -1))
 
             quests.forEach {
+                val notification = createNotification(c)
+                val notificationId = Random().nextInt()
+                notificationManager.notify(notificationId, notification)
 
                 val reminder = it.reminder!!
                 val message = reminder.message.let { if (it.isEmpty()) "Ready for a quest?" else it }
@@ -65,14 +75,17 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
                 ReminderNotificationOverlay(ReminderNotificationViewModel(it.id, it.name, message, startTimeMessage),
                     object : ReminderNotificationOverlay.OnClickListener {
                         override fun onDismiss() {
+                            notificationManager.cancel(notificationId)
                         }
 
                         override fun onSnooze() {
+                            notificationManager.cancel(notificationId)
                             snoozeQuestUseCase.execute(it.id)
                             Toast.makeText(c, "Quest snoozed", Toast.LENGTH_SHORT).show()
                         }
 
                         override fun onDone() {
+                            notificationManager.cancel(notificationId)
                             completeQuestUseCase.execute(it.id)
                             Toast.makeText(c, "Quest completed", Toast.LENGTH_SHORT).show()
                         }
@@ -81,6 +94,17 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
         }
 
         return Job.Result.SUCCESS
+    }
+
+    private fun createNotification(c: ContextThemeWrapper): Notification? {
+        return NotificationCompat.Builder(c, "iPoli")
+            .setSmallIcon(R.drawable.ic_notification_small)
+            .setContentTitle("Reminder")
+            .setContentText("Reminder")
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setAutoCancel(true)
+            .build()
     }
 
     private fun startTimeMessage(quest: Quest): String {

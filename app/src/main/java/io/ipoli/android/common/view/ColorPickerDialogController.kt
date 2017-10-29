@@ -27,14 +27,12 @@ class ColorPickerDialogController : BaseDialogController {
     private var listener: ColorPickedListener? = null
     private var selectedColor: AndroidColor? = null
 
-    constructor(listener: ColorPickedListener, selectedColor: AndroidColor? = null) : super() {
+    constructor(listener: ColorPickedListener, selectedColor: AndroidColor? = null) : this() {
         this.listener = listener
         this.selectedColor = selectedColor
     }
 
-    protected constructor() : super()
-
-    protected constructor(args: Bundle?) : super(args)
+    constructor(args: Bundle? = null) : super(args)
 
     override fun onCreateDialog(savedViewState: Bundle?): Dialog {
 
