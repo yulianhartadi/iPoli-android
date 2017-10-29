@@ -484,6 +484,10 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 unscheduledEventAdapterPosition = null)
         })
 
+        fsm.transition(State.Type.VIEW, Event.CancelEdit::class, { s, _ ->
+            s
+        })
+
         fsm.transition(State.Type.EDIT, Event.RemoveEvent::class, { s, _ ->
             prepareForViewState()
             listener?.onRemoveEvent(s.eventId)
