@@ -1,9 +1,11 @@
 package io.ipoli.android.reminder
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.os.Build.VERSION_CODES.N
 import android.support.v4.app.NotificationCompat
 import android.view.ContextThemeWrapper
 import android.widget.Toast
@@ -46,6 +48,7 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
             channel.description = "Reminder notification"
             channel.enableLights(true)
             channel.enableVibration(true)
+            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             notificationManager.createNotificationChannel(channel)
         }
 
@@ -142,8 +145,7 @@ class ReminderScheduler {
         bundle.putLong("start", time)
         JobRequest.Builder(ReminderNotificationJob.TAG)
             .setExtras(bundle)
-            .setExact(100)
-//            .setExact(time - System.currentTimeMillis())
+            .setExact(time - System.currentTimeMillis())
             .build()
             .schedule()
     }
