@@ -13,6 +13,8 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.ipoli.android.R
+import io.ipoli.android.R.id.add
+import io.ipoli.android.R.id.questName
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
@@ -33,6 +35,7 @@ import sun.bob.mcalendarview.MarkStyle
 import sun.bob.mcalendarview.listeners.OnDateClickListener
 import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -73,6 +76,15 @@ class CalendarViewController(args: Bundle? = null) :
         toolbar.addView(calendarToolbar)
 
         initDayPicker(view, calendarToolbar)
+
+        val addContainer = view.addContainer
+
+        view.addQuest.setOnClickListener {
+            addContainer.visibility = View.VISIBLE
+            view.addQuest.visibility = View.GONE
+            ViewUtils.showKeyboard(addContainer.questName.context, addContainer.questName)
+            addContainer.questName.requestFocus()
+        }
 
         return view
     }
