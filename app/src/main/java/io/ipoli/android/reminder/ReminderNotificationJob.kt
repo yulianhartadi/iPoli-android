@@ -121,8 +121,10 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
 
             if (minutesDiff > Time.MINUTES_IN_AN_HOUR) {
                 "Starts at ${quest.startTime.toString(false)}"
-            } else {
+            } else if(minutesDiff > 0){
                 "Starts in $minutesDiff min"
+            } else {
+                "Starts now"
             }
         }
     }
@@ -140,7 +142,8 @@ class ReminderScheduler {
         bundle.putLong("start", time)
         JobRequest.Builder(ReminderNotificationJob.TAG)
             .setExtras(bundle)
-            .setExact(time - System.currentTimeMillis())
+            .setExact(100)
+//            .setExact(time - System.currentTimeMillis())
             .build()
             .schedule()
     }

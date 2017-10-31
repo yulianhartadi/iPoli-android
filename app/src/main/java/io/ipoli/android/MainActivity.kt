@@ -3,6 +3,7 @@ package io.ipoli.android
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
@@ -33,9 +34,8 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         val amplitudeClient = Amplitude.getInstance().initialize(this, AnalyticsConstants.AMPLITUDE_KEY)
         amplitudeClient.enableForegroundTracking(application)
         if (BuildConfig.DEBUG) {
+            Amplitude.getInstance().setLogLevel(Log.VERBOSE);
             amplitudeClient.setOptOut(true)
-        } else {
-            amplitudeClient.setOptOut(false)
         }
 
 //        if (!Settings.canDrawOverlays(this)) {
