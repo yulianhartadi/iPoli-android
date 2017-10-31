@@ -41,7 +41,7 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
         val id = "iPoli"
         val channelName = "iPoli"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManager.IMPORTANCE_MIN
+            val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(id, channelName, importance)
             channel.description = "Reminder notification"
             channel.enableLights(true)
