@@ -2,8 +2,6 @@ package io.ipoli.android.quest.calendar
 
 import android.content.Context
 import android.os.Bundle
-import android.support.constraint.ConstraintLayout
-import android.support.design.widget.FloatingActionButton
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.Toolbar
@@ -37,11 +35,8 @@ import sun.bob.mcalendarview.MarkStyle
 import sun.bob.mcalendarview.listeners.OnDateClickListener
 import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
-import timber.log.Timber
-import android.view.KeyEvent.KEYCODE_BACK
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
-import io.ipoli.android.R.id.*
 
 
 /**
