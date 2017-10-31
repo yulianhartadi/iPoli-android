@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipChildren="false"
@@ -89,21 +90,22 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@color/md_white"
-        android:focusable="true"
         android:clickable="true"
         android:elevation="3dp"
+        android:focusable="true"
         android:visibility="gone">
 
         <io.ipoli.android.quest.calendar.EditTextBackEvent
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
             android:id="@+id/questName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:backgroundTint="@android:color/transparent"
             android:hint="e.g. Go for a run"
+            android:imeOptions="actionDone"
             android:inputType="textCapSentences"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp"
             app:layout_constraintBottom_toTopOf="@+id/imageView3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -117,6 +119,16 @@
             android:src="@drawable/ic_add_black_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageView
+            android:id="@+id/done"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_done_black_24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.design.widget.CoordinatorLayout>

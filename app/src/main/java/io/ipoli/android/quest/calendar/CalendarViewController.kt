@@ -2,6 +2,8 @@ package io.ipoli.android.quest.calendar
 
 import android.content.Context
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
+import android.support.design.widget.FloatingActionButton
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.Toolbar
@@ -15,8 +17,6 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.ipoli.android.R
-import io.ipoli.android.R.id.add
-import io.ipoli.android.R.id.questName
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
@@ -39,7 +39,9 @@ import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
 import timber.log.Timber
 import android.view.KeyEvent.KEYCODE_BACK
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
+import io.ipoli.android.R.id.*
 
 
 /**
@@ -110,17 +112,23 @@ class CalendarViewController(args: Bundle? = null) :
         toolbar.addView(calendarToolbar)
 
         initDayPicker(view, calendarToolbar)
-        val addQuest = view.addQuest
 
+        val addQuest = view.addQuest
         val addContainer = view.addContainer
         val questName = addContainer.questName
         questName.setOnEditTextImeBackListener(object : EditTextImeBackListener {
             override fun onImeBack(ctrl: EditTextBackEvent, text: String) {
-                addContainer.visibility = View.GONE
-                addQuest.visibility = View.VISIBLE
-                addContainer.requestFocus()
+                closeAddContainer()
             }
         })
+
+        questName.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                closeAddContainer()
+                true
+            }
+            false
+        }
 
 
         addQuest.setOnClickListener {
@@ -130,7 +138,18 @@ class CalendarViewController(args: Bundle? = null) :
             questName.requestFocus()
         }
 
+        view.done.setOnClickListener {
+            ViewUtils.hideKeyboard(view)
+            closeAddContainer()
+        }
+
         return view
+    }
+
+    private fun closeAddContainer() {
+        view!!.addContainer.visibility = View.GONE
+        view!!.addContainer.requestFocus()
+        view!!.addQuest.visibility = View.VISIBLE
     }
 
     override fun onAttach(view: View) {
