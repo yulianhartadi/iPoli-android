@@ -85,18 +85,24 @@
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/addContainer"
-        android:elevation="3dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@color/md_white"
+        android:focusable="true"
+        android:clickable="true"
+        android:elevation="3dp"
         android:visibility="gone">
 
-        <EditText
+        <io.ipoli.android.quest.calendar.EditTextBackEvent
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             android:id="@+id/questName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
+            android:backgroundTint="@android:color/transparent"
+            android:hint="e.g. Go for a run"
             android:inputType="textCapSentences"
             app:layout_constraintBottom_toTopOf="@+id/imageView3"
             app:layout_constraintEnd_toEndOf="parent"
@@ -107,7 +113,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginBottom="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="16dp"
             android:src="@drawable/ic_add_black_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

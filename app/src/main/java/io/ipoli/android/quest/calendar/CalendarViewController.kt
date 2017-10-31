@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.Toolbar
+import android.util.AttributeSet
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,11 +38,43 @@ import sun.bob.mcalendarview.listeners.OnDateClickListener
 import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
 import timber.log.Timber
+import android.view.KeyEvent.KEYCODE_BACK
+import android.widget.EditText
+
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/8/17.
  */
+
+class EditTextBackEvent : EditText {
+
+    private var mOnImeBack: EditTextImeBackListener? = null
+
+    constructor(context: Context) : super(context) {}
+
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {}
+
+    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle) {}
+
+    override fun onKeyPreIme(keyCode: Int, event: KeyEvent): Boolean {
+        if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
+            if (mOnImeBack != null)
+                mOnImeBack!!.onImeBack(this, this.text.toString())
+        }
+        return super.dispatchKeyEvent(event)
+    }
+
+    fun setOnEditTextImeBackListener(listener: EditTextImeBackListener) {
+        mOnImeBack = listener
+    }
+
+}
+
+interface EditTextImeBackListener {
+    fun onImeBack(ctrl: EditTextBackEvent, text: String)
+}
+
 class CalendarViewController(args: Bundle? = null) :
     MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>(args),
     Injects<ControllerModule>,
@@ -76,14 +110,24 @@ class CalendarViewController(args: Bundle? = null) :
         toolbar.addView(calendarToolbar)
 
         initDayPicker(view, calendarToolbar)
+        val addQuest = view.addQuest
 
         val addContainer = view.addContainer
+        val questName = addContainer.questName
+        questName.setOnEditTextImeBackListener(object : EditTextImeBackListener {
+            override fun onImeBack(ctrl: EditTextBackEvent, text: String) {
+                addContainer.visibility = View.GONE
+                addQuest.visibility = View.VISIBLE
+                addContainer.requestFocus()
+            }
+        })
 
-        view.addQuest.setOnClickListener {
+
+        addQuest.setOnClickListener {
             addContainer.visibility = View.VISIBLE
-            view.addQuest.visibility = View.GONE
-            ViewUtils.showKeyboard(addContainer.questName.context, addContainer.questName)
-            addContainer.questName.requestFocus()
+            addQuest.visibility = View.GONE
+            ViewUtils.showKeyboard(questName.context, questName)
+            questName.requestFocus()
         }
 
         return view
