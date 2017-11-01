@@ -93,7 +93,7 @@
         android:clickable="true"
         android:elevation="3dp"
         android:focusable="true"
-        android:visibility="gone">
+        android:visibility="invisible">
 
         <io.ipoli.android.quest.calendar.EditTextBackEvent
             android:id="@+id/questName"

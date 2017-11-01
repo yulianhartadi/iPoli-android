@@ -1,19 +1,20 @@
 package io.ipoli.android.quest.calendar
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ObjectAnimator
+import android.animation.*
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Rect
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.AppCompatEditText
+import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.util.AttributeSet
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.util.DisplayMetrics
+import android.view.*
 import android.view.animation.AccelerateInterpolator
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
@@ -40,7 +41,10 @@ import sun.bob.mcalendarview.vo.DateData
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import io.ipoli.android.*
+import io.ipoli.android.R.string.view
 import io.ipoli.android.common.view.*
+import io.ipoli.android.quest.calendar.CalendarViewController.Companion.MAX_VISIBLE_DAYS
+import timber.log.Timber
 
 
 /**
@@ -118,7 +122,7 @@ class CalendarViewController(args: Bundle? = null) :
     }
 
     private fun initAddQuest(view: View) {
-        val addQuest = view.addQuest
+        val fab = view.addQuest
         val addContainer = view.addContainer
         val questName = addContainer.questName
 
@@ -136,54 +140,54 @@ class CalendarViewController(args: Bundle? = null) :
             false
         }
 
-
-        addQuest.setOnClickListener {
-            val startX = addQuest.x;
-
-            val path = AnimatorPath()
-            path.moveTo(0f, 0f);
-            path.curveTo(-200f, 200f, -400f, 100f, -600f, 50f)
-            val anim = ObjectAnimator.ofObject(CalendarViewController@this, "fabLoc",
-                PathEvaluator(), ArrayList<PathPoint>(path.points)[0], ArrayList<PathPoint>(path.points)[1])
-
-            anim.interpolator = AccelerateInterpolator()
-            anim.duration = 1000
-            anim.start()
-
-            anim.addUpdateListener {
-
-            }
-//            val animator = RevealAnimator(view = addQuest, reverse = true).create()
-//            animator.duration = 2000
-//            animator.addListener(object : AnimatorListenerAdapter() {
-//                override fun onAnimationEnd(animation: Animator?) {
-//                    addContainer.visibility = View.VISIBLE
-//                    addQuest.visibility = View.GONE
-//                    ViewUtils.showKeyboard(questName.context, questName)
-//                    questName.requestFocus()
-//                }
-//            })
-//            animator.start()
-
-        }
-
         view.done.setOnClickListener {
             ViewUtils.hideKeyboard(view)
             closeAddContainer()
         }
-    }
 
-    fun setFabLoc(newLoc: PathPoint) {
-//        mFab.setTranslationX(newLoc.mX);
-//
-//        if (mRevealFlag)
-//            mFab.setTranslationY(newLoc.mY - (mFabSize / 2));
-//        else
-//            mFab.setTranslationY(newLoc.mY);
-        view!!.addQuest.translationX = newLoc.mX
-        view!!.addQuest.translationY = newLoc.mY
-    }
+        fab.setOnClickListener {
+            val halfWidth = addContainer.width / 2
+            val centerY = addContainer.height / 2
 
+            val fabTransition = ObjectAnimator.ofFloat(fab, "x", halfWidth.toFloat() - fab.width / 2)
+            val rgbAnim = ObjectAnimator.ofArgb(fab, "backgroundTint",
+                ContextCompat.getColor(fab.context, R.color.md_green_500),
+                ContextCompat.getColor(fab.context, R.color.md_white))
+            rgbAnim.addUpdateListener({ animation ->
+                val value = animation.animatedValue as Int
+                fab.backgroundTintList = ColorStateList.valueOf(value)
+            })
+
+
+            val fabSet = AnimatorSet()
+            fabSet.playTogether(fabTransition, rgbAnim)
+            fabSet.duration = 300
+            fabSet.start()
+
+            fabSet.addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator?) {
+                    val ra = ViewAnimationUtils.createCircularReveal(
+                        addContainer,
+                        halfWidth, centerY,
+                        (fab.width / 2).toFloat(), halfWidth.toFloat()
+                    )
+                    ra.duration = 300
+                    ra.addListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationStart(animation: Animator?) {
+                            addContainer.visibility = View.VISIBLE
+                            fab.visibility = View.INVISIBLE
+                        }
+
+                        override fun onAnimationEnd(animation: Animator?) {
+                            ViewUtils.showKeyboard(questName.context, questName)
+                            questName.requestFocus()
+                        }
+                    })
+                    ra.start()
+                }
+            })
+        }
+    }
 
     private fun closeAddContainer() {
         view!!.addContainer.visibility = View.GONE
