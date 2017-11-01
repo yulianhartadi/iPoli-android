@@ -145,7 +145,8 @@ class ReminderScheduler {
         bundle.putLong("start", time)
         JobRequest.Builder(ReminderNotificationJob.TAG)
             .setExtras(bundle)
-            .setExact(time - System.currentTimeMillis())
+//            .setExact(time - System.currentTimeMillis())
+            .setExact(100)
             .build()
             .schedule()
     }

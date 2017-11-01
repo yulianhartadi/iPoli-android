@@ -26,10 +26,7 @@ import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
-import io.ipoli.android.common.view.AndroidColor
-import io.ipoli.android.common.view.ColorPickerDialogController
-import io.ipoli.android.common.view.PetMessage
-import io.ipoli.android.common.view.color
+import io.ipoli.android.common.view.*
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
@@ -404,7 +401,7 @@ class DayViewController :
 
             view.checkBox.setOnCheckedChangeListener { cb, checked ->
                 if (checked) {
-                    val anim = createRevealAnimator(view.completedBackgroundView, cb)
+                    val anim = RevealAnimator(view.completedBackgroundView, cb).create()
                     anim.addListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationStart(animation: Animator?) {
                             view.completedBackgroundView.visibility = View.VISIBLE
@@ -418,11 +415,11 @@ class DayViewController :
                     anim.start()
                 } else {
 
-                    val anim = createRevealAnimator(
+                    val anim = RevealAnimator(
                         view.completedBackgroundView,
                         cb,
                         reverse = true
-                    )
+                    ).create()
 
                     anim.addListener(object : AnimatorListenerAdapter() {
 
@@ -441,16 +438,6 @@ class DayViewController :
             view.post {
                 adaptViewForHeight(view, ViewUtils.pxToDp(view.height, context))
             }
-        }
-
-        private fun createRevealAnimator(view: View, anchorView: View, reverse: Boolean = false): Animator {
-            val finalRadius = Math.sqrt((view.width * view.width + view.height * view.height).toDouble()).toFloat()
-            return ViewAnimationUtils.createCircularReveal(view,
-                anchorView.x.toInt() + anchorView.width / 2,
-                anchorView.y.toInt() + anchorView.height / 2,
-                if (reverse) finalRadius else 0f,
-                if (reverse) 0f else finalRadius
-            )
         }
 
         override fun rescheduleEvent(position: Int, startTime: Time, duration: Int) {
