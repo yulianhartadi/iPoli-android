@@ -1,31 +1,32 @@
 package io.ipoli.android.quest.calendar
 
-import android.animation.*
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Rect
 import android.os.Bundle
-import android.support.constraint.ConstraintLayout
-import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.AppCompatEditText
-import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.util.AttributeSet
-import android.util.DisplayMetrics
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.AccelerateInterpolator
+import android.view.inputmethod.EditorInfo
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
+import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
+import io.ipoli.android.common.view.color
+import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import io.ipoli.android.quest.calendar.CalendarViewState.StateType.CALENDAR_DATE_CHANGED
 import io.ipoli.android.quest.calendar.dayview.view.DayViewController
@@ -40,15 +41,6 @@ import sun.bob.mcalendarview.MarkStyle
 import sun.bob.mcalendarview.listeners.OnDateClickListener
 import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
-import android.view.inputmethod.EditorInfo
-import android.widget.EditText
-import io.ipoli.android.*
-import io.ipoli.android.R.id.addContainer
-import io.ipoli.android.R.id.questName
-import io.ipoli.android.R.string.view
-import io.ipoli.android.common.view.*
-import io.ipoli.android.quest.calendar.CalendarViewController.Companion.MAX_VISIBLE_DAYS
-import timber.log.Timber
 
 
 /**
@@ -138,15 +130,13 @@ class CalendarViewController(args: Bundle? = null) :
 
         questName.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                closeAddContainer()
-                true
+
             }
-            false
+            true
         }
 
         view.done.setOnClickListener {
-            ViewUtils.hideKeyboard(view)
-            closeAddContainer()
+
         }
 
         fab.setOnClickListener {
@@ -180,14 +170,14 @@ class CalendarViewController(args: Bundle? = null) :
 
         fabSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
-                val ra = ViewAnimationUtils.createCircularReveal(
+                val revealAnim = ViewAnimationUtils.createCircularReveal(
                     addContainer,
                     halfWidth, centerY,
                     (fab.width / 2).toFloat(), halfWidth.toFloat()
                 )
-                ra.duration = 300
-                ra.interpolator = AccelerateDecelerateInterpolator()
-                ra.addListener(object : AnimatorListenerAdapter() {
+                revealAnim.duration = 300
+                revealAnim.interpolator = AccelerateDecelerateInterpolator()
+                revealAnim.addListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationStart(animation: Animator?) {
                         addContainer.visibility = View.VISIBLE
                         fab.visibility = View.INVISIBLE
@@ -198,15 +188,53 @@ class CalendarViewController(args: Bundle? = null) :
                         questName.requestFocus()
                     }
                 })
-                ra.start()
+                revealAnim.start()
             }
         })
     }
 
     private fun closeAddContainer() {
-        view!!.addContainer.visibility = View.GONE
-        view!!.addContainer.requestFocus()
-        view!!.addQuest.visibility = View.VISIBLE
+        val addContainer = view!!.addContainer
+        val fab = view!!.addQuest
+        val questName = addContainer.questName
+        val halfWidth = addContainer.width / 2
+        val centerY = addContainer.height / 2
+
+        val revealAnim = ViewAnimationUtils.createCircularReveal(
+            addContainer,
+            halfWidth, centerY,
+            halfWidth.toFloat(),  (fab.width / 2).toFloat()
+        )
+        revealAnim.duration = 300
+        revealAnim.startDelay = 300
+        revealAnim.interpolator = AccelerateDecelerateInterpolator()
+        revealAnim.addListener(object : AnimatorListenerAdapter() {
+
+            override fun onAnimationEnd(animation: Animator?) {
+                addContainer.visibility = View.INVISIBLE
+                view!!.addContainer.requestFocus()
+                fab.visibility = View.VISIBLE
+
+                val fabTransition = ObjectAnimator.ofFloat(fab, "x", (addContainer.width - fab.width - ViewUtils.dpToPx(16f, fab.context)).toFloat())
+                val rgbAnim = ObjectAnimator.ofArgb(fab, "backgroundTint",
+                    ContextCompat.getColor(fab.context, R.color.md_white),
+                    ContextCompat.getColor(fab.context, R.color.md_green_500))
+                rgbAnim.addUpdateListener({ animation ->
+                    val value = animation.animatedValue as Int
+                    fab.backgroundTintList = ColorStateList.valueOf(value)
+                })
+
+
+                val fabSet = AnimatorSet()
+                fabSet.playTogether(fabTransition, rgbAnim)
+                fabSet.duration = 300
+                fabSet.interpolator = AccelerateDecelerateInterpolator()
+                fabSet.start()
+
+            }
+
+        })
+        revealAnim.start()
     }
 
     override fun onAttach(view: View) {

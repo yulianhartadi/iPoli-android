@@ -401,7 +401,7 @@ class DayViewController :
 
             view.checkBox.setOnCheckedChangeListener { cb, checked ->
                 if (checked) {
-                    val anim = RevealAnimator(view.completedBackgroundView, cb).create()
+                    val anim = RevealAnimator().create(view.completedBackgroundView, cb)
                     anim.addListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationStart(animation: Animator?) {
                             view.completedBackgroundView.visibility = View.VISIBLE
@@ -415,11 +415,11 @@ class DayViewController :
                     anim.start()
                 } else {
 
-                    val anim = RevealAnimator(
+                    val anim = RevealAnimator().create(
                         view.completedBackgroundView,
                         cb,
                         reverse = true
-                    ).create()
+                    )
 
                     anim.addListener(object : AnimatorListenerAdapter() {
 
