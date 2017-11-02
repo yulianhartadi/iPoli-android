@@ -84,93 +84,13 @@
         app:backgroundTint="@color/colorAccentAlternative"
         app:elevation="6dp" />
 
-    <android.support.constraint.ConstraintLayout
+    <LinearLayout
+        android:orientation="horizontal"
         android:id="@+id/addContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/md_white"
-        android:clickable="true"
         android:elevation="3dp"
-        android:focusable="true"
-        android:visibility="invisible">
-
-        <io.ipoli.android.quest.calendar.EditTextBackEvent
-            android:id="@+id/questName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:backgroundTint="@android:color/transparent"
-            android:hint="e.g. Go for a run"
-            android:imeOptions="actionDone"
-            android:inputType="textCapSentences"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/scheduleDate"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <ImageView
-            android:id="@+id/scheduleDate"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="16dp"
-            android:src="@drawable/ic_event_black_18dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <ImageView
-            android:id="@+id/startTime"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="16dp"
-            android:src="@drawable/ic_clock_black_24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/scheduleDate" />
-
-
-        <ImageView
-            android:id="@+id/duration"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="16dp"
-            android:src="@drawable/ic_timer_black_24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/startTime" />
-
-        <ImageView
-            android:id="@+id/color"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="16dp"
-            android:src="@drawable/ic_color_palette_black_24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/duration" />
-
-        <ImageView
-            android:id="@+id/reminder"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginStart="16dp"
-            android:src="@drawable/ic_reminder_black_24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/color" />
-
-
-        <ImageView
-            android:id="@+id/done"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="16dp"
-            android:src="@drawable/ic_done_black_24dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-    </android.support.constraint.ConstraintLayout>
+        android:visibility="invisible"/>
 
 </android.support.design.widget.CoordinatorLayout>

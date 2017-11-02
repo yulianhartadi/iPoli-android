@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.app.DatePickerDialog
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
@@ -17,12 +18,15 @@ import android.util.AttributeSet
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.EditorInfo
+import android.widget.DatePicker
+import android.widget.LinearLayout
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.ipoli.android.R
-import io.ipoli.android.R.id.addContainer
+import io.ipoli.android.R.id.questName
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
@@ -32,9 +36,11 @@ import io.ipoli.android.common.view.color
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import io.ipoli.android.quest.calendar.CalendarViewState.StateType.CALENDAR_DATE_CHANGED
+import io.ipoli.android.quest.calendar.addquest.AddQuestViewController
 import io.ipoli.android.quest.calendar.dayview.view.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.controller_calendar_toolbar.view.*
+import kotlinx.android.synthetic.main.controller_home.view.*
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -117,40 +123,54 @@ class CalendarViewController(args: Bundle? = null) :
 
         initAddQuest(view)
 
+        val handler = FadeChangeHandler()
+        val childRouter = getChildRouter(view!!.addContainer, null)
+        childRouter.setRoot(
+            RouterTransaction.with(AddQuestViewController())
+                .pushChangeHandler(handler)
+                .popChangeHandler(handler)
+        )
+
         return view
     }
 
     private fun initAddQuest(view: View) {
-        val fab = view.addQuest
-        val addContainer = view.addContainer
-        val questName = addContainer.questName
-
-        questName.setOnEditTextImeBackListener(object : EditTextImeBackListener {
-            override fun onImeBack(ctrl: EditTextBackEvent, text: String) {
-                closeAddContainer()
-            }
-        })
-
-        questName.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-
-            }
-            true
-        }
-
-        view.done.setOnClickListener {
-
-        }
-
-        fab.setOnClickListener {
+//        val addContainer = view.addContainer
+//        val questName = addContainer.questName
+//
+        view.addQuest.setOnClickListener {
             openAddContainer()
         }
+//
+//        questName.setOnEditTextImeBackListener(object : EditTextImeBackListener {
+//            override fun onImeBack(ctrl: EditTextBackEvent, text: String) {
+//                closeAddContainer()
+//            }
+//        })
+//
+//        questName.setOnEditorActionListener { _, actionId, _ ->
+//            if (actionId == EditorInfo.IME_ACTION_DONE) {
+//                //send save quest intent
+//            }
+//            true
+//        }
+//
+//        view.done.setOnClickListener {
+//            //send save quest intent
+//        }
+//
+////        view.scheduleDate.setOnClickListener {
+////            val dialog = DatePickerDialog(view.context, R.style.Theme_iPoli_AlertDialog,
+////                DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth -> },
+////                )
+////        }
+//
     }
 
     private fun openAddContainer() {
-        val addContainer = view!!.addContainer
+        val addContainer = view!!.addContainer as LinearLayout
         val fab = view!!.addQuest
-        val questName = addContainer.questName
+//        val questName = addContainer.questName
 
         val halfWidth = addContainer.width / 2
 
@@ -174,8 +194,9 @@ class CalendarViewController(args: Bundle? = null) :
                     }
 
                     override fun onAnimationEnd(animation: Animator?) {
-                        ViewUtils.showKeyboard(questName.context, questName)
-                        questName.requestFocus()
+
+//                        ViewUtils.showKeyboard(questName.context, questName)
+//                        questName.requestFocus()
                     }
                 })
                 revealAnim.start()
