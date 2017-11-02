@@ -7,6 +7,7 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
@@ -21,6 +22,7 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.ipoli.android.R
+import io.ipoli.android.R.id.addContainer
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
@@ -151,32 +153,20 @@ class CalendarViewController(args: Bundle? = null) :
         val questName = addContainer.questName
 
         val halfWidth = addContainer.width / 2
-        val centerY = addContainer.height / 2
 
-        val fabTransition = ObjectAnimator.ofFloat(fab, "x", halfWidth.toFloat() - fab.width / 2)
-        val rgbAnim = ObjectAnimator.ofArgb(fab, "backgroundTint",
-            ContextCompat.getColor(fab.context, R.color.md_green_500),
-            ContextCompat.getColor(fab.context, R.color.md_white))
-        rgbAnim.addUpdateListener({ animation ->
-            val value = animation.animatedValue as Int
-            fab.backgroundTintList = ColorStateList.valueOf(value)
-        })
-
-
-        val fabSet = AnimatorSet()
-        fabSet.playTogether(fabTransition, rgbAnim)
-        fabSet.duration = 300
-        fabSet.interpolator = AccelerateDecelerateInterpolator()
+        val fabSet = createFabAnimator(fab, halfWidth.toFloat() - fab.width / 2)
         fabSet.start()
 
         fabSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
+                val duration = view!!.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
                 val revealAnim = RevealAnimator().createWithStartRadius(
                     view = addContainer,
                     startRadius = (fab.width / 2).toFloat()
                 )
-                revealAnim.duration = 2000
+                revealAnim.duration = duration
                 revealAnim.interpolator = AccelerateDecelerateInterpolator()
+
                 revealAnim.addListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationStart(animation: Animator?) {
                         addContainer.visibility = View.VISIBLE
@@ -194,6 +184,7 @@ class CalendarViewController(args: Bundle? = null) :
     }
 
     private fun closeAddContainer() {
+        val duration = view!!.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
         val addContainer = view!!.addContainer
         val fab = view!!.addQuest
 
@@ -202,7 +193,7 @@ class CalendarViewController(args: Bundle? = null) :
             endRadius = (fab.width / 2).toFloat(),
             reverse = true
         )
-        revealAnim.duration = 2000
+        revealAnim.duration = duration
         revealAnim.startDelay = 300
         revealAnim.interpolator = AccelerateDecelerateInterpolator()
         revealAnim.addListener(object : AnimatorListenerAdapter() {
@@ -212,26 +203,45 @@ class CalendarViewController(args: Bundle? = null) :
                 view!!.addContainer.requestFocus()
                 fab.visibility = View.VISIBLE
 
-                val fabTransition = ObjectAnimator.ofFloat(fab, "x", (addContainer.width - fab.width - ViewUtils.dpToPx(16f, fab.context)).toFloat())
-                val rgbAnim = ObjectAnimator.ofArgb(fab, "backgroundTint",
-                    ContextCompat.getColor(fab.context, R.color.md_white),
-                    ContextCompat.getColor(fab.context, R.color.md_green_500))
-                rgbAnim.addUpdateListener({ animation ->
-                    val value = animation.animatedValue as Int
-                    fab.backgroundTintList = ColorStateList.valueOf(value)
-                })
-
-
-                val fabSet = AnimatorSet()
-                fabSet.playTogether(fabTransition, rgbAnim)
-                fabSet.duration = 300
-                fabSet.interpolator = AccelerateDecelerateInterpolator()
+                val fabSet = createFabAnimator(
+                    fab,
+                    (addContainer.width - fab.width - ViewUtils.dpToPx(16f, fab.context)),
+                    reverse = true
+                )
                 fabSet.start()
 
             }
 
         })
         revealAnim.start()
+    }
+
+    private fun createFabAnimator(fab: FloatingActionButton, x: Float, reverse: Boolean = false): AnimatorSet {
+        val duration = view!!.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+        val fabTranslation = ObjectAnimator.ofFloat(fab, "x", x)
+
+        val fabColor = ContextCompat.getColor(fab.context, R.color.md_green_500)
+        val whiteColor = ContextCompat.getColor(fab.context, R.color.md_white)
+
+        val startColor = if (reverse) whiteColor else fabColor
+        val endColor = if (reverse) fabColor else whiteColor
+
+        val rgbAnim = ObjectAnimator.ofArgb(
+            fab,
+            "backgroundTint",
+            startColor, endColor
+        )
+        rgbAnim.addUpdateListener({ animation ->
+            val value = animation.animatedValue as Int
+            fab.backgroundTintList = ColorStateList.valueOf(value)
+        })
+
+
+        val fabSet = AnimatorSet()
+        fabSet.playTogether(fabTranslation, rgbAnim)
+        fabSet.interpolator = AccelerateDecelerateInterpolator()
+        fabSet.duration = duration
+        return fabSet
     }
 
     override fun onAttach(view: View) {
