@@ -25,6 +25,7 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
+import io.ipoli.android.common.view.RevealAnimator
 import io.ipoli.android.common.view.color
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
@@ -170,12 +171,11 @@ class CalendarViewController(args: Bundle? = null) :
 
         fabSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
-                val revealAnim = ViewAnimationUtils.createCircularReveal(
-                    addContainer,
-                    halfWidth, centerY,
-                    (fab.width / 2).toFloat(), halfWidth.toFloat()
+                val revealAnim = RevealAnimator().createWithStartRadius(
+                    view = addContainer,
+                    startRadius = (fab.width / 2).toFloat()
                 )
-                revealAnim.duration = 300
+                revealAnim.duration = 2000
                 revealAnim.interpolator = AccelerateDecelerateInterpolator()
                 revealAnim.addListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationStart(animation: Animator?) {
@@ -196,16 +196,13 @@ class CalendarViewController(args: Bundle? = null) :
     private fun closeAddContainer() {
         val addContainer = view!!.addContainer
         val fab = view!!.addQuest
-        val questName = addContainer.questName
-        val halfWidth = addContainer.width / 2
-        val centerY = addContainer.height / 2
 
-        val revealAnim = ViewAnimationUtils.createCircularReveal(
-            addContainer,
-            halfWidth, centerY,
-            halfWidth.toFloat(),  (fab.width / 2).toFloat()
+        val revealAnim = RevealAnimator().createWithEndRadius(
+            view = addContainer,
+            endRadius = (fab.width / 2).toFloat(),
+            reverse = true
         )
-        revealAnim.duration = 300
+        revealAnim.duration = 2000
         revealAnim.startDelay = 300
         revealAnim.interpolator = AccelerateDecelerateInterpolator()
         revealAnim.addListener(object : AnimatorListenerAdapter() {

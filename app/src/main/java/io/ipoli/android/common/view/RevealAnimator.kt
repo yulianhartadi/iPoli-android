@@ -11,7 +11,7 @@ import android.view.ViewAnimationUtils
 class RevealAnimator  {
 
     fun create(view: View, anchorView: View = view, reverse: Boolean = false): Animator {
-        val finalRadius = Math.max(view.width, view.height).toFloat()
+        val finalRadius = Math.max(view.width / 2, view.height / 2).toFloat()
         return ViewAnimationUtils.createCircularReveal(view,
             anchorView.x.toInt() + anchorView.width / 2,
             anchorView.y.toInt() + anchorView.height / 2,
@@ -20,34 +20,24 @@ class RevealAnimator  {
         )
     }
 
-    fun createWithStartRadius(view: View, startRadius: Float, anchorView: View = view, reverse: Boolean = false): Animator {
-        val finalRadius = Math.max(view.width, view.height).toFloat()
+    fun createWithStartRadius(view: View, startRadius: Float, reverse: Boolean = false): Animator {
+        val radius = Math.max(view.width / 2, view.height / 2).toFloat()
         return ViewAnimationUtils.createCircularReveal(view,
-            anchorView.x.toInt() + anchorView.width / 2,
-            anchorView.y.toInt() + anchorView.height / 2,
-            if (reverse) finalRadius else 0f,
-            if (reverse) 0f else finalRadius
+            view.width / 2,
+            view.height / 2,
+            startRadius,
+            if (reverse) 0f else radius
         )
     }
 
 
-    fun createWithEndRadius(view: View, endRadius: Float, anchorView: View = view, reverse: Boolean = false): Animator {
-        val finalRadius = Math.max(view.width, view.height).toFloat()
+    fun createWithEndRadius(view: View, endRadius: Float, reverse: Boolean = false): Animator {
+        val radius = Math.max(view.width / 2, view.height / 2).toFloat()
         return ViewAnimationUtils.createCircularReveal(view,
-            anchorView.x.toInt() + anchorView.width / 2,
-            anchorView.y.toInt() + anchorView.height / 2,
-            if (reverse) finalRadius else 0f,
-            if (reverse) 0f else finalRadius
+            view.width / 2,
+            view.height / 2,
+            if (reverse) radius else 0f,
+            endRadius
         )
     }
-
-//    fun create(view: View, startRadius: Float, endRadius: Float, anchorView: View = view, reverse: Boolean = false): Animator {
-//        val finalRadius = Math.max(view.width, view.height).toFloat()
-//        return ViewAnimationUtils.createCircularReveal(view,
-//            anchorView.x.toInt() + anchorView.width / 2,
-//            anchorView.y.toInt() + anchorView.height / 2,
-//            if (reverse) finalRadius else 0f,
-//            if (reverse) 0f else finalRadius
-//        )
-//    }
 }
