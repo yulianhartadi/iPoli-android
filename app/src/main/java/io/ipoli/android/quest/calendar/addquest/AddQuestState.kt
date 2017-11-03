@@ -4,6 +4,7 @@ import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.view.AndroidColor
+import io.ipoli.android.reminder.view.picker.ReminderViewModel
 import org.threeten.bp.LocalDate
 
 /**
@@ -15,21 +16,26 @@ sealed class AddQuestIntent : Intent
 object PickDateIntent : AddQuestIntent()
 object PickTimeIntent : AddQuestIntent()
 object PickColorIntent : AddQuestIntent()
+object PickReminderIntent : AddQuestIntent()
 data class DatePickedIntent(val year: Int, val month: Int, val day: Int) : AddQuestIntent()
 data class TimePickedIntent(val hour: Int, val minute: Int) : AddQuestIntent()
 data class ColorPickedIntent(val color: AndroidColor) : AddQuestIntent()
+data class ReminderPickedIntent(val reminder: ReminderViewModel?) : AddQuestIntent()
 
 data class AddQuestViewState(
     val type: StateType,
     val name: String,
     val date: LocalDate? = null,
     val time: Time? = null,
-    val color: AndroidColor? = null
+    val color: AndroidColor? = null,
+    val reminder: ReminderViewModel? = null
+
 ) : ViewState
 
 enum class StateType {
     DEFAULT,
     PICK_DATE,
     PICK_TIME,
-    PICK_COLOR
+    PICK_COLOR,
+    PICK_REMINDER
 }

@@ -21,6 +21,8 @@ import io.ipoli.android.common.view.ColorPickerDialogController
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.EditTextBackEvent
 import io.ipoli.android.quest.calendar.EditTextImeBackListener
+import io.ipoli.android.reminder.view.picker.ReminderPickerDialogController
+import io.ipoli.android.reminder.view.picker.ReminderViewModel
 import kotlinx.android.synthetic.main.controller_add_quest.view.*
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
@@ -65,6 +67,10 @@ class AddQuestViewController(args: Bundle? = null) :
             send(PickColorIntent)
         }
 
+        view.reminder.setOnClickListener {
+            send(PickReminderIntent)
+        }
+
         return view
     }
 
@@ -79,6 +85,10 @@ class AddQuestViewController(args: Bundle? = null) :
 
         state.color?.let {
             view.color.drawable.setTint(ContextCompat.getColor(view.context, R.color.colorAccentAlternative))
+        }
+
+        state.reminder?.let {
+            view.reminder.drawable.setTint(ContextCompat.getColor(view.context, R.color.colorAccentAlternative))
         }
 
         if (state.type == StateType.PICK_DATE) {
@@ -104,6 +114,14 @@ class AddQuestViewController(args: Bundle? = null) :
                 }
 
             }, state.color).showDialog(router, "pick_color_tag")
+        }
+
+        if (state.type == StateType.PICK_REMINDER) {
+            ReminderPickerDialogController(object : ReminderPickerDialogController.ReminderPickedListener {
+                override fun onReminderPicked(reminder: ReminderViewModel?) {
+                    send(ReminderPickedIntent(reminder))
+                }
+            }, state.reminder).showDialog(router, "pick_reminder_tag")
         }
     }
 

@@ -43,6 +43,12 @@ class AddQuestPresenter(
             is ColorPickedIntent ->
                 state.copy(type = StateType.DEFAULT, color = intent.color)
 
+            is PickReminderIntent ->
+                state.copy(type = StateType.PICK_REMINDER)
+
+            is ReminderPickedIntent ->
+                state.copy(type = StateType.DEFAULT, reminder = intent.reminder)
+
             else -> {
                 state
             }
