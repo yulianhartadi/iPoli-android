@@ -3,6 +3,7 @@ package io.ipoli.android.quest.calendar.addquest
 import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -56,6 +57,10 @@ class AddQuestViewController(args: Bundle? = null) :
     }
 
     override fun render(state: AddQuestViewState, view: View) {
+        state.date?.let {
+            view.scheduleDate.drawable.setTint(ContextCompat.getColor(view.context, R.color.colorAccentAlternative))
+        }
+
         if (state.type == StateType.SHOW_DATE_PICKER) {
             val date = if (state.date != null) state.date else LocalDate.now()
             val dialog = DatePickerDialog(view.context, R.style.Theme_iPoli_AlertDialog,
