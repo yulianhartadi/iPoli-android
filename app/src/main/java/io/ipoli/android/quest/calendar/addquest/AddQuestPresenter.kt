@@ -2,10 +2,6 @@ package io.ipoli.android.quest.calendar.addquest
 
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
-import io.ipoli.android.common.text.CalendarFormatter
-import io.ipoli.android.quest.calendar.CalendarIntent
-import io.ipoli.android.quest.calendar.CalendarPresenter
-import io.ipoli.android.quest.calendar.CalendarViewState
 import org.threeten.bp.LocalDate
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -17,12 +13,25 @@ class AddQuestPresenter(
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<AddQuestViewState>, AddQuestViewState, AddQuestIntent>(
     AddQuestViewState(
+        type = StateType.LOADING,
         name = ""
     ),
     coroutineContext
 ) {
-    override fun reduceState(intent: AddQuestIntent, state: AddQuestViewState): AddQuestViewState {
-        return state
-    }
+    override fun reduceState(intent: AddQuestIntent, state: AddQuestViewState) =
+        when (intent) {
+            is PickDateIntent ->
+                state.copy(type = StateType.SHOW_DATE_PICKER)
+
+            is DatePickedIntent -> {
+                val date = LocalDate.of(intent.year, intent.month, intent.day)
+                state.copy(type = StateType.DEFAULT, date = date)
+            }
+
+            else -> {
+                state
+            }
+
+        }
 
 }

@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.calendar.addquest
 
+import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,6 +17,7 @@ import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.EditTextBackEvent
 import io.ipoli.android.quest.calendar.EditTextImeBackListener
 import kotlinx.android.synthetic.main.controller_add_quest.view.*
+import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -31,6 +33,12 @@ class AddQuestViewController(args: Bundle? = null) :
 
     private val presenter by required { addQuestPresenter }
 
+    override fun createPresenter() = presenter
+
+    override fun onContextAvailable(context: Context) {
+        inject(iPoliApp.controllerModule(context, router))
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_add_quest, container, false)
 
@@ -40,12 +48,22 @@ class AddQuestViewController(args: Bundle? = null) :
             }
         })
 
-//        view.questName.post {
-//            view.questName.requestFocus()
-//            ViewUtils.showKeyboard(view.questName.context, view.questName)
-//        }
+        view.scheduleDate.setOnClickListener {
+            send(PickDateIntent)
+        }
 
         return view
+    }
+
+    override fun render(state: AddQuestViewState, view: View) {
+        if (state.type == StateType.SHOW_DATE_PICKER) {
+            val date = if (state.date != null) state.date else LocalDate.now()
+            val dialog = DatePickerDialog(view.context, R.style.Theme_iPoli_AlertDialog,
+                DatePickerDialog.OnDateSetListener { v, year, month, dayOfMonth ->
+                    send(DatePickedIntent(year, month - 1, dayOfMonth))
+                }, date.year, date.month.value - 1, date.dayOfMonth)
+            dialog.show()
+        }
     }
 
     override fun onChangeEnded(changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) {
@@ -56,25 +74,6 @@ class AddQuestViewController(args: Bundle? = null) :
 
     private fun close() {
         router.popController(this)
-    }
-
-    override fun createPresenter() = presenter
-
-    override fun render(state: AddQuestViewState, view: View) {
-//        Timber.d("AAA render")
-//        view.questName.requestFocus()
-//        ViewUtils.showKeyboard(view.questName.context, view.questName)
-    }
-
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-        view.post {
-
-        }
-    }
-
-    override fun onContextAvailable(context: Context) {
-        inject(iPoliApp.controllerModule(context, router))
     }
 
 }

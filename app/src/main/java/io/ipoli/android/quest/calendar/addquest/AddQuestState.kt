@@ -2,7 +2,6 @@ package io.ipoli.android.quest.calendar.addquest
 
 import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
-import io.ipoli.android.quest.calendar.CalendarIntent
 import org.threeten.bp.LocalDate
 
 /**
@@ -12,7 +11,14 @@ import org.threeten.bp.LocalDate
 sealed class AddQuestIntent : Intent
 
 object PickDateIntent : AddQuestIntent()
+data class DatePickedIntent(val year: Int, val month: Int, val day: Int) : AddQuestIntent()
 
 data class AddQuestViewState(
-    val name: String
+    val type: StateType,
+    val name: String,
+    val date: LocalDate? = null
 ) : ViewState
+
+enum class StateType {
+    LOADING, SHOW_DATE_PICKER, DEFAULT
+}
