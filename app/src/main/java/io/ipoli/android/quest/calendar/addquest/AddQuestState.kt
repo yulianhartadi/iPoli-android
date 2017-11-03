@@ -23,11 +23,13 @@ data class AddQuestViewState(
     val type: StateType,
     val name: String,
     val date: LocalDate? = null,
-    val time: Time? = null
+    val time: Time? = null,
+    val color: AndroidColor? = null
 ) : ViewState
 
 enum class StateType {
     DEFAULT,
     PICK_DATE,
-    PICK_TIME
+    PICK_TIME,
+    PICK_COLOR
 }

@@ -37,6 +37,12 @@ class AddQuestPresenter(
                 state.copy(type = StateType.DEFAULT, time = time)
             }
 
+            is PickColorIntent ->
+                state.copy(type = StateType.PICK_COLOR)
+
+            is ColorPickedIntent ->
+                state.copy(type = StateType.DEFAULT, color = intent.color)
+
             else -> {
                 state
             }
