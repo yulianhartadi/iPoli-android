@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.calendar.addquest
 
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
@@ -11,6 +12,7 @@ import com.bluelinelabs.conductor.ControllerChangeHandler
 import com.bluelinelabs.conductor.ControllerChangeType
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
+import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
@@ -53,6 +55,10 @@ class AddQuestViewController(args: Bundle? = null) :
             send(PickDateIntent)
         }
 
+        view.startTime.setOnClickListener {
+            send(PickTimeIntent)
+        }
+
         return view
     }
 
@@ -61,13 +67,25 @@ class AddQuestViewController(args: Bundle? = null) :
             view.scheduleDate.drawable.setTint(ContextCompat.getColor(view.context, R.color.colorAccentAlternative))
         }
 
-        if (state.type == StateType.SHOW_DATE_PICKER) {
+        state.time?.let {
+            view.startTime.drawable.setTint(ContextCompat.getColor(view.context, R.color.colorAccentAlternative))
+        }
 
+        if (state.type == StateType.PICK_DATE) {
             val date = state.date ?: LocalDate.now()
             val dialog = DatePickerDialog(view.context, R.style.Theme_iPoli_AlertDialog,
                 DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                     send(DatePickedIntent(year, month + 1, dayOfMonth))
                 }, date.year, date.month.value - 1, date.dayOfMonth)
+            dialog.show()
+        }
+
+        if (state.type == StateType.PICK_TIME) {
+            val startTime = state.time ?: Time.now()
+            val dialog = TimePickerDialog(view.context,
+                TimePickerDialog.OnTimeSetListener { _, hour, minute ->
+                    send(TimePickedIntent(hour, minute))
+                }, startTime.hours, startTime.getMinutes(), false)
             dialog.show()
         }
     }
