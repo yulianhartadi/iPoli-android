@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.app.DatePickerDialog
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
@@ -15,23 +14,22 @@ import android.support.v4.view.ViewPager
 import android.support.v7.widget.AppCompatEditText
 import android.support.v7.widget.Toolbar
 import android.util.AttributeSet
-import android.view.*
+import android.view.KeyEvent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.inputmethod.EditorInfo
-import android.widget.DatePicker
-import android.widget.LinearLayout
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.ipoli.android.R
-import io.ipoli.android.R.id.questName
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.RevealAnimator
+import io.ipoli.android.common.view.changehandler.CircularRevealChangeHandler
 import io.ipoli.android.common.view.color
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
@@ -40,7 +38,6 @@ import io.ipoli.android.quest.calendar.addquest.AddQuestViewController
 import io.ipoli.android.quest.calendar.dayview.view.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.controller_calendar_toolbar.view.*
-import kotlinx.android.synthetic.main.controller_home.view.*
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -50,7 +47,6 @@ import sun.bob.mcalendarview.MarkStyle
 import sun.bob.mcalendarview.listeners.OnDateClickListener
 import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
-
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -123,19 +119,14 @@ class CalendarViewController(args: Bundle? = null) :
 
         initAddQuest(view)
 
-        val handler = FadeChangeHandler()
-        val childRouter = getChildRouter(view!!.addContainer, null)
-        childRouter.setRoot(
-            RouterTransaction.with(AddQuestViewController())
-                .pushChangeHandler(handler)
-                .popChangeHandler(handler)
-        )
+//        targetController = addQuestViewController
+//        addQuestViewController.targetController = this
 
         return view
     }
 
     private fun initAddQuest(view: View) {
-//        val addContainer = view.addContainer
+        val addContainer = view.addContainer
 //        val questName = addContainer.questName
 //
         view.addQuest.setOnClickListener {
@@ -168,9 +159,8 @@ class CalendarViewController(args: Bundle? = null) :
     }
 
     private fun openAddContainer() {
-        val addContainer = view!!.addContainer as LinearLayout
+        val addContainer = view!!.addContainer
         val fab = view!!.addQuest
-//        val questName = addContainer.questName
 
         val halfWidth = addContainer.width / 2
 
@@ -179,27 +169,26 @@ class CalendarViewController(args: Bundle? = null) :
 
         fabSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
-                val duration = view!!.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
-                val revealAnim = RevealAnimator().createWithStartRadius(
-                    view = addContainer,
-                    startRadius = (fab.width / 2).toFloat()
-                )
-                revealAnim.duration = duration
-                revealAnim.interpolator = AccelerateDecelerateInterpolator()
+                addContainer.visibility = View.VISIBLE
+                fab.visibility = View.INVISIBLE
+                val handler = CircularRevealChangeHandler(addContainer, addContainer, duration = 200)
+                val childRouter = getChildRouter(view!!.addContainer, "add-quest")
+                val addQuestViewController = AddQuestViewController()
 
-                revealAnim.addListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationStart(animation: Animator?) {
-                        addContainer.visibility = View.VISIBLE
-                        fab.visibility = View.INVISIBLE
+                addQuestViewController.addLifecycleListener(object : LifecycleListener() {
+                    override fun postDestroy(controller: Controller) {
+                        super.postDestroy(controller)
+                        closeAddContainer()
                     }
 
-                    override fun onAnimationEnd(animation: Animator?) {
-
-//                        ViewUtils.showKeyboard(questName.context, questName)
-//                        questName.requestFocus()
-                    }
                 })
-                revealAnim.start()
+
+                childRouter.setRoot(
+                    RouterTransaction.with(addQuestViewController)
+                        .pushChangeHandler(handler)
+                        .popChangeHandler(handler)
+                )
+
             }
         })
     }
@@ -256,7 +245,6 @@ class CalendarViewController(args: Bundle? = null) :
             val value = animation.animatedValue as Int
             fab.backgroundTintList = ColorStateList.valueOf(value)
         })
-
 
         val fabSet = AnimatorSet()
         fabSet.playTogether(fabTranslation, rgbAnim)

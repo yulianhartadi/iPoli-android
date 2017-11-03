@@ -1,30 +1,21 @@
 package io.ipoli.android.quest.calendar.addquest
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.os.Bundle
-import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
-import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import com.bluelinelabs.conductor.ControllerChangeHandler
+import com.bluelinelabs.conductor.ControllerChangeType
 import io.ipoli.android.R
-import io.ipoli.android.R.id.*
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
-import io.ipoli.android.common.view.RevealAnimator
 import io.ipoli.android.iPoliApp
-import io.ipoli.android.quest.calendar.CalendarIntent
-import io.ipoli.android.quest.calendar.CalendarPresenter
-import io.ipoli.android.quest.calendar.CalendarViewController
-import io.ipoli.android.quest.calendar.CalendarViewState
+import io.ipoli.android.quest.calendar.EditTextBackEvent
+import io.ipoli.android.quest.calendar.EditTextImeBackListener
 import kotlinx.android.synthetic.main.controller_add_quest.view.*
-import kotlinx.android.synthetic.main.controller_calendar.view.*
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -43,22 +34,42 @@ class AddQuestViewController(args: Bundle? = null) :
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_add_quest, container, false)
 
+        view.questName.setOnEditTextImeBackListener(object : EditTextImeBackListener {
+            override fun onImeBack(ctrl: EditTextBackEvent, text: String) {
+                close()
+            }
+        })
+
+//        view.questName.post {
+//            view.questName.requestFocus()
+//            ViewUtils.showKeyboard(view.questName.context, view.questName)
+//        }
+
         return view
+    }
+
+    override fun onChangeEnded(changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) {
+        super.onChangeEnded(changeHandler, changeType)
+        view!!.questName.requestFocus()
+        ViewUtils.showKeyboard(view!!.questName.context, view!!.questName)
+    }
+
+    private fun close() {
+        router.popController(this)
     }
 
     override fun createPresenter() = presenter
 
     override fun render(state: AddQuestViewState, view: View) {
-
+//        Timber.d("AAA render")
+//        view.questName.requestFocus()
+//        ViewUtils.showKeyboard(view.questName.context, view.questName)
     }
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-
         view.post {
-            val questName = view.questName
-            ViewUtils.showKeyboard(questName.context, questName)
-            questName.requestFocus()
+
         }
     }
 
