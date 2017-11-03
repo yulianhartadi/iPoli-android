@@ -62,10 +62,11 @@ class AddQuestViewController(args: Bundle? = null) :
         }
 
         if (state.type == StateType.SHOW_DATE_PICKER) {
-            val date = if (state.date != null) state.date else LocalDate.now()
+
+            val date = state.date ?: LocalDate.now()
             val dialog = DatePickerDialog(view.context, R.style.Theme_iPoli_AlertDialog,
-                DatePickerDialog.OnDateSetListener { v, year, month, dayOfMonth ->
-                    send(DatePickedIntent(year, month - 1, dayOfMonth))
+                DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                    send(DatePickedIntent(year, month + 1, dayOfMonth))
                 }, date.year, date.month.value - 1, date.dayOfMonth)
             dialog.show()
         }
