@@ -159,7 +159,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, undoRemoveQuestUseCase, completeQuestUseCase, undoCompleteQuestUseCase, job)
     override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter, job)
     override val calendarPresenter get() = CalendarPresenter(calendarFormatter, job)
-    override val addQuestPresenter get() = AddQuestPresenter(job)
+    override val addQuestPresenter get() = AddQuestPresenter(saveQuestUseCase, job)
 }
 
 class ControllerModule(androidModule: AndroidModule,

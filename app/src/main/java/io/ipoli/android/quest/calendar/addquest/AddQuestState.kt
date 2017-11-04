@@ -23,10 +23,10 @@ data class TimePickedIntent(val hour: Int, val minute: Int) : AddQuestIntent()
 data class DurationPickedIntent(val minutes: Int) : AddQuestIntent()
 data class ColorPickedIntent(val color: AndroidColor) : AddQuestIntent()
 data class ReminderPickedIntent(val reminder: ReminderViewModel?) : AddQuestIntent()
+data class SaveQuestIntent(val name : String) : AddQuestIntent()
 
 data class AddQuestViewState(
     val type: StateType,
-    val name: String,
     val date: LocalDate? = null,
     val time: Time? = null,
     val duration: Int? = null,
@@ -41,5 +41,7 @@ enum class StateType {
     PICK_TIME,
     PICK_DURATION,
     PICK_COLOR,
-    PICK_REMINDER
+    PICK_REMINDER,
+    VALIDATION_ERROR,
+    QUEST_SAVED
 }

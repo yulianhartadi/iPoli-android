@@ -8,10 +8,12 @@ import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.widget.ImageView
 import com.bluelinelabs.conductor.ControllerChangeHandler
 import com.bluelinelabs.conductor.ControllerChangeType
 import io.ipoli.android.R
-import io.ipoli.android.R.id.startTime
+import io.ipoli.android.R.id.questName
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.ControllerModule
@@ -20,6 +22,7 @@ import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.ColorPickerDialogController
 import io.ipoli.android.common.view.DurationPickerDialogController
+import io.ipoli.android.common.view.color
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.EditTextBackEvent
 import io.ipoli.android.quest.calendar.EditTextImeBackListener
@@ -53,9 +56,17 @@ class AddQuestViewController(args: Bundle? = null) :
 
         view.questName.setOnEditTextImeBackListener(object : EditTextImeBackListener {
             override fun onImeBack(ctrl: EditTextBackEvent, text: String) {
+                send(SaveQuestIntent(view.questName.text.toString()))
                 close()
             }
         })
+
+        view.questName.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                send(SaveQuestIntent(view.questName.text.toString()))
+            }
+            true
+        }
 
         view.scheduleDate.setOnClickListener {
             send(PickDateIntent)
@@ -77,71 +88,98 @@ class AddQuestViewController(args: Bundle? = null) :
             send(PickReminderIntent)
         }
 
+        view.done.setOnClickListener {
+            send(SaveQuestIntent(view.questName.text.toString()))
+        }
+
         return view
     }
 
     override fun render(state: AddQuestViewState, view: View) {
+        colorSelectedIcons(state, view)
+
+        when {
+            state.type == StateType.PICK_DATE -> {
+                val date = state.date ?: LocalDate.now()
+                DatePickerDialog(view.context, R.style.Theme_iPoli_AlertDialog,
+                    DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                        send(DatePickedIntent(year, month + 1, dayOfMonth))
+                    }, date.year, date.month.value - 1, date.dayOfMonth).show()
+            }
+
+            state.type == StateType.PICK_TIME -> {
+                val startTime = state.time ?: Time.now()
+                TimePickerDialog(view.context,
+                    TimePickerDialog.OnTimeSetListener { _, hour, minute ->
+                        send(TimePickedIntent(hour, minute))
+                    }, startTime.hours, startTime.getMinutes(), false).show()
+            }
+
+            state.type == StateType.PICK_DURATION ->
+                DurationPickerDialogController(object : DurationPickerDialogController.DurationPickedListener {
+                    override fun onDurationPicked(minutes: Int) {
+                        send(DurationPickedIntent(minutes))
+                    }
+
+                }, state.duration).showDialog(router, "pick_duration_tag")
+
+            state.type == StateType.PICK_COLOR ->
+                ColorPickerDialogController(object : ColorPickerDialogController.ColorPickedListener {
+                    override fun onColorPicked(color: AndroidColor) {
+                        send(ColorPickedIntent(color))
+                    }
+
+                }, state.color).showDialog(router, "pick_color_tag")
+
+            state.type == StateType.PICK_REMINDER ->
+                ReminderPickerDialogController(object : ReminderPickerDialogController.ReminderPickedListener {
+                    override fun onReminderPicked(reminder: ReminderViewModel?) {
+                        send(ReminderPickedIntent(reminder))
+                    }
+                }, state.reminder).showDialog(router, "pick_reminder_tag")
+
+            state.type == StateType.VALIDATION_ERROR ->
+                view.questName.error = "Think of a name"
+
+            state.type == StateType.QUEST_SAVED -> {
+                resetForm(view)
+            }
+        }
+    }
+
+    private fun resetForm(view: View) {
+        view.questName.setText("")
+        view.scheduleDate.drawable.setTintList(null)
+        view.startTime.drawable.setTintList(null)
+        view.duration.drawable.setTintList(null)
+        view.color.drawable.setTintList(null)
+        view.reminder.drawable.setTintList(null)
+    }
+
+    private fun colorSelectedIcons(state: AddQuestViewState, view: View) {
         state.date?.let {
-            view.scheduleDate.drawable.setTint(ContextCompat.getColor(view.context, R.color.colorAccentAlternative))
+            colorSelectedIcon(view.scheduleDate)
         }
 
         state.time?.let {
-            view.startTime.drawable.setTint(ContextCompat.getColor(view.context, R.color.colorAccentAlternative))
+            colorSelectedIcon(view.startTime)
         }
 
         state.duration?.let {
-            view.duration.drawable.setTint(ContextCompat.getColor(view.context, R.color.colorAccentAlternative))
+            colorSelectedIcon(view.duration)
         }
 
         state.color?.let {
-            view.color.drawable.setTint(ContextCompat.getColor(view.context, R.color.colorAccentAlternative))
+            colorSelectedIcon(view.color)
         }
 
         state.reminder?.let {
-            view.reminder.drawable.setTint(ContextCompat.getColor(view.context, R.color.colorAccentAlternative))
+            colorSelectedIcon(view.reminder)
         }
+    }
 
-        if (state.type == StateType.PICK_DATE) {
-            val date = state.date ?: LocalDate.now()
-            DatePickerDialog(view.context, R.style.Theme_iPoli_AlertDialog,
-                DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                    send(DatePickedIntent(year, month + 1, dayOfMonth))
-                }, date.year, date.month.value - 1, date.dayOfMonth).show()
-        }
-
-        if (state.type == StateType.PICK_TIME) {
-            val startTime = state.time ?: Time.now()
-            TimePickerDialog(view.context,
-                TimePickerDialog.OnTimeSetListener { _, hour, minute ->
-                    send(TimePickedIntent(hour, minute))
-                }, startTime.hours, startTime.getMinutes(), false).show()
-        }
-
-        if (state.type == StateType.PICK_DURATION) {
-            DurationPickerDialogController(object : DurationPickerDialogController.DurationPickedListener {
-                override fun onDurationPicked(minutes: Int) {
-                    send(DurationPickedIntent(minutes))
-                }
-
-            }, state.duration).showDialog(router, "pick_duration_tag")
-        }
-
-        if (state.type == StateType.PICK_COLOR) {
-            ColorPickerDialogController(object : ColorPickerDialogController.ColorPickedListener {
-                override fun onColorPicked(color: AndroidColor) {
-                    send(ColorPickedIntent(color))
-                }
-
-            }, state.color).showDialog(router, "pick_color_tag")
-        }
-
-        if (state.type == StateType.PICK_REMINDER) {
-            ReminderPickerDialogController(object : ReminderPickerDialogController.ReminderPickedListener {
-                override fun onReminderPicked(reminder: ReminderViewModel?) {
-                    send(ReminderPickedIntent(reminder))
-                }
-            }, state.reminder).showDialog(router, "pick_reminder_tag")
-        }
+    private fun colorSelectedIcon(view: ImageView) {
+        view.drawable.setTint(color(R.color.colorAccentAlternative))
     }
 
     override fun onChangeEnded(changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) {
