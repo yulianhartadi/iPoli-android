@@ -126,36 +126,9 @@ class CalendarViewController(args: Bundle? = null) :
     }
 
     private fun initAddQuest(view: View) {
-        val addContainer = view.addContainer
-//        val questName = addContainer.questName
-//
         view.addQuest.setOnClickListener {
             openAddContainer()
         }
-//
-//        questName.setOnEditTextImeBackListener(object : EditTextImeBackListener {
-//            override fun onImeBack(ctrl: EditTextBackEvent, text: String) {
-//                closeAddContainer()
-//            }
-//        })
-//
-//        questName.setOnEditorActionListener { _, actionId, _ ->
-//            if (actionId == EditorInfo.IME_ACTION_DONE) {
-//                //send save quest intent
-//            }
-//            true
-//        }
-//
-//        view.done.setOnClickListener {
-//            //send save quest intent
-//        }
-//
-////        view.scheduleDate.setOnClickListener {
-////            val dialog = DatePickerDialog(view.context, R.style.Theme_iPoli_AlertDialog,
-////                DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth -> },
-////                )
-////        }
-//
     }
 
     private fun openAddContainer() {
@@ -227,7 +200,7 @@ class CalendarViewController(args: Bundle? = null) :
     }
 
     private fun createFabAnimator(fab: FloatingActionButton, x: Float, reverse: Boolean = false): AnimatorSet {
-        val duration = view!!.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+        val duration = view!!.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
         val fabTranslation = ObjectAnimator.ofFloat(fab, "x", x)
 
         val fabColor = ContextCompat.getColor(fab.context, R.color.md_green_500)
