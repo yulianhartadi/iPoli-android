@@ -43,10 +43,10 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
             amplitudeClient.setOptOut(true)
         }
 
-        if (!Settings.canDrawOverlays(this)) {
-            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + packageName))
-            startActivityForResult(intent, 0)
-        }
+//        if (!Settings.canDrawOverlays(this)) {
+//            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + packageName))
+//            startActivityForResult(intent, 0)
+//        }
 
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         inject(iPoliApp.controllerModule(this, router))
