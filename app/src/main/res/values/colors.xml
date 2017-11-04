@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">@color/md_red_500</color>
     <color name="colorPrimaryDark">@color/md_red_700</color>
-    <color name="colorAccent">@color/md_red_A400</color>
+    <color name="colorAccent">@color/md_green_500</color>
     <color name="colorAccentDark">@color/md_red_A700</color>
     <color name="colorAccentAlternative">@color/md_green_500</color>
 

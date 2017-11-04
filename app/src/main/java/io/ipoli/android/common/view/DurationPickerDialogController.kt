@@ -13,7 +13,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import com.sdsmdg.harjot.crollerTest.Croller
+import io.ipoli.android.Constants
 import io.ipoli.android.R
+import io.ipoli.android.R.string.minutes
 import io.ipoli.android.common.text.DurationFormatter.formatShort
 import kotlinx.android.synthetic.main.dialog_duration_picker.view.*
 import timber.log.Timber
@@ -44,21 +46,28 @@ class DurationPickerDialogController : BaseDialogController {
 
         val contentView = inflater.inflate(R.layout.dialog_duration_picker, null)
 
+
         val croller = contentView.croller
-        croller.max = 2 * 12
+        croller.max = 25
+        var minutes: Int = Constants.QUEST_MIN_DURATION
         croller.setOnProgressChangedListener { progress ->
-            Timber.d("AAA $progress")
-            val minutes = progress * 5
+            if(progress <= 11) {
+                minutes = progress * 5 + 5
+            } else if(progress <= 17) {
+                minutes = 60 + (progress % 11) * 10
+            } else {
+                minutes = 120 + (progress % 17) * 15
+            }
             croller.label = formatShort(minutes)
 
         }
 
         return AlertDialog.Builder(activity!!)
             .setView(contentView)
-            .setTitle("Pick duration")
+            .setTitle("Pick minutes")
             .setIcon(R.drawable.pet_5_head)
             .setPositiveButton(R.string.dialog_ok, { _, _ ->
-                listener!!.onDurationPicked(croller.progress)
+                listener!!.onDurationPicked(minutes)
             })
             .setNegativeButton(R.string.cancel, null)
             .create()

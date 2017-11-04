@@ -81,14 +81,13 @@ object DurationFormatter {
         if (duration < 0) {
             return ""
         }
-        val separator = "and"
         val hours = TimeUnit.MINUTES.toHours(duration.toLong()).toInt()
         val mins = duration - hours * 60
         if (hours <= 0 && mins <= 0) {
             return ""
         }
         if (hours > 0 && mins > 0) {
-            return hours.toString() + "h " + separator + " " + mins + "m"
+            return hours.toString() + "h " + mins + "m"
         }
 
         return if (hours > 0 && mins == 0) {
