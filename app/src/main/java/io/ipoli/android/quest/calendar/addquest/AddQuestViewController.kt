@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import com.bluelinelabs.conductor.ControllerChangeHandler
 import com.bluelinelabs.conductor.ControllerChangeType
 import io.ipoli.android.R
+import io.ipoli.android.R.id.startTime
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.ControllerModule
@@ -18,6 +19,7 @@ import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.ColorPickerDialogController
+import io.ipoli.android.common.view.DurationPickerDialogController
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.EditTextBackEvent
 import io.ipoli.android.quest.calendar.EditTextImeBackListener
@@ -63,6 +65,10 @@ class AddQuestViewController(args: Bundle? = null) :
             send(PickTimeIntent)
         }
 
+        view.duration.setOnClickListener {
+            send(PickDurationIntent)
+        }
+
         view.color.setOnClickListener {
             send(PickColorIntent)
         }
@@ -81,6 +87,10 @@ class AddQuestViewController(args: Bundle? = null) :
 
         state.time?.let {
             view.startTime.drawable.setTint(ContextCompat.getColor(view.context, R.color.colorAccentAlternative))
+        }
+
+        state.duration?.let {
+            view.duration.drawable.setTint(ContextCompat.getColor(view.context, R.color.colorAccentAlternative))
         }
 
         state.color?.let {
@@ -105,6 +115,15 @@ class AddQuestViewController(args: Bundle? = null) :
                 TimePickerDialog.OnTimeSetListener { _, hour, minute ->
                     send(TimePickedIntent(hour, minute))
                 }, startTime.hours, startTime.getMinutes(), false).show()
+        }
+
+        if (state.type == StateType.PICK_DURATION) {
+            DurationPickerDialogController(object : DurationPickerDialogController.DurationPickedListener {
+                override fun onDurationPicked(minutes: Int) {
+                    send(DurationPickedIntent(minutes))
+                }
+
+            }, state.duration).showDialog(router, "pick_duration_tag")
         }
 
         if (state.type == StateType.PICK_COLOR) {

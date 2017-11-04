@@ -15,10 +15,12 @@ sealed class AddQuestIntent : Intent
 
 object PickDateIntent : AddQuestIntent()
 object PickTimeIntent : AddQuestIntent()
+object PickDurationIntent : AddQuestIntent()
 object PickColorIntent : AddQuestIntent()
 object PickReminderIntent : AddQuestIntent()
 data class DatePickedIntent(val year: Int, val month: Int, val day: Int) : AddQuestIntent()
 data class TimePickedIntent(val hour: Int, val minute: Int) : AddQuestIntent()
+data class DurationPickedIntent(val minutes: Int) : AddQuestIntent()
 data class ColorPickedIntent(val color: AndroidColor) : AddQuestIntent()
 data class ReminderPickedIntent(val reminder: ReminderViewModel?) : AddQuestIntent()
 
@@ -27,6 +29,7 @@ data class AddQuestViewState(
     val name: String,
     val date: LocalDate? = null,
     val time: Time? = null,
+    val duration: Int? = null,
     val color: AndroidColor? = null,
     val reminder: ReminderViewModel? = null
 
@@ -36,6 +39,7 @@ enum class StateType {
     DEFAULT,
     PICK_DATE,
     PICK_TIME,
+    PICK_DURATION,
     PICK_COLOR,
     PICK_REMINDER
 }
