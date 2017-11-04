@@ -112,7 +112,6 @@ class ReminderPickerDialogController :
             }
 
             ReminderPickerViewState.StateType.FINISHED -> {
-                ViewUtils.hideKeyboard(view)
                 listener?.onReminderPicked(state.viewModel!!)
                 dismissDialog()
             }
@@ -196,7 +195,6 @@ class ReminderPickerDialogController :
             .setPositiveButton(R.string.dialog_ok, null)
             .setNegativeButton(R.string.cancel, { _, _ -> ViewUtils.hideKeyboard(contentView) })
             .setNeutralButton(R.string.do_not_remind, { _, _ ->
-                ViewUtils.hideKeyboard(contentView)
                 listener?.onReminderPicked(null)
             })
             .create()

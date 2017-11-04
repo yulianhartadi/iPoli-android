@@ -26,7 +26,7 @@ class AddQuestPresenter(
 ) : BaseMviPresenter<ViewStateRenderer<AddQuestViewState>, AddQuestViewState, AddQuestIntent>(
     AddQuestViewState(
         type = StateType.DEFAULT
-        ),
+    ),
     coroutineContext
 ) {
     override fun reduceState(intent: AddQuestIntent, state: AddQuestViewState) =
@@ -84,7 +84,12 @@ class AddQuestPresenter(
                 )
                 val result = saveQuestUseCase.execute(questParams)
                 when (result) {
-                    is Result.Invalid -> state.copy(type = StateType.VALIDATION_ERROR)
+                    is Result.Invalid -> {
+                        if (result.errors[0] == Result.ValidationError.EMPTY_NAME)
+                            state.copy(type = StateType.VALIDATION_ERROR_EMPTY_NAME)
+                        else
+                            state.copy(type = StateType.VALIDATION_ERROR_EMPTY_START_TIME)
+                    }
                     else -> AddQuestViewState(type = StateType.QUEST_SAVED)
                 }
             }

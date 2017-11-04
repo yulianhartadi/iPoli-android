@@ -62,7 +62,7 @@ data class Quest(
     val isCompleted = completedAtDate != null
     val endTime: Time?
         get() = startTime?.let { Time.of(it.toMinuteOfDay() + duration)}
-    val isScheduled = true
+    val isScheduled = startTime != null
 }
 
 data class Player(

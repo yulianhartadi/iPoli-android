@@ -1,5 +1,7 @@
 package io.ipoli.android.quest.calendar.addquest
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
@@ -10,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
+import android.widget.Toast
 import com.bluelinelabs.conductor.ControllerChangeHandler
 import com.bluelinelabs.conductor.ControllerChangeType
 import io.ipoli.android.R
@@ -29,6 +32,7 @@ import io.ipoli.android.quest.calendar.EditTextImeBackListener
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogController
 import io.ipoli.android.reminder.view.picker.ReminderViewModel
 import kotlinx.android.synthetic.main.controller_add_quest.view.*
+import kotlinx.android.synthetic.main.dialog_reminder_picker.view.*
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -56,7 +60,6 @@ class AddQuestViewController(args: Bundle? = null) :
 
         view.questName.setOnEditTextImeBackListener(object : EditTextImeBackListener {
             override fun onImeBack(ctrl: EditTextBackEvent, text: String) {
-                send(SaveQuestIntent(view.questName.text.toString()))
                 close()
             }
         })
@@ -138,13 +141,30 @@ class AddQuestViewController(args: Bundle? = null) :
                     }
                 }, state.reminder).showDialog(router, "pick_reminder_tag")
 
-            state.type == StateType.VALIDATION_ERROR ->
+            state.type == StateType.VALIDATION_ERROR_EMPTY_NAME ->
                 view.questName.error = "Think of a name"
+
+            state.type == StateType.VALIDATION_ERROR_EMPTY_START_TIME -> {
+                Toast.makeText(view.context, "When will it start?", Toast.LENGTH_SHORT).show()
+                playStartTimeErrorAnimation(view.startTime)
+            }
 
             state.type == StateType.QUEST_SAVED -> {
                 resetForm(view)
             }
         }
+    }
+
+    private fun playStartTimeErrorAnimation(view: View) {
+        val scaleXAnimator = ObjectAnimator.ofFloat(view, "scaleX", 1.4f, 1f)
+        val scaleYAnimator = ObjectAnimator.ofFloat(view, "scaleY", 1.4f, 1f)
+        val shakeAnimator = ObjectAnimator.ofFloat(view, "rotation", 0f, 50f, 0f, -50f, 0f)
+        shakeAnimator.repeatCount = 4
+
+        val set = AnimatorSet()
+        set.playTogether(scaleXAnimator, scaleYAnimator, shakeAnimator)
+        set.duration = 200
+        set.start()
     }
 
     private fun resetForm(view: View) {

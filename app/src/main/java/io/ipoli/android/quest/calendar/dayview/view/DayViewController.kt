@@ -201,6 +201,8 @@ class DayViewController :
         dragView.reminder.setOnClickListener {
             ReminderPickerDialogController(object : ReminderPickerDialogController.ReminderPickedListener {
                 override fun onReminderPicked(reminder: ReminderViewModel?) {
+                    calendarDayView.requestFocus()
+                    ViewUtils.hideKeyboard(calendarDayView)
                     send(ReminderPickedIntent(reminder))
                 }
             }, reminder)
