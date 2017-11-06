@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.calendar.dayview.view
 
+import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.quest.calendar.dayview.view.widget.CalendarEvent
@@ -17,8 +18,8 @@ sealed class DayViewIntent : Intent
 
 data class LoadDataIntent(val currentDate: LocalDate) : DayViewIntent()
 data class AddEventIntent(val event: CalendarEvent) : DayViewIntent()
-data class EditEventIntent(val event: CalendarEvent, val reminder: ReminderViewModel?) : DayViewIntent()
-data class EditUnscheduledEventIntent(val event: UnscheduledEvent) : DayViewIntent()
+data class EditEventIntent(val event: CalendarEvent, val startTime: Time?, val reminder: ReminderViewModel?) : DayViewIntent()
+data class EditUnscheduledEventIntent(val event: UnscheduledEvent, val startTime: Time?) : DayViewIntent()
 data class RemoveEventIntent(val eventId: String) : DayViewIntent()
 data class ScheduleLoadedIntent(val schedule: Schedule) : DayViewIntent()
 data class UndoRemoveEventIntent(val eventId: String) : DayViewIntent()

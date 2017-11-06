@@ -31,7 +31,6 @@ import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
 import io.ipoli.android.quest.calendar.dayview.view.widget.*
-import io.ipoli.android.quest.data.Category
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogController
 import io.ipoli.android.reminder.view.picker.ReminderViewModel
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
@@ -259,17 +258,18 @@ class DayViewController :
         stopActionMode()
         ViewUtils.hideKeyboard(calendarDayView)
         val ue = unscheduledEventsAdapter.removeEvent(position)
+        val endTime = Time.plusMinutes(startTime, ue.duration)
         val vm = QuestViewModel(
             ue.id,
             ue.name,
             ue.duration,
             startTime.toMinuteOfDay(),
             startTime.toString(),
-            "12:00",
+            endTime.toString(),
             ue.backgroundColor,
-            Category.FUN.color800,
+            ue.backgroundColor.color900,
             null,
-            false)
+            ue.isCompleted)
         eventsAdapter.addEvent(vm)
     }
 
@@ -314,13 +314,13 @@ class DayViewController :
         ViewUtils.hideKeyboard(calendarDayView)
     }
 
-    override fun onEditCalendarEvent(event: CalendarEvent, adapterPosition: Int) {
-        send(EditEventIntent(event, eventsAdapter.events[adapterPosition].reminder))
+    override fun onEditCalendarEvent(event: CalendarEvent, startTime: Time?, adapterPosition: Int) {
+        send(EditEventIntent(event, startTime, eventsAdapter.events[adapterPosition].reminder))
         ViewUtils.hideKeyboard(calendarDayView)
     }
 
-    override fun onEditUnscheduledEvent(event: UnscheduledEvent) {
-        send(EditUnscheduledEventIntent(event))
+    override fun onEditUnscheduledEvent(event: UnscheduledEvent, startTime: Time?) {
+        send(EditUnscheduledEventIntent(event, startTime))
         ViewUtils.hideKeyboard(calendarDayView)
     }
 

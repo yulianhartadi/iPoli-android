@@ -89,7 +89,7 @@ class DayViewPresenter(
                     color = colorName,
                     category = Category("WELLNESS", Color.GREEN),
                     scheduledDate = state.scheduledDate,
-                    startTime = Time.of(event.startMinute),
+                    startTime = intent.startTime,
                     duration = event.duration,
                     reminder = createQuestReminder(reminderVM, state.scheduledDate, event)
                 )
@@ -106,7 +106,7 @@ class DayViewPresenter(
                     color = colorName,
                     category = Category("WELLNESS", Color.GREEN),
                     scheduledDate = state.scheduledDate,
-                    startTime = null,
+                    startTime = intent.startTime,
                     duration = event.duration
                 )
                 val result = saveQuestUseCase.execute(questParams)

@@ -425,20 +425,29 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                     override val backgroundColor = s.color!!
                 })
             } else if (s.eventAdapterPosition != null) {
+                var startTime : Time? = null
+                    if (!shouldUnscheduleScheduledEvent(s)) {
+                    startTime = startTimeForEvent(s)
+                }
+
                 listener?.onEditCalendarEvent(object : CalendarEvent {
                     override val id = s.eventId
                     override val duration = durationForEvent(s)
                     override val startMinute = startTimeForEvent(s).toMinuteOfDay()
                     override val name = s.name!!
                     override val backgroundColor = s.color!!
-                }, s.eventAdapterPosition)
+                }, startTime, s.eventAdapterPosition)
             } else if (s.unscheduledEventAdapterPosition != null) {
+                var startTime: Time? = null
+                if (shouldScheduleUnscheduledEvent(s)) {
+                    startTime = startTimeForEvent(s)
+                }
                 listener?.onEditUnscheduledEvent(object : UnscheduledEvent {
                     override val id = s.eventId
                     override val duration = durationForEvent(s)
                     override val name = s.name!!
                     override val backgroundColor = s.color!!
-                })
+                }, startTime)
             }
             s
         })
@@ -575,9 +584,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         return endTime.toMinuteOfDay() - startTime.toMinuteOfDay()
     }
 
-    private fun dragTopRelativePosition(s: State): Float {
-        return s.topDragViewPosition!! - unscheduledEvents.height + scrollView.scrollY
-    }
+    private fun dragTopRelativePosition(s: State) =
+        s.topDragViewPosition!! - unscheduledEvents.height + scrollView.scrollY
 
     private fun startTimeForEvent(s: State): Time {
         val timeMapper = PositionToTimeMapper(s.minuteHeight)
@@ -1077,8 +1085,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fun onMoveEvent(dragView: View, startTime: Time?, endTime: Time?)
         fun onZoomEvent(adapterView: View)
         fun onAddEvent(event: CalendarEvent)
-        fun onEditCalendarEvent(event: CalendarEvent, adapterPosition: Int)
-        fun onEditUnscheduledEvent(event: UnscheduledEvent)
+        fun onEditCalendarEvent(event: CalendarEvent, startTime: Time?, adapterPosition: Int)
+        fun onEditUnscheduledEvent(event: UnscheduledEvent, startTime: Time?)
         fun onRemoveEvent(eventId: String)
     }
 
