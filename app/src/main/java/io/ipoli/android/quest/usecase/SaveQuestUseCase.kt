@@ -49,9 +49,9 @@ class SaveQuestUseCase(
                 given { name.isEmpty() } addError EMPTY_NAME
             }
 
-            "startTime" {
-                given { startTime == null } addError EMPTY_START_TIME
-            }
+//            "startTime" {
+//                given { startTime == null } addError EMPTY_START_TIME
+//            }
         }
 
         if (errors.isNotEmpty()) {

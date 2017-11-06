@@ -43,6 +43,10 @@ import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
+import android.view.ViewGroup
+import io.ipoli.android.Constants
+import kotlinx.android.synthetic.main.view_calendar_day.view.*
+
 
 class DayViewController :
     MviViewController<DayViewState, DayViewController, DayViewPresenter, DayViewIntent>,
@@ -115,6 +119,8 @@ class DayViewController :
                 calendarDayView.setScheduledEventsAdapter(eventsAdapter)
                 unscheduledEventsAdapter = UnscheduledQuestsAdapter(state.unscheduledQuests, calendarDayView)
                 calendarDayView.setUnscheduledQuestsAdapter(unscheduledEventsAdapter)
+                updateUnscheduledQuestsHeight(view)
+
             }
 
             EVENT_UPDATED -> {
@@ -142,6 +148,19 @@ class DayViewController :
             }
 
         }
+    }
+
+    private fun updateUnscheduledQuestsHeight(view: View) {
+        val unscheduledQuestsToShow = Math.min(unscheduledEventsAdapter.itemCount, Constants.MAX_UNSCHEDULED_QUEST_VISIBLE_COUNT)
+
+        val itemHeight = resources!!.getDimensionPixelSize(R.dimen.unscheduled_quest_item_height)
+
+        val layoutParams = view.unscheduledEvents.layoutParams
+        layoutParams.height = unscheduledQuestsToShow * itemHeight
+        if (unscheduledQuestsToShow == Constants.MAX_UNSCHEDULED_QUEST_VISIBLE_COUNT) {
+            layoutParams.height = layoutParams.height - itemHeight / 2
+        }
+        view.unscheduledEvents.layoutParams = layoutParams
     }
 
     private fun sendUndoRemovedEventIntent(eventId: String) {
