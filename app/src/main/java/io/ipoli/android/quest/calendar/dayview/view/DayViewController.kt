@@ -118,7 +118,7 @@ class DayViewController :
                 eventsAdapter = QuestScheduledEventsAdapter(activity!!, state.scheduledQuests, calendarDayView)
                 calendarDayView.setScheduledEventsAdapter(eventsAdapter)
                 unscheduledEventsAdapter = UnscheduledQuestsAdapter(state.unscheduledQuests, calendarDayView)
-                calendarDayView.setUnscheduledQuestsAdapter(unscheduledEventsAdapter)
+                calendarDayView.setUnscheduledEventsAdapter(unscheduledEventsAdapter)
                 updateUnscheduledQuestsHeight(view)
 
             }
@@ -277,7 +277,7 @@ class DayViewController :
         stopActionMode()
         ViewUtils.hideKeyboard(calendarDayView)
         val e = eventsAdapter.removeEvent(position)
-        val vm = UnscheduledQuestViewModel(e.id, e.name, e.duration, e.backgroundColor)
+        val vm = UnscheduledQuestViewModel(e.id, e.name, e.duration, e.backgroundColor, e.isCompleted)
         unscheduledEventsAdapter.addEvent(vm)
     }
 
@@ -518,19 +518,39 @@ class DayViewController :
     data class UnscheduledQuestViewModel(override val id: String,
                                          override val name: String,
                                          override val duration: Int,
-                                         override val backgroundColor: AndroidColor) : UnscheduledEvent
+                                         override val backgroundColor: AndroidColor,
+                                         val isCompleted: Boolean) : UnscheduledEvent
 
     inner class UnscheduledQuestsAdapter(items: List<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) :
         UnscheduledEventsAdapter<UnscheduledQuestViewModel>
         (R.layout.unscheduled_quest_item, items.toMutableList(), calendarDayView) {
 
-        override fun ViewHolder.bind(event: UnscheduledQuestViewModel, calendarDayView: CalendarDayView) {
-            itemView.name.text = event.name
-
-            (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(event.backgroundColor.color200, itemView.context)
+        override fun ViewHolder.bind(vm: UnscheduledQuestViewModel, calendarDayView: CalendarDayView) {
+            (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color200, itemView.context)
             itemView.setOnLongClickListener {
                 calendarDayView.startEventRescheduling(events[adapterPosition])
                 true
+            }
+
+            if (!vm.isCompleted) {
+                itemView.name.text = vm.name
+                itemView.name.setTextColor(ContextCompat.getColor(itemView.context, vm.backgroundColor.color900))
+                (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color500, itemView.context)
+            } else {
+                val span = SpannableString(vm.name)
+                span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
+                itemView.name.text = span
+                itemView.unscheduledDone.isChecked = true
+                (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(R.color.md_grey_700, itemView.context)
+            }
+
+            itemView.unscheduledDone.setOnCheckedChangeListener { cb, checked ->
+                if (checked) {
+                    send(CompleteQuestIntent(vm.id))
+                } else {
+                    send(UndoCompleteQuestIntent(vm.id))
+                }
+
             }
         }
 

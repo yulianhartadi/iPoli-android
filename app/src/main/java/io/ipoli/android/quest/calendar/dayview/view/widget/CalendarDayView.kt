@@ -193,7 +193,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         setupScroll()
         setupHourCells()
         setupEditBackgroundView()
-        setupUnscheduledQuests()
+        setupUnscheduledEvents()
         setupTimeLine()
 
         topDragView = addDragView()
@@ -743,11 +743,9 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         return view
     }
 
-    private fun setupUnscheduledQuests() {
+    private fun setupUnscheduledEvents() {
         unscheduledEvents.layoutManager = object : LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false) {
-            override fun canScrollVertically(): Boolean {
-                return !fsm.state.isScrollLocked
-            }
+            override fun canScrollVertically() = !fsm.state.isScrollLocked
         }
     }
 
@@ -755,7 +753,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         this.listener = listener
     }
 
-    fun setUnscheduledQuestsAdapter(adapter: UnscheduledEventsAdapter<*>) {
+    fun setUnscheduledEventsAdapter(adapter: UnscheduledEventsAdapter<*>) {
         unscheduledEventsAdapter = adapter
         unscheduledEvents.adapter = adapter
     }

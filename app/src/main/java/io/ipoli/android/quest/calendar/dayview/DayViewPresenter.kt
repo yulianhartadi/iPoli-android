@@ -177,7 +177,8 @@ class DayViewPresenter(
                 it.id,
                 it.name,
                 it.duration,
-                AndroidColor.valueOf(it.color.name)
+                AndroidColor.valueOf(it.color.name),
+                it.isCompleted
             )
         }
 
