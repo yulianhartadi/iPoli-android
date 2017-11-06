@@ -23,7 +23,7 @@ class LoadScheduleForDateUseCase(private val questRepository: QuestRepository, c
         channel.consumeEach { quests ->
             val (scheduled, unscheduled) = quests
                 .partition { it.isScheduled }
-            send(Schedule(date, scheduled, unscheduled))
+            send(Schedule(date, scheduled, unscheduled.sortedBy { it.isCompleted }))
         }
     }
 }

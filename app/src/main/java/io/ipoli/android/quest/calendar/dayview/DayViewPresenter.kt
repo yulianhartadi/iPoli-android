@@ -173,11 +173,13 @@ class DayViewPresenter(
 
     private fun createUnscheduledViewModels(schedule: Schedule): List<DayViewController.UnscheduledQuestViewModel> =
         schedule.unscheduled.map {
+            val color = AndroidColor.valueOf(it.color.name)
             DayViewController.UnscheduledQuestViewModel(
                 it.id,
                 it.name,
                 it.duration,
-                AndroidColor.valueOf(it.color.name),
+                color,
+                color.color900,
                 it.isCompleted
             )
         }
