@@ -208,12 +208,12 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
         eventContainer.setOnLongClickListener {
 
-            val yPosition = lastY!! - topLocationOnScreen - unscheduledEvents.height + scrollView.scrollY
+            val yPosition = lastY!! - topLocationOnScreen + scrollView.scrollY
             val minuteHeight = fsm.state.minuteHeight
             val timeMapper = PositionToTimeMapper(minuteHeight)
             val eventStartTime = timeMapper
                 .timeAt(yPosition, 15)
-            val dragView = addAndPositionDragView(eventStartTime.toPosition(minuteHeight) - unscheduledEvents.height - scrollView.scrollY, fsm.state.hourHeight.toInt())
+            val dragView = addAndPositionDragView(eventStartTime.toPosition(minuteHeight) - scrollView.scrollY, fsm.state.hourHeight.toInt())
             dragView.post {
                 this.dragView = dragView
                 fsm.fire(Event.StartCalendarEventAdd(eventStartTime, 60, "", AndroidColor.GREEN))
@@ -425,8 +425,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                     override val backgroundColor = s.color!!
                 })
             } else if (s.eventAdapterPosition != null) {
-                var startTime : Time? = null
-                    if (!shouldUnscheduleScheduledEvent(s)) {
+                var startTime: Time? = null
+                if (!shouldUnscheduleScheduledEvent(s)) {
                     startTime = startTimeForEvent(s)
                 }
 
