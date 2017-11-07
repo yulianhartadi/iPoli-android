@@ -44,6 +44,7 @@ import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
 import android.view.ViewGroup
 import io.ipoli.android.Constants
+import io.ipoli.android.R.id.startTime
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 
 
@@ -184,11 +185,11 @@ class DayViewController :
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragEndTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
     }
 
-    override fun onStartEditUnscheduledEvent(dragView: View, name: String, color: AndroidColor) {
+    override fun onStartEditUnscheduledEvent(dragView: View, name: String, color: AndroidColor, adapterPosition: Int) {
         startActionMode()
         dragView.dragStartTime.visibility = View.GONE
         dragView.dragEndTime.visibility = View.GONE
-        setupDragViewNameAndColor(dragView, name, color)
+        setupDragViewNameAndColor(dragView, name, color, unscheduledEventsAdapter.events[adapterPosition].reminder)
     }
 
     private fun setupDragViewNameAndColor(dragView: View, name: String, color: AndroidColor, reminder: ReminderViewModel? = null) {
@@ -314,13 +315,18 @@ class DayViewController :
         ViewUtils.hideKeyboard(calendarDayView)
     }
 
-    override fun onEditCalendarEvent(event: CalendarEvent, startTime: Time?, adapterPosition: Int) {
-        send(EditEventIntent(event, startTime, eventsAdapter.events[adapterPosition].reminder))
+    override fun onEditCalendarEvent(event: CalendarEvent, adapterPosition: Int) {
+        send(EditEventIntent(event, eventsAdapter.events[adapterPosition].reminder))
         ViewUtils.hideKeyboard(calendarDayView)
     }
 
-    override fun onEditUnscheduledEvent(event: UnscheduledEvent, startTime: Time?) {
-        send(EditUnscheduledEventIntent(event, startTime))
+    override fun onEditUnscheduledCalendarEvent(event: CalendarEvent, adapterPosition: Int) {
+        send(EditEventIntent(event, unscheduledEventsAdapter.events[adapterPosition].reminder))
+        ViewUtils.hideKeyboard(calendarDayView)
+    }
+
+    override fun onEditUnscheduledEvent(event: UnscheduledEvent) {
+        send(EditUnscheduledEventIntent(event))
         ViewUtils.hideKeyboard(calendarDayView)
     }
 
@@ -520,7 +526,8 @@ class DayViewController :
                                          override val duration: Int,
                                          override val backgroundColor: AndroidColor,
                                          @ColorRes val textColor: Int,
-                                         val isCompleted: Boolean) : UnscheduledEvent
+                                         val isCompleted: Boolean,
+                                         val reminder: ReminderViewModel? = null) : UnscheduledEvent
 
     inner class UnscheduledQuestsAdapter(items: List<UnscheduledQuestViewModel>, calendarDayView: CalendarDayView) :
         UnscheduledEventsAdapter<UnscheduledQuestViewModel>

@@ -293,7 +293,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
             val event = unscheduledEventsAdapter!!.events[e.position]
             listener?.onStartEditUnscheduledEvent(dragView!!, event.name,
-                event.backgroundColor)
+                event.backgroundColor, e.position)
             s.copy(
                 type = State.Type.DRAG,
                 eventId = event.id,
@@ -425,29 +425,39 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                     override val backgroundColor = s.color!!
                 })
             } else if (s.eventAdapterPosition != null) {
-                var startTime: Time? = null
-                if (!shouldUnscheduleScheduledEvent(s)) {
-                    startTime = startTimeForEvent(s)
+                if (shouldUnscheduleScheduledEvent(s)) {
+                    listener?.onEditUnscheduledEvent(object : UnscheduledEvent {
+                        override val id = s.eventId
+                        override val duration = durationForEvent(s)
+                        override val name = s.name!!
+                        override val backgroundColor = s.color!!
+                    })
+                } else {
+                    listener?.onEditCalendarEvent(object : CalendarEvent {
+                        override val id = s.eventId
+                        override val duration = durationForEvent(s)
+                        override val startMinute = startTimeForEvent(s).toMinuteOfDay()
+                        override val name = s.name!!
+                        override val backgroundColor = s.color!!
+                    }, s.eventAdapterPosition)
                 }
-
-                listener?.onEditCalendarEvent(object : CalendarEvent {
-                    override val id = s.eventId
-                    override val duration = durationForEvent(s)
-                    override val startMinute = startTimeForEvent(s).toMinuteOfDay()
-                    override val name = s.name!!
-                    override val backgroundColor = s.color!!
-                }, startTime, s.eventAdapterPosition)
             } else if (s.unscheduledEventAdapterPosition != null) {
-                var startTime: Time? = null
                 if (shouldScheduleUnscheduledEvent(s)) {
-                    startTime = startTimeForEvent(s)
+                    listener?.onEditUnscheduledCalendarEvent(object : CalendarEvent {
+                        override val id = s.eventId
+                        override val duration = durationForEvent(s)
+                        override val startMinute = startTimeForEvent(s).toMinuteOfDay()
+                        override val name = s.name!!
+                        override val backgroundColor = s.color!!
+                    }, s.unscheduledEventAdapterPosition)
+                } else {
+                    listener?.onEditUnscheduledEvent(object : UnscheduledEvent {
+                        override val id = s.eventId
+                        override val duration = durationForEvent(s)
+                        override val name = s.name!!
+                        override val backgroundColor = s.color!!
+                    })
                 }
-                listener?.onEditUnscheduledEvent(object : UnscheduledEvent {
-                    override val id = s.eventId
-                    override val duration = durationForEvent(s)
-                    override val name = s.name!!
-                    override val backgroundColor = s.color!!
-                }, startTime)
             }
             s
         })
@@ -1074,7 +1084,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     interface CalendarChangeListener {
         fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: AndroidColor, adapterPosition: Int)
         fun onStartEditNewScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: AndroidColor)
-        fun onStartEditUnscheduledEvent(dragView: View, name: String, color: AndroidColor)
+        fun onStartEditUnscheduledEvent(dragView: View, name: String, color: AndroidColor, adapterPosition: Int)
         fun onDragViewClick(dragView: View)
         fun onDragViewColorChange(dragView: View, color: AndroidColor)
         fun onEventValidationError(dragView: View)
@@ -1085,8 +1095,9 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fun onMoveEvent(dragView: View, startTime: Time?, endTime: Time?)
         fun onZoomEvent(adapterView: View)
         fun onAddEvent(event: CalendarEvent)
-        fun onEditCalendarEvent(event: CalendarEvent, startTime: Time?, adapterPosition: Int)
-        fun onEditUnscheduledEvent(event: UnscheduledEvent, startTime: Time?)
+        fun onEditCalendarEvent(event: CalendarEvent, adapterPosition: Int)
+        fun onEditUnscheduledCalendarEvent(event: CalendarEvent, adapterPosition: Int)
+        fun onEditUnscheduledEvent(event: UnscheduledEvent)
         fun onRemoveEvent(eventId: String)
     }
 

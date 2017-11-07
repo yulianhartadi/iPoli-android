@@ -62,7 +62,7 @@ class DayViewPresenter(
                 val event = intent.event
                 val colorName = Color.valueOf(event.backgroundColor.name)
 
-                val reminder = createQuestReminder(state.reminder, state.scheduledDate, event)
+                val reminder = createQuestReminder(state.reminder, state.scheduledDate, event.startMinute)
 
                 val questParams = SaveQuestUseCase.Parameters(
                     name = event.name,
@@ -80,7 +80,6 @@ class DayViewPresenter(
             is EditEventIntent -> {
                 val event = intent.event
                 val colorName = Color.valueOf(event.backgroundColor.name)
-
                 val reminderVM = if (state.isReminderEdited) state.reminder else intent.reminder
 
                 val questParams = SaveQuestUseCase.Parameters(
@@ -89,9 +88,9 @@ class DayViewPresenter(
                     color = colorName,
                     category = Category("WELLNESS", Color.GREEN),
                     scheduledDate = state.scheduledDate,
-                    startTime = intent.startTime,
+                    startTime = Time.of(event.startMinute),
                     duration = event.duration,
-                    reminder = createQuestReminder(reminderVM, state.scheduledDate, event)
+                    reminder = createQuestReminder(reminderVM, state.scheduledDate, event.startMinute)
                 )
                 val result = saveQuestUseCase.execute(questParams)
                 savedQuestViewState(result, state)
@@ -100,13 +99,14 @@ class DayViewPresenter(
             is EditUnscheduledEventIntent -> {
                 val event = intent.event
                 val colorName = Color.valueOf(event.backgroundColor.name)
+
                 val questParams = SaveQuestUseCase.Parameters(
                     id = event.id,
                     name = event.name,
                     color = colorName,
                     category = Category("WELLNESS", Color.GREEN),
                     scheduledDate = state.scheduledDate,
-                    startTime = intent.startTime,
+                    startTime = null,
                     duration = event.duration
                 )
                 val result = saveQuestUseCase.execute(questParams)
@@ -155,9 +155,9 @@ class DayViewPresenter(
             }
         }
 
-    private fun createQuestReminder(reminder: ReminderViewModel?, scheduledDate: LocalDate, event: CalendarEvent): Reminder? {
+    private fun createQuestReminder(reminder: ReminderViewModel?, scheduledDate: LocalDate, eventStartMinute: Int): Reminder? {
         return reminder?.let {
-            val time = Time.of(event.startMinute)
+            val time = Time.of(eventStartMinute)
             val questDateTime = LocalDateTime.of(scheduledDate, LocalTime.of(time.hours, time.getMinutes()))
             val reminderDateTime = questDateTime.minusMinutes(it.minutesFromStart)
             val toLocalTime = reminderDateTime.toLocalTime()
