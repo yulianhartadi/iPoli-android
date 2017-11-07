@@ -557,13 +557,11 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private fun shouldUnscheduleScheduledEvent(s: State) =
         isInUnscheduledEventsArea(dragView!!.topLocationOnScreen.toFloat()) && s.eventAdapterPosition != null
 
-    private fun calculateStartTime(topPosition: Float, s: State): Time? {
-        return calculateStartAndEndTime(topPosition, s).first
-    }
+    private fun calculateStartTime(topPosition: Float, s: State) =
+        calculateStartAndEndTime(topPosition, s).first
 
-    private fun calculateEndTime(topPosition: Float, s: State): Time? {
-        return calculateStartAndEndTime(topPosition, s).second
-    }
+    private fun calculateEndTime(topPosition: Float, s: State) =
+        calculateStartAndEndTime(topPosition, s).second
 
     private fun calculateStartAndEndTime(topPosition: Float, s: State): Pair<Time?, Time?> {
         if (isInUnscheduledEventsArea(dragView!!.topLocationOnScreen.toFloat())) {

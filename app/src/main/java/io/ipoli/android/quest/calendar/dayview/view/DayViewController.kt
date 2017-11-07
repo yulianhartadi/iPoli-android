@@ -367,9 +367,7 @@ class DayViewController :
                 return true
             }
 
-            override fun onPrepareActionMode(p0: ActionMode?, p1: Menu?): Boolean {
-                return false
-            }
+            override fun onPrepareActionMode(p0: ActionMode?, p1: Menu?) = false
 
             override fun onDestroyActionMode(p0: ActionMode?) {
                 cancelEdit()
