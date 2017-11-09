@@ -33,7 +33,7 @@ import io.ipoli.android.common.view.changehandler.CircularRevealChangeHandler
 import io.ipoli.android.common.view.color
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
-import io.ipoli.android.quest.calendar.CalendarViewState.StateType.CALENDAR_DATE_CHANGED
+import io.ipoli.android.quest.calendar.CalendarViewState.StateType.*
 import io.ipoli.android.quest.calendar.addquest.AddQuestViewController
 import io.ipoli.android.quest.calendar.dayview.view.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
@@ -118,9 +118,6 @@ class CalendarViewController(args: Bundle? = null) :
         initDayPicker(view, calendarToolbar)
 
         initAddQuest(view)
-
-//        targetController = addQuestViewController
-//        addQuestViewController.targetController = this
 
         return view
     }
@@ -271,12 +268,13 @@ class CalendarViewController(args: Bundle? = null) :
 
         calendarToolbar.day.text = state.dayText
         calendarToolbar.date.text = state.dateText
-
         view.currentMonth.text = state.monthText
 
-        renderDatePicker(state.datePickerState, view, state.currentDate)
+        if (state.type == DATE_PICKER_CHANGED) {
+            renderDatePicker(state.datePickerState, view, state.currentDate)
+        }
 
-        if (state.type == CalendarViewState.StateType.DATA_LOADED) {
+        if (state.type == DATA_LOADED) {
             removeDayViewPagerAdapter(view)
             createDayViewPagerAdapter(state, view)
         }
@@ -287,7 +285,7 @@ class CalendarViewController(args: Bundle? = null) :
             createDayViewPagerAdapter(state, view)
         }
 
-        if (state.type == CalendarViewState.StateType.SWIPE_DATE_CHANGED) {
+        if (state.type == SWIPE_DATE_CHANGED) {
             markSelectedDate(view, state.currentDate)
             updateDayViewPagerAdapter(state)
         }

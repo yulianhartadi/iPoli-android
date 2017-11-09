@@ -44,14 +44,14 @@ class CalendarPresenter(
             }
             is ExpandToolbarIntent -> {
                 when (state.datePickerState) {
-                    INVISIBLE -> state.copy(type = DEFAULT, datePickerState = SHOW_WEEK)
-                    else -> state.copy(type = DEFAULT, datePickerState = INVISIBLE)
+                    INVISIBLE -> state.copy(type = DATE_PICKER_CHANGED, datePickerState = SHOW_WEEK)
+                    else -> state.copy(type = DATE_PICKER_CHANGED, datePickerState = INVISIBLE)
                 }
             }
             is ExpandToolbarWeekIntent -> {
                 when (state.datePickerState) {
-                    SHOW_WEEK -> state.copy(type = DEFAULT, datePickerState = SHOW_MONTH)
-                    else -> state.copy(type = DEFAULT, datePickerState = SHOW_WEEK)
+                    SHOW_WEEK -> state.copy(type = DATE_PICKER_CHANGED, datePickerState = SHOW_MONTH)
+                    else -> state.copy(type = DATE_PICKER_CHANGED, datePickerState = SHOW_WEEK)
                 }
             }
             is CalendarChangeDateIntent -> {
