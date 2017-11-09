@@ -7,6 +7,7 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.*
 import kotlinx.coroutines.experimental.launch
 import org.json.JSONObject
+import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -19,7 +20,7 @@ interface ViewStateRenderer<in VS> {
     fun render(state: VS)
 }
 
-interface MviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, in I : Intent> {
+interface MviPresenter<in V : ViewStateRenderer<VS>, in VS : ViewState, in I : Intent> {
 
     fun intentChannel(): SendChannel<I>
 
@@ -47,6 +48,7 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
             val data = JSONObject()
             data.put("initial", initialState)
             Amplitude.getInstance().logEvent("change_state", data)
+            Timber.d("intial state $initialState")
             view.render(initialState)
         }
         launch(coroutineContext + UI) {
@@ -61,6 +63,7 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
                 data.put("new_state", state)
                 Amplitude.getInstance().logEvent("change_state", data)
 
+                Timber.d("new state $state")
                 view.render(state)
             }
         }
@@ -77,4 +80,8 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
     }
 
     abstract fun reduceState(intent: I, state: VS): VS
+
+    override fun onDestroy() {
+        actor.cancel()
+    }
 }

@@ -1,16 +1,13 @@
 package io.ipoli.android
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import com.sdsmdg.harjot.crollerTest.Croller
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.home.HomeController
 import io.ipoli.android.player.persistence.ProviderType
@@ -19,8 +16,6 @@ import io.ipoli.android.quest.Player
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
-import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -39,7 +34,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         val amplitudeClient = Amplitude.getInstance().initialize(this, AnalyticsConstants.AMPLITUDE_KEY)
         amplitudeClient.enableForegroundTracking(application)
         if (BuildConfig.DEBUG) {
-            Amplitude.getInstance().setLogLevel(Log.VERBOSE);
+            Amplitude.getInstance().setLogLevel(Log.VERBOSE)
             amplitudeClient.setOptOut(true)
         }
 
