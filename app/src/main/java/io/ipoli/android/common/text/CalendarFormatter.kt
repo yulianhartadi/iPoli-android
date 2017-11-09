@@ -18,18 +18,17 @@ class CalendarFormatter(private val context: Context) {
             .format(date.toStartOfDayUTC())
 
     private fun formatter(dayOfMonth: Int) =
-//        SimpleDateFormat(pattern(dayOfMonth), Locale.US)
-        SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        SimpleDateFormat(pattern(dayOfMonth), Locale.getDefault())
 
     private fun pattern(day: Int): String {
         if (day !in 11..18)
             return when (day % 10) {
-                1 -> "MMM d'st' YY"
-                2 -> "MMM d'nd' YY"
-                3 -> "MMM d'rd' YY"
-                else -> "MMM d'th' YY"
+                1 -> "MMM d'st' yy"
+                2 -> "MMM d'nd' yy"
+                3 -> "MMM d'rd' yy"
+                else -> "MMM d'th' yy"
             }
-        return "MMM d'th' YY"
+        return "MMM d'th' yy"
     }
 
     fun day(date: LocalDate): String {

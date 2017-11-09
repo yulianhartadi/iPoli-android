@@ -15,6 +15,9 @@ object ViewUtils {
     fun dpToPx(dips: Float, context: Context): Float =
         TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dips, context.resources.displayMetrics)
 
+    fun spToPx(sp: Int, context: Context): Int =
+        TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp.toFloat(), context.resources.displayMetrics).toInt()
+
     fun pxToDp(px: Int, context: Context): Float =
         px / context.resources.displayMetrics.density
 

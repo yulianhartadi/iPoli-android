@@ -1,24 +1,14 @@
 package io.ipoli.android.common.view
 
 import android.app.Dialog
-import android.content.DialogInterface
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
-import com.sdsmdg.harjot.crollerTest.Croller
 import io.ipoli.android.Constants
 import io.ipoli.android.R
-import io.ipoli.android.R.string.minutes
+import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.text.DurationFormatter.formatShort
 import kotlinx.android.synthetic.main.dialog_duration_picker.view.*
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -48,6 +38,7 @@ class DurationPickerDialogController : BaseDialogController {
 
 
         val croller = contentView.croller
+        croller.labelSize = ViewUtils.spToPx(14, contentView.context)
         croller.max = 25
         var minutes: Int = Constants.QUEST_MIN_DURATION
         croller.setOnProgressChangedListener { progress ->

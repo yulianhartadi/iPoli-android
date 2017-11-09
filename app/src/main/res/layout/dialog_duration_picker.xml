@@ -11,15 +11,13 @@
         android:layout_height="250dp"
         android:layout_centerInParent="true"
         app:back_circle_color="@color/md_white"
-        app:indicator_color="@color/colorAccentAlternative"
+        app:indicator_color="@color/colorAccent"
         app:indicator_width="10"
         app:is_continuous="false"
-        app:label="10 min"
-        app:label_size="30"
         app:label_color="@color/md_dark_text_54"
-        app:main_circle_color="@color/md_green_50"
+        app:main_circle_color="@color/md_red_100"
         app:progress_primary_circle_size="10"
-        app:progress_primary_color="@color/colorAccentAlternative"
+        app:progress_primary_color="@color/colorAccent"
         app:progress_secondary_circle_size="5"
-        app:progress_secondary_color="@color/md_green_100" />
+        app:progress_secondary_color="@color/md_red_A100" />
 </RelativeLayout>

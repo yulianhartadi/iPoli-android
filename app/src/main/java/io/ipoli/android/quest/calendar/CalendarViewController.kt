@@ -231,7 +231,7 @@ class CalendarViewController(args: Bundle? = null) :
     private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
         view.datePickerContainer.visibility = View.GONE
         val calendarIndicator = calendarToolbar.calendarIndicator
-        view.datePicker.setMarkedStyle(MarkStyle.BACKGROUND, color(R.color.colorPrimary))
+        view.datePicker.setMarkedStyle(MarkStyle.BACKGROUND, color(R.color.colorAccentAlternative))
 
         val currentDate = LocalDate.now()
         view.datePicker.markDate(DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth))
