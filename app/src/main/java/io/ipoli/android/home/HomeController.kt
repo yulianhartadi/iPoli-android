@@ -1,20 +1,21 @@
 package io.ipoli.android.home
 
-import android.support.design.widget.NavigationView
-import android.support.v4.view.GravityCompat
-import android.support.v7.app.ActionBarDrawerToggle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.content.Intent
+import android.view.*
+import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
-import io.ipoli.android.R.string.view
+import io.ipoli.android.common.view.FeedbackDialogController
 import io.ipoli.android.quest.calendar.CalendarViewController
 import kotlinx.android.synthetic.main.controller_home.view.*
+import org.json.JSONObject
+import android.content.Intent.ACTION_VIEW
+import android.net.Uri
+import android.widget.Toast
+import io.ipoli.android.Constants
 
 
 /**
@@ -89,5 +90,34 @@ class HomeController : Controller() {
 //        }
 //        return super.onOptionsItemSelected(item)
 //    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.home_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_feedback) {
+            FeedbackDialogController(object : FeedbackDialogController.FeedbackListener {
+                override fun onSendFeedback(feedback: String) {
+                    if(feedback.isNotEmpty()) {
+                        Amplitude.getInstance().logEvent("feedback",
+                            JSONObject().put("feedback", feedback))
+                        Toast.makeText(activity!!, "Thank you!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onChatWithUs() {
+                    Amplitude.getInstance().logEvent("feedback_chat")
+                    val myIntent = Intent(ACTION_VIEW, Uri.parse(Constants.DISCORD_CHAT_LINK))
+                    startActivity(myIntent)
+                }
+
+
+            }).showDialog(router, "feedback-dialog")
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
 
 }

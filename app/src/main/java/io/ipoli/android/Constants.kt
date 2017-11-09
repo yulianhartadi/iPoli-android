@@ -10,6 +10,8 @@ import java.util.*
 interface Constants {
     companion object {
 
+        val DISCORD_CHAT_LINK = "https://discord.gg/7AMKs28"
+
         val FACEBOOK_APP_LINK = "https://fb.me/1609677589354576"
         val IPOLI_LOGO_URL = "https://i.imgur.com/Gz3rUi1.png"
         val INVITE_IMAGE_URL = "https://i.imgur.com/fLToavB.png"
