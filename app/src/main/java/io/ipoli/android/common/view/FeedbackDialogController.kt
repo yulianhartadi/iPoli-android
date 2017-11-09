@@ -35,7 +35,7 @@ class FeedbackDialogController : BaseDialogController {
         return AlertDialog.Builder(activity!!)
             .setView(contentView)
             .setTitle(R.string.rate_dialog_feedback_title)
-            .setIcon(R.drawable.pet_5_head)
+            .setIcon(R.drawable.logo)
             .setPositiveButton("Send", { _, _ ->
                 listener?.onSendFeedback(contentView.feedback.text.toString())
             })
