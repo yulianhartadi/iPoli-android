@@ -1,22 +1,18 @@
 package io.ipoli.android.quest.calendar.addquest
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.app.DatePickerDialog
+import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
-import android.widget.Toast
 import com.bluelinelabs.conductor.ControllerChangeHandler
 import com.bluelinelabs.conductor.ControllerChangeType
 import io.ipoli.android.R
-import io.ipoli.android.R.id.questName
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.ControllerModule
@@ -32,7 +28,6 @@ import io.ipoli.android.quest.calendar.EditTextImeBackListener
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogController
 import io.ipoli.android.reminder.view.picker.ReminderViewModel
 import kotlinx.android.synthetic.main.controller_add_quest.view.*
-import kotlinx.android.synthetic.main.dialog_reminder_picker.view.*
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -112,10 +107,14 @@ class AddQuestViewController(args: Bundle? = null) :
 
             StateType.PICK_TIME -> {
                 val startTime = state.time ?: Time.now()
-                TimePickerDialog(view.context,
+                val dialog = TimePickerDialog(view.context,
                     TimePickerDialog.OnTimeSetListener { _, hour, minute ->
-                        send(TimePickedIntent(hour, minute))
-                    }, startTime.hours, startTime.getMinutes(), false).show()
+                        send(TimePickedIntent(Time.at(hour, minute)))
+                    }, startTime.hours, startTime.getMinutes(), false)
+                dialog.setButton(Dialog.BUTTON_NEUTRAL, view.context.getString(R.string.do_not_know), { _, _ ->
+                    send(TimePickedIntent(null))
+                })
+                dialog.show()
             }
 
             StateType.PICK_DURATION ->
@@ -144,30 +143,13 @@ class AddQuestViewController(args: Bundle? = null) :
             StateType.VALIDATION_ERROR_EMPTY_NAME ->
                 view.questName.error = "Think of a name"
 
-            StateType.VALIDATION_ERROR_EMPTY_START_TIME -> {
-                Toast.makeText(view.context, "When will it start?", Toast.LENGTH_SHORT).show()
-                playStartTimeErrorAnimation(view.startTime)
-            }
-
             StateType.QUEST_SAVED -> {
                 resetForm(view)
             }
-            
+
             StateType.DEFAULT -> {
             }
         }
-    }
-
-    private fun playStartTimeErrorAnimation(view: View) {
-        val scaleXAnimator = ObjectAnimator.ofFloat(view, "scaleX", 1.4f, 1f)
-        val scaleYAnimator = ObjectAnimator.ofFloat(view, "scaleY", 1.4f, 1f)
-        val shakeAnimator = ObjectAnimator.ofFloat(view, "rotation", 0f, 50f, 0f, -50f, 0f)
-        shakeAnimator.repeatCount = 4
-
-        val set = AnimatorSet()
-        set.playTogether(scaleXAnimator, scaleYAnimator, shakeAnimator)
-        set.duration = 200
-        set.start()
     }
 
     private fun resetForm(view: View) {
@@ -184,8 +166,10 @@ class AddQuestViewController(args: Bundle? = null) :
             colorSelectedIcon(view.scheduleDate)
         }
 
-        state.time?.let {
+        if (state.time != null) {
             colorSelectedIcon(view.startTime)
+        } else {
+            view.startTime.drawable.setTintList(null)
         }
 
         state.duration?.let {

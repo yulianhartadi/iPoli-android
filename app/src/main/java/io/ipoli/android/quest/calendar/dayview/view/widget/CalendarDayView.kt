@@ -205,7 +205,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val delaySec = Duration.ofMinutes(1).seconds - LocalDateTime.now().second
         minuteChangeHandler.postDelayed(
             moveTimeLineToNow(),
-            TimeUnit.SECONDS.toMillis(delaySec))
+            TimeUnit.SECONDS.toMillis(delaySec)
+        )
 
         eventContainer.setOnLongClickListener {
 
@@ -250,7 +251,12 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     private fun setupTimeLine() {
         timeLineView = inflater.inflate(R.layout.calendar_time_line, eventContainer, false)
-        timeLineView.setTopPosition(Time.now().toPosition(fsm.state.minuteHeight))
+
+        timeLineView.post {
+            val timeLineHeight = timeLineView.height
+            timeLineView.setTopPosition(Time.now().toPosition(fsm.state.minuteHeight) - (timeLineHeight / 2))
+        }
+
         eventContainer.addView(timeLineView)
     }
 
