@@ -11,7 +11,6 @@ import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.usecase.Result.*
 import io.ipoli.android.quest.usecase.Result.ValidationError.EMPTY_NAME
-import io.ipoli.android.quest.usecase.Result.ValidationError.EMPTY_START_TIME
 import io.ipoli.android.reminder.ReminderScheduler
 import org.threeten.bp.LocalDate
 
@@ -22,7 +21,7 @@ import org.threeten.bp.LocalDate
 sealed class Result {
 
     enum class ValidationError {
-        EMPTY_NAME, EMPTY_START_TIME
+        EMPTY_NAME
     }
 
     data class Added(val quest: Quest) : Result()
@@ -48,10 +47,6 @@ class SaveQuestUseCase(
             "name" {
                 given { name.isEmpty() } addError EMPTY_NAME
             }
-
-//            "startTime" {
-//                given { startTime == null } addError EMPTY_START_TIME
-//            }
         }
 
         if (errors.isNotEmpty()) {

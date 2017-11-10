@@ -41,10 +41,8 @@ class AddQuestPresenter(
             is PickTimeIntent ->
                 state.copy(type = StateType.PICK_TIME)
 
-            is TimePickedIntent -> {
-                val time = Time.at(intent.hour, intent.minute)
-                state.copy(type = StateType.DEFAULT, time = time)
-            }
+            is TimePickedIntent ->
+                state.copy(type = StateType.DEFAULT, time = intent.time)
 
             is PickDurationIntent ->
                 state.copy(type = StateType.PICK_DURATION)
@@ -83,12 +81,8 @@ class AddQuestPresenter(
                 )
                 val result = saveQuestUseCase.execute(questParams)
                 when (result) {
-                    is Result.Invalid -> {
-                        if (result.errors[0] == Result.ValidationError.EMPTY_NAME)
-                            state.copy(type = StateType.VALIDATION_ERROR_EMPTY_NAME)
-                        else
-                            state.copy(type = StateType.VALIDATION_ERROR_EMPTY_START_TIME)
-                    }
+                    is Result.Invalid ->
+                        state.copy(type = StateType.VALIDATION_ERROR_EMPTY_NAME)
                     else -> AddQuestViewState(type = StateType.QUEST_SAVED)
                 }
             }
