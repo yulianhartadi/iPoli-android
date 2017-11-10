@@ -134,7 +134,7 @@ class DayViewController :
             }
 
             EVENT_REMOVED -> {
-                PetMessage(object : PetMessage.UndoClickedListener {
+                PetMessageViewController(object : PetMessageViewController.UndoClickedListener {
                     override fun onClick() {
                         sendUndoRemovedEventIntent(state.removedEventId)
                     }

@@ -18,9 +18,16 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
 import io.ipoli.android.R
-import kotlinx.android.synthetic.main.view_pet_message.view.*
+import kotlinx.android.synthetic.main.overlay_pet_message.view.*
 
-class PetMessage : BaseOverlayViewController {
+class QuestCompleteViewController constructor(args: Bundle? = null) : BaseOverlayViewController(args) {
+
+    override fun createOverlayView(inflater: LayoutInflater): View {
+        return inflater.inflate(R.layout.overlay_quest_complete, null)
+    }
+}
+
+class PetMessageViewController : BaseOverlayViewController {
 
     interface UndoClickedListener {
         fun onClick()
@@ -35,7 +42,7 @@ class PetMessage : BaseOverlayViewController {
     protected constructor(args: Bundle? = null) : super(args)
 
     override fun createOverlayView(inflater: LayoutInflater): View {
-        val view = inflater.inflate(R.layout.view_pet_message, null)
+        val view = inflater.inflate(R.layout.overlay_pet_message, null)
         view.undoAction.setOnClickListener {
             listener.onClick()
             dismiss()
