@@ -86,11 +86,6 @@ class AddQuestPresenter(
                     else -> AddQuestViewState(type = StateType.QUEST_SAVED)
                 }
             }
-
-            else -> {
-                state
-            }
-
         }
 
     private fun createQuestReminder(reminder: ReminderViewModel?, scheduledDate: LocalDate, startMinute: Int): Reminder? {
