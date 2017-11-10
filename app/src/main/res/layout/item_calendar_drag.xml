@@ -20,12 +20,12 @@
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:gravity="top"
-        android:text="10:30"
         android:textColor="@color/md_light_text_87"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.51" />
+        app:layout_constraintVertical_bias="0.51"
+        tools:text="10:30" />
 
     <TextView
         android:id="@+id/dragEndTime"
@@ -34,11 +34,11 @@
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:gravity="bottom"
-        android:text="11:30"
         android:textColor="@color/md_light_text_87"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline" />
+        app:layout_constraintTop_toTopOf="@+id/guideline"
+        tools:text="11:30" />
 
     <EditText
         android:id="@+id/dragName"
@@ -47,11 +47,11 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="40dp"
         android:layout_marginStart="36dp"
-        android:text="Hello World"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Hello World" />
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline"

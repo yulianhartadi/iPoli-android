@@ -18,5 +18,6 @@
     <declare-styleable name="CalendarDayView">
         <attr name="dragImage" format="reference" />
         <attr name="dragImageSize" format="dimension" />
+        <attr name="dragImagePadding" format="dimension" />
     </declare-styleable>
 </resources>

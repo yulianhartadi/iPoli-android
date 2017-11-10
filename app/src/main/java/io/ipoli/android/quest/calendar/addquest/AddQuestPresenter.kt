@@ -7,7 +7,6 @@ import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.quest.Category
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Reminder
-import io.ipoli.android.quest.calendar.dayview.view.DayViewState
 import io.ipoli.android.quest.usecase.Result
 import io.ipoli.android.quest.usecase.SaveQuestUseCase
 import io.ipoli.android.reminder.view.picker.ReminderViewModel

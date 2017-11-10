@@ -34,28 +34,27 @@ class DurationPickerDialogController : BaseDialogController {
 
         val inflater = LayoutInflater.from(activity!!)
 
-        val contentView = inflater.inflate(R.layout.dialog_duration_picker, null)
+        val view = inflater.inflate(R.layout.dialog_duration_picker, null)
 
-
-        val croller = contentView.croller
-        croller.labelSize = ViewUtils.spToPx(14, contentView.context)
-        croller.max = 25
+        val durationPicker = view.durationPicker
+        durationPicker.labelSize = ViewUtils.spToPx(14, view.context)
+        durationPicker.max = 25
         var minutes: Int = Constants.QUEST_MIN_DURATION
-        croller.setOnProgressChangedListener { progress ->
-            if(progress <= 11) {
+        durationPicker.setOnProgressChangedListener { progress ->
+            if (progress <= 11) {
                 minutes = progress * 5 + 5
-            } else if(progress <= 17) {
+            } else if (progress <= 17) {
                 minutes = 60 + (progress % 11) * 10
             } else {
                 minutes = 120 + (progress % 17) * 15
             }
-            croller.label = formatShort(minutes)
+            durationPicker.label = formatShort(minutes)
 
         }
 
         return AlertDialog.Builder(activity!!)
-            .setView(contentView)
-            .setTitle("Pick minutes")
+            .setView(view)
+            .setTitle(R.string.quest_duration_question)
             .setIcon(R.drawable.pet_5_head)
             .setPositiveButton(R.string.dialog_ok, { _, _ ->
                 listener!!.onDurationPicked(minutes)

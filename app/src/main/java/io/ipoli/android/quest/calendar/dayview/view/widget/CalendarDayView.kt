@@ -138,6 +138,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     private lateinit var dragImage: Drawable
     private var dragImageSize: Int = toPx(16)
+    private var dragImagePadding: Int = toPx(0)
 
     private lateinit var editModeBackground: View
     private lateinit var topDragView: View
@@ -717,6 +718,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             val a = context.theme.obtainStyledAttributes(attrs, R.styleable.CalendarDayView, defStyleAttr, 0)
             dragImage = a.getDrawable(R.styleable.CalendarDayView_dragImage)
             dragImageSize = a.getDimensionPixelSize(R.styleable.CalendarDayView_dragImageSize, dragImageSize)
+            dragImagePadding = a.getDimensionPixelSize(R.styleable.CalendarDayView_dragImagePadding, dragImagePadding)
             a.recycle()
         }
     }
@@ -743,7 +745,9 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     private fun addDragView(): View {
         val view = ImageView(context)
-        view.layoutParams = LayoutParams(dragImageSize, dragImageSize)
+        val lp = LayoutParams(dragImageSize, dragImageSize)
+        view.layoutParams = lp
+        view.setPadding(dragImagePadding, dragImagePadding, dragImagePadding, dragImagePadding)
         view.setImageDrawable(dragImage)
         view.visibility = View.GONE
         addView(view)

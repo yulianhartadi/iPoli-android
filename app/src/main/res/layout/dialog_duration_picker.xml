@@ -6,7 +6,7 @@
     android:padding="24dp">
 
     <com.sdsmdg.harjot.crollerTest.Croller xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/croller"
+        android:id="@+id/durationPicker"
         android:layout_width="250dp"
         android:layout_height="250dp"
         android:layout_centerInParent="true"

@@ -5,4 +5,5 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:dragImage="@drawable/circle_accent"
-    app:dragImageSize="16dp" />
+    app:dragImagePadding="8dp"
+    app:dragImageSize="36dp" />

@@ -9,7 +9,6 @@ import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.calendar.dayview.view.*
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
-import io.ipoli.android.quest.calendar.dayview.view.widget.CalendarEvent
 import io.ipoli.android.quest.usecase.*
 import io.ipoli.android.reminder.view.picker.ReminderViewModel
 import kotlinx.coroutines.experimental.channels.consumeEach
@@ -62,7 +61,10 @@ class DayViewPresenter(
                 val event = intent.event
                 val colorName = Color.valueOf(event.backgroundColor.name)
 
-                val reminder = createQuestReminder(state.reminder, state.scheduledDate, event.startMinute)
+                val reminder = if (state.isReminderEdited)
+                    createQuestReminder(state.reminder, state.scheduledDate, event.startMinute)
+                else
+                    createDefaultReminder(state.scheduledDate, event.startMinute)
 
                 val questParams = SaveQuestUseCase.Parameters(
                     name = event.name,
@@ -155,15 +157,17 @@ class DayViewPresenter(
             }
         }
 
-    private fun createQuestReminder(reminder: ReminderViewModel?, scheduledDate: LocalDate, eventStartMinute: Int): Reminder? {
-        return reminder?.let {
+    private fun createDefaultReminder(scheduledDate: LocalDate, startMinute: Int) =
+        Reminder("", Time.of(startMinute), scheduledDate)
+
+    private fun createQuestReminder(reminder: ReminderViewModel?, scheduledDate: LocalDate, eventStartMinute: Int) =
+        reminder?.let {
             val time = Time.of(eventStartMinute)
             val questDateTime = LocalDateTime.of(scheduledDate, LocalTime.of(time.hours, time.getMinutes()))
             val reminderDateTime = questDateTime.minusMinutes(it.minutesFromStart)
             val toLocalTime = reminderDateTime.toLocalTime()
             Reminder(it.message, Time.at(toLocalTime.hour, toLocalTime.minute), reminderDateTime.toLocalDate())
         }
-    }
 
     private fun savedQuestViewState(result: Result, state: DayViewState) =
         when (result) {

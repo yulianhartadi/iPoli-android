@@ -54,6 +54,12 @@ class DayViewController :
 
     private lateinit var currentDate: LocalDate
 
+    private var actionMode: ActionMode? = null
+
+    private lateinit var eventsAdapter: QuestScheduledEventsAdapter
+
+    private lateinit var unscheduledEventsAdapter: UnscheduledQuestsAdapter
+
     constructor(currentDate: LocalDate) : this() {
         this.currentDate = currentDate
     }
@@ -105,9 +111,7 @@ class DayViewController :
         calendarDayView.cancelEdit()
     }
 
-    override fun createPresenter(): DayViewPresenter {
-        return presenter
-    }
+    override fun createPresenter() = presenter
 
     override fun render(state: DayViewState, view: View) {
 
@@ -328,12 +332,6 @@ class DayViewController :
         ViewUtils.hideKeyboard(calendarDayView)
     }
 
-    private var actionMode: ActionMode? = null
-
-    private lateinit var eventsAdapter: QuestScheduledEventsAdapter
-
-    private lateinit var unscheduledEventsAdapter: UnscheduledQuestsAdapter
-
     override fun onContextAvailable(context: Context) {
         inject(iPoliApp.controllerModule(context, router))
     }
@@ -399,7 +397,6 @@ class DayViewController :
                 calendarDayView.startEventRescheduling(vm)
                 true
             }
-
 
             view.startTime.text = vm.startTime
             view.endTime.text = vm.endTime
