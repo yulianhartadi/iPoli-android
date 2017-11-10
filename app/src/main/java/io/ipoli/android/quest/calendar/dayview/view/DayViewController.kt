@@ -18,6 +18,7 @@ import android.util.TypedValue
 import android.view.*
 import android.widget.LinearLayout
 import android.widget.Toast
+import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.DateUtils
@@ -38,14 +39,11 @@ import kotlinx.android.synthetic.main.controller_day_view.view.*
 import kotlinx.android.synthetic.main.item_calendar_drag.view.*
 import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 import kotlinx.android.synthetic.main.unscheduled_quest_item.view.*
+import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
-import android.view.ViewGroup
-import io.ipoli.android.Constants
-import io.ipoli.android.R.id.startTime
-import kotlinx.android.synthetic.main.view_calendar_day.view.*
 
 
 class DayViewController :
@@ -426,6 +424,7 @@ class DayViewController :
 
             view.checkBox.setOnCheckedChangeListener { cb, checked ->
                 if (checked) {
+                    (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(R.color.md_grey_700)
                     val anim = RevealAnimator().create(view.completedBackgroundView, cb)
                     anim.addListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationStart(animation: Animator?) {
