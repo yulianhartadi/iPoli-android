@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/pet_message_background">
 
     <View
@@ -28,7 +29,7 @@
         android:layout_marginStart="8dp"
         android:layout_toEndOf="@id/pet"
         android:layout_toStartOf="@id/undoAction"
-        android:text="How ya doing?"
+        tools:text="How ya doing?"
         android:textColor="@color/md_white" />
 
     <Button
