@@ -101,8 +101,8 @@ class AddQuestViewController(args: Bundle? = null) :
     override fun render(state: AddQuestViewState, view: View) {
         colorSelectedIcons(state, view)
 
-        when {
-            state.type == StateType.PICK_DATE -> {
+        when (state.type) {
+            StateType.PICK_DATE -> {
                 val date = state.date ?: LocalDate.now()
                 DatePickerDialog(view.context, R.style.Theme_iPoli_AlertDialog,
                     DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
@@ -110,7 +110,7 @@ class AddQuestViewController(args: Bundle? = null) :
                     }, date.year, date.month.value - 1, date.dayOfMonth).show()
             }
 
-            state.type == StateType.PICK_TIME -> {
+            StateType.PICK_TIME -> {
                 val startTime = state.time ?: Time.now()
                 TimePickerDialog(view.context,
                     TimePickerDialog.OnTimeSetListener { _, hour, minute ->
@@ -118,7 +118,7 @@ class AddQuestViewController(args: Bundle? = null) :
                     }, startTime.hours, startTime.getMinutes(), false).show()
             }
 
-            state.type == StateType.PICK_DURATION ->
+            StateType.PICK_DURATION ->
                 DurationPickerDialogController(object : DurationPickerDialogController.DurationPickedListener {
                     override fun onDurationPicked(minutes: Int) {
                         send(DurationPickedIntent(minutes))
@@ -126,7 +126,7 @@ class AddQuestViewController(args: Bundle? = null) :
 
                 }, state.duration).showDialog(router, "pick_duration_tag")
 
-            state.type == StateType.PICK_COLOR ->
+            StateType.PICK_COLOR ->
                 ColorPickerDialogController(object : ColorPickerDialogController.ColorPickedListener {
                     override fun onColorPicked(color: AndroidColor) {
                         send(ColorPickedIntent(color))
@@ -134,23 +134,26 @@ class AddQuestViewController(args: Bundle? = null) :
 
                 }, state.color).showDialog(router, "pick_color_tag")
 
-            state.type == StateType.PICK_REMINDER ->
+            StateType.PICK_REMINDER ->
                 ReminderPickerDialogController(object : ReminderPickerDialogController.ReminderPickedListener {
                     override fun onReminderPicked(reminder: ReminderViewModel?) {
                         send(ReminderPickedIntent(reminder))
                     }
                 }, state.reminder).showDialog(router, "pick_reminder_tag")
 
-            state.type == StateType.VALIDATION_ERROR_EMPTY_NAME ->
+            StateType.VALIDATION_ERROR_EMPTY_NAME ->
                 view.questName.error = "Think of a name"
 
-            state.type == StateType.VALIDATION_ERROR_EMPTY_START_TIME -> {
+            StateType.VALIDATION_ERROR_EMPTY_START_TIME -> {
                 Toast.makeText(view.context, "When will it start?", Toast.LENGTH_SHORT).show()
                 playStartTimeErrorAnimation(view.startTime)
             }
 
-            state.type == StateType.QUEST_SAVED -> {
+            StateType.QUEST_SAVED -> {
                 resetForm(view)
+            }
+            
+            StateType.DEFAULT -> {
             }
         }
     }
@@ -193,8 +196,10 @@ class AddQuestViewController(args: Bundle? = null) :
             colorSelectedIcon(view.color)
         }
 
-        state.reminder?.let {
+        if (state.reminder != null) {
             colorSelectedIcon(view.reminder)
+        } else {
+            view.reminder.drawable.setTintList(null)
         }
     }
 
