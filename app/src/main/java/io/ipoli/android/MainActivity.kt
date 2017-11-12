@@ -1,7 +1,9 @@
 package io.ipoli.android
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.amplitude.api.Amplitude
@@ -36,12 +38,13 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         if (BuildConfig.DEBUG) {
             Amplitude.getInstance().setLogLevel(Log.VERBOSE)
             amplitudeClient.setOptOut(true)
+
+            if (!Settings.canDrawOverlays(this)) {
+                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + packageName))
+                startActivityForResult(intent, 0)
+            }
         }
 
-//        if (!Settings.canDrawOverlays(this)) {
-//            val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + packageName))
-//            startActivityForResult(intent, 0)
-//        }
 
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         inject(iPoliApp.controllerModule(this, router))

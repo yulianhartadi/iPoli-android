@@ -5,7 +5,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import android.os.Build.VERSION_CODES.N
 import android.support.v4.app.NotificationCompat
 import android.view.ContextThemeWrapper
 import android.widget.Toast
@@ -19,7 +18,7 @@ import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.di.JobModule
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.Quest
-import io.ipoli.android.reminder.view.ReminderNotificationOverlay
+import io.ipoli.android.reminder.view.ReminderNotificationPopup
 import io.ipoli.android.reminder.view.ReminderNotificationViewModel
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -74,8 +73,8 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
                 val questName = it.name
                 val notificationId = showNotification(questName, message, notificationManager)
 
-                ReminderNotificationOverlay(ReminderNotificationViewModel(it.id, questName, message, startTimeMessage),
-                    object : ReminderNotificationOverlay.OnClickListener {
+                ReminderNotificationPopup(ReminderNotificationViewModel(it.id, questName, message, startTimeMessage),
+                    object : ReminderNotificationPopup.OnClickListener {
                         override fun onDismiss() {
                             notificationManager.cancel(notificationId)
                         }
