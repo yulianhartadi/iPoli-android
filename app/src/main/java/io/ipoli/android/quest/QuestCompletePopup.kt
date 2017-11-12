@@ -53,15 +53,35 @@ class QuestCompletePopup(private val earnedXP: Int) : BasePopup() {
 
     private fun startEarnedRewardAnimation(contentView: View) {
         val earnedXP = contentView.earnedXP
+        earnedXP.text = "+ ${this.earnedXP}XP"
+        earnedXP.visible = true
 
         val scaleX = ObjectAnimator.ofFloat(earnedXP, "scaleX", 1f, 1.6f, 1f)
         val scaleY = ObjectAnimator.ofFloat(earnedXP, "scaleY", 1f, 1.6f, 1f)
-        val scaleSet = AnimatorSet()
-        scaleSet.interpolator = LinearOutSlowInInterpolator()
-        scaleSet.playTogether(scaleX, scaleY)
+        val scaleAnimation = AnimatorSet()
+        scaleAnimation.interpolator = LinearOutSlowInInterpolator()
+        scaleAnimation.playTogether(scaleX, scaleY)
 
-        earnedXP.text = "+ ${this.earnedXP}XP"
-        earnedXP.visible = true
-        scaleSet.start()
+        scaleAnimation.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                contentView.postDelayed({
+                    val container = contentView.contentContainer
+                    val transAnim = ObjectAnimator.ofFloat(container, "y", container.y, getScreenHeight(container.context).toFloat())
+                    val fadeAnim = ObjectAnimator.ofFloat(container, "alpha", 1f, 0f)
+                    transAnim.duration = contentView.context.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
+                    fadeAnim.duration = contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+                    val animSet = AnimatorSet()
+                    animSet.addListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator) {
+                            hide()
+                        }
+                    })
+                    animSet.playTogether(transAnim, fadeAnim)
+                    animSet.start()
+                }, 2000)
+            }
+        })
+
+        scaleAnimation.start()
     }
 }

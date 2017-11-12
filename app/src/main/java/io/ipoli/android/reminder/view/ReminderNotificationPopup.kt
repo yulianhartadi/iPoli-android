@@ -73,6 +73,10 @@ abstract class BasePopup() {
         wm.defaultDisplay.getMetrics(metrics)
         return metrics.heightPixels
     }
+
+    fun hide() {
+        windowManager.removeViewImmediate(overlayView)
+    }
 }
 
 
