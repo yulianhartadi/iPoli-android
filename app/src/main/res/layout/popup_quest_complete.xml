@@ -13,7 +13,8 @@
         android:layout_gravity="center"
         android:layout_marginEnd="24dp"
         android:layout_marginStart="24dp"
-        android:background="@color/md_white"
+        android:background="@drawable/popup_background"
+        android:elevation="24dp"
         android:visibility="invisible">
 
         <ImageView
@@ -54,7 +55,6 @@
             app:layout_constraintStart_toEndOf="@+id/pet"
             app:layout_constraintTop_toBottomOf="@+id/pet"
             tools:text="+64XP" />
-
     </android.support.constraint.ConstraintLayout>
 
 
