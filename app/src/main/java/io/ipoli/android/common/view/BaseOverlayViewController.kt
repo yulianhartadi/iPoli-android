@@ -20,13 +20,6 @@ import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
 import io.ipoli.android.R
 import kotlinx.android.synthetic.main.overlay_pet_message.view.*
 
-class QuestCompleteViewController constructor(args: Bundle? = null) : BaseOverlayViewController(args) {
-
-    override fun createOverlayView(inflater: LayoutInflater): View {
-        return inflater.inflate(R.layout.overlay_quest_complete, null)
-    }
-}
-
 class PetMessageViewController : BaseOverlayViewController {
 
     interface UndoClickedListener {

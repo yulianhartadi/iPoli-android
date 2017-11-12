@@ -32,6 +32,7 @@ import io.ipoli.android.common.view.RevealAnimator
 import io.ipoli.android.common.view.changehandler.CircularRevealChangeHandler
 import io.ipoli.android.common.view.color
 import io.ipoli.android.iPoliApp
+import io.ipoli.android.quest.QuestCompletePopup
 import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import io.ipoli.android.quest.calendar.CalendarViewState.StateType.*
 import io.ipoli.android.quest.calendar.addquest.AddQuestViewController
@@ -118,6 +119,8 @@ class CalendarViewController(args: Bundle? = null) :
         initDayPicker(view, calendarToolbar)
 
         initAddQuest(view)
+
+        QuestCompletePopup(120).show(activity!!)
 
         return view
     }
