@@ -8,11 +8,10 @@ import android.support.v4.view.animation.LinearOutSlowInInterpolator
 import android.view.LayoutInflater
 import android.view.View
 import io.ipoli.android.R
-import io.ipoli.android.R.string.view
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
 import io.ipoli.android.common.view.visible
 import io.ipoli.android.common.view.BasePopup
-import io.ipoli.android.common.view.PopupBackgroundLayout
+import io.ipoli.android.common.view.RevealAnimator
 import kotlinx.android.synthetic.main.popup_level_up.view.*
 
 
@@ -27,31 +26,51 @@ class LevelUpPopup(private val earnedXP: Int) : BasePopup() {
 
     private fun startTypingAnimation(contentView: View) {
         val title = contentView.title
-//        val message = contentView.message
 
         val typewriterTitleAnim = TypewriterTextAnimator.of(title, "You reached new level")
-//        val typewriterMessageAnim = TypewriterTextAnimator.of(message, "You are now level 12!")
         val animSet = AnimatorSet()
-        animSet.playSequentially(typewriterTitleAnim)
-        animSet.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
-//                startEarnedRewardAnimation(contentView)
-            }
-        })
+        animSet.playSequentially(typewriterTitleAnim, levelBadgeAnimation(contentView),
+            claimRewardAnimation(contentView))
+
         animSet.start()
     }
 
-//    private fun startEarnedRewardAnimation(contentView: View) {
-//        val earnedXP = contentView.earnedXP
-//        earnedXP.text = "Quest complete + ${this.earnedXP}XP"
-//        earnedXP.visible = true
-//
-//        val scaleX = ObjectAnimator.ofFloat(earnedXP, "scaleX", 1f, 1.6f, 1f)
-//        val scaleY = ObjectAnimator.ofFloat(earnedXP, "scaleY", 1f, 1.6f, 1f)
-//        val scaleAnimation = AnimatorSet()
-//        scaleAnimation.interpolator = LinearOutSlowInInterpolator()
-//        scaleAnimation.playTogether(scaleX, scaleY)
-//
-//        scaleAnimation.start()
-//    }
+    private fun levelBadgeAnimation(contentView: View): Animator {
+        val badge = contentView.badge
+        val level = contentView.level
+
+
+        val fadeIn = ObjectAnimator.ofFloat(badge, "alpha", 0f, 1f)
+        val scaleLevelX = ObjectAnimator.ofFloat(level, "scaleX", 1.5f, 1f)
+        val scaleLevelY = ObjectAnimator.ofFloat(level, "scaleY", 1.5f, 1f)
+
+        val scaleAnim = AnimatorSet()
+        scaleAnim.playTogether(scaleLevelX, scaleLevelY)
+
+        val anim = AnimatorSet()
+        anim.interpolator = LinearOutSlowInInterpolator()
+        anim.playSequentially(fadeIn, scaleAnim)
+        fadeIn.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator?) {
+                badge.visible = true
+            }
+
+            override fun onAnimationEnd(animation: Animator?) {
+                level.visible = true
+            }
+        })
+
+        return anim
+    }
+
+    private fun claimRewardAnimation(contentView: View): Animator {
+        val anim = RevealAnimator().create(contentView.button2)
+        anim.duration = 1000
+        anim.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator?) {
+                contentView.button2.visible = true
+            }
+        })
+        return anim
+    }
 }
