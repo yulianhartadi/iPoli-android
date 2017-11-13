@@ -23,8 +23,8 @@ import io.ipoli.android.common.view.ColorPickerDialogController
 import io.ipoli.android.common.view.DurationPickerDialogController
 import io.ipoli.android.common.view.color
 import io.ipoli.android.iPoliApp
-import io.ipoli.android.quest.calendar.EditTextBackEvent
-import io.ipoli.android.quest.calendar.EditTextImeBackListener
+import io.ipoli.android.common.view.EditTextBackEvent
+import io.ipoli.android.common.view.EditTextImeBackListener
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogController
 import io.ipoli.android.reminder.view.picker.ReminderViewModel
 import kotlinx.android.synthetic.main.controller_add_quest.view.*

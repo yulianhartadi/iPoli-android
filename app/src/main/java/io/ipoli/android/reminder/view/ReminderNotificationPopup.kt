@@ -28,57 +28,6 @@ data class ReminderNotificationViewModel(
     val startTimeMessage: String
 )
 
-abstract class BasePopup() {
-
-    private lateinit var overlayView: ViewGroup
-    private lateinit var windowManager: WindowManager
-
-    abstract fun createView(inflater: LayoutInflater): View
-
-    fun show(context: Context) {
-        overlayView = createView(LayoutInflater.from(context)) as ViewGroup
-        windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        addViewToWindowManager(overlayView)
-        overlayView.post {
-            playEnterAnimation(overlayView)
-        }
-    }
-
-    protected open fun playEnterAnimation(contentView: View) {
-
-    }
-
-    private fun addViewToWindowManager(view: ViewGroup) {
-        val focusable = WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED.
-            or(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN).
-            or(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL).
-            or(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
-
-        val metrics = DisplayMetrics()
-        windowManager.defaultDisplay.getRealMetrics(metrics)
-
-        val layoutParams = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.MATCH_PARENT,
-            WindowManager.LayoutParams.MATCH_PARENT,
-            BaseOverlayViewController.WindowOverlayCompat.TYPE_SYSTEM_ERROR,
-            focusable,
-            PixelFormat.TRANSLUCENT)
-
-        windowManager.addView(view, layoutParams)
-    }
-
-    protected fun getScreenHeight(context: Context): Int {
-        val metrics = DisplayMetrics()
-        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        wm.defaultDisplay.getMetrics(metrics)
-        return metrics.heightPixels
-    }
-
-    fun hide() {
-        windowManager.removeViewImmediate(overlayView)
-    }
-}
-
 
 class ReminderNotificationPopup(private val reminder: ReminderNotificationViewModel, private val listener: OnClickListener) {
 
