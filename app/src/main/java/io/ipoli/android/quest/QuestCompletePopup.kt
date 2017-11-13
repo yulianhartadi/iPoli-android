@@ -2,15 +2,13 @@ package io.ipoli.android.quest
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
-import android.support.v4.view.animation.LinearOutSlowInInterpolator
+import android.animation.ValueAnimator
 import android.view.LayoutInflater
 import android.view.View
 import io.ipoli.android.R
+import io.ipoli.android.common.view.BasePopup
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
 import io.ipoli.android.common.view.visible
-import io.ipoli.android.common.view.BasePopup
 import kotlinx.android.synthetic.main.popup_quest_complete.view.*
 
 
@@ -28,7 +26,7 @@ class QuestCompletePopup(private val earnedXP: Int) : BasePopup() {
 
         val typewriterAnim = TypewriterTextAnimator.of(title, "Quest Complete")
         typewriterAnim.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
+            override fun onAnimationEnd(animation: Animator) {
                 startEarnedRewardAnimation(contentView)
             }
         })
@@ -37,16 +35,22 @@ class QuestCompletePopup(private val earnedXP: Int) : BasePopup() {
 
     private fun startEarnedRewardAnimation(contentView: View) {
         val earnedXP = contentView.earnedXP
-        earnedXP.text = "+ ${this.earnedXP}XP"
+
         earnedXP.visible = true
 
-        val scaleX = ObjectAnimator.ofFloat(earnedXP, "scaleX", 1f, 1.6f, 1f)
-        val scaleY = ObjectAnimator.ofFloat(earnedXP, "scaleY", 1f, 1.6f, 1f)
-        val scaleAnimation = AnimatorSet()
-        scaleAnimation.interpolator = LinearOutSlowInInterpolator()
-        scaleAnimation.playTogether(scaleX, scaleY)
+        val xpAnim = ValueAnimator.ofInt(0, this.earnedXP)
+        xpAnim.duration = 1000
+        xpAnim.addUpdateListener {
+            earnedXP.text = "+ ${it.animatedValue}XP"
+        }
 
-        scaleAnimation.addListener(object : AnimatorListenerAdapter() {
+//        val scaleX = ObjectAnimator.ofFloat(earnedXP, "scaleX", 1f, 1.6f, 1f)
+//        val scaleY = ObjectAnimator.ofFloat(earnedXP, "scaleY", 1f, 1.6f, 1f)
+//        val scaleAnimation = AnimatorSet()
+//        scaleAnimation.interpolator = LinearOutSlowInInterpolator()
+//        scaleAnimation.playTogether(scaleX, scaleY)
+
+        xpAnim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 contentView.postDelayed({
                     playExitAnimation(contentView)
@@ -54,6 +58,6 @@ class QuestCompletePopup(private val earnedXP: Int) : BasePopup() {
             }
         })
 
-        scaleAnimation.start()
+        xpAnim.start()
     }
 }
