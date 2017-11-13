@@ -8,16 +8,18 @@ import android.support.v4.view.animation.LinearOutSlowInInterpolator
 import android.view.LayoutInflater
 import android.view.View
 import io.ipoli.android.R
+import io.ipoli.android.R.string.view
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
 import io.ipoli.android.common.view.visible
 import io.ipoli.android.common.view.BasePopup
+import io.ipoli.android.common.view.PopupBackgroundLayout
 import kotlinx.android.synthetic.main.popup_quest_complete.view.*
 
 
-class QuestCompletePopup(private val earnedXP: Int) : BasePopup() {
+class LevelUpPopup(private val earnedXP: Int) : BasePopup() {
 
     override fun createView(inflater: LayoutInflater): View =
-        inflater.inflate(R.layout.popup_quest_complete, null)
+        inflater.inflate(R.layout.popup_level_up, null)
 
     override fun onEnterAnimationEnd(contentView: View) {
         startTypingAnimation(contentView)
@@ -45,14 +47,6 @@ class QuestCompletePopup(private val earnedXP: Int) : BasePopup() {
         val scaleAnimation = AnimatorSet()
         scaleAnimation.interpolator = LinearOutSlowInInterpolator()
         scaleAnimation.playTogether(scaleX, scaleY)
-
-        scaleAnimation.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator) {
-                contentView.postDelayed({
-                    playExitAnimation(contentView)
-                }, 2000)
-            }
-        })
 
         scaleAnimation.start()
     }

@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@color/md_white">
 
-    <io.ipoli.android.quest.calendar.EditTextBackEvent
+    <io.ipoli.android.common.view.EditTextBackEvent
         android:id="@+id/questName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

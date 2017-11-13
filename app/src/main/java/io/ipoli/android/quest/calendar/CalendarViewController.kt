@@ -11,10 +11,7 @@ import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
-import android.support.v7.widget.AppCompatEditText
 import android.support.v7.widget.Toolbar
-import android.util.AttributeSet
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,6 +29,7 @@ import io.ipoli.android.common.view.RevealAnimator
 import io.ipoli.android.common.view.changehandler.CircularRevealChangeHandler
 import io.ipoli.android.common.view.color
 import io.ipoli.android.iPoliApp
+import io.ipoli.android.quest.LevelUpPopup
 import io.ipoli.android.quest.QuestCompletePopup
 import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import io.ipoli.android.quest.calendar.CalendarViewState.StateType.*
@@ -48,39 +46,6 @@ import sun.bob.mcalendarview.MarkStyle
 import sun.bob.mcalendarview.listeners.OnDateClickListener
 import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
-
-/**
- * Created by Venelin Valkov <venelin@ipoli.io>
- * on 9/8/17.
- */
-
-class EditTextBackEvent : AppCompatEditText {
-
-    private var mOnImeBack: EditTextImeBackListener? = null
-
-    constructor(context: Context) : super(context) {}
-
-    constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {}
-
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle) {}
-
-    override fun onKeyPreIme(keyCode: Int, event: KeyEvent): Boolean {
-        if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-            if (mOnImeBack != null)
-                mOnImeBack!!.onImeBack(this, this.text.toString())
-        }
-        return super.dispatchKeyEvent(event)
-    }
-
-    fun setOnEditTextImeBackListener(listener: EditTextImeBackListener) {
-        mOnImeBack = listener
-    }
-
-}
-
-interface EditTextImeBackListener {
-    fun onImeBack(ctrl: EditTextBackEvent, text: String)
-}
 
 class CalendarViewController(args: Bundle? = null) :
     MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>(args),
@@ -122,6 +87,7 @@ class CalendarViewController(args: Bundle? = null) :
 
         QuestCompletePopup(120).show(activity!!)
 
+//        LevelUpPopup(60).show(activity!!)
         return view
     }
 
