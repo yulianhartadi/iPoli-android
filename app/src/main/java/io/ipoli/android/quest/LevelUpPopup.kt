@@ -13,7 +13,7 @@ import io.ipoli.android.common.view.anim.TypewriterTextAnimator
 import io.ipoli.android.common.view.visible
 import io.ipoli.android.common.view.BasePopup
 import io.ipoli.android.common.view.PopupBackgroundLayout
-import kotlinx.android.synthetic.main.popup_quest_complete.view.*
+import kotlinx.android.synthetic.main.popup_level_up.view.*
 
 
 class LevelUpPopup(private val earnedXP: Int) : BasePopup() {
@@ -27,27 +27,31 @@ class LevelUpPopup(private val earnedXP: Int) : BasePopup() {
 
     private fun startTypingAnimation(contentView: View) {
         val title = contentView.title
+//        val message = contentView.message
 
-        val typewriterAnim = TypewriterTextAnimator.of(title, "Quest Complete")
-        typewriterAnim.addListener(object : AnimatorListenerAdapter() {
+        val typewriterTitleAnim = TypewriterTextAnimator.of(title, "You reached new level")
+//        val typewriterMessageAnim = TypewriterTextAnimator.of(message, "You are now level 12!")
+        val animSet = AnimatorSet()
+        animSet.playSequentially(typewriterTitleAnim)
+        animSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
-                startEarnedRewardAnimation(contentView)
+//                startEarnedRewardAnimation(contentView)
             }
         })
-        typewriterAnim.start()
+        animSet.start()
     }
 
-    private fun startEarnedRewardAnimation(contentView: View) {
-        val earnedXP = contentView.earnedXP
-        earnedXP.text = "+ ${this.earnedXP}XP"
-        earnedXP.visible = true
-
-        val scaleX = ObjectAnimator.ofFloat(earnedXP, "scaleX", 1f, 1.6f, 1f)
-        val scaleY = ObjectAnimator.ofFloat(earnedXP, "scaleY", 1f, 1.6f, 1f)
-        val scaleAnimation = AnimatorSet()
-        scaleAnimation.interpolator = LinearOutSlowInInterpolator()
-        scaleAnimation.playTogether(scaleX, scaleY)
-
-        scaleAnimation.start()
-    }
+//    private fun startEarnedRewardAnimation(contentView: View) {
+//        val earnedXP = contentView.earnedXP
+//        earnedXP.text = "Quest complete + ${this.earnedXP}XP"
+//        earnedXP.visible = true
+//
+//        val scaleX = ObjectAnimator.ofFloat(earnedXP, "scaleX", 1f, 1.6f, 1f)
+//        val scaleY = ObjectAnimator.ofFloat(earnedXP, "scaleY", 1f, 1.6f, 1f)
+//        val scaleAnimation = AnimatorSet()
+//        scaleAnimation.interpolator = LinearOutSlowInInterpolator()
+//        scaleAnimation.playTogether(scaleX, scaleY)
+//
+//        scaleAnimation.start()
+//    }
 }

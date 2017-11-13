@@ -85,9 +85,9 @@ class CalendarViewController(args: Bundle? = null) :
 
         initAddQuest(view)
 
-        QuestCompletePopup(120).show(activity!!)
+//        QuestCompletePopup(120).show(activity!!)
 
-//        LevelUpPopup(60).show(activity!!)
+        LevelUpPopup(60).show(activity!!)
         return view
     }
 
