@@ -8,14 +8,13 @@ import android.support.v4.view.animation.LinearOutSlowInInterpolator
 import android.view.LayoutInflater
 import android.view.View
 import io.ipoli.android.R
+import io.ipoli.android.common.view.BasePopup
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
 import io.ipoli.android.common.view.visible
-import io.ipoli.android.common.view.BasePopup
-import io.ipoli.android.common.view.RevealAnimator
 import kotlinx.android.synthetic.main.popup_level_up.view.*
 
 
-class LevelUpPopup(private val earnedXP: Int) : BasePopup() {
+class LevelUpPopup : BasePopup() {
 
     override fun createView(inflater: LayoutInflater): View =
         inflater.inflate(R.layout.popup_level_up, null)
@@ -64,8 +63,9 @@ class LevelUpPopup(private val earnedXP: Int) : BasePopup() {
     }
 
     private fun claimRewardAnimation(contentView: View): Animator {
-        val anim = RevealAnimator().create(contentView.button2)
-        anim.duration = 1000
+        val anim = ObjectAnimator.ofFloat(contentView.button2, "alpha", 0f, 1f)
+        // RevealAnimator().create(contentView.button2)
+        anim.duration = 300
         anim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator?) {
                 contentView.button2.visible = true
