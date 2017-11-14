@@ -64,7 +64,6 @@ class LevelUpPopup : BasePopup() {
 
     private fun claimRewardAnimation(contentView: View): Animator {
         val anim = ObjectAnimator.ofFloat(contentView.button2, "alpha", 0f, 1f)
-        // RevealAnimator().create(contentView.button2)
         anim.duration = 300
         anim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator?) {
