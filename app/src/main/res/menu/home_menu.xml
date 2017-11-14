@@ -5,5 +5,5 @@
         android:id="@+id/action_feedback"
         android:icon="@drawable/ic_comment_white_24dp"
         android:title="Feedback"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 </menu>
