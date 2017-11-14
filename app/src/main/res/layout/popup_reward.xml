@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/popup_background"
-    android:elevation="24dp"
-    android:visibility="invisible">
+    android:elevation="24dp">
 
     <ImageView
         android:id="@+id/reward"
