@@ -29,7 +29,7 @@ import io.ipoli.android.common.view.RevealAnimator
 import io.ipoli.android.common.view.changehandler.CircularRevealChangeHandler
 import io.ipoli.android.common.view.color
 import io.ipoli.android.iPoliApp
-import io.ipoli.android.quest.QuestCompletePopup
+import io.ipoli.android.quest.RewardPopup
 import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import io.ipoli.android.quest.calendar.CalendarViewState.StateType.*
 import io.ipoli.android.quest.calendar.addquest.AddQuestViewController
@@ -84,9 +84,14 @@ class CalendarViewController(args: Bundle? = null) :
 
         initAddQuest(view)
 
-        QuestCompletePopup(120).show(activity!!)
+//        QuestCompletePopup(120).show(activity!!)
 
 //        LevelUpPopup().show(activity!!)
+
+        view.postDelayed({
+            RewardPopup().show(activity!!)
+        }, 2000)
+
         return view
     }
 
