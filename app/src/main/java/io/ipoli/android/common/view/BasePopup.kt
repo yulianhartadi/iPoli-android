@@ -47,6 +47,7 @@ abstract class BasePopup {
     fun show(context: Context) {
         activity = context
         contentView = createView(LayoutInflater.from(context)) as ViewGroup
+        contentView.visibility = View.INVISIBLE
 
         overlayView = PopupBackgroundLayout(context)
         overlayView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
@@ -60,7 +61,10 @@ abstract class BasePopup {
         overlayView.addView(contentView, contentLp)
 
         overlayView.setOnBackPressed({ playExitAnimation(contentView) })
-        overlayView.setOnClickListener { playExitAnimation(contentView) }
+        overlayView.setOnClickListener {
+            overlayView.isClickable = false
+            playExitAnimation(contentView)
+        }
 
         windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
