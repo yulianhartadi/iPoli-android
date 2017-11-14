@@ -40,10 +40,12 @@ abstract class BasePopup {
     private lateinit var overlayView: PopupBackgroundLayout
     private lateinit var contentView: ViewGroup
     private lateinit var windowManager: WindowManager
+    protected lateinit var activity: Context
 
     abstract fun createView(inflater: LayoutInflater): View
 
     fun show(context: Context) {
+        activity = context
         contentView = createView(LayoutInflater.from(context)) as ViewGroup
 
         overlayView = PopupBackgroundLayout(context)
@@ -71,8 +73,8 @@ abstract class BasePopup {
     protected open fun playEnterAnimation(contentView: View) {
         val transAnim = ObjectAnimator.ofFloat(contentView, "y", getScreenHeight(contentView.context).toFloat(), contentView.y)
         val fadeAnim = ObjectAnimator.ofFloat(contentView, "alpha", 0f, 1f)
-        transAnim.duration = contentView.context.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
-        fadeAnim.duration = contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+        transAnim.duration = contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+        fadeAnim.duration = contentView.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong()
         val animSet = AnimatorSet()
         animSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator) {
