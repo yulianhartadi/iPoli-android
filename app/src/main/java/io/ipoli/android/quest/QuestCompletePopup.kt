@@ -44,12 +44,6 @@ class QuestCompletePopup(private val earnedXP: Int) : BasePopup() {
             earnedXP.text = "+ ${it.animatedValue}XP"
         }
 
-//        val scaleX = ObjectAnimator.ofFloat(earnedXP, "scaleX", 1f, 1.6f, 1f)
-//        val scaleY = ObjectAnimator.ofFloat(earnedXP, "scaleY", 1f, 1.6f, 1f)
-//        val scaleAnimation = AnimatorSet()
-//        scaleAnimation.interpolator = LinearOutSlowInInterpolator()
-//        scaleAnimation.playTogether(scaleX, scaleY)
-
         xpAnim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 contentView.postDelayed({
