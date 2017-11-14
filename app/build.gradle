@@ -8,6 +8,8 @@ apply plugin: "de.mannodermaus.android-junit5"
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
+    mavenCentral()
+    maven { url 'https://maven.google.com' }
 }
 
 android {
@@ -82,6 +84,9 @@ dependencies {
     implementation 'com.evernote:android-job:1.2.0'
     implementation 'com.amplitude:android-sdk:2.15.0'
     implementation 'com.sdsmdg.harjot:croller:1.0.7'
+
+    implementation 'com.github.bumptech.glide:glide:4.3.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.3.1'
 
 //    debugImplementation "com.github.brianPlummer:tinydancer:0.1.1"
 //    implementation "com.github.brianPlummer:tinydancer-noop:0.1.1"

@@ -6,10 +6,12 @@ import android.os.Bundle
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.widget.ImageView
 import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import com.bumptech.glide.Glide
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.home.HomeController
 import io.ipoli.android.player.persistence.ProviderType
@@ -33,6 +35,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         val amplitudeClient = Amplitude.getInstance().initialize(this, AnalyticsConstants.AMPLITUDE_KEY)
         amplitudeClient.enableForegroundTracking(application)
         if (BuildConfig.DEBUG) {
@@ -44,7 +47,6 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
                 startActivityForResult(intent, 0)
             }
         }
-
 
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         inject(iPoliApp.controllerModule(this, router))
