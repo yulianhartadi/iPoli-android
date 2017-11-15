@@ -1,11 +1,11 @@
 package io.ipoli.android.player.persistence
 
 import com.couchbase.lite.Database
+import io.ipoli.android.common.persistence.BaseCouchbaseRepository
+import io.ipoli.android.common.persistence.CouchbasePersistedModel
 import io.ipoli.android.common.persistence.Repository
 import io.ipoli.android.quest.AuthProvider
 import io.ipoli.android.quest.Player
-import io.ipoli.android.common.persistence.BaseCouchbaseRepository
-import io.ipoli.android.common.persistence.CouchbasePersistedModel
 import io.ipoli.android.store.avatars.data.Avatar
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
@@ -22,6 +22,7 @@ interface PlayerRepository : Repository<Player> {
 data class CouchbasePlayer(override val map: MutableMap<String, Any?> = mutableMapOf()) : CouchbasePersistedModel {
     override var type: String by map
     override var id: String by map
+    var level: Int by map
     var coins: Int by map
     var experience: Int by map
     var authProvider: MutableMap<String, Any?> by map
@@ -67,6 +68,7 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
         )
         return Player(
             id = cp.id,
+            level = cp.level,
             coins = cp.coins,
             experience = cp.experience,
             authProvider = authProvider,
@@ -78,6 +80,8 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
     override fun toCouchbaseObject(entity: Player): CouchbasePlayer {
         val cp = CouchbasePlayer()
         cp.id = entity.id
+        cp.type = CouchbasePlayer.TYPE
+        cp.level = entity.level
         cp.coins = entity.coins
         cp.experience = entity.experience
         cp.authProvider = createCouchbaseAuthProvider(entity).map
