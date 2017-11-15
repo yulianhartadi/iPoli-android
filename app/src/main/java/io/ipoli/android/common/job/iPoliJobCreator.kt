@@ -2,6 +2,7 @@ package io.ipoli.android.common.job
 
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobCreator
+import io.ipoli.android.player.LevelUpJob
 import io.ipoli.android.quest.QuestCompleteJob
 import io.ipoli.android.reminder.ReminderNotificationJob
 
@@ -14,6 +15,7 @@ class iPoliJobCreator : JobCreator {
         when (tag) {
             ReminderNotificationJob.TAG -> ReminderNotificationJob()
             QuestCompleteJob.TAG -> QuestCompleteJob()
+            LevelUpJob.TAG -> LevelUpJob()
             else -> null
         }
 }

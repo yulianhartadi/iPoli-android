@@ -1,4 +1,4 @@
-package io.ipoli.android.quest
+package io.ipoli.android.player.view
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -14,7 +14,7 @@ import io.ipoli.android.common.view.visible
 import kotlinx.android.synthetic.main.popup_level_up.view.*
 
 
-class LevelUpPopup : BasePopup() {
+class LevelUpPopup(private val level: Int) : BasePopup() {
 
     override fun createView(inflater: LayoutInflater): View =
         inflater.inflate(R.layout.popup_level_up, null)
@@ -36,12 +36,12 @@ class LevelUpPopup : BasePopup() {
 
     private fun levelBadgeAnimation(contentView: View): Animator {
         val badge = contentView.badge
-        val level = contentView.level
-
+        val levelView = contentView.level
+        levelView.text = level.toString()
 
         val fadeIn = ObjectAnimator.ofFloat(badge, "alpha", 0f, 1f)
-        val scaleLevelX = ObjectAnimator.ofFloat(level, "scaleX", 1.5f, 1f)
-        val scaleLevelY = ObjectAnimator.ofFloat(level, "scaleY", 1.5f, 1f)
+        val scaleLevelX = ObjectAnimator.ofFloat(levelView, "scaleX", 1.5f, 1f)
+        val scaleLevelY = ObjectAnimator.ofFloat(levelView, "scaleY", 1.5f, 1f)
 
         val scaleAnim = AnimatorSet()
         scaleAnim.playTogether(scaleLevelX, scaleLevelY)
@@ -55,7 +55,7 @@ class LevelUpPopup : BasePopup() {
             }
 
             override fun onAnimationEnd(animation: Animator?) {
-                level.visible = true
+                levelView.visible = true
             }
         })
 

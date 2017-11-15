@@ -2,6 +2,7 @@ package io.ipoli.android.quest
 
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.toMillis
+import io.ipoli.android.player.ExperienceForLevelGenerator
 import io.ipoli.android.store.avatars.data.Avatar
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
@@ -68,19 +69,36 @@ data class Quest(
 
 data class Player(
     override val id: String = "",
-    var coins: Int = 0,
-    var experience: Int = 0,
-    var authProvider: AuthProvider,
-    var avatar: Avatar = Avatar.IPOLI_CLASSIC,
+    val level: Int = 1,
+    val coins: Int = 0,
+    val experience: Int = 0,
+    val authProvider: AuthProvider,
+    val avatar: Avatar = Avatar.IPOLI_CLASSIC,
     val createdAt: LocalDateTime = LocalDateTime.now()
-) : Entity
+) : Entity {
+    fun addExperience(experience: Int): Player {
+        val newXp = experience + this.experience
+        return copy(
+            experience = newXp,
+            level = nextLevel(newXp)
+        )
+    }
+
+    private fun nextLevel(newXp: Int): Int {
+        var newLevel = level
+        while (newXp >= ExperienceForLevelGenerator.forLevel(newLevel + 1)) {
+            newLevel++
+        }
+        return newLevel
+    }
+}
 
 data class AuthProvider(
-    var id: String = "",
-    var provider: String = "",
-    var firstName: String = "",
-    var lastName: String = "",
-    var username: String = "",
-    var email: String = "",
-    var image: String = ""
+    val id: String = "",
+    val provider: String = "",
+    val firstName: String = "",
+    val lastName: String = "",
+    val username: String = "",
+    val email: String = "",
+    val image: String = ""
 )

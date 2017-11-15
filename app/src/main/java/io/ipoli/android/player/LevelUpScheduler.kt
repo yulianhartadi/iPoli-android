@@ -1,14 +1,13 @@
-package io.ipoli.android.quest
+package io.ipoli.android.player
 
 import android.view.ContextThemeWrapper
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobRequest
-import com.evernote.android.job.util.support.PersistableBundleCompat
 import io.ipoli.android.R
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.di.JobModule
 import io.ipoli.android.iPoliApp
-import io.ipoli.android.quest.view.QuestCompletePopup
+import io.ipoli.android.player.view.LevelUpPopup
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Injects
@@ -19,43 +18,38 @@ import space.traversal.kapsule.Kapsule
  * on 11/15/17.
  */
 
-class QuestCompleteJob : Job(), Injects<ControllerModule> {
+class LevelUpJob : Job(), Injects<ControllerModule> {
     override fun onRunJob(params: Params): Result {
-        val questId = params.extras.getString("questId", "")
 
         val kap = Kapsule<JobModule>()
-        val findCompletedQuestUseCase by kap.required { findCompletedQuestUseCase }
+        val findPlayerLevelUseCase by kap.required { findPlayerLevelUseCase }
         kap.inject(iPoliApp.jobModule(context))
 
-        val quest = findCompletedQuestUseCase.execute(questId)
+        val playerLevel = findPlayerLevelUseCase.execute(Unit)
 
         val c = ContextThemeWrapper(context, R.style.Theme_iPoli)
 
         launch(UI) {
-            QuestCompletePopup(quest.experience!!).show(c)
+            LevelUpPopup(playerLevel).show(c)
         }
 
         return Result.SUCCESS
     }
 
     companion object {
-        val TAG = "job_quest_complete_tag"
+        val TAG = "job_level_up_tag"
     }
 }
 
-interface QuestCompleteScheduler {
-    fun schedule(questId: String)
+interface LevelUpScheduler {
+    fun schedule()
 }
 
-class AndroidJobQuestCompleteScheduler : QuestCompleteScheduler {
-    override fun schedule(questId: String) {
-        val bundle = PersistableBundleCompat()
-        bundle.putString("questId", questId)
-        JobRequest.Builder(QuestCompleteJob.TAG)
-            .setExtras(bundle)
+class AndroidLevelUpScheduler : LevelUpScheduler {
+    override fun schedule() {
+        JobRequest.Builder(LevelUpJob.TAG)
             .startNow()
             .build()
             .schedule()
     }
-
 }

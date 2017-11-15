@@ -2,6 +2,8 @@ package io.ipoli.android.quest.usecase
 
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.player.LevelUpScheduler
+import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.QuestCompleteScheduler
 import io.ipoli.android.quest.data.persistence.QuestRepository
@@ -15,8 +17,11 @@ import java.util.*
  */
 class CompleteQuestUseCase(
     private val questRepository: QuestRepository,
+    private val playerRepository: PlayerRepository,
     private val reminderScheduler: ReminderScheduler,
-    private val questCompleteScheduler: QuestCompleteScheduler
+    private val questCompleteScheduler: QuestCompleteScheduler,
+    private val levelUpScheduler: LevelUpScheduler,
+    private val randomSeed: Long = System.currentTimeMillis()
 ) : UseCase<String, Quest> {
     override fun execute(parameters: String): Quest {
 
@@ -37,14 +42,23 @@ class CompleteQuestUseCase(
             reminderScheduler.schedule(quests.first().reminder!!.toMillis())
         }
 
-        questCompleteScheduler.schedule(parameters)
+        val player = playerRepository.find()
+        requireNotNull(player)
+        val newPlayer = player!!.addExperience(experience)
 
+        if (newPlayer.level != player.level) {
+            levelUpScheduler.schedule()
+        } else {
+            questCompleteScheduler.schedule(parameters)
+        }
+
+        playerRepository.save(newPlayer)
         return newQuest
     }
 
     private fun xpForQuest(): Int {
         val rewards = intArrayOf(5, 10, 15, 20, 30)
-        return rewards[Random().nextInt(rewards.size)] * TEMP_BONUS_MULTIPLIER
+        return rewards[Random(randomSeed).nextInt(rewards.size)] * TEMP_BONUS_MULTIPLIER
     }
 
     companion object {

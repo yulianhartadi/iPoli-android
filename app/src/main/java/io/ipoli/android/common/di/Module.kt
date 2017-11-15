@@ -9,8 +9,11 @@ import com.couchbase.lite.Database
 import com.couchbase.lite.DatabaseConfiguration
 import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.text.CalendarFormatter
+import io.ipoli.android.player.AndroidLevelUpScheduler
+import io.ipoli.android.player.LevelUpScheduler
 import io.ipoli.android.player.persistence.CouchbasePlayerRepository
 import io.ipoli.android.player.persistence.PlayerRepository
+import io.ipoli.android.player.usecase.FindPlayerLevelUseCase
 import io.ipoli.android.quest.AndroidJobQuestCompleteScheduler
 import io.ipoli.android.quest.QuestCompleteScheduler
 import io.ipoli.android.quest.calendar.CalendarPresenter
@@ -70,6 +73,8 @@ interface AndroidModule {
 
     val questCompleteScheduler: QuestCompleteScheduler
 
+    val levelUpScheduler: LevelUpScheduler
+
     val job: Job
 }
 
@@ -97,6 +102,8 @@ class MainAndroidModule(private val context: Context) : AndroidModule {
 
     override val questCompleteScheduler get() = AndroidJobQuestCompleteScheduler()
 
+    override val levelUpScheduler get() = AndroidLevelUpScheduler()
+
     override val database: Database
         get() = Database("iPoli", DatabaseConfiguration(context.applicationContext))
 
@@ -108,6 +115,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     private val playerRepository by required { playerRepository }
     private val reminderScheduler by required { reminderScheduler }
     private val questCompleteScheduler by required { questCompleteScheduler }
+    private val levelUpScheduler by required { levelUpScheduler }
     private val job by required { job }
     override val loadScheduleForDateUseCase
         get() = LoadScheduleForDateUseCase(questRepository, job + CommonPool)
@@ -116,7 +124,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val undoRemoveQuestUseCase get() = UndoRemovedQuestUseCase(questRepository)
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
-    override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, reminderScheduler, questCompleteScheduler)
+    override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, playerRepository, reminderScheduler, questCompleteScheduler, levelUpScheduler)
     override val undoCompleteQuestUseCase get() = UndoCompleteQuestUseCase(questRepository, reminderScheduler)
 }
 
@@ -125,16 +133,20 @@ interface JobUseCaseModule {
     val snoozeQuestUseCase: SnoozeQuestUseCase
     val completeQuestUseCase: CompleteQuestUseCase
     val findCompletedQuestUseCase: FindCompletedQuestUseCase
+    val findPlayerLevelUseCase: FindPlayerLevelUseCase
 }
 
 class AndroidJobUseCaseModule : JobUseCaseModule, Injects<JobModule> {
     private val questRepository by required { questRepository }
+    private val playerRepository by required { playerRepository }
     private val reminderScheduler by required { reminderScheduler }
     private val questCompleteScheduler by required { questCompleteScheduler }
+    private val levelUpScheduler by required { levelUpScheduler }
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
-    override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, reminderScheduler, questCompleteScheduler)
+    override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, playerRepository, reminderScheduler, questCompleteScheduler, levelUpScheduler)
     override val findCompletedQuestUseCase get() = FindCompletedQuestUseCase(questRepository)
+    override val findPlayerLevelUseCase get() = FindPlayerLevelUseCase(playerRepository)
 }
 
 interface UseCaseModule {

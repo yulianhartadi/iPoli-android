@@ -5,6 +5,8 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.reset
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.player.LevelUpScheduler
+import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.quest.*
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.reminder.ReminderScheduler
@@ -23,7 +25,7 @@ class CompleteQuestUseCaseSpek : Spek({
     describe("CompleteQuestUseCase") {
 
         beforeEachTest {
-            reset(questRepo, reminderScheduler, questCompleteScheduler)
+            reset(questRepo, reminderScheduler, questCompleteScheduler, levelUpScheduler, playerRepo)
         }
 
         val questId = "sampleid"
@@ -51,13 +53,67 @@ class CompleteQuestUseCaseSpek : Spek({
             Verify on questCompleteScheduler that questCompleteScheduler.schedule(any()) was called
         }
 
-        it("should give XP for the Quest") {
+        it("should save XP to the Quest") {
             val newQuest = useCase.execute(questId)
             newQuest.experience.shouldNotBeNull()
             newQuest.experience!! `should be greater than` 0
         }
+
+        it("should level up Player") {
+            val player = Player(
+                experience = 49,
+                authProvider = AuthProvider()
+            )
+
+            val playerRepo = mock<PlayerRepository> {
+                on { find() } doReturn player
+            }
+            val useCase = CompleteQuestUseCase(
+                questRepo,
+                playerRepo,
+                reminderScheduler,
+                questCompleteScheduler,
+                levelUpScheduler
+            )
+            val newQuest = useCase.execute(questId)
+            Verify on playerRepo that playerRepo.save(
+                player.copy(
+                    level = 2,
+                    experience = player.experience + newQuest.experience!!
+                )
+            ) was called
+        }
+
+        it("should schedule level up message") {
+            val player = Player(
+                experience = 49,
+                authProvider = AuthProvider()
+            )
+
+            val playerRepo = mock<PlayerRepository> {
+                on { find() } doReturn player
+            }
+            val useCase = CompleteQuestUseCase(
+                questRepo,
+                playerRepo,
+                reminderScheduler,
+                questCompleteScheduler,
+                levelUpScheduler
+            )
+            useCase.execute(questId)
+            Verify on levelUpScheduler that levelUpScheduler.schedule() was called
+        }
     }
 })
+
+val player = Player(
+    authProvider = AuthProvider()
+)
+
+val playerRepo: PlayerRepository
+    get() = mock<PlayerRepository> {
+        on { find() } doReturn player
+    }
 
 val quest = Quest(
     name = "",
@@ -72,6 +128,8 @@ val questCompleteScheduler = mock<QuestCompleteScheduler>()
 
 val reminderScheduler = mock<ReminderScheduler>()
 
+val levelUpScheduler = mock<LevelUpScheduler>()
+
 val questRepo: QuestRepository
     get() = mock<QuestRepository> {
 
@@ -82,4 +140,11 @@ val questRepo: QuestRepository
             listOf(quest)
     }
 
-val useCase = CompleteQuestUseCase(questRepo, reminderScheduler, questCompleteScheduler)
+val useCase = CompleteQuestUseCase(
+    questRepo,
+    playerRepo,
+    reminderScheduler,
+    questCompleteScheduler,
+    levelUpScheduler,
+    42
+)

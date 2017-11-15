@@ -6,12 +6,10 @@ import android.os.Bundle
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.widget.ImageView
 import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import com.bumptech.glide.Glide
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.home.HomeController
 import io.ipoli.android.player.persistence.ProviderType
@@ -30,7 +28,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
     lateinit var router: Router
 
     private val playerRepository by required { playerRepository }
-
+    private val db by required { database }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,9 +50,11 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         inject(iPoliApp.controllerModule(this, router))
         val hasNoRootController = !router.hasRootController()
 
-
         if (playerRepository.find() == null) {
-            val player = Player(authProvider = AuthProvider(provider = ProviderType.ANONYMOUS.name))
+            val player = Player(
+                level = 1,
+                authProvider = AuthProvider(provider = ProviderType.ANONYMOUS.name)
+            )
             playerRepository.save(player)
         }
 

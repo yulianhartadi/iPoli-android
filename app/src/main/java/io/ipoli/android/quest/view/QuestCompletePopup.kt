@@ -1,4 +1,4 @@
-package io.ipoli.android.quest
+package io.ipoli.android.quest.view
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
