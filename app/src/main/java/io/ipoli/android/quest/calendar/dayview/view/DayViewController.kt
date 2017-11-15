@@ -17,7 +17,6 @@ import android.text.style.StrikethroughSpan
 import android.util.TypedValue
 import android.view.*
 import android.widget.LinearLayout
-import android.widget.Toast
 import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
@@ -142,11 +141,9 @@ class DayViewController :
             }
 
             QUEST_COMPLETED -> {
-                Toast.makeText(applicationContext, R.string.quest_complete, Toast.LENGTH_SHORT).show()
             }
 
             UNDO_QUEST_COMPLETED -> {
-
             }
 
         }

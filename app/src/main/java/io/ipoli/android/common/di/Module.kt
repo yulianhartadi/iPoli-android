@@ -124,6 +124,7 @@ interface JobUseCaseModule {
     val findQuestToRemindUseCase: FindQuestsToRemindUseCase
     val snoozeQuestUseCase: SnoozeQuestUseCase
     val completeQuestUseCase: CompleteQuestUseCase
+    val findCompletedQuestUseCase: FindCompletedQuestUseCase
 }
 
 class AndroidJobUseCaseModule : JobUseCaseModule, Injects<JobModule> {
@@ -133,6 +134,7 @@ class AndroidJobUseCaseModule : JobUseCaseModule, Injects<JobModule> {
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
     override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, reminderScheduler, questCompleteScheduler)
+    override val findCompletedQuestUseCase get() = FindCompletedQuestUseCase(questRepository)
 }
 
 interface UseCaseModule {
