@@ -1,6 +1,5 @@
 package io.ipoli.android.quest.calendar.dayview.view
 
-import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.quest.calendar.dayview.view.widget.CalendarEvent
@@ -39,7 +38,6 @@ data class DayViewState(
 
     enum class StateType {
         LOADING, SCHEDULE_LOADED, EVENT_UPDATED, EVENT_VALIDATION_ERROR, EVENT_REMOVED,
-
         UNDO_REMOVED_EVENT,
         QUEST_COMPLETED,
         UNDO_QUEST_COMPLETED

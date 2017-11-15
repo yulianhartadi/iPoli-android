@@ -24,7 +24,7 @@ import kotlin.coroutines.experimental.CoroutineContext
 interface QuestRepository : Repository<Quest> {
     fun listenForScheduledBetween(startDate: LocalDate, endDate: LocalDate): ReceiveChannel<List<Quest>>
     fun listenForDate(date: LocalDate): ReceiveChannel<List<Quest>>
-    fun findNextQuestsToRemind(afterTime: Long): List<Quest>
+    fun findNextQuestsToRemind(afterTime: Long = DateUtils.nowUTC().time): List<Quest>
     fun findQuestsToRemind(time: Long): List<Quest>
 }
 
@@ -37,6 +37,7 @@ data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMa
     var duration: Int by map
     var reminder: MutableMap<String, Any?>? by map
     var startMinute: Long? by map
+    var experience: Long? by map
     var scheduledDate: Long by map
     var completedAtDate: Long? by map
     var completedAtMinute: Long? by map
@@ -128,6 +129,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             scheduledDate = plannedDate,
             startTime = plannedTime,
             duration = cq.duration,
+            experience = cq.experience?.toInt(),
             completedAtDate = cq.completedAtDate?.let {
                 DateUtils.fromMillis(it)
             },
@@ -153,6 +155,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         q.reminder = entity.reminder?.let {
             createCouchbaseReminder(it).map
         }
+        q.experience = entity.experience?.toLong()
         q.startMinute = entity.startTime?.toMinuteOfDay()?.toLong()
         q.completedAtDate = entity.completedAtDate?.startOfDayUTC()
         q.completedAtMinute = entity.completedAtTime?.toMinuteOfDay()?.toLong()

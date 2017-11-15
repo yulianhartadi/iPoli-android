@@ -57,11 +57,12 @@ data class Quest(
     val reminder: Reminder? = null,
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val completedAtDate: LocalDate? = null,
-    val completedAtTime: Time? = null
+    val completedAtTime: Time? = null,
+    val experience: Int? = null
 ) : Entity {
     val isCompleted = completedAtDate != null
     val endTime: Time?
-        get() = startTime?.let { Time.of(it.toMinuteOfDay() + duration)}
+        get() = startTime?.let { Time.of(it.toMinuteOfDay() + duration) }
     val isScheduled = startTime != null
 }
 
