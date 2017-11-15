@@ -91,6 +91,22 @@ data class Player(
         }
         return newLevel
     }
+
+    fun removeExperience(experience: Int): Player {
+        val newXp = Math.max(this.experience - experience, 0)
+        return copy(
+            experience = newXp,
+            level = prevLevel(newXp)
+        )
+    }
+
+    private fun prevLevel(newXp: Int): Int {
+        var newLevel = level
+        while (newLevel - 1 > 0 && newXp < ExperienceForLevelGenerator.forLevel(newLevel)) {
+            newLevel--
+        }
+        return newLevel
+    }
 }
 
 data class AuthProvider(

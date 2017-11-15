@@ -125,7 +125,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
     override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, playerRepository, reminderScheduler, questCompleteScheduler, levelUpScheduler)
-    override val undoCompleteQuestUseCase get() = UndoCompleteQuestUseCase(questRepository, reminderScheduler)
+    override val undoCompleteQuestUseCase get() = UndoCompleteQuestUseCase(questRepository, playerRepository, reminderScheduler)
 }
 
 interface JobUseCaseModule {
