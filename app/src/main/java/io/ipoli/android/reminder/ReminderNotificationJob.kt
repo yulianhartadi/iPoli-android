@@ -58,11 +58,9 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
         kap.inject(iPoliApp.jobModule(context))
 
         val c = ContextThemeWrapper(context, R.style.Theme_iPoli)
+        val quests = findQuestsToRemindUseCase.execute(params.extras.getLong("start", -1))
 
         launch(UI) {
-
-            val quests = findQuestsToRemindUseCase.execute(params.extras.getLong("start", -1))
-
             quests.forEach {
 
                 val reminder = it.reminder!!
