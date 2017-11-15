@@ -123,7 +123,7 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
 
             if (minutesDiff > Time.MINUTES_IN_AN_HOUR) {
                 "Starts at ${quest.startTime.toString(false)}"
-            } else if(minutesDiff > 0){
+            } else if (minutesDiff > 0) {
                 "Starts in $minutesDiff min"
             } else {
                 "Starts now"
@@ -136,17 +136,20 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
     }
 }
 
-class ReminderScheduler {
-    fun schedule(time: Long) {
+interface ReminderScheduler {
+    fun schedule(atTime: Long)
+}
+
+class AndroidJobReminderScheduler : ReminderScheduler {
+    override fun schedule(atTime: Long) {
         JobManager.instance().cancelAllForTag(ReminderNotificationJob.TAG)
 
         val bundle = PersistableBundleCompat()
-        bundle.putLong("start", time)
+        bundle.putLong("start", atTime)
         JobRequest.Builder(ReminderNotificationJob.TAG)
             .setExtras(bundle)
-            .setExact(time - System.currentTimeMillis())
+            .setExact(atTime - System.currentTimeMillis())
             .build()
             .schedule()
     }
-
 }
