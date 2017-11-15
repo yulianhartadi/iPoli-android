@@ -27,7 +27,7 @@ import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.RevealAnimator
 import io.ipoli.android.common.view.changehandler.CircularRevealChangeHandler
-import io.ipoli.android.common.view.color
+import io.ipoli.android.common.view.colorRes
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import io.ipoli.android.quest.calendar.CalendarViewState.StateType.*
@@ -195,7 +195,7 @@ class CalendarViewController(args: Bundle? = null) :
     private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
         view.datePickerContainer.visibility = View.GONE
         val calendarIndicator = calendarToolbar.calendarIndicator
-        view.datePicker.setMarkedStyle(MarkStyle.BACKGROUND, color(R.color.colorAccentAlternative))
+        view.datePicker.setMarkedStyle(MarkStyle.BACKGROUND, colorRes(R.color.colorAccentAlternative))
 
         val currentDate = LocalDate.now()
         view.datePicker.markDate(DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth))

@@ -9,11 +9,13 @@ import com.couchbase.lite.Database
 import com.couchbase.lite.DatabaseConfiguration
 import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.text.CalendarFormatter
+import io.ipoli.android.home.HomePresenter
 import io.ipoli.android.player.AndroidLevelUpScheduler
 import io.ipoli.android.player.LevelUpScheduler
 import io.ipoli.android.player.persistence.CouchbasePlayerRepository
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.usecase.FindPlayerLevelUseCase
+import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
 import io.ipoli.android.quest.AndroidJobQuestCompleteScheduler
 import io.ipoli.android.quest.QuestCompleteScheduler
 import io.ipoli.android.quest.calendar.CalendarPresenter
@@ -126,6 +128,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
     override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, playerRepository, reminderScheduler, questCompleteScheduler, levelUpScheduler)
     override val undoCompleteQuestUseCase get() = UndoCompleteQuestUseCase(questRepository, playerRepository, reminderScheduler)
+    override val listenForPlayerChangesUseCase get() = ListenForPlayerChangesUseCase(playerRepository, job + CommonPool)
 }
 
 interface JobUseCaseModule {
@@ -158,12 +161,14 @@ interface UseCaseModule {
     val snoozeQuestUseCase: SnoozeQuestUseCase
     val completeQuestUseCase: CompleteQuestUseCase
     val undoCompleteQuestUseCase: UndoCompleteQuestUseCase
+    val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase
 }
 
 interface PresenterModule {
+    val homePresenter: HomePresenter
+    val calendarPresenter: CalendarPresenter
     val dayViewPresenter: DayViewPresenter
     val reminderPickerPresenter: ReminderPickerDialogPresenter
-    val calendarPresenter: CalendarPresenter
     val addQuestPresenter: AddQuestPresenter
 }
 
@@ -174,11 +179,13 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val undoRemoveQuestUseCase by required { undoRemoveQuestUseCase }
     private val completeQuestUseCase by required { completeQuestUseCase }
     private val undoCompleteQuestUseCase by required { undoCompleteQuestUseCase }
+    private val listenForPlayerChangesUseCase by required { listenForPlayerChangesUseCase }
     private val navigator by required { navigator }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
     private val timeUnitFormatter by required { timeUnitFormatter }
     private val calendarFormatter by required { calendarFormatter }
     private val job by required { job }
+    override val homePresenter get() = HomePresenter(listenForPlayerChangesUseCase, job)
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, undoRemoveQuestUseCase, completeQuestUseCase, undoCompleteQuestUseCase, job)
     override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter, job)
     override val calendarPresenter get() = CalendarPresenter(calendarFormatter, job)

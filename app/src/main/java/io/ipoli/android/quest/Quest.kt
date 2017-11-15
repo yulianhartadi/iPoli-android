@@ -71,7 +71,7 @@ data class Player(
     override val id: String = "",
     val level: Int = 1,
     val coins: Int = 0,
-    val experience: Int = 0,
+    val experience: Long = 0,
     val authProvider: AuthProvider,
     val avatar: Avatar = Avatar.IPOLI_CLASSIC,
     val createdAt: LocalDateTime = LocalDateTime.now()
@@ -84,7 +84,7 @@ data class Player(
         )
     }
 
-    private fun nextLevel(newXp: Int): Int {
+    private fun nextLevel(newXp: Long): Int {
         var newLevel = level
         while (newXp >= ExperienceForLevelGenerator.forLevel(newLevel + 1)) {
             newLevel++
@@ -100,7 +100,7 @@ data class Player(
         )
     }
 
-    private fun prevLevel(newXp: Int): Int {
+    private fun prevLevel(newXp: Long): Int {
         var newLevel = level
         while (newLevel - 1 > 0 && newXp < ExperienceForLevelGenerator.forLevel(newLevel)) {
             newLevel--

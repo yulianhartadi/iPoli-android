@@ -15,7 +15,7 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.MviDialogController
-import io.ipoli.android.common.view.string
+import io.ipoli.android.common.view.stringRes
 import io.ipoli.android.iPoliApp
 import kotlinx.android.synthetic.main.dialog_reminder_picker.view.*
 import space.traversal.kapsule.Injects
@@ -117,7 +117,7 @@ class ReminderPickerDialogController :
             }
 
             ReminderPickerViewState.StateType.TIME_VALUE_VALIDATION_ERROR -> {
-                view.customTime.error = string(R.string.invalid_reminder_time)
+                view.customTime.error = stringRes(R.string.invalid_reminder_time)
             }
         }
     }

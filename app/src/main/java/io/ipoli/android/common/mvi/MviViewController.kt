@@ -1,12 +1,17 @@
 package io.ipoli.android.common.mvi
 
+import android.content.Context
 import android.os.Bundle
 import android.support.annotation.MainThread
 import android.view.View
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
+import io.ipoli.android.common.di.ControllerModule
+import io.ipoli.android.iPoliApp
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.launch
+import space.traversal.kapsule.Injects
+import space.traversal.kapsule.inject
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -18,7 +23,7 @@ interface Intent
 
 abstract class MviViewController<VS : ViewState, in V : ViewStateRenderer<VS>, out P : MviPresenter<V, VS, I>, in I : Intent>
 protected constructor(args: Bundle? = null)
-    : RestoreViewOnCreateController(args), ViewStateRenderer<VS> {
+    : RestoreViewOnCreateController(args), ViewStateRenderer<VS>, Injects<ControllerModule> {
 
     private lateinit var intentChannel: SendChannel<I>
 
@@ -81,6 +86,10 @@ protected constructor(args: Bundle? = null)
         launch {
             intentChannel.send(intent)
         }
+    }
+
+    override fun onContextAvailable(context: Context) {
+        inject(iPoliApp.controllerModule(context, router))
     }
 
     @MainThread

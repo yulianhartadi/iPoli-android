@@ -11,7 +11,7 @@ import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import io.ipoli.android.common.di.ControllerModule
-import io.ipoli.android.home.HomeController
+import io.ipoli.android.home.HomeViewController
 import io.ipoli.android.player.persistence.ProviderType
 import io.ipoli.android.quest.AuthProvider
 import io.ipoli.android.quest.Player
@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         }
 
         if (hasNoRootController) {
-            router.setRoot(RouterTransaction.with(HomeController()))
+            router.setRoot(RouterTransaction.with(HomeViewController()))
         }
     }
 

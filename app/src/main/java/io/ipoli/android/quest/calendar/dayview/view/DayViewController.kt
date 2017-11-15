@@ -398,7 +398,7 @@ class DayViewController :
             view.startTime.text = vm.startTime
             view.endTime.text = vm.endTime
 
-            view.backgroundView.setBackgroundColor(color(vm.backgroundColor.color200))
+            view.backgroundView.setBackgroundColor(colorRes(vm.backgroundColor.color200))
 
             if (!vm.isCompleted) {
                 view.questName.text = vm.name
