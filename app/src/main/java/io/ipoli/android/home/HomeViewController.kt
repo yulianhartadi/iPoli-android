@@ -49,7 +49,7 @@ class HomeViewController(args: Bundle? = null) :
             DATA_LOADED -> {
                 levelProgress.progress = state.progress
                 levelProgress.max = state.maxProgress
-                view.toolbar.playerLevel.text = "Level ${state.level}"
+                view.toolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
             }
             XP_CHANGED -> {
                 val animator = ObjectAnimator.ofInt(levelProgress, "progress", levelProgress.progress, state.progress)
@@ -59,7 +59,7 @@ class HomeViewController(args: Bundle? = null) :
             LEVEL_CHANGED -> {
                 levelProgress.progress = state.progress
                 levelProgress.max = state.maxProgress
-                view.toolbar.playerLevel.text = "Level ${state.level}"
+                view.toolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
             }
         }
         levelProgress.visible = state.type != LOADING
@@ -83,6 +83,7 @@ class HomeViewController(args: Bundle? = null) :
 
         val activity = activity as MainActivity
         activity.setSupportActionBar(view.toolbar)
+        view.appbar.outlineProvider = null
 
         val actionBar = activity.supportActionBar
 //        actionBar?.setDisplayHomeAsUpEnabled(true)
