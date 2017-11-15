@@ -17,7 +17,6 @@ import space.traversal.kapsule.Kapsule
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 11/15/17.
  */
-
 class LevelUpJob : Job(), Injects<ControllerModule> {
     override fun onRunJob(params: Params): Result {
 

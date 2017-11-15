@@ -10,6 +10,7 @@ import kotlinx.coroutines.experimental.channels.ReceiveChannel
 interface Repository<T> where T : Entity {
     fun listenById(id: String): ReceiveChannel<T?>
     fun listenForAll(): ReceiveChannel<List<T>>
+    fun listen(): ReceiveChannel<T?>
     fun find(): T?
     fun findById(id: String): T?
     fun save(entity: T): T

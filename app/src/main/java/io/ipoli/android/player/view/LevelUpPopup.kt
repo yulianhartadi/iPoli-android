@@ -36,7 +36,7 @@ class LevelUpPopup(private val level: Int) : BasePopup() {
 
     private fun levelBadgeAnimation(contentView: View): Animator {
         val badge = contentView.badge
-        val levelView = contentView.level
+        val levelView = contentView.playerLevel
         levelView.text = level.toString()
 
         val fadeIn = ObjectAnimator.ofFloat(badge, "alpha", 0f, 1f)

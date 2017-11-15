@@ -24,7 +24,7 @@ data class CouchbasePlayer(override val map: MutableMap<String, Any?> = mutableM
     override var id: String by map
     var level: Int by map
     var coins: Int by map
-    var experience: Int by map
+    var experience: Long by map
     var authProvider: MutableMap<String, Any?> by map
     var avatarCode: Int by map
     override var createdAt: Long by map

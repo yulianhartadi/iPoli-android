@@ -21,7 +21,7 @@ import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.ColorPickerDialogController
 import io.ipoli.android.common.view.DurationPickerDialogController
-import io.ipoli.android.common.view.color
+import io.ipoli.android.common.view.colorRes
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.common.view.EditTextBackEvent
 import io.ipoli.android.common.view.EditTextImeBackListener
@@ -188,7 +188,7 @@ class AddQuestViewController(args: Bundle? = null) :
     }
 
     private fun colorSelectedIcon(view: ImageView) {
-        view.drawable.setTint(color(R.color.colorAccentAlternative))
+        view.drawable.setTint(colorRes(R.color.colorAccentAlternative))
     }
 
     override fun onChangeEnded(changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) {

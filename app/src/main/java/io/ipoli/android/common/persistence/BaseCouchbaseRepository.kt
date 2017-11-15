@@ -23,6 +23,11 @@ abstract class BaseCouchbaseRepository<E, out T>(protected val database: Databas
             where = Expression.property("id").equalTo(id)
         )
 
+    override fun listen() =
+        listenForChange(
+            limit = 1
+        )
+
     protected fun listenForChange(where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null) =
         sendLiveResult(createQuery(where, limit, orderBy))
 
