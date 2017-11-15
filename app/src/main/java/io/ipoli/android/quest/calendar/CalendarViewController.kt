@@ -347,7 +347,7 @@ class CalendarViewController(args: Bundle? = null) :
             }
         }
 
-        override fun getItemPosition(`object`: Any?) = PagerAdapter.POSITION_NONE
+        override fun getItemPosition(`object`: Any): Int = PagerAdapter.POSITION_NONE
 
         override fun getCount() = MAX_VISIBLE_DAYS
 
