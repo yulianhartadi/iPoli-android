@@ -16,7 +16,7 @@ class RewardPopup : BasePopup() {
         return view
     }
 
-    override fun onEnterAnimationEnd(contentView: View) {
+    override fun onViewShown(contentView: View) {
         val reward = contentView.reward as ImageView
         Glide.with(contentView.context)
             .load("https://media3.giphy.com/media/pFnnMFXgQgkrC/giphy.gif")

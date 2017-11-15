@@ -19,7 +19,7 @@ class LevelUpPopup : BasePopup() {
     override fun createView(inflater: LayoutInflater): View =
         inflater.inflate(R.layout.popup_level_up, null)
 
-    override fun onEnterAnimationEnd(contentView: View) {
+    override fun onViewShown(contentView: View) {
         startTypingAnimation(contentView)
     }
 
