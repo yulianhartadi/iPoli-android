@@ -12,12 +12,12 @@ import io.ipoli.android.common.view.visible
 import kotlinx.android.synthetic.main.popup_quest_complete.view.*
 
 
-class QuestCompletePopup(private val earnedXP: Int) : BasePopup() {
+class QuestCompletePopup(private val earnedXP: Int) : BasePopup(isAutoHide = true) {
 
     override fun createView(inflater: LayoutInflater): View =
         inflater.inflate(R.layout.popup_quest_complete, null)
 
-    override fun onEnterAnimationEnd(contentView: View) {
+    override fun onViewShown(contentView: View) {
         startTypingAnimation(contentView)
     }
 
@@ -39,16 +39,14 @@ class QuestCompletePopup(private val earnedXP: Int) : BasePopup() {
         earnedXP.visible = true
 
         val xpAnim = ValueAnimator.ofInt(0, this.earnedXP)
-        xpAnim.duration = 1000
+        xpAnim.duration = 300
         xpAnim.addUpdateListener {
             earnedXP.text = "+ ${it.animatedValue}XP"
         }
 
         xpAnim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
-                contentView.postDelayed({
-                    playExitAnimation(contentView)
-                }, 2000)
+                autoHideAfter(700)
             }
         })
 

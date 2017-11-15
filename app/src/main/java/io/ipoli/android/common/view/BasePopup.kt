@@ -35,12 +35,15 @@ class PopupBackgroundLayout : RelativeLayout {
     }
 }
 
-abstract class BasePopup {
+abstract class BasePopup(private val isAutoHide: Boolean = false) {
 
     private lateinit var overlayView: PopupBackgroundLayout
     private lateinit var contentView: ViewGroup
     private lateinit var windowManager: WindowManager
     protected lateinit var activity: Context
+    private val autoHideRunnable = {
+        startExit()
+    }
 
     abstract fun createView(inflater: LayoutInflater): View
 
@@ -60,10 +63,13 @@ abstract class BasePopup {
 
         overlayView.addView(contentView, contentLp)
 
-        overlayView.setOnBackPressed({ playExitAnimation(contentView) })
-        overlayView.setOnClickListener {
-            overlayView.isClickable = false
-            playExitAnimation(contentView)
+        overlayView.setOnBackPressed {
+            if (!isAutoHide) {
+                startExit()
+            }
+        }
+        if (!isAutoHide) {
+            overlayView.setOnClickListener { startExit() }
         }
 
         windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -86,14 +92,14 @@ abstract class BasePopup {
             }
 
             override fun onAnimationEnd(animation: Animator) {
-                onEnterAnimationEnd(contentView)
+                onViewShown(contentView)
             }
         })
         animSet.playTogether(transAnim, fadeAnim)
         animSet.start()
     }
 
-    protected open fun onEnterAnimationEnd(contentView: View) {
+    protected open fun onViewShown(contentView: View) {
 
     }
 
@@ -137,7 +143,20 @@ abstract class BasePopup {
         return metrics.heightPixels
     }
 
+    protected fun autoHideAfter(millis: Long) {
+        require(isAutoHide)
+        contentView.postDelayed(autoHideRunnable, millis)
+    }
+
+    private fun startExit() {
+        contentView.removeCallbacks(autoHideRunnable)
+        overlayView.setOnClickListener(null)
+        overlayView.isClickable = false
+        playExitAnimation(contentView)
+    }
+
     fun hide() {
         windowManager.removeViewImmediate(overlayView)
+
     }
 }
