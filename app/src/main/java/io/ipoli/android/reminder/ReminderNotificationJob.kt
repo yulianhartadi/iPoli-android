@@ -33,7 +33,6 @@ import java.util.*
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 10/26/17.
  */
-
 class ReminderNotificationJob : Job(), Injects<ControllerModule> {
 
     override fun onRunJob(params: Job.Params): Job.Result {
