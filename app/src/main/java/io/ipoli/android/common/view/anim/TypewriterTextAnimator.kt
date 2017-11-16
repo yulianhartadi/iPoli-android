@@ -42,10 +42,10 @@ class TypewriterTextAnimator private constructor(private val textView: TextView,
 
     override fun cancel() {
         isRunning = false
-        listeners?.forEach {
+        listeners?.toMutableList()?.forEach {
             it.onAnimationCancel(this)
         }
-        listeners?.forEach {
+        listeners?.toMutableList()?.forEach {
             it.onAnimationEnd(this)
         }
     }
@@ -57,7 +57,7 @@ class TypewriterTextAnimator private constructor(private val textView: TextView,
 
     private fun endAnimation() {
         isRunning = false
-        listeners?.forEach {
+        listeners?.toMutableList()?.forEach {
             it.onAnimationEnd(this)
         }
     }
