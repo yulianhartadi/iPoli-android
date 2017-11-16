@@ -183,5 +183,28 @@ interface Constants {
 
         val KEY_ACHIEVEMENT_ACTION = "achievement_action"
         val KEY_ACHIEVEMENT_ACTION_CLASS = "achievement_action_class"
+
+        val LEVEL_UP_REWARDS = listOf<String>(
+            "https://media2.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
+            "https://i.imgur.com/vlU5ROS.jpg",
+            "https://media2.giphy.com/media/epnHmbfUFaBkk/giphy.gif",
+            "https://i.imgur.com/6XQzIIE.jpg",
+            "https://media0.giphy.com/media/SzLfW8ydkkjde/giphy.gif",
+            "https://i.imgur.com/rH4tJzy.jpg",
+            "https://media1.giphy.com/media/DGfhSy8xKKbHq/giphy.gif",
+            "https://i.imgur.com/c7h9RJ3.jpg",
+            "https://media1.giphy.com/media/uTCAwWNtz7U2c/giphy.gif",
+            "https://i.imgur.com/Rjsuje5.jpg",
+            "https://media2.giphy.com/media/xT8qBepJQzUjXpeWU8/giphy.gif",
+            "https://i.imgur.com/rZIkNSB.jpg",
+            "https://media2.giphy.com/media/TEFplLVRDMWBi/giphy.gif",
+            "https://i.imgur.com/vQWIgJi.jpg",
+            "http://www.awesomelycute.com/gallery/2014/01/awesomelycute-animals-2861.gif",
+            "https://i.imgur.com/8RfjjbY.jpg",
+            "http://cdn2.list25.com/wp-content/uploads/2012/04/fish1.gif",
+            "https://i.imgur.com/Pt5CbEa.jpg",
+            "https://media0.giphy.com/media/LLtUrlCg6qT2o/giphy.gif",
+            "https://i.imgur.com/v7clQ8l.jpg"
+        )
     }
 }
