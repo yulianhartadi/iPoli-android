@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">iPoli</string>
+    <string name="app_name">myPoli</string>
     <string name="title_fragment_inbox">Inbox</string>
     <string name="title_edit_quest">Edit quest</string>
     <string name="quest_deleted">Quest deleted</string>

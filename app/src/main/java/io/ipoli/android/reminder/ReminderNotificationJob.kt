@@ -39,8 +39,8 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
     override fun onRunJob(params: Job.Params): Job.Result {
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val id = "iPoli"
-        val channelName = "iPoli"
+        val id = "myPoli"
+        val channelName = "myPoli"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(id, channelName, importance)
@@ -103,7 +103,7 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
     }
 
     private fun createNotification(title: String, message: String) =
-        NotificationCompat.Builder(context, "iPoli")
+        NotificationCompat.Builder(context, "myPoli")
             .setSmallIcon(R.drawable.ic_notification_small)
             .setContentTitle(title)
             .setContentText(message)
