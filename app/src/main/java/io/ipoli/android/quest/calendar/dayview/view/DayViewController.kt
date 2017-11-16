@@ -22,6 +22,7 @@ import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.datetime.isNotEqual
 import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
@@ -98,6 +99,9 @@ class DayViewController :
     override fun onAttach(view: View) {
         super.onAttach(view)
         send(LoadDataIntent(currentDate))
+        if (currentDate.isNotEqual(LocalDate.now())) {
+            calendarDayView.hideTimeline()
+        }
     }
 
     override fun handleBack(): Boolean {
