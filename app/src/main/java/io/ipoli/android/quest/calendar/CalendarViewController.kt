@@ -82,7 +82,7 @@ class CalendarViewController(args: Bundle? = null) :
         initDayPicker(view, calendarToolbar)
 
         initAddQuest(view)
-        
+
         return view
     }
 
