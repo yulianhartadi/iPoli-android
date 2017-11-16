@@ -7,12 +7,13 @@ import android.animation.ObjectAnimator
 import android.support.v4.view.animation.LinearOutSlowInInterpolator
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ImageView
+import com.bumptech.glide.Glide
 import io.ipoli.android.R
 import io.ipoli.android.common.view.BasePopup
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
 import io.ipoli.android.common.view.visible
 import kotlinx.android.synthetic.main.popup_level_up.view.*
-
 
 class LevelUpPopup(private val level: Int) : BasePopup() {
 
@@ -30,8 +31,15 @@ class LevelUpPopup(private val level: Int) : BasePopup() {
         val animSet = AnimatorSet()
         animSet.playSequentially(typewriterTitleAnim, levelBadgeAnimation(contentView),
             claimRewardAnimation(contentView))
-
         animSet.start()
+
+        contentView.claimReward.setOnClickListener {
+            val reward = contentView.reward as ImageView
+            Glide.with(contentView.context)
+                .load("https://media3.giphy.com/media/pFnnMFXgQgkrC/giphy.gif")
+                .into(reward)
+            contentView.viewSwitcher.showNext()
+        }
     }
 
     private fun levelBadgeAnimation(contentView: View): Animator {
@@ -63,11 +71,11 @@ class LevelUpPopup(private val level: Int) : BasePopup() {
     }
 
     private fun claimRewardAnimation(contentView: View): Animator {
-        val anim = ObjectAnimator.ofFloat(contentView.button2, "alpha", 0f, 1f)
+        val anim = ObjectAnimator.ofFloat(contentView.claimReward, "alpha", 0f, 1f)
         anim.duration = 300
         anim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator?) {
-                contentView.button2.visible = true
+                contentView.claimReward.visible = true
             }
         })
         return anim

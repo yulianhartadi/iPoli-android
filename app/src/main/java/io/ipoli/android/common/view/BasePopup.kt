@@ -41,8 +41,9 @@ abstract class BasePopup(private val isAutoHide: Boolean = false) {
     private lateinit var contentView: ViewGroup
     private lateinit var windowManager: WindowManager
     protected lateinit var activity: Context
+
     private val autoHideRunnable = {
-        startExit()
+        hide()
     }
 
     abstract fun createView(inflater: LayoutInflater): View
@@ -65,11 +66,11 @@ abstract class BasePopup(private val isAutoHide: Boolean = false) {
 
         overlayView.setOnBackPressed {
             if (!isAutoHide) {
-                startExit()
+                hide()
             }
         }
         if (!isAutoHide) {
-            overlayView.setOnClickListener { startExit() }
+            overlayView.setOnClickListener { hide() }
         }
 
         windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -111,7 +112,7 @@ abstract class BasePopup(private val isAutoHide: Boolean = false) {
         val animSet = AnimatorSet()
         animSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
-                hide()
+                windowManager.removeViewImmediate(overlayView)
             }
         })
         animSet.playTogether(transAnim, fadeAnim)
@@ -148,15 +149,10 @@ abstract class BasePopup(private val isAutoHide: Boolean = false) {
         contentView.postDelayed(autoHideRunnable, millis)
     }
 
-    private fun startExit() {
+    fun hide() {
         contentView.removeCallbacks(autoHideRunnable)
         overlayView.setOnClickListener(null)
         overlayView.isClickable = false
         playExitAnimation(contentView)
-    }
-
-    fun hide() {
-        windowManager.removeViewImmediate(overlayView)
-
     }
 }
