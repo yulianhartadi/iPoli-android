@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import com.bumptech.glide.Glide
+import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.view.BasePopup
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
@@ -33,10 +34,11 @@ class LevelUpPopup(private val level: Int) : BasePopup() {
             claimRewardAnimation(contentView))
         animSet.start()
 
+        val rewardUrl = Constants.LEVEL_UP_REWARDS[(level - 2) % Constants.LEVEL_UP_REWARDS.size]
         contentView.claimReward.setOnClickListener {
             val reward = contentView.reward as ImageView
             Glide.with(contentView.context)
-                .load("https://media3.giphy.com/media/pFnnMFXgQgkrC/giphy.gif")
+                .load(rewardUrl)
                 .into(reward)
             contentView.viewSwitcher.showNext()
         }
