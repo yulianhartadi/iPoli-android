@@ -18,6 +18,7 @@ import android.widget.ImageView
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.view.AndroidColor
+import io.ipoli.android.common.view.visible
 import io.ipoli.android.quest.calendar.dayview.view.widget.util.PositionToTimeMapper
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.Duration
@@ -1065,6 +1066,10 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val hourOffset = Math.floor((fsm.state.visibleHours * .3)).toInt()
         val scrollHours = max(hourOffset, time.hours - hourOffset)
         return Time.at(scrollHours, time.getMinutes()).toPosition(fsm.state.minuteHeight).toInt()
+    }
+
+    fun hideTimeline() {
+        timeLineView.visible = false
     }
 
     override fun onDetachedFromWindow() {
