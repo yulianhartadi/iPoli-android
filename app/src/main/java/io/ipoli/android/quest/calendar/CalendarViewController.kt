@@ -84,8 +84,6 @@ class CalendarViewController(args: Bundle? = null) :
 
         initAddQuest(view)
 
-        LevelUpPopup(2).show(view.context)
-
         return view
     }
 
