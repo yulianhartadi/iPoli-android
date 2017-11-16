@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
     lateinit var router: Router
 
     private val playerRepository by required { playerRepository }
-    private val db by required { database }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
