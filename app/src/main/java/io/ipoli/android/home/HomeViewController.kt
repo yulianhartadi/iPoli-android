@@ -48,7 +48,13 @@ class HomeViewController(args: Bundle? = null) :
         val levelProgress = view.levelProgress
 
         when (state.type) {
+
+            LOADING -> {
+                levelProgress.visible = false
+            }
+
             DATA_LOADED -> {
+                levelProgress.visible = true
                 levelProgress.progress = state.progress
                 levelProgress.max = state.maxProgress
                 view.toolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
@@ -70,7 +76,6 @@ class HomeViewController(args: Bundle? = null) :
                 view.toolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
             }
         }
-        levelProgress.visible = state.type != LOADING
     }
 
 //    private var navigationItemSelected: MenuItem? = null
