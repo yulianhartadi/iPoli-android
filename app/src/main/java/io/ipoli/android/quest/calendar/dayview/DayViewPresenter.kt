@@ -66,6 +66,13 @@ class DayViewPresenter(
                 )
             }
 
+            is StartEditUnscheduledQuestIntent -> {
+                state.copy(
+                    type = EDIT_QUEST,
+                    icon = intent.viewModel.icon
+                )
+            }
+
             is AddEventIntent -> {
                 val event = intent.event
 
@@ -206,6 +213,7 @@ class DayViewPresenter(
                 it.id,
                 it.name,
                 it.duration,
+                it.icon?.let { AndroidIcon.valueOf(it.name) },
                 color,
                 color.color900,
                 it.isCompleted
@@ -229,9 +237,7 @@ class DayViewPresenter(
                 q.startTime!!.toMinuteOfDay(),
                 q.startTime.toString(),
                 q.endTime.toString(),
-                q.icon?.let {
-                    AndroidIcon.valueOf(it.name)
-                },
+                q.icon?.let { AndroidIcon.valueOf(it.name) },
                 color,
                 color.color900,
                 reminder,

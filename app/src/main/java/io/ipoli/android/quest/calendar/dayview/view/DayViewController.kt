@@ -286,7 +286,15 @@ class DayViewController :
         onStopEditMode()
         ViewUtils.hideKeyboard(calendarDayView)
         val e = eventsAdapter.removeEvent(position)
-        val vm = UnscheduledQuestViewModel(e.id, e.name, e.duration, e.backgroundColor, e.textColor, e.isCompleted)
+        val vm = UnscheduledQuestViewModel(
+            e.id,
+            e.name,
+            e.duration,
+            AndroidIcon.PAW,
+            e.backgroundColor,
+            e.textColor,
+            e.isCompleted
+        )
         unscheduledEventsAdapter.addEvent(vm)
     }
 
@@ -545,6 +553,7 @@ class DayViewController :
     data class UnscheduledQuestViewModel(override val id: String,
                                          override val name: String,
                                          override val duration: Int,
+                                         val icon: AndroidIcon?,
                                          override val backgroundColor: AndroidColor,
                                          @ColorRes val textColor: Int,
                                          val isCompleted: Boolean,
