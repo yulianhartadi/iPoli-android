@@ -47,6 +47,11 @@ enum class Color {
     LIME
 }
 
+enum class Icon {
+    HOME,
+    CAMERA
+}
+
 data class Quest(
     override val id: String = "",
     val name: String,
