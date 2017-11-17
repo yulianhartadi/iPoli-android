@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
@@ -25,9 +24,10 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
-import io.ipoli.android.common.view.*
+import io.ipoli.android.common.view.RevealAnimator
 import io.ipoli.android.common.view.changehandler.CircularRevealChangeHandler
-import io.ipoli.android.iPoliApp
+import io.ipoli.android.common.view.colorRes
+import io.ipoli.android.common.view.visible
 import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import io.ipoli.android.quest.calendar.CalendarViewState.StateType.*
 import io.ipoli.android.quest.calendar.addquest.AddQuestViewController
@@ -36,7 +36,6 @@ import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.controller_calendar_toolbar.view.*
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
-import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
 import sun.bob.mcalendarview.CellConfig
 import sun.bob.mcalendarview.MarkStyle
@@ -81,10 +80,6 @@ class CalendarViewController(args: Bundle? = null) :
         initDayPicker(view, calendarToolbar)
 
         initAddQuest(view)
-
-        IconPickerDialogController({icon ->
-
-        }, AndroidIcon.PAW).showDialog(router, "icon-picker")
 
         return view
     }
@@ -325,10 +320,6 @@ class CalendarViewController(args: Bundle? = null) :
             view.pager.adapter = null
         }
         super.onDestroyView(view)
-    }
-
-    override fun onContextAvailable(context: Context) {
-        inject(iPoliApp.controllerModule(context, router))
     }
 
     class DayViewPagerAdapter(var date: LocalDate, var pagerPosition: Int, controller: Controller) : RouterPagerAdapter(controller) {

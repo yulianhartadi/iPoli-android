@@ -3,7 +3,6 @@ package io.ipoli.android.quest.calendar.addquest
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,19 +17,12 @@ import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
-import io.ipoli.android.common.view.AndroidColor
-import io.ipoli.android.common.view.ColorPickerDialogController
-import io.ipoli.android.common.view.DurationPickerDialogController
-import io.ipoli.android.common.view.colorRes
-import io.ipoli.android.iPoliApp
-import io.ipoli.android.common.view.EditTextBackEvent
-import io.ipoli.android.common.view.EditTextImeBackListener
+import io.ipoli.android.common.view.*
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogController
 import io.ipoli.android.reminder.view.picker.ReminderViewModel
 import kotlinx.android.synthetic.main.controller_add_quest.view.*
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
-import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
 
 /**
@@ -45,10 +37,6 @@ class AddQuestViewController(args: Bundle? = null) :
     private val presenter by required { addQuestPresenter }
 
     override fun createPresenter() = presenter
-
-    override fun onContextAvailable(context: Context) {
-        inject(iPoliApp.controllerModule(context, router))
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_add_quest, container, false)

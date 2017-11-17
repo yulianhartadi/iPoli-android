@@ -11,10 +11,7 @@ import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.persistence.BaseCouchbaseRepository
 import io.ipoli.android.common.persistence.CouchbasePersistedModel
 import io.ipoli.android.common.persistence.Repository
-import io.ipoli.android.quest.Category
-import io.ipoli.android.quest.Color
-import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.Reminder
+import io.ipoli.android.quest.*
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
@@ -33,6 +30,7 @@ data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMa
     override var id: String by map
     var name: String by map
     var color: String by map
+    var icon: String? by map
     var category: String by map
     var duration: Int by map
     var reminder: MutableMap<String, Any?>? by map
@@ -125,6 +123,9 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             id = cq.id,
             name = cq.name,
             color = Color.valueOf(cq.color),
+            icon = cq.icon?.let {
+                Icon.valueOf(it)
+            },
             category = Category(cq.category, Color.GREEN),
             scheduledDate = plannedDate,
             startTime = plannedTime,
@@ -149,6 +150,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         q.name = entity.name
         q.category = entity.category.name
         q.color = entity.color.name
+        q.icon = entity.icon?.name
         q.duration = entity.duration
         q.type = CouchbaseQuest.TYPE
         q.scheduledDate = DateUtils.toMillis(entity.scheduledDate)
