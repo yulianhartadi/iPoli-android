@@ -59,7 +59,7 @@ class IconPickerDialogController : BaseDialogController {
 
     inner class IconAdapter(private val icons: List<IconViewModel>) : RecyclerView.Adapter<IconAdapter.ViewHolder>() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val vm = icons[position]
+            val vm = icons[holder.adapterPosition]
             val iv = holder.itemView as ImageView
 
             iv.setImageDrawable(
@@ -73,6 +73,8 @@ class IconPickerDialogController : BaseDialogController {
                 iv.setBackgroundResource(R.drawable.ic_context_indicator)
                 val drawable = iv.background as GradientDrawable
                 drawable.setColor(ContextCompat.getColor(iv.context, R.color.md_grey_300))
+            } else {
+                iv.background = null
             }
 
             iv.setOnClickListener {

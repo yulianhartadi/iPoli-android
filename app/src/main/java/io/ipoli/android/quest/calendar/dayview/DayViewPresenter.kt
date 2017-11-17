@@ -4,8 +4,10 @@ import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.AndroidColor
+import io.ipoli.android.common.view.AndroidIcon
 import io.ipoli.android.quest.Category
 import io.ipoli.android.quest.Color
+import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.calendar.dayview.view.*
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
@@ -57,9 +59,20 @@ class DayViewPresenter(
                 )
             }
 
+            is StartEditQuestIntent -> {
+                state.copy(
+                    type = EDIT_QUEST,
+                    icon = intent.questViewModel.icon
+                )
+            }
+
             is AddEventIntent -> {
                 val event = intent.event
-                val colorName = Color.valueOf(event.backgroundColor.name)
+
+                val color = Color.valueOf(event.backgroundColor.name)
+                val icon = state.icon?.let {
+                    Icon.valueOf(it.name)
+                }
 
                 val reminder = if (state.isReminderEdited)
                     createQuestReminder(state.reminder, state.scheduledDate, event.startMinute)
@@ -68,7 +81,8 @@ class DayViewPresenter(
 
                 val questParams = SaveQuestUseCase.Parameters(
                     name = event.name,
-                    color = colorName,
+                    color = color,
+                    icon = icon,
                     category = Category("WELLNESS", Color.GREEN),
                     scheduledDate = state.scheduledDate,
                     startTime = Time.of(event.startMinute),
@@ -81,13 +95,19 @@ class DayViewPresenter(
 
             is EditEventIntent -> {
                 val event = intent.event
-                val colorName = Color.valueOf(event.backgroundColor.name)
+                val color = Color.valueOf(event.backgroundColor.name)
+
+                val icon = state.icon?.let {
+                    Icon.valueOf(it.name)
+                }
+
                 val reminderVM = if (state.isReminderEdited) state.reminder else intent.reminder
 
                 val questParams = SaveQuestUseCase.Parameters(
                     id = event.id,
                     name = event.name,
-                    color = colorName,
+                    color = color,
+                    icon = icon,
                     category = Category("WELLNESS", Color.GREEN),
                     scheduledDate = state.scheduledDate,
                     startTime = Time.of(event.startMinute),
@@ -144,6 +164,10 @@ class DayViewPresenter(
 
             is ReminderPickedIntent -> {
                 state.copy(reminder = intent.reminder, isReminderEdited = true)
+            }
+
+            is IconPickedIntent -> {
+                state.copy(icon = intent.icon)
             }
 
             is CompleteQuestIntent -> {
@@ -205,6 +229,9 @@ class DayViewPresenter(
                 q.startTime!!.toMinuteOfDay(),
                 q.startTime.toString(),
                 q.endTime.toString(),
+                q.icon?.let {
+                    AndroidIcon.valueOf(it.name)
+                },
                 color,
                 color.color900,
                 reminder,
