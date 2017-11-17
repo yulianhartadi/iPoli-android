@@ -125,7 +125,6 @@ class DayViewController :
                 unscheduledEventsAdapter = UnscheduledQuestsAdapter(state.unscheduledQuests, calendarDayView)
                 calendarDayView.setUnscheduledEventsAdapter(unscheduledEventsAdapter)
                 updateUnscheduledQuestsHeight(view)
-
             }
 
             EVENT_UPDATED -> {
@@ -342,13 +341,7 @@ class DayViewController :
             override fun onActionItemClicked(am: ActionMode, item: MenuItem): Boolean {
                 when (item.itemId) {
                     R.id.chooseColor -> {
-                        ColorPickerDialogController(object : ColorPickerDialogController.ColorPickedListener {
-                            override fun onColorPicked(color: AndroidColor) {
-                                calendarDayView.updateDragBackgroundColor(color)
-                            }
-
-                        }, calendarDayView.getDragViewBackgroundColor())
-                            .showDialog(router, "pick_color_tag")
+                        showColorPicker()
                     }
 
                     R.id.removeEvent -> {
@@ -371,6 +364,16 @@ class DayViewController :
                 actionMode = null
             }
         })
+    }
+
+    private fun showColorPicker() {
+        ColorPickerDialogController(object : ColorPickerDialogController.ColorPickedListener {
+            override fun onColorPicked(color: AndroidColor) {
+                calendarDayView.updateDragBackgroundColor(color)
+            }
+
+        }, calendarDayView.getDragViewBackgroundColor())
+            .showDialog(router, "pick_color_tag")
     }
 
     private fun stopActionMode() {
@@ -404,13 +407,7 @@ class DayViewController :
 
             view.backgroundView.setBackgroundColor(colorRes(vm.backgroundColor.color200))
 
-            if (!vm.isCompleted) {
-                view.questName.text = vm.name
-                view.questName.setTextColor(ContextCompat.getColor(context, vm.textColor))
-                view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color700)
-                (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color500)
-                view.completedBackgroundView.visibility = View.INVISIBLE
-            } else {
+            if (vm.isCompleted) {
                 val span = SpannableString(vm.name)
                 span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
                 view.questName.text = span
@@ -418,6 +415,12 @@ class DayViewController :
                 view.checkBox.isChecked = true
                 (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(R.color.md_grey_700)
                 view.completedBackgroundView.visibility = View.VISIBLE
+            } else {
+                view.questName.text = vm.name
+                view.questName.setTextColor(ContextCompat.getColor(context, vm.textColor))
+                view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color700)
+                (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color500)
+                view.completedBackgroundView.visibility = View.INVISIBLE
             }
 
             view.checkBox.setOnCheckedChangeListener { cb, checked ->
