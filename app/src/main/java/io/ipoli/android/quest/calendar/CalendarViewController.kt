@@ -28,8 +28,8 @@ import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.RevealAnimator
 import io.ipoli.android.common.view.changehandler.CircularRevealChangeHandler
 import io.ipoli.android.common.view.colorRes
+import io.ipoli.android.common.view.visible
 import io.ipoli.android.iPoliApp
-import io.ipoli.android.player.view.LevelUpPopup
 import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import io.ipoli.android.quest.calendar.CalendarViewState.StateType.*
 import io.ipoli.android.quest.calendar.addquest.AddQuestViewController
@@ -343,5 +343,13 @@ class CalendarViewController(args: Bundle? = null) :
 
         override fun getCount() = MAX_VISIBLE_DAYS
 
+    }
+
+    fun onStartEdit() {
+        view!!.addQuest.visible = false
+    }
+
+    fun onStopEdit() {
+        view!!.addQuest.visible = true
     }
 }

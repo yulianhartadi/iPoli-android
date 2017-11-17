@@ -29,6 +29,7 @@ import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.*
 import io.ipoli.android.iPoliApp
+import io.ipoli.android.quest.calendar.CalendarViewController
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
 import io.ipoli.android.quest.calendar.dayview.view.widget.*
@@ -93,6 +94,7 @@ class DayViewController :
         })
 
         calendarDayView.scrollToNow()
+
         return view
     }
 
@@ -170,6 +172,7 @@ class DayViewController :
     }
 
     override fun onStartEditNewScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: AndroidColor) {
+        (parentController as CalendarViewController).onStartEdit()
         startEditScheduledEvent(dragView, startTime, endTime)
         setupDragViewNameAndColor(dragView, name, color)
     }
@@ -248,7 +251,7 @@ class DayViewController :
     }
 
     override fun onRescheduleScheduledEvent(position: Int, startTime: Time, duration: Int) {
-        stopActionMode()
+        onStopEditMode()
         ViewUtils.hideKeyboard(calendarDayView)
         eventsAdapter.rescheduleEvent(position, startTime, duration)
     }
@@ -258,7 +261,7 @@ class DayViewController :
     }
 
     override fun onScheduleUnscheduledEvent(position: Int, startTime: Time) {
-        stopActionMode()
+        onStopEditMode()
         ViewUtils.hideKeyboard(calendarDayView)
         val ue = unscheduledEventsAdapter.removeEvent(position)
         val endTime = Time.plusMinutes(startTime, ue.duration)
@@ -277,7 +280,7 @@ class DayViewController :
     }
 
     override fun onUnscheduleScheduledEvent(position: Int) {
-        stopActionMode()
+        onStopEditMode()
         ViewUtils.hideKeyboard(calendarDayView)
         val e = eventsAdapter.removeEvent(position)
         val vm = UnscheduledQuestViewModel(e.id, e.name, e.duration, e.backgroundColor, e.textColor, e.isCompleted)
@@ -285,11 +288,11 @@ class DayViewController :
     }
 
     override fun onCancelRescheduleUnscheduledEvent() {
-        stopActionMode()
+        onStopEditMode()
     }
 
     override fun onRemoveEvent(eventId: String) {
-        stopActionMode()
+        onStopEditMode()
         send(RemoveEventIntent(eventId))
     }
 
@@ -376,7 +379,8 @@ class DayViewController :
             .showDialog(router, "pick_color_tag")
     }
 
-    private fun stopActionMode() {
+    private fun onStopEditMode() {
+        (parentController as CalendarViewController).onStopEdit()
         actionMode?.finish()
     }
 
@@ -398,6 +402,7 @@ class DayViewController :
             val vm = getItem(position)
 
             view.setOnLongClickListener {
+                (parentController as CalendarViewController).onStartEdit()
                 calendarDayView.startEventRescheduling(vm)
                 true
             }
@@ -534,6 +539,7 @@ class DayViewController :
         override fun ViewHolder.bind(event: UnscheduledQuestViewModel, calendarDayView: CalendarDayView) {
             (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(event.backgroundColor.color200, itemView.context)
             itemView.setOnLongClickListener {
+                (parentController as CalendarViewController).onStartEdit()
                 calendarDayView.startEventRescheduling(events[adapterPosition])
                 true
             }
