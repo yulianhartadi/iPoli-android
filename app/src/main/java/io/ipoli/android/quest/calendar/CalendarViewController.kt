@@ -25,10 +25,8 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
-import io.ipoli.android.common.view.RevealAnimator
+import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.changehandler.CircularRevealChangeHandler
-import io.ipoli.android.common.view.colorRes
-import io.ipoli.android.common.view.visible
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import io.ipoli.android.quest.calendar.CalendarViewState.StateType.*
@@ -83,6 +81,10 @@ class CalendarViewController(args: Bundle? = null) :
         initDayPicker(view, calendarToolbar)
 
         initAddQuest(view)
+
+        IconPickerDialogController({icon ->
+
+        }, AndroidIcon.PAW).showDialog(router, "icon-picker")
 
         return view
     }

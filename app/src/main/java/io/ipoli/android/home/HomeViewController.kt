@@ -10,8 +10,6 @@ import android.widget.Toast
 import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
-import com.mikepenz.iconics.IconicsDrawable
-import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.Constants
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
@@ -58,12 +56,6 @@ class HomeViewController(args: Bundle? = null) :
                 levelProgress.progress = state.progress
                 levelProgress.max = state.maxProgress
                 view.toolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
-                view.toolbar.playerLevelIcon.setImageDrawable(
-                    IconicsDrawable(view.context)
-                        .icon(Ionicons.Icon.ion_speedometer)
-                        .colorRes(R.color.md_green_500)
-                        .sizeDp(24)
-                )
             }
             XP_CHANGED -> {
                 val animator = ObjectAnimator.ofInt(levelProgress, "progress", levelProgress.progress, state.progress)

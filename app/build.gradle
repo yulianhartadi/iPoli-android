@@ -75,6 +75,8 @@ dependencies {
 
     implementation 'com.mikepenz:iconics-core:2.9.5@aar'
     implementation 'com.mikepenz:ionicons-typeface:2.0.1.4@aar'
+    implementation 'com.mikepenz:entypo-typeface:1.0.0.4@aar'
+    implementation 'com.mikepenz:google-material-typeface:3.0.1.2.original@aar'
     implementation 'com.github.medyo:fancybuttons:1.8.4'
     implementation 'de.hdodenhof:circleimageview:2.1.0'
     implementation 'com.lnikkila:extendedtouchview:0.1.1'
