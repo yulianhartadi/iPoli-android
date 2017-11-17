@@ -30,7 +30,6 @@ import java.lang.Math.*
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 
-
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/2/17.
@@ -163,7 +162,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private val hourCellViews = mutableListOf<View>()
     private lateinit var timeLineView: View
 
-
     private val keyboardVisibleThreshold = Math.round(
         ViewUtils.dpToPx(KEYBOARD_VISIBLE_THRESHOLD_DP, context)
     )
@@ -241,7 +239,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
         viewTreeObserver.addOnGlobalLayoutListener(layoutListener)
     }
-
 
     private val layoutListener = object : ViewTreeObserver.OnGlobalLayoutListener {
 
@@ -430,10 +427,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             s.copy(type = State.Type.DRAG)
         })
 
-        fsm.transition(State.Type.EDIT, Event.StartEditName::class, { s, _ ->
-            s
-        })
-
         fsm.transition(State.Type.EDIT, Event.UpdateName::class, { s, e ->
             s.copy(name = e.name)
         })
@@ -457,56 +450,24 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
             if (isOpen && !s.isKeyboardOpen && s.type == State.Type.EDIT) {
                 dragView?.let {
-                    // check only if bottom is below visibleHeight
-//                    Timber.d("Visible height $visibleHeight drag height ${it.height} root height ${rootView.height} root top ${rootView.topLocationOnScreen}")
-                    it.setTopPosition(visibleHeight.toFloat() - it.height / 2 - topLocationOnScreen)
-//                    it.setTopPosition(0f)
-                    //                        val dragDiff = it.y - heightDiff
-//                        Timber.d("dragDiff $dragDiff y $y heightDiff $heightDiff")
+                    val dragBottom = it.topLocationOnScreen + it.height
+                    if (dragBottom > visibleHeight) {
+
+                        val topPosition = visibleHeight.toFloat() - it.height / 2 - topLocationOnScreen
+                        val scrollYDelta = s.topDragViewPosition!! - topPosition
+                        scrollView.scrollBy(0, scrollYDelta.toInt())
+                        return@transition s.copy(
+                            isKeyboardOpen = isOpen,
+                            topDragViewPosition = topPosition,
+                            topDragIndicatorPosition = topPosition - dragImageSize / 2,
+                            bottomDragIndicatorPosition = topPosition + it.height - dragImageSize / 2
+                        )
+                    }
 
                 }
-//                dragView?.setTopPosition(dragView?.y!! - heightDiff)
-//                scrollView.scrollBy(0, -heightDiff)
             }
 
-
             s.copy(isKeyboardOpen = isOpen)
-
-//            val activityRoot = rootView
-//
-//            activityRoot.getWindowVisibleDisplayFrame(r)
-//
-//            val heightDiff = activityRoot.height - r.height()
-//
-//            val isOpen = heightDiff > keyboardVisibleThreshold
-//
-//            if (isOpen && !s.isKeyboardOpen && s.type == State.Type.EDIT) {
-////                Timber.d("DragView $dragView")
-//                dragView?.let {
-//                    it.post {
-////                        val dragDiff = it.y - heightDiff
-////                        Timber.d("dragDiff $dragDiff y $y heightDiff $heightDiff")
-//                        it.setTopPosition(heightDiff.toFloat() - it.height)
-//                    }
-//
-//                }
-////                dragView?.setTopPosition(dragView?.y!! - heightDiff)
-////                scrollView.scrollBy(0, -heightDiff)
-//            }
-
-//            s.copy(isKeyboardOpen = isOpen)
-
-
-//            if (isOpen == wasOpened) {
-//                // keyboard state has not changed
-//                return
-//            }
-//
-//            Timber.d("Is Open Keyboard? $isOpen $heightDiff")
-//
-//            wasOpened = isOpen
-//
-//            s.copy()
         })
 
         fsm.transition(State.Type.EDIT, Event.CompleteEditRequest::class, { s, _ ->
@@ -567,10 +528,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 isNewEvent = false,
                 eventAdapterPosition = null,
                 unscheduledEventAdapterPosition = null)
-        })
-
-        fsm.transition(State.Type.VIEW, Event.CancelEdit::class, { s, _ ->
-            s
         })
 
         fsm.transition(State.Type.EDIT, Event.RemoveEvent::class, { s, _ ->
@@ -1027,6 +984,10 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         when (state.type) {
             State.Type.EDIT -> {
                 showViews(editModeBackground, topDragView, bottomDragView)
+
+                dragView?.setPositionAndHeight(state.topDragViewPosition!!, state.height!!)
+                topDragView.setTopPosition(state.topDragIndicatorPosition!!)
+                bottomDragView.setTopPosition(state.bottomDragIndicatorPosition!!)
             }
 //
             State.Type.DRAG -> {
@@ -1036,6 +997,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 bottomDragView.setTopPosition(state.bottomDragIndicatorPosition!!)
 //                dragView?.startTime!!.changeHeight(state.height!! / 4)
             }
+
 //
 //            State.Type.VIEW -> {
 //                hideViews(editModeBackground, topDragView, bottomDragView)
