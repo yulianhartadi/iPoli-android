@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.Resources
 import android.database.DataSetObserver
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
@@ -16,6 +17,7 @@ import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
 import io.ipoli.android.R
+import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.visible
@@ -27,6 +29,7 @@ import timber.log.Timber
 import java.lang.Math.*
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
+
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -68,7 +71,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fun <E : Event> fire(event: E) {
             val actionKey = Pair(currentState.type, event::class)
             if (actionKey !in actions) {
-                throw ActionNotFound(actionKey)
+                return
+//                throw ActionNotFound(actionKey)
             }
             @Suppress("UNCHECKED_CAST")
             val a = actions[actionKey] as Action<E>
@@ -82,6 +86,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         object CompleteEditRequest : Event()
         object CancelEdit : Event()
         object Up : Event()
+        object LayoutChange : Event()
         data class StartCalendarEventEdit(val view: View, val position: Int) : Event()
         data class StartUnscheduledEventEdit(val view: View, val position: Int) : Event()
         data class StartCalendarEventAdd(val startTime: Time, val duration: Int, val name: String, val backgroundColor: AndroidColor) : Event()
@@ -98,12 +103,13 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     companion object {
-        val DEFAULT_VISIBLE_HOURS = 9
-        val MIN_VISIBLE_HOURS = 6
-        val MAX_VISIBLE_HOURS = 16
-        val MIN_EVENT_DURATION = 10
+        const val DEFAULT_VISIBLE_HOURS = 9
+        const val MIN_VISIBLE_HOURS = 6
+        const val MAX_VISIBLE_HOURS = 16
+        const val MIN_EVENT_DURATION = 10
         val MAX_EVENT_DURATION = Time.h2Min(4)
-        val HOURS_IN_A_DAY = 24
+        const val HOURS_IN_A_DAY = 24
+        const val KEYBOARD_VISIBLE_THRESHOLD_DP = 100f
     }
 
     data class State(
@@ -121,7 +127,9 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val visibleHours: Int = DEFAULT_VISIBLE_HOURS,
         val hourHeight: Float = 0f,
         val zoomDistance: Float? = null,
-        val isScrollLocked: Boolean = false) {
+        val isScrollLocked: Boolean = false,
+        val isKeyboardOpen: Boolean = false,
+        val keyboardHeight: Int = 0) {
         enum class Type {
             VIEW, EDIT, DRAG, ZOOM
         }
@@ -154,6 +162,13 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private val eventViews = mutableListOf<View>()
     private val hourCellViews = mutableListOf<View>()
     private lateinit var timeLineView: View
+
+
+    private val keyboardVisibleThreshold = Math.round(
+        ViewUtils.dpToPx(KEYBOARD_VISIBLE_THRESHOLD_DP, context)
+    )
+
+    private val r = Rect()
 
     private val minuteChangeHandler = Handler(Looper.getMainLooper())
 
@@ -223,6 +238,17 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             }
             false
         }
+
+        viewTreeObserver.addOnGlobalLayoutListener(layoutListener)
+    }
+
+
+    private val layoutListener = object : ViewTreeObserver.OnGlobalLayoutListener {
+
+        override fun onGlobalLayout() {
+            fsm.fire(Event.LayoutChange)
+        }
+
     }
 
     private fun moveTimeLineToNow(): Runnable =
@@ -421,6 +447,66 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fsm.transition(State.Type.EDIT, Event.Up::class, { s, _ ->
             listener?.onDragViewClick(dragView!!)
             s
+        })
+
+        fsm.transition(State.Type.EDIT, Event.LayoutChange::class, { s, _ ->
+            getWindowVisibleDisplayFrame(r)
+            val visibleHeight = r.height()
+            val heightDiff = rootView.height - r.height()
+            val isOpen = heightDiff > keyboardVisibleThreshold
+
+            if (isOpen && !s.isKeyboardOpen && s.type == State.Type.EDIT) {
+                dragView?.let {
+                    // check only if bottom is below visibleHeight
+//                    Timber.d("Visible height $visibleHeight drag height ${it.height} root height ${rootView.height} root top ${rootView.topLocationOnScreen}")
+                    it.setTopPosition(visibleHeight.toFloat() - it.height / 2 - topLocationOnScreen)
+//                    it.setTopPosition(0f)
+                    //                        val dragDiff = it.y - heightDiff
+//                        Timber.d("dragDiff $dragDiff y $y heightDiff $heightDiff")
+
+                }
+//                dragView?.setTopPosition(dragView?.y!! - heightDiff)
+//                scrollView.scrollBy(0, -heightDiff)
+            }
+
+
+            s.copy(isKeyboardOpen = isOpen)
+
+//            val activityRoot = rootView
+//
+//            activityRoot.getWindowVisibleDisplayFrame(r)
+//
+//            val heightDiff = activityRoot.height - r.height()
+//
+//            val isOpen = heightDiff > keyboardVisibleThreshold
+//
+//            if (isOpen && !s.isKeyboardOpen && s.type == State.Type.EDIT) {
+////                Timber.d("DragView $dragView")
+//                dragView?.let {
+//                    it.post {
+////                        val dragDiff = it.y - heightDiff
+////                        Timber.d("dragDiff $dragDiff y $y heightDiff $heightDiff")
+//                        it.setTopPosition(heightDiff.toFloat() - it.height)
+//                    }
+//
+//                }
+////                dragView?.setTopPosition(dragView?.y!! - heightDiff)
+////                scrollView.scrollBy(0, -heightDiff)
+//            }
+
+//            s.copy(isKeyboardOpen = isOpen)
+
+
+//            if (isOpen == wasOpened) {
+//                // keyboard state has not changed
+//                return
+//            }
+//
+//            Timber.d("Is Open Keyboard? $isOpen $heightDiff")
+//
+//            wasOpened = isOpen
+//
+//            s.copy()
         })
 
         fsm.transition(State.Type.EDIT, Event.CompleteEditRequest::class, { s, _ ->
