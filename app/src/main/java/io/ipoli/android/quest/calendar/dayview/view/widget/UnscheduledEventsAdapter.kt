@@ -16,8 +16,6 @@ interface UnscheduledEvent {
     val id: String
 
     val duration: Int
-
-    val name: String
 }
 
 abstract class UnscheduledEventsAdapter<E : UnscheduledEvent>(@LayoutRes private val unscheduledEventLayout: Int,

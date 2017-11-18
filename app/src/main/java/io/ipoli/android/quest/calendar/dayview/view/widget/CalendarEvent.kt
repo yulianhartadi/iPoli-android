@@ -11,6 +11,4 @@ interface CalendarEvent {
     val duration: Int
 
     val startMinute: Int
-
-    val name: String
 }
