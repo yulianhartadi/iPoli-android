@@ -1,9 +1,7 @@
 package io.ipoli.android.common.view
 
 import android.app.Dialog
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -22,10 +20,10 @@ import kotlinx.android.synthetic.main.dialog_color_picker.view.*
 
 class IconPickerDialogController : BaseDialogController {
 
-    private var listener: (AndroidIcon) -> Unit = {}
+    private var listener: (AndroidIcon?) -> Unit = {}
     private var selectedIcon: AndroidIcon? = null
 
-    constructor(listener: (AndroidIcon) -> Unit, selectedIcon: AndroidIcon? = null) : this() {
+    constructor(listener: (AndroidIcon?) -> Unit, selectedIcon: AndroidIcon? = null) : this() {
         this.listener = listener
         this.selectedIcon = selectedIcon
     }
@@ -52,6 +50,9 @@ class IconPickerDialogController : BaseDialogController {
             .setTitle("Choose icon")
             .setIcon(R.drawable.pet_5_head)
             .setNegativeButton(R.string.cancel, null)
+            .setNeutralButton("No icon", { _, _ ->
+                listener(null)
+            })
             .create()
     }
 
@@ -70,9 +71,7 @@ class IconPickerDialogController : BaseDialogController {
             )
 
             if (vm.isSelected) {
-                iv.setBackgroundResource(R.drawable.ic_context_indicator)
-                val drawable = iv.background as GradientDrawable
-                drawable.setColor(ContextCompat.getColor(iv.context, R.color.md_grey_300))
+                iv.setBackgroundResource(R.drawable.selected_icon_background)
             } else {
                 iv.background = null
             }

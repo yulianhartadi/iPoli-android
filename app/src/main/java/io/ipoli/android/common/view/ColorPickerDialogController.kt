@@ -50,7 +50,7 @@ class ColorPickerDialogController : BaseDialogController {
 
         return AlertDialog.Builder(activity!!)
             .setView(contentView)
-            .setTitle("Pick color")
+            .setTitle("Choose color")
             .setIcon(R.drawable.pet_5_head)
             .setNegativeButton(R.string.cancel, null)
             .create()
