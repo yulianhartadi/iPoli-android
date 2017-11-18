@@ -74,6 +74,7 @@ class DayViewPresenter(
                 val vm = intent.questViewModel
                 state.copy(
                     type = START_EDIT_SCHEDULED_QUEST,
+                    editId = vm.id,
                     name = vm.name,
                     color = vm.backgroundColor,
                     startTime = Time.of(vm.startMinute),
@@ -88,6 +89,7 @@ class DayViewPresenter(
                 val vm = intent.questViewModel
                 state.copy(
                     type = START_EDIT_UNSCHEDULED_QUEST,
+                    editId = vm.id,
                     name = vm.name,
                     color = vm.backgroundColor,
                     duration = vm.duration,
@@ -110,74 +112,140 @@ class DayViewPresenter(
 //                )
 //            }
 
-            is AddEventIntent -> {
-                val event = intent.event
+//            is AddEventIntent -> {
+//                val event = intent.event
+//
+//                val color = Color.valueOf(state.color!!.name)
+//                val icon = state.icon?.let {
+//                    Icon.valueOf(it.name)
+//                }
+//
+//                val reminder = if (state.reminder != null)
+//                    createQuestReminder(state.reminder, state.scheduledDate, event.startMinute)
+//                else
+//                    createDefaultReminder(state.scheduledDate, event.startMinute)
+//
+//                val questParams = SaveQuestUseCase.Parameters(
+//                    name = "",
+//                    color = color,
+//                    icon = icon,
+//                    category = Category("WELLNESS", Color.GREEN),
+//                    scheduledDate = state.scheduledDate,
+//                    startTime = Time.of(event.startMinute),
+//                    duration = event.duration,
+//                    reminder = reminder
+//                )
+//                val result = saveQuestUseCase.execute(questParams)
+//                savedQuestViewState(result, state)
+//            }
+//
+//            is EditEventIntent -> {
+//                val event = intent.event
+//                val color = Color.valueOf(state.color!!.name)
+//
+//                val icon = state.icon?.let {
+//                    Icon.valueOf(it.name)
+//                }
+//
+//
+//                val questParams = SaveQuestUseCase.Parameters(
+//                    id = event.id,
+//                    name = "",
+//                    color = color,
+//                    icon = icon,
+//                    category = Category("WELLNESS", Color.GREEN),
+//                    scheduledDate = state.scheduledDate,
+//                    startTime = Time.of(event.startMinute),
+//                    duration = event.duration,
+//                    reminder = createQuestReminder(state.reminder, state.scheduledDate, event.startMinute)
+//                )
+//                val result = saveQuestUseCase.execute(questParams)
+//                savedQuestViewState(result, state)
+//            }
 
+            is AddQuestIntent -> {
                 val color = Color.valueOf(state.color!!.name)
+
                 val icon = state.icon?.let {
                     Icon.valueOf(it.name)
                 }
 
-                val reminder = if (state.isReminderEdited)
-                    createQuestReminder(state.reminder, state.scheduledDate, event.startMinute)
-                else
-                    createDefaultReminder(state.scheduledDate, event.startMinute)
-
                 val questParams = SaveQuestUseCase.Parameters(
-                    name = event.name,
+                    id = state.editId,
+                    name = state.name,
                     color = color,
                     icon = icon,
                     category = Category("WELLNESS", Color.GREEN),
                     scheduledDate = state.scheduledDate,
-                    startTime = Time.of(event.startMinute),
-                    duration = event.duration,
-                    reminder = reminder
+                    startTime = state.startTime,
+                    duration = state.duration!!,
+                    reminder = createQuestReminder(state.reminder, state.scheduledDate, state.startTime!!.toMinuteOfDay())
                 )
                 val result = saveQuestUseCase.execute(questParams)
                 savedQuestViewState(result, state)
             }
 
-            is EditEventIntent -> {
-                val event = intent.event
+            is EditQuestIntent -> {
                 val color = Color.valueOf(state.color!!.name)
 
                 val icon = state.icon?.let {
                     Icon.valueOf(it.name)
                 }
 
-                val reminderVM = if (state.isReminderEdited) state.reminder else intent.reminder
-
                 val questParams = SaveQuestUseCase.Parameters(
-                    id = event.id,
-                    name = event.name,
+                    id = state.editId,
+                    name = state.name,
                     color = color,
                     icon = icon,
                     category = Category("WELLNESS", Color.GREEN),
                     scheduledDate = state.scheduledDate,
-                    startTime = Time.of(event.startMinute),
-                    duration = event.duration,
-                    reminder = createQuestReminder(reminderVM, state.scheduledDate, event.startMinute)
+                    startTime = state.startTime,
+                    duration = state.duration!!,
+                    reminder = createQuestReminder(state.reminder, state.scheduledDate, state.startTime!!.toMinuteOfDay())
                 )
                 val result = saveQuestUseCase.execute(questParams)
                 savedQuestViewState(result, state)
             }
 
-            is EditUnscheduledEventIntent -> {
-                val event = intent.event
+            is EditUnscheduledQuestIntent -> {
                 val color = Color.valueOf(state.color!!.name)
 
+                val icon = state.icon?.let {
+                    Icon.valueOf(it.name)
+                }
+
                 val questParams = SaveQuestUseCase.Parameters(
-                    id = event.id,
-                    name = event.name,
+                    id = state.editId,
+                    name = state.name,
                     color = color,
+                    icon = icon,
                     category = Category("WELLNESS", Color.GREEN),
                     scheduledDate = state.scheduledDate,
-                    startTime = null,
-                    duration = event.duration
+                    startTime = state.startTime,
+                    duration = state.duration!!,
+//                    reminder = createQuestReminder(state.reminder, state.scheduledDate, state.startTime!!.toMinuteOfDay())
+                    reminder = null
                 )
                 val result = saveQuestUseCase.execute(questParams)
                 savedQuestViewState(result, state)
             }
+
+//            is EditUnscheduledEventIntent -> {
+//                val event = intent.event
+//                val color = Color.valueOf(state.color!!.name)
+//
+//                val questParams = SaveQuestUseCase.Parameters(
+//                    id = event.id,
+//                    name = "",
+//                    color = color,
+//                    category = Category("WELLNESS", Color.GREEN),
+//                    scheduledDate = state.scheduledDate,
+//                    startTime = null,
+//                    duration = event.duration
+//                )
+//                val result = saveQuestUseCase.execute(questParams)
+//                savedQuestViewState(result, state)
+//            }
 
             is RemoveEventIntent -> {
                 val eventId = intent.eventId
@@ -194,8 +262,7 @@ class DayViewPresenter(
                         removedEventId = eventId,
                         scheduledQuests = scheduledQuests,
                         unscheduledQuests = unscheduledQuests,
-                        reminder = null,
-                        isReminderEdited = false
+                        reminder = null
                     )
                 }
             }
@@ -207,7 +274,7 @@ class DayViewPresenter(
             }
 
             is ReminderPickedIntent -> {
-                state.copy(reminder = intent.reminder, isReminderEdited = true)
+                state.copy(reminder = intent.reminder)
             }
 
             is IconPickedIntent -> {
@@ -233,6 +300,22 @@ class DayViewPresenter(
                 undoCompleteQuestUseCase.execute(intent.questId)
                 state.copy(type = UNDO_QUEST_COMPLETED)
             }
+
+            is DragEditViewIntent -> {
+                state.copy(
+                    type = EDIT_VIEW_DRAGGED,
+                    startTime = intent.startTime,
+                    endTime = intent.endTime,
+                    duration = intent.duration
+                )
+            }
+
+            is ChangeEditViewNameIntent -> {
+                state.copy(
+                    type = EDIT_VIEW_NAME_CHANGED,
+                    name = intent.name
+                )
+            }
         }
 
     private fun createDefaultReminder(scheduledDate: LocalDate, startMinute: Int) =
@@ -250,7 +333,7 @@ class DayViewPresenter(
     private fun savedQuestViewState(result: Result, state: DayViewState) =
         when (result) {
             is Result.Invalid -> state.copy(type = EVENT_VALIDATION_ERROR)
-            else -> state.copy(type = EVENT_UPDATED, reminder = null, isReminderEdited = false)
+            else -> state.copy(type = EVENT_UPDATED, reminder = null)
         }
 
     private fun createUnscheduledViewModels(schedule: Schedule): List<DayViewController.UnscheduledQuestViewModel> =
