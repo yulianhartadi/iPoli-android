@@ -31,6 +31,9 @@ android {
             // @TODO Fix proguard rules
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            ndk {
+                abiFilter 'armeabi-v7a'
+            }
         }
     }
 
