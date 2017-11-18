@@ -1,6 +1,5 @@
 package io.ipoli.android.reminder.view.picker
 
-import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
@@ -16,10 +15,8 @@ import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.MviDialogController
 import io.ipoli.android.common.view.stringRes
-import io.ipoli.android.iPoliApp
 import kotlinx.android.synthetic.main.dialog_reminder_picker.view.*
 import space.traversal.kapsule.Injects
-import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
 
 typealias TimeUnitConverter = java.util.concurrent.TimeUnit
@@ -125,10 +122,6 @@ class ReminderPickerDialogController :
     private fun showCustomTimeViews(dialogView: View) {
         ViewUtils.showViews(dialogView.customTimeContainer)
         ViewUtils.hideViews(dialogView.predefinedTimes)
-    }
-
-    override fun onContextAvailable(context: Context) {
-        inject(iPoliApp.controllerModule(context, router))
     }
 
     override fun onAttach(view: View) {
