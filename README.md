@@ -4,11 +4,11 @@
 [![Discord](https://img.shields.io/discord/367715831913906176.svg?style=flat-square)](https://discord.gg/7AMKs28)
 [![License](https://img.shields.io/github/license/iPoli/iPoli-android.svg?style=flat-square)](https://github.com/iPoli/iPoli-android/blob/master/LICENSE)
 
-# [iPoli](http://bit.ly/ipoli-android): AI-Powered Calendar & Habit Tracking for your Life!
+# [myPoli](http://bit.ly/ipoli-android): AI-Powered Calendar & Habit Tracking for your Life!
 
 <p align="center"><img src="./.github/icon.png" width="128px"/></p>
 
-iPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one place! It's goal is to find time for the things that matter most in your life, make you stick to good habits and free you from the burden of scheduling tasks by yourself.
+myPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one place! It's goal is to find time for the things that matter most in your life, make you stick to good habits and free you from the burden of scheduling tasks by yourself.
 
 <img src="./.github/screens/calendar.png" width="250px"/> &nbsp;&nbsp;&nbsp;
 <img src="./.github/screens/quest.png" width="250px"/> &nbsp;&nbsp;&nbsp;
@@ -16,7 +16,7 @@ iPoli is a combination of Calendar, ToDo list and Habit tracking app, all in one
 
 # Download
 
-**iPoli** can be download on [Google Play](http://bit.ly/ipoli-android):
+**myPoli** can be download on [Google Play](http://bit.ly/ipoli-android):
 
 <a href="http://bit.ly/ipoli-android"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" height="80"/></a>
 
@@ -46,9 +46,9 @@ Join the community on [Slack](https://slofile.com/slack/productivityhackers) or 
 
 # Contributing
 
-You love **iPoli**? You want new features or bug fixes?  
+You love **myPoli**? You want new features or bug fixes?  
 Please **contribute** to the  project either by [_creating a PR_](https://github.com/iPoli/iPoli-android/compare) or [_submitting an issue_](https://github.com/iPoli/iPoli-android/issues/new) on GitHub.  
-You can help translate **iPoli** at [OneSky](https://ossiudx.oneskyapp.com/collaboration/project?id=110776).
+You can help translate **myPoli** at [OneSky](https://ossiudx.oneskyapp.com/collaboration/project?id=110776).
 
 # License
 
