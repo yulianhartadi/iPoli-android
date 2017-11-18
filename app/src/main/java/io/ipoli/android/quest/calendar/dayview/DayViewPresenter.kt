@@ -113,7 +113,7 @@ class DayViewPresenter(
             is AddEventIntent -> {
                 val event = intent.event
 
-                val color = Color.valueOf(event.backgroundColor.name)
+                val color = Color.valueOf(state.color!!.name)
                 val icon = state.icon?.let {
                     Icon.valueOf(it.name)
                 }
@@ -139,7 +139,7 @@ class DayViewPresenter(
 
             is EditEventIntent -> {
                 val event = intent.event
-                val color = Color.valueOf(event.backgroundColor.name)
+                val color = Color.valueOf(state.color!!.name)
 
                 val icon = state.icon?.let {
                     Icon.valueOf(it.name)
@@ -164,12 +164,12 @@ class DayViewPresenter(
 
             is EditUnscheduledEventIntent -> {
                 val event = intent.event
-                val colorName = Color.valueOf(event.backgroundColor.name)
+                val color = Color.valueOf(state.color!!.name)
 
                 val questParams = SaveQuestUseCase.Parameters(
                     id = event.id,
                     name = event.name,
-                    color = colorName,
+                    color = color,
                     category = Category("WELLNESS", Color.GREEN),
                     scheduledDate = state.scheduledDate,
                     startTime = null,
@@ -211,7 +211,17 @@ class DayViewPresenter(
             }
 
             is IconPickedIntent -> {
-                state.copy(icon = intent.icon)
+                state.copy(
+                    type = ICON_PICKED,
+                    icon = intent.icon
+                )
+            }
+
+            is ColorPickedIntent -> {
+                state.copy(
+                    type = COLOR_PICKED,
+                    color = intent.color
+                )
             }
 
             is CompleteQuestIntent -> {

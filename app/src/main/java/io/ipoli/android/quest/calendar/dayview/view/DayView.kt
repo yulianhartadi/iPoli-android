@@ -30,6 +30,7 @@ data class ScheduleLoadedIntent(val schedule: Schedule) : DayViewIntent()
 data class UndoRemoveEventIntent(val eventId: String) : DayViewIntent()
 data class ReminderPickedIntent(val reminder: ReminderViewModel?) : DayViewIntent()
 data class IconPickedIntent(val icon: AndroidIcon?) : DayViewIntent()
+data class ColorPickedIntent(val color: AndroidColor) : DayViewIntent()
 data class CompleteQuestIntent(val questId: String) : DayViewIntent()
 data class UndoCompleteQuestIntent(val questId: String) : DayViewIntent()
 data class AddNewScheduledQuestIntent(val startTime: Time, val duration: Int) : DayViewIntent()
@@ -58,6 +59,8 @@ data class DayViewState(
         ADD_NEW_SCHEDULED_QUEST,
         START_EDIT_SCHEDULED_QUEST,
         START_EDIT_UNSCHEDULED_QUEST,
+        ICON_PICKED,
+        COLOR_PICKED,
         EDIT_QUEST,
         EVENT_UPDATED,
         EVENT_VALIDATION_ERROR,

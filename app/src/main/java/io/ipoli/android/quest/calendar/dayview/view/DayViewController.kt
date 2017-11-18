@@ -44,7 +44,6 @@ import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
-import timber.log.Timber
 
 class DayViewController :
     MviViewController<DayViewState, DayViewController, DayViewPresenter, DayViewIntent>,
@@ -94,12 +93,6 @@ class DayViewController :
 
         calendarDayView.scrollToNow()
 
-        repeatTruc = Runnable {
-            calendarDayView.setScheduledEventsAdapter(eventsAdapter)
-            calendarDayView.setUnscheduledEventsAdapter(unscheduledEventsAdapter)
-            view?.postDelayed(repeatTruc, 3000)
-        }
-
         return view
     }
 
@@ -123,9 +116,6 @@ class DayViewController :
 
     override fun createPresenter() = presenter
 
-    var repeatTruc: Runnable? = null
-
-
     override fun render(state: DayViewState, view: View) {
 
         when (state.type) {
@@ -135,12 +125,10 @@ class DayViewController :
                 unscheduledEventsAdapter = UnscheduledQuestsAdapter(state.unscheduledQuests, calendarDayView)
                 calendarDayView.setUnscheduledEventsAdapter(unscheduledEventsAdapter)
                 updateUnscheduledQuestsHeight(view)
-
-                view.postDelayed(repeatTruc, 3000)
             }
 
             ADD_NEW_SCHEDULED_QUEST -> {
-                startActionMode(null)
+                startActionMode(state.icon, state.color)
                 (parentController as CalendarViewController).onStartEdit()
                 val dragView = view.dragContainer
                 dragView.dragStartTime.visibility = View.VISIBLE
@@ -150,7 +138,7 @@ class DayViewController :
             }
 
             START_EDIT_SCHEDULED_QUEST -> {
-                startActionMode(state.icon)
+                startActionMode(state.icon, state.color)
                 (parentController as CalendarViewController).onStartEdit()
                 val dragView = view.dragContainer
                 dragView.dragStartTime.visibility = View.VISIBLE
@@ -160,7 +148,7 @@ class DayViewController :
             }
 
             START_EDIT_UNSCHEDULED_QUEST -> {
-                startActionMode(state.icon)
+                startActionMode(state.icon, state.color)
                 (parentController as CalendarViewController).onStartEdit()
                 val dragView = view.dragContainer
                 dragView.dragStartTime.visibility = View.GONE
@@ -184,6 +172,18 @@ class DayViewController :
                 }).show(router)
             }
 
+            COLOR_PICKED -> {
+                val dragView = view.dragContainer
+                ObjectAnimator.ofArgb(
+                    dragView,
+                    "backgroundColor",
+                    (dragView.background as ColorDrawable).color,
+                    ContextCompat.getColor(dragView.context, state.color!!.color500)
+                )
+                    .setDuration(dragView.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong())
+                    .start()
+            }
+
             QUEST_COMPLETED -> {
             }
 
@@ -191,7 +191,7 @@ class DayViewController :
             }
 
             EDIT_QUEST -> {
-                startActionMode(state.icon)
+                startActionMode(state.icon, state.color)
             }
 
         }
@@ -279,17 +279,6 @@ class DayViewController :
     override fun onDragViewClick(dragView: View) {
         ViewUtils.hideKeyboard(calendarDayView)
         dragView.requestFocus()
-    }
-
-    override fun onDragViewColorChange(dragView: View, color: AndroidColor) {
-        ObjectAnimator.ofArgb(
-            dragView,
-            "backgroundColor",
-            (dragView.background as ColorDrawable).color,
-            ContextCompat.getColor(dragView.context, color.color500)
-        )
-            .setDuration(dragView.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong())
-            .start()
     }
 
     override fun onRescheduleScheduledEvent(position: Int, startTime: Time, duration: Int) {
@@ -386,7 +375,7 @@ class DayViewController :
         ViewUtils.hideKeyboard(calendarDayView)
     }
 
-    private fun startActionMode(selectedIcon: AndroidIcon?) {
+    private fun startActionMode(selectedIcon: AndroidIcon?, selectedColor: AndroidColor?) {
         parentController?.view?.startActionMode(object : ActionMode.Callback {
             override fun onActionItemClicked(am: ActionMode, item: MenuItem): Boolean {
                 when (item.itemId) {
@@ -398,7 +387,7 @@ class DayViewController :
                     }
 
                     R.id.chooseColor -> {
-                        showColorPicker()
+                        showColorPicker(selectedColor)
                     }
 
                     R.id.removeEvent -> {
@@ -424,13 +413,13 @@ class DayViewController :
         })
     }
 
-    private fun showColorPicker() {
+    private fun showColorPicker(selectedColor: AndroidColor?) {
         ColorPickerDialogController(object : ColorPickerDialogController.ColorPickedListener {
             override fun onColorPicked(color: AndroidColor) {
-                calendarDayView.updateDragBackgroundColor(color)
+                send(ColorPickedIntent(color))
             }
 
-        }, calendarDayView.getDragViewBackgroundColor())
+        }, selectedColor)
             .showDialog(router, "pick_color_tag")
     }
 
@@ -446,7 +435,7 @@ class DayViewController :
                               val startTime: String,
                               val endTime: String,
                               val icon: AndroidIcon?,
-                              override val backgroundColor: AndroidColor,
+                              val backgroundColor: AndroidColor,
                               @ColorRes val textColor: Int,
                               val reminder: ReminderViewModel?,
                               val isCompleted: Boolean) : CalendarEvent
@@ -531,10 +520,7 @@ class DayViewController :
 
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(view.questName, 8, 16, 1, TypedValue.COMPLEX_UNIT_SP)
 
-            val millis = System.currentTimeMillis()
-//            Timber.d("AAA before $position")
             view.post {
-                Timber.d("AAA post $position ${System.currentTimeMillis() - millis}")
                 adaptViewForHeight(view, ViewUtils.pxToDp(view.height, context))
             }
         }
@@ -597,7 +583,7 @@ class DayViewController :
                                          override val name: String,
                                          override val duration: Int,
                                          val icon: AndroidIcon?,
-                                         override val backgroundColor: AndroidColor,
+                                         val backgroundColor: AndroidColor,
                                          @ColorRes val textColor: Int,
                                          val isCompleted: Boolean,
                                          val reminder: ReminderViewModel? = null) : UnscheduledEvent

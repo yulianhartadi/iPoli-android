@@ -97,7 +97,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         data class ZoomStart(val zoomDistance: Float) : Event()
         data class Zoom(val zoomDistance: Float, val focusY: Float, val scaleFactor: Float) : Event()
         object ZoomEnd : Event()
-        data class ChangeBackgroundColor(val color: AndroidColor) : Event()
         object RemoveEvent : Event()
     }
 
@@ -121,7 +120,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val eventId: String = "",
         val height: Int? = null,
         val name: String? = null,
-        val color: AndroidColor? = null,
         val isNewEvent: Boolean = false,
         val visibleHours: Int = DEFAULT_VISIBLE_HOURS,
         val hourHeight: Float = 0f,
@@ -311,7 +309,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 bottomDragIndicatorPosition = topPosition + dragView!!.height - dragImageSize / 2,
                 eventAdapterPosition = e.position,
                 height = dragView!!.height,
-                color = event.backgroundColor,
                 isScrollLocked = true)
         })
 
@@ -329,7 +326,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 bottomDragIndicatorPosition = topPosition + dragView!!.height - dragImageSize / 2,
                 unscheduledEventAdapterPosition = e.position,
                 height = dragView!!.height,
-                color = event.backgroundColor,
                 isScrollLocked = true)
         })
 
@@ -359,7 +355,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 topDragIndicatorPosition = topPosition - dragImageSize / 2,
                 bottomDragIndicatorPosition = topPosition + dragView!!.height - dragImageSize / 2,
                 height = dragView!!.height,
-                color = e.backgroundColor,
                 isScrollLocked = true)
         })
 
@@ -425,12 +420,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fsm.transition(State.Type.EDIT, Event.UpdateName::class, { s, e ->
             s.copy(name = e.name)
         })
-
-        fsm.transition(State.Type.EDIT, Event.ChangeBackgroundColor::class, { s, e ->
-            listener?.onDragViewColorChange(dragView!!, e.color)
-            s.copy(color = e.color)
-        })
-
 
         fsm.transition(State.Type.EDIT, Event.Up::class, { s, _ ->
             listener?.onDragViewClick(dragView!!)
@@ -571,7 +560,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             override val duration = durationForEvent(s)
             override val startMinute = startTimeForEvent(s).toMinuteOfDay()
             override val name = s.name!!
-            override val backgroundColor = s.color!!
         }
     }
 
@@ -580,7 +568,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             override val id = s.eventId
             override val duration = durationForEvent(s)
             override val name = s.name!!
-            override val backgroundColor = s.color!!
         }
     }
 
@@ -748,7 +735,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 setBottomDragViewListener()
                 adapterView.setOnTouchListener(null)
             }
-            false
+            true
         }
     }
 
@@ -834,17 +821,11 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     fun updateDragEventName(name: String) =
         fsm.fire(Event.UpdateName(name))
 
-    fun updateDragBackgroundColor(color: AndroidColor) =
-        fsm.fire(Event.ChangeBackgroundColor(color))
-
     fun onEventUpdated() =
         fsm.fire(Event.CompleteEdit)
 
     fun onEventValidationError() =
         listener?.onEventValidationError(dragView!!)
-
-    fun getDragViewBackgroundColor() =
-        fsm.state.color
 
     fun cancelEdit() {
         fsm.fire(Event.CancelEdit)
@@ -1135,7 +1116,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         //        fun onStartEditUnscheduledEvent(adapterPosition: Int)
         fun onDragViewClick(dragView: View)
 
-        fun onDragViewColorChange(dragView: View, color: AndroidColor)
         fun onEventValidationError(dragView: View)
         fun onRescheduleScheduledEvent(position: Int, startTime: Time, duration: Int)
         fun onScheduleUnscheduledEvent(position: Int, startTime: Time)
