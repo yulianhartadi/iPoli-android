@@ -44,6 +44,7 @@ import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 class DayViewController :
     MviViewController<DayViewState, DayViewController, DayViewPresenter, DayViewIntent>,
@@ -93,6 +94,12 @@ class DayViewController :
 
         calendarDayView.scrollToNow()
 
+        repeatTruc = Runnable {
+            calendarDayView.setScheduledEventsAdapter(eventsAdapter)
+            calendarDayView.setUnscheduledEventsAdapter(unscheduledEventsAdapter)
+            view?.postDelayed(repeatTruc, 3000)
+        }
+
         return view
     }
 
@@ -116,6 +123,9 @@ class DayViewController :
 
     override fun createPresenter() = presenter
 
+    var repeatTruc: Runnable? = null
+
+
     override fun render(state: DayViewState, view: View) {
 
         when (state.type) {
@@ -125,6 +135,37 @@ class DayViewController :
                 unscheduledEventsAdapter = UnscheduledQuestsAdapter(state.unscheduledQuests, calendarDayView)
                 calendarDayView.setUnscheduledEventsAdapter(unscheduledEventsAdapter)
                 updateUnscheduledQuestsHeight(view)
+
+                view.postDelayed(repeatTruc, 3000)
+            }
+
+            ADD_NEW_SCHEDULED_QUEST -> {
+                startActionMode(null)
+                (parentController as CalendarViewController).onStartEdit()
+                val dragView = view.dragContainer
+                dragView.dragStartTime.visibility = View.VISIBLE
+                dragView.dragEndTime.visibility = View.VISIBLE
+                startEditScheduledEvent(dragView, state.startTime!!, state.endTime!!)
+                setupDragViewNameAndColor(dragView, state.name, state.color!!)
+            }
+
+            START_EDIT_SCHEDULED_QUEST -> {
+                startActionMode(state.icon)
+                (parentController as CalendarViewController).onStartEdit()
+                val dragView = view.dragContainer
+                dragView.dragStartTime.visibility = View.VISIBLE
+                dragView.dragEndTime.visibility = View.VISIBLE
+                startEditScheduledEvent(dragView, state.startTime!!, state.endTime!!)
+                setupDragViewNameAndColor(dragView, state.name, state.color!!, state.reminder)
+            }
+
+            START_EDIT_UNSCHEDULED_QUEST -> {
+                startActionMode(state.icon)
+                (parentController as CalendarViewController).onStartEdit()
+                val dragView = view.dragContainer
+                dragView.dragStartTime.visibility = View.GONE
+                dragView.dragEndTime.visibility = View.GONE
+                setupDragViewNameAndColor(dragView, state.name, state.color!!, state.reminder)
             }
 
             EVENT_UPDATED -> {
@@ -173,17 +214,6 @@ class DayViewController :
         send(UndoRemoveEventIntent(eventId))
     }
 
-    override fun onStartEditNewScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: AndroidColor) {
-        (parentController as CalendarViewController).onStartEdit()
-        startEditScheduledEvent(dragView, startTime, endTime)
-        setupDragViewNameAndColor(dragView, name, color)
-    }
-
-    override fun onStartEditScheduledEvent(dragView: View, startTime: Time, endTime: Time, name: String, color: AndroidColor, adapterPosition: Int) {
-        startEditScheduledEvent(dragView, startTime, endTime)
-        setupDragViewNameAndColor(dragView, name, color, eventsAdapter.events[adapterPosition].reminder)
-    }
-
     private fun startEditScheduledEvent(dragView: View, startTime: Time, endTime: Time) {
 //        startActionMode()
         dragView.dragStartTime.text = startTime.toString()
@@ -192,12 +222,22 @@ class DayViewController :
         TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(dragView.dragEndTime, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
     }
 
-    override fun onStartEditUnscheduledEvent(dragView: View, name: String, color: AndroidColor, adapterPosition: Int) {
-//        startActionMode()
-        dragView.dragStartTime.visibility = View.GONE
-        dragView.dragEndTime.visibility = View.GONE
-        setupDragViewNameAndColor(dragView, name, color, unscheduledEventsAdapter.events[adapterPosition].reminder)
+    override fun onStartEditNewScheduledEvent(startTime: Time, duration: Int) {
+        send(AddNewScheduledQuestIntent(startTime, duration))
     }
+
+//    override fun onStartEditScheduledEvent(adapterPosition: Int) {
+//        send(StartEditScheduledQuestIntent(eventsAdapter.events[adapterPosition]))
+//    }
+//
+//
+//    override fun onStartEditUnscheduledEvent(adapterPosition: Int) {
+//        send(StartEditUnscheduledQuestIntent(unscheduledEventsAdapter.events[adapterPosition]))
+////        startActionMode()
+////        dragView.dragStartTime.visibility = View.GONE
+////        dragView.dragEndTime.visibility = View.GONE
+////        setupDragViewNameAndColor(dragView, name, color, unscheduledEventsAdapter.events[adapterPosition].reminder)
+//    }
 
     private fun setupDragViewNameAndColor(dragView: View, name: String, color: AndroidColor, reminder: ReminderViewModel? = null) {
         dragView.dragName.setText(name)
@@ -418,8 +458,8 @@ class DayViewController :
             val vm = getItem(position)
 
             view.setOnLongClickListener {
-                send(StartEditQuestIntent(vm))
-                (parentController as CalendarViewController).onStartEdit()
+                send(StartEditScheduledQuestIntent(vm))
+//                (parentController as CalendarViewController).onStartEdit()
                 calendarDayView.startEventRescheduling(vm)
                 true
             }
@@ -491,7 +531,10 @@ class DayViewController :
 
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(view.questName, 8, 16, 1, TypedValue.COMPLEX_UNIT_SP)
 
+            val millis = System.currentTimeMillis()
+//            Timber.d("AAA before $position")
             view.post {
+                Timber.d("AAA post $position ${System.currentTimeMillis() - millis}")
                 adaptViewForHeight(view, ViewUtils.pxToDp(view.height, context))
             }
         }
@@ -567,7 +610,7 @@ class DayViewController :
             (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(event.backgroundColor.color200, itemView.context)
             itemView.setOnLongClickListener {
                 send(StartEditUnscheduledQuestIntent(event))
-                (parentController as CalendarViewController).onStartEdit()
+//                (parentController as CalendarViewController).onStartEdit()
                 calendarDayView.startEventRescheduling(events[adapterPosition])
                 true
             }
@@ -584,7 +627,7 @@ class DayViewController :
                 (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(R.color.md_grey_700, itemView.context)
             }
 
-            itemView.unscheduledDone.setOnCheckedChangeListener { cb, checked ->
+            itemView.unscheduledDone.setOnCheckedChangeListener { _, checked ->
                 if (checked) {
                     send(CompleteQuestIntent(event.id))
                 } else {

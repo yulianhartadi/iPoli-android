@@ -59,19 +59,56 @@ class DayViewPresenter(
                 )
             }
 
-            is StartEditQuestIntent -> {
+            is AddNewScheduledQuestIntent -> {
                 state.copy(
-                    type = EDIT_QUEST,
-                    icon = intent.questViewModel.icon
+                    type = ADD_NEW_SCHEDULED_QUEST,
+                    name = "",
+                    color = AndroidColor.GREEN,
+                    startTime = intent.startTime,
+                    duration = intent.duration,
+                    endTime = Time.plusMinutes(intent.startTime, intent.duration)
+                )
+            }
+
+            is StartEditScheduledQuestIntent -> {
+                val vm = intent.questViewModel
+                state.copy(
+                    type = START_EDIT_SCHEDULED_QUEST,
+                    name = vm.name,
+                    color = vm.backgroundColor,
+                    startTime = Time.of(vm.startMinute),
+                    duration = vm.duration,
+                    endTime = Time.plusMinutes(Time.of(vm.startMinute), vm.duration),
+                    icon = vm.icon,
+                    reminder = vm.reminder
                 )
             }
 
             is StartEditUnscheduledQuestIntent -> {
+                val vm = intent.questViewModel
                 state.copy(
-                    type = EDIT_QUEST,
-                    icon = intent.viewModel.icon
+                    type = START_EDIT_UNSCHEDULED_QUEST,
+                    name = vm.name,
+                    color = vm.backgroundColor,
+                    duration = vm.duration,
+                    icon = vm.icon,
+                    reminder = vm.reminder
                 )
             }
+
+//            is StartEditQuestIntent -> {
+//                state.copy(
+//                    type = EDIT_QUEST,
+//                    icon = intent.questViewModel.icon
+//                )
+//            }
+//
+//            is StartEditUnscheduledQuestIntent -> {
+//                state.copy(
+//                    type = EDIT_QUEST,
+//                    icon = intent.viewModel.icon
+//                )
+//            }
 
             is AddEventIntent -> {
                 val event = intent.event
