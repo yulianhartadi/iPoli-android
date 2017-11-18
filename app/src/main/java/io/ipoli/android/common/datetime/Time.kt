@@ -133,6 +133,13 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
         fun h2Min(hours: Int): Int {
             return TimeUnit.HOURS.toMinutes(hours.toLong()).toInt()
         }
+
+        fun minutesBetween(endTime: Time?, startTime: Time?): Int? {
+            if (endTime == null || startTime == null) {
+                return null
+            }
+            return endTime.minutesAfterMidnight - startTime.minutesAfterMidnight
+        }
     }
 }
 

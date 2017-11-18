@@ -4,10 +4,7 @@ import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.Validator.Companion.validate
 import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.quest.Category
-import io.ipoli.android.quest.Color
-import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.Reminder
+import io.ipoli.android.quest.*
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.usecase.Result.*
 import io.ipoli.android.quest.usecase.Result.ValidationError.EMPTY_NAME
@@ -36,6 +33,7 @@ class SaveQuestUseCase(
     data class Parameters(val id: String = "",
                           val name: String,
                           val color: Color,
+                          val icon: Icon? = null,
                           val category: Category,
                           val startTime: Time? = null,
                           val scheduledDate: LocalDate,
@@ -55,6 +53,7 @@ class SaveQuestUseCase(
         val quest = if (parameters.id.isEmpty()) {
             Quest(
                 name = parameters.name,
+                icon = parameters.icon,
                 color = parameters.color,
                 category = parameters.category,
                 scheduledDate = parameters.scheduledDate,
@@ -65,6 +64,7 @@ class SaveQuestUseCase(
         } else {
             questRepository.findById(parameters.id)!!.copy(
                 name = parameters.name,
+                icon = parameters.icon,
                 color = parameters.color,
                 category = parameters.category,
                 scheduledDate = parameters.scheduledDate,
