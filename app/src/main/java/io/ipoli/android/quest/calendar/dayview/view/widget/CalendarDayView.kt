@@ -228,12 +228,16 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun onAddNewEvent() {
-        val yPosition = lastY!! - topLocationOnScreen + scrollView.scrollY
+        val yPosition = lastY!! - topLocationOnScreen + scrollView.scrollY - unscheduledEvents.height
         val minuteHeight = fsm.state.minuteHeight
         val timeMapper = PositionToTimeMapper(minuteHeight)
         val eventStartTime = timeMapper
             .timeAt(yPosition, 15)
-        positionDragView(eventStartTime.toPosition(minuteHeight) - scrollView.scrollY, fsm.state.hourHeight.toInt())
+
+        positionDragView(
+            eventStartTime.toPosition(minuteHeight) - scrollView.scrollY + unscheduledEvents.height,
+            fsm.state.hourHeight.toInt()
+        )
         dragView?.post {
             fsm.fire(Event.StartCalendarEventAdd(eventStartTime, 60, "", AndroidColor.GREEN))
         }
@@ -559,9 +563,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun prepareForViewState() {
-//        removeView(dragView)
-//        dragView = null
-
         dragView?.visible = false
 
         listenForZoom()
