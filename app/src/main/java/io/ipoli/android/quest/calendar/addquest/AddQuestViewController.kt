@@ -152,12 +152,14 @@ class AddQuestViewController(args: Bundle? = null) :
 
     private fun resetForm(view: View) {
         view.questName.setText("")
-        view.scheduleDate.drawable.setTintList(null)
-        view.startTime.drawable.setTintList(null)
-        view.duration.drawable.setTintList(null)
-        view.color.drawable.setTintList(null)
-        view.icon.drawable.setTintList(null)
-        view.reminder.drawable.setTintList(null)
+        listOf<ImageView>(
+            view.scheduleDate,
+            view.startTime,
+            view.duration,
+            view.color,
+            view.icon,
+            view.reminder)
+            .forEach { resetSelectedIcon(it) }
     }
 
     private fun colorSelectedIcons(state: AddQuestViewState, view: View) {
@@ -190,7 +192,14 @@ class AddQuestViewController(args: Bundle? = null) :
         }
     }
 
+    private fun resetSelectedIcon(view: ImageView) {
+        // 0.48 = 122
+        view.drawable.alpha = 122
+        view.drawable.setTintList(null)
+    }
+
     private fun colorSelectedIcon(view: ImageView) {
+        view.drawable.alpha = 255
         view.drawable.setTint(colorRes(R.color.colorAccentAlternative))
     }
 
@@ -201,6 +210,7 @@ class AddQuestViewController(args: Bundle? = null) :
     }
 
     private fun close() {
+        resetForm(view!!)
         router.popController(this)
     }
 
