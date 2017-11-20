@@ -285,55 +285,9 @@ class DayViewController :
         dragView.requestFocus()
     }
 
-//    override fun onRescheduleScheduledEvent(position: Int, startTime: Time, duration: Int) {
-//        onStopEditMode()
-//        ViewUtils.hideKeyboard(calendarDayView)
-//        eventsAdapter.rescheduleEvent(position, startTime, duration)
-//    }
-
     override fun onEventValidationError(dragView: View) {
         dragView.dragName.error = "Think of a name"
     }
-//
-//    override fun onScheduleUnscheduledEvent(position: Int, startTime: Time) {
-//        onStopEditMode()
-//        ViewUtils.hideKeyboard(calendarDayView)
-//        val ue = unscheduledEventsAdapter.removeEvent(position)
-//        val endTime = Time.plusMinutes(startTime, ue.duration)
-//        val vm = QuestViewModel(
-//            ue.id,
-//            ue.name,
-//            ue.duration,
-//            startTime.toMinuteOfDay(),
-//            startTime.toString(),
-//            endTime.toString(),
-//            AndroidIcon.PAW,
-//            ue.backgroundColor,
-//            ue.backgroundColor.color900,
-//            null,
-//            ue.isCompleted)
-//        eventsAdapter.addEvent(vm)
-//    }
-//
-//    override fun onUnscheduleScheduledEvent(position: Int) {
-//        onStopEditMode()
-//        ViewUtils.hideKeyboard(calendarDayView)
-//        val e = eventsAdapter.removeEvent(position)
-//        val vm = UnscheduledQuestViewModel(
-//            e.id,
-//            e.name,
-//            e.duration,
-//            AndroidIcon.PAW,
-//            e.backgroundColor,
-//            e.textColor,
-//            e.isCompleted
-//        )
-//        unscheduledEventsAdapter.addEvent(vm)
-//    }
-//
-//    override fun onCancelRescheduleUnscheduledEvent() {
-//        onStopEditMode()
-//    }
 
     override fun onRemoveEvent(eventId: String) {
         onStopEditMode()
@@ -349,26 +303,19 @@ class DayViewController :
     }
 
     override fun onAddEvent(event: CalendarEvent) {
-//        send(AddEventIntent(event))
-//        ViewUtils.hideKeyboard(calendarDayView)
         send(AddQuestIntent)
     }
 
     override fun onEditCalendarEvent(event: CalendarEvent, adapterPosition: Int) {
-//        send(EditEventIntent(event, eventsAdapter.events[adapterPosition].reminder))
         send(EditQuestIntent)
     }
 
     override fun onEditUnscheduledCalendarEvent(event: CalendarEvent, adapterPosition: Int) {
         send(EditQuestIntent)
-//        send(EditEventIntent(event, unscheduledEventsAdapter.events[adapterPosition].reminder))
-//        ViewUtils.hideKeyboard(calendarDayView)
     }
 
     override fun onEditUnscheduledEvent(event: UnscheduledEvent) {
         send(EditUnscheduledQuestIntent)
-//        send(EditUnscheduledEventIntent(event))
-//        ViewUtils.hideKeyboard(calendarDayView)
     }
 
     private fun startActionMode(selectedIcon: AndroidIcon?, selectedColor: AndroidColor?) {
