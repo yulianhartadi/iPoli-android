@@ -18,6 +18,7 @@ import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.*
+import io.ipoli.android.quest.calendar.addquest.StateType.*
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogController
 import io.ipoli.android.reminder.view.picker.ReminderViewModel
 import kotlinx.android.synthetic.main.controller_add_quest.view.*
@@ -70,6 +71,10 @@ class AddQuestViewController(args: Bundle? = null) :
             send(PickColorIntent)
         }
 
+        view.icon.setOnClickListener {
+            send(PickIconIntent)
+        }
+
         view.reminder.setOnClickListener {
             send(PickReminderIntent)
         }
@@ -85,7 +90,7 @@ class AddQuestViewController(args: Bundle? = null) :
         colorSelectedIcons(state, view)
 
         when (state.type) {
-            StateType.PICK_DATE -> {
+            PICK_DATE -> {
                 val date = state.date ?: LocalDate.now()
                 DatePickerDialog(view.context, R.style.Theme_iPoli_AlertDialog,
                     DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
@@ -93,7 +98,7 @@ class AddQuestViewController(args: Bundle? = null) :
                     }, date.year, date.month.value - 1, date.dayOfMonth).show()
             }
 
-            StateType.PICK_TIME -> {
+            PICK_TIME -> {
                 val startTime = state.time ?: Time.now()
                 val dialog = TimePickerDialog(view.context,
                     TimePickerDialog.OnTimeSetListener { _, hour, minute ->
@@ -105,7 +110,7 @@ class AddQuestViewController(args: Bundle? = null) :
                 dialog.show()
             }
 
-            StateType.PICK_DURATION ->
+            PICK_DURATION ->
                 DurationPickerDialogController(object : DurationPickerDialogController.DurationPickedListener {
                     override fun onDurationPicked(minutes: Int) {
                         send(DurationPickedIntent(minutes))
@@ -113,7 +118,7 @@ class AddQuestViewController(args: Bundle? = null) :
 
                 }, state.duration).showDialog(router, "pick_duration_tag")
 
-            StateType.PICK_COLOR ->
+            PICK_COLOR ->
                 ColorPickerDialogController(object : ColorPickerDialogController.ColorPickedListener {
                     override fun onColorPicked(color: AndroidColor) {
                         send(ColorPickedIntent(color))
@@ -121,21 +126,26 @@ class AddQuestViewController(args: Bundle? = null) :
 
                 }, state.color).showDialog(router, "pick_color_tag")
 
-            StateType.PICK_REMINDER ->
+            PICK_ICON ->
+                IconPickerDialogController({ icon ->
+                    send(IconPickedIntent(icon))
+                }, state.icon).showDialog(router, "pick_icon_tag")
+
+            PICK_REMINDER ->
                 ReminderPickerDialogController(object : ReminderPickerDialogController.ReminderPickedListener {
                     override fun onReminderPicked(reminder: ReminderViewModel?) {
                         send(ReminderPickedIntent(reminder))
                     }
                 }, state.reminder).showDialog(router, "pick_reminder_tag")
 
-            StateType.VALIDATION_ERROR_EMPTY_NAME ->
+            VALIDATION_ERROR_EMPTY_NAME ->
                 view.questName.error = "Think of a name"
 
-            StateType.QUEST_SAVED -> {
+            QUEST_SAVED -> {
                 resetForm(view)
             }
 
-            StateType.DEFAULT -> {
+            DEFAULT -> {
             }
         }
     }
@@ -146,6 +156,7 @@ class AddQuestViewController(args: Bundle? = null) :
         view.startTime.drawable.setTintList(null)
         view.duration.drawable.setTintList(null)
         view.color.drawable.setTintList(null)
+        view.icon.drawable.setTintList(null)
         view.reminder.drawable.setTintList(null)
     }
 
@@ -166,6 +177,10 @@ class AddQuestViewController(args: Bundle? = null) :
 
         state.color?.let {
             colorSelectedIcon(view.color)
+        }
+
+        state.icon?.let {
+            colorSelectedIcon(view.icon)
         }
 
         if (state.reminder != null) {
