@@ -360,7 +360,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fsm.transition(State.Type.DRAG, Event.Drag::class, { s, e ->
             val topPosition = calculateTopPosition(e.y)
 
-            val (startTime: Time?, endTime: Time?) = calculateStartAndEndTime(topPosition, s)
+            val (startTime: Time?, endTime: Time?) = calculateStartAndEndTime(topPosition, s.height!!, s.minuteHeight)
             listener?.onMoveEvent(dragView!!,
                 startTime,
                 endTime,
@@ -381,7 +381,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             if (!isValidHeightForEvent(height)) {
                 return@transition s
             }
-            val (startTime: Time?, endTime: Time?) = calculateStartAndEndTime(topPosition, s)
+            val (startTime: Time?, endTime: Time?) = calculateStartAndEndTime(topPosition, height, s.minuteHeight)
             listener?.onMoveEvent(dragView!!, startTime, endTime, getMinutesFor(height))
 
             s.copy(
@@ -399,7 +399,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             }
 
             val topPosition = bottomPosition - height
-            val (startTime: Time?, endTime: Time?) = calculateStartAndEndTime(topPosition, s)
+            val (startTime: Time?, endTime: Time?) = calculateStartAndEndTime(topPosition, height, s.minuteHeight)
             listener?.onMoveEvent(dragView!!, startTime, endTime, getMinutesFor(height))
 
             s.copy(
@@ -580,15 +580,16 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private fun shouldUnscheduleScheduledEvent(s: State) =
         isInUnscheduledEventsArea(dragView!!.topLocationOnScreen.toFloat()) && s.eventAdapterPosition != null
 
-    private fun calculateStartAndEndTime(topPosition: Float, s: State): Pair<Time?, Time?> {
+    private fun calculateStartAndEndTime(topPosition: Float, height: Int, minuteHeight: Float): Pair<Time?, Time?> {
         if (isInUnscheduledEventsArea(dragView!!.topLocationOnScreen.toFloat())) {
             return Pair(null, null)
         }
-        val timeMapper = PositionToTimeMapper(s.minuteHeight)
+        val timeMapper = PositionToTimeMapper(minuteHeight)
         val topRelativePos = topPosition - unscheduledEvents.height + scrollView.scrollY
+
         return Pair(
             timeMapper.timeAt(topRelativePos),
-            timeMapper.timeAt(topRelativePos + s.height!!)
+            timeMapper.timeAt(topRelativePos + height)
         )
     }
 
