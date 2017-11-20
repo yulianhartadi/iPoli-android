@@ -15,7 +15,7 @@ class CalendarFormatter(private val context: Context) {
 
     fun date(date: LocalDate): String =
         formatter(date.dayOfMonth)
-            .format(date.toStartOfDayUTC())
+            .format(date.toStartOfDay())
 
     private fun formatter(dayOfMonth: Int) =
         SimpleDateFormat(pattern(dayOfMonth), Locale.getDefault())

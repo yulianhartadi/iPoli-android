@@ -24,6 +24,8 @@ fun LocalDate.startOfDayUTC() = toStartOfDayUTC().time
 
 fun LocalDate.toStartOfDayUTC() = fromZonedDateTime(this.atStartOfDay(DateUtils.ZONE_UTC))
 
+fun LocalDate.toStartOfDay() = fromZonedDateTime(this.atStartOfDay(ZoneId.systemDefault()))
+
 fun LocalDate.fromZonedDateTime(dateTime: ZonedDateTime) = Date(dateTime.toInstant().toEpochMilli())
 
 fun LocalDate.isBetween(start: LocalDate?, end: LocalDate?): Boolean {
