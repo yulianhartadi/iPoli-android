@@ -472,26 +472,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         })
 
         fsm.transition(State.Type.EDIT, Event.CompleteEdit::class, { s, _ ->
-            //            when {
-//                shouldUnscheduleScheduledEvent(s) ->
-//                    listener?.onUnscheduleScheduledEvent(s.eventAdapterPosition!!)
-//
-//                shouldRescheduleScheduledEvent(s) ->
-//                    listener?.onRescheduleScheduledEvent(
-//                        s.eventAdapterPosition!!,
-//                        startTimeForEvent(s),
-//                        durationForEvent(s)
-//                    )
-//
-//                shouldScheduleUnscheduledEvent(s) ->
-//                    listener?.onScheduleUnscheduledEvent(
-//                        s.unscheduledEventAdapterPosition!!,
-//                        startTimeForEvent(s)
-//                    )
-//
-//                else -> listener?.onCancelRescheduleUnscheduledEvent()
-//            }
-
             prepareForViewState()
             s.copy(
                 type = State.Type.VIEW,
@@ -1086,10 +1066,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fun onStartEditNewScheduledEvent(startTime: Time, duration: Int)
         fun onDragViewClick(dragView: View)
         fun onEventValidationError(dragView: View)
-        //        fun onRescheduleScheduledEvent(position: Int, startTime: Time, duration: Int)
-//        fun onScheduleUnscheduledEvent(position: Int, startTime: Time)
-//        fun onUnscheduleScheduledEvent(position: Int)
-//        fun onCancelRescheduleUnscheduledEvent()
         fun onMoveEvent(dragView: View, startTime: Time?, endTime: Time?, duration: Int)
 
         fun onZoomEvent(adapterView: View)
