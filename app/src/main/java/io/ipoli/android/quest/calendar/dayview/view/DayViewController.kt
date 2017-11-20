@@ -59,6 +59,10 @@ class DayViewController :
 
     private lateinit var unscheduledEventsAdapter: UnscheduledQuestsAdapter
 
+    private var colorPickListener: () -> Unit = {}
+
+    private var iconPickedListener: () -> Unit = {}
+
     constructor(currentDate: LocalDate) : this() {
         this.currentDate = currentDate
     }
@@ -128,7 +132,11 @@ class DayViewController :
             }
 
             ADD_NEW_SCHEDULED_QUEST -> {
-                startActionMode(state.icon, state.color)
+
+                colorPickListener = { showColorPicker(state.color) }
+                iconPickedListener = { showIconPicker(state.icon) }
+
+                startActionMode()
                 (parentController as CalendarViewController).onStartEdit()
                 val dragView = view.dragContainer
                 dragView.dragStartTime.visibility = View.VISIBLE
@@ -138,7 +146,9 @@ class DayViewController :
             }
 
             START_EDIT_SCHEDULED_QUEST -> {
-                startActionMode(state.icon, state.color)
+                colorPickListener = { showColorPicker(state.color) }
+                iconPickedListener = { showIconPicker(state.icon) }
+                startActionMode()
                 (parentController as CalendarViewController).onStartEdit()
                 val dragView = view.dragContainer
                 dragView.dragStartTime.visibility = View.VISIBLE
@@ -148,7 +158,9 @@ class DayViewController :
             }
 
             START_EDIT_UNSCHEDULED_QUEST -> {
-                startActionMode(state.icon, state.color)
+                colorPickListener = { showColorPicker(state.color) }
+                iconPickedListener = { showIconPicker(state.icon) }
+                startActionMode()
                 (parentController as CalendarViewController).onStartEdit()
                 val dragView = view.dragContainer
                 dragView.dragStartTime.visibility = View.GONE
@@ -175,6 +187,7 @@ class DayViewController :
             }
 
             COLOR_PICKED -> {
+                colorPickListener = { showColorPicker(state.color) }
                 val dragView = view.dragContainer
                 ObjectAnimator.ofArgb(
                     dragView,
@@ -186,6 +199,9 @@ class DayViewController :
                     .start()
             }
 
+            ICON_PICKED ->
+                iconPickedListener = { showIconPicker(state.icon) }
+
             QUEST_COMPLETED -> {
             }
 
@@ -193,7 +209,9 @@ class DayViewController :
             }
 
             EDIT_QUEST -> {
-                startActionMode(state.icon, state.color)
+                colorPickListener = { showColorPicker(state.color) }
+                iconPickedListener = { showIconPicker(state.icon) }
+                startActionMode()
             }
 
             EDIT_VIEW_DRAGGED -> {
@@ -262,7 +280,6 @@ class DayViewController :
             }
 
             override fun onTextChanged(text: CharSequence?, start: Int, before: Int, count: Int) {
-//                calendarDayView.updateDragEventName(text.toString())
                 send(ChangeEditViewNameIntent(text.toString()))
             }
 
@@ -318,19 +335,17 @@ class DayViewController :
         send(EditUnscheduledQuestIntent)
     }
 
-    private fun startActionMode(selectedIcon: AndroidIcon?, selectedColor: AndroidColor?) {
+    private fun startActionMode() {
         parentController?.view?.startActionMode(object : ActionMode.Callback {
             override fun onActionItemClicked(am: ActionMode, item: MenuItem): Boolean {
                 when (item.itemId) {
 
                     R.id.chooseIcon -> {
-                        IconPickerDialogController({ icon ->
-                            send(IconPickedIntent(icon))
-                        }, selectedIcon).showDialog(router, "icon-picker")
+                        iconPickedListener()
                     }
 
                     R.id.chooseColor -> {
-                        showColorPicker(selectedColor)
+                        colorPickListener()
                     }
 
                     R.id.removeEvent -> {
@@ -354,6 +369,12 @@ class DayViewController :
                 actionMode = null
             }
         })
+    }
+
+    private fun showIconPicker(selectedIcon: AndroidIcon?) {
+        IconPickerDialogController({ icon ->
+            send(IconPickedIntent(icon))
+        }, selectedIcon).showDialog(router, "icon-picker")
     }
 
     private fun showColorPicker(selectedColor: AndroidColor?) {
