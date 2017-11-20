@@ -85,9 +85,6 @@ class CalendarPresenter(
                     monthText = monthFormatter.format(newDate)
                 )
             }
-            else -> {
-                state
-            }
         }
 
     private fun formatDayAndDate(date: LocalDate): Pair<String, String> {
