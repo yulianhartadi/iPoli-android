@@ -142,7 +142,7 @@ class DayViewController :
                 dragView.dragStartTime.visibility = View.VISIBLE
                 dragView.dragEndTime.visibility = View.VISIBLE
                 startEditScheduledEvent(dragView, state.startTime!!, state.endTime!!)
-                setupDragViewNameAndColor(dragView, state.name, state.color!!)
+                setupDragViewUI(dragView, state.name, state.color!!, state.icon)
             }
 
             START_EDIT_SCHEDULED_QUEST -> {
@@ -154,7 +154,7 @@ class DayViewController :
                 dragView.dragStartTime.visibility = View.VISIBLE
                 dragView.dragEndTime.visibility = View.VISIBLE
                 startEditScheduledEvent(dragView, state.startTime!!, state.endTime!!)
-                setupDragViewNameAndColor(dragView, state.name, state.color!!, state.reminder)
+                setupDragViewUI(dragView, state.name, state.color!!, state.icon, state.reminder)
             }
 
             START_EDIT_UNSCHEDULED_QUEST -> {
@@ -165,7 +165,7 @@ class DayViewController :
                 val dragView = view.dragContainer
                 dragView.dragStartTime.visibility = View.GONE
                 dragView.dragEndTime.visibility = View.GONE
-                setupDragViewNameAndColor(dragView, state.name, state.color!!, state.reminder)
+                setupDragViewUI(dragView, state.name, state.color!!, state.icon, state.reminder)
             }
 
             EVENT_UPDATED -> {
@@ -199,8 +199,16 @@ class DayViewController :
                     .start()
             }
 
-            ICON_PICKED ->
+            ICON_PICKED -> {
                 iconPickedListener = { showIconPicker(state.icon) }
+                val dragView = view.dragContainer
+                dragView.dragIcon.setImageDrawable(
+                    IconicsDrawable(dragView.context)
+                        .icon(state.icon!!.icon)
+                        .colorRes(R.color.md_white)
+                        .sizeDp(24)
+                )
+            }
 
             QUEST_COMPLETED -> {
             }
@@ -260,10 +268,20 @@ class DayViewController :
         send(AddNewScheduledQuestIntent(startTime, duration))
     }
 
-    private fun setupDragViewNameAndColor(dragView: View, name: String, color: AndroidColor, reminder: ReminderViewModel? = null) {
+    private fun setupDragViewUI(dragView: View, name: String, color: AndroidColor, icon: AndroidIcon? = null, reminder: ReminderViewModel? = null) {
         dragView.dragName.setText(name)
         dragView.setBackgroundColor(ContextCompat.getColor(dragView.context, color.color500))
+        if (icon != null) {
+            dragView.dragIcon.setImageDrawable(
+                IconicsDrawable(dragView.context)
+                    .icon(icon.icon)
+                    .colorRes(R.color.md_white)
+                    .sizeDp(24)
+            )
 
+        } else {
+            dragView.dragIcon.setImageDrawable(null)
+        }
         dragView.dragName.setOnFocusChangeListener { _, isFocused ->
             if (isFocused) {
                 calendarDayView.startEditDragEventName()
