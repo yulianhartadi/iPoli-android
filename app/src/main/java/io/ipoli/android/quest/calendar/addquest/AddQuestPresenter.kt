@@ -6,7 +6,9 @@ import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.quest.Category
 import io.ipoli.android.quest.Color
+import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.Reminder
+import io.ipoli.android.quest.calendar.addquest.StateType.*
 import io.ipoli.android.quest.usecase.Result
 import io.ipoli.android.quest.usecase.SaveQuestUseCase
 import io.ipoli.android.reminder.view.picker.ReminderViewModel
@@ -24,48 +26,54 @@ class AddQuestPresenter(
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<AddQuestViewState>, AddQuestViewState, AddQuestIntent>(
     AddQuestViewState(
-        type = StateType.DEFAULT
+        type = DEFAULT
     ),
     coroutineContext
 ) {
     override fun reduceState(intent: AddQuestIntent, state: AddQuestViewState) =
         when (intent) {
             is PickDateIntent ->
-                state.copy(type = StateType.PICK_DATE)
+                state.copy(type = PICK_DATE)
 
             is DatePickedIntent -> {
                 val date = LocalDate.of(intent.year, intent.month, intent.day)
-                state.copy(type = StateType.DEFAULT, date = date)
+                state.copy(type = DEFAULT, date = date)
             }
 
             is PickTimeIntent ->
-                state.copy(type = StateType.PICK_TIME)
+                state.copy(type = PICK_TIME)
 
             is TimePickedIntent ->
-                state.copy(type = StateType.DEFAULT, time = intent.time)
+                state.copy(type = DEFAULT, time = intent.time)
 
             is PickDurationIntent ->
-                state.copy(type = StateType.PICK_DURATION)
+                state.copy(type = PICK_DURATION)
 
             is DurationPickedIntent ->
-                state.copy(type = StateType.DEFAULT, duration = intent.minutes)
+                state.copy(type = DEFAULT, duration = intent.minutes)
 
             is PickColorIntent ->
-                state.copy(type = StateType.PICK_COLOR)
+                state.copy(type = PICK_COLOR)
 
             is ColorPickedIntent ->
-                state.copy(type = StateType.DEFAULT, color = intent.color)
+                state.copy(type = DEFAULT, color = intent.color)
+
+            is PickIconIntent ->
+                state.copy(type = PICK_ICON)
+
+            is IconPickedIntent ->
+                state.copy(type = DEFAULT, icon = intent.icon)
 
             is PickReminderIntent ->
-                state.copy(type = StateType.PICK_REMINDER)
+                state.copy(type = PICK_REMINDER)
 
             is ReminderPickedIntent ->
-                state.copy(type = StateType.DEFAULT, reminder = intent.reminder)
+                state.copy(type = DEFAULT, reminder = intent.reminder)
 
             is SaveQuestIntent -> {
                 val color = state.color ?: Color.GREEN
+                val icon = state.icon?.let { Icon.valueOf(it.name) }
                 val scheduledDate = state.date ?: LocalDate.now()
-
                 val reminder = state.time?.let {
                     createQuestReminder(state.reminder, scheduledDate, state.time.toMinuteOfDay())
                 }
@@ -73,6 +81,7 @@ class AddQuestPresenter(
                 val questParams = SaveQuestUseCase.Parameters(
                     name = intent.name,
                     color = Color.valueOf(color.name),
+                    icon = icon,
                     category = Category("WELLNESS", Color.GREEN),
                     scheduledDate = scheduledDate,
                     startTime = state.time,
@@ -82,8 +91,8 @@ class AddQuestPresenter(
                 val result = saveQuestUseCase.execute(questParams)
                 when (result) {
                     is Result.Invalid ->
-                        state.copy(type = StateType.VALIDATION_ERROR_EMPTY_NAME)
-                    else -> AddQuestViewState(type = StateType.QUEST_SAVED)
+                        state.copy(type = VALIDATION_ERROR_EMPTY_NAME)
+                    else -> AddQuestViewState(type = QUEST_SAVED)
                 }
             }
         }
