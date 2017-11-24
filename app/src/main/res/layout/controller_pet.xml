@@ -147,7 +147,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/moodProgress"
                 app:layout_constraintVertical_bias="0.5"
-                app:srcCompat="@drawable/ic_coins_green_24dp" />
+                app:srcCompat="@drawable/ic_coin" />
 
             <TextView
                 android:id="@+id/coinsBonus"
@@ -183,12 +183,12 @@
 
             <ImageView
                 android:id="@+id/giftIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 app:layout_constraintBottom_toBottomOf="@+id/coinsIcon"
                 app:layout_constraintStart_toStartOf="@+id/guideline8"
                 app:layout_constraintTop_toTopOf="@+id/coinsIcon"
-                app:srcCompat="@drawable/ic_gift_blue_24dp" />
+                app:srcCompat="@drawable/ic_four_leaf_clover" />
 
             <TextView
                 android:id="@+id/giftBonus"
