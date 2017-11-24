@@ -1,5 +1,7 @@
 package io.ipoli.android.pet
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.os.Bundle
@@ -80,7 +82,52 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                     send(ShowFoodList)
                 }
             }
+
+            PET_FED -> {
+                val anim = AnimatorSet()
+                anim.playSequentially(
+                    createA(view),
+                    createB(view),
+                    createA(view),
+                    createB(view),
+                    createA(view),
+                    createB(view)
+                )
+                anim.start()
+            }
         }
+    }
+
+    private fun createB(view: View): Animator {
+        val b = ObjectAnimator.ofFloat(view.petState, "alpha", 0f, 1f)
+        val c = ObjectAnimator.ofFloat(view.petResponse, "alpha", 0f, 1f)
+
+//        b.duration = 50
+        val set = AnimatorSet()
+        set.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                view.petState.setImageResource(R.drawable.pet_8_happy)
+                view.petResponse.alpha = 0f
+            }
+        })
+        set.playTogether(b, c)
+
+        return set
+    }
+
+    private fun createA(view: View): Animator {
+        val a = ObjectAnimator.ofFloat(view.petState, "alpha", 1f, 0f)
+        val c = ObjectAnimator.ofFloat(view.petResponse, "alpha", 1f, 0f)
+        a.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                view.petState.setImageResource(R.drawable.pet_8_awesome)
+            }
+        })
+//        a.duration = 50
+        val set = AnimatorSet()
+        set.playTogether(a, c)
+
+        return set
     }
 
     private fun playHideFoodListAnimation(view: View) {
@@ -125,6 +172,9 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 holder.itemView.foodPrice.text = ""
             } else {
                 holder.itemView.foodPrice.text = vm.price.toString() + " coins"
+                holder.itemView.setOnClickListener {
+                    send(Feed)
+                }
             }
         }
 
