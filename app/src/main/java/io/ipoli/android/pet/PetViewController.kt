@@ -101,13 +101,15 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     private fun createB(view: View): Animator {
         val b = ObjectAnimator.ofFloat(view.petState, "alpha", 0f, 1f)
         val c = ObjectAnimator.ofFloat(view.petResponse, "alpha", 0f, 1f)
-        b.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
-                view.petState.setImageResource(R.drawable.pet_8_happy)
-            }
-        })
+
 //        b.duration = 50
         val set = AnimatorSet()
+        set.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                view.petState.setImageResource(R.drawable.pet_8_happy)
+                view.petResponse.alpha = 0f
+            }
+        })
         set.playTogether(b, c)
 
         return set
@@ -119,7 +121,6 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         a.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
                 view.petState.setImageResource(R.drawable.pet_8_awesome)
-                view.petResponse.alpha = 0f
             }
         })
 //        a.duration = 50
