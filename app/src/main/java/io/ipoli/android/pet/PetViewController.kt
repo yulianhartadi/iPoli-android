@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.mikepenz.iconics.IconicsDrawable
+import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
 import io.ipoli.android.common.mvi.MviViewController
+import kotlinx.android.synthetic.main.controller_pet.view.*
 import space.traversal.kapsule.required
 
 /**
@@ -22,7 +25,12 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         inflater.inflate(R.layout.controller_pet, container, false)
 
     override fun render(state: PetViewState, view: View) {
-
+        view.fab.setImageDrawable(
+            IconicsDrawable(view.context)
+                .icon(Ionicons.Icon.ion_pizza)
+                .colorRes(R.color.md_white)
+                .sizeDp(24)
+        )
     }
 
 }
