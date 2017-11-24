@@ -32,6 +32,12 @@ class PetPresenter(coroutineContext: CoroutineContext
                     type = FOOD_LIST_HIDDEN
                 )
             }
+
+            is Feed -> {
+                state.copy(
+                    type = PET_FED
+                )
+            }
         }
 
 }
