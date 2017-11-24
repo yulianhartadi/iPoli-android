@@ -11,6 +11,8 @@ import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import com.bluelinelabs.conductor.ControllerChangeHandler
 import com.bluelinelabs.conductor.ControllerChangeType
+import com.mikepenz.entypo_typeface_library.Entypo
+import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
@@ -54,6 +56,12 @@ class AddQuestViewController(args: Bundle? = null) :
             }
             true
         }
+
+        view.duration.setImageDrawable(IconicsDrawable(view.context)
+            .icon(Entypo.Icon.ent_hour_glass)
+            .colorRes(R.color.md_black)
+            .alpha(122)
+            .sizeDp(22))
 
         view.scheduleDate.setOnClickListener {
             send(PickDateIntent)

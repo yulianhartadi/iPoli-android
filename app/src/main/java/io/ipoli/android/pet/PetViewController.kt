@@ -81,13 +81,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 }
             }
             FOOD_LIST_SHOWN -> {
-                val anim = AnimatorSet()
-                anim.playTogether(
-                    ObjectAnimator.ofFloat(view.foodList, "alpha", 0f, 1f),
-                    ObjectAnimator.ofFloat(view.foodList, "x", view.width.toFloat(), 0f)
-                )
-                anim.duration = intRes(android.R.integer.config_mediumAnimTime).toLong()
-                anim.start()
+                playShowFoodListAnimation(view)
                 view.fab.setImageResource(R.drawable.ic_close_white_24dp)
                 view.fab.setOnClickListener {
                     send(HideFoodList)
@@ -95,13 +89,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             FOOD_LIST_HIDDEN -> {
-                val anim = AnimatorSet()
-                anim.playTogether(
-                    ObjectAnimator.ofFloat(view.foodList, "alpha", 1f, 0f),
-                    ObjectAnimator.ofFloat(view.foodList, "x", 0f, view.width.toFloat())
-                )
-                anim.duration = intRes(android.R.integer.config_mediumAnimTime).toLong()
-                anim.start()
+                playHideFoodListAnimation(view)
                 view.fab.setImageDrawable(
                     IconicsDrawable(view.context)
                         .icon(Ionicons.Icon.ion_pizza)
@@ -113,6 +101,26 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 }
             }
         }
+    }
+
+    private fun playHideFoodListAnimation(view: View) {
+        val anim = AnimatorSet()
+        anim.playTogether(
+            ObjectAnimator.ofFloat(view.foodList, "alpha", 1f, 0f),
+            ObjectAnimator.ofFloat(view.foodList, "x", 0f, view.width.toFloat())
+        )
+        anim.duration = intRes(android.R.integer.config_mediumAnimTime).toLong()
+        anim.start()
+    }
+
+    private fun playShowFoodListAnimation(view: View) {
+        val anim = AnimatorSet()
+        anim.playTogether(
+            ObjectAnimator.ofFloat(view.foodList, "alpha", 0f, 1f),
+            ObjectAnimator.ofFloat(view.foodList, "x", view.width.toFloat(), 0f)
+        )
+        anim.duration = intRes(android.R.integer.config_mediumAnimTime).toLong()
+        anim.start()
     }
 
     data class PetFoodViewModel(@DrawableRes val image: Int, val price: Int)
