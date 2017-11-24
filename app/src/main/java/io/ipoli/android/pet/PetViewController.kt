@@ -39,32 +39,11 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         )
 
         view.foodList.layoutManager = LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
-        view.foodList.adapter = PetFoodAdapter(listOf(
-            PetFoodViewModel(R.drawable.food_beer_1, 12),
-            PetFoodViewModel(R.drawable.food_candy_1, 32),
-            PetFoodViewModel(R.drawable.food_candy_2, 32),
-            PetFoodViewModel(R.drawable.food_candy_3, 32),
-            PetFoodViewModel(R.drawable.food_candy_4, 32),
-            PetFoodViewModel(R.drawable.food_junk_1, 23),
-            PetFoodViewModel(R.drawable.food_junk_2, 23),
-            PetFoodViewModel(R.drawable.food_junk_3, 23),
-            PetFoodViewModel(R.drawable.food_junk_4, 23),
-            PetFoodViewModel(R.drawable.food_poop_1, 12),
-            PetFoodViewModel(R.drawable.food_veggie_1, 12),
-            PetFoodViewModel(R.drawable.food_veggie_2, 12),
-            PetFoodViewModel(R.drawable.food_veggie_3, 12),
-            PetFoodViewModel(R.drawable.food_fruit_1, 12),
-            PetFoodViewModel(R.drawable.food_fruit_2, 12),
-            PetFoodViewModel(R.drawable.food_fruit_3, 12),
-            PetFoodViewModel(R.drawable.food_fruit_4, 12),
-            PetFoodViewModel(R.drawable.food_meat_1, 12),
-            PetFoodViewModel(R.drawable.food_meat_2, 12),
-            PetFoodViewModel(R.drawable.food_meat_3, 12),
-            PetFoodViewModel(R.drawable.food_meat_4, 12),
-            PetFoodViewModel(R.drawable.food_empty, -1)
-
-        ))
-
+        view.foodList.adapter = PetFoodAdapter(
+            Food.values().map {
+                PetFoodViewModel(it.image, it.price)
+            }
+        )
         return view
     }
 
