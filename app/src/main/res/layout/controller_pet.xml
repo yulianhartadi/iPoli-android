@@ -124,16 +124,14 @@
                 android:id="@+id/stateText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:text="HAPPY"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                android:text="Happy"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                 android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/moodProgress"
-                tools:text="HAPPY" />
+                app:layout_constraintBottom_toBottomOf="@+id/moodPoints"
+                app:layout_constraintEnd_toEndOf="@+id/moodIcon"
+                app:layout_constraintStart_toStartOf="@+id/moodIcon"
+                app:layout_constraintTop_toTopOf="@+id/moodPoints"
+                tools:text="Happy" />
 
             <ImageView
                 android:id="@+id/coinsIcon"
@@ -142,36 +140,33 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="32dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/coinsBonus"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/stateText"
-                app:layout_constraintVertical_bias="0.51"
+                app:layout_constraintTop_toBottomOf="@+id/moodProgress"
+                app:layout_constraintVertical_bias="0.5"
                 app:srcCompat="@drawable/ic_coins_green_24dp" />
 
             <TextView
                 android:id="@+id/coinsBonus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="5%"
+                android:text="+5%"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 app:layout_constraintBottom_toBottomOf="@+id/coinsIcon"
                 app:layout_constraintEnd_toStartOf="@+id/guideline7"
                 app:layout_constraintTop_toTopOf="@+id/coinsIcon"
-                tools:text="5%" />
+                tools:text="+5%" />
 
             <ImageView
                 android:id="@+id/xpIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/coinsIcon"
                 app:layout_constraintEnd_toStartOf="@+id/guideline9"
-                app:layout_constraintTop_toBottomOf="@+id/stateText"
-                app:layout_constraintVertical_bias="1.0"
+                app:layout_constraintTop_toTopOf="@+id/coinsIcon"
                 app:srcCompat="@drawable/ic_star_yellow_24dp" />
 
             <TextView
@@ -179,22 +174,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="7%"
+                android:text="+7%"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 app:layout_constraintBottom_toBottomOf="@+id/xpIcon"
                 app:layout_constraintStart_toEndOf="@+id/xpIcon"
                 app:layout_constraintTop_toTopOf="@+id/xpIcon"
-                tools:text="7%" />
+                tools:text="+7%" />
 
             <ImageView
                 android:id="@+id/giftIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/coinsIcon"
                 app:layout_constraintStart_toStartOf="@+id/guideline8"
-                app:layout_constraintTop_toBottomOf="@+id/stateText"
+                app:layout_constraintTop_toTopOf="@+id/coinsIcon"
                 app:srcCompat="@drawable/ic_gift_blue_24dp" />
 
             <TextView
@@ -203,7 +196,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:text="3%"
+                android:text="+3%"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 app:layout_constraintBottom_toBottomOf="@+id/giftIcon"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -211,7 +204,7 @@
                 app:layout_constraintStart_toEndOf="@+id/giftIcon"
                 app:layout_constraintTop_toTopOf="@+id/giftIcon"
                 app:layout_constraintVertical_bias="0.6"
-                tools:text="3%" />
+                tools:text="+3%" />
 
             <android.support.constraint.Guideline
                 android:id="@+id/guideline7"
@@ -250,11 +243,11 @@
         app:srcCompat="@drawable/ic_restaurant_white_24dp" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/food"
+        android:id="@+id/foodList"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginEnd="72dp"
-        android:visibility="invisible"
+        android:background="@color/md_white"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
