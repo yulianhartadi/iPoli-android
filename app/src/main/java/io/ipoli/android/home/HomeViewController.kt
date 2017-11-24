@@ -1,6 +1,5 @@
 package io.ipoli.android.home
 
-import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.Intent.ACTION_VIEW
 import android.net.Uri
@@ -17,11 +16,7 @@ import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.FeedbackDialogController
-import io.ipoli.android.common.view.intRes
-import io.ipoli.android.common.view.visible
-import io.ipoli.android.home.HomeViewState.StateType.*
-import io.ipoli.android.quest.calendar.CalendarViewController
-import kotlinx.android.synthetic.main.controller_calendar_toolbar.view.*
+import io.ipoli.android.pet.PetViewController
 import kotlinx.android.synthetic.main.controller_home.view.*
 import org.json.JSONObject
 import space.traversal.kapsule.Injects
@@ -47,26 +42,26 @@ class HomeViewController(args: Bundle? = null) :
 
         when (state.type) {
 
-            LOADING -> {
-                levelProgress.visible = false
-            }
-
-            DATA_LOADED -> {
-                levelProgress.visible = true
-                levelProgress.progress = state.progress
-                levelProgress.max = state.maxProgress
-                view.toolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
-            }
-            XP_CHANGED -> {
-                val animator = ObjectAnimator.ofInt(levelProgress, "progress", levelProgress.progress, state.progress)
-                animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
-                animator.start()
-            }
-            LEVEL_CHANGED -> {
-                levelProgress.progress = state.progress
-                levelProgress.max = state.maxProgress
-                view.toolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
-            }
+//            LOADING -> {
+//                levelProgress.visible = false
+//            }
+//
+//            DATA_LOADED -> {
+//                levelProgress.visible = true
+//                levelProgress.progress = state.progress
+//                levelProgress.max = state.maxProgress
+//                view.toolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
+//            }
+//            XP_CHANGED -> {
+//                val animator = ObjectAnimator.ofInt(levelProgress, "progress", levelProgress.progress, state.progress)
+//                animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
+//                animator.start()
+//            }
+//            LEVEL_CHANGED -> {
+//                levelProgress.progress = state.progress
+//                levelProgress.max = state.maxProgress
+//                view.toolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
+//            }
         }
     }
 
@@ -114,7 +109,8 @@ class HomeViewController(args: Bundle? = null) :
         val handler = FadeChangeHandler()
         val childRouter = getChildRouter(view.controllerContainer, null)
         childRouter.setRoot(
-            RouterTransaction.with(CalendarViewController())
+//            RouterTransaction.with(CalendarViewController())
+            RouterTransaction.with(PetViewController())
                 .pushChangeHandler(handler)
                 .popChangeHandler(handler)
         )
