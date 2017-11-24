@@ -10,6 +10,7 @@ import com.couchbase.lite.DatabaseConfiguration
 import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.text.CalendarFormatter
 import io.ipoli.android.home.HomePresenter
+import io.ipoli.android.pet.PetPresenter
 import io.ipoli.android.player.AndroidLevelUpScheduler
 import io.ipoli.android.player.LevelUpScheduler
 import io.ipoli.android.player.persistence.CouchbasePlayerRepository
@@ -170,6 +171,7 @@ interface PresenterModule {
     val dayViewPresenter: DayViewPresenter
     val reminderPickerPresenter: ReminderPickerDialogPresenter
     val addQuestPresenter: AddQuestPresenter
+    val petPresenter: PetPresenter
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
@@ -190,6 +192,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter, job)
     override val calendarPresenter get() = CalendarPresenter(calendarFormatter, job)
     override val addQuestPresenter get() = AddQuestPresenter(saveQuestUseCase, job)
+    override val petPresenter get() = PetPresenter(job)
 }
 
 class ControllerModule(androidModule: AndroidModule,
