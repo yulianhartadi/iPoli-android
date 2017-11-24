@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
+import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.view.intRes
 import io.ipoli.android.pet.PetViewState.StateType.*
@@ -83,23 +84,33 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     }
 
     private fun playHideFoodListAnimation(view: View) {
-        val anim = AnimatorSet()
-        anim.playTogether(
+        val foodListAnim = AnimatorSet()
+        foodListAnim.playTogether(
             ObjectAnimator.ofFloat(view.foodList, "alpha", 1f, 0f),
             ObjectAnimator.ofFloat(view.foodList, "x", 0f, view.width.toFloat())
         )
-        anim.duration = intRes(android.R.integer.config_mediumAnimTime).toLong()
-        anim.start()
+        val animator = AnimatorSet()
+        animator.playSequentially(
+            foodListAnim,
+            ObjectAnimator.ofFloat(view.fab, "y", view.fab.y, view.foodList.y + ViewUtils.dpToPx(8f, view.context))
+        )
+        animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
+        animator.start()
     }
 
     private fun playShowFoodListAnimation(view: View) {
-        val anim = AnimatorSet()
-        anim.playTogether(
+        val foodListAnim = AnimatorSet()
+        foodListAnim.playTogether(
             ObjectAnimator.ofFloat(view.foodList, "alpha", 0f, 1f),
             ObjectAnimator.ofFloat(view.foodList, "x", view.width.toFloat(), 0f)
         )
-        anim.duration = intRes(android.R.integer.config_mediumAnimTime).toLong()
-        anim.start()
+        val animator = AnimatorSet()
+        animator.playSequentially(
+            ObjectAnimator.ofFloat(view.fab, "y", view.fab.y, view.foodList.y - view.fab.height - ViewUtils.dpToPx(8f, view.context)),
+            foodListAnim
+        )
+        animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
+        animator.start()
     }
 
     data class PetFoodViewModel(@DrawableRes val image: Int, val price: Int)
