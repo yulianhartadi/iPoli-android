@@ -36,15 +36,30 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
         view.foodList.layoutManager = LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
         view.foodList.adapter = PetFoodAdapter(listOf(
-            PetFoodViewModel(R.drawable.ic_add_accent_24dp, 12),
-            PetFoodViewModel(R.drawable.ic_coins_green_24dp, 32),
-            PetFoodViewModel(R.drawable.ic_star_yellow_24dp, 23),
-            PetFoodViewModel(R.drawable.ic_add_accent_24dp, 12),
-            PetFoodViewModel(R.drawable.ic_add_accent_24dp, 12),
-            PetFoodViewModel(R.drawable.ic_coins_green_24dp, 32),
-            PetFoodViewModel(R.drawable.ic_star_yellow_24dp, 23)
+            PetFoodViewModel(R.drawable.food_beer_1, 12),
+            PetFoodViewModel(R.drawable.food_candy_1, 32),
+            PetFoodViewModel(R.drawable.food_candy_2, 32),
+            PetFoodViewModel(R.drawable.food_candy_3, 32),
+            PetFoodViewModel(R.drawable.food_candy_4, 32),
+            PetFoodViewModel(R.drawable.food_junk_1, 23),
+            PetFoodViewModel(R.drawable.food_junk_2, 23),
+            PetFoodViewModel(R.drawable.food_junk_3, 23),
+            PetFoodViewModel(R.drawable.food_junk_4, 23),
+            PetFoodViewModel(R.drawable.food_poop_1, 12),
+            PetFoodViewModel(R.drawable.food_veggie_1, 12),
+            PetFoodViewModel(R.drawable.food_veggie_2, 12),
+            PetFoodViewModel(R.drawable.food_veggie_3, 12),
+            PetFoodViewModel(R.drawable.food_fruit_1, 12),
+            PetFoodViewModel(R.drawable.food_fruit_2, 12),
+            PetFoodViewModel(R.drawable.food_fruit_3, 12),
+            PetFoodViewModel(R.drawable.food_fruit_4, 12),
+            PetFoodViewModel(R.drawable.food_meat_1, 12),
+            PetFoodViewModel(R.drawable.food_meat_2, 12),
+            PetFoodViewModel(R.drawable.food_meat_3, 12),
+            PetFoodViewModel(R.drawable.food_meat_4, 12),
+            PetFoodViewModel(R.drawable.food_empty, -1)
 
-            ))
+        ))
 
         return view
     }
@@ -61,7 +76,11 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val vm = foodItems[position]
             holder.itemView.foodImage.setImageResource(vm.image)
-            holder.itemView.foodPrice.text = vm.price.toString() + " coins"
+            if (position == itemCount - 1) {
+                holder.itemView.foodPrice.text = ""
+            } else {
+                holder.itemView.foodPrice.text = vm.price.toString() + " coins"
+            }
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =

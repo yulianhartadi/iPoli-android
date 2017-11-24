@@ -245,7 +245,7 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/foodList"
         android:layout_width="0dp"
-        android:layout_height="56dp"
+        android:layout_height="84dp"
         android:background="@color/md_white"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
