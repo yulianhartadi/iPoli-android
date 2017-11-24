@@ -1,5 +1,7 @@
 package io.ipoli.android.pet
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.support.annotation.DrawableRes
 import android.support.v7.widget.LinearLayoutManager
@@ -11,6 +13,8 @@ import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
 import io.ipoli.android.common.mvi.MviViewController
+import io.ipoli.android.common.view.intRes
+import io.ipoli.android.pet.PetViewState.StateType.*
 import kotlinx.android.synthetic.main.controller_pet.view.*
 import kotlinx.android.synthetic.main.item_pet_food.view.*
 import space.traversal.kapsule.required
@@ -64,8 +68,51 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         return view
     }
 
-    override fun render(state: PetViewState, view: View) {
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        send(LoadDataIntent)
+    }
 
+    override fun render(state: PetViewState, view: View) {
+        when (state.type) {
+            DATA_LOADED -> {
+                view.fab.setOnClickListener {
+                    send(ShowFoodList)
+                }
+            }
+            FOOD_LIST_SHOWN -> {
+                val anim = AnimatorSet()
+                anim.playTogether(
+                    ObjectAnimator.ofFloat(view.foodList, "alpha", 0f, 1f),
+                    ObjectAnimator.ofFloat(view.foodList, "x", view.width.toFloat(), 0f)
+                )
+                anim.duration = intRes(android.R.integer.config_mediumAnimTime).toLong()
+                anim.start()
+                view.fab.setImageResource(R.drawable.ic_close_white_24dp)
+                view.fab.setOnClickListener {
+                    send(HideFoodList)
+                }
+            }
+
+            FOOD_LIST_HIDDEN -> {
+                val anim = AnimatorSet()
+                anim.playTogether(
+                    ObjectAnimator.ofFloat(view.foodList, "alpha", 1f, 0f),
+                    ObjectAnimator.ofFloat(view.foodList, "x", 0f, view.width.toFloat())
+                )
+                anim.duration = intRes(android.R.integer.config_mediumAnimTime).toLong()
+                anim.start()
+                view.fab.setImageDrawable(
+                    IconicsDrawable(view.context)
+                        .icon(Ionicons.Icon.ion_pizza)
+                        .colorRes(R.color.md_white)
+                        .sizeDp(24)
+                )
+                view.fab.setOnClickListener {
+                    send(ShowFoodList)
+                }
+            }
+        }
     }
 
     data class PetFoodViewModel(@DrawableRes val image: Int, val price: Int)

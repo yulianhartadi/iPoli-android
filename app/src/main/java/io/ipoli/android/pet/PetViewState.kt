@@ -10,11 +10,13 @@ import io.ipoli.android.common.mvi.ViewState
 sealed class PetIntent : Intent
 
 object LoadDataIntent : PetIntent()
+object ShowFoodList : PetIntent()
+object HideFoodList : PetIntent()
 
 data class PetViewState(
     val type: StateType = StateType.DATA_LOADED
 ) : ViewState {
     enum class StateType {
-        LOADING, DATA_LOADED
+        LOADING, DATA_LOADED, FOOD_LIST_SHOWN, FOOD_LIST_HIDDEN
     }
 }
