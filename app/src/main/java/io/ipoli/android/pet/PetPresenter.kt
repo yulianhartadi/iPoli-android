@@ -2,6 +2,7 @@ package io.ipoli.android.pet
 
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
+import io.ipoli.android.pet.PetViewState.StateType.*
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -10,11 +11,27 @@ import kotlin.coroutines.experimental.CoroutineContext
  */
 class PetPresenter(coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<PetViewState>, PetViewState, PetIntent>(
-    PetViewState(PetViewState.StateType.LOADING),
+    PetViewState(LOADING),
     coroutineContext
 ) {
-    override fun reduceState(intent: PetIntent, state: PetViewState): PetViewState {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun reduceState(intent: PetIntent, state: PetViewState) =
+        when (intent) {
+            is LoadDataIntent -> {
+                state.copy(
+                    type = DATA_LOADED
+                )
+            }
+            is ShowFoodList -> {
+                state.copy(
+                    type = FOOD_LIST_SHOWN
+                )
+            }
+
+            is HideFoodList -> {
+                state.copy(
+                    type = FOOD_LIST_HIDDEN
+                )
+            }
+        }
 
 }
