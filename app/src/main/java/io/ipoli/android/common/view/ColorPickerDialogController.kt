@@ -77,9 +77,8 @@ class ColorPickerDialogController : BaseDialogController {
 
         override fun getItemCount() = colors.size
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_color_picker, parent, false))
-        }
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_color_picker, parent, false))
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
