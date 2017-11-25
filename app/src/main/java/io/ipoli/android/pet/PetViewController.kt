@@ -102,7 +102,6 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         val b = ObjectAnimator.ofFloat(view.petState, "alpha", 0f, 1f)
         val c = ObjectAnimator.ofFloat(view.petResponse, "alpha", 0f, 1f)
 
-//        b.duration = 50
         val set = AnimatorSet()
         set.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
@@ -123,7 +122,6 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 view.petState.setImageResource(R.drawable.pet_8_awesome)
             }
         })
-//        a.duration = 50
         val set = AnimatorSet()
         set.playTogether(a, c)
 
@@ -168,13 +166,9 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val vm = foodItems[position]
             holder.itemView.foodImage.setImageResource(vm.image)
-            if (position == itemCount - 1) {
-                holder.itemView.foodPrice.text = ""
-            } else {
-                holder.itemView.foodPrice.text = vm.price.toString() + " coins"
-                holder.itemView.setOnClickListener {
-                    send(Feed)
-                }
+            holder.itemView.foodPrice.text = vm.price.toString() + " coins"
+            holder.itemView.setOnClickListener {
+                send(Feed)
             }
         }
 
