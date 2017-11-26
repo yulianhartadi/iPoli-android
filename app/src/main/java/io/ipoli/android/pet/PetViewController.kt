@@ -84,48 +84,47 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             PET_FED -> {
-                val anim = AnimatorSet()
-                anim.playSequentially(
-                    createA(view),
-                    createB(view),
-                    createA(view),
-                    createB(view),
-                    createA(view),
-                    createB(view)
-                )
-                anim.start()
+                playFeedPetAnimation(view)
             }
         }
     }
 
-    private fun createB(view: View): Animator {
-        val b = ObjectAnimator.ofFloat(view.petState, "alpha", 0f, 1f)
-        val c = ObjectAnimator.ofFloat(view.petResponse, "alpha", 0f, 1f)
+    private fun playFeedPetAnimation(view: View) {
+        val anim = AnimatorSet()
+        anim.playSequentially(
+            createShowPetResponseAnimation(view),
+            createHidePetResponseAnimation(view),
+            createShowPetResponseAnimation(view),
+            createHidePetResponseAnimation(view)
+        )
+        anim.start()
+    }
 
-        val set = AnimatorSet()
-        set.addListener(object : AnimatorListenerAdapter() {
+    private fun createHidePetResponseAnimation(view: View): Animator {
+        val anim = ObjectAnimator.ofFloat(view.petState, "alpha", 0f, 1f)
+        anim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
                 view.petState.setImageResource(R.drawable.pet_8_happy)
                 view.petResponse.alpha = 0f
             }
         })
-        set.playTogether(b, c)
-
-        return set
+        anim.duration = 100
+        anim.startDelay = 300
+        return anim
     }
 
-    private fun createA(view: View): Animator {
-        val a = ObjectAnimator.ofFloat(view.petState, "alpha", 1f, 0f)
-        val c = ObjectAnimator.ofFloat(view.petResponse, "alpha", 1f, 0f)
-        a.addListener(object : AnimatorListenerAdapter() {
+    private fun createShowPetResponseAnimation(view: View): Animator {
+        val anim = ObjectAnimator.ofFloat(view.petState, "alpha", 1f, 0f)
+        anim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
                 view.petState.setImageResource(R.drawable.pet_8_awesome)
+                view.petState.alpha = 1f
+                view.petResponse.alpha = 1f
             }
         })
-        val set = AnimatorSet()
-        set.playTogether(a, c)
-
-        return set
+        anim.duration = 100
+        anim.startDelay = 300
+        return anim
     }
 
     private fun playHideFoodListAnimation(view: View) {
