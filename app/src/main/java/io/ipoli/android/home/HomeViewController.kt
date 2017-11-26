@@ -17,6 +17,7 @@ import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.FeedbackDialogController
 import io.ipoli.android.pet.PetViewController
+import io.ipoli.android.quest.calendar.CalendarViewController
 import kotlinx.android.synthetic.main.controller_home.view.*
 import org.json.JSONObject
 import space.traversal.kapsule.Injects
@@ -109,8 +110,8 @@ class HomeViewController(args: Bundle? = null) :
         val handler = FadeChangeHandler()
         val childRouter = getChildRouter(view.controllerContainer, null)
         childRouter.setRoot(
-//            RouterTransaction.with(CalendarViewController())
-            RouterTransaction.with(PetViewController())
+            RouterTransaction.with(CalendarViewController())
+//            RouterTransaction.with(PetViewController())
                 .pushChangeHandler(handler)
                 .popChangeHandler(handler)
         )
@@ -144,8 +145,20 @@ class HomeViewController(args: Bundle? = null) :
         if (item.itemId == R.id.action_feedback) {
             showFeedbackDialog()
             return true
+        } else if (item.itemId == R.id.action_pet) {
+            showPet()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showPet() {
+        val handler = FadeChangeHandler()
+        val childRouter = getChildRouter(view!!.controllerContainer, null)
+        childRouter.setRoot(
+            RouterTransaction.with(PetViewController())
+                .pushChangeHandler(handler)
+                .popChangeHandler(handler)
+        )
     }
 
     private fun showFeedbackDialog() {
