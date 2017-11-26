@@ -87,7 +87,7 @@ dependencies {
     implementation "space.traversal.kapsule:kapsule-core:0.3"
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.19.3'
-    implementation 'com.couchbase.lite:couchbase-lite-android:2.0.0-DB019'
+    implementation 'com.couchbase.lite:couchbase-lite-android:2.0.0-DB020'
     implementation 'com.evernote:android-job:1.2.0'
     implementation 'com.amplitude:android-sdk:2.15.0'
     implementation 'com.sdsmdg.harjot:croller:1.0.7'
