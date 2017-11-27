@@ -2,7 +2,6 @@ package io.ipoli.android.home
 
 import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
-import io.ipoli.android.quest.Player
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -13,15 +12,10 @@ sealed class HomeIntent : Intent
 
 object LoadDataIntent : HomeIntent()
 
-data class PlayerChangedIntent(val player: Player) : HomeIntent()
-
 data class HomeViewState(
-    val type: StateType = StateType.DATA_LOADED,
-    val progress: Int = 0,
-    val maxProgress: Int = 0,
-    val level: Int = 0
+    val type: StateType = StateType.DATA_LOADED
 ) : ViewState {
     enum class StateType {
-        LOADING, DATA_LOADED, LEVEL_CHANGED, XP_CHANGED
+        LOADING, DATA_LOADED
     }
 }

@@ -39,30 +39,8 @@ class HomeViewController(args: Bundle? = null) :
 
     override fun render(state: HomeViewState, view: View) {
 
-        val levelProgress = view.levelProgress
-
         when (state.type) {
 
-//            LOADING -> {
-//                levelProgress.visible = false
-//            }
-//
-//            DATA_LOADED -> {
-//                levelProgress.visible = true
-//                levelProgress.progress = state.progress
-//                levelProgress.max = state.maxProgress
-//                view.toolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
-//            }
-//            XP_CHANGED -> {
-//                val animator = ObjectAnimator.ofInt(levelProgress, "progress", levelProgress.progress, state.progress)
-//                animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
-//                animator.start()
-//            }
-//            LEVEL_CHANGED -> {
-//                levelProgress.progress = state.progress
-//                levelProgress.max = state.maxProgress
-//                view.toolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
-//            }
         }
     }
 
