@@ -52,7 +52,7 @@
                     android:layout_marginRight="0dp"
                     android:layout_marginTop="0dp"
                     android:drawablePadding="4dp"
-                    android:drawableStart="@drawable/ic_life_coin_white_24dp"
+                    android:drawableStart="@drawable/ic_life_coin_24dp"
                     android:gravity="center_vertical"
                     android:text="400"
                     android:textColor="@color/md_white"

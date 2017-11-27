@@ -27,7 +27,8 @@ data class PetViewState(
     val xpBonus: Int = 0,
     val unlockChanceBonus: Int = 0,
     @DrawableRes val petImage: Int = 0,
-    @DrawableRes val petStateImage: Int = 0
+    @DrawableRes val petStateImage: Int = 0,
+    @DrawableRes val petAwesomeStateImage: Int = 0
 ) : ViewState {
     enum class StateType {
         LOADING, DATA_LOADED, FOOD_LIST_SHOWN, FOOD_LIST_HIDDEN, PET_FED,
