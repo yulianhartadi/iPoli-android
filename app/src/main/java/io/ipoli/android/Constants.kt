@@ -182,6 +182,9 @@ interface Constants {
         val KEY_ACHIEVEMENT_ACTION = "achievement_action"
         val KEY_ACHIEVEMENT_ACTION_CLASS = "achievement_action_class"
 
+        val MAX_PET_HP = 100
+        val MAX_PET_MP = 100
+
         val LEVEL_UP_REWARDS = listOf<String>(
             "https://media2.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
             "https://i.imgur.com/vlU5ROS.jpg",
