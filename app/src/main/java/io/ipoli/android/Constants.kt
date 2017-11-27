@@ -144,9 +144,7 @@ interface Constants {
         val DEFAULT_PET_HP = 80
         val XP_BONUS_PERCENTAGE_OF_HP = 20.0
         val COINS_BONUS_PERCENTAGE_OF_HP = 10.0
-        val REWARD_POINTS_BONUS_PERCENTAGE_OF_HP = 10.0
         val MAX_PET_COIN_BONUS = 10
-        val MAX_PET_REWARD_POINTS_BONUS = 10
 
         val MAX_PET_XP_BONUS = 20
 

@@ -51,7 +51,6 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
 
         if (playerRepository.find() == null) {
             val player = Player(
-                level = 1,
                 authProvider = AuthProvider(provider = ProviderType.ANONYMOUS.name)
             )
             playerRepository.save(player)
