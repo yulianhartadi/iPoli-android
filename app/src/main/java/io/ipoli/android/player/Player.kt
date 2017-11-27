@@ -1,5 +1,8 @@
 package io.ipoli.android.player
 
+import io.ipoli.android.Constants
+import io.ipoli.android.pet.Pet
+import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.quest.Entity
 import io.ipoli.android.store.avatars.data.Avatar
 import org.threeten.bp.LocalDateTime
@@ -11,7 +14,8 @@ data class Player(
     val experience: Long = 0,
     val authProvider: AuthProvider,
     val avatar: Avatar = Avatar.IPOLI_CLASSIC,
-    val createdAt: LocalDateTime = LocalDateTime.now()
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val pet: Pet = Pet(name = Constants.DEFAULT_PET_NAME, avatar = PetAvatar.ELEPHANT)
 ) : Entity {
     fun addExperience(experience: Int): Player {
         val newXp = experience + this.experience
