@@ -187,10 +187,10 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val timeUnitFormatter by required { timeUnitFormatter }
     private val calendarFormatter by required { calendarFormatter }
     private val job by required { job }
-    override val homePresenter get() = HomePresenter(listenForPlayerChangesUseCase, job)
+    override val homePresenter get() = HomePresenter(job)
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, undoRemoveQuestUseCase, completeQuestUseCase, undoCompleteQuestUseCase, job)
     override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter, job)
-    override val calendarPresenter get() = CalendarPresenter(calendarFormatter, job)
+    override val calendarPresenter get() = CalendarPresenter(listenForPlayerChangesUseCase, calendarFormatter, job)
     override val addQuestPresenter get() = AddQuestPresenter(saveQuestUseCase, job)
     override val petPresenter get() = PetPresenter(job)
 }

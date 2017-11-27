@@ -3,8 +3,12 @@ package io.ipoli.android.quest.calendar
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.text.CalendarFormatter
+import io.ipoli.android.player.ExperienceForLevelGenerator
+import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
 import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import io.ipoli.android.quest.calendar.CalendarViewState.StateType.*
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import kotlin.coroutines.experimental.CoroutineContext
@@ -14,6 +18,7 @@ import kotlin.coroutines.experimental.CoroutineContext
  * on 10/21/17.
  */
 class CalendarPresenter(
+    private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
     private val calendarFormatter: CalendarFormatter,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<CalendarViewState>, CalendarViewState, CalendarIntent>(
@@ -31,6 +36,11 @@ class CalendarPresenter(
     override fun reduceState(intent: CalendarIntent, state: CalendarViewState): CalendarViewState =
         when (intent) {
             is LoadDataIntent -> {
+                launch {
+                    listenForPlayerChangesUseCase.execute(Unit).consumeEach {
+                        actor.send(PlayerChangedIntent(it))
+                    }
+                }
                 val date = intent.currentDate
                 val (dayText, dateText) = formatDayAndDate(date)
                 state.copy(
@@ -83,6 +93,23 @@ class CalendarPresenter(
                 state.copy(
                     type = DEFAULT,
                     monthText = monthFormatter.format(newDate)
+                )
+            }
+
+            is PlayerChangedIntent -> {
+                val player = intent.player
+
+                val type = if (state.level != player.level) {
+                    LEVEL_CHANGED
+                } else {
+                    XP_CHANGED
+                }
+
+                state.copy(
+                    type = type,
+                    level = player.level,
+                    progress = player.experience.toInt(),
+                    maxProgress = ExperienceForLevelGenerator.forLevel(player.level + 1).toInt()
                 )
             }
         }

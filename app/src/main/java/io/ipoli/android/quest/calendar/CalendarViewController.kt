@@ -27,6 +27,7 @@ import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.RevealAnimator
 import io.ipoli.android.common.view.changehandler.CircularRevealChangeHandler
 import io.ipoli.android.common.view.colorRes
+import io.ipoli.android.common.view.intRes
 import io.ipoli.android.common.view.visible
 import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import io.ipoli.android.quest.calendar.CalendarViewState.StateType.*
@@ -227,10 +228,28 @@ class CalendarViewController(args: Bundle? = null) :
     override fun createPresenter() = presenter
 
     override fun render(state: CalendarViewState, view: View) {
+        val levelProgress = view.levelProgress
 
         calendarToolbar.day.text = state.dayText
         calendarToolbar.date.text = state.dateText
         view.currentMonth.text = state.monthText
+
+        if (state.type == LOADING) {
+            levelProgress.visible = false
+        }
+
+        if (state.type == XP_CHANGED) {
+            levelProgress.visible = true
+            val animator = ObjectAnimator.ofInt(levelProgress, "progress", levelProgress.progress, state.progress)
+            animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
+            animator.start()
+        }
+
+        if (state.type == LEVEL_CHANGED) {
+            levelProgress.progress = state.progress
+            levelProgress.max = state.maxProgress
+            calendarToolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
+        }
 
         if (state.type == DATE_PICKER_CHANGED) {
             renderDatePicker(state.datePickerState, view, state.currentDate)
@@ -239,6 +258,10 @@ class CalendarViewController(args: Bundle? = null) :
         if (state.type == DATA_LOADED) {
             removeDayViewPagerAdapter(view)
             createDayViewPagerAdapter(state, view)
+            levelProgress.visible = true
+            levelProgress.progress = state.progress
+            levelProgress.max = state.maxProgress
+            calendarToolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
         }
 
         if (state.type == CALENDAR_DATE_CHANGED) {
