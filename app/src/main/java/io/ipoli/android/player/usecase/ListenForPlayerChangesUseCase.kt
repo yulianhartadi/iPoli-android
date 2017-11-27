@@ -2,7 +2,7 @@ package io.ipoli.android.player.usecase
 
 import io.ipoli.android.common.StreamingUseCase
 import io.ipoli.android.player.persistence.PlayerRepository
-import io.ipoli.android.quest.Player
+import io.ipoli.android.player.Player
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.channels.produce

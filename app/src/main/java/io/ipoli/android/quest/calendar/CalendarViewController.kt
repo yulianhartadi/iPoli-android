@@ -342,6 +342,10 @@ class CalendarViewController(args: Bundle? = null) :
         if (!activity!!.isChangingConfigurations) {
             view.pager.adapter = null
         }
+
+        val toolbar = activity!!.findViewById<Toolbar>(R.id.toolbar)
+        toolbar.removeView(calendarToolbar)
+
         super.onDestroyView(view)
     }
 

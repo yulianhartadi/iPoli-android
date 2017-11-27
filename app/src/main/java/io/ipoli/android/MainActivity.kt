@@ -13,8 +13,8 @@ import com.bluelinelabs.conductor.RouterTransaction
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.home.HomeViewController
 import io.ipoli.android.player.persistence.ProviderType
-import io.ipoli.android.quest.AuthProvider
-import io.ipoli.android.quest.Player
+import io.ipoli.android.player.AuthProvider
+import io.ipoli.android.player.Player
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required

@@ -5,7 +5,9 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.reset
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.player.AuthProvider
 import io.ipoli.android.player.LevelUpScheduler
+import io.ipoli.android.player.Player
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.quest.*
 import io.ipoli.android.quest.data.persistence.QuestRepository

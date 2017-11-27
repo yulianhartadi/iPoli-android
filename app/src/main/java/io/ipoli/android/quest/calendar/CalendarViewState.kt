@@ -2,7 +2,7 @@ package io.ipoli.android.quest.calendar
 
 import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
-import io.ipoli.android.quest.Player
+import io.ipoli.android.player.Player
 import io.ipoli.android.quest.calendar.CalendarViewState.StateType.DATA_LOADED
 import org.threeten.bp.LocalDate
 

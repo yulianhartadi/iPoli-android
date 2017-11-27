@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.support.annotation.DrawableRes
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,9 +34,6 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_pet, container, false)
-
-        val toolbarC = activity!!.findViewById<Toolbar>(R.id.toolbar)
-        toolbarC.removeView(toolbarC.findViewById(R.id.calendarToolbar))
 
         view.fab.setImageDrawable(
             IconicsDrawable(view.context)
