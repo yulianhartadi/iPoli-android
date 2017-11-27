@@ -4,8 +4,8 @@ import com.couchbase.lite.Database
 import io.ipoli.android.common.persistence.BaseCouchbaseRepository
 import io.ipoli.android.common.persistence.CouchbasePersistedModel
 import io.ipoli.android.common.persistence.Repository
-import io.ipoli.android.quest.AuthProvider
-import io.ipoli.android.quest.Player
+import io.ipoli.android.player.AuthProvider
+import io.ipoli.android.player.Player
 import io.ipoli.android.store.avatars.data.Avatar
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
