@@ -51,14 +51,16 @@ class PetPresenter(
 
             is PetChangedIntent -> {
                 val pet = intent.pet
+                val petAvatar = AndroidPetAvatar.valueOf(pet.avatar.name)
                 state.copy(
                     type = PET_CHANGED,
-                    pet = AndroidPetAvatar.valueOf(pet.avatar.name),
                     mp = pet.moodPoints,
                     hp = pet.healthPoints,
                     coinsBonus = pet.coinBonus,
                     xpBonus = pet.experienceBonus,
-                    unlockChanceBonus = pet.unlockChanceBonus
+                    unlockChanceBonus = pet.unlockChanceBonus,
+                    petImage = petAvatar.image,
+                    petStateImage = petAvatar.moodImage[pet.mood]!!
                 )
             }
         }
