@@ -50,7 +50,7 @@
             app:layout_constraintRight_toRightOf="parent"
             fancy:fb_defaultColor="@color/colorAccent"
             fancy:fb_focusColor="@color/colorAccentDark"
-            fancy:fb_iconResource="@drawable/ic_life_coin_white_24dp"
+            fancy:fb_iconResource="@drawable/ic_life_coin_24dp"
             fancy:fb_textSize="14sp" />
 
         <ImageView

@@ -60,7 +60,8 @@ class PetPresenter(
                     xpBonus = pet.experienceBonus,
                     unlockChanceBonus = pet.unlockChanceBonus,
                     petImage = petAvatar.image,
-                    petStateImage = petAvatar.moodImage[pet.mood]!!
+                    petStateImage = petAvatar.moodImage[pet.mood]!!,
+                    petAwesomeStateImage = petAvatar.moodImage[PetMood.AWESOME]!!
                 )
             }
         }

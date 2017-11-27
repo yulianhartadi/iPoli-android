@@ -86,7 +86,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             PET_FED -> {
-                playFeedPetAnimation(view)
+                playFeedPetAnimation(view, state.petStateImage, state.petAwesomeStateImage)
             }
 
             PET_CHANGED -> {
@@ -113,22 +113,22 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         animator.start()
     }
 
-    private fun playFeedPetAnimation(view: View) {
+    private fun playFeedPetAnimation(view: View, @DrawableRes currentStateImage: Int, @DrawableRes awesomeStateImage: Int) {
         val anim = AnimatorSet()
         anim.playSequentially(
-            createShowPetResponseAnimation(view),
-            createHidePetResponseAnimation(view),
-            createShowPetResponseAnimation(view),
-            createHidePetResponseAnimation(view)
+            createShowPetResponseAnimation(view, awesomeStateImage),
+            createHidePetResponseAnimation(view, currentStateImage),
+            createShowPetResponseAnimation(view, awesomeStateImage),
+            createHidePetResponseAnimation(view, currentStateImage)
         )
         anim.start()
     }
 
-    private fun createHidePetResponseAnimation(view: View): Animator {
+    private fun createHidePetResponseAnimation(view: View, @DrawableRes petStateImage: Int): Animator {
         val anim = ObjectAnimator.ofFloat(view.petState, "alpha", 0f, 1f)
         anim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
-                view.petState.setImageResource(R.drawable.pet_8_happy)
+                view.petState.setImageResource(petStateImage)
                 view.petResponse.alpha = 0f
             }
         })
@@ -137,11 +137,11 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         return anim
     }
 
-    private fun createShowPetResponseAnimation(view: View): Animator {
+    private fun createShowPetResponseAnimation(view: View, @DrawableRes petAwesomeStateImage: Int): Animator {
         val anim = ObjectAnimator.ofFloat(view.petState, "alpha", 1f, 0f)
         anim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
-                view.petState.setImageResource(R.drawable.pet_8_awesome)
+                view.petState.setImageResource(petAwesomeStateImage)
                 view.petState.alpha = 1f
                 view.petResponse.alpha = 1f
             }
@@ -189,7 +189,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val vm = foodItems[position]
             holder.itemView.foodImage.setImageResource(vm.image)
-            holder.itemView.foodPrice.text = vm.price.toString() + " coins"
+            holder.itemView.foodPrice.text = vm.price.toString()
             holder.itemView.setOnClickListener {
                 send(Feed)
             }
