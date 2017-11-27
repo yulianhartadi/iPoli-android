@@ -11,6 +11,7 @@ import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.text.CalendarFormatter
 import io.ipoli.android.home.HomePresenter
 import io.ipoli.android.pet.PetPresenter
+import io.ipoli.android.pet.usecase.ListenForPetChangesUseCase
 import io.ipoli.android.player.AndroidLevelUpScheduler
 import io.ipoli.android.player.LevelUpScheduler
 import io.ipoli.android.player.persistence.CouchbasePlayerRepository
@@ -130,6 +131,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, playerRepository, reminderScheduler, questCompleteScheduler, levelUpScheduler)
     override val undoCompleteQuestUseCase get() = UndoCompleteQuestUseCase(questRepository, playerRepository, reminderScheduler)
     override val listenForPlayerChangesUseCase get() = ListenForPlayerChangesUseCase(playerRepository, job + CommonPool)
+    override val listenForPetChangesUseCase get() = ListenForPetChangesUseCase(playerRepository, job + CommonPool)
 }
 
 interface JobUseCaseModule {
@@ -163,6 +165,7 @@ interface UseCaseModule {
     val completeQuestUseCase: CompleteQuestUseCase
     val undoCompleteQuestUseCase: UndoCompleteQuestUseCase
     val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase
+    val listenForPetChangesUseCase: ListenForPetChangesUseCase
 }
 
 interface PresenterModule {
@@ -182,6 +185,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val completeQuestUseCase by required { completeQuestUseCase }
     private val undoCompleteQuestUseCase by required { undoCompleteQuestUseCase }
     private val listenForPlayerChangesUseCase by required { listenForPlayerChangesUseCase }
+    private val listenForPetChangesUseCase by required { listenForPetChangesUseCase }
     private val navigator by required { navigator }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
     private val timeUnitFormatter by required { timeUnitFormatter }
@@ -192,7 +196,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter, job)
     override val calendarPresenter get() = CalendarPresenter(listenForPlayerChangesUseCase, calendarFormatter, job)
     override val addQuestPresenter get() = AddQuestPresenter(saveQuestUseCase, job)
-    override val petPresenter get() = PetPresenter(job)
+    override val petPresenter get() = PetPresenter(listenForPetChangesUseCase, job)
 }
 
 class ControllerModule(androidModule: AndroidModule,
