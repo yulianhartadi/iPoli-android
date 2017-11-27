@@ -14,6 +14,7 @@ object LoadDataIntent : PetIntent()
 object ShowFoodList : PetIntent()
 object HideFoodList : PetIntent()
 object Feed : PetIntent()
+data class PetChangedIntent(val pet: Pet) : PetIntent()
 
 data class PetViewState(
     val type: StateType = StateType.DATA_LOADED,
@@ -27,6 +28,7 @@ data class PetViewState(
     val pet: AndroidPetAvatar? = null
 ) : ViewState {
     enum class StateType {
-        LOADING, DATA_LOADED, FOOD_LIST_SHOWN, FOOD_LIST_HIDDEN, PET_FED
+        LOADING, DATA_LOADED, FOOD_LIST_SHOWN, FOOD_LIST_HIDDEN, PET_FED,
+        PET_CHANGED
     }
 }

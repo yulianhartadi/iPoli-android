@@ -3,13 +3,18 @@ package io.ipoli.android.pet
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.pet.PetViewState.StateType.*
+import io.ipoli.android.pet.usecase.ListenForPetChangesUseCase
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 11/24/17.
  */
-class PetPresenter(coroutineContext: CoroutineContext
+class PetPresenter(
+    val listenForPetChangesUseCase: ListenForPetChangesUseCase,
+    coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<PetViewState>, PetViewState, PetIntent>(
     PetViewState(LOADING),
     coroutineContext
@@ -17,6 +22,11 @@ class PetPresenter(coroutineContext: CoroutineContext
     override fun reduceState(intent: PetIntent, state: PetViewState) =
         when (intent) {
             is LoadDataIntent -> {
+                launch {
+                    listenForPetChangesUseCase.execute(Unit).consumeEach {
+                        actor.send(PetChangedIntent(it))
+                    }
+                }
                 state.copy(
                     type = DATA_LOADED
                 )
@@ -36,6 +46,19 @@ class PetPresenter(coroutineContext: CoroutineContext
             is Feed -> {
                 state.copy(
                     type = PET_FED
+                )
+            }
+
+            is PetChangedIntent -> {
+                val pet = intent.pet
+                state.copy(
+                    type = PET_CHANGED,
+                    pet = AndroidPetAvatar.valueOf(pet.avatar.name),
+                    mp = pet.moodPoints,
+                    hp = pet.healthPoints,
+                    coinsBonus = pet.coinBonus,
+                    xpBonus = pet.experienceBonus,
+                    unlockChanceBonus = pet.unlockChanceBonus
                 )
             }
         }

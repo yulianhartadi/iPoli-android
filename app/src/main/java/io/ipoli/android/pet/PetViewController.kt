@@ -87,6 +87,15 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             PET_FED -> {
                 playFeedPetAnimation(view)
             }
+
+            PET_CHANGED -> {
+                view.moodPoints.text = state.mp.toString() + "/" + state.maxMP
+                view.moodProgress.progress = state.mp
+                view.moodProgress.max = state.maxMP
+                view.coinsBonus.text = state.coinsBonus.toString()
+                view.xpBonus.text = state.xpBonus.toString()
+                view.giftBonus.text = state.unlockChanceBonus.toString()
+            }
         }
     }
 
