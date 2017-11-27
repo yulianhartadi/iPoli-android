@@ -1,5 +1,6 @@
 package io.ipoli.android.pet
 
+import android.support.annotation.DrawableRes
 import io.ipoli.android.Constants
 import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
@@ -25,7 +26,8 @@ data class PetViewState(
     val coinsBonus: Int = 0,
     val xpBonus: Int = 0,
     val unlockChanceBonus: Int = 0,
-    val pet: AndroidPetAvatar? = null
+    @DrawableRes val petImage: Int = 0,
+    @DrawableRes val petStateImage: Int = 0
 ) : ViewState {
     enum class StateType {
         LOADING, DATA_LOADED, FOOD_LIST_SHOWN, FOOD_LIST_HIDDEN, PET_FED,

@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
@@ -90,13 +91,26 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
             PET_CHANGED -> {
                 view.moodPoints.text = state.mp.toString() + "/" + state.maxMP
-                view.moodProgress.progress = state.mp
+                view.healthPoints.text = state.hp.toString() + "/" + state.maxHP
+
+                playProgressAnimation(view.moodProgress, view.moodProgress.progress, state.mp)
+                playProgressAnimation(view.healthProgress, view.healthProgress.progress, state.hp)
+
                 view.moodProgress.max = state.maxMP
-                view.coinsBonus.text = state.coinsBonus.toString()
-                view.xpBonus.text = state.xpBonus.toString()
-                view.giftBonus.text = state.unlockChanceBonus.toString()
+                view.coinBonus.text = "+${state.coinsBonus}%"
+                view.xpBonus.text = "+${state.xpBonus}%"
+                view.unlockChanceBonus.text = "+${state.unlockChanceBonus}%"
+
+                view.pet.setImageResource(state.petImage)
+                view.petState.setImageResource(state.petStateImage)
             }
         }
+    }
+
+    private fun playProgressAnimation(view: ProgressBar, from: Int, to: Int) {
+        val animator = ObjectAnimator.ofInt(view, "progress", from, to)
+        animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
+        animator.start()
     }
 
     private fun playFeedPetAnimation(view: View) {
