@@ -117,10 +117,9 @@
                 tools:text="40/100" />
 
             <TextView
-                android:id="@+id/stateText"
+                android:id="@+id/stateName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Happy"
                 android:textAppearance="@style/TextAppearance.AppCompat.Caption"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="@+id/moodPoints"
@@ -141,7 +140,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/coinBonus"
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/stateText"
+                app:layout_constraintTop_toBottomOf="@+id/stateName"
                 app:layout_constraintVertical_bias="0.5"
                 app:srcCompat="@drawable/ic_life_coin_24dp" />
 

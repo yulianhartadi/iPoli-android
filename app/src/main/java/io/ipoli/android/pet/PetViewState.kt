@@ -15,10 +15,11 @@ object LoadDataIntent : PetIntent()
 object ShowFoodList : PetIntent()
 object HideFoodList : PetIntent()
 object Feed : PetIntent()
-data class PetChangedIntent(val pet: Pet) : PetIntent()
+data class ChangePetIntent(val pet: Pet) : PetIntent()
 
 data class PetViewState(
     val type: StateType = StateType.DATA_LOADED,
+    val stateName: String = "",
     val maxHP: Int = Constants.MAX_PET_HP,
     val maxMP: Int = Constants.MAX_PET_MP,
     val hp: Int = 0,
@@ -26,9 +27,9 @@ data class PetViewState(
     val coinsBonus: Int = 0,
     val xpBonus: Int = 0,
     val unlockChanceBonus: Int = 0,
-    @DrawableRes val petImage: Int = 0,
-    @DrawableRes val petStateImage: Int = 0,
-    @DrawableRes val petAwesomeStateImage: Int = 0
+    @DrawableRes val image: Int = 0,
+    @DrawableRes val stateImage: Int = 0,
+    @DrawableRes val awesomeStateImage: Int = 0
 ) : ViewState {
     enum class StateType {
         LOADING, DATA_LOADED, FOOD_LIST_SHOWN, FOOD_LIST_HIDDEN, PET_FED,

@@ -24,7 +24,7 @@ class PetPresenter(
             is LoadDataIntent -> {
                 launch {
                     listenForPetChangesUseCase.execute(Unit).consumeEach {
-                        actor.send(PetChangedIntent(it))
+                        actor.send(ChangePetIntent(it))
                     }
                 }
                 state.copy(
@@ -49,19 +49,20 @@ class PetPresenter(
                 )
             }
 
-            is PetChangedIntent -> {
+            is ChangePetIntent -> {
                 val pet = intent.pet
                 val petAvatar = AndroidPetAvatar.valueOf(pet.avatar.name)
                 state.copy(
                     type = PET_CHANGED,
+                    stateName = pet.mood.name.toLowerCase().capitalize(),
                     mp = pet.moodPoints,
                     hp = pet.healthPoints,
                     coinsBonus = pet.coinBonus,
                     xpBonus = pet.experienceBonus,
                     unlockChanceBonus = pet.unlockChanceBonus,
-                    petImage = petAvatar.image,
-                    petStateImage = petAvatar.moodImage[pet.mood]!!,
-                    petAwesomeStateImage = petAvatar.moodImage[PetMood.AWESOME]!!
+                    image = petAvatar.image,
+                    stateImage = petAvatar.moodImage[pet.mood]!!,
+                    awesomeStateImage = petAvatar.moodImage[PetMood.AWESOME]!!
                 )
             }
         }
