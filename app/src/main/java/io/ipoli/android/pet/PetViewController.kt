@@ -86,23 +86,25 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             PET_FED -> {
-                playFeedPetAnimation(view, state.petStateImage, state.petAwesomeStateImage)
+                playFeedPetAnimation(view, state.stateImage, state.awesomeStateImage)
             }
 
             PET_CHANGED -> {
-                view.moodPoints.text = state.mp.toString() + "/" + state.maxMP
+                playProgressAnimation(view.healthProgress, view.healthProgress.progress, state.hp)
                 view.healthPoints.text = state.hp.toString() + "/" + state.maxHP
+                view.healthProgress.max = state.maxHP
 
                 playProgressAnimation(view.moodProgress, view.moodProgress.progress, state.mp)
-                playProgressAnimation(view.healthProgress, view.healthProgress.progress, state.hp)
-
+                view.moodPoints.text = state.mp.toString() + "/" + state.maxMP
                 view.moodProgress.max = state.maxMP
+
                 view.coinBonus.text = "+${state.coinsBonus}%"
                 view.xpBonus.text = "+${state.xpBonus}%"
                 view.unlockChanceBonus.text = "+${state.unlockChanceBonus}%"
 
-                view.pet.setImageResource(state.petImage)
-                view.petState.setImageResource(state.petStateImage)
+                view.pet.setImageResource(state.image)
+                view.petState.setImageResource(state.stateImage)
+                view.stateName.text = state.stateName
             }
         }
     }
