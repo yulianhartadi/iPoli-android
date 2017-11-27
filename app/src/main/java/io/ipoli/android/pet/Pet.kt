@@ -4,14 +4,12 @@ import android.support.annotation.IntegerRes
 import android.support.annotation.StringRes
 import io.ipoli.android.Constants
 import io.ipoli.android.R
-import io.ipoli.android.quest.Entity
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 11/27/17.
  */
 data class Pet(
-    override val id: String = "",
     val name: String,
     val avatar: PetAvatar,
     val moodPoints: Int = Constants.DEFAULT_PET_HP,
@@ -19,7 +17,7 @@ data class Pet(
     val experienceBonus: Int = moodPoints / 20,
     val coinBonus: Int = moodPoints / 20,
     val unlockChanceBonus: Int = moodPoints / 20
-) : Entity
+)
 
 enum class PetAvatar(val price: Int) {
     SEAL(600),

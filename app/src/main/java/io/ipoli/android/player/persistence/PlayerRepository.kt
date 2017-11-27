@@ -4,6 +4,8 @@ import com.couchbase.lite.Database
 import io.ipoli.android.common.persistence.BaseCouchbaseRepository
 import io.ipoli.android.common.persistence.CouchbasePersistedModel
 import io.ipoli.android.common.persistence.Repository
+import io.ipoli.android.pet.Pet
+import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.AuthProvider
 import io.ipoli.android.player.Player
 import io.ipoli.android.store.avatars.data.Avatar
@@ -27,6 +29,7 @@ data class CouchbasePlayer(override val map: MutableMap<String, Any?> = mutableM
     var experience: Long by map
     var authProvider: MutableMap<String, Any?> by map
     var avatarCode: Int by map
+    var pet: MutableMap<String, Any?> by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
@@ -44,6 +47,16 @@ data class CouchbaseAuthProvider(val map: MutableMap<String, Any?> = mutableMapO
     var username: String by map
     var email: String by map
     var image: String by map
+}
+
+data class CouchbasePet(val map: MutableMap<String, Any?> = mutableMapOf()) {
+    var name: String by map
+    var avatar: String by map
+    var moodPoints: Int by map
+    var healthPoints: Int by map
+    var experienceBonus: Int by map
+    var coinBonus: Int by map
+    var unlockChanceBonus: Int by map
 }
 
 
@@ -66,6 +79,17 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             email = cap.email,
             image = cap.image
         )
+        val cPet = CouchbasePet(cp.pet)
+        val pet = Pet(
+            name = cPet.name,
+            avatar = PetAvatar.valueOf(cPet.avatar),
+            moodPoints = cPet.moodPoints,
+            healthPoints = cPet.healthPoints,
+            coinBonus = cPet.coinBonus,
+            experienceBonus = cPet.experienceBonus,
+            unlockChanceBonus = cPet.unlockChanceBonus
+        )
+
         return Player(
             id = cp.id,
             level = cp.level,
@@ -73,34 +97,43 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             experience = cp.experience,
             authProvider = authProvider,
             avatar = Avatar.fromCode(cp.avatarCode)!!,
-            createdAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(cp.createdAt), ZoneId.systemDefault())
+            createdAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(cp.createdAt), ZoneId.systemDefault()),
+            pet = pet
         )
     }
 
-    override fun toCouchbaseObject(entity: Player): CouchbasePlayer {
-        val cp = CouchbasePlayer()
-        cp.id = entity.id
-        cp.type = CouchbasePlayer.TYPE
-        cp.level = entity.level
-        cp.coins = entity.coins
-        cp.experience = entity.experience
-        cp.authProvider = createCouchbaseAuthProvider(entity).map
-        cp.avatarCode = entity.avatar.code
-        cp.createdAt = entity.createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        return cp
-    }
+    override fun toCouchbaseObject(entity: Player) =
+        CouchbasePlayer().also {
+            it.id = entity.id
+            it.type = CouchbasePlayer.TYPE
+            it.level = entity.level
+            it.coins = entity.coins
+            it.experience = entity.experience
+            it.authProvider = createCouchbaseAuthProvider(entity.authProvider).map
+            it.avatarCode = entity.avatar.code
+            it.createdAt = entity.createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            it.pet = createCouchbasePet(entity.pet).map
+        }
 
-    private fun createCouchbaseAuthProvider(entity: Player): CouchbaseAuthProvider {
-        val authProvider = entity.authProvider
+    private fun createCouchbasePet(pet: Pet) =
+        CouchbasePet().also {
+            it.name = pet.name
+            it.avatar = pet.avatar.name
+            it.healthPoints = pet.healthPoints
+            it.moodPoints = pet.moodPoints
+            it.coinBonus = pet.coinBonus
+            it.experienceBonus = pet.experienceBonus
+            it.unlockChanceBonus = pet.unlockChanceBonus
+        }
 
-        val cap = CouchbaseAuthProvider()
-        cap.id = authProvider.id
-        cap.email = authProvider.email
-        cap.firstName = authProvider.firstName
-        cap.lastName = authProvider.lastName
-        cap.username = authProvider.username
-        cap.image = authProvider.image
-        cap.provider = authProvider.provider
-        return cap
-    }
+    private fun createCouchbaseAuthProvider(authProvider: AuthProvider) =
+        CouchbaseAuthProvider().also {
+            it.id = authProvider.id
+            it.email = authProvider.email
+            it.firstName = authProvider.firstName
+            it.lastName = authProvider.lastName
+            it.username = authProvider.username
+            it.image = authProvider.image
+            it.provider = authProvider.provider
+        }
 }
