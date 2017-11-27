@@ -19,7 +19,7 @@ data class CalendarChangeDateIntent(val year: Int, val month: Int, val day: Int)
 data class ChangeMonthIntent(val year: Int, val month: Int) : CalendarIntent()
 object ExpandToolbarIntent : CalendarIntent()
 object ExpandToolbarWeekIntent : CalendarIntent()
-data class PlayerChangedIntent(val player: Player) : CalendarIntent()
+data class ChangePlayerIntent(val player: Player) : CalendarIntent()
 
 data class CalendarViewState(
     val type: StateType = DATA_LOADED,
