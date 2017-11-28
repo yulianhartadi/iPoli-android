@@ -14,12 +14,13 @@ sealed class PetIntent : Intent
 object LoadDataIntent : PetIntent()
 object ShowFoodList : PetIntent()
 object HideFoodList : PetIntent()
-object Feed : PetIntent()
+data class Feed(val food : Food) : PetIntent()
 data class ChangePetIntent(val pet: Pet) : PetIntent()
 
 data class PetViewState(
     val type: StateType = StateType.DATA_LOADED,
     val stateName: String = "",
+    val foodImage: Int? = null,
     val maxHP: Int = Constants.MAX_PET_HP,
     val maxMP: Int = Constants.MAX_PET_MP,
     val hp: Int = 0,

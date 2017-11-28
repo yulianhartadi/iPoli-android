@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ProgressBar
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
@@ -46,7 +47,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         view.foodList.layoutManager = LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
         view.foodList.adapter = PetFoodAdapter(
             Food.values().map {
-                PetFoodViewModel(it.image, it.price)
+                PetFoodViewModel(it.image, it.price, it)
             }
         )
         return view
@@ -86,7 +87,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             PET_FED -> {
-                playFeedPetAnimation(view, state.stateImage, state.awesomeStateImage)
+                playFeedPetAnimation(view, state)
             }
 
             PET_CHANGED -> {
@@ -109,13 +110,36 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         }
     }
 
+    private fun playFeedPetAnimation(view: View, state: PetViewState) {
+        val selectedFood = view.selectedFood
+        val slideAnim = ObjectAnimator.ofFloat(selectedFood, "x", 0f, (view.width / 2 - selectedFood.width / 2).toFloat())
+        val fadeAnim = ObjectAnimator.ofFloat(selectedFood, "alpha", 1f, 0f)
+        fadeAnim.startDelay = 250
+
+        val anim = AnimatorSet()
+        anim.playTogether(slideAnim, fadeAnim)
+        anim.duration = 500
+        anim.interpolator = AccelerateDecelerateInterpolator()
+        anim.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator?) {
+                selectedFood.setImageResource(state.foodImage!!)
+                selectedFood.alpha = 1f
+            }
+
+            override fun onAnimationEnd(animation: Animator?) {
+                playFeedPetResponseAnimation(view, state.stateImage, state.awesomeStateImage)
+            }
+        })
+        anim.start()
+    }
+
     private fun playProgressAnimation(view: ProgressBar, from: Int, to: Int) {
         val animator = ObjectAnimator.ofInt(view, "progress", from, to)
         animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
         animator.start()
     }
 
-    private fun playFeedPetAnimation(view: View, @DrawableRes currentStateImage: Int, @DrawableRes awesomeStateImage: Int) {
+    private fun playFeedPetResponseAnimation(view: View, @DrawableRes currentStateImage: Int, @DrawableRes awesomeStateImage: Int) {
         val anim = AnimatorSet()
         anim.playSequentially(
             createShowPetResponseAnimation(view, awesomeStateImage),
@@ -183,7 +207,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         animator.start()
     }
 
-    data class PetFoodViewModel(@DrawableRes val image: Int, val price: Int)
+    data class PetFoodViewModel(@DrawableRes val image: Int, val price: Int, val food : Food)
 
     inner class PetFoodAdapter(private val foodItems: List<PetFoodViewModel>) : RecyclerView.Adapter<PetFoodAdapter.ViewHolder>() {
         override fun getItemCount() = foodItems.size
@@ -193,7 +217,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             holder.itemView.foodImage.setImageResource(vm.image)
             holder.itemView.foodPrice.text = vm.price.toString()
             holder.itemView.setOnClickListener {
-                send(Feed)
+                send(Feed(vm.food))
             }
         }
 
