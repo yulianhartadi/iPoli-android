@@ -31,12 +31,13 @@ data class CalendarViewState(
     val adapterPosition: Int,
     val progress: Int = 0,
     val maxProgress: Int = 0,
-    val level: Int = 0
+    val level: Int = 0,
+    val coins: Int = 0
 ) : ViewState {
 
     enum class StateType {
         LOADING, DATA_LOADED, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED, DEFAULT, DATE_PICKER_CHANGED,
-        LEVEL_CHANGED, XP_CHANGED
+        LEVEL_CHANGED, XP_AND_COINS_CHANGED
     }
 
     enum class DatePickerState {

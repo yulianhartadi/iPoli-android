@@ -32,7 +32,7 @@ class QuestCompleteJob : Job(), Injects<ControllerModule> {
         val c = ContextThemeWrapper(context, R.style.Theme_iPoli)
 
         launch(UI) {
-            QuestCompletePopup(quest.experience!!).show(c)
+            QuestCompletePopup(quest.experience!!, quest.coins!!).show(c)
         }
 
         return Result.SUCCESS
