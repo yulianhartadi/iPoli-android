@@ -4,6 +4,8 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.pet.Pet
+import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.AuthProvider
 import io.ipoli.android.player.LevelUpScheduler
 import io.ipoli.android.player.Player
@@ -115,11 +117,15 @@ class CompleteQuestUseCaseSpek : Spek({
             newQuest.coins!! `should be greater than` 0
         }
 
-        it("should level up & give coins to Player") {
+        it("should give rewards to Player") {
+
+            val pet = Pet("", PetAvatar.ELEPHANT)
+
             val player = Player(
                 coins = 10,
                 experience = 49,
-                authProvider = AuthProvider()
+                authProvider = AuthProvider(),
+                pet = pet
             )
 
             val playerRepo = mock<PlayerRepository> {
@@ -132,12 +138,14 @@ class CompleteQuestUseCaseSpek : Spek({
                 questCompleteScheduler,
                 levelUpScheduler
             )
+
             val newQuest = useCase.execute(questId)
             Verify on playerRepo that playerRepo.save(
                 player.copy(
                     level = 2,
                     experience = player.experience + newQuest.experience!!,
-                    coins = player.coins + newQuest.coins!!
+                    coins = player.coins + newQuest.coins!!,
+                    pet = pet.addHealthPoints(newQuest)
                 )
             ) was called
 
