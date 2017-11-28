@@ -277,7 +277,8 @@
 
     <ImageView
         android:id="@+id/selectedFood"
-        android:layout_width="wrap_content"
+        android:layout_width="92dp"
+        android:scaleType="fitCenter"
         android:layout_height="wrap_content"
         android:alpha="0"
         app:layout_constraintBottom_toTopOf="@+id/guideline11"

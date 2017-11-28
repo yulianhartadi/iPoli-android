@@ -112,13 +112,15 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
     private fun playFeedPetAnimation(view: View, state: PetViewState) {
         val selectedFood = view.selectedFood
-        val slideAnim = ObjectAnimator.ofFloat(selectedFood, "x", 0f, (view.width / 2 - selectedFood.width / 2).toFloat())
+        val duration = 300L
+        val slideAnim = ObjectAnimator.ofFloat(selectedFood, "x", 0f,
+            (view.width / 2 - selectedFood.width).toFloat())
         val fadeAnim = ObjectAnimator.ofFloat(selectedFood, "alpha", 1f, 0f)
-        fadeAnim.startDelay = 250
+        fadeAnim.startDelay = duration / 2
 
         val anim = AnimatorSet()
         anim.playTogether(slideAnim, fadeAnim)
-        anim.duration = 500
+        anim.duration = duration
         anim.interpolator = AccelerateDecelerateInterpolator()
         anim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator?) {
