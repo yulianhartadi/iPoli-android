@@ -10,8 +10,8 @@ import org.threeten.bp.LocalDateTime
 data class Player(
     override val id: String = "",
     val level: Int = 1,
-    val coins: Int = 0,
-    val experience: Long = 0,
+    val coins: Int = Constants.DEFAULT_PLAYER_COINS,
+    val experience: Long = Constants.DEFAULT_PLAYER_XP,
     val authProvider: AuthProvider,
     val avatar: Avatar = Avatar.IPOLI_CLASSIC,
     val createdAt: LocalDateTime = LocalDateTime.now(),
@@ -48,6 +48,14 @@ data class Player(
         }
         return newLevel
     }
+
+    fun addCoins(coins: Int) = copy(
+        coins = coins + this.coins
+    )
+
+    fun removeCoins(coins: Int) = copy(
+        coins = Math.max(this.coins - coins, 0)
+    )
 }
 
 data class AuthProvider(

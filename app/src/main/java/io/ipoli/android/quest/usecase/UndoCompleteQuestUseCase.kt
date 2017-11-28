@@ -31,7 +31,7 @@ class UndoCompleteQuestUseCase(
 
         val player = playerRepository.find()
         requireNotNull(player)
-        val newPlayer = player!!.removeExperience(newQuest.experience!!)
+        val newPlayer = player!!.removeExperience(newQuest.experience!!).removeCoins(newQuest.coins!!)
         playerRepository.save(newPlayer)
 
         return newQuest

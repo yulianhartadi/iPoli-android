@@ -3,12 +3,14 @@ package io.ipoli.android.quest.usecase
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.reset
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.player.AuthProvider
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.persistence.PlayerRepository
-import io.ipoli.android.quest.*
+import io.ipoli.android.quest.Category
+import io.ipoli.android.quest.Color
+import io.ipoli.android.quest.Quest
+import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.reminder.ReminderScheduler
 import org.amshove.kluent.*
@@ -26,8 +28,54 @@ class UndoCompleteQuestUseCaseSpek : Spek({
     describe("UndoCompleteQuestUseCase") {
         val questId = "sampleid"
 
+        val quest = Quest(
+            name = "",
+            color = Color.BLUE,
+            category = Category("Wellness", Color.BLUE),
+            scheduledDate = LocalDate.now(),
+            duration = 30,
+            reminder = Reminder("", Time.now(), LocalDate.now()),
+            experience = 20,
+            coins = 10
+        )
+
+        var questRepo: QuestRepository = mock<QuestRepository>()
+
+        var reminderScheduler = mock<ReminderScheduler>()
+
+        val player = Player(
+            authProvider = AuthProvider()
+        )
+
+        var playerRepo: PlayerRepository = mock<PlayerRepository>()
+
+        var useCase = UndoCompleteQuestUseCase(
+            questRepo,
+            playerRepo,
+            reminderScheduler
+        )
+
         beforeEachTest {
-            reset(questRepo, reminderScheduler)
+            questRepo = mock<QuestRepository> {
+
+                on { findById(any()) } doReturn
+                    quest
+
+                on { findNextQuestsToRemind(any()) } doReturn
+                    listOf(quest)
+            }
+
+            playerRepo = mock<PlayerRepository> {
+                on { find() } doReturn player
+            }
+
+            reminderScheduler = mock<ReminderScheduler>()
+
+            useCase = UndoCompleteQuestUseCase(
+                questRepo,
+                playerRepo,
+                reminderScheduler
+            )
         }
 
         it("should fail when questId is empty") {
@@ -51,10 +99,16 @@ class UndoCompleteQuestUseCaseSpek : Spek({
             newQuest.experience.shouldNotBeNull()
         }
 
-        it("should level down player") {
+        it("should not remove coins") {
+            val newQuest = useCase.execute(questId)
+            newQuest.coins.shouldNotBeNull()
+        }
+
+        it("should level down & remove coins from Player") {
             val player = Player(
                 level = 2,
                 experience = 50,
+                coins = 100,
                 authProvider = AuthProvider()
             )
 
@@ -70,53 +124,15 @@ class UndoCompleteQuestUseCaseSpek : Spek({
             Verify on playerRepo that playerRepo.save(
                 player.copy(
                     level = 1,
-                    experience = player.experience - newQuest.experience!!
+                    experience = player.experience - newQuest.experience!!,
+                    coins = player.coins - newQuest.coins!!
                 )
             ) was called
         }
     }
 
-
 })
 
-val quest = Quest(
-    name = "",
-    color = Color.BLUE,
-    category = Category("Wellness", Color.BLUE),
-    scheduledDate = LocalDate.now(),
-    duration = 30,
-    reminder = Reminder("", Time.now(), LocalDate.now()),
-    experience = 20
-)
-
-val questRepo: QuestRepository
-    get() =
-        mock<QuestRepository> {
-
-            on { findById(any()) } doReturn
-                quest
-
-            on { findNextQuestsToRemind(any()) } doReturn
-                listOf(quest)
-        }
-
-val reminderScheduler = mock<ReminderScheduler>()
-
-val player = Player(
-    authProvider = AuthProvider()
-)
-
-val playerRepo: PlayerRepository
-    get() =
-        mock<PlayerRepository> {
-            on { find() } doReturn player
-        }
-
-val useCase = UndoCompleteQuestUseCase(
-    questRepo,
-    playerRepo,
-    reminderScheduler
-)
 
 
 
