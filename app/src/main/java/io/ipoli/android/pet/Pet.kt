@@ -4,6 +4,7 @@ import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
 import io.ipoli.android.Constants
 import io.ipoli.android.R
+import io.ipoli.android.quest.Quest
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -18,7 +19,11 @@ data class Pet(
     val experienceBonus: Int = moodPoints / 20,
     val coinBonus: Int = moodPoints / 20,
     val unlockChanceBonus: Int = moodPoints / 20
-)
+) {
+    fun addHealthPoints(quest: Quest) = copy(
+        healthPoints = healthPoints + Math.floor(quest.experience!! / Constants.XP_TO_PET_HP_RATIO).toInt()
+    )
+}
 
 enum class PetMood {
     DEAD, SAD, GOOD, HAPPY, AWESOME
