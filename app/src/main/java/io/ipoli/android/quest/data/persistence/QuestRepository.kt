@@ -36,6 +36,7 @@ data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMa
     var reminder: MutableMap<String, Any?>? by map
     var startMinute: Long? by map
     var experience: Long? by map
+    var coins: Long? by map
     var scheduledDate: Long by map
     var completedAtDate: Long? by map
     var completedAtMinute: Long? by map
@@ -131,6 +132,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             startTime = plannedTime,
             duration = cq.duration,
             experience = cq.experience?.toInt(),
+            coins = cq.coins?.toInt(),
             completedAtDate = cq.completedAtDate?.let {
                 DateUtils.fromMillis(it)
             },
@@ -158,6 +160,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             createCouchbaseReminder(it).map
         }
         q.experience = entity.experience?.toLong()
+        q.coins = entity.coins?.toLong()
         q.startMinute = entity.startTime?.toMinuteOfDay()?.toLong()
         q.completedAtDate = entity.completedAtDate?.startOfDayUTC()
         q.completedAtMinute = entity.completedAtTime?.toMinuteOfDay()?.toLong()

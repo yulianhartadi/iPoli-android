@@ -238,11 +238,12 @@ class CalendarViewController(args: Bundle? = null) :
             levelProgress.visible = false
         }
 
-        if (state.type == XP_CHANGED) {
+        if (state.type == XP_AND_COINS_CHANGED) {
             levelProgress.visible = true
             val animator = ObjectAnimator.ofInt(levelProgress, "progress", levelProgress.progress, state.progress)
             animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
             animator.start()
+            calendarToolbar.playerCoins.text = state.coins.toString()
         }
 
         if (state.type == LEVEL_CHANGED) {
@@ -262,6 +263,7 @@ class CalendarViewController(args: Bundle? = null) :
             levelProgress.progress = state.progress
             levelProgress.max = state.maxProgress
             calendarToolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
+            calendarToolbar.playerCoins.text = state.coins.toString()
         }
 
         if (state.type == CALENDAR_DATE_CHANGED) {
