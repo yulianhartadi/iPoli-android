@@ -45,7 +45,8 @@ class PetPresenter(
 
             is Feed -> {
                 state.copy(
-                    type = PET_FED
+                    type = PET_FED,
+                    foodImage = intent.food.image
                 )
             }
 
