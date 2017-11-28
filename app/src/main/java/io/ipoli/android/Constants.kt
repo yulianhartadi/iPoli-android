@@ -82,9 +82,9 @@ interface Constants {
         val IPOLI_EMAIL = "hi@ipoli.io"
 
         val API_RESOURCE_SOURCE = "ipoli-android"
-        val DEFAULT_PLAYER_XP = 20
+        val DEFAULT_PLAYER_XP: Long = 20
         val DEFAULT_PLAYER_LEVEL = 1
-        val DEFAULT_PLAYER_COINS: Long = 10
+        val DEFAULT_PLAYER_COINS: Int = 10
         //        val DEFAULT_PLAYER_AVATAR = Avatar.IPOLI_CLASSIC
 //        val DEFAULT_PLAYER_PRODUCTIVE_TIMES: Set<TimeOfDay> = HashSet<Any>(listOf(TimeOfDay.MORNING))
         val DEFAULT_PLAYER_WORK_START_MINUTE = 10 * 60

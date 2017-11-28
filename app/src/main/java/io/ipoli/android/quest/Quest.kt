@@ -97,7 +97,8 @@ data class Quest(
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val completedAtDate: LocalDate? = null,
     val completedAtTime: Time? = null,
-    val experience: Int? = null
+    val experience: Int? = null,
+    val coins: Int? = null
 ) : Entity {
     val isCompleted = completedAtDate != null
     val endTime: Time?

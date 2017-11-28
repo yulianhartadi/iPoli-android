@@ -29,10 +29,12 @@ class CompleteQuestUseCase(
 
         val quest = questRepository.findById(parameters)!!
         val experience = quest.experience ?: xpForQuest()
+        val coins = quest.coins ?: coinsForQuest()
         val newQuest = quest.copy(
             completedAtDate = LocalDate.now(),
             completedAtTime = Time.now(),
-            experience = experience
+            experience = experience,
+            coins = coins
         )
 
         questRepository.save(newQuest)
@@ -44,7 +46,7 @@ class CompleteQuestUseCase(
 
         val player = playerRepository.find()
         requireNotNull(player)
-        val newPlayer = player!!.addExperience(experience)
+        val newPlayer = player!!.addExperience(experience).addCoins(coins)
 
         if (newPlayer.level != player.level) {
             levelUpScheduler.schedule()
@@ -54,6 +56,11 @@ class CompleteQuestUseCase(
 
         playerRepository.save(newPlayer)
         return newQuest
+    }
+
+    private fun coinsForQuest(): Int {
+        val rewards = intArrayOf(2, 5, 7, 10)
+        return rewards[Random(randomSeed).nextInt(rewards.size)] * TEMP_BONUS_MULTIPLIER
     }
 
     private fun xpForQuest(): Int {
