@@ -144,11 +144,13 @@ interface Constants {
         val DEFAULT_PET_HP = 80
         val XP_BONUS_PERCENTAGE_OF_HP = 20.0
         val COINS_BONUS_PERCENTAGE_OF_HP = 10.0
-        val MAX_PET_COIN_BONUS = 10
 
-        val MAX_PET_XP_BONUS = 20
+        val MAX_PET_XP_BONUS = 20f
+        val MAX_PET_COIN_BONUS = 18f
+        val MAX_PET_UNLOCK_CHANCE_BONUS = 16f
 
         val XP_TO_PET_HP_RATIO = 13.2
+        val XP_TO_PET_MOOD_RATIO = 11.1
         val REVIVE_PET_COST = 300
         val PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index"
         val RANDOM_SEED = 42 // duh!
