@@ -2,8 +2,7 @@ package io.ipoli.android.quest.usecase
 
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.player.LevelUpScheduler
-import io.ipoli.android.player.persistence.PlayerRepository
+import io.ipoli.android.player.usecase.RewardPlayerUseCase
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.QuestCompleteScheduler
 import io.ipoli.android.quest.data.persistence.QuestRepository
@@ -17,10 +16,9 @@ import java.util.*
  */
 class CompleteQuestUseCase(
     private val questRepository: QuestRepository,
-    private val playerRepository: PlayerRepository,
     private val reminderScheduler: ReminderScheduler,
     private val questCompleteScheduler: QuestCompleteScheduler,
-    private val levelUpScheduler: LevelUpScheduler,
+    private val rewardPlayerUseCase: RewardPlayerUseCase,
     private val randomSeed: Long = System.currentTimeMillis()
 ) : UseCase<String, Quest> {
     override fun execute(parameters: String): Quest {
@@ -44,18 +42,20 @@ class CompleteQuestUseCase(
             reminderScheduler.schedule(quests.first().reminder!!.toMillis())
         }
 
-        val player = playerRepository.find()
-        requireNotNull(player)
-        val newPet = player!!.pet.addHealthPoints(newQuest)
-        val newPlayer = player.addExperience(experience).addCoins(coins).copy(pet = newPet)
+        val newPlayer = rewardPlayerUseCase.execute(newQuest)
 
-        if (newPlayer.level != player.level) {
-            levelUpScheduler.schedule()
-        } else {
+//        val player = playerRepository.find()
+//        requireNotNull(player)
+//        val newPet = player!!.pet.addHealthPoints(newQuest)
+//        val newPlayer = player.addExperience(experience).addCoins(coins).copy(pet = newPet)
+//
+//        if (newPlayer.level != player.level) {
+//            levelUpScheduler.schedule()
+//        } else {
             questCompleteScheduler.schedule(parameters)
-        }
-
-        playerRepository.save(newPlayer)
+//        }
+//
+//        playerRepository.save(newPlayer)
         return newQuest
     }
 

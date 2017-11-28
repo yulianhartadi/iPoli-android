@@ -25,9 +25,9 @@ data class PetViewState(
     val maxMP: Int = Constants.MAX_PET_MP,
     val hp: Int = 0,
     val mp: Int = 0,
-    val coinsBonus: Int = 0,
-    val xpBonus: Int = 0,
-    val unlockChanceBonus: Int = 0,
+    val coinsBonus: Float = 0f,
+    val xpBonus: Float = 0f,
+    val unlockChanceBonus: Float = 0f,
     @DrawableRes val image: Int = 0,
     @DrawableRes val stateImage: Int = 0,
     @DrawableRes val awesomeStateImage: Int = 0

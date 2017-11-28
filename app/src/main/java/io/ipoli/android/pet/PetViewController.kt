@@ -99,9 +99,9 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 view.moodPoints.text = state.mp.toString() + "/" + state.maxMP
                 view.moodProgress.max = state.maxMP
 
-                view.coinBonus.text = "+${state.coinsBonus}%"
-                view.xpBonus.text = "+${state.xpBonus}%"
-                view.unlockChanceBonus.text = "+${state.unlockChanceBonus}%"
+                view.coinBonus.text = "+ ${state.coinsBonus}%"
+                view.xpBonus.text = "+ ${state.xpBonus}%"
+                view.unlockChanceBonus.text = "+ ${state.unlockChanceBonus}%"
 
                 view.pet.setImageResource(state.image)
                 view.petState.setImageResource(state.stateImage)
