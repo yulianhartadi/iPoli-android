@@ -3,9 +3,9 @@ package io.ipoli.android.quest.usecase
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.reset
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.player.AuthProvider
-import io.ipoli.android.player.Player
+import io.ipoli.android.player.usecase.RewardPlayerUseCase
 import io.ipoli.android.quest.*
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.reminder.ReminderScheduler
@@ -23,10 +23,6 @@ class CompleteQuestUseCaseSpek : Spek({
 
     describe("CompleteQuestUseCase") {
 
-        val player = Player(
-            authProvider = AuthProvider()
-        )
-
         val quest = Quest(
             name = "",
             color = Color.BLUE,
@@ -36,33 +32,22 @@ class CompleteQuestUseCaseSpek : Spek({
             reminder = Reminder("", Time.now(), LocalDate.now())
         )
 
-        var questCompleteScheduler = mock<QuestCompleteScheduler>()
+        val questRepo: QuestRepository = createQuestRepository(quest)
 
-        var reminderScheduler = mock<ReminderScheduler>()
+        val questCompleteScheduler = mock<QuestCompleteScheduler>()
+        val reminderScheduler = mock<ReminderScheduler>()
+        val rewardPlayerUseCase = mock<RewardPlayerUseCase>()
 
-        var questRepo: QuestRepository = createQuestRepository(quest)
-
-        var useCase = CompleteQuestUseCase(
+        val useCase = CompleteQuestUseCase(
             questRepo,
             reminderScheduler,
             questCompleteScheduler,
+            rewardPlayerUseCase,
             42
         )
 
         beforeEachTest {
-
-            questCompleteScheduler = mock<QuestCompleteScheduler>()
-
-            reminderScheduler = mock<ReminderScheduler>()
-
-            questRepo = createQuestRepository(quest)
-
-            useCase = CompleteQuestUseCase(
-                questRepo,
-                reminderScheduler,
-                questCompleteScheduler,
-                42
-            )
+            reset(rewardPlayerUseCase, questCompleteScheduler, reminderScheduler)
         }
 
         val questId = "sampleid"
@@ -101,61 +86,6 @@ class CompleteQuestUseCaseSpek : Spek({
             newQuest.coins.shouldNotBeNull()
             newQuest.coins!! `should be greater than` 0
         }
-
-//        it("should give rewards to Player") {
-//
-//            val pet = Pet("", PetAvatar.ELEPHANT)
-//
-//            val player = Player(
-//                coins = 10,
-//                experience = 49,
-//                authProvider = AuthProvider(),
-//                pet = pet
-//            )
-//
-//            val playerRepo = mock<PlayerRepository> {
-//                on { find() } doReturn player
-//            }
-//            val useCase = CompleteQuestUseCase(
-//                questRepo,
-//                playerRepo,
-//                reminderScheduler,
-//                questCompleteScheduler,
-//                levelUpScheduler
-//            )
-//
-//            val newQuest = useCase.execute(questId)
-//            Verify on playerRepo that playerRepo.save(
-//                player.copy(
-//                    level = 2,
-//                    experience = player.experience + newQuest.experience!!,
-//                    coins = player.coins + newQuest.coins!!,
-//                    pet = pet.addHealthPoints(newQuest)
-//                )
-//            ) was called
-//
-//        }
-//
-//        it("should schedule level up message") {
-//            val player = Player(
-//                experience = 49,
-//                authProvider = AuthProvider()
-//            )
-//
-//            val playerRepo = mock<PlayerRepository> {
-//                on { find() } doReturn player
-//            }
-//            val useCase = CompleteQuestUseCase(
-//                questRepo,
-//                playerRepo,
-//                reminderScheduler,
-//                questCompleteScheduler,
-//                levelUpScheduler
-//            )
-//            useCase.execute(questId)
-//            Verify on levelUpScheduler that levelUpScheduler.schedule() was called
-//        }
-
     }
 })
 
