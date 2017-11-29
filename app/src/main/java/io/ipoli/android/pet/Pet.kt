@@ -23,13 +23,11 @@ data class Pet(
 ) {
     fun rewardFrom(quest: Quest): Pet {
 
-        val rewardHP = Math.floor(quest.experience!! / Constants.XP_TO_PET_HP_RATIO).toInt()
-        val rewardMP = Math.floor(quest.experience / Constants.XP_TO_PET_MOOD_RATIO).toInt()
+        val rewardHP = healthPointsForXP(quest.experience!!)
+        val rewardMP = moodPointsForXP(quest.experience)
 
-        val newHealthPoints = newHealthPoints(rewardHP)
-
-        val newMoodPoints = newMoodPoints(newHealthPoints, rewardMP)
-
+        val newHealthPoints = addHealthPoints(rewardHP)
+        val newMoodPoints = addMoodPoints(newHealthPoints, rewardMP)
         val newMood = moodFor(newMoodPoints)
 
         return copy(
@@ -42,9 +40,15 @@ data class Pet(
         )
     }
 
-    private fun newHealthPoints(rewardHP: Int) = Math.min(this.healthPoints + rewardHP, MAX_HP)
+    private fun healthPointsForXP(experience: Int) =
+        Math.floor(experience / Constants.XP_TO_PET_HP_RATIO).toInt()
 
-    private fun newMoodPoints(newHealthPoints: Int, rewardMoodPoints: Int) =
+    private fun moodPointsForXP(experience: Int) =
+        Math.floor(experience / Constants.XP_TO_PET_MOOD_RATIO).toInt()
+
+    private fun addHealthPoints(rewardHP: Int) = Math.min(this.healthPoints + rewardHP, MAX_HP)
+
+    private fun addMoodPoints(newHealthPoints: Int, rewardMoodPoints: Int) =
         if (newHealthPoints <= LOW_HP_CUTOFF) {
             Math.min(moodPoints, GOOD_MIN_MOOD_POINTS - 1)
         } else {
