@@ -21,7 +21,10 @@ open class RewardPlayerUseCase(
         requireNotNull(player)
 
         val newPet = player!!.pet.rewardFor(parameters)
-        val newPlayer = player.addExperience(parameters.experience!!).addCoins(parameters.coins!!).copy(pet = newPet)
+        val newPlayer = player
+            .addExperience(parameters.experience!!)
+            .addCoins(parameters.coins!!)
+            .copy(pet = newPet)
         if (newPlayer.level != player.level) {
             levelUpScheduler.schedule()
         }
