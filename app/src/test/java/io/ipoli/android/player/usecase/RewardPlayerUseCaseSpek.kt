@@ -86,7 +86,7 @@ class RewardPlayerUseCaseSpek : Spek({
             val coins = 0
             val newQuest = quest.copy(experience = xp, coins = coins)
             val newPet = useCase.execute(newQuest).pet
-            val petReward = pet.rewardFrom(newQuest)
+            val petReward = pet.rewardFor(newQuest)
             newPet.healthPoints.`should be equal to`(petReward.healthPoints)
             newPet.moodPoints.`should be equal to`(petReward.moodPoints)
             newPet.mood.`should be`(petReward.mood)
