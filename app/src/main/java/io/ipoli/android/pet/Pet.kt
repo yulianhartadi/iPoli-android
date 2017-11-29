@@ -17,15 +17,18 @@ data class Pet(
     val moodPoints: Int = Constants.DEFAULT_PET_HP,
     val healthPoints: Int = Constants.DEFAULT_PET_HP,
     val mood: PetMood = moodFor(healthPoints),
-    val experienceBonus: Float = bonusFor(mood, Constants.MAX_PET_XP_BONUS),
-    val coinBonus: Float = bonusFor(mood, Constants.MAX_PET_COIN_BONUS),
-    val unlockChanceBonus: Float = bonusFor(mood, Constants.MAX_PET_UNLOCK_CHANCE_BONUS)
+    val experienceBonus: Float = bonusFor(mood, MAX_XP_BONUS),
+    val coinBonus: Float = bonusFor(mood, MAX_COIN_BONUS),
+    val unlockChanceBonus: Float = bonusFor(mood, MAX_UNLOCK_CHANCE_BONUS)
 ) {
     fun rewardFrom(quest: Quest): Pet {
-        val reward = PetRewardGenerator.forQuest(quest)
-        val newHealthPoints = Math.min(this.healthPoints + reward.healthPoints, Constants.MAX_PET_HP)
 
-        val newMoodPoints = newMoodPoints(newHealthPoints, reward)
+        val rewardHP = Math.floor(quest.experience!! / Constants.XP_TO_PET_HP_RATIO).toInt()
+        val rewardMP = Math.floor(quest.experience / Constants.XP_TO_PET_MOOD_RATIO).toInt()
+
+        val newHealthPoints = newHealthPoints(rewardHP)
+
+        val newMoodPoints = newMoodPoints(newHealthPoints, rewardMP)
 
         val newMood = moodFor(newMoodPoints)
 
@@ -33,24 +36,35 @@ data class Pet(
             healthPoints = newHealthPoints,
             moodPoints = newMoodPoints,
             mood = newMood,
-            coinBonus = bonusFor(newMood, Constants.MAX_PET_COIN_BONUS),
-            experienceBonus = bonusFor(newMood, Constants.MAX_PET_XP_BONUS),
-            unlockChanceBonus = bonusFor(newMood, Constants.MAX_PET_UNLOCK_CHANCE_BONUS)
+            coinBonus = bonusFor(newMood, MAX_COIN_BONUS),
+            experienceBonus = bonusFor(newMood, MAX_XP_BONUS),
+            unlockChanceBonus = bonusFor(newMood, MAX_UNLOCK_CHANCE_BONUS)
         )
     }
 
-    private fun newMoodPoints(newHealthPoints: Int, reward: PetReward) =
-        if (newHealthPoints <= 0.2 * Constants.MAX_PET_HP) {
+    private fun newHealthPoints(rewardHP: Int) = Math.min(this.healthPoints + rewardHP, MAX_HP)
+
+    private fun newMoodPoints(newHealthPoints: Int, rewardMoodPoints: Int) =
+        if (newHealthPoints <= LOW_HP_CUTOFF) {
             Math.min(moodPoints, GOOD_MIN_MOOD_POINTS - 1)
         } else {
-            val moodBonusMultiplier = if (newHealthPoints >= 0.9 * Constants.MAX_PET_HP) 2 else 1
-            Math.min(moodPoints + reward.moodPoints * moodBonusMultiplier, Constants.MAX_PET_MP)
+            val moodBonusMultiplier = if (newHealthPoints >= HIGH_HP_CUTOFF) 2 else 1
+            Math.min(moodPoints + rewardMoodPoints * moodBonusMultiplier, MAX_MP)
         }
 
     companion object {
+
+        const val MAX_HP = 100
+        const val MAX_MP = 100
+        const val LOW_HP_CUTOFF = 0.2 * MAX_HP
+        const val HIGH_HP_CUTOFF = 0.9 * MAX_HP
         const val AWESOME_MIN_MOOD_POINTS = 90
         const val HAPPY_MIN_MOOD_POINTS = 60
         const val GOOD_MIN_MOOD_POINTS = 35
+
+        const val MAX_XP_BONUS = 20f
+        const val MAX_COIN_BONUS = 18f
+        const val MAX_UNLOCK_CHANCE_BONUS = 16f
 
         private fun bonusFor(mood: PetMood, maxBonus: Float): Float {
             val percentage = when (mood) {
