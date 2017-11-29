@@ -10,7 +10,7 @@ import io.ipoli.android.reminder.ReminderScheduler
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 10/27/17.
  */
-class UndoCompleteQuestUseCase(
+class UndoCompletedQuestUseCase(
     private val questRepository: QuestRepository,
     private val playerRepository: PlayerRepository,
     private val reminderScheduler: ReminderScheduler
