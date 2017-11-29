@@ -42,7 +42,7 @@ class CompleteQuestUseCase(
             reminderScheduler.schedule(quests.first().reminder!!.toMillis())
         }
 
-        val newPlayer = rewardPlayerUseCase.execute(newQuest)
+        rewardPlayerUseCase.execute(newQuest)
 
 //        val player = playerRepository.find()
 //        requireNotNull(player)

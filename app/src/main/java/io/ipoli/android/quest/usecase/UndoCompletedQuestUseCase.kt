@@ -1,7 +1,7 @@
 package io.ipoli.android.quest.usecase
 
 import io.ipoli.android.common.UseCase
-import io.ipoli.android.player.persistence.PlayerRepository
+import io.ipoli.android.player.usecase.RemoveRewardFromPlayerUseCase
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.reminder.ReminderScheduler
@@ -12,10 +12,10 @@ import io.ipoli.android.reminder.ReminderScheduler
  */
 class UndoCompletedQuestUseCase(
     private val questRepository: QuestRepository,
-    private val playerRepository: PlayerRepository,
-    private val reminderScheduler: ReminderScheduler
+    private val reminderScheduler: ReminderScheduler,
+    private val removeRewardFromPlayerUseCase: RemoveRewardFromPlayerUseCase
 ) : UseCase<String, Quest> {
-    override fun execute(parameters: String) : Quest {
+    override fun execute(parameters: String): Quest {
         require(parameters.isNotEmpty(), { "questId cannot be empty" })
 
         val newQuest = questRepository.findById(parameters)!!.copy(
@@ -29,10 +29,7 @@ class UndoCompletedQuestUseCase(
             reminderScheduler.schedule(quests.first().reminder!!.toMillis())
         }
 
-        val player = playerRepository.find()
-        requireNotNull(player)
-        val newPlayer = player!!.removeExperience(newQuest.experience!!).removeCoins(newQuest.coins!!)
-        playerRepository.save(newPlayer)
+        removeRewardFromPlayerUseCase.execute(newQuest)
 
         return newQuest
     }

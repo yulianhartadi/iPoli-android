@@ -6,7 +6,7 @@ import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.player.AuthProvider
 import io.ipoli.android.player.Player
-import io.ipoli.android.player.persistence.PlayerRepository
+import io.ipoli.android.player.usecase.RemoveRewardFromPlayerUseCase
 import io.ipoli.android.quest.Category
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Quest
@@ -39,7 +39,7 @@ class UndoCompleteQuestUseCaseSpek : Spek({
             coins = 10
         )
 
-        var questRepo: QuestRepository = mock<QuestRepository>()
+        var questRepo = mock<QuestRepository>()
 
         var reminderScheduler = mock<ReminderScheduler>()
 
@@ -47,12 +47,12 @@ class UndoCompleteQuestUseCaseSpek : Spek({
             authProvider = AuthProvider()
         )
 
-        var playerRepo: PlayerRepository = mock<PlayerRepository>()
+        val removeRewardFromPlayerUseCase = mock<RemoveRewardFromPlayerUseCase>()
 
         var useCase = UndoCompletedQuestUseCase(
             questRepo,
-            playerRepo,
-            reminderScheduler
+            reminderScheduler,
+            removeRewardFromPlayerUseCase
         )
 
         beforeEachTest {
@@ -65,16 +65,12 @@ class UndoCompleteQuestUseCaseSpek : Spek({
                     listOf(quest)
             }
 
-            playerRepo = mock<PlayerRepository> {
-                on { find() } doReturn player
-            }
-
             reminderScheduler = mock<ReminderScheduler>()
 
             useCase = UndoCompletedQuestUseCase(
                 questRepo,
-                playerRepo,
-                reminderScheduler
+                reminderScheduler,
+                removeRewardFromPlayerUseCase
             )
         }
 
@@ -102,32 +98,6 @@ class UndoCompleteQuestUseCaseSpek : Spek({
         it("should not remove coins") {
             val newQuest = useCase.execute(questId)
             newQuest.coins.shouldNotBeNull()
-        }
-
-        it("should level down & remove coins from Player") {
-            val player = Player(
-                level = 2,
-                experience = 50,
-                coins = 100,
-                authProvider = AuthProvider()
-            )
-
-            val playerRepo = mock<PlayerRepository> {
-                on { find() } doReturn player
-            }
-            val useCase = UndoCompletedQuestUseCase(
-                questRepo,
-                playerRepo,
-                reminderScheduler
-            )
-            val newQuest = useCase.execute(questId)
-            Verify on playerRepo that playerRepo.save(
-                player.copy(
-                    level = 1,
-                    experience = player.experience - newQuest.experience!!,
-                    coins = player.coins - newQuest.coins!!
-                )
-            ) was called
         }
     }
 
