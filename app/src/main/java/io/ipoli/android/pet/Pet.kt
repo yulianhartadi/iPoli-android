@@ -21,7 +21,7 @@ data class Pet(
     val coinBonus: Float = bonusFor(mood, MAX_COIN_BONUS),
     val unlockChanceBonus: Float = bonusFor(mood, MAX_UNLOCK_CHANCE_BONUS)
 ) {
-    fun rewardFrom(quest: Quest): Pet {
+    fun rewardFor(quest: Quest): Pet {
 
         val rewardHP = healthPointsForXP(quest.experience!!)
         val rewardMP = moodPointsForXP(quest.experience)
@@ -40,6 +40,32 @@ data class Pet(
         )
     }
 
+    fun removeRewardFor(quest: Quest): Pet {
+        val rewardHP = healthPointsForXP(quest.experience!!)
+        val rewardMP = moodPointsForXP(quest.experience)
+
+        val newHealthPoints = removeHealthPoints(rewardHP)
+        val newMoodPoints = removeMoodPoints(healthPoints, newHealthPoints, rewardMP)
+        val newMood = moodFor(newMoodPoints)
+
+        return copy(
+            healthPoints = newHealthPoints,
+            moodPoints = newMoodPoints,
+            mood = newMood,
+            coinBonus = bonusFor(newMood, MAX_COIN_BONUS),
+            experienceBonus = bonusFor(newMood, MAX_XP_BONUS),
+            unlockChanceBonus = bonusFor(newMood, MAX_UNLOCK_CHANCE_BONUS)
+        )
+    }
+
+    private fun removeMoodPoints(oldHealthPoints: Int, newHealthPoints: Int, rewardMoodPoints: Int): Int {
+        val notHealthyAnymore = oldHealthPoints >= HEALTHY_CUTOFF && newHealthPoints < HEALTHY_CUTOFF
+        val reduceMultiplier = if (notHealthyAnymore) 2 else 1
+        return Math.max(moodPoints - rewardMoodPoints * reduceMultiplier, 0)
+    }
+
+    private fun removeHealthPoints(rewardHP: Int) = Math.max(this.healthPoints - rewardHP, 0)
+
     private fun healthPointsForXP(experience: Int) =
         Math.floor(experience / Constants.XP_TO_PET_HP_RATIO).toInt()
 
@@ -49,10 +75,10 @@ data class Pet(
     private fun addHealthPoints(rewardHP: Int) = Math.min(this.healthPoints + rewardHP, MAX_HP)
 
     private fun addMoodPoints(newHealthPoints: Int, rewardMoodPoints: Int) =
-        if (newHealthPoints <= LOW_HP_CUTOFF) {
+        if (newHealthPoints <= SICK_CUTOFF) {
             Math.min(moodPoints, GOOD_MIN_MOOD_POINTS - 1)
         } else {
-            val moodBonusMultiplier = if (newHealthPoints >= HIGH_HP_CUTOFF) 2 else 1
+            val moodBonusMultiplier = if (newHealthPoints >= HEALTHY_CUTOFF) 2 else 1
             Math.min(moodPoints + rewardMoodPoints * moodBonusMultiplier, MAX_MP)
         }
 
@@ -60,8 +86,8 @@ data class Pet(
 
         const val MAX_HP = 100
         const val MAX_MP = 100
-        const val LOW_HP_CUTOFF = 0.2 * MAX_HP
-        const val HIGH_HP_CUTOFF = 0.9 * MAX_HP
+        const val SICK_CUTOFF = 0.2 * MAX_HP
+        const val HEALTHY_CUTOFF = 0.9 * MAX_HP
         const val AWESOME_MIN_MOOD_POINTS = 90
         const val HAPPY_MIN_MOOD_POINTS = 60
         const val GOOD_MIN_MOOD_POINTS = 35

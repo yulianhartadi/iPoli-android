@@ -40,7 +40,7 @@ class PetSpek : Spek({
                 moodPoints = Pet.MAX_MP,
                 mood = PetMood.AWESOME
             )
-            val newPet = p.rewardFrom(quest)
+            val newPet = p.rewardFor(quest)
             newPet.healthPoints.`should be equal to`(Pet.MAX_HP)
             newPet.moodPoints.`should be equal to`(Pet.MAX_MP)
         }
@@ -52,9 +52,9 @@ class PetSpek : Spek({
                 mood = PetMood.GOOD
             )
 
-            val normalIncrease = sickPet.rewardFrom(quest).moodPoints - sickPet.moodPoints
+            val normalIncrease = sickPet.rewardFor(quest).moodPoints - sickPet.moodPoints
             val healthyPet = sickPet.copy(healthPoints = 90)
-            val bonusIncrease = healthyPet.rewardFrom(quest).moodPoints - sickPet.moodPoints
+            val bonusIncrease = healthyPet.rewardFor(quest).moodPoints - sickPet.moodPoints
             bonusIncrease.`should be equal to`(normalIncrease * 2)
         }
 
@@ -63,11 +63,20 @@ class PetSpek : Spek({
                 healthPoints = 89,
                 moodPoints = 89,
                 mood = PetMood.HAPPY
-            ).rewardFrom(quest)
+            ).rewardFor(quest)
             newPet.mood.`should be`(PetMood.AWESOME)
             newPet.experienceBonus.`should be equal to`(Pet.MAX_XP_BONUS)
             newPet.coinBonus.`should be equal to`(Pet.MAX_COIN_BONUS)
             newPet.unlockChanceBonus.`should be equal to`(Pet.MAX_UNLOCK_CHANCE_BONUS)
+        }
+
+        it("should change mood to Happy reward from Quest is removed") {
+            val newPet = pet.copy(
+                healthPoints = Pet.MAX_HP,
+                moodPoints = Pet.AWESOME_MIN_MOOD_POINTS - 1,
+                mood = PetMood.AWESOME
+            ).removeRewardFor(quest)
+            newPet.mood.`should be`(PetMood.HAPPY)
         }
     }
 })
