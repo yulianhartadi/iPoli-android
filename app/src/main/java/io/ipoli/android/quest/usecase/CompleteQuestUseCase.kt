@@ -44,18 +44,7 @@ class CompleteQuestUseCase(
 
         rewardPlayerUseCase.execute(newQuest)
 
-//        val player = playerRepository.find()
-//        requireNotNull(player)
-//        val newPet = player!!.pet.addHealthPoints(newQuest)
-//        val newPlayer = player.addExperience(experience).addCoins(coins).copy(pet = newPet)
-//
-//        if (newPlayer.level != player.level) {
-//            levelUpScheduler.schedule()
-//        } else {
-            questCompleteScheduler.schedule(parameters)
-//        }
-//
-//        playerRepository.save(newPlayer)
+        questCompleteScheduler.schedule(parameters)
         return newQuest
     }
 
