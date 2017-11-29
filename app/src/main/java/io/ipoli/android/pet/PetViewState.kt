@@ -1,7 +1,6 @@
 package io.ipoli.android.pet
 
 import android.support.annotation.DrawableRes
-import io.ipoli.android.Constants
 import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
 
@@ -21,8 +20,8 @@ data class PetViewState(
     val type: StateType = StateType.DATA_LOADED,
     val stateName: String = "",
     val foodImage: Int? = null,
-    val maxHP: Int = Constants.MAX_PET_HP,
-    val maxMP: Int = Constants.MAX_PET_MP,
+    val maxHP: Int = Pet.MAX_HP,
+    val maxMP: Int = Pet.MAX_MP,
     val hp: Int = 0,
     val mp: Int = 0,
     val coinsBonus: Float = 0f,

@@ -145,10 +145,6 @@ interface Constants {
         val XP_BONUS_PERCENTAGE_OF_HP = 20.0
         val COINS_BONUS_PERCENTAGE_OF_HP = 10.0
 
-        val MAX_PET_XP_BONUS = 20f
-        val MAX_PET_COIN_BONUS = 18f
-        val MAX_PET_UNLOCK_CHANCE_BONUS = 16f
-
         val XP_TO_PET_HP_RATIO = 13.2
         val XP_TO_PET_MOOD_RATIO = 11.1
         val REVIVE_PET_COST = 300
@@ -183,9 +179,6 @@ interface Constants {
 
         val KEY_ACHIEVEMENT_ACTION = "achievement_action"
         val KEY_ACHIEVEMENT_ACTION_CLASS = "achievement_action_class"
-
-        val MAX_PET_HP = 100
-        val MAX_PET_MP = 100
 
         val LEVEL_UP_REWARDS = listOf<String>(
             "https://media2.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
