@@ -32,7 +32,7 @@ class DayViewPresenter(
     private val removeQuestUseCase: RemoveQuestUseCase,
     private val undoRemovedQuestUseCase: UndoRemovedQuestUseCase,
     private val completeQuestUseCase: CompleteQuestUseCase,
-    private val undoCompleteQuestUseCase: UndoCompleteQuestUseCase,
+    private val undoCompletedQuestUseCase: UndoCompletedQuestUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<DayViewState>, DayViewState, DayViewIntent>(
     DayViewState(type = DayViewState.StateType.LOADING), coroutineContext) {
@@ -233,7 +233,7 @@ class DayViewPresenter(
             }
 
             is UndoCompleteQuestIntent -> {
-                undoCompleteQuestUseCase.execute(intent.questId)
+                undoCompletedQuestUseCase.execute(intent.questId)
                 state.copy(type = UNDO_QUEST_COMPLETED)
             }
 

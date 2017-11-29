@@ -130,7 +130,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
     override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, reminderScheduler, questCompleteScheduler, rewardPlayerUseCase)
-    override val undoCompleteQuestUseCase get() = UndoCompleteQuestUseCase(questRepository, playerRepository, reminderScheduler)
+    override val undoCompletedQuestUseCase get() = UndoCompletedQuestUseCase(questRepository, playerRepository, reminderScheduler)
     override val listenForPlayerChangesUseCase get() = ListenForPlayerChangesUseCase(playerRepository, job + CommonPool)
     override val listenForPetChangesUseCase get() = ListenForPetChangesUseCase(playerRepository, job + CommonPool)
     override val rewardPlayerUseCase get() = RewardPlayerUseCase(playerRepository, levelUpScheduler)
@@ -167,7 +167,7 @@ interface UseCaseModule {
     val findQuestToRemindUseCase: FindQuestsToRemindUseCase
     val snoozeQuestUseCase: SnoozeQuestUseCase
     val completeQuestUseCase: CompleteQuestUseCase
-    val undoCompleteQuestUseCase: UndoCompleteQuestUseCase
+    val undoCompletedQuestUseCase: UndoCompletedQuestUseCase
     val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase
     val listenForPetChangesUseCase: ListenForPetChangesUseCase
     val rewardPlayerUseCase: RewardPlayerUseCase
@@ -188,7 +188,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val removeQuestUseCase by required { removeQuestUseCase }
     private val undoRemoveQuestUseCase by required { undoRemoveQuestUseCase }
     private val completeQuestUseCase by required { completeQuestUseCase }
-    private val undoCompleteQuestUseCase by required { undoCompleteQuestUseCase }
+    private val undoCompleteQuestUseCase by required { undoCompletedQuestUseCase }
     private val listenForPlayerChangesUseCase by required { listenForPlayerChangesUseCase }
     private val listenForPetChangesUseCase by required { listenForPetChangesUseCase }
     private val navigator by required { navigator }

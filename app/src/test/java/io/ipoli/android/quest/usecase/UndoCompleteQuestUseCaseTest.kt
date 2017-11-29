@@ -25,7 +25,7 @@ import org.threeten.bp.LocalDate
  */
 class UndoCompleteQuestUseCaseSpek : Spek({
 
-    describe("UndoCompleteQuestUseCase") {
+    describe("UndoCompletedQuestUseCase") {
         val questId = "sampleid"
 
         val quest = Quest(
@@ -49,7 +49,7 @@ class UndoCompleteQuestUseCaseSpek : Spek({
 
         var playerRepo: PlayerRepository = mock<PlayerRepository>()
 
-        var useCase = UndoCompleteQuestUseCase(
+        var useCase = UndoCompletedQuestUseCase(
             questRepo,
             playerRepo,
             reminderScheduler
@@ -71,7 +71,7 @@ class UndoCompleteQuestUseCaseSpek : Spek({
 
             reminderScheduler = mock<ReminderScheduler>()
 
-            useCase = UndoCompleteQuestUseCase(
+            useCase = UndoCompletedQuestUseCase(
                 questRepo,
                 playerRepo,
                 reminderScheduler
@@ -115,7 +115,7 @@ class UndoCompleteQuestUseCaseSpek : Spek({
             val playerRepo = mock<PlayerRepository> {
                 on { find() } doReturn player
             }
-            val useCase = UndoCompleteQuestUseCase(
+            val useCase = UndoCompletedQuestUseCase(
                 questRepo,
                 playerRepo,
                 reminderScheduler
