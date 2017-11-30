@@ -142,6 +142,10 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
         }
     }
 
+    /**
+     * @param start inclusive
+     * @param end inclusive
+     */
     fun isBetween(start: Time, end: Time): Boolean {
         if (minutes >= start.minutes && minutes <= end.minutes) {
             return true
