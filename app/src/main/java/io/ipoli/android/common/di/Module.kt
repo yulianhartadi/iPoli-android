@@ -10,7 +10,9 @@ import com.couchbase.lite.DatabaseConfiguration
 import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.text.CalendarFormatter
 import io.ipoli.android.home.HomePresenter
+import io.ipoli.android.pet.AndroidJobChangePetStatsScheduler
 import io.ipoli.android.pet.PetPresenter
+import io.ipoli.android.pet.ChangePetStatsScheduler
 import io.ipoli.android.pet.usecase.ListenForPetChangesUseCase
 import io.ipoli.android.player.AndroidLevelDownScheduler
 import io.ipoli.android.player.AndroidLevelUpScheduler
@@ -85,6 +87,8 @@ interface AndroidModule {
 
     val levelDownScheduler: LevelDownScheduler
 
+    val changePetStatsScheduler: ChangePetStatsScheduler
+
     val job: Job
 }
 
@@ -115,6 +119,8 @@ class MainAndroidModule(private val context: Context) : AndroidModule {
     override val levelUpScheduler get() = AndroidLevelUpScheduler()
 
     override val levelDownScheduler get() = AndroidLevelDownScheduler()
+
+    override val changePetStatsScheduler get() = AndroidJobChangePetStatsScheduler()
 
     override val database: Database
         get() = Database("iPoli", DatabaseConfiguration(context.applicationContext))
