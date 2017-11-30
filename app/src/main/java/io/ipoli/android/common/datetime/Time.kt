@@ -148,6 +148,9 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
         return Time(this.minutesAfterMidnight - minutes)
     }
 
+    operator fun compareTo(time: Time) =
+        minutesAfterMidnight.compareTo(time.minutesAfterMidnight)
+
     /**
      * @param start inclusive
      * @param end inclusive

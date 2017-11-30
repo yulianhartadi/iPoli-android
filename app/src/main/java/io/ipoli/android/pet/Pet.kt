@@ -43,9 +43,12 @@ data class Pet(
     fun removeRewardFor(quest: Quest): Pet {
         val rewardHP = healthPointsForXP(quest.experience!!)
         val rewardMP = moodPointsForXP(quest.experience)
+        return removeHealthAndMoodPoints(rewardHP, rewardMP)
+    }
 
-        val newHealthPoints = removeHealthPoints(rewardHP)
-        val newMoodPoints = removeMoodPoints(healthPoints, newHealthPoints, rewardMP)
+    fun removeHealthAndMoodPoints(healthPoints: Int, moodPoints: Int): Pet {
+        val newHealthPoints = removeHealthPoints(healthPoints)
+        val newMoodPoints = removeMoodPoints(this.healthPoints, newHealthPoints, moodPoints)
         val newMood = moodFor(newMoodPoints)
 
         return copy(
