@@ -5,6 +5,11 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.reset
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.pet.Pet
+import io.ipoli.android.pet.PetAvatar
+import io.ipoli.android.player.AuthProvider
+import io.ipoli.android.player.Player
+import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.usecase.RewardPlayerUseCase
 import io.ipoli.android.quest.*
 import io.ipoli.android.quest.data.persistence.QuestRepository
@@ -23,6 +28,21 @@ class CompleteQuestUseCaseSpek : Spek({
 
     describe("CompleteQuestUseCase") {
 
+        val pet = Pet(
+            "",
+            avatar = PetAvatar.ELEPHANT,
+            healthPoints = 10,
+            moodPoints = Pet.AWESOME_MIN_MOOD_POINTS - 1
+        )
+
+        val player = Player(
+            level = 1,
+            coins = 10,
+            experience = 10,
+            authProvider = AuthProvider(),
+            pet = pet
+        )
+
         val quest = Quest(
             name = "",
             color = Color.BLUE,
@@ -38,8 +58,13 @@ class CompleteQuestUseCaseSpek : Spek({
         val reminderScheduler = mock<ReminderScheduler>()
         val rewardPlayerUseCase = mock<RewardPlayerUseCase>()
 
+        val playerRepo = mock<PlayerRepository> {
+            on { find() } doReturn player
+        }
+
         val useCase = CompleteQuestUseCase(
             questRepo,
+            playerRepo,
             reminderScheduler,
             questCompleteScheduler,
             rewardPlayerUseCase,
