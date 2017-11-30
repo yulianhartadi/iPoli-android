@@ -137,7 +137,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val undoRemoveQuestUseCase get() = UndoRemovedQuestUseCase(questRepository)
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
-    override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, reminderScheduler, questCompleteScheduler, rewardPlayerUseCase)
+    override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, playerRepository, reminderScheduler, questCompleteScheduler, rewardPlayerUseCase)
     override val undoCompletedQuestUseCase get() = UndoCompletedQuestUseCase(questRepository, reminderScheduler, removeRewardFromPlayerUseCase)
     override val listenForPlayerChangesUseCase get() = ListenForPlayerChangesUseCase(playerRepository, job + CommonPool)
     override val listenForPetChangesUseCase get() = ListenForPetChangesUseCase(playerRepository, job + CommonPool)
@@ -162,7 +162,7 @@ class AndroidJobUseCaseModule : JobUseCaseModule, Injects<JobModule> {
     private val levelUpScheduler by required { levelUpScheduler }
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
-    override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, reminderScheduler, questCompleteScheduler, rewardPlayerUseCase)
+    override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, playerRepository, reminderScheduler, questCompleteScheduler, rewardPlayerUseCase)
     override val findCompletedQuestUseCase get() = FindCompletedQuestUseCase(questRepository)
     override val findPlayerLevelUseCase get() = FindPlayerLevelUseCase(playerRepository)
     override val rewardPlayerUseCase get() = RewardPlayerUseCase(playerRepository, levelUpScheduler)
