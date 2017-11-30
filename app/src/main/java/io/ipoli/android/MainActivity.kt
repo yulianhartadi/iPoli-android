@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
     lateinit var router: Router
 
     private val playerRepository by required { playerRepository }
+    private val petStatsChangeScheduler by required { changePetStatsScheduler }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +55,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
                 authProvider = AuthProvider(provider = ProviderType.ANONYMOUS.name)
             )
             playerRepository.save(player)
+            petStatsChangeScheduler.schedule()
         }
 
         if (hasNoRootController) {

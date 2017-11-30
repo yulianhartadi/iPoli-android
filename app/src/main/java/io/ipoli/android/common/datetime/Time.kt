@@ -9,30 +9,20 @@ import java.util.concurrent.TimeUnit
  * on 8/20/17.
  */
 data class Time constructor(private val minutesAfterMidnight: Int) {
-    private val minutes: Int
-
-    init {
-        if (minutesAfterMidnight < 0) {
-            throw IllegalArgumentException("Minutes must be >= 0. It was: " + minutesAfterMidnight)
-        }
-        this.minutes = minutesAfterMidnight % MINUTES_IN_A_DAY
-    }
-
-    private constructor(hours: Int, minutes: Int) : this(hours * 60 + minutes)
 
     fun toMinuteOfDay(): Int {
-        return minutes
+        return minutesAfterMidnight
     }
 
     fun toMillisOfDay(): Long {
-        return TimeUnit.MINUTES.toMillis(minutes.toLong())
+        return TimeUnit.MINUTES.toMillis(minutesAfterMidnight.toLong())
     }
 
     val hours: Int
-        get() = TimeUnit.MINUTES.toHours(minutes.toLong()).toInt()
+        get() = TimeUnit.MINUTES.toHours(minutesAfterMidnight.toLong()).toInt()
 
     fun getMinutes(): Int {
-        return minutes - hours * 60
+        return minutesAfterMidnight - hours * 60
     }
 
     override fun toString(): String {
@@ -57,15 +47,22 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
         val MINUTES_IN_A_DAY = 24 * MINUTES_IN_AN_HOUR
 
         fun of(minutesAfterMidnight: Int): Time {
-            return Time(minutesAfterMidnight)
+
+            val minutes = if (minutesAfterMidnight < 0) {
+                MINUTES_IN_A_DAY + minutesAfterMidnight
+            } else {
+                minutesAfterMidnight % MINUTES_IN_A_DAY
+            }
+
+            return Time(minutes)
         }
 
         fun at(timeString: String): Time {
-            return Time(parseHours(timeString), parseMinutes(timeString))
+            return at(parseHours(timeString), parseMinutes(timeString))
         }
 
         fun at(hours: Int, minutes: Int): Time {
-            return Time(hours, minutes)
+            return of(hours * 60 + minutes)
         }
 
         fun atHours(hours: Int): Time {
@@ -76,14 +73,14 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
             val c = Calendar.getInstance()
             c.add(Calendar.HOUR_OF_DAY, hours)
             c.add(Calendar.MINUTE, minutes)
-            return Time(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE))
+            return at(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE))
         }
 
         fun ago(hours: Int, minutes: Int): Time {
             val c = Calendar.getInstance()
             c.add(Calendar.HOUR_OF_DAY, -hours)
             c.add(Calendar.MINUTE, -minutes)
-            return Time(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE))
+            return at(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE))
         }
 
         fun afterHours(hours: Int): Time {
@@ -114,7 +111,7 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
 
         fun now(): Time {
             val c = Calendar.getInstance()
-            return Time(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE))
+            return at(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE))
         }
 
         fun of(date: Date?): Time? {
@@ -123,23 +120,32 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
             }
             val c = Calendar.getInstance()
             c.time = date
-            return Time(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE))
+            return at(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE))
         }
 
         fun plusMinutes(time: Time, minutes: Int): Time {
-            return Time.of(time.minutes + minutes)
+            return of(time.minutesAfterMidnight + minutes)
         }
 
         fun h2Min(hours: Int): Int {
             return TimeUnit.HOURS.toMinutes(hours.toLong()).toInt()
         }
+    }
 
-        fun minutesBetween(endTime: Time?, startTime: Time?): Int? {
-            if (endTime == null || startTime == null) {
-                return null
-            }
-            return endTime.minutesAfterMidnight - startTime.minutesAfterMidnight
-        }
+    operator fun plus(minutes: Int): Time {
+        return Time(this.minutesAfterMidnight + minutes)
+    }
+
+    operator fun plus(time: Time): Time {
+        return Time(minutesAfterMidnight + time.minutesAfterMidnight)
+    }
+
+    operator fun minus(time: Time): Time {
+        return Time(minutesAfterMidnight - time.minutesAfterMidnight)
+    }
+
+    operator fun minus(minutes: Int): Time {
+        return Time(this.minutesAfterMidnight - minutes)
     }
 
     /**
@@ -147,16 +153,24 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
      * @param end inclusive
      */
     fun isBetween(start: Time, end: Time): Boolean {
-        if (minutes >= start.minutes && minutes <= end.minutes) {
+        if (minutesAfterMidnight >= start.minutesAfterMidnight && minutesAfterMidnight <= end.minutesAfterMidnight) {
             return true
         }
 
-        if (start.minutes > end.minutes) {
+        if (start.minutesAfterMidnight > end.minutesAfterMidnight) {
             val isBetweenStartAndMidnight = isBetween(start, Time.at(23, 59))
             val isBetweenMidnightAndEnd = isBetween(Time.of(0), end)
             return isBetweenStartAndMidnight || isBetweenMidnightAndEnd
         }
         return false
+    }
+
+    fun minutesTo(time: Time): Int {
+        return if (minutesAfterMidnight > time.minutesAfterMidnight) {
+            MINUTES_IN_A_DAY - minutesAfterMidnight + time.minutesAfterMidnight
+        } else {
+            time.minutesAfterMidnight - minutesAfterMidnight
+        }
     }
 }
 
