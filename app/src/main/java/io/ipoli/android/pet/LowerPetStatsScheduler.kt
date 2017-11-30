@@ -16,47 +16,49 @@ import java.util.concurrent.TimeUnit
  * on 11/30/17.
  */
 
-class ChangePetStatsJob : Job(), Injects<ControllerModule> {
+class LowerPetStatsJob : Job(), Injects<ControllerModule> {
 
     override fun onRunJob(params: Params): Result {
         val kap = Kapsule<JobModule>()
         val changePetStatsUseCase by kap.required { lowerPetStatsUseCase }
+        val lowerPetStatsScheduler by kap.required { lowerPetStatsScheduler }
         kap.inject(iPoliApp.jobModule(context))
 
-        val time = Time.of(params.extras.getInt("changeStatsTime", 0))
+        val time = Time.of(params.extras.getInt("lowerStatsTime", 0))
         changePetStatsUseCase.execute(time)
 
+        lowerPetStatsScheduler.schedule()
         return Result.SUCCESS
     }
 
     companion object {
-        val TAG = "job_change_pet_stats_tag"
+        val TAG = "job_lower_pet_stats_tag"
     }
 }
 
-class AndroidJobChangePetStatsScheduler : ChangePetStatsScheduler {
+class AndroidJobLowerPetStatsScheduler : LowerPetStatsScheduler {
     override fun schedule() {
         val currentTime = Time.now()
         val morning = Time.atHours(9)
         val afternoon = Time.atHours(14)
         val evening = Time.atHours(19)
 
-        val changeStatsTime = when {
+        val lowerStatsTime = when {
             currentTime.isBetween(morning - 30, afternoon - 1) -> afternoon
             currentTime.isBetween(afternoon - 30, evening - 1) -> evening
             else -> morning
         }
 
         val bundle = PersistableBundleCompat()
-        bundle.putInt("changeStatsTime", changeStatsTime.toMinuteOfDay())
-        JobRequest.Builder(ChangePetStatsJob.TAG)
+        bundle.putInt("lowerStatsTime", lowerStatsTime.toMinuteOfDay())
+        JobRequest.Builder(LowerPetStatsJob.TAG)
             .setExtras(bundle)
-            .setExact(TimeUnit.MINUTES.toMillis(currentTime.minutesTo(changeStatsTime).toLong()))
+            .setExact(TimeUnit.MINUTES.toMillis(currentTime.minutesTo(lowerStatsTime).toLong()))
             .build()
             .schedule()
     }
 }
 
-interface ChangePetStatsScheduler {
+interface LowerPetStatsScheduler {
     fun schedule()
 }

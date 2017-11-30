@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
     lateinit var router: Router
 
     private val playerRepository by required { playerRepository }
-    private val petStatsChangeScheduler by required { changePetStatsScheduler }
+    private val petStatsChangeScheduler by required { lowerPetStatsScheduler }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
