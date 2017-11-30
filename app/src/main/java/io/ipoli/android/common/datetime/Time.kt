@@ -141,6 +141,19 @@ data class Time constructor(private val minutesAfterMidnight: Int) {
             return endTime.minutesAfterMidnight - startTime.minutesAfterMidnight
         }
     }
+
+    fun isBetween(start: Time, end: Time): Boolean {
+        if (minutes >= start.minutes && minutes <= end.minutes) {
+            return true
+        }
+
+        if (start.minutes > end.minutes) {
+            val isBetweenStartAndMidnight = isBetween(start, Time.at(23, 59))
+            val isBetweenMidnightAndEnd = isBetween(Time.of(0), end)
+            return isBetweenStartAndMidnight || isBetweenMidnightAndEnd
+        }
+        return false
+    }
 }
 
 enum class TimePreference {
