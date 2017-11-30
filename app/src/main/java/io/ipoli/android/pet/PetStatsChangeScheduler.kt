@@ -6,6 +6,6 @@ package io.ipoli.android.pet
  */
 interface PetStatsChangeScheduler {
     fun schedule() {
-        
+
     }
 }
