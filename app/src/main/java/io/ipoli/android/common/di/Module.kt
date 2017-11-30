@@ -11,8 +11,9 @@ import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.text.CalendarFormatter
 import io.ipoli.android.home.HomePresenter
 import io.ipoli.android.pet.AndroidJobChangePetStatsScheduler
-import io.ipoli.android.pet.PetPresenter
 import io.ipoli.android.pet.ChangePetStatsScheduler
+import io.ipoli.android.pet.PetPresenter
+import io.ipoli.android.pet.usecase.ChangePetStatsUseCase
 import io.ipoli.android.pet.usecase.ListenForPetChangesUseCase
 import io.ipoli.android.player.AndroidLevelDownScheduler
 import io.ipoli.android.player.AndroidLevelUpScheduler
@@ -158,6 +159,7 @@ interface JobUseCaseModule {
     val findCompletedQuestUseCase: FindCompletedQuestUseCase
     val findPlayerLevelUseCase: FindPlayerLevelUseCase
     val rewardPlayerUseCase: RewardPlayerUseCase
+    val changePetStatsUseCase : ChangePetStatsUseCase
 }
 
 class AndroidJobUseCaseModule : JobUseCaseModule, Injects<JobModule> {
@@ -172,6 +174,7 @@ class AndroidJobUseCaseModule : JobUseCaseModule, Injects<JobModule> {
     override val findCompletedQuestUseCase get() = FindCompletedQuestUseCase(questRepository)
     override val findPlayerLevelUseCase get() = FindPlayerLevelUseCase(playerRepository)
     override val rewardPlayerUseCase get() = RewardPlayerUseCase(playerRepository, levelUpScheduler)
+    override val changePetStatsUseCase get() = ChangePetStatsUseCase(questRepository, playerRepository)
 }
 
 interface UseCaseModule {
