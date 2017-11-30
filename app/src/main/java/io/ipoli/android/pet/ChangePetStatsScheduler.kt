@@ -6,6 +6,7 @@ import com.evernote.android.job.util.support.PersistableBundleCompat
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.di.JobModule
+import io.ipoli.android.iPoliApp
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.Kapsule
 import java.util.concurrent.TimeUnit
@@ -18,8 +19,13 @@ import java.util.concurrent.TimeUnit
 class ChangePetStatsJob : Job(), Injects<ControllerModule> {
 
     override fun onRunJob(params: Params): Result {
-        val time = Time.of(params.extras.getInt("changeStatsTime", 0))
         val kap = Kapsule<JobModule>()
+        val changePetStatsUseCase by kap.required { changePetStatsUseCase }
+        kap.inject(iPoliApp.jobModule(context))
+
+        val time = Time.of(params.extras.getInt("changeStatsTime", 0))
+        changePetStatsUseCase.execute(time)
+
         return Result.SUCCESS
     }
 

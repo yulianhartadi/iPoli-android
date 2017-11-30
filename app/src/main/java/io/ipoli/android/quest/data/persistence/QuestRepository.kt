@@ -23,6 +23,7 @@ interface QuestRepository : Repository<Quest> {
     fun listenForDate(date: LocalDate): ReceiveChannel<List<Quest>>
     fun findNextQuestsToRemind(afterTime: Long = DateUtils.nowUTC().time): List<Quest>
     fun findQuestsToRemind(time: Long): List<Quest>
+    fun findCompletedForDate(date: LocalDate): List<Quest>
 }
 
 data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) : CouchbasePersistedModel {
@@ -110,6 +111,12 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             )
         return toEntities(query.run().iterator())
 
+    }
+
+    override fun findCompletedForDate(date: LocalDate): List<Quest> {
+        val query = createQuery(property("completedAtDate")
+            .between(date.startOfDayUTC(), date.startOfDayUTC()))
+        return toEntities(query.run().iterator())
     }
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Quest {
