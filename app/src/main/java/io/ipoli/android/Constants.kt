@@ -1,5 +1,6 @@
 package io.ipoli.android
 
+import io.ipoli.android.common.datetime.Time
 import org.threeten.bp.DayOfWeek
 import java.util.*
 
@@ -100,6 +101,10 @@ interface Constants {
             DayOfWeek.THURSDAY.getValue(),
             DayOfWeek.FRIDAY.getValue()
         ))
+
+        val CHANGE_PET_STATS_MORNING_TIME = Time.atHours(9)
+        val CHANGE_PET_STATS_AFTERNOON_TIME = Time.atHours(14)
+        val CHANGE_PET_STATS_EVENING_TIME = Time.atHours(19)
 
         val DURATIONS = arrayOf(10, 15, 25, 30, 45, 60, 90, 120)
 

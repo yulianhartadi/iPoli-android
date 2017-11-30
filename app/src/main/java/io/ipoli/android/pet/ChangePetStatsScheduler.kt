@@ -20,7 +20,7 @@ class ChangePetStatsJob : Job(), Injects<ControllerModule> {
 
     override fun onRunJob(params: Params): Result {
         val kap = Kapsule<JobModule>()
-        val changePetStatsUseCase by kap.required { changePetStatsUseCase }
+        val changePetStatsUseCase by kap.required { lowerPetStatsUseCase }
         kap.inject(iPoliApp.jobModule(context))
 
         val time = Time.of(params.extras.getInt("changeStatsTime", 0))
