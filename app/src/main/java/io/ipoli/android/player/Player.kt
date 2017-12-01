@@ -16,7 +16,10 @@ data class Player(
     val authProvider: AuthProvider,
     val avatar: Avatar = Avatar.IPOLI_CLASSIC,
     val createdAt: LocalDateTime = LocalDateTime.now(),
-    val pet: Pet = Pet(name = Constants.DEFAULT_PET_NAME, avatar = PetAvatar.ELEPHANT),
+    val pet: Pet = Pet(
+        name = Constants.DEFAULT_PET_NAME,
+        avatar = PetAvatar.ELEPHANT
+    ),
     val inventory: Inventory = Inventory(mapOf(
         Food.BANANA to 1
     ))
