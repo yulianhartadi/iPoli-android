@@ -2,12 +2,17 @@ package io.ipoli.android.player.persistence
 
 import com.couchbase.lite.Database
 import io.ipoli.android.common.persistence.BaseCouchbaseRepository
-import io.ipoli.android.common.persistence.CouchbasePersistedModel
 import io.ipoli.android.common.persistence.Repository
+import io.ipoli.android.pet.Food
 import io.ipoli.android.pet.Pet
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.AuthProvider
+import io.ipoli.android.player.Inventory
 import io.ipoli.android.player.Player
+import io.ipoli.android.player.persistence.model.CouchbaseAuthProvider
+import io.ipoli.android.player.persistence.model.CouchbaseInventory
+import io.ipoli.android.player.persistence.model.CouchbasePet
+import io.ipoli.android.player.persistence.model.CouchbasePlayer
 import io.ipoli.android.store.avatars.data.Avatar
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
@@ -18,51 +23,7 @@ import kotlin.coroutines.experimental.CoroutineContext
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 8/2/17.
  */
-interface PlayerRepository : Repository<Player> {
-}
-
-data class CouchbasePlayer(override val map: MutableMap<String, Any?> = mutableMapOf()) : CouchbasePersistedModel {
-    override var type: String by map
-    override var id: String by map
-    var level: Int by map
-    var coins: Int by map
-    var experience: Long by map
-    var authProvider: MutableMap<String, Any?> by map
-    var avatarCode: Int by map
-    var pet: MutableMap<String, Any?> by map
-    override var createdAt: Long by map
-    override var updatedAt: Long by map
-    override var removedAt: Long? by map
-
-    companion object {
-        const val TYPE = "Player"
-    }
-}
-
-data class CouchbaseAuthProvider(val map: MutableMap<String, Any?> = mutableMapOf()) {
-    var id: String by map
-    var provider: String by map
-    var firstName: String by map
-    var lastName: String by map
-    var username: String by map
-    var email: String by map
-    var image: String by map
-}
-
-data class CouchbasePet(val map: MutableMap<String, Any?> = mutableMapOf()) {
-    var name: String by map
-    var avatar: String by map
-    var moodPoints: Int by map
-    var healthPoints: Int by map
-    var experienceBonus: Float by map
-    var coinBonus: Float by map
-    var unlockChanceBonus: Float by map
-}
-
-
-enum class ProviderType {
-    FACEBOOK, GOOGLE, ANONYMOUS
-}
+interface PlayerRepository : Repository<Player>
 
 class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineContext) : BaseCouchbaseRepository<Player, CouchbasePlayer>(database, coroutineContext), PlayerRepository {
     override val modelType = CouchbasePlayer.TYPE
@@ -90,6 +51,11 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             unlockChanceBonus = cPet.unlockChanceBonus
         )
 
+        val ci = CouchbaseInventory(cp.inventory)
+        val inventory = Inventory(
+            food = ci.food.entries.associate { Food.valueOf(it.key) to it.value }
+        )
+
         return Player(
             id = cp.id,
             level = cp.level,
@@ -97,6 +63,7 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             experience = cp.experience,
             authProvider = authProvider,
             avatar = Avatar.fromCode(cp.avatarCode)!!,
+            inventory = inventory,
             createdAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(cp.createdAt), ZoneId.systemDefault()),
             pet = pet
         )
@@ -113,6 +80,7 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             it.avatarCode = entity.avatar.code
             it.createdAt = entity.createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
             it.pet = createCouchbasePet(entity.pet).map
+            it.inventory = createCouchbaseInventory(entity.inventory).map
         }
 
     private fun createCouchbasePet(pet: Pet) =
@@ -135,5 +103,12 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             it.username = authProvider.username
             it.image = authProvider.image
             it.provider = authProvider.provider
+        }
+
+    private fun createCouchbaseInventory(inventory: Inventory) =
+        CouchbaseInventory().also {
+            it.food = inventory.food.entries
+                .associate { it.key.name to it.value }
+                .toMutableMap()
         }
 }

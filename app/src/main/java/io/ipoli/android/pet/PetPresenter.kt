@@ -3,7 +3,9 @@ package io.ipoli.android.pet
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.pet.PetViewState.StateType.*
+import io.ipoli.android.pet.usecase.FeedPetUseCase
 import io.ipoli.android.pet.usecase.ListenForPetChangesUseCase
+import io.ipoli.android.pet.usecase.Parameters
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import kotlin.coroutines.experimental.CoroutineContext
@@ -13,7 +15,8 @@ import kotlin.coroutines.experimental.CoroutineContext
  * on 11/24/17.
  */
 class PetPresenter(
-    val listenForPetChangesUseCase: ListenForPetChangesUseCase,
+    private val listenForPetChangesUseCase: ListenForPetChangesUseCase,
+    private val feedPetUseCase: FeedPetUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<PetViewState>, PetViewState, PetIntent>(
     PetViewState(LOADING),
@@ -44,6 +47,7 @@ class PetPresenter(
             }
 
             is Feed -> {
+                feedPetUseCase.execute(Parameters(intent.food))
                 state.copy(
                     type = PET_FED,
                     foodImage = intent.food.image

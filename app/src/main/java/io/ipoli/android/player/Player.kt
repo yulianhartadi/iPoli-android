@@ -1,6 +1,7 @@
 package io.ipoli.android.player
 
 import io.ipoli.android.Constants
+import io.ipoli.android.pet.Food
 import io.ipoli.android.pet.Pet
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.quest.Entity
@@ -15,7 +16,10 @@ data class Player(
     val authProvider: AuthProvider,
     val avatar: Avatar = Avatar.IPOLI_CLASSIC,
     val createdAt: LocalDateTime = LocalDateTime.now(),
-    val pet: Pet = Pet(name = Constants.DEFAULT_PET_NAME, avatar = PetAvatar.ELEPHANT)
+    val pet: Pet = Pet(name = Constants.DEFAULT_PET_NAME, avatar = PetAvatar.ELEPHANT),
+    val inventory: Inventory = Inventory(mapOf(
+        Food.BANANA to 1
+    ))
 ) : Entity {
     fun addExperience(experience: Int): Player {
         val newXp = experience + this.experience
@@ -56,6 +60,30 @@ data class Player(
     fun removeCoins(coins: Int) = copy(
         coins = Math.max(this.coins - coins, 0)
     )
+}
+
+data class Inventory(val food: Map<Food, Int> = mapOf()) {
+    fun addFood(food: Food): Inventory {
+        val quantity = this.food.let {
+            if (it.containsKey(food)) it[food]!! + 1 else 1
+        }
+        return copy(
+            food = this.food + Pair(food, quantity)
+        )
+    }
+
+    fun removeFood(food: Food): Inventory {
+        requireNotNull(this.food[food])
+        val quantity = this.food[food]!! - 1
+        return copy(
+            food = when (quantity) {
+                0 -> this.food.minus(food)
+                else -> this.food + Pair(food, quantity)
+            }
+        )
+    }
+
+    fun hasFood(food: Food) = this.food.containsKey(food)
 }
 
 data class AuthProvider(
