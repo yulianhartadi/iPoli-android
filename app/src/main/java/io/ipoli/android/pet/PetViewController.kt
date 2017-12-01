@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ProgressBar
+import android.widget.Toast
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
@@ -87,7 +88,12 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             PET_FED -> {
+                view.petResponse.setText(state.foodResponse)
                 playFeedPetAnimation(view, state)
+            }
+
+            FOOD_TOO_EXPENSIVE -> {
+                Toast.makeText(view.context, "Food too expensive", Toast.LENGTH_SHORT).show()
             }
 
             PET_CHANGED -> {
@@ -129,7 +135,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             override fun onAnimationEnd(animation: Animator?) {
-                playFeedPetResponseAnimation(view, state.stateImage, state.awesomeStateImage)
+                playFeedPetResponseAnimation(view, state.stateImage, state.responseStateImage)
             }
         })
         anim.start()
@@ -141,12 +147,12 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         animator.start()
     }
 
-    private fun playFeedPetResponseAnimation(view: View, @DrawableRes currentStateImage: Int, @DrawableRes awesomeStateImage: Int) {
+    private fun playFeedPetResponseAnimation(view: View, @DrawableRes currentStateImage: Int, @DrawableRes responseStateImage: Int) {
         val anim = AnimatorSet()
         anim.playSequentially(
-            createShowPetResponseAnimation(view, awesomeStateImage),
+            createShowPetResponseAnimation(view, responseStateImage),
             createHidePetResponseAnimation(view, currentStateImage),
-            createShowPetResponseAnimation(view, awesomeStateImage),
+            createShowPetResponseAnimation(view, responseStateImage),
             createHidePetResponseAnimation(view, currentStateImage)
         )
         anim.start()
@@ -209,7 +215,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         animator.start()
     }
 
-    data class PetFoodViewModel(@DrawableRes val image: Int, val price: Int, val food : Food)
+    data class PetFoodViewModel(@DrawableRes val image: Int, val price: Int, val food: Food)
 
     inner class PetFoodAdapter(private val foodItems: List<PetFoodViewModel>) : RecyclerView.Adapter<PetFoodAdapter.ViewHolder>() {
         override fun getItemCount() = foodItems.size

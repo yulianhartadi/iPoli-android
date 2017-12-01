@@ -8,10 +8,7 @@ import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.pet.usecase.FeedPetUseCase.FoodReward.*
 import io.ipoli.android.player.Inventory
 import io.ipoli.android.player.Player
-import org.amshove.kluent.`should be empty`
-import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should be instance of`
-import org.amshove.kluent.`should equal`
+import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -155,7 +152,7 @@ class FeedPetUseCaseSpek : Spek({
                     it.copy(
                         inventory = Inventory(mapOf(Food.HOT_DOG to 1)),
                         pet = it.pet.copy(
-                            avatar = PetAvatar.CHICKEN,
+                            avatar = PetAvatar.ELEPHANT,
                             moodPoints = Pet.GOOD_MIN_MOOD_POINTS,
                             healthPoints = (Pet.SICK_CUTOFF + 1 - JunkFood.healthPoints).toInt()
                         )
@@ -166,6 +163,55 @@ class FeedPetUseCaseSpek : Spek({
                 val pet = (result as Result.PetFed).player.pet
                 pet.healthPoints.`should be equal to`(player.pet.healthPoints + JunkFood.healthPoints)
                 pet.moodPoints.`should be equal to`(player.pet.moodPoints + JunkFood.moodPoints)
+            }
+
+            it("should die") {
+                val player = player().let {
+                    it.copy(
+                        inventory = Inventory(mapOf(Food.POOP to 1)),
+                        pet = it.pet.copy(
+                            avatar = PetAvatar.ELEPHANT,
+                            moodPoints = 1,
+                            healthPoints = 1
+                        )
+                    )
+                }
+
+                val result = executeUseCase(player, Food.POOP)
+                val pet = (result as Result.PetFed).player.pet
+                pet.isDead.`should be true`()
+            }
+
+            it("should not like food") {
+                val player = player().let {
+                    it.copy(
+                        inventory = Inventory(mapOf(Food.POOP to 1)),
+                        pet = it.pet.copy(
+                            avatar = PetAvatar.ELEPHANT,
+                            moodPoints = 1,
+                            healthPoints = 1
+                        )
+                    )
+                }
+
+                val result = executeUseCase(player, Food.POOP)
+                (result as Result.PetFed).wasFoodTasty.`should be false`()
+            }
+
+            it("should like food") {
+                val player = player().let {
+                    it.copy(
+                        inventory = Inventory(mapOf(Food.BANANA to 1)),
+                        pet = it.pet.copy(
+                            avatar = PetAvatar.ELEPHANT,
+                            moodPoints = 1,
+                            healthPoints = 1
+                        )
+                    )
+                }
+
+                val result = executeUseCase(player, Food.BANANA)
+                (result as Result.PetFed).wasFoodTasty.`should be true`()
             }
         }
 

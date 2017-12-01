@@ -14,7 +14,7 @@ import io.ipoli.android.player.persistence.PlayerRepository
  */
 
 sealed class Result {
-    data class PetFed(val player: Player) : Result()
+    data class PetFed(val player: Player, val wasFoodTasty: Boolean) : Result()
     object NotEnoughCoins : Result()
 }
 
@@ -26,29 +26,44 @@ class FeedPetUseCase(private val playerRepository: PlayerRepository) : UseCase<P
         val player = playerRepository.find()
         requireNotNull(player)
 
-        if (player!!.inventory.hasFood(food)) {
-            val newPlayer = player.copy(
-                pet = feedPet(player.pet, food),
-                inventory = player.inventory.removeFood(food)
-            )
-            return Result.PetFed(playerRepository.save(newPlayer))
+        if (player!!.coins < food.price && !player.inventory.hasFood(food)) {
+            return Result.NotEnoughCoins
         }
 
-        if (player.coins >= food.price) {
-            val newPlayer = player.copy(
-                pet = feedPet(player.pet, food),
-                coins = player.coins - food.price
-            )
-            return Result.PetFed(playerRepository.save(newPlayer))
-        }
+        val (newPet, wasFoodTasty) = feedPet(player.pet, food)
 
-        return Result.NotEnoughCoins
+        val newPlayer = playerRepository.save(
+            updatePlayer(player, food, newPet)
+        )
+
+        return Result.PetFed(newPlayer, wasFoodTasty)
     }
 
-    private fun feedPet(pet: Pet, food: Food): Pet {
+    private fun updatePlayer(player: Player, food: Food, newPet: Pet) =
+        if (player.inventory.hasFood(food)) {
+            player.copy(
+                pet = newPet,
+                inventory = player.inventory.removeFood(food)
+            )
+
+        } else {
+            player.copy(
+                pet = newPet,
+                coins = player.coins - food.price
+            )
+        }
+
+    private fun feedPet(pet: Pet, food: Food): FeedPetResult {
         val foodCategory = food.category
         val foodReward = foodRewardFor(foodCategory, pet.avatar.feedingCategory)
-        return pet.addHealthAndMoodPoints(foodReward.healthPoints, foodReward.moodPoints)
+        return FeedPetResult(
+            pet = pet.updateHealthAndMoodPoints(foodReward.healthPoints, foodReward.moodPoints),
+            wasFoodTasty = when (foodReward) {
+                is Poop -> false
+                is DislikedFood -> false
+                else -> true
+            }
+        )
     }
 
     private fun foodRewardFor(foodCategory: Food.Category, feedingCategory: PetAvatar.FeedingCategory) =
@@ -91,5 +106,7 @@ class FeedPetUseCase(private val playerRepository: PlayerRepository) : UseCase<P
         object Beer : FoodReward(0, 10)
         object Poop : FoodReward(-10, -10)
     }
+
+    data class FeedPetResult(val pet: Pet, val wasFoodTasty: Boolean)
 
 }

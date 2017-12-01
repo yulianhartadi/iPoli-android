@@ -957,6 +957,8 @@
     <string name="growth_coins_earned">Coins earned</string>
     <string name="growth_experience_earned">Experience earned</string>
     <string name="invalid_reminder_time">Can you think of a number?</string>
+    <string name="pet_tasty_food_response">yummy</string>
+    <string name="pet_not_tasty_food_response">yucky</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

@@ -6,6 +6,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.pet.PetMood.*
 import io.ipoli.android.quest.Quest
+import java.lang.Math.abs
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -21,16 +22,21 @@ data class Pet(
     val coinBonus: Float = bonusFor(mood, MAX_COIN_BONUS),
     val unlockChanceBonus: Float = bonusFor(mood, MAX_UNLOCK_CHANCE_BONUS)
 ) {
-    fun rewardFor(quest: Quest): Pet {
 
-        val rewardHP = healthPointsForXP(quest.experience!!)
-        val rewardMP = moodPointsForXP(quest.experience)
-        return addHealthAndMoodPoints(rewardHP, rewardMP)
-    }
+    val isDead = healthPoints == 0
 
-    fun addHealthAndMoodPoints(rewardHP: Int, rewardMP: Int): Pet {
-        val newHealthPoints = addHealthPoints(rewardHP)
-        val newMoodPoints = addMoodPoints(newHealthPoints, rewardMP)
+    fun updateHealthAndMoodPoints(healthPoints: Int, moodPoints: Int): Pet {
+
+        require(!isDead)
+
+        val newHealthPoints =
+            if (healthPoints >= 0) addHealthPoints(healthPoints)
+            else removeHealthPoints(abs(healthPoints))
+
+        val newMoodPoints =
+            if (moodPoints >= 0) addMoodPoints(newHealthPoints, moodPoints)
+            else removeMoodPoints(this.healthPoints, newHealthPoints, abs(moodPoints))
+
         val newMood = moodFor(newMoodPoints)
 
         return copy(
@@ -43,6 +49,42 @@ data class Pet(
         )
     }
 
+    fun rewardFor(quest: Quest): Pet {
+
+        val rewardHP = healthPointsForXP(quest.experience!!)
+        val rewardMP = moodPointsForXP(quest.experience)
+        return addHealthAndMoodPoints(rewardHP, rewardMP)
+    }
+
+    fun addHealthAndMoodPoints(healthPoints: Int, moodPoints: Int): Pet {
+        require(!isDead)
+        require(healthPoints >= 0)
+        require(moodPoints >= 0)
+
+        val newHealthPoints = addHealthPoints(healthPoints)
+        val newMoodPoints = addMoodPoints(newHealthPoints, moodPoints)
+        val newMood = moodFor(newMoodPoints)
+
+        return copy(
+            healthPoints = newHealthPoints,
+            moodPoints = newMoodPoints,
+            mood = newMood,
+            coinBonus = bonusFor(newMood, MAX_COIN_BONUS),
+            experienceBonus = bonusFor(newMood, MAX_XP_BONUS),
+            unlockChanceBonus = bonusFor(newMood, MAX_UNLOCK_CHANCE_BONUS)
+        )
+    }
+
+    private fun addHealthPoints(rewardHP: Int) = Math.min(this.healthPoints + rewardHP, MAX_HP)
+
+    private fun addMoodPoints(newHealthPoints: Int, rewardMoodPoints: Int) =
+        if (newHealthPoints <= SICK_CUTOFF) {
+            Math.min(moodPoints, GOOD_MIN_MOOD_POINTS - 1)
+        } else {
+            val moodBonusMultiplier = if (newHealthPoints >= HEALTHY_CUTOFF) 2 else 1
+            Math.min(moodPoints + rewardMoodPoints * moodBonusMultiplier, MAX_MP)
+        }
+
     fun removeRewardFor(quest: Quest): Pet {
         val rewardHP = healthPointsForXP(quest.experience!!)
         val rewardMP = moodPointsForXP(quest.experience)
@@ -50,6 +92,10 @@ data class Pet(
     }
 
     fun removeHealthAndMoodPoints(healthPoints: Int, moodPoints: Int): Pet {
+        require(!isDead)
+        require(healthPoints >= 0)
+        require(moodPoints >= 0)
+
         val newHealthPoints = removeHealthPoints(healthPoints)
         val newMoodPoints = removeMoodPoints(this.healthPoints, newHealthPoints, moodPoints)
         val newMood = moodFor(newMoodPoints)
@@ -65,6 +111,9 @@ data class Pet(
     }
 
     private fun removeMoodPoints(oldHealthPoints: Int, newHealthPoints: Int, rewardMoodPoints: Int): Int {
+        if (newHealthPoints == 0) {
+            return 0
+        }
         val notHealthyAnymore = oldHealthPoints >= HEALTHY_CUTOFF && newHealthPoints < HEALTHY_CUTOFF
         val reduceMultiplier = if (notHealthyAnymore) 2 else 1
         return Math.max(moodPoints - rewardMoodPoints * reduceMultiplier, 0)
@@ -77,16 +126,6 @@ data class Pet(
 
     private fun moodPointsForXP(experience: Int) =
         Math.floor(experience / Constants.XP_TO_PET_MOOD_RATIO).toInt()
-
-    private fun addHealthPoints(rewardHP: Int) = Math.min(this.healthPoints + rewardHP, MAX_HP)
-
-    private fun addMoodPoints(newHealthPoints: Int, rewardMoodPoints: Int) =
-        if (newHealthPoints <= SICK_CUTOFF) {
-            Math.min(moodPoints, GOOD_MIN_MOOD_POINTS - 1)
-        } else {
-            val moodBonusMultiplier = if (newHealthPoints >= HEALTHY_CUTOFF) 2 else 1
-            Math.min(moodPoints + rewardMoodPoints * moodBonusMultiplier, MAX_MP)
-        }
 
     companion object {
 
@@ -121,8 +160,6 @@ data class Pet(
             }
     }
 }
-
-
 
 enum class PetMood {
     SAD, GOOD, HAPPY, AWESOME
