@@ -25,7 +25,10 @@ data class Pet(
 
         val rewardHP = healthPointsForXP(quest.experience!!)
         val rewardMP = moodPointsForXP(quest.experience)
+        return addHealthAndMoodPoints(rewardHP, rewardMP)
+    }
 
+    fun addHealthAndMoodPoints(rewardHP: Int, rewardMP: Int): Pet {
         val newHealthPoints = addHealthPoints(rewardHP)
         val newMoodPoints = addMoodPoints(newHealthPoints, rewardMP)
         val newMood = moodFor(newMoodPoints)
@@ -119,23 +122,27 @@ data class Pet(
     }
 }
 
+
+
 enum class PetMood {
     SAD, GOOD, HAPPY, AWESOME
 }
 
-enum class PetAvatar(val price: Int) {
-    SEAL(600),
-    DONKEY(500),
-    ELEPHANT(500),
-    BEAVER(500),
-    CHICKEN(700),
-    BEAR(500),
-    LION(500),
-    CAT(500),
-    MONKEY(500),
-    DUCK(500),
-    PIG(500),
-    ZEBRA(500)
+enum class PetAvatar(val price: Int, val feedingCategory: FeedingCategory) {
+    SEAL(600, FeedingCategory.CARNIVOROUS),
+    DONKEY(500, FeedingCategory.HERBIVOROUS),
+    ELEPHANT(500, FeedingCategory.HERBIVOROUS),
+    BEAVER(500, FeedingCategory.HERBIVOROUS),
+    CHICKEN(700, FeedingCategory.OMNIVOROUS),
+    BEAR(500, FeedingCategory.OMNIVOROUS),
+    LION(500, FeedingCategory.CARNIVOROUS),
+    CAT(500, FeedingCategory.CARNIVOROUS),
+    MONKEY(500, FeedingCategory.OMNIVOROUS),
+    DUCK(500, FeedingCategory.OMNIVOROUS),
+    PIG(500, FeedingCategory.OMNIVOROUS),
+    ZEBRA(500, FeedingCategory.HERBIVOROUS);
+
+    enum class FeedingCategory { OMNIVOROUS, CARNIVOROUS, HERBIVOROUS }
 }
 
 enum class AndroidPetAvatar(
