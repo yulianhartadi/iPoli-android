@@ -1,6 +1,5 @@
 package io.ipoli.android.pet
 
-import io.ipoli.android.R
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.pet.PetViewState.StateType.*
@@ -54,13 +53,11 @@ class PetPresenter(
                     is Result.NotEnoughCoins -> state.copy(type = FOOD_TOO_EXPENSIVE)
                     is Result.PetFed -> {
 
-                        val petAvatar = AndroidPetAvatar.valueOf(result.player.pet.avatar.name)
-
                         state.copy(
                             type = PET_FED,
-                            foodImage = intent.food.image,
-                            foodResponse = if (result.wasFoodTasty) R.string.pet_tasty_food_response else R.string.pet_not_tasty_food_response,
-                            responseStateImage = if (result.wasFoodTasty) petAvatar.moodImage[PetMood.AWESOME]!! else petAvatar.deadStateImage
+                            food = intent.food,
+                            wasFoodTasty = result.wasFoodTasty,
+                            mood = result.player.pet.mood
                         )
                     }
                 }
@@ -68,7 +65,6 @@ class PetPresenter(
 
             is ChangePetIntent -> {
                 val pet = intent.pet
-                val petAvatar = AndroidPetAvatar.valueOf(pet.avatar.name)
                 state.copy(
                     type = PET_CHANGED,
                     stateName = pet.mood.name.toLowerCase().capitalize(),
@@ -77,9 +73,8 @@ class PetPresenter(
                     coinsBonus = pet.coinBonus,
                     xpBonus = pet.experienceBonus,
                     unlockChanceBonus = pet.unlockChanceBonus,
-                    image = petAvatar.image,
-                    stateImage = petAvatar.moodImage[pet.mood]!!//,
-//                    responseStateImage = petAvatar.moodImage[PetMood.AWESOME]!!
+                    avatar = pet.avatar,
+                    mood = pet.mood
                 )
             }
         }
