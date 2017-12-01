@@ -1,9 +1,11 @@
 package io.ipoli.android.pet
 
+import io.ipoli.android.TestUtil
 import io.ipoli.android.quest.Category
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Quest
 import org.amshove.kluent.`should be equal to`
+import org.amshove.kluent.`should be true`
 import org.amshove.kluent.`should be`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -70,13 +72,53 @@ class PetSpek : Spek({
             newPet.unlockChanceBonus.`should be equal to`(Pet.MAX_UNLOCK_CHANCE_BONUS)
         }
 
-        it("should change mood to Happy reward from Quest is removed") {
+        it("should change mood to Happy when reward for Quest is removed") {
             val newPet = pet.copy(
                 healthPoints = Pet.MAX_HP,
-                moodPoints = Pet.AWESOME_MIN_MOOD_POINTS - 1,
+                moodPoints = Pet.AWESOME_MIN_MOOD_POINTS,
                 mood = PetMood.AWESOME
             ).removeRewardFor(quest)
             newPet.mood.`should be`(PetMood.HAPPY)
+        }
+
+        describe("update health and mood points") {
+
+            it("should remove HP") {
+                val newPet = TestUtil.player().pet.copy(
+                    healthPoints = 10,
+                    moodPoints = 10,
+                    mood = PetMood.SAD
+                ).updateHealthAndMoodPoints(-20, 0)
+                newPet.healthPoints.`should be equal to`(0)
+            }
+
+            it("should remove MP") {
+                val newPet = TestUtil.player().pet.copy(
+                    healthPoints = Pet.MAX_HP,
+                    moodPoints = 10,
+                    mood = PetMood.SAD
+                ).updateHealthAndMoodPoints(0, -20)
+                newPet.moodPoints.`should be equal to`(0)
+            }
+
+            it("should remove HP & add MP") {
+                val newPet = TestUtil.player().pet.copy(
+                    healthPoints = Pet.MAX_HP,
+                    moodPoints = 10,
+                    mood = PetMood.SAD
+                ).updateHealthAndMoodPoints(-20, 20)
+                newPet.healthPoints.`should be equal to`(Pet.MAX_HP - 20)
+                newPet.moodPoints.`should be equal to`(30)
+            }
+
+            it("should kill it") {
+                val newPet = TestUtil.player().pet.copy(
+                    healthPoints = 10,
+                    moodPoints = 10,
+                    mood = PetMood.SAD
+                ).updateHealthAndMoodPoints(-20, 0)
+                newPet.isDead.`should be true`()
+            }
         }
     }
 })
