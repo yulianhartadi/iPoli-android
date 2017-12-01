@@ -109,9 +109,9 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 view.moodPoints.text = state.mp.toString() + "/" + state.maxMP
                 view.moodProgress.max = state.maxMP
 
-                view.coinBonus.text = "+ ${state.coinsBonus}%"
-                view.xpBonus.text = "+ ${state.xpBonus}%"
-                view.unlockChanceBonus.text = "+ ${state.unlockChanceBonus}%"
+                view.coinBonus.text = "+ %.2f".format(state.coinsBonus) + "%"
+                view.xpBonus.text = "+ %.2f".format(state.xpBonus) + "%"
+                view.unlockChanceBonus.text = "+ %.2f".format(state.unlockChanceBonus) + "%"
 
                 val avatar = AndroidPetAvatar.valueOf(state.avatar!!.name)
 
