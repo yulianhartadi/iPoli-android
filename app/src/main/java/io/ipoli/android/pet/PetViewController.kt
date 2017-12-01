@@ -88,7 +88,11 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             PET_FED -> {
-                view.petResponse.setText(state.foodResponse)
+                val responseRes = if (state.wasFoodTasty)
+                    R.string.pet_tasty_food_response
+                else
+                    R.string.pet_not_tasty_food_response
+                view.petResponse.setText(responseRes)
                 playFeedPetAnimation(view, state)
             }
 
@@ -109,8 +113,10 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 view.xpBonus.text = "+ ${state.xpBonus}%"
                 view.unlockChanceBonus.text = "+ ${state.unlockChanceBonus}%"
 
-                view.pet.setImageResource(state.image)
-                view.petState.setImageResource(state.stateImage)
+                val avatar = AndroidPetAvatar.valueOf(state.avatar!!.name)
+
+                view.pet.setImageResource(avatar.image)
+                view.petState.setImageResource(avatar.moodImage[state.mood]!!)
                 view.stateName.text = state.stateName
             }
         }
@@ -128,14 +134,20 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         anim.playTogether(slideAnim, fadeAnim)
         anim.duration = duration
         anim.interpolator = AccelerateDecelerateInterpolator()
+        val avatar = AndroidPetAvatar.valueOf(state.avatar!!.name)
+        val stateImage = avatar.moodImage[state.mood]!!
+        val responseStateImage = if (state.wasFoodTasty)
+            avatar.moodImage[PetMood.AWESOME]!!
+        else
+            avatar.deadStateImage
         anim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator?) {
-                selectedFood.setImageResource(state.foodImage!!)
+                selectedFood.setImageResource(state.food!!.image)
                 selectedFood.alpha = 1f
             }
 
             override fun onAnimationEnd(animation: Animator?) {
-                playFeedPetResponseAnimation(view, state.stateImage, state.responseStateImage)
+                playFeedPetResponseAnimation(view, stateImage, responseStateImage)
             }
         })
         anim.start()

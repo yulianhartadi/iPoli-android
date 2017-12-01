@@ -1,7 +1,5 @@
 package io.ipoli.android.pet
 
-import android.support.annotation.DrawableRes
-import android.support.annotation.StringRes
 import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
 
@@ -20,8 +18,8 @@ data class ChangePetIntent(val pet: Pet) : PetIntent()
 data class PetViewState(
     val type: StateType = StateType.DATA_LOADED,
     val stateName: String = "",
-    val foodImage: Int? = null,
-    @StringRes val foodResponse: Int = 0,
+    val food: Food? = null,
+    val wasFoodTasty: Boolean = false,
     val maxHP: Int = Pet.MAX_HP,
     val maxMP: Int = Pet.MAX_MP,
     val hp: Int = 0,
@@ -29,9 +27,8 @@ data class PetViewState(
     val coinsBonus: Float = 0f,
     val xpBonus: Float = 0f,
     val unlockChanceBonus: Float = 0f,
-    @DrawableRes val image: Int = 0,
-    @DrawableRes val stateImage: Int = 0,
-    @DrawableRes val responseStateImage: Int = 0
+    val avatar: PetAvatar? = null,
+    val mood: PetMood? = null
 ) : ViewState {
     enum class StateType {
         LOADING, DATA_LOADED, FOOD_LIST_SHOWN, FOOD_LIST_HIDDEN, PET_FED,
