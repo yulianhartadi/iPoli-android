@@ -8,9 +8,7 @@ import android.os.Bundle
 import android.support.annotation.DrawableRes
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ProgressBar
 import android.widget.Toast
@@ -37,6 +35,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_pet, container, false)
+        setHasOptionsMenu(true)
 
         view.fab.setImageDrawable(
             IconicsDrawable(view.context)
@@ -57,6 +56,23 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     override fun onAttach(view: View) {
         super.onAttach(view)
         send(LoadDataIntent)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        menu.findItem(R.id.action_pet).isVisible = false
+        super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.pet_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.action_store) {
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun render(state: PetViewState, view: View) {
