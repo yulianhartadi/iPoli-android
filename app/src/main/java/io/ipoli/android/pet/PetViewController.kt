@@ -6,6 +6,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.support.annotation.DrawableRes
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
@@ -47,11 +48,11 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         )
 
         view.foodList.layoutManager = LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
-        view.foodList.adapter = PetFoodAdapter(
-            Food.values().map {
-                PetFoodViewModel(it.image, it.price, it)
-            }
-        )
+//        view.foodList.adapter = PetFoodAdapter(
+//            Food.values().map {
+//                PetFoodViewModel(it.image, it.price, it)
+//            }
+//        )
         return view
     }
 
@@ -124,6 +125,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             PET_CHANGED -> {
+                view.foodList.adapter = PetFoodAdapter(state.foodViewModels)
+
                 displayPetName(state.petName)
 
                 playProgressAnimation(view.healthProgress, view.healthProgress.progress, state.hp)
@@ -267,7 +270,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         animator.start()
     }
 
-    data class PetFoodViewModel(@DrawableRes val image: Int, val price: Int, val food: Food)
+    data class PetFoodViewModel(@DrawableRes val image: Int, val price: Int, val food: Food, val quantity: Int = 0)
 
     inner class PetFoodAdapter(private val foodItems: List<PetFoodViewModel>) : RecyclerView.Adapter<PetFoodAdapter.ViewHolder>() {
         override fun getItemCount() = foodItems.size
@@ -275,7 +278,17 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val vm = foodItems[position]
             holder.itemView.foodImage.setImageResource(vm.image)
-            holder.itemView.foodPrice.text = vm.price.toString()
+
+            val foodPrice = holder.itemView.foodPrice
+            if(vm.quantity > 0) {
+                foodPrice.text = vm.quantity.toString()
+                foodPrice.setCompoundDrawables(null, null, null, null)
+            } else {
+                foodPrice.text = vm.price.toString()
+                foodPrice.setCompoundDrawablesWithIntrinsicBounds(
+                    ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_life_coin_16dp),
+                    null, null, null)
+            }
             holder.itemView.setOnClickListener {
                 send(Feed(vm.food))
             }

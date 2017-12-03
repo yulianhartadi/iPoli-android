@@ -2,6 +2,7 @@ package io.ipoli.android.pet
 
 import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.player.Player
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -15,7 +16,7 @@ object HideFoodList : PetIntent()
 object RenamePetRequest : PetIntent()
 data class RenamePet(val name: String) : PetIntent()
 data class Feed(val food: Food) : PetIntent()
-data class ChangePetIntent(val pet: Pet) : PetIntent()
+data class ChangePlayerIntent(val player: Player) : PetIntent()
 
 data class PetViewState(
     val type: StateType = StateType.DATA_LOADED,
@@ -31,7 +32,8 @@ data class PetViewState(
     val xpBonus: Float = 0f,
     val unlockChanceBonus: Float = 0f,
     val avatar: PetAvatar? = null,
-    val mood: PetMood? = null
+    val mood: PetMood? = null,
+    val foodViewModels: List<PetViewController.PetFoodViewModel> = listOf()
 ) : ViewState {
     enum class StateType {
         LOADING, DATA_LOADED, FOOD_LIST_SHOWN, FOOD_LIST_HIDDEN, PET_FED,

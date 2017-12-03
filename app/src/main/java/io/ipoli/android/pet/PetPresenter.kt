@@ -4,9 +4,9 @@ import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.pet.PetViewState.StateType.*
 import io.ipoli.android.pet.usecase.FeedPetUseCase
-import io.ipoli.android.pet.usecase.ListenForPetChangesUseCase
 import io.ipoli.android.pet.usecase.Parameters
 import io.ipoli.android.pet.usecase.Result
+import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import kotlin.coroutines.experimental.CoroutineContext
@@ -16,7 +16,7 @@ import kotlin.coroutines.experimental.CoroutineContext
  * on 11/24/17.
  */
 class PetPresenter(
-    private val listenForPetChangesUseCase: ListenForPetChangesUseCase,
+    private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
     private val feedPetUseCase: FeedPetUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<PetViewState>, PetViewState, PetIntent>(
@@ -27,8 +27,8 @@ class PetPresenter(
         when (intent) {
             is LoadDataIntent -> {
                 launch {
-                    listenForPetChangesUseCase.execute(Unit).consumeEach {
-                        actor.send(ChangePetIntent(it))
+                    listenForPlayerChangesUseCase.execute(Unit).consumeEach {
+                        actor.send(ChangePlayerIntent(it))
                     }
                 }
                 state.copy(
@@ -63,8 +63,9 @@ class PetPresenter(
                 }
             }
 
-            is ChangePetIntent -> {
-                val pet = intent.pet
+            is ChangePlayerIntent -> {
+                val food = intent.player.inventory.food
+                val pet = intent.player.pet
                 state.copy(
                     type = PET_CHANGED,
                     petName = pet.name,
@@ -75,7 +76,8 @@ class PetPresenter(
                     xpBonus = pet.experienceBonus,
                     unlockChanceBonus = pet.unlockChanceBonus,
                     avatar = pet.avatar,
-                    mood = pet.mood
+                    mood = pet.mood,
+                    foodViewModels = createFoodViewModels(food)
                 )
             }
 
@@ -95,6 +97,13 @@ class PetPresenter(
                     state
                 }
             }
+        }
+
+    private fun createFoodViewModels(inventoryFood: Map<Food, Int>) =
+        Food.values().map {
+            PetViewController.PetFoodViewModel(
+                it.image, it.price, it, inventoryFood.getOrDefault(it, 0)
+            )
         }
 
 }

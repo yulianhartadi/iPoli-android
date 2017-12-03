@@ -12,7 +12,9 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.home.HomeViewController
+import io.ipoli.android.pet.Food
 import io.ipoli.android.player.AuthProvider
+import io.ipoli.android.player.Inventory
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.persistence.model.ProviderType
 import space.traversal.kapsule.Injects
@@ -53,6 +55,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         if (playerRepository.find() == null) {
             val player = Player(
                 coins = 1000,
+                inventory = Inventory(mapOf(Food.BANANA to 2, Food.APPLE to 1)),
                 authProvider = AuthProvider(provider = ProviderType.ANONYMOUS.name)
             )
             playerRepository.save(player)
