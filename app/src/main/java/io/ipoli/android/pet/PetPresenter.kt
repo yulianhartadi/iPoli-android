@@ -67,6 +67,7 @@ class PetPresenter(
                 val pet = intent.pet
                 state.copy(
                     type = PET_CHANGED,
+                    petName = pet.name,
                     stateName = pet.mood.name.toLowerCase().capitalize(),
                     mp = pet.moodPoints,
                     hp = pet.healthPoints,
@@ -76,6 +77,23 @@ class PetPresenter(
                     avatar = pet.avatar,
                     mood = pet.mood
                 )
+            }
+
+            is RenamePetRequest -> {
+                state.copy(
+                    type = RENAME_PET
+                )
+            }
+
+            is RenamePet -> {
+                if (intent.name.isNotEmpty()) {
+                    state.copy(
+                        type = PET_RENAMED,
+                        petName = intent.name
+                    )
+                } else {
+                    state
+                }
             }
         }
 
