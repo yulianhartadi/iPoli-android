@@ -14,7 +14,6 @@ import io.ipoli.android.pet.AndroidJobLowerPetStatsScheduler
 import io.ipoli.android.pet.LowerPetStatsScheduler
 import io.ipoli.android.pet.PetPresenter
 import io.ipoli.android.pet.usecase.FeedPetUseCase
-import io.ipoli.android.pet.usecase.ListenForPetChangesUseCase
 import io.ipoli.android.pet.usecase.LowerPetStatsUseCase
 import io.ipoli.android.player.AndroidLevelDownScheduler
 import io.ipoli.android.player.AndroidLevelUpScheduler
@@ -148,7 +147,6 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, playerRepository, reminderScheduler, questCompleteScheduler, rewardPlayerUseCase)
     override val undoCompletedQuestUseCase get() = UndoCompletedQuestUseCase(questRepository, reminderScheduler, removeRewardFromPlayerUseCase)
     override val listenForPlayerChangesUseCase get() = ListenForPlayerChangesUseCase(playerRepository, job + CommonPool)
-    override val listenForPetChangesUseCase get() = ListenForPetChangesUseCase(playerRepository, job + CommonPool)
     override val rewardPlayerUseCase get() = RewardPlayerUseCase(playerRepository, levelUpScheduler)
     override val removeRewardFromPlayerUseCase get() = RemoveRewardFromPlayerUseCase(playerRepository, levelDownScheduler)
     override val feedPetUseCase get() = FeedPetUseCase(playerRepository)
@@ -190,7 +188,6 @@ interface UseCaseModule {
     val completeQuestUseCase: CompleteQuestUseCase
     val undoCompletedQuestUseCase: UndoCompletedQuestUseCase
     val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase
-    val listenForPetChangesUseCase: ListenForPetChangesUseCase
     val rewardPlayerUseCase: RewardPlayerUseCase
     val removeRewardFromPlayerUseCase: RemoveRewardFromPlayerUseCase
     val feedPetUseCase: FeedPetUseCase
@@ -213,7 +210,6 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val completeQuestUseCase by required { completeQuestUseCase }
     private val undoCompleteQuestUseCase by required { undoCompletedQuestUseCase }
     private val listenForPlayerChangesUseCase by required { listenForPlayerChangesUseCase }
-    private val listenForPetChangesUseCase by required { listenForPetChangesUseCase }
     private val feedPetUseCase by required { feedPetUseCase }
     private val navigator by required { navigator }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
@@ -225,7 +221,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter, job)
     override val calendarPresenter get() = CalendarPresenter(listenForPlayerChangesUseCase, calendarFormatter, job)
     override val addQuestPresenter get() = AddQuestPresenter(saveQuestUseCase, job)
-    override val petPresenter get() = PetPresenter(listenForPetChangesUseCase, feedPetUseCase, job)
+    override val petPresenter get() = PetPresenter(listenForPlayerChangesUseCase, feedPetUseCase, job)
 }
 
 class ControllerModule(androidModule: AndroidModule,
