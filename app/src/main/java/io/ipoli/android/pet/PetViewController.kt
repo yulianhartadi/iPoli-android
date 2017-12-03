@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.support.annotation.DrawableRes
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ProgressBar
@@ -17,6 +18,7 @@ import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.mvi.MviViewController
+import io.ipoli.android.common.view.TextPickerDialogController
 import io.ipoli.android.common.view.intRes
 import io.ipoli.android.pet.PetViewState.StateType.*
 import kotlinx.android.synthetic.main.controller_pet.view.*
@@ -69,7 +71,12 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == R.id.action_store) {
+        if (item.itemId == R.id.actionStore) {
+            return true
+        }
+
+        if (item.itemId == R.id.actionRenamePet) {
+            send(RenamePetRequest)
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -117,6 +124,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             PET_CHANGED -> {
+                displayPetName(state.petName)
+
                 playProgressAnimation(view.healthProgress, view.healthProgress.progress, state.hp)
                 view.healthPoints.text = state.hp.toString() + "/" + state.maxHP
                 view.healthProgress.max = state.maxHP
@@ -135,7 +144,22 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 view.petState.setImageResource(avatar.moodImage[state.mood]!!)
                 view.stateName.text = state.stateName
             }
+
+            RENAME_PET ->
+                TextPickerDialogController({ text ->
+                    send(RenamePet(text))
+                }, "Give me a name", state.petName, hint = "Rename your pet")
+                    .showDialog(router, "text-picker-tag")
+
+            PET_RENAMED ->
+                displayPetName(state.petName)
+
         }
+    }
+
+    private fun displayPetName(name: String) {
+        val toolbar = activity!!.findViewById<Toolbar>(R.id.toolbar)
+        toolbar.title = name
     }
 
     private fun playFeedPetAnimation(view: View, state: PetViewState) {

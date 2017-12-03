@@ -2,13 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_store"
+        android:id="@+id/actionStore"
         android:icon="@drawable/ic_shopping_cart_white_24dp"
         android:title="@string/rename_your_pet"
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/action_rename_pet"
+        android:id="@+id/actionRenamePet"
         android:title="@string/rename_your_pet"
         app:showAsAction="never" />
 </menu>
