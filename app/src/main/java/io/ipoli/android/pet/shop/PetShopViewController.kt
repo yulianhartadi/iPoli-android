@@ -1,14 +1,16 @@
 package io.ipoli.android.pet.shop
 
 import android.os.Bundle
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
+import android.support.v4.view.PagerAdapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import io.ipoli.android.R
+import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.pet.AndroidPetAvatar
+import io.ipoli.android.pet.PetAvatar
+import io.ipoli.android.pet.PetMood
 import io.ipoli.android.pet.shop.PetShopViewState.StateType.DATA_LOADED
 import kotlinx.android.synthetic.main.controller_pet_shop.view.*
 import kotlinx.android.synthetic.main.item_pet_shop.view.*
@@ -25,8 +27,8 @@ class PetShopViewController(args: Bundle? = null) : MviViewController<PetShopVie
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_pet_shop, container, false)
-        val petGrid = view.petGrid
-        petGrid.layoutManager = GridLayoutManager(view.context, 2)
+        view.petPager.clipToPadding = false
+        view.petPager.pageMargin = ViewUtils.dpToPx(32f, view.context).toInt()
         return view
     }
 
@@ -38,7 +40,7 @@ class PetShopViewController(args: Bundle? = null) : MviViewController<PetShopVie
     override fun render(state: PetShopViewState, view: View) {
         when (state.type) {
             DATA_LOADED -> {
-                view.petGrid.adapter = PetAdapter(state.petViewModels)
+                view.petPager.adapter = PetPagerAdapter(state.petViewModels)
             }
         }
 
@@ -46,20 +48,29 @@ class PetShopViewController(args: Bundle? = null) : MviViewController<PetShopVie
 
     data class PetViewModel(val avatar: AndroidPetAvatar, val isBought: Boolean = false, val isSelected: Boolean = false)
 
-    inner class PetAdapter(private val pets: List<PetViewModel>) : RecyclerView.Adapter<PetAdapter.ViewHolder>() {
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val vm = pets[position]
-            holder.itemView.pet.setImageResource(vm.avatar.image)
+    inner class PetPagerAdapter(private val viewModels: List<PetViewModel>) : PagerAdapter() {
 
+        override fun instantiateItem(container: ViewGroup, position: Int): Any {
+            val inflater = LayoutInflater.from(container.context)
+            val view = inflater.inflate(R.layout.item_pet_shop, container, false)
+            val vm = viewModels[position]
+            val avatar = vm.avatar
+            view.petName.setText(avatar.petName)
+            view.pet.setImageResource(avatar.image)
+            view.petState.setImageResource(avatar.moodImage[PetMood.HAPPY]!!)
+            view.petPrice.text = PetAvatar.valueOf(avatar.name).price.toString()
+            view.petDescription.setText(avatar.description)
+            container.addView(view)
+            return view
         }
 
-        override fun getItemCount() = pets.size
+        override fun destroyItem(container: ViewGroup, position: Int, view: Any) {
+            container.removeView(view as View)
+        }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_pet_shop, parent, false))
+        override fun isViewFromObject(view: View, `object`: Any) = view == `object`
 
-        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
+        override fun getCount() = viewModels.size
 
     }
-
 }

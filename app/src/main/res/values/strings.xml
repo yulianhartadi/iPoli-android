@@ -959,6 +959,7 @@
     <string name="invalid_reminder_time">Can you think of a number?</string>
     <string name="pet_tasty_food_response">yummy</string>
     <string name="pet_not_tasty_food_response">yucky</string>
+    <string name="pet_seal_description">Flying through everywhere with my magical big ears</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

@@ -184,14 +184,28 @@ enum class PetAvatar(val price: Int, val feedingCategory: FeedingCategory) {
 
 enum class AndroidPetAvatar(
     @StringRes val petName: Int,
+    @StringRes val description: Int,
     @DrawableRes val image: Int,
     @DrawableRes val headPicture: Int,
     @DrawableRes val deadStateImage: Int,
     val moodImage: Map<PetMood, Int>) {
 
-    //    SEAL(R.string.pet_seal, R.drawable.pet_1, R.drawable.pet_1_head),
-//    DONKEY(R.string.pet_donkey, R.drawable.pet_2, R.drawable.pet_2_head),
-    ELEPHANT(R.string.pet_elephant, R.drawable.pet_3, R.drawable.pet_3_head, R.drawable.pet_3_dead,
+    SEAL(R.string.pet_seal, R.string.pet_seal_description, R.drawable.pet_1, R.drawable.pet_1_head, R.drawable.pet_1_dead,
+        mapOf(
+            SAD to R.drawable.pet_1_sad,
+            GOOD to R.drawable.pet_1_good,
+            HAPPY to R.drawable.pet_1_happy,
+            AWESOME to R.drawable.pet_1_awesome
+        )),
+    DONKEY(R.string.pet_donkey, R.string.pet_seal_description, R.drawable.pet_2, R.drawable.pet_2_head, R.drawable.pet_2_dead,
+        mapOf(
+            SAD to R.drawable.pet_2_sad,
+            GOOD to R.drawable.pet_2_good,
+            HAPPY to R.drawable.pet_2_happy,
+            AWESOME to R.drawable.pet_2_awesome
+        )
+    ),
+    ELEPHANT(R.string.pet_elephant, R.string.pet_seal_description, R.drawable.pet_3, R.drawable.pet_3_head, R.drawable.pet_3_dead,
         mapOf(
             SAD to R.drawable.pet_3_sad,
             GOOD to R.drawable.pet_3_good,
@@ -199,13 +213,67 @@ enum class AndroidPetAvatar(
             AWESOME to R.drawable.pet_3_awesome
         )
     ),
-//    BEAVER(R.string.pet_beaver, R.drawable.pet_4, R.drawable.pet_4_head),
-//    CHICKEN(R.string.pet_chicken, R.drawable.pet_5, R.drawable.pet_5_head),
-//    BEAR(R.string.pet_chicken, R.drawable.pet_6, R.drawable.pet_6_head),
-//    LION(R.string.pet_chicken, R.drawable.pet_7, R.drawable.pet_7_head),
-//    CAT(R.string.pet_chicken, R.drawable.pet_8, R.drawable.pet_8_head),
-//    MONKEY(R.string.pet_chicken, R.drawable.pet_9, R.drawable.pet_9_head),
-//    DUCK(R.string.pet_chicken, R.drawable.pet_10, R.drawable.pet_10_head),
-//    PIG(R.string.pet_chicken, R.drawable.pet_11, R.drawable.pet_11_head),
-//    ZEBRA(R.string.pet_chicken, R.drawable.pet_12, R.drawable.pet_12_head)
+    BEAVER(R.string.pet_beaver, R.string.pet_seal_description, R.drawable.pet_4, R.drawable.pet_4_head, R.drawable.pet_4_dead,
+        mapOf(
+            SAD to R.drawable.pet_4_sad,
+            GOOD to R.drawable.pet_4_good,
+            HAPPY to R.drawable.pet_4_happy,
+            AWESOME to R.drawable.pet_4_awesome
+        )),
+    CHICKEN(R.string.pet_chicken, R.string.pet_seal_description, R.drawable.pet_5, R.drawable.pet_5_head, R.drawable.pet_5_dead,
+        mapOf(
+            SAD to R.drawable.pet_5_sad,
+            GOOD to R.drawable.pet_5_good,
+            HAPPY to R.drawable.pet_5_happy,
+            AWESOME to R.drawable.pet_5_awesome
+        )),
+    BEAR(R.string.pet_chicken, R.string.pet_seal_description, R.drawable.pet_6, R.drawable.pet_6_head, R.drawable.pet_6_dead,
+        mapOf(
+            SAD to R.drawable.pet_6_sad,
+            GOOD to R.drawable.pet_6_good,
+            HAPPY to R.drawable.pet_6_happy,
+            AWESOME to R.drawable.pet_6_awesome
+        )),
+    LION(R.string.pet_chicken, R.string.pet_seal_description, R.drawable.pet_7, R.drawable.pet_7_head, R.drawable.pet_7_dead,
+        mapOf(
+            SAD to R.drawable.pet_7_sad,
+            GOOD to R.drawable.pet_7_good,
+            HAPPY to R.drawable.pet_7_happy,
+            AWESOME to R.drawable.pet_7_awesome
+        )),
+    CAT(R.string.pet_chicken, R.string.pet_seal_description, R.drawable.pet_8, R.drawable.pet_8_head, R.drawable.pet_8_dead,
+        mapOf(
+            SAD to R.drawable.pet_8_sad,
+            GOOD to R.drawable.pet_8_good,
+            HAPPY to R.drawable.pet_8_happy,
+            AWESOME to R.drawable.pet_8_awesome
+        )),
+    MONKEY(R.string.pet_chicken, R.string.pet_seal_description, R.drawable.pet_9, R.drawable.pet_9_head, R.drawable.pet_9_dead,
+        mapOf(
+            SAD to R.drawable.pet_9_sad,
+            GOOD to R.drawable.pet_9_good,
+            HAPPY to R.drawable.pet_9_happy,
+            AWESOME to R.drawable.pet_9_awesome
+        )),
+    DUCK(R.string.pet_chicken, R.string.pet_seal_description, R.drawable.pet_10, R.drawable.pet_10_head, R.drawable.pet_10_dead,
+        mapOf(
+            SAD to R.drawable.pet_10_sad,
+            GOOD to R.drawable.pet_10_good,
+            HAPPY to R.drawable.pet_10_happy,
+            AWESOME to R.drawable.pet_10_awesome
+        )),
+    PIG(R.string.pet_chicken, R.string.pet_seal_description, R.drawable.pet_11, R.drawable.pet_11_head, R.drawable.pet_11_dead,
+        mapOf(
+            SAD to R.drawable.pet_11_sad,
+            GOOD to R.drawable.pet_11_good,
+            HAPPY to R.drawable.pet_11_happy,
+            AWESOME to R.drawable.pet_11_awesome
+        )),
+    ZEBRA(R.string.pet_chicken, R.string.pet_seal_description, R.drawable.pet_12, R.drawable.pet_12_head, R.drawable.pet_12_dead,
+        mapOf(
+            SAD to R.drawable.pet_12_sad,
+            GOOD to R.drawable.pet_12_good,
+            HAPPY to R.drawable.pet_12_happy,
+            AWESOME to R.drawable.pet_12_awesome
+        ))
 }
