@@ -48,11 +48,6 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         )
 
         view.foodList.layoutManager = LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
-//        view.foodList.adapter = PetFoodAdapter(
-//            Food.values().map {
-//                PetFoodViewModel(it.image, it.price, it)
-//            }
-//        )
         return view
     }
 
@@ -281,7 +276,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
             val foodPrice = holder.itemView.foodPrice
             if(vm.quantity > 0) {
-                foodPrice.text = vm.quantity.toString()
+                foodPrice.text = "x" + vm.quantity.toString()
                 foodPrice.setCompoundDrawables(null, null, null, null)
             } else {
                 foodPrice.text = vm.price.toString()
