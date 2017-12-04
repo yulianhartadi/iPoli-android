@@ -208,7 +208,7 @@ class AddQuestViewController(args: Bundle? = null) :
 
     private fun colorSelectedIcon(view: ImageView) {
         view.drawable.alpha = 255
-        view.drawable.setTint(colorRes(R.color.colorAccentAlternative))
+        view.drawable.setTint(colorRes(R.color.colorAccent))
     }
 
     override fun onChangeEnded(changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) {

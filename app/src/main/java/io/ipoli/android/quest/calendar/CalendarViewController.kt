@@ -163,7 +163,7 @@ class CalendarViewController(args: Bundle? = null) :
         val duration = view!!.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
         val fabTranslation = ObjectAnimator.ofFloat(fab, "x", x)
 
-        val fabColor = ContextCompat.getColor(fab.context, R.color.md_green_500)
+        val fabColor = ContextCompat.getColor(fab.context, R.color.colorAccent)
         val whiteColor = ContextCompat.getColor(fab.context, R.color.md_white)
 
         val startColor = if (reverse) whiteColor else fabColor
@@ -194,7 +194,7 @@ class CalendarViewController(args: Bundle? = null) :
     private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
         view.datePickerContainer.visibility = View.GONE
         val calendarIndicator = calendarToolbar.calendarIndicator
-        view.datePicker.setMarkedStyle(MarkStyle.BACKGROUND, colorRes(R.color.colorAccentAlternative))
+        view.datePicker.setMarkedStyle(MarkStyle.BACKGROUND, colorRes(R.color.colorAccent))
 
         val currentDate = LocalDate.now()
         view.datePicker.markDate(DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth))
