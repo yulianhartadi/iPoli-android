@@ -653,11 +653,11 @@
     <string name="fragment_store_title">Store</string>
     <string name="power_up_dialog_not_enough_coins">Unfortunately, you don\'t have enough coins to enable this power-up. Become premium member to enable all power-ups at once!</string>
 
-    <string name="pet_seal">Cute Tail</string>
+    <string name="pet_seal">Modern Tail</string>
     <string name="pet_donkey">Meaningful Look</string>
     <string name="pet_elephant">Jazzy Ears</string>
     <string name="pet_beaver">Crazy teeth</string>
-    <string name="pet_chicken">Chicken invader</string>
+    <string name="pet_chicken">Chicken Invader</string>
     <string name="pet_store_use_pet">Use it</string>
     <string name="pet_selected_message">Pet successfully changed</string>
     <string name="avatar_store_use_avatar">Use it</string>
@@ -959,7 +959,7 @@
     <string name="invalid_reminder_time">Can you think of a number?</string>
     <string name="pet_tasty_food_response">yummy</string>
     <string name="pet_not_tasty_food_response">yucky</string>
-    <string name="pet_seal_description">Flying through everywhere with my magical big ears</string>
+    <string name="pet_seal_description">Investor, #BTC owner, Fish brain researcher, Foodie, Blogger, World Traveler, Really modest</string>
     <string name="pet_cat">Insomniac</string>
     <string name="pet_cat_description">I can\'t get no sleep, in the 40 minutes a day that I must be fed constantly</string>
     <string name="pet_lion_description">I am just a regular cutie. Plus, I might or might not ate all my previous owners!</string>
@@ -976,6 +976,8 @@
     <string name="pet_bear_description">I love spending long Sundays on tea parties, charity meetings, reading clubs &amp; deep fried fish restaurants</string>
     <string name="pet_donkey_description">Some say that I might not be the brightest around. How come I landed such a hot Dragon girlfriend then?</string>
     <string name="pet_elephant_description">I remember the day I arrived from Africa like it was yesterday. Too bad I don\'t remember yesterday at all…</string>
+    <string name="pet_chicken_description">My mom always told me that I must not be from this world, later the Doc found she was a swan.</string>
+    <string name="pet_beaver_description">I am just a regular \"Love Yourself\" home builder that likes the occasional upstream swim &amp; whole food</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

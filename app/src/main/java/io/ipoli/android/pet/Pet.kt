@@ -213,14 +213,14 @@ enum class AndroidPetAvatar(
             AWESOME to R.drawable.pet_3_awesome
         )
     ),
-    BEAVER(R.string.pet_beaver, R.string.pet_seal_description, R.drawable.pet_4, R.drawable.pet_4_head, R.drawable.pet_4_dead,
+    BEAVER(R.string.pet_beaver, R.string.pet_beaver_description, R.drawable.pet_4, R.drawable.pet_4_head, R.drawable.pet_4_dead,
         mapOf(
             SAD to R.drawable.pet_4_sad,
             GOOD to R.drawable.pet_4_good,
             HAPPY to R.drawable.pet_4_happy,
             AWESOME to R.drawable.pet_4_awesome
         )),
-    CHICKEN(R.string.pet_chicken, R.string.pet_seal_description, R.drawable.pet_5, R.drawable.pet_5_head, R.drawable.pet_5_dead,
+    CHICKEN(R.string.pet_chicken, R.string.pet_chicken_description, R.drawable.pet_5, R.drawable.pet_5_head, R.drawable.pet_5_dead,
         mapOf(
             SAD to R.drawable.pet_5_sad,
             GOOD to R.drawable.pet_5_good,
