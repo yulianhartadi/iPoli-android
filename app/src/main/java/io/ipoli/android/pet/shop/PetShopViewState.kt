@@ -12,7 +12,8 @@ sealed class PetShopIntent : Intent
 object LoadDataIntent : PetShopIntent()
 
 data class PetShopViewState(
-    val type: StateType = StateType.DATA_LOADED
+    val type: StateType = StateType.DATA_LOADED,
+    val petViewModels: List<PetShopViewController.PetViewModel> = listOf()
 ) : ViewState {
     enum class StateType {
         LOADING, DATA_LOADED
