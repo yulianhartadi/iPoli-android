@@ -7,7 +7,6 @@
         android:id="@+id/petPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="32dp"
         android:padding="32dp" />
 
 </RelativeLayout>
