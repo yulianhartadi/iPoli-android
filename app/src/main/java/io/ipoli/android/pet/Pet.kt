@@ -197,7 +197,7 @@ enum class AndroidPetAvatar(
             HAPPY to R.drawable.pet_1_happy,
             AWESOME to R.drawable.pet_1_awesome
         )),
-    DONKEY(R.string.pet_donkey, R.string.pet_seal_description, R.drawable.pet_2, R.drawable.pet_2_head, R.drawable.pet_2_dead,
+    DONKEY(R.string.pet_donkey, R.string.pet_donkey_description, R.drawable.pet_2, R.drawable.pet_2_head, R.drawable.pet_2_dead,
         mapOf(
             SAD to R.drawable.pet_2_sad,
             GOOD to R.drawable.pet_2_good,
@@ -205,7 +205,7 @@ enum class AndroidPetAvatar(
             AWESOME to R.drawable.pet_2_awesome
         )
     ),
-    ELEPHANT(R.string.pet_elephant, R.string.pet_seal_description, R.drawable.pet_3, R.drawable.pet_3_head, R.drawable.pet_3_dead,
+    ELEPHANT(R.string.pet_elephant, R.string.pet_elephant_description, R.drawable.pet_3, R.drawable.pet_3_head, R.drawable.pet_3_dead,
         mapOf(
             SAD to R.drawable.pet_3_sad,
             GOOD to R.drawable.pet_3_good,
@@ -227,49 +227,49 @@ enum class AndroidPetAvatar(
             HAPPY to R.drawable.pet_5_happy,
             AWESOME to R.drawable.pet_5_awesome
         )),
-    BEAR(R.string.pet_chicken, R.string.pet_seal_description, R.drawable.pet_6, R.drawable.pet_6_head, R.drawable.pet_6_dead,
+    BEAR(R.string.pet_bear, R.string.pet_bear_description, R.drawable.pet_6, R.drawable.pet_6_head, R.drawable.pet_6_dead,
         mapOf(
             SAD to R.drawable.pet_6_sad,
             GOOD to R.drawable.pet_6_good,
             HAPPY to R.drawable.pet_6_happy,
             AWESOME to R.drawable.pet_6_awesome
         )),
-    LION(R.string.pet_chicken, R.string.pet_seal_description, R.drawable.pet_7, R.drawable.pet_7_head, R.drawable.pet_7_dead,
+    LION(R.string.pet_lion, R.string.pet_lion_description, R.drawable.pet_7, R.drawable.pet_7_head, R.drawable.pet_7_dead,
         mapOf(
             SAD to R.drawable.pet_7_sad,
             GOOD to R.drawable.pet_7_good,
             HAPPY to R.drawable.pet_7_happy,
             AWESOME to R.drawable.pet_7_awesome
         )),
-    CAT(R.string.pet_chicken, R.string.pet_seal_description, R.drawable.pet_8, R.drawable.pet_8_head, R.drawable.pet_8_dead,
+    CAT(R.string.pet_cat, R.string.pet_cat_description, R.drawable.pet_8, R.drawable.pet_8_head, R.drawable.pet_8_dead,
         mapOf(
             SAD to R.drawable.pet_8_sad,
             GOOD to R.drawable.pet_8_good,
             HAPPY to R.drawable.pet_8_happy,
             AWESOME to R.drawable.pet_8_awesome
         )),
-    MONKEY(R.string.pet_chicken, R.string.pet_seal_description, R.drawable.pet_9, R.drawable.pet_9_head, R.drawable.pet_9_dead,
+    MONKEY(R.string.pet_monkey, R.string.pet_monkey_description, R.drawable.pet_9, R.drawable.pet_9_head, R.drawable.pet_9_dead,
         mapOf(
             SAD to R.drawable.pet_9_sad,
             GOOD to R.drawable.pet_9_good,
             HAPPY to R.drawable.pet_9_happy,
             AWESOME to R.drawable.pet_9_awesome
         )),
-    DUCK(R.string.pet_chicken, R.string.pet_seal_description, R.drawable.pet_10, R.drawable.pet_10_head, R.drawable.pet_10_dead,
+    DUCK(R.string.pet_duck, R.string.pet_duck_description, R.drawable.pet_10, R.drawable.pet_10_head, R.drawable.pet_10_dead,
         mapOf(
             SAD to R.drawable.pet_10_sad,
             GOOD to R.drawable.pet_10_good,
             HAPPY to R.drawable.pet_10_happy,
             AWESOME to R.drawable.pet_10_awesome
         )),
-    PIG(R.string.pet_chicken, R.string.pet_seal_description, R.drawable.pet_11, R.drawable.pet_11_head, R.drawable.pet_11_dead,
+    PIG(R.string.pet_pig, R.string.pet_pig_description, R.drawable.pet_11, R.drawable.pet_11_head, R.drawable.pet_11_dead,
         mapOf(
             SAD to R.drawable.pet_11_sad,
             GOOD to R.drawable.pet_11_good,
             HAPPY to R.drawable.pet_11_happy,
             AWESOME to R.drawable.pet_11_awesome
         )),
-    ZEBRA(R.string.pet_chicken, R.string.pet_seal_description, R.drawable.pet_12, R.drawable.pet_12_head, R.drawable.pet_12_dead,
+    ZEBRA(R.string.pet_zebra, R.string.pet_zebra_description, R.drawable.pet_12, R.drawable.pet_12_head, R.drawable.pet_12_dead,
         mapOf(
             SAD to R.drawable.pet_12_sad,
             GOOD to R.drawable.pet_12_good,
