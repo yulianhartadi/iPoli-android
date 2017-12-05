@@ -10,7 +10,7 @@ import io.ipoli.android.quest.Quest
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 29.11.17.
  */
-class RemoveRewardFromPlayerUseCase(
+open class RemoveRewardFromPlayerUseCase(
     private val playerRepository: PlayerRepository,
     private val levelDownScheduler: LevelDownScheduler
 ) : UseCase<Quest, Player> {

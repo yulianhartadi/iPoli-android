@@ -4,8 +4,6 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.player.AuthProvider
-import io.ipoli.android.player.Player
 import io.ipoli.android.player.usecase.RemoveRewardFromPlayerUseCase
 import io.ipoli.android.quest.Category
 import io.ipoli.android.quest.Color
@@ -42,11 +40,7 @@ class UndoCompleteQuestUseCaseSpek : Spek({
         var questRepo = mock<QuestRepository>()
 
         var reminderScheduler = mock<ReminderScheduler>()
-
-        val player = Player(
-            authProvider = AuthProvider()
-        )
-
+        
         val removeRewardFromPlayerUseCase = mock<RemoveRewardFromPlayerUseCase>()
 
         var useCase = UndoCompletedQuestUseCase(
