@@ -14,6 +14,9 @@ import com.bluelinelabs.conductor.Controller
 fun Controller.stringRes(@StringRes stringRes: Int): String =
     resources!!.getString(stringRes)
 
+fun Controller.stringRes(@StringRes stringRes: Int, vararg formatArgs: Any): String =
+    resources!!.getString(stringRes, *formatArgs)
+
 fun Controller.stringsRes(@ArrayRes stringArrayRes: Int): List<String> =
     resources!!.getStringArray(stringArrayRes).toList()
 

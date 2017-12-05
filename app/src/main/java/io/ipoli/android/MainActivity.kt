@@ -54,8 +54,8 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
 
         if (playerRepository.find() == null) {
             val player = Player(
-                coins = 1000,
-                inventory = Inventory(mapOf(Food.BANANA to 2, Food.APPLE to 1)),
+                coins = 500,
+                inventory = Inventory(mapOf(Food.POOP to 10, Food.APPLE to 1)),
                 authProvider = AuthProvider(provider = ProviderType.ANONYMOUS.name)
             )
             playerRepository.save(player)

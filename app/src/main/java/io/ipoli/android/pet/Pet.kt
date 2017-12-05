@@ -16,11 +16,11 @@ data class Pet(
     val name: String,
     val avatar: PetAvatar,
     val moodPoints: Int = Constants.DEFAULT_PET_HP,
-    val healthPoints: Int = Constants.DEFAULT_PET_HP,
+    val healthPoints: Int = Constants.DEFAULT_PET_MP,
     val mood: PetMood = moodFor(healthPoints),
     val experienceBonus: Float = bonusFor(mood, MAX_XP_BONUS),
     val coinBonus: Float = bonusFor(mood, MAX_COIN_BONUS),
-    val unlockChanceBonus: Float = bonusFor(mood, MAX_UNLOCK_CHANCE_BONUS)
+    val itemDropChanceBonus: Float = bonusFor(mood, MAX_UNLOCK_CHANCE_BONUS)
 ) {
 
     val isDead = healthPoints == 0
@@ -32,6 +32,17 @@ data class Pet(
         val newHealthPoints =
             if (healthPoints >= 0) addHealthPoints(healthPoints)
             else removeHealthPoints(abs(healthPoints))
+
+        if (newHealthPoints == 0) {
+            return copy(
+                healthPoints = 0,
+                moodPoints = 0,
+                mood = SAD,
+                coinBonus = 0f,
+                experienceBonus = 0f,
+                itemDropChanceBonus = 0f
+            )
+        }
 
         val newMoodPoints =
             if (moodPoints >= 0) addMoodPoints(newHealthPoints, moodPoints)
@@ -45,9 +56,25 @@ data class Pet(
             mood = newMood,
             coinBonus = bonusFor(newMood, MAX_COIN_BONUS),
             experienceBonus = bonusFor(newMood, MAX_XP_BONUS),
-            unlockChanceBonus = bonusFor(newMood, MAX_UNLOCK_CHANCE_BONUS)
+            itemDropChanceBonus = bonusFor(newMood, MAX_UNLOCK_CHANCE_BONUS)
         )
     }
+    fun setHealthAndMoodPoints(healthPoints: Int, moodPoints: Int): Pet {
+        require(healthPoints >= 0)
+        require(moodPoints >= 0)
+
+        val newMood = moodFor(moodPoints)
+
+        return copy(
+            healthPoints = healthPoints,
+            moodPoints = moodPoints,
+            mood = newMood,
+            coinBonus = bonusFor(newMood, MAX_COIN_BONUS),
+            experienceBonus = bonusFor(newMood, MAX_XP_BONUS),
+            itemDropChanceBonus = bonusFor(newMood, MAX_UNLOCK_CHANCE_BONUS)
+        )
+    }
+
 
     fun rewardFor(quest: Quest): Pet {
 
@@ -71,7 +98,7 @@ data class Pet(
             mood = newMood,
             coinBonus = bonusFor(newMood, MAX_COIN_BONUS),
             experienceBonus = bonusFor(newMood, MAX_XP_BONUS),
-            unlockChanceBonus = bonusFor(newMood, MAX_UNLOCK_CHANCE_BONUS)
+            itemDropChanceBonus = bonusFor(newMood, MAX_UNLOCK_CHANCE_BONUS)
         )
     }
 
@@ -106,7 +133,7 @@ data class Pet(
             mood = newMood,
             coinBonus = bonusFor(newMood, MAX_COIN_BONUS),
             experienceBonus = bonusFor(newMood, MAX_XP_BONUS),
-            unlockChanceBonus = bonusFor(newMood, MAX_UNLOCK_CHANCE_BONUS)
+            itemDropChanceBonus = bonusFor(newMood, MAX_UNLOCK_CHANCE_BONUS)
         )
     }
 

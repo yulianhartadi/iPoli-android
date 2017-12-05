@@ -43,7 +43,7 @@ data class CouchbasePet(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var healthPoints: Int by map
     var experienceBonus: Float by map
     var coinBonus: Float by map
-    var unlockChanceBonus: Float by map
+    var itemDropChanceBonus: Float by map
 }
 
 data class CouchbaseInventory(val map: MutableMap<String, Any?> = mutableMapOf()) {

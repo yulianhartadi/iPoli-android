@@ -31,7 +31,7 @@
         app:layout_constraintTop_toTopOf="@+id/pet" />
 
     <android.support.v7.widget.CardView
-        android:id="@+id/statsContainer"
+        android:id="@+id/cardContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardCornerRadius="6dp"
@@ -41,8 +41,81 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <android.support.constraint.ConstraintLayout
+            android:id="@+id/reviveContainer"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/reviveHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:text="Revive Flopsy for:"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                app:layout_constraintEnd_toStartOf="@+id/reviveCost"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+            <TextView
+                android:id="@+id/reviveCost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:drawablePadding="4dp"
+                android:drawableStart="@drawable/ic_life_coin_24dp"
+                android:gravity="center_vertical"
+                android:text="300"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/reviveHint"
+                app:layout_constraintTop_toBottomOf="@+id/textView3"
+                tools:text="300" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="32dp"
+                android:text="Your pet has died!"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <Button
+                android:id="@+id/revive"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:paddingEnd="32dp"
+                android:paddingStart="32dp"
+                android:text="Revive"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/reviveHint" />
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/statsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/healthIcon"
@@ -128,74 +201,49 @@
                 app:layout_constraintTop_toTopOf="@+id/moodPoints"
                 tools:text="Happy" />
 
-            <ImageView
-                android:id="@+id/coinsIcon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/coinBonus"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/stateName"
-                app:layout_constraintVertical_bias="0.5"
-                app:srcCompat="@drawable/ic_life_coin_24dp" />
-
             <TextView
                 android:id="@+id/coinBonus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
+                android:drawablePadding="4dp"
+                android:drawableStart="@drawable/ic_life_coin_32dp"
+                android:gravity="center_vertical"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                app:layout_constraintBottom_toBottomOf="@+id/coinsIcon"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/guideline7"
-                app:layout_constraintTop_toTopOf="@+id/coinsIcon"
+                app:layout_constraintStart_toStartOf="@+id/guideline7"
+                app:layout_constraintTop_toBottomOf="@+id/stateName"
                 tools:text="+5%" />
 
-            <ImageView
-                android:id="@+id/xpIcon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                app:layout_constraintBottom_toBottomOf="@+id/coinsIcon"
-                app:layout_constraintEnd_toStartOf="@+id/guideline9"
-                app:layout_constraintTop_toTopOf="@+id/coinsIcon"
-                app:srcCompat="@drawable/ic_star_yellow_24dp" />
 
             <TextView
                 android:id="@+id/xpBonus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:drawablePadding="4dp"
+                android:drawableStart="@drawable/ic_star_yellow_32dp"
+                android:gravity="center_vertical"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                app:layout_constraintBottom_toBottomOf="@+id/xpIcon"
-                app:layout_constraintStart_toEndOf="@+id/xpIcon"
-                app:layout_constraintTop_toTopOf="@+id/xpIcon"
+                app:layout_constraintBottom_toBottomOf="@+id/coinBonus"
+                app:layout_constraintEnd_toStartOf="@+id/guideline9"
+                app:layout_constraintStart_toStartOf="@+id/guideline9"
+                app:layout_constraintTop_toTopOf="@+id/coinBonus"
                 tools:text="+7%" />
-
-            <ImageView
-                android:id="@+id/giftIcon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                app:layout_constraintBottom_toBottomOf="@+id/coinsIcon"
-                app:layout_constraintStart_toStartOf="@+id/guideline8"
-                app:layout_constraintTop_toTopOf="@+id/coinsIcon"
-                app:srcCompat="@drawable/ic_four_leaf_clover" />
 
             <TextView
                 android:id="@+id/unlockChanceBonus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
+                android:drawablePadding="4dp"
+                android:drawableStart="@drawable/ic_four_leaf_clover_32dp"
+                android:gravity="center_vertical"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                app:layout_constraintBottom_toBottomOf="@+id/giftIcon"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/giftIcon"
-                app:layout_constraintTop_toTopOf="@+id/giftIcon"
-                app:layout_constraintVertical_bias="0.6"
+                app:layout_constraintBottom_toBottomOf="@+id/coinBonus"
+                app:layout_constraintEnd_toStartOf="@+id/guideline8"
+                app:layout_constraintStart_toStartOf="@+id/guideline8"
+                app:layout_constraintTop_toTopOf="@+id/coinBonus"
                 tools:text="+3%" />
 
             <android.support.constraint.Guideline
@@ -203,14 +251,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.3" />
+                app:layout_constraintGuide_percent="0.2" />
 
             <android.support.constraint.Guideline
                 android:id="@+id/guideline8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.7" />
+                app:layout_constraintGuide_percent="0.8" />
 
             <android.support.constraint.Guideline
                 android:id="@+id/guideline9"
@@ -218,6 +266,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.5" />
+
         </android.support.constraint.ConstraintLayout>
 
     </android.support.v7.widget.CardView>
@@ -271,15 +320,15 @@
         app:layout_constraintBottom_toTopOf="@+id/petState"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/statsContainer"
+        app:layout_constraintTop_toBottomOf="@+id/cardContainer"
         tools:text="yummy" />
 
     <ImageView
         android:id="@+id/selectedFood"
         android:layout_width="92dp"
-        android:scaleType="fitCenter"
         android:layout_height="wrap_content"
         android:alpha="0"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toTopOf="@+id/guideline11"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline10"

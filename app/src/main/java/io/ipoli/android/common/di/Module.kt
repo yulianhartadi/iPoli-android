@@ -16,6 +16,7 @@ import io.ipoli.android.pet.PetPresenter
 import io.ipoli.android.pet.shop.PetShopPresenter
 import io.ipoli.android.pet.usecase.FeedPetUseCase
 import io.ipoli.android.pet.usecase.LowerPetStatsUseCase
+import io.ipoli.android.pet.usecase.RevivePetUseCase
 import io.ipoli.android.player.AndroidLevelDownScheduler
 import io.ipoli.android.player.AndroidLevelUpScheduler
 import io.ipoli.android.player.LevelDownScheduler
@@ -150,7 +151,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val rewardPlayerUseCase get() = RewardPlayerUseCase(playerRepository, levelUpScheduler)
     override val removeRewardFromPlayerUseCase get() = RemoveRewardFromPlayerUseCase(playerRepository, levelDownScheduler)
     override val feedPetUseCase get() = FeedPetUseCase(playerRepository)
-
+    override val revivePetUseCase get() = RevivePetUseCase(playerRepository)
 }
 
 interface JobUseCaseModule {
@@ -191,6 +192,7 @@ interface UseCaseModule {
     val rewardPlayerUseCase: RewardPlayerUseCase
     val removeRewardFromPlayerUseCase: RemoveRewardFromPlayerUseCase
     val feedPetUseCase: FeedPetUseCase
+    val revivePetUseCase: RevivePetUseCase
 }
 
 interface PresenterModule {
@@ -211,6 +213,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val completeQuestUseCase by required { completeQuestUseCase }
     private val undoCompleteQuestUseCase by required { undoCompletedQuestUseCase }
     private val listenForPlayerChangesUseCase by required { listenForPlayerChangesUseCase }
+    private val revivePetUseCase by required { revivePetUseCase }
     private val feedPetUseCase by required { feedPetUseCase }
     private val navigator by required { navigator }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
@@ -222,7 +225,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter, job)
     override val calendarPresenter get() = CalendarPresenter(listenForPlayerChangesUseCase, calendarFormatter, job)
     override val addQuestPresenter get() = AddQuestPresenter(saveQuestUseCase, job)
-    override val petPresenter get() = PetPresenter(listenForPlayerChangesUseCase, feedPetUseCase, job)
+    override val petPresenter get() = PetPresenter(listenForPlayerChangesUseCase, feedPetUseCase, revivePetUseCase, job)
     override val petShopPresenter get() = PetShopPresenter(job)
 }
 

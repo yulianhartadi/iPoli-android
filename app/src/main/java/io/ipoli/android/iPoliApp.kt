@@ -3,7 +3,6 @@ package io.ipoli.android
 import android.app.Application
 import android.content.Context
 import android.util.Log
-import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Router
 import com.crashlytics.android.Crashlytics
 import com.evernote.android.job.JobManager
@@ -58,6 +57,8 @@ class iPoliApp : Application() {
 //        Realm.init(this)
 //        val db = Database()
         Timber.plant(Timber.DebugTree())
+
+
 //        Logger.addLogAdapter(AndroidLogAdapter())
 
 //        Timber.plant(object : Timber.DebugTree() {

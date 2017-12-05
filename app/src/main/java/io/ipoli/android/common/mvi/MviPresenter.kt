@@ -43,18 +43,12 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
 
     override fun intentChannel() = intentChannel
 
-    protected lateinit var actor: SendChannel<I>
+    protected lateinit var sendChannel: SendChannel<I>
 
     private fun stateReduceActor(view: V) = actor<I>(coroutineContext + CommonPool, Channel.CONFLATED) {
         var state = initialState
         launch(coroutineContext + UI) {
-            val data = JSONObject()
-            data.put("initial", initialState)
-            Amplitude.getInstance().logEvent("change_state", data)
-            Timber.d("intial state $initialState")
-            view.render(initialState)
-        }
-        launch(coroutineContext + UI) {
+            renderInitialState(view)
             channel.consumeEach { intent ->
 
                 val oldState = state
@@ -72,12 +66,20 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
         }
     }
 
+    private fun renderInitialState(view: V) {
+        val data = JSONObject()
+        data.put("initial", initialState)
+        Amplitude.getInstance().logEvent("change_state", data)
+        Timber.d("intial state $initialState")
+        view.render(initialState)
+    }
+
     override fun onAttachView(view: V) {
 
-        actor = stateReduceActor(view)
+        sendChannel = stateReduceActor(view)
         launch(coroutineContext + CommonPool) {
             intentChannel.consumeEach {
-                actor.send(it)
+                sendChannel.send(it)
             }
         }
     }
@@ -85,6 +87,6 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
     abstract fun reduceState(intent: I, state: VS): VS
 
     override fun onDestroy() {
-        actor.close()
+        sendChannel.close()
     }
 }

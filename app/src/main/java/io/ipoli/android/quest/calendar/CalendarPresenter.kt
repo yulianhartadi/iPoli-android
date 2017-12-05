@@ -38,7 +38,7 @@ class CalendarPresenter(
             is LoadDataIntent -> {
                 launch {
                     listenForPlayerChangesUseCase.execute(Unit).consumeEach {
-                        actor.send(ChangePlayerIntent(it))
+                        sendChannel.send(ChangePlayerIntent(it))
                     }
                 }
                 val date = intent.currentDate
@@ -100,7 +100,7 @@ class CalendarPresenter(
                 val player = intent.player
 
                 val type = if(state.level == 0) {
-                    DATA_LOADED
+                    PLAYER_LOADED
                 } else if(state.level != player.level) {
                     LEVEL_CHANGED
                 } else {

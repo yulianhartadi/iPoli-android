@@ -15,7 +15,7 @@ import io.ipoli.android.player.persistence.PlayerRepository
 
 sealed class Result {
     data class PetFed(val player: Player, val wasFoodTasty: Boolean) : Result()
-    object NotEnoughCoins : Result()
+    object TooExpensive : Result()
 }
 
 data class Parameters(val food: Food)
@@ -27,7 +27,7 @@ class FeedPetUseCase(private val playerRepository: PlayerRepository) : UseCase<P
         requireNotNull(player)
 
         if (player!!.coins < food.price && !player.inventory.hasFood(food)) {
-            return Result.NotEnoughCoins
+            return Result.TooExpensive
         }
 
         val (newPet, wasFoodTasty) = feedPet(player.pet, food)

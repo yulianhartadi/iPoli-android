@@ -43,7 +43,7 @@ class DayViewPresenter(
             is LoadDataIntent -> {
                 launch {
                     loadScheduleUseCase.execute(intent.currentDate).consumeEach {
-                        actor.send(ScheduleLoadedIntent(it))
+                        sendChannel.send(ScheduleLoadedIntent(it))
                     }
                 }
                 state.copy(type = LOADING)

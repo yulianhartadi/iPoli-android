@@ -33,7 +33,7 @@ class FeedPetUseCaseSpek : Spek({
                 )
 
                 val result = executeUseCase(player, Food.BANANA)
-                result.`should be instance of`(Result.NotEnoughCoins::class)
+                result.`should be instance of`(Result.TooExpensive::class)
             }
 
             it("should buy food and feed pet") {

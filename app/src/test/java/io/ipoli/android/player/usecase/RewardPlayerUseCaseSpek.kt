@@ -92,7 +92,7 @@ class RewardPlayerUseCaseSpek : Spek({
             newPet.mood.`should be`(petReward.mood)
             newPet.experienceBonus.`should be equal to`(petReward.experienceBonus)
             newPet.coinBonus.`should be equal to`(petReward.coinBonus)
-            newPet.unlockChanceBonus.`should be equal to`(petReward.unlockChanceBonus)
+            newPet.itemDropChanceBonus.`should be equal to`(petReward.itemDropChanceBonus)
         }
     }
 })
