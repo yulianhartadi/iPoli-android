@@ -137,9 +137,8 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     private val questCompleteScheduler by required { questCompleteScheduler }
     private val levelUpScheduler by required { levelUpScheduler }
     private val levelDownScheduler by required { levelDownScheduler }
-    private val job by required { job }
     override val loadScheduleForDateUseCase
-        get() = LoadScheduleForDateUseCase(questRepository, job + CommonPool)
+        get() = LoadScheduleForDateUseCase(questRepository)
     override val saveQuestUseCase get() = SaveQuestUseCase(questRepository, reminderScheduler)
     override val removeQuestUseCase get() = RemoveQuestUseCase(questRepository, reminderScheduler)
     override val undoRemoveQuestUseCase get() = UndoRemovedQuestUseCase(questRepository)
@@ -147,7 +146,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
     override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, playerRepository, reminderScheduler, questCompleteScheduler, rewardPlayerUseCase)
     override val undoCompletedQuestUseCase get() = UndoCompletedQuestUseCase(questRepository, reminderScheduler, removeRewardFromPlayerUseCase)
-    override val listenForPlayerChangesUseCase get() = ListenForPlayerChangesUseCase(playerRepository, job + CommonPool)
+    override val listenForPlayerChangesUseCase get() = ListenForPlayerChangesUseCase(playerRepository)
     override val rewardPlayerUseCase get() = RewardPlayerUseCase(playerRepository, levelUpScheduler)
     override val removeRewardFromPlayerUseCase get() = RemoveRewardFromPlayerUseCase(playerRepository, levelDownScheduler)
     override val feedPetUseCase get() = FeedPetUseCase(playerRepository)
