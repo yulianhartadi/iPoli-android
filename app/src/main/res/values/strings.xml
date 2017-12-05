@@ -979,6 +979,8 @@
     <string name="pet_chicken_description">My mom always told me that I must not be from this world, later the Doc found she was a swan.</string>
     <string name="pet_beaver_description">I am just a regular \"Love Yourself\" home builder that likes the occasional upstream swim &amp; whole food</string>
 
+    <string name="revive_hint">Revive %s for:</string>
+
     <string-array name="player_titles">
         <item>Novice</item>
         <item>Apprentice</item>

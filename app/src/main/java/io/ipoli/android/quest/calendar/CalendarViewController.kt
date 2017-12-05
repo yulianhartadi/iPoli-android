@@ -259,6 +259,9 @@ class CalendarViewController(args: Bundle? = null) :
         if (state.type == DATA_LOADED) {
             removeDayViewPagerAdapter(view)
             createDayViewPagerAdapter(state, view)
+        }
+
+        if (state.type == PLAYER_LOADED) {
             levelProgress.visible = true
             levelProgress.progress = state.progress
             levelProgress.max = state.maxProgress

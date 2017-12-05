@@ -11,15 +11,17 @@ import io.ipoli.android.player.Player
 sealed class PetIntent : Intent
 
 object LoadDataIntent : PetIntent()
-object ShowFoodList : PetIntent()
-object HideFoodList : PetIntent()
-object RenamePetRequest : PetIntent()
-data class RenamePet(val name: String) : PetIntent()
-data class Feed(val food: Food) : PetIntent()
+object ShowFoodListIntent : PetIntent()
+object HideFoodListIntent : PetIntent()
+object RenamePetRequestIntent : PetIntent()
+object RevivePetIntent : PetIntent()
+data class RenamePetIntent(val name: String) : PetIntent()
+data class FeedIntent(val food: Food) : PetIntent()
 data class ChangePlayerIntent(val player: Player) : PetIntent()
 
 data class PetViewState(
     val type: StateType = StateType.DATA_LOADED,
+    val reviveCost: Int,
     val petName: String = "",
     val stateName: String = "",
     val food: Food? = null,
@@ -33,10 +35,12 @@ data class PetViewState(
     val unlockChanceBonus: Float = 0f,
     val avatar: PetAvatar? = null,
     val mood: PetMood? = null,
+    val isDead: Boolean = false,
     val foodViewModels: List<PetViewController.PetFoodViewModel> = listOf()
 ) : ViewState {
     enum class StateType {
         LOADING, DATA_LOADED, FOOD_LIST_SHOWN, FOOD_LIST_HIDDEN, PET_FED,
-        FOOD_TOO_EXPENSIVE, PET_CHANGED, RENAME_PET, PET_RENAMED
+        FOOD_TOO_EXPENSIVE, PET_CHANGED, RENAME_PET, PET_RENAMED,
+        PET_REVIVED, REVIVE_TOO_EXPENSIVE
     }
 }

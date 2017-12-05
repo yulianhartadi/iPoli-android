@@ -37,7 +37,7 @@ data class CalendarViewState(
 
     enum class StateType {
         LOADING, DATA_LOADED, CALENDAR_DATE_CHANGED, SWIPE_DATE_CHANGED, DEFAULT, DATE_PICKER_CHANGED,
-        LEVEL_CHANGED, XP_AND_COINS_CHANGED
+        LEVEL_CHANGED, XP_AND_COINS_CHANGED, PLAYER_LOADED
     }
 
     enum class DatePickerState {

@@ -147,6 +147,7 @@ interface Constants {
         val DEFAULT_PET_BACKGROUND_PICTURE = "pet_background_1"
 
         val DEFAULT_PET_HP = 80
+        val DEFAULT_PET_MP = 80
         val XP_BONUS_PERCENTAGE_OF_HP = 20.0
         val COINS_BONUS_PERCENTAGE_OF_HP = 10.0
 
