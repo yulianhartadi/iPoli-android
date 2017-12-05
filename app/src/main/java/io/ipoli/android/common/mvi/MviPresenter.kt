@@ -4,7 +4,10 @@ import android.support.annotation.MainThread
 import com.amplitude.api.Amplitude
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.channels.*
+import kotlinx.coroutines.experimental.channels.Channel
+import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.experimental.channels.actor
+import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import org.json.JSONObject
 import timber.log.Timber
@@ -40,7 +43,7 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
 
     override fun intentChannel() = intentChannel
 
-    protected lateinit var actor: ActorJob<I>
+    protected lateinit var actor: SendChannel<I>
 
     private fun stateReduceActor(view: V) = actor<I>(coroutineContext + CommonPool, Channel.CONFLATED) {
         var state = initialState
@@ -82,6 +85,6 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
     abstract fun reduceState(intent: I, state: VS): VS
 
     override fun onDestroy() {
-        actor.cancel()
+        actor.close()
     }
 }
