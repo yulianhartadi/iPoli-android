@@ -20,7 +20,7 @@ data class Pet(
     val mood: PetMood = moodFor(healthPoints),
     val experienceBonus: Float = bonusFor(mood, MAX_XP_BONUS),
     val coinBonus: Float = bonusFor(mood, MAX_COIN_BONUS),
-    val itemDropChanceBonus: Float = bonusFor(mood, MAX_UNLOCK_CHANCE_BONUS)
+    val bountyBonus: Float = bonusFor(mood, MAX_BOUNTY_BONUS)
 ) {
 
     val isDead = healthPoints == 0
@@ -40,7 +40,7 @@ data class Pet(
                 mood = SAD,
                 coinBonus = 0f,
                 experienceBonus = 0f,
-                itemDropChanceBonus = 0f
+                bountyBonus = 0f
             )
         }
 
@@ -56,7 +56,7 @@ data class Pet(
             mood = newMood,
             coinBonus = bonusFor(newMood, MAX_COIN_BONUS),
             experienceBonus = bonusFor(newMood, MAX_XP_BONUS),
-            itemDropChanceBonus = bonusFor(newMood, MAX_UNLOCK_CHANCE_BONUS)
+            bountyBonus = bonusFor(newMood, MAX_BOUNTY_BONUS)
         )
     }
     fun setHealthAndMoodPoints(healthPoints: Int, moodPoints: Int): Pet {
@@ -71,7 +71,7 @@ data class Pet(
             mood = newMood,
             coinBonus = bonusFor(newMood, MAX_COIN_BONUS),
             experienceBonus = bonusFor(newMood, MAX_XP_BONUS),
-            itemDropChanceBonus = bonusFor(newMood, MAX_UNLOCK_CHANCE_BONUS)
+            bountyBonus = bonusFor(newMood, MAX_BOUNTY_BONUS)
         )
     }
 
@@ -98,7 +98,7 @@ data class Pet(
             mood = newMood,
             coinBonus = bonusFor(newMood, MAX_COIN_BONUS),
             experienceBonus = bonusFor(newMood, MAX_XP_BONUS),
-            itemDropChanceBonus = bonusFor(newMood, MAX_UNLOCK_CHANCE_BONUS)
+            bountyBonus = bonusFor(newMood, MAX_BOUNTY_BONUS)
         )
     }
 
@@ -133,7 +133,7 @@ data class Pet(
             mood = newMood,
             coinBonus = bonusFor(newMood, MAX_COIN_BONUS),
             experienceBonus = bonusFor(newMood, MAX_XP_BONUS),
-            itemDropChanceBonus = bonusFor(newMood, MAX_UNLOCK_CHANCE_BONUS)
+            bountyBonus = bonusFor(newMood, MAX_BOUNTY_BONUS)
         )
     }
 
@@ -166,7 +166,7 @@ data class Pet(
 
         const val MAX_XP_BONUS = 20f
         const val MAX_COIN_BONUS = 18f
-        const val MAX_UNLOCK_CHANCE_BONUS = 16f
+        const val MAX_BOUNTY_BONUS = 16f
 
         private fun bonusFor(mood: PetMood, maxBonus: Float): Float {
             val percentage = when (mood) {

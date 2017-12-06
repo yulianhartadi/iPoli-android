@@ -4,11 +4,8 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.reset
+import io.ipoli.android.TestUtil
 import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.pet.Pet
-import io.ipoli.android.pet.PetAvatar
-import io.ipoli.android.player.AuthProvider
-import io.ipoli.android.player.Player
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.usecase.RewardPlayerUseCase
 import io.ipoli.android.quest.*
@@ -28,20 +25,15 @@ class CompleteQuestUseCaseSpek : Spek({
 
     describe("CompleteQuestUseCase") {
 
-        val pet = Pet(
-            "",
-            avatar = PetAvatar.ELEPHANT,
-            healthPoints = 10,
-            moodPoints = Pet.AWESOME_MIN_MOOD_POINTS - 1
-        )
+        fun createQuestRepository(quest: Quest): QuestRepository = mock {
+            on { findById(any()) } doReturn
+                quest
 
-        val player = Player(
-            level = 1,
-            coins = 10,
-            experience = 10,
-            authProvider = AuthProvider(),
-            pet = pet
-        )
+            on { findNextQuestsToRemind(any()) } doReturn
+                listOf(quest)
+        }
+
+        val player = TestUtil.player()
 
         val quest = Quest(
             name = "",
@@ -52,7 +44,7 @@ class CompleteQuestUseCaseSpek : Spek({
             reminder = Reminder("", Time.now(), LocalDate.now())
         )
 
-        val questRepo: QuestRepository = createQuestRepository(quest)
+        val questRepo = createQuestRepository(quest)
 
         val questCompleteScheduler = mock<QuestCompleteScheduler>()
         val reminderScheduler = mock<ReminderScheduler>()
@@ -100,25 +92,52 @@ class CompleteQuestUseCaseSpek : Spek({
             Verify on questCompleteScheduler that questCompleteScheduler.schedule(any()) was called
         }
 
-        it("should save XP to the Quest") {
+        it("should have XP") {
             val newQuest = useCase.execute(questId)
             newQuest.experience.shouldNotBeNull()
             newQuest.experience!! `should be greater than` 0
         }
 
-        it("should save coins to the Quest") {
+        it("should have coins") {
             val newQuest = useCase.execute(questId)
             newQuest.coins.shouldNotBeNull()
             newQuest.coins!! `should be greater than` 0
         }
+
+        it("should have None bounty") {
+            val newQuest = useCase.execute(questId)
+            newQuest.bounty.`should be`(Quest.Bounty.None)
+        }
+
+        it("should have Food bounty") {
+
+            val foodUseCase = CompleteQuestUseCase(
+                questRepo,
+                playerRepo,
+                reminderScheduler,
+                questCompleteScheduler,
+                rewardPlayerUseCase,
+                4096
+            )
+
+            val newQuest = foodUseCase.execute(questId)
+            newQuest.bounty.`should be instance of`(Quest.Bounty.Food::class)
+        }
+
+        it("should not change bounty") {
+            val noChangeUseCase = CompleteQuestUseCase(
+                createQuestRepository(quest.copy(
+                    bounty = Quest.Bounty.None
+                )),
+                playerRepo,
+                reminderScheduler,
+                questCompleteScheduler,
+                rewardPlayerUseCase,
+                4096
+            )
+
+            val newQuest = noChangeUseCase.execute(questId)
+            newQuest.bounty.`should be`(Quest.Bounty.None)
+        }
     }
 })
-
-private fun createQuestRepository(quest: Quest): QuestRepository = mock {
-    on { findById(any()) } doReturn
-        quest
-
-    on { findNextQuestsToRemind(any()) } doReturn
-        listOf(quest)
-}
-

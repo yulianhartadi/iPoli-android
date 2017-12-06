@@ -98,8 +98,15 @@ data class Quest(
     val completedAtDate: LocalDate? = null,
     val completedAtTime: Time? = null,
     val experience: Int? = null,
-    val coins: Int? = null
+    val coins: Int? = null,
+    val bounty: Bounty? = null
 ) : Entity {
+
+    sealed class Bounty {
+        object None : Bounty()
+        data class Food(val food: io.ipoli.android.pet.Food) : Bounty()
+    }
+
     val isCompleted = completedAtDate != null
     val endTime: Time?
         get() = startTime?.let { Time.of(it.toMinuteOfDay() + duration) }

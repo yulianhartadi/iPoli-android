@@ -69,7 +69,7 @@ class PetSpek : Spek({
             newPet.mood.`should be`(PetMood.AWESOME)
             newPet.experienceBonus.`should be equal to`(Pet.MAX_XP_BONUS)
             newPet.coinBonus.`should be equal to`(Pet.MAX_COIN_BONUS)
-            newPet.itemDropChanceBonus.`should be equal to`(Pet.MAX_UNLOCK_CHANCE_BONUS)
+            newPet.bountyBonus.`should be equal to`(Pet.MAX_BOUNTY_BONUS)
         }
 
         it("should change mood to Happy when reward for Quest is removed") {
@@ -123,7 +123,7 @@ class PetSpek : Spek({
                 newPet.mood.`should be`(PetMood.SAD)
                 newPet.experienceBonus.`should be equal to`(0f)
                 newPet.coinBonus.`should be equal to`(0f)
-                newPet.itemDropChanceBonus.`should be equal to`(0f)
+                newPet.bountyBonus.`should be equal to`(0f)
             }
         }
     }

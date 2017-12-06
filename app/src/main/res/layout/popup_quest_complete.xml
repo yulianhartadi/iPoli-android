@@ -66,7 +66,7 @@
         tools:text="+12 coins" />
 
     <ImageView
-        android:id="@+id/reward"
+        android:id="@+id/bounty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -79,7 +79,7 @@
         app:layout_constraintTop_toBottomOf="@+id/earnedCoins" />
 
     <TextView
-        android:id="@+id/rewardQuantity"
+        android:id="@+id/bountyQuantity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
@@ -87,12 +87,12 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:alpha="0"
-        android:text="x1"
+        android:text="+1"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/reward"
-        tools:text="x1" />
+        app:layout_constraintTop_toBottomOf="@+id/bounty"
+        tools:text="+1" />
 </android.support.constraint.ConstraintLayout>

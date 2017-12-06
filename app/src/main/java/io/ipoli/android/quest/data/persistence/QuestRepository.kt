@@ -11,6 +11,7 @@ import io.ipoli.android.common.datetime.startOfDayUTC
 import io.ipoli.android.common.persistence.BaseCouchbaseRepository
 import io.ipoli.android.common.persistence.CouchbasePersistedModel
 import io.ipoli.android.common.persistence.Repository
+import io.ipoli.android.pet.Food
 import io.ipoli.android.quest.*
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import org.threeten.bp.Instant
@@ -38,6 +39,7 @@ data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMa
     var startMinute: Long? by map
     var experience: Long? by map
     var coins: Long? by map
+    var bounty: MutableMap<String, Any?>? by map
     var scheduledDate: Long by map
     var completedAtDate: Long? by map
     var completedAtMinute: Long? by map
@@ -54,6 +56,15 @@ data class CouchbaseReminder(val map: MutableMap<String, Any?> = mutableMapOf())
     var message: String by map
     var minute: Int by map
     var date: Long by map
+}
+
+data class CouchbaseBounty(val map: MutableMap<String, Any?> = mutableMapOf()) {
+    var type: String by map
+    var name: String? by map
+
+    enum class Type {
+        NONE, FOOD
+    }
 }
 
 class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineContext) : BaseCouchbaseRepository<Quest, CouchbaseQuest>(database, coroutineContext), QuestRepository {
@@ -140,6 +151,15 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             duration = cq.duration,
             experience = cq.experience?.toInt(),
             coins = cq.coins?.toInt(),
+            bounty = cq.bounty?.let {
+                val cr = CouchbaseBounty(it)
+                when {
+                    cr.type == CouchbaseBounty.Type.NONE.name -> Quest.Bounty.None
+                    cr.type == CouchbaseBounty.Type.FOOD.name -> Quest.Bounty.Food(Food.valueOf(cr.name!!))
+                    else -> null
+                }
+
+            },
             completedAtDate = cq.completedAtDate?.let {
                 DateUtils.fromMillis(it)
             },
@@ -168,6 +188,21 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         }
         q.experience = entity.experience?.toLong()
         q.coins = entity.coins?.toLong()
+        q.bounty = entity.bounty?.let {
+            val cr = CouchbaseBounty()
+
+            cr.type = when (it) {
+                is Quest.Bounty.None -> CouchbaseBounty.Type.NONE.name
+                is Quest.Bounty.Food -> CouchbaseBounty.Type.FOOD.name
+                else -> throw IllegalArgumentException("Unexpected bounty type: ${it}")
+            }
+
+            if (it is Quest.Bounty.Food) {
+                cr.name = it.food.name
+            }
+
+            cr.map
+        }
         q.startMinute = entity.startTime?.toMinuteOfDay()?.toLong()
         q.completedAtDate = entity.completedAtDate?.startOfDayUTC()
         q.completedAtMinute = entity.completedAtTime?.toMinuteOfDay()?.toLong()
