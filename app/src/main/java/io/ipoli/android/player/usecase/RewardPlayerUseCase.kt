@@ -21,10 +21,22 @@ open class RewardPlayerUseCase(
         requireNotNull(player)
 
         val newPet = player!!.pet.rewardFor(parameters)
+
+        val inventory = player.inventory.let {
+            if (parameters.bounty is Quest.Bounty.Food) {
+                it.addFood(parameters.bounty.food)
+            } else {
+                it
+            }
+        }
+
         val newPlayer = player
             .addExperience(parameters.experience!!)
             .addCoins(parameters.coins!!)
-            .copy(pet = newPet)
+            .copy(
+                pet = newPet,
+                inventory = inventory
+            )
         if (newPlayer.level != player.level) {
             levelUpScheduler.schedule()
         }
