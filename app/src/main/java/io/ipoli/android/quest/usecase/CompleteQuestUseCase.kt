@@ -83,12 +83,14 @@ class CompleteQuestUseCase(
     }
 
     private fun chooseBounty(): Quest.Bounty.Food {
-        return Quest.Bounty.Food(Food.BANANA)
+        val foods = Food.values() + Food.POOP + Food.POOP + Food.BEER
+        val index = createRandom().nextInt(foods.size)
+        return Quest.Bounty.Food(foods[index])
     }
 
     private fun createRandom(): Random {
         val random = Random()
-        randomSeed?.let { random.setSeed(randomSeed) }
+        randomSeed?.let { random.setSeed(it) }
         return random
     }
 }
