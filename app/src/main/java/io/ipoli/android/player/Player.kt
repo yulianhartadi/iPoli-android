@@ -20,9 +20,12 @@ data class Player(
         name = Constants.DEFAULT_PET_NAME,
         avatar = PetAvatar.ELEPHANT
     ),
-    val inventory: Inventory = Inventory(mapOf(
-        Food.BANANA to 1
-    ))
+    val inventory: Inventory = Inventory(
+        food = mapOf(
+            Food.BANANA to 1
+        ),
+        pets = listOf(InventoryPet.fromPet(pet))
+    )
 ) : Entity {
     fun addExperience(experience: Int): Player {
         val newXp = experience + this.experience
@@ -63,9 +66,18 @@ data class Player(
     fun removeCoins(coins: Int) = copy(
         coins = Math.max(this.coins - coins, 0)
     )
+
+    fun hasPet(petAvatar: PetAvatar) =
+        inventory.hasPet(petAvatar)
 }
 
-data class Inventory(val food: Map<Food, Int> = mapOf()) {
+data class InventoryPet(val name: String, val avatar: PetAvatar) {
+    companion object {
+        fun fromPet(pet: Pet) = InventoryPet(pet.name, pet.avatar)
+    }
+}
+
+data class Inventory(val food: Map<Food, Int> = mapOf(), val pets: List<InventoryPet> = listOf()) {
     fun addFood(food: Food): Inventory {
         val quantity = this.food.let {
             if (it.containsKey(food)) it[food]!! + 1 else 1
@@ -87,6 +99,17 @@ data class Inventory(val food: Map<Food, Int> = mapOf()) {
     }
 
     fun hasFood(food: Food) = this.food.containsKey(food)
+
+    fun addPet(pet: Pet) =
+        copy(
+            pets = this.pets + InventoryPet.fromPet(pet)
+        )
+
+    fun hasPet(petAvatar: PetAvatar) =
+        pets.any { it.avatar == petAvatar }
+
+    fun getPet(petAvatar: PetAvatar) =
+        pets.first { it.avatar == petAvatar }
 }
 
 data class AuthProvider(

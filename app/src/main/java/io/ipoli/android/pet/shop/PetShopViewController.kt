@@ -5,13 +5,15 @@ import android.support.v4.view.PagerAdapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.mvi.MviViewController
+import io.ipoli.android.common.view.stringRes
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.pet.PetMood
-import io.ipoli.android.pet.shop.PetShopViewState.StateType.DATA_LOADED
+import io.ipoli.android.pet.shop.PetShopViewState.StateType.*
 import kotlinx.android.synthetic.main.controller_pet_shop.view.*
 import kotlinx.android.synthetic.main.item_pet_shop.view.*
 import space.traversal.kapsule.required
@@ -40,15 +42,23 @@ class PetShopViewController(args: Bundle? = null) : MviViewController<PetShopVie
     override fun render(state: PetShopViewState, view: View) {
         when (state.type) {
             DATA_LOADED -> {
-                view.petPager.adapter = PetPagerAdapter(state.petViewModels)
+                view.petPager.adapter = PetPagerAdapter(listOf())
+            }
+
+            PLAYER_CHANGED -> {
+                (view.petPager.adapter as PetPagerAdapter).updateAll(state.petViewModels)
+            }
+
+            PET_TOO_EXPENSIVE -> {
+                Toast.makeText(view.context, "Pet too expensive", Toast.LENGTH_SHORT).show()
             }
         }
 
     }
 
-    data class PetViewModel(val avatar: AndroidPetAvatar, val isBought: Boolean = false, val isSelected: Boolean = false)
+    data class PetViewModel(val avatar: AndroidPetAvatar, val isBought: Boolean = false, val isCurrent: Boolean = false)
 
-    inner class PetPagerAdapter(private val viewModels: List<PetViewModel>) : PagerAdapter() {
+    inner class PetPagerAdapter(private var viewModels: List<PetViewModel>) : PagerAdapter() {
 
         override fun instantiateItem(container: ViewGroup, position: Int): Any {
             val inflater = LayoutInflater.from(container.context)
@@ -57,9 +67,32 @@ class PetShopViewController(args: Bundle? = null) : MviViewController<PetShopVie
             val avatar = vm.avatar
             view.petName.setText(avatar.petName)
             view.pet.setImageResource(avatar.image)
-            view.petState.setImageResource(avatar.moodImage[PetMood.HAPPY]!!)
             view.petPrice.text = PetAvatar.valueOf(avatar.name).price.toString()
             view.petDescription.setText(avatar.description)
+            val action = view.petAction
+            when {
+                vm.isCurrent -> {
+                    action.isEnabled = false
+                    action.text = stringRes(R.string.shop_current_pet)
+                    view.petState.setImageResource(avatar.moodImage[PetMood.HAPPY]!!)
+                }
+                vm.isBought -> {
+                    action.isEnabled = true
+                    action.text = stringRes(R.string.shop_pet_in_inventory)
+                    action.setOnClickListener {
+                        send(ChangePetIntent(PetAvatar.valueOf(vm.avatar.name)))
+                    }
+                    view.petState.setImageResource(avatar.moodImage[PetMood.GOOD]!!)
+                }
+                else -> {
+                    action.isEnabled = true
+                    action.text = stringRes(R.string.shop_buy_pet)
+                    action.setOnClickListener {
+                        send(BuyPetIntent(PetAvatar.valueOf(vm.avatar.name)))
+                    }
+                    view.petState.setImageResource(avatar.moodImage[PetMood.GOOD]!!)
+                }
+            }
             container.addView(view)
             return view
         }
@@ -71,6 +104,13 @@ class PetShopViewController(args: Bundle? = null) : MviViewController<PetShopVie
         override fun isViewFromObject(view: View, `object`: Any) = view == `object`
 
         override fun getCount() = viewModels.size
+
+        override fun getItemPosition(`object`: Any) = PagerAdapter.POSITION_NONE
+
+        fun updateAll(viewModels: List<PetViewModel>) {
+            this.viewModels = viewModels
+            notifyDataSetChanged()
+        }
 
     }
 }
