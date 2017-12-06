@@ -36,7 +36,7 @@ class LevelUpPopup(private val level: Int) : BasePopup() {
 
         val rewardUrl = Constants.LEVEL_UP_REWARDS[(level - 2) % Constants.LEVEL_UP_REWARDS.size]
         contentView.claimReward.setOnClickListener {
-            val reward = contentView.reward as ImageView
+            val reward = contentView.bounty as ImageView
             Glide.with(contentView.context)
                 .load(rewardUrl)
                 .into(reward)

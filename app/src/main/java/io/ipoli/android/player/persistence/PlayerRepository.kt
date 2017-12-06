@@ -46,7 +46,7 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             healthPoints = cPet.healthPoints,
             coinBonus = cPet.coinBonus,
             experienceBonus = cPet.experienceBonus,
-            itemDropChanceBonus = cPet.itemDropChanceBonus
+            bountyBonus = cPet.itemDropChanceBonus
         )
 
         val ci = CouchbaseInventory(cp.inventory)
@@ -93,7 +93,7 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             it.moodPoints = pet.moodPoints
             it.coinBonus = pet.coinBonus
             it.experienceBonus = pet.experienceBonus
-            it.itemDropChanceBonus = pet.itemDropChanceBonus
+            it.itemDropChanceBonus = pet.bountyBonus
         }
 
     private fun createCouchbaseAuthProvider(authProvider: AuthProvider) =

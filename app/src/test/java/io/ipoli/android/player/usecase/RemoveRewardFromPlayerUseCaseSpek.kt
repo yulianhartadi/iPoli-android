@@ -88,7 +88,7 @@ class RemoveRewardFromPlayerUseCaseSpek : Spek({
             newPet.mood.`should be`(petReward.mood)
             newPet.experienceBonus.`should be equal to`(petReward.experienceBonus)
             newPet.coinBonus.`should be equal to`(petReward.coinBonus)
-            newPet.itemDropChanceBonus.`should be equal to`(petReward.itemDropChanceBonus)
+            newPet.bountyBonus.`should be equal to`(petReward.bountyBonus)
         }
     }
 })

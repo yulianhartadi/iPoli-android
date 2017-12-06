@@ -19,18 +19,15 @@ import kotlinx.android.synthetic.main.popup_quest_complete.view.*
 class QuestCompletePopup(
     private val earnedXP: Int,
     private val earnedCoins: Int,
-    private val reward: FoodReward? = null
+    private val bounty: Food? = null
 ) : BasePopup(isAutoHide = true) {
-
-    data class FoodReward(val food: Food, val quantity: Int = 1)
 
     override fun createView(inflater: LayoutInflater): View =
         inflater.inflate(R.layout.popup_quest_complete, null)
 
     override fun onViewShown(contentView: View) {
-        reward?.let {
-            contentView.reward.setImageResource(it.food.image)
-            contentView.rewardQuantity.text = "x${it.quantity}"
+        bounty?.let {
+            contentView.bounty.setImageResource(it.image)
         }
         startTypingAnimation(contentView)
     }
@@ -70,7 +67,7 @@ class QuestCompletePopup(
 
         anim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
-                if (reward != null) playRewardAnimation(contentView)
+                if (bounty != null) playRewardAnimation(contentView)
                 else autoHideAfter(700)
             }
         })
@@ -83,20 +80,20 @@ class QuestCompletePopup(
         transition.addListener(object : TransitionListenerAdapter() {
 
             override fun onTransitionEnd(transition: Transition) {
-                val xAnim = ObjectAnimator.ofFloat(contentView.reward, "scaleX", 0f, 1f)
-                val yAnim = ObjectAnimator.ofFloat(contentView.reward, "scaleY", 0f, 1f)
+                val xAnim = ObjectAnimator.ofFloat(contentView.bounty, "scaleX", 0f, 1f)
+                val yAnim = ObjectAnimator.ofFloat(contentView.bounty, "scaleY", 0f, 1f)
                 val set = AnimatorSet()
                 set.interpolator = OvershootInterpolator()
                 set.playTogether(xAnim, yAnim)
                 set.addListener(object : AnimatorListenerAdapter() {
 
                     override fun onAnimationStart(animation: Animator?) {
-                        contentView.reward.visible = true
-                        contentView.rewardQuantity.visible = true
+                        contentView.bounty.visible = true
+                        contentView.bountyQuantity.visible = true
                     }
 
                     override fun onAnimationEnd(animation: Animator?) {
-                        val fadeAnim = ObjectAnimator.ofFloat(contentView.rewardQuantity, "alpha", 0f, 1f)
+                        val fadeAnim = ObjectAnimator.ofFloat(contentView.bountyQuantity, "alpha", 0f, 1f)
                         fadeAnim.addListener(object : AnimatorListenerAdapter() {
                             override fun onAnimationEnd(animation: Animator?) {
                                 autoHideAfter(700)
@@ -111,7 +108,7 @@ class QuestCompletePopup(
 
 
         TransitionManager.beginDelayedTransition(contentView as ViewGroup, transition)
-        contentView.reward.visible = false
-        contentView.rewardQuantity.visible = false
+        contentView.bounty.visible = false
+        contentView.bountyQuantity.visible = false
     }
 }
