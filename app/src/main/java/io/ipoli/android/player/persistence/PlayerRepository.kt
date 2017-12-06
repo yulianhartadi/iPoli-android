@@ -8,11 +8,9 @@ import io.ipoli.android.pet.Pet
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.AuthProvider
 import io.ipoli.android.player.Inventory
+import io.ipoli.android.player.InventoryPet
 import io.ipoli.android.player.Player
-import io.ipoli.android.player.persistence.model.CouchbaseAuthProvider
-import io.ipoli.android.player.persistence.model.CouchbaseInventory
-import io.ipoli.android.player.persistence.model.CouchbasePet
-import io.ipoli.android.player.persistence.model.CouchbasePlayer
+import io.ipoli.android.player.persistence.model.*
 import io.ipoli.android.store.avatars.data.Avatar
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
@@ -53,7 +51,11 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
 
         val ci = CouchbaseInventory(cp.inventory)
         val inventory = Inventory(
-            food = ci.food.entries.associate { Food.valueOf(it.key) to it.value }
+            food = ci.food.entries.associate { Food.valueOf(it.key) to it.value },
+            pets = ci.pets.map {
+                val cip = CouchbaseInventoryPet(it)
+                InventoryPet(cip.name, PetAvatar.valueOf(cip.avatar))
+            }
         )
 
         return Player(
@@ -110,5 +112,13 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             it.food = inventory.food.entries
                 .associate { it.key.name to it.value }
                 .toMutableMap()
+            it.pets = inventory.pets
+                .map { createCouchbaseInventoryPet(it).map }
+        }
+
+    private fun createCouchbaseInventoryPet(inventoryPet: InventoryPet) =
+        CouchbaseInventoryPet().also {
+            it.name = inventoryPet.name
+            it.avatar = inventoryPet.avatar.name
         }
 }

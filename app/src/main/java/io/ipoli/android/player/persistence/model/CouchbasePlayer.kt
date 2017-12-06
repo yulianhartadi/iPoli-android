@@ -48,6 +48,12 @@ data class CouchbasePet(val map: MutableMap<String, Any?> = mutableMapOf()) {
 
 data class CouchbaseInventory(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var food: MutableMap<String, Int> by map
+    var pets: List<MutableMap<String, Any?>> by map
+}
+
+data class CouchbaseInventoryPet(val map: MutableMap<String, Any?> = mutableMapOf()) {
+    var name: String by map
+    var avatar: String by map
 }
 
 enum class ProviderType {
