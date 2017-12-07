@@ -106,6 +106,12 @@ class DayViewPresenter(
                     Icon.valueOf(it.name)
                 }
 
+                val reminder = if (state.reminder != null) {
+                    createQuestReminder(state.reminder, state.scheduledDate, state.startTime!!.toMinuteOfDay())
+                } else {
+                    createDefaultReminder(state.scheduledDate, state.startTime!!.toMinuteOfDay())
+                }
+
                 val questParams = SaveQuestUseCase.Parameters(
                     id = state.editId,
                     name = state.name,
@@ -115,7 +121,7 @@ class DayViewPresenter(
                     scheduledDate = state.scheduledDate,
                     startTime = state.startTime,
                     duration = state.duration!!,
-                    reminder = createQuestReminder(state.reminder, state.scheduledDate, state.startTime!!.toMinuteOfDay())
+                    reminder = reminder
                 )
                 val result = saveQuestUseCase.execute(questParams)
                 savedQuestViewState(result, state)

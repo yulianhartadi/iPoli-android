@@ -28,7 +28,6 @@ import space.traversal.kapsule.Injects
 import space.traversal.kapsule.Kapsule
 import java.util.*
 
-
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 10/26/17.
@@ -54,10 +53,12 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
         val findQuestsToRemindUseCase by kap.required { findQuestToRemindUseCase }
         val snoozeQuestUseCase by kap.required { snoozeQuestUseCase }
         val completeQuestUseCase by kap.required { completeQuestUseCase }
+        val findPetUseCase by kap.required { findPetUseCase }
         kap.inject(iPoliApp.jobModule(context))
 
         val c = ContextThemeWrapper(context, R.style.Theme_iPoli)
         val quests = findQuestsToRemindUseCase.execute(params.extras.getLong("start", -1))
+        val pet = findPetUseCase.execute(Unit)
 
         launch(UI) {
             quests.forEach {
@@ -70,7 +71,14 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
                 val questName = it.name
                 val notificationId = showNotification(questName, message, notificationManager)
 
-                ReminderNotificationPopup(ReminderNotificationViewModel(it.id, questName, message, startTimeMessage),
+                val viewModel = ReminderNotificationViewModel(
+                    it.id,
+                    questName,
+                    message,
+                    startTimeMessage,
+                    pet
+                )
+                ReminderNotificationPopup(viewModel,
                     object : ReminderNotificationPopup.OnClickListener {
                         override fun onDismiss() {
                             notificationManager.cancel(notificationId)
