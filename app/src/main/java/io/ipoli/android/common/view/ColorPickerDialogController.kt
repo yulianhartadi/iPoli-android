@@ -1,6 +1,5 @@
 package io.ipoli.android.common.view
 
-import android.app.Dialog
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
@@ -12,20 +11,32 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import io.ipoli.android.R
+import io.ipoli.android.common.di.ControllerModule
+import io.ipoli.android.common.mvi.ViewStateRenderer
+import io.ipoli.android.pet.AndroidPetAvatar
+import io.ipoli.android.pet.LoadPetIntent
+import io.ipoli.android.pet.PetDialogPresenter
+import io.ipoli.android.pet.PetDialogViewState
 import kotlinx.android.synthetic.main.dialog_color_picker.view.*
+import space.traversal.kapsule.Injects
+import space.traversal.kapsule.required
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 9/2/17.
  */
 
-class ColorPickerDialogController : BaseDialogController {
+class ColorPickerDialogController : MviDialogController<PetDialogViewState, ColorPickerDialogController, PetDialogPresenter, LoadPetIntent>
+    , ViewStateRenderer<PetDialogViewState>, Injects<ControllerModule> {
+
     interface ColorPickedListener {
         fun onColorPicked(color: AndroidColor)
     }
 
     private var listener: ColorPickedListener? = null
     private var selectedColor: AndroidColor? = null
+
+    private val presenter by required { petDialogPresenter }
 
     constructor(listener: ColorPickedListener, selectedColor: AndroidColor? = null) : this() {
         this.listener = listener
@@ -34,7 +45,9 @@ class ColorPickerDialogController : BaseDialogController {
 
     constructor(args: Bundle? = null) : super(args)
 
-    override fun onCreateDialog(savedViewState: Bundle?): Dialog {
+    override fun createPresenter() = presenter
+
+    override fun onCreateDialog(savedViewState: Bundle?): DialogView {
 
         val inflater = LayoutInflater.from(activity!!)
 
@@ -48,12 +61,24 @@ class ColorPickerDialogController : BaseDialogController {
 
         colorGrid.adapter = ColorAdapter(colorViewModels)
 
-        return AlertDialog.Builder(activity!!)
+        val dialog = AlertDialog.Builder(activity!!)
             .setView(contentView)
             .setTitle("Choose color")
-            .setIcon(R.drawable.pet_5_head)
             .setNegativeButton(R.string.cancel, null)
             .create()
+
+        return DialogView(dialog, contentView)
+    }
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        send(LoadPetIntent)
+    }
+
+    override fun render(state: PetDialogViewState, view: View) {
+        if (state.type == PetDialogViewState.Type.PET_LOADED) {
+            changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
+        }
     }
 
     data class ColorViewModel(val color: AndroidColor, val isSelected: Boolean)
