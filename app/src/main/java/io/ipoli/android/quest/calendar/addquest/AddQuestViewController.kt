@@ -13,6 +13,7 @@ import com.bluelinelabs.conductor.ControllerChangeHandler
 import com.bluelinelabs.conductor.ControllerChangeType
 import com.mikepenz.entypo_typeface_library.Entypo
 import com.mikepenz.iconics.IconicsDrawable
+import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.datetime.Time
@@ -20,6 +21,8 @@ import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.*
+import io.ipoli.android.quest.Color
+import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.calendar.addquest.StateType.*
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogController
 import io.ipoli.android.reminder.view.picker.ReminderViewModel
@@ -129,15 +132,15 @@ class AddQuestViewController(args: Bundle? = null) :
             PICK_COLOR ->
                 ColorPickerDialogController(object : ColorPickerDialogController.ColorPickedListener {
                     override fun onColorPicked(color: AndroidColor) {
-                        send(ColorPickedIntent(color))
+                        send(ColorPickedIntent(Color.valueOf(color.name)))
                     }
 
-                }, state.color).showDialog(router, "pick_color_tag")
+                }, state.color?.let { AndroidColor.valueOf(it.name) }).showDialog(router, "pick_color_tag")
 
             PICK_ICON ->
                 IconPickerDialogController({ icon ->
-                    send(IconPickedIntent(icon))
-                }, state.icon).showDialog(router, "pick_icon_tag")
+                    send(IconPickedIntent(icon?.let { Icon.valueOf(it.name) }))
+                }, state.icon?.let { AndroidIcon.valueOf(it.name) }).showDialog(router, "pick_icon_tag")
 
             PICK_REMINDER ->
                 ReminderPickerDialogController(object : ReminderPickerDialogController.ReminderPickedListener {
@@ -178,7 +181,7 @@ class AddQuestViewController(args: Bundle? = null) :
         if (state.time != null) {
             colorSelectedIcon(view.startTime)
         } else {
-            view.startTime.drawable.setTintList(null)
+            resetSelectedIcon(view.startTime)
         }
 
         state.duration?.let {
@@ -189,25 +192,26 @@ class AddQuestViewController(args: Bundle? = null) :
             colorSelectedIcon(view.color)
         }
 
-        state.icon?.let {
+        if (state.icon != null) {
             colorSelectedIcon(view.icon)
+        } else {
+            resetSelectedIcon(view.icon)
         }
 
         if (state.reminder != null) {
             colorSelectedIcon(view.reminder)
         } else {
-            view.reminder.drawable.setTintList(null)
+            resetSelectedIcon(view.reminder)
         }
     }
 
     private fun resetSelectedIcon(view: ImageView) {
-        // 0.48 = 122
-        view.drawable.alpha = 122
+        view.drawable.alpha = Constants.MEDIUM_ALPHA
         view.drawable.setTintList(null)
     }
 
     private fun colorSelectedIcon(view: ImageView) {
-        view.drawable.alpha = 255
+        view.drawable.alpha = Constants.NO_TRANSPARENCY_ALPHA
         view.drawable.setTint(colorRes(R.color.colorAccent))
     }
 

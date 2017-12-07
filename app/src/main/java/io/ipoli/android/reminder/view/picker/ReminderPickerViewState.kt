@@ -2,6 +2,7 @@ package io.ipoli.android.reminder.view.picker
 
 import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.pet.PetAvatar
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -25,6 +26,7 @@ data class ReminderPickerViewState(
     val timeValue: String = "",
     val timeUnits: List<String> = listOf(),
     val timeUnitIndex: Int? = null,
+    val pet: PetAvatar? = null,
     val viewModel: ReminderViewModel? = null
 ) : ViewState {
 

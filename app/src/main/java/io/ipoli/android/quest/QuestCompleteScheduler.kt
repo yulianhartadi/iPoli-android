@@ -6,11 +6,15 @@ import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
 import io.ipoli.android.R
 import io.ipoli.android.common.di.ControllerModule
+import io.ipoli.android.common.di.JobModule
+import io.ipoli.android.iPoliApp
+import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.Food
 import io.ipoli.android.quest.view.QuestCompletePopup
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Injects
+import space.traversal.kapsule.Kapsule
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -30,10 +34,21 @@ class QuestCompleteJob : Job(), Injects<ControllerModule> {
             Food.valueOf(it)
         }
 
+        val kap = Kapsule<JobModule>()
+        val findPetUseCase by kap.required { findPetUseCase }
+        kap.inject(iPoliApp.jobModule(context))
+
+        val pet = findPetUseCase.execute(Unit)
+
         val c = ContextThemeWrapper(context, R.style.Theme_iPoli)
 
         launch(UI) {
-            QuestCompletePopup(experience, coins, bounty).show(c)
+            QuestCompletePopup(
+                experience,
+                coins,
+                bounty,
+                AndroidPetAvatar.valueOf(pet.avatar.name)
+            ).show(c)
         }
 
         return Result.SUCCESS

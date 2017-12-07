@@ -152,6 +152,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val revivePetUseCase get() = RevivePetUseCase(playerRepository)
     override val buyPetUseCase get() = BuyPetUseCase(playerRepository)
     override val changePetUseCase get() = ChangePetUseCase(playerRepository)
+    override val findPetUseCase get() = FindPetUseCase(playerRepository)
 }
 
 interface JobUseCaseModule {
@@ -161,6 +162,7 @@ interface JobUseCaseModule {
     val findPlayerLevelUseCase: FindPlayerLevelUseCase
     val rewardPlayerUseCase: RewardPlayerUseCase
     val lowerPetStatsUseCase: LowerPetStatsUseCase
+    val findPetUseCase: FindPetUseCase
 }
 
 class AndroidJobUseCaseModule : JobUseCaseModule, Injects<JobModule> {
@@ -175,6 +177,7 @@ class AndroidJobUseCaseModule : JobUseCaseModule, Injects<JobModule> {
     override val findPlayerLevelUseCase get() = FindPlayerLevelUseCase(playerRepository)
     override val rewardPlayerUseCase get() = RewardPlayerUseCase(playerRepository, levelUpScheduler)
     override val lowerPetStatsUseCase get() = LowerPetStatsUseCase(questRepository, playerRepository)
+    override val findPetUseCase get() = FindPetUseCase(playerRepository)
 }
 
 interface UseCaseModule {
@@ -193,6 +196,7 @@ interface UseCaseModule {
     val revivePetUseCase: RevivePetUseCase
     val buyPetUseCase: BuyPetUseCase
     val changePetUseCase: ChangePetUseCase
+    val findPetUseCase: FindPetUseCase
 }
 
 interface PresenterModule {
@@ -217,6 +221,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val feedPetUseCase by required { feedPetUseCase }
     private val buyPetUseCase by required { buyPetUseCase }
     private val changePetUseCase by required { changePetUseCase }
+    private val findPetUseCase by required { findPetUseCase }
     private val navigator by required { navigator }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
     private val timeUnitFormatter by required { timeUnitFormatter }
@@ -224,7 +229,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val job by required { job }
     override val homePresenter get() = HomePresenter(job)
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, undoRemoveQuestUseCase, completeQuestUseCase, undoCompleteQuestUseCase, job)
-    override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter, job)
+    override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter, findPetUseCase, job)
     override val calendarPresenter get() = CalendarPresenter(listenForPlayerChangesUseCase, calendarFormatter, job)
     override val addQuestPresenter get() = AddQuestPresenter(saveQuestUseCase, job)
     override val petPresenter get() = PetPresenter(listenForPlayerChangesUseCase, feedPetUseCase, revivePetUseCase, job)

@@ -15,9 +15,9 @@
         app:indicator_width="10"
         app:is_continuous="false"
         app:label_color="@color/md_dark_text_54"
-        app:main_circle_color="@color/md_red_100"
+        app:main_circle_color="@color/md_green_100"
         app:progress_primary_circle_size="10"
         app:progress_primary_color="@color/colorAccent"
         app:progress_secondary_circle_size="5"
-        app:progress_secondary_color="@color/md_red_A100" />
+        app:progress_secondary_color="@color/md_green_A100" />
 </RelativeLayout>

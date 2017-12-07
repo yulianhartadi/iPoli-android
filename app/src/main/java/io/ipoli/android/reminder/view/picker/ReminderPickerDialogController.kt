@@ -15,6 +15,7 @@ import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.MviDialogController
 import io.ipoli.android.common.view.stringRes
+import io.ipoli.android.pet.AndroidPetAvatar
 import kotlinx.android.synthetic.main.dialog_reminder_picker.view.*
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
@@ -54,80 +55,6 @@ class ReminderPickerDialogController :
     constructor(args: Bundle? = null) : super(args)
 
     override fun createPresenter() = presenter
-
-    override fun render(state: ReminderPickerViewState, view: View) {
-
-        when (state.type) {
-            ReminderPickerViewState.StateType.NEW_REMINDER -> {
-                ViewUtils.showViews(view.predefinedTimes)
-                ViewUtils.hideViews(view.customTimeContainer)
-                view.message.setText(state.message)
-                view.message.setSelection(state.message.length)
-
-                val predefinedTimesAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.predefinedValues)
-                predefinedTimesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                view.predefinedTimes.adapter = predefinedTimesAdapter
-                view.predefinedTimes.setSelection(state.predefinedIndex!!)
-            }
-
-            ReminderPickerViewState.StateType.EDIT_REMINDER -> {
-                view.message.setText(state.message)
-                view.message.setSelection(state.message.length)
-
-                if (state.predefinedIndex != null) {
-                    ViewUtils.showViews(view.predefinedTimes)
-                    ViewUtils.hideViews(view.customTimeContainer)
-                    val predefinedTimesAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.predefinedValues)
-                    predefinedTimesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    view.predefinedTimes.adapter = predefinedTimesAdapter
-                    view.predefinedTimes.setSelection(state.predefinedIndex)
-                }
-
-                if (state.timeUnitIndex != null) {
-
-                    showCustomTimeViews(view)
-
-                    val customTimeAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.timeUnits)
-                    customTimeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    view.customTimeUnits.adapter = customTimeAdapter
-                    view.customTimeUnits.setSelection(state.timeUnitIndex)
-                    view.customTime.setText(state.timeValue)
-                }
-            }
-
-            ReminderPickerViewState.StateType.CUSTOM_TIME -> {
-                showCustomTimeViews(view)
-
-                val customTimeAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.timeUnits)
-                customTimeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                view.customTimeUnits.adapter = customTimeAdapter
-                view.customTimeUnits.setSelection(state.timeUnitIndex!!)
-                view.customTime.setText(state.timeValue)
-
-                view.customTime.requestFocus()
-                ViewUtils.showKeyboard(activity!!, view.customTime)
-            }
-
-            ReminderPickerViewState.StateType.FINISHED -> {
-                listener?.onReminderPicked(state.viewModel!!)
-                dismissDialog()
-            }
-
-            ReminderPickerViewState.StateType.TIME_VALUE_VALIDATION_ERROR -> {
-                view.customTime.error = stringRes(R.string.invalid_reminder_time)
-            }
-        }
-    }
-
-    private fun showCustomTimeViews(dialogView: View) {
-        ViewUtils.showViews(dialogView.customTimeContainer)
-        ViewUtils.hideViews(dialogView.predefinedTimes)
-    }
-
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-        send(LoadReminderDataIntent(reminder))
-    }
 
     override fun onCreateDialog(savedViewState: Bundle?): DialogView {
 
@@ -184,7 +111,6 @@ class ReminderPickerDialogController :
         val dialog = AlertDialog.Builder(activity!!)
             .setView(contentView)
             .setTitle(R.string.reminder_dialog_title)
-            .setIcon(R.drawable.pet_5_head)
             .setPositiveButton(R.string.dialog_ok, null)
             .setNegativeButton(R.string.cancel, { _, _ -> ViewUtils.hideKeyboard(contentView) })
             .setNeutralButton(R.string.do_not_remind, { _, _ ->
@@ -199,6 +125,82 @@ class ReminderPickerDialogController :
         }
 
         return DialogView(dialog, contentView)
+    }
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        send(LoadReminderDataIntent(reminder))
+    }
+
+    override fun render(state: ReminderPickerViewState, view: View) {
+
+        when (state.type) {
+            ReminderPickerViewState.StateType.NEW_REMINDER -> {
+                changeIcon(AndroidPetAvatar.valueOf(state.pet!!.name).headImage)
+                ViewUtils.showViews(view.predefinedTimes)
+                ViewUtils.hideViews(view.customTimeContainer)
+                view.message.setText(state.message)
+                view.message.setSelection(state.message.length)
+
+                val predefinedTimesAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.predefinedValues)
+                predefinedTimesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                view.predefinedTimes.adapter = predefinedTimesAdapter
+                view.predefinedTimes.setSelection(state.predefinedIndex!!)
+            }
+
+            ReminderPickerViewState.StateType.EDIT_REMINDER -> {
+                changeIcon(AndroidPetAvatar.valueOf(state.pet!!.name).headImage)
+                view.message.setText(state.message)
+                view.message.setSelection(state.message.length)
+
+                if (state.predefinedIndex != null) {
+                    ViewUtils.showViews(view.predefinedTimes)
+                    ViewUtils.hideViews(view.customTimeContainer)
+                    val predefinedTimesAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.predefinedValues)
+                    predefinedTimesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    view.predefinedTimes.adapter = predefinedTimesAdapter
+                    view.predefinedTimes.setSelection(state.predefinedIndex)
+                }
+
+                if (state.timeUnitIndex != null) {
+
+                    showCustomTimeViews(view)
+
+                    val customTimeAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.timeUnits)
+                    customTimeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    view.customTimeUnits.adapter = customTimeAdapter
+                    view.customTimeUnits.setSelection(state.timeUnitIndex)
+                    view.customTime.setText(state.timeValue)
+                }
+            }
+
+            ReminderPickerViewState.StateType.CUSTOM_TIME -> {
+                showCustomTimeViews(view)
+
+                val customTimeAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.timeUnits)
+                customTimeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                view.customTimeUnits.adapter = customTimeAdapter
+                view.customTimeUnits.setSelection(state.timeUnitIndex!!)
+                view.customTime.setText(state.timeValue)
+
+                view.customTime.requestFocus()
+                ViewUtils.showKeyboard(activity!!, view.customTime)
+            }
+
+            ReminderPickerViewState.StateType.FINISHED -> {
+                listener?.onReminderPicked(state.viewModel!!)
+                dismissDialog()
+            }
+
+            ReminderPickerViewState.StateType.TIME_VALUE_VALIDATION_ERROR -> {
+                view.customTime.error = stringRes(R.string.invalid_reminder_time)
+            }
+        }
+    }
+
+    private fun showCustomTimeViews(dialogView: View) {
+        ViewUtils.showViews(dialogView.customTimeContainer)
+        ViewUtils.hideViews(dialogView.predefinedTimes)
     }
 
     interface ReminderPickedListener {
