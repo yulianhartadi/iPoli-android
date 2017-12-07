@@ -34,9 +34,7 @@ class PetPresenter(
                         sendChannel.send(ChangePlayerIntent(it))
                     }
                 }
-                state.copy(
-                    type = DATA_LOADED
-                )
+                state
             }
             is ShowFoodListIntent -> {
                 state.copy(
@@ -68,8 +66,14 @@ class PetPresenter(
             is ChangePlayerIntent -> {
                 val food = intent.player.inventory.food
                 val pet = intent.player.pet
+
+                val type = when {
+                    state.petName.isEmpty() -> DATA_LOADED
+                    else -> PET_CHANGED
+                }
+
                 state.copy(
-                    type = PET_CHANGED,
+                    type = type,
                     petName = pet.name,
                     stateName = pet.mood.name.toLowerCase().capitalize(),
                     mp = pet.moodPoints,

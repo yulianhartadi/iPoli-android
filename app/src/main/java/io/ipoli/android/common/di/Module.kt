@@ -14,7 +14,7 @@ import io.ipoli.android.pet.AndroidJobLowerPetStatsScheduler
 import io.ipoli.android.pet.LowerPetStatsScheduler
 import io.ipoli.android.pet.PetDialogPresenter
 import io.ipoli.android.pet.PetPresenter
-import io.ipoli.android.pet.shop.PetShopPresenter
+import io.ipoli.android.pet.store.PetStorePresenter
 import io.ipoli.android.pet.usecase.*
 import io.ipoli.android.player.AndroidLevelDownScheduler
 import io.ipoli.android.player.AndroidLevelUpScheduler
@@ -207,7 +207,7 @@ interface PresenterModule {
     val reminderPickerPresenter: ReminderPickerDialogPresenter
     val addQuestPresenter: AddQuestPresenter
     val petPresenter: PetPresenter
-    val petShopPresenter: PetShopPresenter
+    val petStorePresenter: PetStorePresenter
     val petDialogPresenter: PetDialogPresenter
 }
 
@@ -235,7 +235,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val calendarPresenter get() = CalendarPresenter(listenForPlayerChangesUseCase, calendarFormatter, job)
     override val addQuestPresenter get() = AddQuestPresenter(saveQuestUseCase, job)
     override val petPresenter get() = PetPresenter(listenForPlayerChangesUseCase, feedPetUseCase, revivePetUseCase, job)
-    override val petShopPresenter get() = PetShopPresenter(listenForPlayerChangesUseCase, buyPetUseCase, changePetUseCase, job)
+    override val petStorePresenter get() = PetStorePresenter(listenForPlayerChangesUseCase, buyPetUseCase, changePetUseCase, job)
     override val petDialogPresenter get() = PetDialogPresenter(findPetUseCase, job)
 }
 

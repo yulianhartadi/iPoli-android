@@ -40,8 +40,7 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline11"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/pet"
-        app:srcCompat="@drawable/pet_4_item_sweater_red_white" />
+        app:layout_constraintTop_toTopOf="@+id/pet" />
 
     <ImageView
         android:id="@+id/face"
@@ -53,8 +52,7 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline11"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/pet"
-        app:srcCompat="@drawable/pet_4_item_beard" />
+        app:layout_constraintTop_toTopOf="@+id/pet" />
 
     <ImageView
         android:id="@+id/hat"
