@@ -99,12 +99,10 @@ class CalendarPresenter(
             is ChangePlayerIntent -> {
                 val player = intent.player
 
-                val type = if(state.level == 0) {
-                    PLAYER_LOADED
-                } else if(state.level != player.level) {
-                    LEVEL_CHANGED
-                } else {
-                    XP_AND_COINS_CHANGED
+                val type = when {
+                    state.level == 0 -> PLAYER_LOADED
+                    state.level != player.level -> LEVEL_CHANGED
+                    else -> XP_AND_COINS_CHANGED
                 }
 
                 state.copy(

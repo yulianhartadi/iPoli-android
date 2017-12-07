@@ -14,14 +14,18 @@ import io.ipoli.android.R
 import io.ipoli.android.common.view.BasePopup
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
 import io.ipoli.android.common.view.visible
+import io.ipoli.android.pet.AndroidPetAvatar
 import kotlinx.android.synthetic.main.popup_level_up.view.*
 
-class LevelUpPopup(private val level: Int) : BasePopup() {
+class LevelUpPopup(
+    private val level: Int,
+    private val petAvatar: AndroidPetAvatar) : BasePopup() {
 
     override fun createView(inflater: LayoutInflater): View =
         inflater.inflate(R.layout.popup_level_up, null)
 
     override fun onViewShown(contentView: View) {
+        contentView.pet.setImageResource(petAvatar.headImage)
         startTypingAnimation(contentView)
     }
 

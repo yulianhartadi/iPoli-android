@@ -247,8 +247,8 @@ class CalendarViewController(args: Bundle? = null) :
         }
 
         if (state.type == LEVEL_CHANGED) {
-            levelProgress.progress = state.progress
             levelProgress.max = state.maxProgress
+            levelProgress.progress = state.progress
             calendarToolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
         }
 
@@ -263,8 +263,8 @@ class CalendarViewController(args: Bundle? = null) :
 
         if (state.type == PLAYER_LOADED) {
             levelProgress.visible = true
-            levelProgress.progress = state.progress
             levelProgress.max = state.maxProgress
+            levelProgress.progress = state.progress
             calendarToolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
             calendarToolbar.playerCoins.text = state.coins.toString()
         }

@@ -7,6 +7,7 @@ import io.ipoli.android.R
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.di.JobModule
 import io.ipoli.android.iPoliApp
+import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.player.view.LevelUpPopup
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -22,14 +23,16 @@ class LevelUpJob : Job(), Injects<ControllerModule> {
 
         val kap = Kapsule<JobModule>()
         val findPlayerLevelUseCase by kap.required { findPlayerLevelUseCase }
+        val findPetUseCase by kap.required { findPetUseCase }
         kap.inject(iPoliApp.jobModule(context))
 
         val playerLevel = findPlayerLevelUseCase.execute(Unit)
+        val pet = findPetUseCase.execute(Unit)
 
         val c = ContextThemeWrapper(context, R.style.Theme_iPoli)
 
         launch(UI) {
-            LevelUpPopup(playerLevel).show(c)
+            LevelUpPopup(playerLevel, AndroidPetAvatar.valueOf(pet.avatar.name)).show(c)
         }
 
         return Result.SUCCESS

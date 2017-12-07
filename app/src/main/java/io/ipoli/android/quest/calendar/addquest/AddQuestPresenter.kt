@@ -73,13 +73,7 @@ class AddQuestPresenter(
                 val color = state.color ?: Color.GREEN
                 val scheduledDate = state.date ?: LocalDate.now()
 
-                val reminder = state.time?.let {
-                    if (state.reminder != null) {
-                        createQuestReminder(state.reminder, scheduledDate, it.toMinuteOfDay())
-                    } else {
-                        createDefaultReminder(scheduledDate, it.toMinuteOfDay())
-                    }
-                }
+                val reminder = createReminder(state, scheduledDate)
 
                 val questParams = SaveQuestUseCase.Parameters(
                     name = intent.name,
@@ -100,7 +94,16 @@ class AddQuestPresenter(
             }
         }
 
-    private fun createQuestReminder(reminder: ReminderViewModel?, scheduledDate: LocalDate, startMinute: Int): Reminder? {
+    private fun createReminder(state: AddQuestViewState, scheduledDate: LocalDate) =
+        state.time?.let {
+            if (state.reminder != null) {
+                createReminderFromViewModel(state.reminder, scheduledDate, it.toMinuteOfDay())
+            } else {
+                createDefaultReminder(scheduledDate, it.toMinuteOfDay())
+            }
+        }
+
+    private fun createReminderFromViewModel(reminder: ReminderViewModel?, scheduledDate: LocalDate, startMinute: Int): Reminder? {
         return reminder?.let {
             val time = Time.of(startMinute)
             val questDateTime = LocalDateTime.of(scheduledDate, LocalTime.of(time.hours, time.getMinutes()))
