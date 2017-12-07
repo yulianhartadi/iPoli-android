@@ -26,7 +26,7 @@ data class ReminderPickerViewState(
     val timeValue: String = "",
     val timeUnits: List<String> = listOf(),
     val timeUnitIndex: Int? = null,
-    val pet: PetAvatar? = null,
+    val petAvatar: PetAvatar? = null,
     val viewModel: ReminderViewModel? = null
 ) : ViewState {
 

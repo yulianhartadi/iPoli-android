@@ -136,7 +136,7 @@ class ReminderPickerDialogController :
 
         when (state.type) {
             ReminderPickerViewState.StateType.NEW_REMINDER -> {
-                changeIcon(AndroidPetAvatar.valueOf(state.pet!!.name).headImage)
+                changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
                 ViewUtils.showViews(view.predefinedTimes)
                 ViewUtils.hideViews(view.customTimeContainer)
                 view.message.setText(state.message)
@@ -149,7 +149,7 @@ class ReminderPickerDialogController :
             }
 
             ReminderPickerViewState.StateType.EDIT_REMINDER -> {
-                changeIcon(AndroidPetAvatar.valueOf(state.pet!!.name).headImage)
+                changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
                 view.message.setText(state.message)
                 view.message.setSelection(state.message.length)
 

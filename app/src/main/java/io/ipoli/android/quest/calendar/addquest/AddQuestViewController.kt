@@ -11,7 +11,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import com.bluelinelabs.conductor.ControllerChangeHandler
 import com.bluelinelabs.conductor.ControllerChangeType
-import com.mikepenz.entypo_typeface_library.Entypo
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.Constants
 import io.ipoli.android.R
@@ -61,7 +61,7 @@ class AddQuestViewController(args: Bundle? = null) :
         }
 
         view.duration.setImageDrawable(IconicsDrawable(view.context)
-            .icon(Entypo.Icon.ent_hour_glass)
+            .icon(GoogleMaterial.Icon.gmd_hourglass_empty)
             .colorRes(R.color.md_black)
             .alpha(122)
             .sizeDp(22))
@@ -185,6 +185,9 @@ class AddQuestViewController(args: Bundle? = null) :
         }
 
         state.duration?.let {
+            view.duration.setImageDrawable(IconicsDrawable(view.context)
+                .icon(GoogleMaterial.Icon.gmd_hourglass_full)
+                .sizeDp(22))
             colorSelectedIcon(view.duration)
         }
 

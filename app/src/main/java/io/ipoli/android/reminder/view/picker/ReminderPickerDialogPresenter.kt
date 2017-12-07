@@ -27,7 +27,7 @@ class ReminderPickerDialogPresenter(
 
             is LoadReminderDataIntent -> {
                 val stateWithPet = state.copy(
-                    pet = findPetUseCase.execute(Unit).avatar
+                    petAvatar = findPetUseCase.execute(Unit).avatar
                 )
                 if (intent.reminder == null) {
                     loadNewReminderData(stateWithPet)

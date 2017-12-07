@@ -12,6 +12,7 @@ import io.ipoli.android.common.text.CalendarFormatter
 import io.ipoli.android.home.HomePresenter
 import io.ipoli.android.pet.AndroidJobLowerPetStatsScheduler
 import io.ipoli.android.pet.LowerPetStatsScheduler
+import io.ipoli.android.pet.PetDialogPresenter
 import io.ipoli.android.pet.PetPresenter
 import io.ipoli.android.pet.shop.PetShopPresenter
 import io.ipoli.android.pet.usecase.*
@@ -207,6 +208,7 @@ interface PresenterModule {
     val addQuestPresenter: AddQuestPresenter
     val petPresenter: PetPresenter
     val petShopPresenter: PetShopPresenter
+    val petDialogPresenter: PetDialogPresenter
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
@@ -234,6 +236,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val addQuestPresenter get() = AddQuestPresenter(saveQuestUseCase, job)
     override val petPresenter get() = PetPresenter(listenForPlayerChangesUseCase, feedPetUseCase, revivePetUseCase, job)
     override val petShopPresenter get() = PetShopPresenter(listenForPlayerChangesUseCase, buyPetUseCase, changePetUseCase, job)
+    override val petDialogPresenter get() = PetDialogPresenter(findPetUseCase, job)
 }
 
 class ControllerModule(androidModule: AndroidModule,
