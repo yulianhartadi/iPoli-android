@@ -158,7 +158,6 @@ interface JobUseCaseModule {
     val findQuestToRemindUseCase: FindQuestsToRemindUseCase
     val snoozeQuestUseCase: SnoozeQuestUseCase
     val completeQuestUseCase: CompleteQuestUseCase
-    val findCompletedQuestUseCase: FindCompletedQuestUseCase
     val findPlayerLevelUseCase: FindPlayerLevelUseCase
     val rewardPlayerUseCase: RewardPlayerUseCase
     val lowerPetStatsUseCase: LowerPetStatsUseCase
@@ -173,7 +172,6 @@ class AndroidJobUseCaseModule : JobUseCaseModule, Injects<JobModule> {
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
     override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, playerRepository, reminderScheduler, questCompleteScheduler, rewardPlayerUseCase)
-    override val findCompletedQuestUseCase get() = FindCompletedQuestUseCase(questRepository)
     override val findPlayerLevelUseCase get() = FindPlayerLevelUseCase(playerRepository)
     override val rewardPlayerUseCase get() = RewardPlayerUseCase(playerRepository, levelUpScheduler)
     override val lowerPetStatsUseCase get() = LowerPetStatsUseCase(questRepository, playerRepository)

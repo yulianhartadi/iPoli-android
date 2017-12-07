@@ -127,7 +127,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
                 renderPetName(state.petName)
 
-                val avatar = AndroidPetAvatar.valueOf(state.avatar!!.name)
+//                val avatar = AndroidPetAvatar.valueOf(state.avatar!!.name)
+                val avatar = AndroidPetAvatar.BEAVER
 
                 view.pet.setImageResource(avatar.image)
 
