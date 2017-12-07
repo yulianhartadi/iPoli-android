@@ -52,7 +52,7 @@ class CompleteQuestUseCase(
 
         rewardPlayerUseCase.execute(newQuest)
 
-        questCompleteScheduler.schedule(parameters)
+        questCompleteScheduler.schedule(newQuest)
         return newQuest
     }
 
