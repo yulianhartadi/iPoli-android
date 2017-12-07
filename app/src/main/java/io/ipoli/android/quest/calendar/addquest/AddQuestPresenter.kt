@@ -72,8 +72,13 @@ class AddQuestPresenter(
             is SaveQuestIntent -> {
                 val color = state.color ?: Color.GREEN
                 val scheduledDate = state.date ?: LocalDate.now()
+
                 val reminder = state.time?.let {
-                    createQuestReminder(state.reminder, scheduledDate, state.time.toMinuteOfDay())
+                    if (state.reminder != null) {
+                        createQuestReminder(state.reminder, scheduledDate, it.toMinuteOfDay())
+                    } else {
+                        createDefaultReminder(scheduledDate, it.toMinuteOfDay())
+                    }
                 }
 
                 val questParams = SaveQuestUseCase.Parameters(
@@ -104,5 +109,8 @@ class AddQuestPresenter(
             Reminder(it.message, Time.at(toLocalTime.hour, toLocalTime.minute), reminderDateTime.toLocalDate())
         }
     }
+
+    private fun createDefaultReminder(scheduledDate: LocalDate, startMinute: Int) =
+        Reminder("", Time.of(startMinute), scheduledDate)
 
 }
