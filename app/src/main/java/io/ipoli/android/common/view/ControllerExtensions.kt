@@ -6,6 +6,7 @@ import android.support.annotation.IntegerRes
 import android.support.annotation.StringRes
 import android.support.v4.content.ContextCompat
 import com.bluelinelabs.conductor.Controller
+import io.ipoli.android.MainActivity
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -25,3 +26,11 @@ fun Controller.colorRes(@ColorRes colorRes: Int): Int =
 
 fun Controller.intRes(@IntegerRes res: Int): Int =
     resources!!.getInteger(res)
+
+fun Controller.showBackButton() {
+    (activity!! as MainActivity).showBackButton()
+}
+
+fun Controller.hideBackButton() {
+    (activity!! as MainActivity).hideBackButton()
+}

@@ -12,9 +12,7 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.home.HomeViewController
-import io.ipoli.android.pet.Food
 import io.ipoli.android.player.AuthProvider
-import io.ipoli.android.player.Inventory
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.persistence.model.ProviderType
 import space.traversal.kapsule.Injects
@@ -74,5 +72,17 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         router.onActivityResult(requestCode, resultCode, data)
+    }
+
+    fun showBackButton() {
+        val actionBar = supportActionBar!!
+        actionBar.setDisplayHomeAsUpEnabled(true)
+        actionBar.setDisplayShowHomeEnabled(true)
+    }
+
+    fun hideBackButton() {
+        val actionBar = supportActionBar!!
+        actionBar.setDisplayHomeAsUpEnabled(false)
+        actionBar.setDisplayShowHomeEnabled(false)
     }
 }

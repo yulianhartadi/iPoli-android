@@ -12,18 +12,19 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
+import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.mvi.MviViewController
-import io.ipoli.android.common.view.TextPickerDialogController
-import io.ipoli.android.common.view.intRes
-import io.ipoli.android.common.view.stringRes
-import io.ipoli.android.common.view.visible
+import io.ipoli.android.common.view.*
 import io.ipoli.android.pet.PetViewState.StateType.*
+import io.ipoli.android.pet.store.PetStoreViewController
 import kotlinx.android.synthetic.main.controller_pet.view.*
 import kotlinx.android.synthetic.main.item_pet_food.view.*
 import space.traversal.kapsule.required
@@ -54,13 +55,9 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     }
 
     override fun onAttach(view: View) {
+        showBackButton()
         super.onAttach(view)
         send(LoadDataIntent)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        menu.findItem(R.id.action_pet).isVisible = false
-        super.onPrepareOptionsMenu(menu)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -69,7 +66,18 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            router.popCurrentController()
+            return true
+        }
+
         if (item.itemId == R.id.actionStore) {
+            val handler = FadeChangeHandler()
+            router.pushController(
+                RouterTransaction.with(PetStoreViewController())
+                    .pushChangeHandler(handler)
+                    .popChangeHandler(handler)
+            )
             return true
         }
 
@@ -77,15 +85,21 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             send(RenamePetRequestIntent)
             return true
         }
+
         return super.onOptionsItemSelected(item)
     }
 
     override fun render(state: PetViewState, view: View) {
         when (state.type) {
             DATA_LOADED -> {
-                view.foodList.adapter = PetFoodAdapter(listOf())
+                view.foodList.adapter = PetFoodAdapter(state.foodViewModels)
                 view.fab.setOnClickListener {
                     send(ShowFoodListIntent)
+                }
+                renderPet(state, view)
+
+                if(!state.isDead) {
+                    playEnterAnimation(view)
                 }
             }
             FOOD_LIST_SHOWN -> {
@@ -125,45 +139,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             PET_CHANGED -> {
                 (view.foodList.adapter as PetFoodAdapter).updateAll(state.foodViewModels)
 
-                renderPetName(state.petName)
-
-                val avatar = AndroidPetAvatar.valueOf(state.avatar!!.name)
-
-                view.pet.setImageResource(avatar.image)
-
-                if (state.isDead) {
-                    view.reviveContainer.visibility = View.VISIBLE
-                    view.statsContainer.visibility = View.GONE
-                    view.petState.setImageResource(avatar.deadStateImage)
-
-                    view.reviveHint.text = stringRes(R.string.revive_hint, state.petName)
-                    view.reviveCost.text = state.reviveCost.toString()
-
-                    view.fab.visible = false
-                    view.foodList.visible = false
-
-                    view.revive.setOnClickListener {
-                        send(RevivePetIntent)
-                    }
-                } else {
-                    view.statsContainer.visibility = View.VISIBLE
-                    view.reviveContainer.visibility = View.GONE
-                    playProgressAnimation(view.healthProgress, view.healthProgress.progress, state.hp)
-                    view.healthPoints.text = state.hp.toString() + "/" + state.maxHP
-                    view.healthProgress.max = state.maxHP
-
-                    playProgressAnimation(view.moodProgress, view.moodProgress.progress, state.mp)
-                    view.moodPoints.text = state.mp.toString() + "/" + state.maxMP
-                    view.moodProgress.max = state.maxMP
-
-                    view.coinBonus.text = "+ %.2f".format(state.coinsBonus) + "%"
-                    view.xpBonus.text = "+ %.2f".format(state.xpBonus) + "%"
-                    view.unlockChanceBonus.text = "+ %.2f".format(state.unlockChanceBonus) + "%"
-
-                    view.petState.setImageResource(avatar.moodImage[state.mood]!!)
-                }
-
-                view.stateName.text = state.stateName
+                renderPet(state, view)
             }
 
             RENAME_PET ->
@@ -185,6 +161,67 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
         }
+    }
+
+    private fun playEnterAnimation(view: View) {
+        val anims = listOf<ImageView>(
+            view.pet,
+            view.petState,
+            view.body,
+            view.face,
+            view.hat)
+            .map {
+                ObjectAnimator.ofFloat(it, "y",
+                    it.y, it.y - ViewUtils.dpToPx(30f, view.context), it.y, it.y - ViewUtils.dpToPx(24f, view.context), it.y)
+            }
+
+        val set = AnimatorSet()
+        set.duration = intRes(android.R.integer.config_longAnimTime).toLong() + 100
+        set.playTogether(anims)
+        set.interpolator = AccelerateDecelerateInterpolator()
+        set.start()
+    }
+
+    private fun renderPet(state: PetViewState, view: View) {
+        renderPetName(state.petName)
+
+        val avatar = AndroidPetAvatar.valueOf(state.avatar!!.name)
+
+        view.pet.setImageResource(avatar.image)
+
+        if (state.isDead) {
+            view.reviveContainer.visibility = View.VISIBLE
+            view.statsContainer.visibility = View.GONE
+            view.petState.setImageResource(avatar.deadStateImage)
+
+            view.reviveHint.text = stringRes(R.string.revive_hint, state.petName)
+            view.reviveCost.text = state.reviveCost.toString()
+
+            view.fab.visible = false
+            view.foodList.visible = false
+
+            view.revive.setOnClickListener {
+                send(RevivePetIntent)
+            }
+        } else {
+            view.statsContainer.visibility = View.VISIBLE
+            view.reviveContainer.visibility = View.GONE
+            playProgressAnimation(view.healthProgress, view.healthProgress.progress, state.hp)
+            view.healthPoints.text = state.hp.toString() + "/" + state.maxHP
+            view.healthProgress.max = state.maxHP
+
+            playProgressAnimation(view.moodProgress, view.moodProgress.progress, state.mp)
+            view.moodPoints.text = state.mp.toString() + "/" + state.maxMP
+            view.moodProgress.max = state.maxMP
+
+            view.coinBonus.text = "+ %.2f".format(state.coinsBonus) + "%"
+            view.xpBonus.text = "+ %.2f".format(state.xpBonus) + "%"
+            view.unlockChanceBonus.text = "+ %.2f".format(state.unlockChanceBonus) + "%"
+
+            view.petState.setImageResource(avatar.moodImage[state.mood]!!)
+        }
+
+        view.stateName.text = state.stateName
     }
 
     private fun renderPetName(name: String) {

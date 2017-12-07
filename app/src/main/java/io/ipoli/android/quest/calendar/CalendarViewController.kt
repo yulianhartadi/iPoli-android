@@ -11,24 +11,21 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.Toolbar
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
-import io.ipoli.android.common.view.RevealAnimator
+import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.changehandler.CircularRevealChangeHandler
-import io.ipoli.android.common.view.colorRes
-import io.ipoli.android.common.view.intRes
-import io.ipoli.android.common.view.visible
+import io.ipoli.android.pet.PetViewController
 import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import io.ipoli.android.quest.calendar.CalendarViewState.StateType.*
 import io.ipoli.android.quest.calendar.addquest.AddQuestViewController
@@ -71,8 +68,8 @@ class CalendarViewController(args: Bundle? = null) :
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
-
         val view = inflater.inflate(R.layout.controller_calendar, container, false)
+        setHasOptionsMenu(true)
 
         val toolbar = activity!!.findViewById<Toolbar>(R.id.toolbar)
         calendarToolbar = inflater.inflate(R.layout.controller_calendar_toolbar, toolbar, false) as ViewGroup
@@ -83,6 +80,27 @@ class CalendarViewController(args: Bundle? = null) :
         initAddQuest(view)
 
         return view
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.calendar_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.actionPet) {
+            showPet()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun showPet() {
+        val handler = FadeChangeHandler()
+        router.pushController(
+            RouterTransaction.with(PetViewController())
+                .pushChangeHandler(handler)
+                .popChangeHandler(handler)
+        )
     }
 
     private fun initAddQuest(view: View) {
@@ -187,6 +205,7 @@ class CalendarViewController(args: Bundle? = null) :
     }
 
     override fun onAttach(view: View) {
+        hideBackButton()
         super.onAttach(view)
         send(LoadDataIntent(LocalDate.now()))
     }

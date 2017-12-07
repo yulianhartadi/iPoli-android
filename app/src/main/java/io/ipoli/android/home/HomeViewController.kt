@@ -16,7 +16,6 @@ import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.FeedbackDialogController
-import io.ipoli.android.pet.PetViewController
 import io.ipoli.android.quest.calendar.CalendarViewController
 import kotlinx.android.synthetic.main.controller_home.view.*
 import org.json.JSONObject
@@ -89,7 +88,7 @@ class HomeViewController(args: Bundle? = null) :
         val childRouter = getChildRouter(view.controllerContainer, null)
         childRouter.setRoot(
             RouterTransaction.with(CalendarViewController())
-//            RouterTransaction.with(PetShopViewController())
+//            RouterTransaction.with(PetStoreViewController())
 //            RouterTransaction.with(PetViewController())
                 .pushChangeHandler(handler)
                 .popChangeHandler(handler)
@@ -121,23 +120,11 @@ class HomeViewController(args: Bundle? = null) :
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_feedback) {
+        if (item.itemId == R.id.actionFeedback) {
             showFeedbackDialog()
             return true
-        } else if (item.itemId == R.id.action_pet) {
-            showPet()
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun showPet() {
-        val handler = FadeChangeHandler()
-        val childRouter = getChildRouter(view!!.controllerContainer, null)
-        childRouter.setRoot(
-            RouterTransaction.with(PetViewController())
-                .pushChangeHandler(handler)
-                .popChangeHandler(handler)
-        )
     }
 
     private fun showFeedbackDialog() {

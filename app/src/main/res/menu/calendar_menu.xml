@@ -1,16 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
     <item
-        android:id="@+id/action_eisenhower_matrix"
-        android:icon="@drawable/ic_matrix_white_24dp"
-        android:title="Eisenhower Matrix"
-        app:showAsAction="ifRoom" />
-
-    <item
-        android:id="@+id/action_today"
-        android:icon="@drawable/ic_today_white_24dp"
-        android:title="@string/today"
-        app:showAsAction="ifRoom" />
+        android:id="@+id/actionPet"
+        android:icon="@drawable/ic_pets_white_24dp"
+        android:title="Pet"
+        app:showAsAction="always" />
 </menu>

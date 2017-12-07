@@ -4,11 +4,12 @@
     <item
         android:id="@+id/actionStore"
         android:icon="@drawable/ic_shopping_cart_white_24dp"
-        android:title="@string/rename_your_pet"
+        android:title="@string/store"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/actionRenamePet"
+        android:icon="@drawable/ic_edit_white_24dp"
         android:title="@string/rename_your_pet"
-        app:showAsAction="never" />
+        app:showAsAction="always" />
 </menu>

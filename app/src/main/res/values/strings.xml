@@ -980,9 +980,9 @@
     <string name="pet_beaver_description">I am just a regular \"Love Yourself\" home builder that likes the occasional upstream swim &amp; whole food</string>
 
     <string name="revive_hint">Revive %s for:</string>
-    <string name="shop_current_pet">I am your pet</string>
-    <string name="shop_pet_in_inventory">Take me with you</string>
-    <string name="shop_buy_pet">Buy me now</string>
+    <string name="store_current_pet">I am your pet</string>
+    <string name="store_pet_in_inventory">Take me with you</string>
+    <string name="store_buy_pet">Buy me now</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
