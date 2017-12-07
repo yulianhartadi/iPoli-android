@@ -2,7 +2,9 @@ package io.ipoli.android.common.view
 
 import android.app.Dialog
 import android.os.Bundle
+import android.support.annotation.DrawableRes
 import android.support.annotation.MainThread
+import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -112,9 +114,9 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
 abstract class MviDialogController<VS : ViewState, in V : ViewStateRenderer<VS>, out P : MviPresenter<V, VS, I>, in I : Intent>(
     args: Bundle? = null
 ) : MviViewController<VS, V, P, I>(args) {
-    data class DialogView(val dialog: Dialog, val view: View)
+    data class DialogView(val dialog: AlertDialog, val view: View)
 
-    protected lateinit var dialog: Dialog
+    protected lateinit var dialog: AlertDialog
     private lateinit var contentView: View
     private var dismissed: Boolean = false
 
@@ -183,6 +185,10 @@ abstract class MviDialogController<VS : ViewState, in V : ViewStateRenderer<VS>,
     @MainThread
     override fun render(state: VS) {
         render(state, contentView)
+    }
+
+    protected fun changeIcon(@DrawableRes icon: Int) {
+        dialog.setIcon(icon)
     }
 
     /**

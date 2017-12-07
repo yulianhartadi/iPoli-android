@@ -6,7 +6,6 @@ import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.quest.Category
 import io.ipoli.android.quest.Color
-import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.calendar.addquest.StateType.*
 import io.ipoli.android.quest.usecase.Result
@@ -72,7 +71,6 @@ class AddQuestPresenter(
 
             is SaveQuestIntent -> {
                 val color = state.color ?: Color.GREEN
-                val icon = state.icon?.let { Icon.valueOf(it.name) }
                 val scheduledDate = state.date ?: LocalDate.now()
                 val reminder = state.time?.let {
                     createQuestReminder(state.reminder, scheduledDate, state.time.toMinuteOfDay())
@@ -81,7 +79,7 @@ class AddQuestPresenter(
                 val questParams = SaveQuestUseCase.Parameters(
                     name = intent.name,
                     color = Color.valueOf(color.name),
-                    icon = icon,
+                    icon = state.icon,
                     category = Category("WELLNESS", Color.GREEN),
                     scheduledDate = scheduledDate,
                     startTime = state.time,

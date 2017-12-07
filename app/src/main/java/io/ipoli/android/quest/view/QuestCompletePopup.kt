@@ -13,19 +13,22 @@ import io.ipoli.android.R
 import io.ipoli.android.common.view.BasePopup
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
 import io.ipoli.android.common.view.visible
+import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.Food
 import kotlinx.android.synthetic.main.popup_quest_complete.view.*
 
 class QuestCompletePopup(
     private val earnedXP: Int,
     private val earnedCoins: Int,
-    private val bounty: Food? = null
+    private val bounty: Food? = null,
+    private val avatar: AndroidPetAvatar
 ) : BasePopup(isAutoHide = true) {
 
     override fun createView(inflater: LayoutInflater): View =
         inflater.inflate(R.layout.popup_quest_complete, null)
 
     override fun onViewShown(contentView: View) {
+        contentView.pet.setImageResource(avatar.headImage)
         bounty?.let {
             contentView.bounty.setImageResource(it.image)
         }

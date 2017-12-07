@@ -213,7 +213,7 @@ enum class AndroidPetAvatar(
     @StringRes val petName: Int,
     @StringRes val description: Int,
     @DrawableRes val image: Int,
-    @DrawableRes val headPicture: Int,
+    @DrawableRes val headImage: Int,
     @DrawableRes val deadStateImage: Int,
     val moodImage: Map<PetMood, Int>) {
 
