@@ -983,6 +983,7 @@
     <string name="store_current_pet">I am your pet</string>
     <string name="store_pet_in_inventory">Take me with you</string>
     <string name="store_buy_pet">Buy me now</string>
+    <string name="text_picker_empty_error">Think of a name</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

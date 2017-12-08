@@ -1,5 +1,6 @@
 package io.ipoli.android.common.view
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
@@ -56,11 +57,21 @@ class TextPickerDialogController : MviDialogController<PetDialogViewState, Color
             .setView(contentView)
             .setTitle(title)
             .setIcon(R.drawable.pet_5_head)
-            .setPositiveButton(R.string.dialog_ok, { _, _ ->
-                listener(textView.text.toString())
-            })
+            .setPositiveButton(R.string.dialog_ok, null)
             .setNegativeButton(R.string.cancel, null)
             .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+                val text = textView.text.toString()
+                if (text.isNotEmpty()) {
+                    listener(text)
+                    dialog.hide()
+                } else {
+                    textView.error = stringRes(R.string.text_picker_empty_error)
+                }
+            }
+        }
 
         return DialogView(dialog, contentView)
     }
