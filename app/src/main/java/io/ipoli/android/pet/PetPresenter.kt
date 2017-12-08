@@ -95,14 +95,10 @@ class PetPresenter(
             }
 
             is RenamePetIntent -> {
-                if (intent.name.isNotEmpty()) {
-                    state.copy(
-                        type = PET_RENAMED,
-                        petName = intent.name
-                    )
-                } else {
-                    state
-                }
+                state.copy(
+                    type = PET_RENAMED,
+                    petName = intent.name
+                )
             }
 
             is RevivePetIntent -> {
