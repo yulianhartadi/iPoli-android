@@ -51,7 +51,7 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
 
         val ci = CouchbaseInventory(cp.inventory)
         val inventory = Inventory(
-            food = ci.food.entries.associate { Food.valueOf(it.key) to it.value },
+            food = ci.food.entries.associate { Food.valueOf(it.key) to it.value.toInt() },
             pets = ci.pets.map {
                 val cip = CouchbaseInventoryPet(it)
                 InventoryPet(cip.name, PetAvatar.valueOf(cip.avatar))
@@ -110,7 +110,7 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
     private fun createCouchbaseInventory(inventory: Inventory) =
         CouchbaseInventory().also {
             it.food = inventory.food.entries
-                .associate { it.key.name to it.value }
+                .associate { it.key.name to it.value.toLong() }
                 .toMutableMap()
             it.pets = inventory.pets
                 .map { createCouchbaseInventoryPet(it).map }

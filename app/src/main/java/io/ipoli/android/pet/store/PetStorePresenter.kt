@@ -40,11 +40,10 @@ class PetStorePresenter(
             }
 
             is ChangePlayerIntent -> {
-                val player = intent.player
                 state.copy(
                     type = PLAYER_CHANGED,
-                    playerCoins = player.coins,
-                    petViewModels = createPetViewModels(player)
+                    playerCoins = intent.player.coins,
+                    petViewModels = createPetViewModels(intent.player)
                 )
             }
 

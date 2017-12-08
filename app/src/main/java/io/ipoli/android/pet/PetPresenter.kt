@@ -119,7 +119,7 @@ class PetPresenter(
     private fun createFoodViewModels(inventoryFood: Map<Food, Int>) =
         Food.values().map {
             PetViewController.PetFoodViewModel(
-                it.image, it.price, it, inventoryFood.getOrDefault(it, 0)
+                it.image, it.price, it, inventoryFood[it] ?: 0
             )
         }
 
