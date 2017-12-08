@@ -2,6 +2,7 @@ package io.ipoli.android.pet.store
 
 import android.os.Bundle
 import android.support.v4.view.PagerAdapter
+import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -17,6 +18,7 @@ import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.pet.PetMood
 import io.ipoli.android.pet.store.PetStoreViewState.StateType.*
 import kotlinx.android.synthetic.main.controller_pet_store.view.*
+import kotlinx.android.synthetic.main.controller_store_toolbar.view.*
 import kotlinx.android.synthetic.main.item_pet_shop.view.*
 import space.traversal.kapsule.required
 
@@ -29,9 +31,17 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
 
     override fun createPresenter() = presenter
 
+    private lateinit var storeToolbar: ViewGroup
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_pet_store, container, false)
+
+        val toolbar = activity!!.findViewById<Toolbar>(R.id.toolbar)
+        storeToolbar = inflater.inflate(R.layout.controller_store_toolbar, toolbar, false) as ViewGroup
+        toolbar.addView(storeToolbar)
+        storeToolbar.storeTitle.setText(R.string.store)
+
         view.petPager.clipToPadding = false
         view.petPager.pageMargin = ViewUtils.dpToPx(32f, view.context).toInt()
         return view
@@ -58,6 +68,7 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
             }
 
             PLAYER_CHANGED -> {
+                storeToolbar.playerCoins.text = state.playerCoins.toString()
                 (view.petPager.adapter as PetPagerAdapter).updateAll(state.petViewModels)
             }
 

@@ -18,6 +18,7 @@ data class ChangePetIntent(val pet: PetAvatar) : PetStoreIntent()
 
 data class PetStoreViewState(
     val type: StateType = StateType.DATA_LOADED,
+    val playerCoins: Int = 0,
     val petViewModels: List<PetStoreViewController.PetViewModel> = listOf()
 ) : ViewState {
     enum class StateType {
