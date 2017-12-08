@@ -78,6 +78,13 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
         }
     }
 
+    override fun onDestroyView(view: View) {
+        val toolbar = activity!!.findViewById<Toolbar>(R.id.toolbar)
+        toolbar.removeView(storeToolbar)
+
+        super.onDestroyView(view)
+    }
+
     data class PetViewModel(val avatar: AndroidPetAvatar, val isBought: Boolean = false, val isCurrent: Boolean = false)
 
     inner class PetPagerAdapter(private var viewModels: List<PetViewModel>) : PagerAdapter() {
