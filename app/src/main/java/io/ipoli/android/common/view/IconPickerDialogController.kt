@@ -91,7 +91,8 @@ class IconPickerDialogController : MviDialogController<PetDialogViewState, IconP
                 IconicsDrawable(iv.context)
                     .icon(vm.icon.icon)
                     .colorRes(vm.icon.color)
-                    .sizeDp(32)
+                    .paddingDp(4)
+                    .sizeDp(40)
             )
 
             if (vm.isSelected) {
