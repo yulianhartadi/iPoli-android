@@ -72,7 +72,6 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
         Amplitude.getInstance().logEvent("change_state", data)
         Timber.d("initial state $initialState")
         view.render(initialState)
-        UI.awaitFrame()
     }
 
     override fun onAttachView(view: V) {
