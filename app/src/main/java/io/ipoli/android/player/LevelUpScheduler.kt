@@ -50,9 +50,7 @@ interface LevelUpScheduler {
 class AndroidLevelUpScheduler : LevelUpScheduler {
     override fun schedule() {
         JobRequest.Builder(LevelUpJob.TAG)
-
-            .setExact(200)
-            .startNow()
+            .setExact(1500)
             .build()
             .schedule()
     }
