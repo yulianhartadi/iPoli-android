@@ -47,8 +47,10 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
 
     private fun stateReduceActor(view: V) = actor<I>(coroutineContext + CommonPool, Channel.CONFLATED) {
         var state = initialState
-        renderInitialState(view)
         launch(coroutineContext + UI) {
+
+            renderInitialState(view)
+
             channel.consumeEach { intent ->
 
                 val oldState = state

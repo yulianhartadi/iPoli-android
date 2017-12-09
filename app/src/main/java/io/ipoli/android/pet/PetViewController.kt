@@ -51,6 +51,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         )
 
         view.foodList.layoutManager = LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
+
         return view
     }
 
@@ -98,7 +99,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 }
                 renderPet(state, view)
 
-                if(!state.isDead) {
+                if (!state.isDead) {
                     playEnterAnimation(view)
                 }
             }
@@ -129,6 +130,12 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 else
                     R.string.pet_not_tasty_food_response
                 view.petResponse.setText(responseRes)
+                val avatar = AndroidPetAvatar.valueOf(state.avatar!!.name)
+                if (state.isDead) {
+                    view.petState.setImageResource(avatar.deadStateImage)
+                } else {
+                    view.petState.setImageResource(avatar.moodImage[state.mood]!!)
+                }
                 playFeedPetAnimation(view, state)
             }
 
@@ -241,12 +248,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         anim.playTogether(slideAnim, fadeAnim)
         anim.duration = duration
         anim.interpolator = AccelerateDecelerateInterpolator()
-        val avatar = AndroidPetAvatar.valueOf(state.avatar!!.name)
-        val stateImage = avatar.moodImage[state.mood]!!
-        val responseStateImage = if (state.wasFoodTasty)
-            avatar.moodImage[PetMood.AWESOME]!!
-        else
-            avatar.deadStateImage
+
         anim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator?) {
                 selectedFood.setImageResource(state.food!!.image)
@@ -254,6 +256,15 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             override fun onAnimationEnd(animation: Animator?) {
+                if (state.isDead) {
+                    return
+                }
+                val avatar = AndroidPetAvatar.valueOf(state.avatar!!.name)
+                val stateImage = avatar.moodImage[state.mood]!!
+                val responseStateImage = if (state.wasFoodTasty)
+                    avatar.moodImage[PetMood.AWESOME]!!
+                else
+                    avatar.deadStateImage
                 playFeedPetResponseAnimation(view, stateImage, responseStateImage)
             }
         })

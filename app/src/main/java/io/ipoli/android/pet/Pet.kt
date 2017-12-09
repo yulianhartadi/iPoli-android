@@ -17,7 +17,7 @@ data class Pet(
     val avatar: PetAvatar,
     val moodPoints: Int = Constants.DEFAULT_PET_HP,
     val healthPoints: Int = Constants.DEFAULT_PET_MP,
-    val mood: PetMood = moodFor(healthPoints),
+    val mood: PetMood = moodFor(moodPoints),
     val experienceBonus: Float = bonusFor(mood, MAX_XP_BONUS),
     val coinBonus: Float = bonusFor(mood, MAX_COIN_BONUS),
     val bountyBonus: Float = bonusFor(mood, MAX_BOUNTY_BONUS)
@@ -59,6 +59,7 @@ data class Pet(
             bountyBonus = bonusFor(newMood, MAX_BOUNTY_BONUS)
         )
     }
+
     fun setHealthAndMoodPoints(healthPoints: Int, moodPoints: Int): Pet {
         require(healthPoints >= 0)
         require(moodPoints >= 0)
@@ -74,7 +75,6 @@ data class Pet(
             bountyBonus = bonusFor(newMood, MAX_BOUNTY_BONUS)
         )
     }
-
 
     fun rewardFor(quest: Quest): Pet {
 
@@ -141,6 +141,11 @@ data class Pet(
         if (newHealthPoints == 0) {
             return 0
         }
+
+        if (newHealthPoints < SICK_CUTOFF) {
+            return Math.max(Math.min(moodPoints - rewardMoodPoints, GOOD_MIN_MOOD_POINTS - 1), 0)
+        }
+
         val notHealthyAnymore = oldHealthPoints >= HEALTHY_CUTOFF && newHealthPoints < HEALTHY_CUTOFF
         val reduceMultiplier = if (notHealthyAnymore) 2 else 1
         return Math.max(moodPoints - rewardMoodPoints * reduceMultiplier, 0)

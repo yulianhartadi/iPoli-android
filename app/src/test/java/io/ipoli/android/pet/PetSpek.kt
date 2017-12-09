@@ -125,6 +125,15 @@ class PetSpek : Spek({
                 newPet.coinBonus.`should be equal to`(0f)
                 newPet.bountyBonus.`should be equal to`(0f)
             }
+
+            it("should become sad when unhealthy") {
+                val newPet = TestUtil.player().pet.copy(
+                    healthPoints = 20,
+                    moodPoints = 50,
+                    mood = PetMood.GOOD
+                ).updateHealthAndMoodPoints(-10, -10)
+                newPet.mood.`should be`(PetMood.SAD)
+            }
         }
     }
 })

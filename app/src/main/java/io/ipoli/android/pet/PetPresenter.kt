@@ -54,10 +54,13 @@ class PetPresenter(
                     is Result.TooExpensive -> state.copy(type = FOOD_TOO_EXPENSIVE)
                     is Result.PetFed -> {
 
+                        val pet = result.player.pet
                         state.copy(
                             type = PET_FED,
                             food = intent.food,
-                            wasFoodTasty = result.wasFoodTasty
+                            wasFoodTasty = result.wasFoodTasty,
+                            mood = pet.mood,
+                            isDead = pet.isDead
                         )
                     }
                 }
