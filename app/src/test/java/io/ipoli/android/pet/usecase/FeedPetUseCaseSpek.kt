@@ -214,6 +214,5 @@ class FeedPetUseCaseSpek : Spek({
                 (result as Result.PetFed).wasFoodTasty.`should be true`()
             }
         }
-
     }
 })
