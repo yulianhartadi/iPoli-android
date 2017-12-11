@@ -40,7 +40,7 @@ class LowerPetStatsUseCaseSpek : Spek({
             val pet = Pet(
                 "",
                 avatar = PetAvatar.ELEPHANT,
-                healthPoints = 30,
+                healthPoints = 40,
                 moodPoints = Pet.AWESOME_MIN_MOOD_POINTS - 1
             )
 
