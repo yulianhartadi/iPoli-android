@@ -40,7 +40,6 @@ abstract class BasePopup(private val isAutoHide: Boolean = false) {
     private lateinit var overlayView: PopupBackgroundLayout
     private lateinit var contentView: ViewGroup
     private lateinit var windowManager: WindowManager
-    protected lateinit var activity: Context
 
     private val autoHideRunnable = {
         hide()
@@ -49,7 +48,6 @@ abstract class BasePopup(private val isAutoHide: Boolean = false) {
     abstract fun createView(inflater: LayoutInflater): View
 
     fun show(context: Context) {
-        activity = context
         contentView = createView(LayoutInflater.from(context)) as ViewGroup
         contentView.visibility = View.INVISIBLE
 
