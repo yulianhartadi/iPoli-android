@@ -11,7 +11,7 @@
         <item name="color">@color/md_white</item>
     </style>
 
-    <style name="Base.Theme.iPoli" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.iPoli" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -19,6 +19,41 @@
         <item name="alertDialogTheme">@style/Theme.iPoli.AlertDialog</item>
         <item name="drawerArrowStyle">@style/WhiteDrawerIconStyle</item>
         <item name="windowActionModeOverlay">true</item>
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="Theme.iPoli.Pink" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/md_pink_500</item>
+        <item name="colorPrimaryDark">@color/md_pink_700</item>
+        <item name="colorAccent">@color/md_blue_A400</item>
+        <item name="alertDialogTheme">@style/Theme.iPoli.AlertDialog</item>
+        <item name="drawerArrowStyle">@style/WhiteDrawerIconStyle</item>
+        <item name="windowActionModeOverlay">true</item>
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:navigationBarColor">@color/md_pink_500</item>
+    </style>
+
+    <style name="Theme.iPoli.White" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/md_white</item>
+        <item name="colorPrimaryDark">@color/md_grey_300</item>
+        <item name="colorAccent">@color/md_red_A400</item>
+        <item name="alertDialogTheme">@style/Theme.iPoli.AlertDialog</item>
+        <item name="drawerArrowStyle">@style/WhiteDrawerIconStyle</item>
+        <item name="windowActionModeOverlay">true</item>
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:navigationBarColor">@color/md_white</item>
     </style>
 
     <style name="Theme.iPoli.DialogActivity" parent="Base.Theme.AppCompat.Light.Dialog.Alert">
@@ -29,8 +64,6 @@
         <item name="windowActionBar">false</item>
         <item name="android:windowAnimationStyle">@style/ScaleInDialogAnimation</item>
     </style>
-
-    <style name="Theme.iPoli" parent="Base.Theme.iPoli" />
 
     <style name="Theme.iPoli.SignIn" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -164,5 +197,47 @@
         <item name="android:padding">0dp</item>
         <item name="android:inputType">textMultiLine|textCapSentences</item>
         <item name="android:textColor">@color/md_light_text_87</item>
+    </style>
+
+    <style name="LearningCheckbox">
+        <item name="android:colorAccent">@color/md_blue_500</item>
+        <item name="android:colorControlNormal">@color/md_blue_500</item>
+        <item name="android:colorControlHighlight">@color/md_blue_500</item>
+        <item name="android:colorControlActivated">@color/md_blue_500</item>
+    </style>
+
+    <style name="WellnessCheckbox">
+        <item name="android:colorAccent">@color/md_green_500</item>
+        <item name="android:colorControlNormal">@color/md_green_500</item>
+        <item name="android:colorControlHighlight">@color/md_green_500</item>
+        <item name="android:colorControlActivated">@color/md_green_500</item>
+    </style>
+
+    <style name="PersonalCheckbox">
+        <item name="android:colorAccent">@color/md_orange_500</item>
+        <item name="android:colorControlNormal">@color/md_orange_500</item>
+        <item name="android:colorControlHighlight">@color/md_orange_500</item>
+        <item name="android:colorControlActivated">@color/md_orange_500</item>
+    </style>
+
+    <style name="WorkCheckbox">
+        <item name="android:colorAccent">@color/md_red_500</item>
+        <item name="android:colorControlNormal">@color/md_red_500</item>
+        <item name="android:colorControlHighlight">@color/md_red_500</item>
+        <item name="android:colorControlActivated">@color/md_red_500</item>
+    </style>
+
+    <style name="FunCheckbox">
+        <item name="android:colorAccent">@color/md_purple_500</item>
+        <item name="android:colorControlNormal">@color/md_purple_500</item>
+        <item name="android:colorControlHighlight">@color/md_purple_500</item>
+        <item name="android:colorControlActivated">@color/md_purple_500</item>
+    </style>
+
+    <style name="ChoresCheckbox">
+        <item name="android:colorAccent">@color/md_blue_grey_500</item>
+        <item name="android:colorControlNormal">@color/md_blue_grey_500</item>
+        <item name="android:colorControlHighlight">@color/md_blue_grey_500</item>
+        <item name="android:colorControlActivated">@color/md_blue_grey_500</item>
     </style>
 </resources>
