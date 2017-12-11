@@ -3,6 +3,7 @@ package io.ipoli.android
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -30,8 +31,20 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
     private val playerRepository by required { playerRepository }
     private val petStatsChangeScheduler by required { lowerPetStatsScheduler }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val pm = PreferenceManager.getDefaultSharedPreferences(this)
+        if (!pm.contains("changed")) {
+            val editor = pm.edit()
+            editor.putString("changed", "yepa")
+            editor.commit()
+            recreate()
+        } else {
+            setTheme(R.style.Theme_iPoli)
+        }
+
         setContentView(R.layout.activity_main)
 
         val amplitudeClient = Amplitude.getInstance().initialize(this, AnalyticsConstants.AMPLITUDE_KEY)
