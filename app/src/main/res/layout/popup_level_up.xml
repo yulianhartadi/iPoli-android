@@ -9,79 +9,79 @@
     android:inAnimation="@anim/slide_in_right"
     android:outAnimation="@anim/slide_out_left">
 
-    <!--<android.support.constraint.ConstraintLayout-->
-        <!--android:id="@+id/levelUpContainer"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:background="@drawable/popup_background">-->
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/levelUpContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/popup_background">
 
-        <!--<ImageView-->
-            <!--android:id="@+id/pet"-->
-            <!--android:layout_width="42dp"-->
-            <!--android:layout_height="42dp"-->
-            <!--android:layout_marginStart="24dp"-->
-            <!--android:layout_marginTop="24dp"-->
-            <!--app:layout_constraintStart_toStartOf="parent"-->
-            <!--app:layout_constraintTop_toTopOf="parent" />-->
+        <ImageView
+            android:id="@+id/pet"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <!--<TextView-->
-            <!--android:id="@+id/title"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginEnd="24dp"-->
-            <!--android:layout_marginStart="16dp"-->
-            <!--android:textAppearance="@style/TextAppearance.AppCompat.Title"-->
-            <!--app:layout_constraintBottom_toBottomOf="@+id/pet"-->
-            <!--app:layout_constraintEnd_toEndOf="parent"-->
-            <!--app:layout_constraintStart_toEndOf="@+id/pet"-->
-            <!--app:layout_constraintTop_toTopOf="@+id/pet" />-->
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="24dp"
+            android:layout_marginStart="16dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            app:layout_constraintBottom_toBottomOf="@+id/pet"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/pet"
+            app:layout_constraintTop_toTopOf="@+id/pet" />
 
 
-        <!--<Button-->
-            <!--android:id="@+id/claimReward"-->
-            <!--style="@style/Widget.AppCompat.Button.Colored"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginBottom="16dp"-->
-            <!--android:layout_marginEnd="24dp"-->
-            <!--android:layout_marginStart="24dp"-->
-            <!--android:layout_marginTop="16dp"-->
-            <!--android:text="Claim your Reward"-->
-            <!--android:visibility="invisible"-->
-            <!--app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--app:layout_constraintEnd_toEndOf="parent"-->
-            <!--app:layout_constraintHorizontal_bias="0.5"-->
-            <!--app:layout_constraintStart_toStartOf="parent"-->
-            <!--app:layout_constraintTop_toBottomOf="@+id/badge" />-->
+        <Button
+            android:id="@+id/claimReward"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:text="Claim your Reward"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/badge" />
 
-        <!--<ImageView-->
-            <!--android:id="@+id/badge"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginEnd="8dp"-->
-            <!--android:layout_marginStart="8dp"-->
-            <!--android:layout_marginTop="24dp"-->
-            <!--android:src="@drawable/ic_achievement_badge"-->
-            <!--android:visibility="invisible"-->
-            <!--app:layout_constraintEnd_toEndOf="parent"-->
-            <!--app:layout_constraintStart_toStartOf="parent"-->
-            <!--app:layout_constraintTop_toBottomOf="@+id/title" />-->
+        <ImageView
+            android:id="@+id/badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:src="@drawable/ic_achievement_badge"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title" />
 
-        <!--<TextView-->
-            <!--android:id="@+id/playerLevel"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:textAppearance="@style/TextAppearance.AppCompat.Display1"-->
-            <!--android:textColor="@color/md_yellow_900"-->
-            <!--android:textStyle="bold"-->
-            <!--android:visibility="invisible"-->
-            <!--app:layout_constraintBottom_toBottomOf="@+id/badge"-->
-            <!--app:layout_constraintEnd_toEndOf="@+id/badge"-->
-            <!--app:layout_constraintStart_toStartOf="@+id/badge"-->
-            <!--app:layout_constraintTop_toTopOf="@+id/badge"-->
-            <!--app:layout_constraintVertical_bias="0.26999998"-->
-            <!--tools:text="12" />-->
-    <!--</android.support.constraint.ConstraintLayout>-->
+        <TextView
+            android:id="@+id/playerLevel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="@color/md_yellow_900"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/badge"
+            app:layout_constraintEnd_toEndOf="@+id/badge"
+            app:layout_constraintStart_toStartOf="@+id/badge"
+            app:layout_constraintTop_toTopOf="@+id/badge"
+            app:layout_constraintVertical_bias="0.26999998"
+            tools:text="12" />
+    </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
