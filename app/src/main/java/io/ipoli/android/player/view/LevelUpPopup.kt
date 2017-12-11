@@ -8,6 +8,7 @@ import android.support.v4.view.animation.LinearOutSlowInInterpolator
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
+import com.amplitude.api.Amplitude
 import com.bumptech.glide.Glide
 import io.ipoli.android.Constants
 import io.ipoli.android.R
@@ -16,6 +17,7 @@ import io.ipoli.android.common.view.anim.TypewriterTextAnimator
 import io.ipoli.android.common.view.visible
 import io.ipoli.android.pet.AndroidPetAvatar
 import kotlinx.android.synthetic.main.popup_level_up.view.*
+import org.json.JSONObject
 
 class LevelUpPopup(
     private val level: Int,
@@ -26,6 +28,18 @@ class LevelUpPopup(
 
     override fun onViewShown(contentView: View) {
         contentView.pet.setImageResource(petAvatar.headImage)
+        val data = JSONObject()
+        data.put("level", level)
+        contentView.positive.setOnClickListener {
+            data.put("sentiment", "positive")
+            Amplitude.getInstance().logEvent("reward_response", data)
+            hide()
+        }
+        contentView.negative.setOnClickListener {
+            data.put("sentiment", "negative")
+            Amplitude.getInstance().logEvent("reward_response", data)
+            hide()
+        }
         startTypingAnimation(contentView)
     }
 
