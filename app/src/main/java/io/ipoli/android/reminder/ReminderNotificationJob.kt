@@ -56,7 +56,7 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
         val findPetUseCase by kap.required { findPetUseCase }
         kap.inject(iPoliApp.jobModule(context))
 
-        val c = ContextThemeWrapper(context, R.style.Theme_iPoli)
+        val c = ContextThemeWrapper(context, R.style.Theme_myPoli_Red)
         val quests = findQuestsToRemindUseCase.execute(params.extras.getLong("start", -1))
         val pet = findPetUseCase.execute(Unit)
 
