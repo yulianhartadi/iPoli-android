@@ -5,12 +5,14 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
+import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.Toolbar
+import android.util.TypedValue
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.bluelinelabs.conductor.Controller
@@ -19,6 +21,7 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.ipoli.android.R
+import io.ipoli.android.R.id.calendarIndicator
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
@@ -212,14 +215,13 @@ class CalendarViewController(args: Bundle? = null) :
 
     private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
         view.datePickerContainer.visibility = View.GONE
-        val calendarIndicator = calendarToolbar.calendarIndicator
-        view.datePicker.setMarkedStyle(MarkStyle.BACKGROUND, colorRes(R.color.colorAccent))
+
+        view.datePicker.setMarkedStyle(MarkStyle.BACKGROUND, attr(R.attr.colorAccent))
 
         val currentDate = LocalDate.now()
         view.datePicker.markDate(DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth))
 
         calendarToolbar.setOnClickListener {
-            calendarIndicator.animate().rotationBy(180f).duration = 200
             send(ExpandToolbarIntent)
         }
 
@@ -309,6 +311,7 @@ class CalendarViewController(args: Bundle? = null) :
     }
 
     private fun showWeekDatePicker(view: View, currentDate: LocalDate) {
+        calendarToolbar.calendarIndicator.animate().rotation(180f).duration = shortAnimTime
         val layoutParams = view.pager.layoutParams as ViewGroup.MarginLayoutParams
         CellConfig.Month2WeekPos = CellConfig.middlePosition
         CellConfig.ifMonth = false
@@ -329,6 +332,7 @@ class CalendarViewController(args: Bundle? = null) :
     }
 
     private fun hideDatePicker(view: View, currentDate: LocalDate) {
+        calendarToolbar.calendarIndicator.animate().rotation(0f).duration = shortAnimTime
         view.datePickerContainer.visibility = View.GONE
         val layoutParams = view.pager.layoutParams as ViewGroup.MarginLayoutParams
         layoutParams.topMargin = 0

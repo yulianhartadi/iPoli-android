@@ -1,10 +1,8 @@
 package io.ipoli.android.common.view
 
-import android.support.annotation.ArrayRes
-import android.support.annotation.ColorRes
-import android.support.annotation.IntegerRes
-import android.support.annotation.StringRes
+import android.support.annotation.*
 import android.support.v4.content.ContextCompat
+import android.util.TypedValue
 import com.bluelinelabs.conductor.Controller
 import io.ipoli.android.MainActivity
 
@@ -27,6 +25,15 @@ fun Controller.colorRes(@ColorRes colorRes: Int): Int =
 fun Controller.intRes(@IntegerRes res: Int): Int =
     resources!!.getInteger(res)
 
+val Controller.shortAnimTime: Long
+    get() = resources!!.getInteger(android.R.integer.config_shortAnimTime).toLong()
+
+val Controller.mediumAnimTime: Long
+    get() = resources!!.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+
+val Controller.longAnimTime: Long
+    get() = resources!!.getInteger(android.R.integer.config_longAnimTime).toLong()
+
 fun Controller.showBackButton() {
     (activity!! as MainActivity).showBackButton()
 }
@@ -34,3 +41,9 @@ fun Controller.showBackButton() {
 fun Controller.hideBackButton() {
     (activity!! as MainActivity).hideBackButton()
 }
+
+fun Controller.attr(@AttrRes attributeRes: Int) =
+    TypedValue().let {
+        activity!!.theme.resolveAttribute(attributeRes, it, true)
+        it.data
+    }

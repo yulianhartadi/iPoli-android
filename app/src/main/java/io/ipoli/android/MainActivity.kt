@@ -31,7 +31,6 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
     private val playerRepository by required { playerRepository }
     private val petStatsChangeScheduler by required { lowerPetStatsScheduler }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -42,7 +41,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
             editor.commit()
             recreate()
         } else {
-            setTheme(R.style.Theme_iPoli)
+            setTheme(R.style.Theme_myPoli_Orange)
         }
 
         setContentView(R.layout.activity_main)

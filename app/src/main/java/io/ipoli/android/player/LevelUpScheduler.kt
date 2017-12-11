@@ -29,7 +29,7 @@ class LevelUpJob : Job(), Injects<ControllerModule> {
         val playerLevel = findPlayerLevelUseCase.execute(Unit)
         val pet = findPetUseCase.execute(Unit)
 
-        val c = ContextThemeWrapper(context, R.style.Theme_iPoli)
+        val c = ContextThemeWrapper(context, R.style.Theme_myPoli_Red)
 
         launch(UI) {
             LevelUpPopup(playerLevel, AndroidPetAvatar.valueOf(pet.avatar.name)).show(c)

@@ -40,7 +40,7 @@ class QuestCompleteJob : Job(), Injects<ControllerModule> {
 
         val pet = findPetUseCase.execute(Unit)
 
-        val c = ContextThemeWrapper(context, R.style.Theme_iPoli)
+        val c = ContextThemeWrapper(context, R.style.Theme_myPoli_Red)
 
         launch(UI) {
             QuestCompletePopup(
