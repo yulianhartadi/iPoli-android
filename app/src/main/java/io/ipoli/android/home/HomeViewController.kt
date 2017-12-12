@@ -17,11 +17,11 @@ import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.FeedbackDialogController
 import io.ipoli.android.quest.calendar.CalendarViewController
+import io.ipoli.android.theme.ThemeStoreViewController
 import kotlinx.android.synthetic.main.controller_home.view.*
 import org.json.JSONObject
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
-
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -124,7 +124,22 @@ class HomeViewController(args: Bundle? = null) :
             showFeedbackDialog()
             return true
         }
+
+        if (item.itemId == R.id.actionThemes) {
+            showThemes()
+            return true
+        }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showThemes() {
+        val handler = FadeChangeHandler()
+        val childRouter = getChildRouter(view!!.controllerContainer, null)
+        childRouter.pushController(
+            RouterTransaction.with(ThemeStoreViewController())
+                .pushChangeHandler(handler)
+                .popChangeHandler(handler)
+        )
     }
 
     private fun showFeedbackDialog() {
