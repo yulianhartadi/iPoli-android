@@ -6,6 +6,7 @@ import io.ipoli.android.player.Player
 import io.ipoli.android.player.Theme
 import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
 import io.ipoli.android.theme.ThemeStoreViewState.StateType.*
+import io.ipoli.android.theme.usecase.ChangeThemeUseCase
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import kotlin.coroutines.experimental.CoroutineContext
@@ -16,6 +17,7 @@ import kotlin.coroutines.experimental.CoroutineContext
  */
 class ThemeStorePresenter(
     private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
+    private val changeThemeUseCase: ChangeThemeUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<ThemeStoreViewState>, ThemeStoreViewState, ThemeStoreIntent>(
     ThemeStoreViewState(LOADING),
@@ -47,7 +49,10 @@ class ThemeStorePresenter(
             }
 
             is ChangeThemeIntent -> {
-                state
+                changeThemeUseCase.execute(intent.theme)
+                state.copy(
+                    type = THEME_CHANGED
+                )
             }
         }
 

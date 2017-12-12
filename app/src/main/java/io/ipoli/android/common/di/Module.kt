@@ -40,6 +40,7 @@ import io.ipoli.android.reminder.view.formatter.ReminderTimeFormatter
 import io.ipoli.android.reminder.view.formatter.TimeUnitFormatter
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogPresenter
 import io.ipoli.android.theme.ThemeStorePresenter
+import io.ipoli.android.theme.usecase.ChangeThemeUseCase
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import space.traversal.kapsule.HasModules
@@ -155,6 +156,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val buyPetUseCase get() = BuyPetUseCase(playerRepository)
     override val changePetUseCase get() = ChangePetUseCase(playerRepository)
     override val findPetUseCase get() = FindPetUseCase(playerRepository)
+    override val changeThemeUseCase get() = ChangeThemeUseCase(playerRepository)
 }
 
 interface JobUseCaseModule {
@@ -199,6 +201,7 @@ interface UseCaseModule {
     val buyPetUseCase: BuyPetUseCase
     val changePetUseCase: ChangePetUseCase
     val findPetUseCase: FindPetUseCase
+    val changeThemeUseCase: ChangeThemeUseCase
 }
 
 interface PresenterModule {
@@ -226,6 +229,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val buyPetUseCase by required { buyPetUseCase }
     private val changePetUseCase by required { changePetUseCase }
     private val findPetUseCase by required { findPetUseCase }
+    private val changeThemeUseCase by required { changeThemeUseCase }
     private val navigator by required { navigator }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
     private val timeUnitFormatter by required { timeUnitFormatter }
@@ -239,7 +243,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val petPresenter get() = PetPresenter(listenForPlayerChangesUseCase, feedPetUseCase, revivePetUseCase, job)
     override val petStorePresenter get() = PetStorePresenter(listenForPlayerChangesUseCase, buyPetUseCase, changePetUseCase, job)
     override val petDialogPresenter get() = PetDialogPresenter(findPetUseCase, job)
-    override val themeStorePresenter get() = ThemeStorePresenter(listenForPlayerChangesUseCase, job)
+    override val themeStorePresenter get() = ThemeStorePresenter(listenForPlayerChangesUseCase, changeThemeUseCase, job)
 }
 
 class ControllerModule(androidModule: AndroidModule,
