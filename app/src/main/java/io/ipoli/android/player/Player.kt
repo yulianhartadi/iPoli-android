@@ -121,6 +121,9 @@ data class Inventory(
         pets.first { it.avatar == petAvatar }
 
     fun hasTheme(theme: Theme) = themes.contains(theme)
+
+    fun addTheme(theme: Theme)
+        = copy(themes = this.themes + theme)
 }
 
 data class AuthProvider(
