@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
             editor.commit()
             recreate()
         } else {
-            setTheme(R.style.Theme_myPoli_Orange)
+            setTheme(R.style.Theme_myPoli_Purple)
         }
 
         setContentView(R.layout.activity_main)

@@ -16,6 +16,7 @@ data class Player(
     val authProvider: AuthProvider,
     val avatar: Avatar = Avatar.IPOLI_CLASSIC,
     val createdAt: LocalDateTime = LocalDateTime.now(),
+    val currentTheme : Theme = Theme.RED,
     val pet: Pet = Pet(
         name = Constants.DEFAULT_PET_NAME,
         avatar = PetAvatar.ELEPHANT
@@ -24,7 +25,8 @@ data class Player(
         food = mapOf(
             Food.BANANA to 1
         ),
-        pets = listOf(InventoryPet.fromPet(pet))
+        pets = setOf(InventoryPet.fromPet(pet)),
+        themes = setOf(currentTheme)
     )
 ) : Entity {
     fun addExperience(experience: Int): Player {
@@ -69,6 +71,9 @@ data class Player(
 
     fun hasPet(petAvatar: PetAvatar) =
         inventory.hasPet(petAvatar)
+
+    fun hasTheme(theme: Theme) =
+        inventory.hasTheme(theme)
 }
 
 data class InventoryPet(val name: String, val avatar: PetAvatar) {
@@ -77,7 +82,11 @@ data class InventoryPet(val name: String, val avatar: PetAvatar) {
     }
 }
 
-data class Inventory(val food: Map<Food, Int> = mapOf(), val pets: List<InventoryPet> = listOf()) {
+data class Inventory(
+    val food: Map<Food, Int> = mapOf(),
+    val pets: Set<InventoryPet> = setOf(),
+    val themes: Set<Theme> = setOf()
+    ) {
     fun addFood(food: Food): Inventory {
         val quantity = this.food.let {
             if (it.containsKey(food)) it[food]!! + 1 else 1
@@ -110,6 +119,8 @@ data class Inventory(val food: Map<Food, Int> = mapOf(), val pets: List<Inventor
 
     fun getPet(petAvatar: PetAvatar) =
         pets.first { it.avatar == petAvatar }
+
+    fun hasTheme(theme: Theme) = themes.contains(theme)
 }
 
 data class AuthProvider(

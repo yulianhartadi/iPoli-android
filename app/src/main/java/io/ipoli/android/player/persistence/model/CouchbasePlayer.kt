@@ -15,6 +15,7 @@ data class CouchbasePlayer(override val map: MutableMap<String, Any?> = mutableM
     var experience: Long by map
     var authProvider: MutableMap<String, Any?> by map
     var avatarCode: Int by map
+    var currentTheme: String by map
     var pet: MutableMap<String, Any?> by map
     var inventory: MutableMap<String, Any?> by map
     override var createdAt: Long by map
@@ -49,6 +50,7 @@ data class CouchbasePet(val map: MutableMap<String, Any?> = mutableMapOf()) {
 data class CouchbaseInventory(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var food: MutableMap<String, Long> by map
     var pets: List<MutableMap<String, Any?>> by map
+    var themes: List<String> by map
 }
 
 data class CouchbaseInventoryPet(val map: MutableMap<String, Any?> = mutableMapOf()) {
