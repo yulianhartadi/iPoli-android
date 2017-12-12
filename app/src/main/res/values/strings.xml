@@ -986,6 +986,15 @@
     <string name="text_picker_empty_error">Think of a name</string>
     <string name="themes">Themes</string>
     <string name="theme_store_title">Themes</string>
+    <string name="theme_red">Dragon Breath</string>
+    <string name="theme_orange">Orange Juice</string>
+    <string name="theme_pink">Pinky Swear</string>
+    <string name="theme_green">Nature Calls</string>
+    <string name="theme_blue">Blue Lagoon</string>
+    <string name="theme_purple">Dreamland</string>
+    <string name="store_current_theme">Current theme</string>
+    <string name="store_buy_theme">Buy now</string>
+    <string name="store_theme_in_inventory">Pick me</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

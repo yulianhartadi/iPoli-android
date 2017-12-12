@@ -6,10 +6,7 @@ import io.ipoli.android.common.persistence.Repository
 import io.ipoli.android.pet.Food
 import io.ipoli.android.pet.Pet
 import io.ipoli.android.pet.PetAvatar
-import io.ipoli.android.player.AuthProvider
-import io.ipoli.android.player.Inventory
-import io.ipoli.android.player.InventoryPet
-import io.ipoli.android.player.Player
+import io.ipoli.android.player.*
 import io.ipoli.android.player.persistence.model.*
 import io.ipoli.android.store.avatars.data.Avatar
 import org.threeten.bp.Instant
@@ -55,7 +52,8 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             pets = ci.pets.map {
                 val cip = CouchbaseInventoryPet(it)
                 InventoryPet(cip.name, PetAvatar.valueOf(cip.avatar))
-            }
+            }.toSet(),
+            themes = ci.themes.map { Theme.valueOf(it) }.toSet()
         )
 
         return Player(
@@ -65,6 +63,7 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             experience = cp.experience,
             authProvider = authProvider,
             avatar = Avatar.fromCode(cp.avatarCode)!!,
+            currentTheme = Theme.valueOf(cp.currentTheme),
             inventory = inventory,
             createdAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(cp.createdAt), ZoneId.systemDefault()),
             pet = pet
@@ -81,6 +80,7 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             it.authProvider = createCouchbaseAuthProvider(entity.authProvider).map
             it.avatarCode = entity.avatar.code
             it.createdAt = entity.createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            it.currentTheme = entity.currentTheme.name
             it.pet = createCouchbasePet(entity.pet).map
             it.inventory = createCouchbaseInventory(entity.inventory).map
         }
@@ -114,6 +114,7 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
                 .toMutableMap()
             it.pets = inventory.pets
                 .map { createCouchbaseInventoryPet(it).map }
+            it.themes = inventory.themes.map { it.name }
         }
 
     private fun createCouchbaseInventoryPet(inventoryPet: InventoryPet) =

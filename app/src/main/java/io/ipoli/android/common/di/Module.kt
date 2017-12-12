@@ -239,7 +239,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val petPresenter get() = PetPresenter(listenForPlayerChangesUseCase, feedPetUseCase, revivePetUseCase, job)
     override val petStorePresenter get() = PetStorePresenter(listenForPlayerChangesUseCase, buyPetUseCase, changePetUseCase, job)
     override val petDialogPresenter get() = PetDialogPresenter(findPetUseCase, job)
-    override val themeStorePresenter get() = ThemeStorePresenter(job)
+    override val themeStorePresenter get() = ThemeStorePresenter(listenForPlayerChangesUseCase, job)
 }
 
 class ControllerModule(androidModule: AndroidModule,

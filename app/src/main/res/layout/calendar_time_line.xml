@@ -7,11 +7,13 @@
     android:elevation="6dp">
 
     <View
+        android:id="@+id/timeLineIndicator"
         android:layout_width="8dp"
         android:layout_height="8dp"
         android:background="@drawable/time_line_circle" />
 
     <View
+        android:id="@+id/timeLine"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_gravity="center_vertical"
