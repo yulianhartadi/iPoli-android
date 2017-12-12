@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.view.PagerAdapter
 import android.view.*
+import android.widget.Toast
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
@@ -87,7 +88,15 @@ class ThemeStoreViewController(args: Bundle? = null) :
             }
 
             THEME_CHANGED -> {
-                
+
+            }
+
+            THEME_BOUGHT -> {
+
+            }
+
+            THEME_TOO_EXPENSIVE -> {
+                Toast.makeText(view.context, "Theme too expensive", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -134,6 +143,9 @@ class ThemeStoreViewController(args: Bundle? = null) :
                     action.text = stringRes(R.string.store_theme_in_inventory)
                     action.setOnClickListener {
                         send(ChangeThemeIntent(vm.theme))
+                        val pm = PreferenceManager.getDefaultSharedPreferences(activity!!)
+                        pm.edit().putString("currentTheme", theme.name).commit()
+                        activity!!.recreate()
                     }
                 }
                 else -> {
@@ -143,11 +155,6 @@ class ThemeStoreViewController(args: Bundle? = null) :
 
                     action.setOnClickListener {
                         send(BuyThemeIntent(vm.theme))
-                        val pm = PreferenceManager.getDefaultSharedPreferences(activity!!)
-                        pm.edit().putString("currentTheme", theme.name).commit()
-//                        router.popCurrentController()
-                        activity!!.recreate()
-
                     }
                 }
             }

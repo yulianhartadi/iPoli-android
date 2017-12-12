@@ -21,6 +21,6 @@ data class ThemeStoreViewState(
     val viewModels: List<ThemeViewModel> = listOf()
 ) : ViewState {
     enum class StateType {
-        LOADING, DATA_LOADED, PLAYER_CHANGED, THEME_CHANGED
+        LOADING, DATA_LOADED, PLAYER_CHANGED, THEME_CHANGED, THEME_BOUGHT, THEME_TOO_EXPENSIVE
     }
 }

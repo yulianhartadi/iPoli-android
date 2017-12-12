@@ -17,9 +17,8 @@ import org.jetbrains.spek.api.dsl.it
  */
 class BuyPetUseCaseSpek : Spek({
     describe("BuyPetUseCase") {
-        fun executeUseCase(player: Player, pet: PetAvatar): BuyPetUseCase.Result {
-            return BuyPetUseCase(TestUtil.playerRepoMock(player)).execute(pet)
-        }
+        fun executeUseCase(player: Player, pet: PetAvatar) =
+            BuyPetUseCase(TestUtil.playerRepoMock(player)).execute(pet)
 
         it("should require not bought pet") {
             val pet = Pet(
