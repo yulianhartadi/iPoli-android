@@ -13,13 +13,14 @@ import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.view.showBackButton
 import io.ipoli.android.common.view.stringRes
+import io.ipoli.android.common.view.visible
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.pet.PetMood
 import io.ipoli.android.pet.store.PetStoreViewState.StateType.*
 import kotlinx.android.synthetic.main.controller_pet_store.view.*
 import kotlinx.android.synthetic.main.controller_store_toolbar.view.*
-import kotlinx.android.synthetic.main.item_pet_shop.view.*
+import kotlinx.android.synthetic.main.item_pet_store.view.*
 import space.traversal.kapsule.required
 
 /**
@@ -91,7 +92,7 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
 
         override fun instantiateItem(container: ViewGroup, position: Int): Any {
             val inflater = LayoutInflater.from(container.context)
-            val view = inflater.inflate(R.layout.item_pet_shop, container, false)
+            val view = inflater.inflate(R.layout.item_pet_store, container, false)
             val vm = viewModels[position]
             val avatar = vm.avatar
             view.petName.setText(avatar.petName)
@@ -99,14 +100,16 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
             view.petPrice.text = PetAvatar.valueOf(avatar.name).price.toString()
             view.petDescription.setText(avatar.description)
             val action = view.petAction
+            val current = view.currentPet
             when {
                 vm.isCurrent -> {
-                    action.isEnabled = false
-                    action.text = stringRes(R.string.store_current_pet)
+                    action.visible = false
+                    current.visible = true
                     view.petState.setImageResource(avatar.moodImage[PetMood.HAPPY]!!)
                 }
                 vm.isBought -> {
-                    action.isEnabled = true
+                    action.visible = true
+                    current.visible = false
                     action.text = stringRes(R.string.store_pet_in_inventory)
                     action.setOnClickListener {
                         send(ChangePetIntent(PetAvatar.valueOf(vm.avatar.name)))
@@ -114,7 +117,8 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
                     view.petState.setImageResource(avatar.moodImage[PetMood.GOOD]!!)
                 }
                 else -> {
-                    action.isEnabled = true
+                    action.visible = true
+                    current.visible = false
                     action.text = stringRes(R.string.store_buy_pet)
                     action.setOnClickListener {
                         send(BuyPetIntent(PetAvatar.valueOf(vm.avatar.name)))

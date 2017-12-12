@@ -46,7 +46,7 @@
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             app:layout_constraintBottom_toTopOf="@+id/petState"
             app:layout_constraintEnd_toEndOf="parent"
@@ -58,16 +58,18 @@
             android:id="@+id/petDescription"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="32dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:textColor="@color/md_dark_text_54"
+            app:layout_constraintBottom_toTopOf="@+id/petPrice"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline13"
+            app:layout_constraintTop_toBottomOf="@+id/pet"
+            app:layout_constraintVertical_chainStyle="spread"
             tools:text="I remember the day I arrived from Africa like it was yesterday. Too bad I don\'t remember yesterday at all…" />
 
         <Button
@@ -75,44 +77,59 @@
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="16dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/petPrice"
             tools:text="Take Me With You" />
 
         <TextView
             android:id="@+id/petPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:drawablePadding="8dp"
             android:drawableStart="@drawable/ic_life_coin_32dp"
             android:gravity="center_vertical"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             app:layout_constraintBottom_toTopOf="@+id/petAction"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/petDescription"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintTop_toBottomOf="@+id/petDescription" />
 
         <android.support.constraint.Guideline
             android:id="@+id/guideline12"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.15" />
+            app:layout_constraintGuide_percent="0.13" />
 
         <android.support.constraint.Guideline
             android:id="@+id/guideline13"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.59" />
+            app:layout_constraintGuide_percent="0.53" />
+
+        <TextView
+            android:id="@+id/currentPet"
+            android:layout_width="wrap_content"
+            android:layout_height="21dp"
+            android:text="@string/store_current_pet"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:textColor="@color/md_dark_text_54"
+            app:layout_constraintBottom_toBottomOf="@+id/petAction"
+            app:layout_constraintEnd_toEndOf="@+id/petAction"
+            app:layout_constraintStart_toStartOf="@+id/petAction"
+            app:layout_constraintTop_toTopOf="@+id/petAction" />
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>
