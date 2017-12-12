@@ -7,6 +7,8 @@ import io.ipoli.android.player.Theme
 import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
 import io.ipoli.android.theme.ThemeStoreViewState.StateType.*
 import io.ipoli.android.theme.usecase.BuyThemeUseCase
+import io.ipoli.android.theme.usecase.BuyThemeUseCase.Result.ThemeBought
+import io.ipoli.android.theme.usecase.BuyThemeUseCase.Result.TooExpensive
 import io.ipoli.android.theme.usecase.ChangeThemeUseCase
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
@@ -49,10 +51,10 @@ class ThemeStorePresenter(
             is BuyThemeIntent -> {
                 val result = buyThemeUseCase.execute(intent.theme)
                 when (result) {
-                    is BuyThemeUseCase.Result.TooExpensive -> state.copy(
+                    is TooExpensive -> state.copy(
                         type = THEME_TOO_EXPENSIVE
                     )
-                    else -> state.copy(
+                    is ThemeBought -> state.copy(
                         type = THEME_BOUGHT
                     )
                 }

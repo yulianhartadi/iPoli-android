@@ -4,6 +4,8 @@ import io.ipoli.android.common.UseCase
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.Theme
 import io.ipoli.android.player.persistence.PlayerRepository
+import io.ipoli.android.theme.usecase.BuyThemeUseCase.Result.ThemeBought
+import io.ipoli.android.theme.usecase.BuyThemeUseCase.Result.TooExpensive
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -17,7 +19,7 @@ class BuyThemeUseCase(private val playerRepository: PlayerRepository) : UseCase<
         require(!player!!.hasTheme(theme))
 
         if (player.coins < theme.price) {
-            return BuyThemeUseCase.Result.TooExpensive
+            return TooExpensive
         }
 
         val newPlayer = player.copy(
@@ -25,7 +27,7 @@ class BuyThemeUseCase(private val playerRepository: PlayerRepository) : UseCase<
             inventory = player.inventory.addTheme(theme)
         )
 
-        return Result.ThemeBought(playerRepository.save(newPlayer))
+        return ThemeBought(playerRepository.save(newPlayer))
     }
 
     sealed class Result {
