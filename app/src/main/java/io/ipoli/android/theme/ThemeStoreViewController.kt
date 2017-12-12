@@ -1,5 +1,6 @@
 package io.ipoli.android.theme
 
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -19,6 +20,7 @@ import kotlinx.android.synthetic.main.calendar_time_line.view.*
 import kotlinx.android.synthetic.main.controller_theme_store.view.*
 import kotlinx.android.synthetic.main.item_theme_store.view.*
 import space.traversal.kapsule.required
+
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -145,7 +147,13 @@ class ThemeStoreViewController(args: Bundle? = null) :
                         send(ChangeThemeIntent(vm.theme))
                         val pm = PreferenceManager.getDefaultSharedPreferences(activity!!)
                         pm.edit().putString("currentTheme", theme.name).commit()
-                        activity!!.recreate()
+
+
+                        val intent = Intent(activity!!, MainActivity::class.java)
+                        activity!!.startActivity(intent)
+                        activity!!.finish()
+
+//                        activity!!.recreate()
                     }
                 }
                 else -> {
