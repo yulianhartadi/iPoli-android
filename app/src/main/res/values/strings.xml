@@ -32,7 +32,7 @@
     <string name="dialog_delete_challenge_title">Delete challenge</string>
     <string name="dialog_delete_challenge_message">Would you like to remove all quests for the challenge as well?</string>
     <string name="inbox">Inbox</string>
-    <string name="feedback">Improve iPoli</string>
+    <string name="feedback">Improve myPoli</string>
     <string name="contact_us">Contact Us</string>
     <string name="yesterday_calendar_format">\'Yesterday - \'d MMM</string>
     <string name="today_calendar_format">\'Today - \'EEE, d MMM</string>
@@ -984,6 +984,8 @@
     <string name="store_pet_in_inventory">Take me with you</string>
     <string name="store_buy_pet">Buy me now</string>
     <string name="text_picker_empty_error">Think of a name</string>
+    <string name="themes">Themes</string>
+    <string name="theme_store_title">Themes</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

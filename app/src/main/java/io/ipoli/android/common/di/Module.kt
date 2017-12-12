@@ -39,6 +39,7 @@ import io.ipoli.android.reminder.ReminderScheduler
 import io.ipoli.android.reminder.view.formatter.ReminderTimeFormatter
 import io.ipoli.android.reminder.view.formatter.TimeUnitFormatter
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogPresenter
+import io.ipoli.android.theme.ThemeStorePresenter
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import space.traversal.kapsule.HasModules
@@ -209,6 +210,7 @@ interface PresenterModule {
     val petPresenter: PetPresenter
     val petStorePresenter: PetStorePresenter
     val petDialogPresenter: PetDialogPresenter
+    val themeStorePresenter : ThemeStorePresenter
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
@@ -237,6 +239,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val petPresenter get() = PetPresenter(listenForPlayerChangesUseCase, feedPetUseCase, revivePetUseCase, job)
     override val petStorePresenter get() = PetStorePresenter(listenForPlayerChangesUseCase, buyPetUseCase, changePetUseCase, job)
     override val petDialogPresenter get() = PetDialogPresenter(findPetUseCase, job)
+    override val themeStorePresenter get() = ThemeStorePresenter(job)
 }
 
 class ControllerModule(androidModule: AndroidModule,
