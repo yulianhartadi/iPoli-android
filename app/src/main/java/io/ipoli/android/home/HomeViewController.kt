@@ -10,12 +10,12 @@ import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.Constants
-import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.FeedbackDialogController
+import io.ipoli.android.quest.calendar.CalendarViewController
 import io.ipoli.android.theme.ThemeStoreViewController
 import kotlinx.android.synthetic.main.controller_home.view.*
 import org.json.JSONObject
@@ -52,17 +52,16 @@ class HomeViewController(args: Bundle? = null) :
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.controller_home, container, false)
+
+        val contentView = inflater.inflate(R.layout.controller_home, container, false)
+
+        return contentView
     }
 
     override fun onAttach(view: View) {
         super.onAttach(view)
 
-        val activity = activity as MainActivity
-        activity.setSupportActionBar(view.toolbar)
-        view.appbar.outlineProvider = null
-
-        val actionBar = activity.supportActionBar
+//        val actionBar = activity.supportActionBar
 //        actionBar?.setDisplayHomeAsUpEnabled(true)
 
 //        view.navigationView.setNavigationItemSelectedListener(this)
@@ -82,15 +81,16 @@ class HomeViewController(args: Bundle? = null) :
 //        }
 //
 //        view.drawerLayout.addDrawerListener(actionBarDrawerToggle)
-
         val handler = FadeChangeHandler()
         val childRouter = getChildRouter(view.controllerContainer, null)
-        childRouter.setRoot(
-//            RouterTransaction.with(CalendarViewController())
-            RouterTransaction.with(ThemeStoreViewController())
-                .pushChangeHandler(handler)
-                .popChangeHandler(handler)
-        )
+        if (!childRouter.hasRootController()) {
+            childRouter.setRoot(
+            RouterTransaction.with(CalendarViewController())
+//                RouterTransaction.with(ThemeStoreViewController())
+                    .pushChangeHandler(handler)
+                    .popChangeHandler(handler)
+            )
+        }
 
         send(LoadDataIntent)
 //        actionBarDrawerToggle.syncState()
