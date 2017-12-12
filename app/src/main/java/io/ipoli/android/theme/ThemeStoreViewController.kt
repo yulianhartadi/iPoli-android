@@ -9,10 +9,7 @@ import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.mvi.MviViewController
-import io.ipoli.android.common.view.AndroidTheme
-import io.ipoli.android.common.view.showBackButton
-import io.ipoli.android.common.view.stringRes
-import io.ipoli.android.common.view.visible
+import io.ipoli.android.common.view.*
 import io.ipoli.android.player.Theme
 import io.ipoli.android.quest.calendar.dayview.view.widget.CalendarDayView
 import io.ipoli.android.theme.ThemeStoreViewState.StateType.*
@@ -40,7 +37,7 @@ class ThemeStoreViewController(args: Bundle? = null) :
 
         val view = inflater.inflate(R.layout.controller_theme_store, container, false)
 
-        (activity as MainActivity).supportActionBar?.title = stringRes(R.string.themes)
+        toolbarTitle = stringRes(R.string.themes)
 
         view.themePager.clipToPadding = false
         view.themePager.pageMargin = ViewUtils.dpToPx(32f, view.context).toInt()
