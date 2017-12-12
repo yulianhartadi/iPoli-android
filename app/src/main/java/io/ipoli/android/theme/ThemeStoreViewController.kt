@@ -2,9 +2,10 @@ package io.ipoli.android.theme
 
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v4.view.PagerAdapter
-import android.support.v7.widget.Toolbar
 import android.view.*
+import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.mvi.MviViewController
@@ -29,19 +30,31 @@ import space.traversal.kapsule.required
 class ThemeStoreViewController(args: Bundle? = null) :
     MviViewController<ThemeStoreViewState, ThemeStoreViewController, ThemeStorePresenter, ThemeStoreIntent>(args) {
 
+    var currentPosition = -1
+
     private val presenter by required { themeStorePresenter }
 
     override fun createPresenter() = presenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         setHasOptionsMenu(true)
-        val toolbar = activity!!.findViewById<Toolbar>(R.id.toolbar)
-        toolbar.title = stringRes(R.string.theme_store_title)
+
         val view = inflater.inflate(R.layout.controller_theme_store, container, false)
+
+        (activity as MainActivity).supportActionBar?.title = stringRes(R.string.themes)
 
         view.themePager.clipToPadding = false
         view.themePager.pageMargin = ViewUtils.dpToPx(32f, view.context).toInt()
         return view
+    }
+
+    override fun onSaveViewState(view: View, outState: Bundle) {
+        outState.putInt("themePosition", view.themePager.currentItem)
+        super.onSaveViewState(view, outState)
+    }
+
+    override fun onRestoreViewState(view: View, savedViewState: Bundle) {
+        currentPosition = savedViewState.getInt("themePosition")
     }
 
     override fun onAttach(view: View) {
@@ -72,6 +85,9 @@ class ThemeStoreViewController(args: Bundle? = null) :
 
             PLAYER_CHANGED -> {
                 (view.themePager.adapter as ThemePagerAdapter).updateAll(state.viewModels)
+                if(currentPosition >= 0) {
+                    view.themePager.currentItem = currentPosition
+                }
             }
         }
     }
@@ -124,8 +140,14 @@ class ThemeStoreViewController(args: Bundle? = null) :
                     action.visible = true
                     current.visible = false
                     action.text = stringRes(R.string.store_buy_theme)
+
                     action.setOnClickListener {
-                        send(BuyThemeIntent(vm.theme))
+                        val pm = PreferenceManager.getDefaultSharedPreferences(activity!!)
+                        pm.edit().putString("currentTheme", theme.name).commit()
+//                        router.popCurrentController()
+                        activity!!.recreate()
+
+//                        send(BuyThemeIntent(vm.theme))
                     }
                 }
             }

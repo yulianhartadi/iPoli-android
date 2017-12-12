@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.provider.Settings
+import android.support.design.widget.AppBarLayout
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.amplitude.api.Amplitude
@@ -12,6 +13,7 @@ import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import io.ipoli.android.common.di.ControllerModule
+import io.ipoli.android.common.view.AndroidTheme
 import io.ipoli.android.home.HomeViewController
 import io.ipoli.android.player.AuthProvider
 import io.ipoli.android.player.Player
@@ -35,16 +37,15 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         super.onCreate(savedInstanceState)
 
         val pm = PreferenceManager.getDefaultSharedPreferences(this)
-        if (!pm.contains("changed")) {
-            val editor = pm.edit()
-            editor.putString("changed", "yepa")
-            editor.commit()
-            recreate()
-        } else {
-            setTheme(R.style.Theme_myPoli_Purple)
+        if (pm.contains("currentTheme")) {
+            val themeName = pm.getString("currentTheme", "")
+            setTheme(AndroidTheme.valueOf(themeName).style)
         }
 
         setContentView(R.layout.activity_main)
+
+        setSupportActionBar(findViewById(R.id.toolbar))
+        findViewById<AppBarLayout>(R.id.appbar).outlineProvider = null
 
         val amplitudeClient = Amplitude.getInstance().initialize(this, AnalyticsConstants.AMPLITUDE_KEY)
         amplitudeClient.enableForegroundTracking(application)
