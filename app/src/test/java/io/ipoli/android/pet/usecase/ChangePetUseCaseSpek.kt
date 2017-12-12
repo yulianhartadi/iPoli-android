@@ -19,13 +19,12 @@ import org.jetbrains.spek.api.dsl.it
 class ChangePetUseCaseSpek : Spek({
     describe("ChangePetUseCase") {
 
-        fun executeUseCase(player: Player, pet: PetAvatar): Player {
-            return ChangePetUseCase(TestUtil.playerRepoMock(player)).execute(pet)
-        }
+        fun executeUseCase(player: Player, pet: PetAvatar) =
+            ChangePetUseCase(TestUtil.playerRepoMock(player)).execute(pet)
 
         it("should require pet in inventory") {
             val player = TestUtil.player().copy(
-                inventory = Inventory(pets = listOf(
+                inventory = Inventory(pets = setOf(
                     InventoryPet("", PetAvatar.CHICKEN)
                 ))
             )
@@ -45,7 +44,7 @@ class ChangePetUseCaseSpek : Spek({
             val player = TestUtil.player().copy(
                 pet = currentPet,
                 inventory = Inventory(
-                    pets = listOf(
+                    pets = setOf(
                         InventoryPet.fromPet(currentPet),
                         InventoryPet.fromPet(newPet)
                     )

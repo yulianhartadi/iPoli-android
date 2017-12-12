@@ -15,8 +15,7 @@ import io.ipoli.android.common.view.stringRes
 import io.ipoli.android.common.view.visible
 import io.ipoli.android.player.Theme
 import io.ipoli.android.quest.calendar.dayview.view.widget.CalendarDayView
-import io.ipoli.android.theme.ThemeStoreViewState.StateType.DATA_LOADED
-import io.ipoli.android.theme.ThemeStoreViewState.StateType.PLAYER_CHANGED
+import io.ipoli.android.theme.ThemeStoreViewState.StateType.*
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.calendar_time_line.view.*
 import kotlinx.android.synthetic.main.controller_theme_store.view.*
@@ -89,6 +88,10 @@ class ThemeStoreViewController(args: Bundle? = null) :
                     view.themePager.currentItem = currentPosition
                 }
             }
+
+            THEME_CHANGED -> {
+                
+            }
         }
     }
 
@@ -142,12 +145,12 @@ class ThemeStoreViewController(args: Bundle? = null) :
                     action.text = stringRes(R.string.store_buy_theme)
 
                     action.setOnClickListener {
+                        send(BuyThemeIntent(vm.theme))
                         val pm = PreferenceManager.getDefaultSharedPreferences(activity!!)
                         pm.edit().putString("currentTheme", theme.name).commit()
 //                        router.popCurrentController()
                         activity!!.recreate()
 
-//                        send(BuyThemeIntent(vm.theme))
                     }
                 }
             }
