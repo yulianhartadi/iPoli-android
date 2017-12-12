@@ -61,7 +61,6 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
 
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         inject(iPoliApp.controllerModule(this, router))
-        val hasNoRootController = !router.hasRootController()
 
         if (playerRepository.find() == null) {
             val player = Player(
@@ -72,7 +71,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
             petStatsChangeScheduler.schedule()
         }
 
-        if (hasNoRootController) {
+        if (!router.hasRootController()) {
             router.setRoot(RouterTransaction.with(HomeViewController()))
         }
     }
