@@ -9,7 +9,6 @@ import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
@@ -232,8 +231,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     }
 
     private fun renderPetName(name: String) {
-        val toolbar = activity!!.findViewById<Toolbar>(R.id.toolbar)
-        toolbar.title = name
+        toolbarTitle = name
     }
 
     private fun playFeedPetAnimation(view: View, state: PetViewState) {

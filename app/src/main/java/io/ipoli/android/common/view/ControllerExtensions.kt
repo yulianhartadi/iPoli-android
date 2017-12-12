@@ -47,3 +47,9 @@ fun Controller.attr(@AttrRes attributeRes: Int) =
         activity!!.theme.resolveAttribute(attributeRes, it, true)
         it.data
     }
+
+var Controller.toolbarTitle: String
+    set(value) {
+        (activity!! as MainActivity).supportActionBar!!.title = value
+    }
+    get() = (activity!! as MainActivity).supportActionBar!!.title.toString()
