@@ -40,6 +40,7 @@ import io.ipoli.android.reminder.view.formatter.ReminderTimeFormatter
 import io.ipoli.android.reminder.view.formatter.TimeUnitFormatter
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogPresenter
 import io.ipoli.android.theme.ThemeStorePresenter
+import io.ipoli.android.theme.usecase.BuyThemeUseCase
 import io.ipoli.android.theme.usecase.ChangeThemeUseCase
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
@@ -157,6 +158,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val changePetUseCase get() = ChangePetUseCase(playerRepository)
     override val findPetUseCase get() = FindPetUseCase(playerRepository)
     override val changeThemeUseCase get() = ChangeThemeUseCase(playerRepository)
+    override val buyThemeUseCase get() = BuyThemeUseCase(playerRepository)
 }
 
 interface JobUseCaseModule {
@@ -202,6 +204,7 @@ interface UseCaseModule {
     val changePetUseCase: ChangePetUseCase
     val findPetUseCase: FindPetUseCase
     val changeThemeUseCase: ChangeThemeUseCase
+    val buyThemeUseCase: BuyThemeUseCase
 }
 
 interface PresenterModule {
@@ -213,7 +216,7 @@ interface PresenterModule {
     val petPresenter: PetPresenter
     val petStorePresenter: PetStorePresenter
     val petDialogPresenter: PetDialogPresenter
-    val themeStorePresenter : ThemeStorePresenter
+    val themeStorePresenter: ThemeStorePresenter
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
@@ -230,6 +233,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val changePetUseCase by required { changePetUseCase }
     private val findPetUseCase by required { findPetUseCase }
     private val changeThemeUseCase by required { changeThemeUseCase }
+    private val buyThemeUseCase by required { buyThemeUseCase }
     private val navigator by required { navigator }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
     private val timeUnitFormatter by required { timeUnitFormatter }
@@ -243,7 +247,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val petPresenter get() = PetPresenter(listenForPlayerChangesUseCase, feedPetUseCase, revivePetUseCase, job)
     override val petStorePresenter get() = PetStorePresenter(listenForPlayerChangesUseCase, buyPetUseCase, changePetUseCase, job)
     override val petDialogPresenter get() = PetDialogPresenter(findPetUseCase, job)
-    override val themeStorePresenter get() = ThemeStorePresenter(listenForPlayerChangesUseCase, changeThemeUseCase, job)
+    override val themeStorePresenter get() = ThemeStorePresenter(listenForPlayerChangesUseCase, changeThemeUseCase, buyThemeUseCase, job)
 }
 
 class ControllerModule(androidModule: AndroidModule,
