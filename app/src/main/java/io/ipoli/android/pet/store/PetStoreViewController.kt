@@ -2,7 +2,6 @@ package io.ipoli.android.pet.store
 
 import android.os.Bundle
 import android.support.v4.view.PagerAdapter
-import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -11,16 +10,14 @@ import android.widget.Toast
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.mvi.MviViewController
-import io.ipoli.android.common.view.showBackButton
-import io.ipoli.android.common.view.stringRes
-import io.ipoli.android.common.view.visible
+import io.ipoli.android.common.view.*
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.pet.PetMood
 import io.ipoli.android.pet.store.PetStoreViewState.StateType.*
 import kotlinx.android.synthetic.main.controller_pet_store.view.*
-import kotlinx.android.synthetic.main.controller_store_toolbar.view.*
 import kotlinx.android.synthetic.main.item_pet_store.view.*
+import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import space.traversal.kapsule.required
 
 /**
@@ -32,16 +29,14 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
 
     override fun createPresenter() = presenter
 
-    private lateinit var storeToolbar: ViewGroup
+    private lateinit var inventoryToolbar: ViewGroup
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_pet_store, container, false)
 
-        val toolbar = activity!!.findViewById<Toolbar>(R.id.toolbar)
-        storeToolbar = inflater.inflate(R.layout.controller_store_toolbar, toolbar, false) as ViewGroup
-        toolbar.addView(storeToolbar)
-        storeToolbar.storeTitle.setText(R.string.store)
+        inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
+        inventoryToolbar.toolbarTitle.setText(R.string.store)
 
         view.petPager.clipToPadding = false
         view.petPager.pageMargin = ViewUtils.dpToPx(32f, view.context).toInt()
@@ -69,7 +64,7 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
             }
 
             PLAYER_CHANGED -> {
-                storeToolbar.playerCoins.text = state.playerCoins.toString()
+                inventoryToolbar.playerCoins.text = state.playerCoins.toString()
                 (view.petPager.adapter as PetPagerAdapter).updateAll(state.petViewModels)
             }
 
@@ -80,9 +75,7 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
     }
 
     override fun onDestroyView(view: View) {
-        val toolbar = activity!!.findViewById<Toolbar>(R.id.toolbar)
-        toolbar.removeView(storeToolbar)
-
+        removeToolbarView(inventoryToolbar)
         super.onDestroyView(view)
     }
 

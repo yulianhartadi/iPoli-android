@@ -26,6 +26,7 @@ import io.ipoli.android.pet.PetViewState.StateType.*
 import io.ipoli.android.pet.store.PetStoreViewController
 import kotlinx.android.synthetic.main.controller_pet.view.*
 import kotlinx.android.synthetic.main.item_pet_food.view.*
+import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import space.traversal.kapsule.required
 
 /**
@@ -37,6 +38,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     private val presenter by required { petPresenter }
 
     override fun createPresenter() = presenter
+
+    private lateinit var inventoryToolbar: ViewGroup
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_pet, container, false)
@@ -53,6 +56,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         view.foodList.post {
             view.foodList.x = view.width.toFloat()
         }
+
+        inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
 
         return view
     }
@@ -104,6 +109,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 if (!state.isDead) {
                     playEnterAnimation(view)
                 }
+                inventoryToolbar.playerCoins.text = state.playerCoins.toString()
             }
             FOOD_LIST_SHOWN -> {
                 playShowFoodListAnimation(view)
@@ -146,6 +152,9 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             PET_CHANGED -> {
+
+                inventoryToolbar.playerCoins.text = state.playerCoins.toString()
+
                 (view.foodList.adapter as PetFoodAdapter).updateAll(state.foodViewModels)
 
                 renderPet(state, view)
@@ -234,7 +243,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     }
 
     private fun renderPetName(name: String) {
-        toolbarTitle = name
+        inventoryToolbar.toolbarTitle.text = name
     }
 
     private fun playFeedPetAnimation(view: View, state: PetViewState) {
@@ -344,6 +353,11 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         )
         animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
         animator.start()
+    }
+
+    override fun onDestroyView(view: View) {
+        removeToolbarView(inventoryToolbar)
+        super.onDestroyView(view)
     }
 
     data class PetFoodViewModel(@DrawableRes val image: Int, val price: Int, val food: Food, val quantity: Int = 0)

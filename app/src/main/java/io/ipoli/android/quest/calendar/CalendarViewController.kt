@@ -5,14 +5,11 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
-import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
-import android.support.v4.content.ContextCompat
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.Toolbar
-import android.util.TypedValue
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.bluelinelabs.conductor.Controller
@@ -21,9 +18,6 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.ipoli.android.R
-import io.ipoli.android.R.id.addContainerBackground
-import io.ipoli.android.R.id.calendarIndicator
-import io.ipoli.android.R.string.view
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
@@ -36,7 +30,7 @@ import io.ipoli.android.quest.calendar.CalendarViewState.StateType.*
 import io.ipoli.android.quest.calendar.addquest.AddQuestViewController
 import io.ipoli.android.quest.calendar.dayview.view.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
-import kotlinx.android.synthetic.main.controller_calendar_toolbar.view.*
+import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
@@ -76,9 +70,7 @@ class CalendarViewController(args: Bundle? = null) :
         val view = inflater.inflate(R.layout.controller_calendar, container, false)
         setHasOptionsMenu(true)
 
-        val toolbar = activity!!.findViewById<Toolbar>(R.id.toolbar)
-        calendarToolbar = inflater.inflate(R.layout.controller_calendar_toolbar, toolbar, false) as ViewGroup
-        toolbar.addView(calendarToolbar)
+        calendarToolbar = addToolbarView(R.layout.view_calendar_toolbar) as ViewGroup
 
         initDayPicker(view, calendarToolbar)
 
@@ -383,8 +375,7 @@ class CalendarViewController(args: Bundle? = null) :
             view.pager.adapter = null
         }
 
-        val toolbar = activity!!.findViewById<Toolbar>(R.id.toolbar)
-        toolbar.removeView(calendarToolbar)
+        removeToolbarView(calendarToolbar)
 
         super.onDestroyView(view)
     }

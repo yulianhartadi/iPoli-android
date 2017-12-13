@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.calendar_time_line.view.*
 import kotlinx.android.synthetic.main.controller_theme_store.view.*
 import kotlinx.android.synthetic.main.item_theme_store.view.*
+import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import space.traversal.kapsule.required
 
 /**
@@ -31,6 +32,8 @@ class ThemeStoreViewController(args: Bundle? = null) :
 
     var currentPosition = -1
 
+    private lateinit var inventoryToolbar: ViewGroup
+
     private val presenter by required { themeStorePresenter }
 
     override fun createPresenter() = presenter
@@ -40,7 +43,8 @@ class ThemeStoreViewController(args: Bundle? = null) :
 
         val view = inflater.inflate(R.layout.controller_theme_store, container, false)
 
-        toolbarTitle = stringRes(R.string.themes)
+        inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
+        inventoryToolbar.toolbarTitle.setText(R.string.themes)
 
         view.themePager.clipToPadding = false
         view.themePager.pageMargin = ViewUtils.dpToPx(32f, view.context).toInt()
@@ -84,6 +88,7 @@ class ThemeStoreViewController(args: Bundle? = null) :
             }
 
             PLAYER_CHANGED -> {
+                inventoryToolbar.playerCoins.text = state.playerCoins.toString()
                 (view.themePager.adapter as ThemePagerAdapter).updateAll(state.viewModels)
                 if (currentPosition >= 0) {
                     view.themePager.currentItem = currentPosition
@@ -110,6 +115,11 @@ class ThemeStoreViewController(args: Bundle? = null) :
                 Toast.makeText(view.context, "Theme too expensive", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    override fun onDestroyView(view: View) {
+        removeToolbarView(inventoryToolbar)
+        super.onDestroyView(view)
     }
 
     inner class ThemePagerAdapter(private var viewModels: List<ThemeViewModel>) : PagerAdapter() {
