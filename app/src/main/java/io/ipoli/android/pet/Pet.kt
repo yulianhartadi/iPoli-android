@@ -4,8 +4,8 @@ import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
 import io.ipoli.android.Constants
 import io.ipoli.android.R
+import io.ipoli.android.common.Reward
 import io.ipoli.android.pet.PetMood.*
-import io.ipoli.android.quest.Quest
 import java.lang.Math.abs
 
 /**
@@ -76,10 +76,9 @@ data class Pet(
         )
     }
 
-    fun rewardFor(quest: Quest): Pet {
-
-        val rewardHP = healthPointsForXP(quest.experience!!)
-        val rewardMP = moodPointsForXP(quest.experience)
+    fun rewardFor(reward: Reward): Pet {
+        val rewardHP = healthPointsForXP(reward.experience)
+        val rewardMP = moodPointsForXP(reward.experience)
         return addHealthAndMoodPoints(rewardHP, rewardMP)
     }
 
@@ -112,9 +111,9 @@ data class Pet(
             Math.min(moodPoints + rewardMoodPoints * moodBonusMultiplier, MAX_MP)
         }
 
-    fun removeRewardFor(quest: Quest): Pet {
-        val rewardHP = healthPointsForXP(quest.experience!!)
-        val rewardMP = moodPointsForXP(quest.experience)
+    fun removeReward(reward: Reward): Pet {
+        val rewardHP = healthPointsForXP(reward.experience)
+        val rewardMP = moodPointsForXP(reward.experience)
         return removeHealthAndMoodPoints(rewardHP, rewardMP)
     }
 

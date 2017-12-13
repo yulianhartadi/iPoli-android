@@ -5,6 +5,7 @@ import com.evernote.android.job.Job
 import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
 import io.ipoli.android.R
+import io.ipoli.android.common.Reward
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.di.JobModule
 import io.ipoli.android.iPoliApp
@@ -60,16 +61,17 @@ class QuestCompleteJob : Job(), Injects<ControllerModule> {
 }
 
 interface QuestCompleteScheduler {
-    fun schedule(quest: Quest)
+    fun schedule(reward: Reward)
 }
 
 class AndroidJobQuestCompleteScheduler : QuestCompleteScheduler {
-    override fun schedule(quest: Quest) {
+    override fun schedule(reward: Reward) {
         val bundle = PersistableBundleCompat()
-        bundle.putInt("experience", quest.experience!!)
-        bundle.putInt("coins", quest.coins!!)
-        if (quest.bounty is Quest.Bounty.Food) {
-            bundle.putString("bounty", quest.bounty.food.name)
+        bundle.putInt("experience", reward.experience)
+        bundle.putInt("coins", reward.coins)
+        val bounty = reward.bounty
+        if (bounty is Quest.Bounty.Food) {
+            bundle.putString("bounty", bounty.food.name)
         }
 
         JobRequest.Builder(QuestCompleteJob.TAG)

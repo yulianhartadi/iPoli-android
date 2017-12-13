@@ -1,6 +1,5 @@
 package io.ipoli.android.theme
 
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -20,7 +19,6 @@ import kotlinx.android.synthetic.main.calendar_time_line.view.*
 import kotlinx.android.synthetic.main.controller_theme_store.view.*
 import kotlinx.android.synthetic.main.item_theme_store.view.*
 import space.traversal.kapsule.required
-
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -54,6 +52,7 @@ class ThemeStoreViewController(args: Bundle? = null) :
 
     override fun onRestoreViewState(view: View, savedViewState: Bundle) {
         currentPosition = savedViewState.getInt("themePosition")
+        (activity as MainActivity).animateFadeIn()
     }
 
     override fun onAttach(view: View) {
@@ -84,7 +83,7 @@ class ThemeStoreViewController(args: Bundle? = null) :
 
             PLAYER_CHANGED -> {
                 (view.themePager.adapter as ThemePagerAdapter).updateAll(state.viewModels)
-                if(currentPosition >= 0) {
+                if (currentPosition >= 0) {
                     view.themePager.currentItem = currentPosition
                 }
             }
@@ -148,12 +147,7 @@ class ThemeStoreViewController(args: Bundle? = null) :
                         val pm = PreferenceManager.getDefaultSharedPreferences(activity!!)
                         pm.edit().putString("currentTheme", theme.name).commit()
 
-
-                        val intent = Intent(activity!!, MainActivity::class.java)
-                        activity!!.startActivity(intent)
-                        activity!!.finish()
-
-//                        activity!!.recreate()
+                        activity!!.recreate()
                     }
                 }
                 else -> {

@@ -1,11 +1,13 @@
 package io.ipoli.android
 
+import android.animation.ObjectAnimator
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.provider.Settings
 import android.support.design.widget.AppBarLayout
+import android.support.design.widget.CoordinatorLayout
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.amplitude.api.Amplitude
@@ -96,5 +98,13 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         val actionBar = supportActionBar!!
         actionBar.setDisplayHomeAsUpEnabled(false)
         actionBar.setDisplayShowHomeEnabled(false)
+    }
+
+    fun animateFadeIn() {
+        val root = findViewById<CoordinatorLayout>(R.id.rootCoordinator)
+        root.alpha = 0f
+        val fadeIn = ObjectAnimator.ofFloat(root, "alpha", 0f, 1f)
+        fadeIn.duration = resources.getInteger(android.R.integer.config_longAnimTime).toLong()
+        fadeIn.start()
     }
 }

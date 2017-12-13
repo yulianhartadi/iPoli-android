@@ -1,5 +1,6 @@
 package io.ipoli.android.quest.usecase
 
+import io.ipoli.android.common.SimpleReward
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.player.usecase.RemoveRewardFromPlayerUseCase
 import io.ipoli.android.quest.Quest
@@ -29,7 +30,7 @@ class UndoCompletedQuestUseCase(
             reminderScheduler.schedule(quests.first().reminder!!.toMillis())
         }
 
-        removeRewardFromPlayerUseCase.execute(newQuest)
+        removeRewardFromPlayerUseCase.execute(SimpleReward.of(newQuest))
 
         return newQuest
     }

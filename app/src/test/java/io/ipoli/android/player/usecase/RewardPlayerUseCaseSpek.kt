@@ -3,21 +3,18 @@ package io.ipoli.android.player.usecase
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.reset
 import io.ipoli.android.TestUtil
-import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.common.Reward
+import io.ipoli.android.common.SimpleReward
 import io.ipoli.android.pet.Food
 import io.ipoli.android.player.ExperienceForLevelGenerator
 import io.ipoli.android.player.Inventory
 import io.ipoli.android.player.LevelUpScheduler
 import io.ipoli.android.player.Player
-import io.ipoli.android.quest.Category
-import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.Reminder
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
-import org.threeten.bp.LocalDate
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -32,18 +29,11 @@ class RewardPlayerUseCaseSpek : Spek({
         val player = TestUtil.player()
         val pet = player.pet
 
-        fun executeUseCase(player: Player, quest: Quest): Player {
-            return RewardPlayerUseCase(TestUtil.playerRepoMock(player), levelUpScheduler).execute(quest)
+        fun executeUseCase(player: Player, reward: Reward): Player {
+            return RewardPlayerUseCase(TestUtil.playerRepoMock(player), levelUpScheduler).execute(reward)
         }
 
-        val quest = Quest(
-            name = "",
-            color = Color.BLUE,
-            category = Category("Wellness", Color.BLUE),
-            scheduledDate = LocalDate.now(),
-            duration = 30,
-            reminder = Reminder("", Time.now(), LocalDate.now())
-        )
+        val reward = SimpleReward(10, 10, Quest.Bounty.None)
 
         beforeEachTest {
             reset(levelUpScheduler)
@@ -53,7 +43,7 @@ class RewardPlayerUseCaseSpek : Spek({
             val xp = 10
             val coins = 5
             val newPlayer = executeUseCase(player,
-                quest.copy(experience = xp, coins = coins)
+                reward.copy(experience = xp, coins = coins)
             )
             newPlayer.coins.`should be`(player.coins + coins)
             newPlayer.experience.`should be`(player.experience + xp)
@@ -63,7 +53,7 @@ class RewardPlayerUseCaseSpek : Spek({
             val xp = (ExperienceForLevelGenerator.forLevel(player.level + 1) - player.experience + 1).toInt()
             val coins = 0
             val newPlayer = executeUseCase(player,
-                quest.copy(experience = xp, coins = coins)
+                reward.copy(experience = xp, coins = coins)
             )
             newPlayer.level.`should be`(player.level + 1)
             Verify on levelUpScheduler that levelUpScheduler.schedule() was called
@@ -72,7 +62,7 @@ class RewardPlayerUseCaseSpek : Spek({
         it("should give reward to the Pet") {
             val xp = 50
             val coins = 0
-            val newQuest = quest.copy(experience = xp, coins = coins)
+            val newQuest = reward.copy(experience = xp, coins = coins)
             val newPet = executeUseCase(player, newQuest).pet
             val petReward = pet.rewardFor(newQuest)
             newPet.healthPoints.`should be equal to`(petReward.healthPoints)
@@ -88,7 +78,7 @@ class RewardPlayerUseCaseSpek : Spek({
                 inventory = Inventory()
             )
             val newPlayer = executeUseCase(p,
-                quest.copy(
+                reward.copy(
                     experience = 10,
                     coins = 5,
                     bounty = Quest.Bounty.None
@@ -101,7 +91,7 @@ class RewardPlayerUseCaseSpek : Spek({
                 inventory = Inventory()
             )
             val newPlayer = executeUseCase(p,
-                quest.copy(
+                reward.copy(
                     experience = 10,
                     coins = 5,
                     bounty = Quest.Bounty.Food(Food.BANANA)

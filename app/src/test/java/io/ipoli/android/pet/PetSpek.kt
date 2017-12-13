@@ -1,8 +1,7 @@
 package io.ipoli.android.pet
 
 import io.ipoli.android.TestUtil
-import io.ipoli.android.quest.Category
-import io.ipoli.android.quest.Color
+import io.ipoli.android.common.SimpleReward
 import io.ipoli.android.quest.Quest
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be true`
@@ -10,7 +9,6 @@ import org.amshove.kluent.`should be`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
-import org.threeten.bp.LocalDate
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -26,14 +24,10 @@ class PetSpek : Spek({
             moodPoints = 0
         )
 
-        val quest = Quest(
-            name = "",
-            color = Color.BLUE,
-            scheduledDate = LocalDate.now(),
-            category = Category("", Color.BLUE_GREY),
-            duration = 30,
+        val reward = SimpleReward(
             experience = 100,
-            coins = 20
+            coins = 20,
+            bounty = Quest.Bounty.None
         )
 
         it("should not give more than max HP & MP") {
@@ -42,7 +36,7 @@ class PetSpek : Spek({
                 moodPoints = Pet.MAX_MP,
                 mood = PetMood.AWESOME
             )
-            val newPet = p.rewardFor(quest)
+            val newPet = p.rewardFor(reward)
             newPet.healthPoints.`should be equal to`(Pet.MAX_HP)
             newPet.moodPoints.`should be equal to`(Pet.MAX_MP)
         }
@@ -54,9 +48,9 @@ class PetSpek : Spek({
                 mood = PetMood.GOOD
             )
 
-            val normalIncrease = sickPet.rewardFor(quest).moodPoints - sickPet.moodPoints
+            val normalIncrease = sickPet.rewardFor(reward).moodPoints - sickPet.moodPoints
             val healthyPet = sickPet.copy(healthPoints = 90)
-            val bonusIncrease = healthyPet.rewardFor(quest).moodPoints - sickPet.moodPoints
+            val bonusIncrease = healthyPet.rewardFor(reward).moodPoints - sickPet.moodPoints
             bonusIncrease.`should be equal to`(normalIncrease * 2)
         }
 
@@ -65,7 +59,7 @@ class PetSpek : Spek({
                 healthPoints = 89,
                 moodPoints = 89,
                 mood = PetMood.HAPPY
-            ).rewardFor(quest)
+            ).rewardFor(reward)
             newPet.mood.`should be`(PetMood.AWESOME)
             newPet.experienceBonus.`should be equal to`(Pet.MAX_XP_BONUS)
             newPet.coinBonus.`should be equal to`(Pet.MAX_COIN_BONUS)
@@ -77,7 +71,7 @@ class PetSpek : Spek({
                 healthPoints = Pet.MAX_HP,
                 moodPoints = Pet.AWESOME_MIN_MOOD_POINTS,
                 mood = PetMood.AWESOME
-            ).removeRewardFor(quest)
+            ).removeReward(reward)
             newPet.mood.`should be`(PetMood.HAPPY)
         }
 

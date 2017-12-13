@@ -5,7 +5,9 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.reset
 import io.ipoli.android.TestUtil
+import io.ipoli.android.common.SimpleReward
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.pet.Food
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.player.usecase.RewardPlayerUseCase
 import io.ipoli.android.quest.*
@@ -138,6 +140,30 @@ class CompleteQuestUseCaseSpek : Spek({
 
             val newQuest = noChangeUseCase.execute(questId)
             newQuest.bounty.`should be`(Quest.Bounty.None)
+        }
+
+        it("should not give bounty when was already completed") {
+
+            val rewardPlayerUseCaseMock = mock<RewardPlayerUseCase>()
+
+            val xp = 10
+            val coins = 20
+            val noNewBountyUseCase = CompleteQuestUseCase(
+                createQuestRepository(quest.copy(
+                    experience = xp,
+                    coins = coins,
+                    bounty = Quest.Bounty.Food(Food.BANANA)
+                )),
+                playerRepo,
+                reminderScheduler,
+                questCompleteScheduler,
+                rewardPlayerUseCaseMock
+            )
+
+            val newQuest = noNewBountyUseCase.execute(questId)
+            newQuest.bounty.`should be instance of`(Quest.Bounty.Food::class)
+            val expectedReward = SimpleReward(xp, coins, Quest.Bounty.None)
+            Verify on rewardPlayerUseCaseMock that rewardPlayerUseCaseMock.execute(expectedReward) was called
         }
     }
 })
