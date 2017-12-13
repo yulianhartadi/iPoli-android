@@ -53,6 +53,7 @@ class AddQuestViewController(args: Bundle? = null) :
 
         view.questName.setOnEditTextImeBackListener(object : EditTextImeBackListener {
             override fun onImeBack(ctrl: EditTextBackEvent, text: String) {
+                resetForm(view)
                 closeListener()
                 view.questName.setOnEditTextImeBackListener(null)
             }
@@ -67,8 +68,7 @@ class AddQuestViewController(args: Bundle? = null) :
 
         view.duration.setImageDrawable(IconicsDrawable(view.context)
             .icon(GoogleMaterial.Icon.gmd_hourglass_empty)
-            .colorRes(R.color.md_black)
-            .alpha(122)
+            .colorRes(R.color.md_white)
             .sizeDp(22))
 
         view.scheduleDate.setOnClickListener {
@@ -214,13 +214,11 @@ class AddQuestViewController(args: Bundle? = null) :
     }
 
     private fun resetSelectedIcon(view: ImageView) {
-        view.drawable.alpha = Constants.MEDIUM_ALPHA
-        view.drawable.setTintList(null)
+        view.drawable.alpha = Constants.NO_TRANSPARENCY_ALPHA
     }
 
     private fun colorSelectedIcon(view: ImageView) {
-        view.drawable.alpha = Constants.NO_TRANSPARENCY_ALPHA
-        view.drawable.setTint(colorRes(R.color.colorAccent))
+        view.drawable.alpha = Constants.MEDIUM_ALPHA
     }
 
     override fun onDetach(view: View) {

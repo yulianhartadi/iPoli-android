@@ -735,7 +735,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private fun setupEditBackgroundView() {
         editModeBackground = View(context)
         editModeBackground.layoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        editModeBackground.setBackgroundResource(R.color.md_dark_text_12)
+        editModeBackground.setBackgroundResource(R.color.md_dark_text_26)
         editModeBackground.visibility = View.GONE
         addView(editModeBackground)
     }
