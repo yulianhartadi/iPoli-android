@@ -1,11 +1,13 @@
 package io.ipoli.android.theme
 
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.view.PagerAdapter
 import android.view.*
 import android.widget.Toast
+import io.ipoli.android.Constants
 import io.ipoli.android.MainActivity
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
@@ -89,7 +91,15 @@ class ThemeStoreViewController(args: Bundle? = null) :
             }
 
             THEME_CHANGED -> {
-
+                val pm = PreferenceManager.getDefaultSharedPreferences(activity!!)
+                pm.registerOnSharedPreferenceChangeListener { _, key ->
+                    if (key == Constants.KEY_THEME) {
+                        val intent = Intent(activity!!, MainActivity::class.java)
+                        activity!!.startActivity(intent)
+                        activity!!.finish()
+                    }
+                }
+                pm.edit().putString(Constants.KEY_THEME, state.theme!!.name).apply()
             }
 
             THEME_BOUGHT -> {
@@ -144,10 +154,6 @@ class ThemeStoreViewController(args: Bundle? = null) :
                     action.text = stringRes(R.string.store_theme_in_inventory)
                     action.setOnClickListener {
                         send(ChangeThemeIntent(vm.theme))
-                        val pm = PreferenceManager.getDefaultSharedPreferences(activity!!)
-                        pm.edit().putString("currentTheme", theme.name).commit()
-
-                        activity!!.recreate()
                     }
                 }
                 else -> {

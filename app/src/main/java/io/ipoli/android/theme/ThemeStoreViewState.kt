@@ -18,6 +18,7 @@ data class ChangeThemeIntent(val theme : Theme) : ThemeStoreIntent()
 
 data class ThemeStoreViewState(
     val type: StateType = StateType.DATA_LOADED,
+    val theme: Theme? = null,
     val viewModels: List<ThemeViewModel> = listOf()
 ) : ViewState {
     enum class StateType {

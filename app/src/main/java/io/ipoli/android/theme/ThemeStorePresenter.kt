@@ -27,6 +27,7 @@ class ThemeStorePresenter(
     ThemeStoreViewState(LOADING),
     coroutineContext
 ) {
+
     override fun reduceState(intent: ThemeStoreIntent, state: ThemeStoreViewState) =
         when (intent) {
             is LoadDataIntent -> {
@@ -42,9 +43,11 @@ class ThemeStorePresenter(
             }
 
             is ChangePlayerIntent -> {
+                val player = intent.player
                 state.copy(
                     type = PLAYER_CHANGED,
-                    viewModels = createThemeViewModels(intent.player)
+                    theme = player.currentTheme,
+                    viewModels = createThemeViewModels(player)
                 )
             }
 
@@ -63,7 +66,8 @@ class ThemeStorePresenter(
             is ChangeThemeIntent -> {
                 changeThemeUseCase.execute(intent.theme)
                 state.copy(
-                    type = THEME_CHANGED
+                    type = THEME_CHANGED,
+                    theme = intent.theme
                 )
             }
         }
