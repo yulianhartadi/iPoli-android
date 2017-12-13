@@ -185,6 +185,10 @@ class DayViewController :
                 }).show(router)
             }
 
+            NEW_EVENT_REMOVED -> {
+
+            }
+
             COLOR_PICKED -> {
                 colorPickListener = { showColorPicker(state.color) }
                 val dragView = view.dragContainer
