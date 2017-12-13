@@ -62,6 +62,7 @@ class DayViewPresenter(
             is AddNewScheduledQuestIntent -> {
                 state.copy(
                     type = ADD_NEW_SCHEDULED_QUEST,
+                    editId = "",
                     name = "",
                     color = AndroidColor.GREEN,
                     icon = null,
@@ -113,7 +114,6 @@ class DayViewPresenter(
                 }
 
                 val questParams = SaveQuestUseCase.Parameters(
-                    id = state.editId,
                     name = state.name,
                     color = color,
                     icon = icon,
