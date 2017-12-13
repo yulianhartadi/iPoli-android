@@ -121,7 +121,6 @@ class DayViewController :
     override fun createPresenter() = presenter
 
     override fun render(state: DayViewState, view: View) {
-
         when (state.type) {
             SCHEDULE_LOADED -> {
                 eventsAdapter = QuestScheduledEventsAdapter(activity!!, state.scheduledQuests, calendarDayView)
