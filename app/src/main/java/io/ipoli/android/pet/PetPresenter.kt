@@ -85,6 +85,7 @@ class PetPresenter(
                     avatar = pet.avatar,
                     mood = pet.mood,
                     isDead = pet.isDead,
+                    playerCoins = intent.player.coins,
                     foodViewModels = createFoodViewModels(food)
                 )
             }

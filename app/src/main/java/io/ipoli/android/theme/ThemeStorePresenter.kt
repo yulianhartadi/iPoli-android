@@ -47,6 +47,7 @@ class ThemeStorePresenter(
                 state.copy(
                     type = PLAYER_CHANGED,
                     theme = player.currentTheme,
+                    playerCoins = player.coins,
                     viewModels = createThemeViewModels(player)
                 )
             }
