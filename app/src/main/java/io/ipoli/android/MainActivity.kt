@@ -39,9 +39,11 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         super.onCreate(savedInstanceState)
 
         val pm = PreferenceManager.getDefaultSharedPreferences(this)
-        if (pm.contains("currentTheme")) {
-            val themeName = pm.getString("currentTheme", "")
-            setTheme(AndroidTheme.valueOf(themeName).style)
+        if (pm.contains(Constants.KEY_THEME)) {
+            val themeName = pm.getString(Constants.KEY_THEME, "")
+            if (themeName.isNotEmpty()) {
+                setTheme(AndroidTheme.valueOf(themeName).style)
+            }
         }
 
         setContentView(R.layout.activity_main)
