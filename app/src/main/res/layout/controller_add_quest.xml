@@ -5,7 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/md_white">
+    android:background="?attr/colorPrimary">
 
     <io.ipoli.android.common.view.EditTextBackEvent
         android:id="@+id/questName"
@@ -14,6 +14,8 @@
         android:layout_marginBottom="8dp"
         android:backgroundTint="@android:color/transparent"
         android:hint="e.g. Go for a run"
+        android:textColor="@color/md_white"
+        android:textColorHint="@color/md_light_text_54"
         android:imeOptions="actionDone"
         android:inputType="textCapSentences"
         android:paddingEnd="16dp"

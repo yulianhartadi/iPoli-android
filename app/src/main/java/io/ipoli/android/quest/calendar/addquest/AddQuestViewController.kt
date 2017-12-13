@@ -9,8 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
-import com.bluelinelabs.conductor.ControllerChangeHandler
-import com.bluelinelabs.conductor.ControllerChangeType
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.Constants
@@ -42,6 +40,12 @@ class AddQuestViewController(args: Bundle? = null) :
 
     private val presenter by required { addQuestPresenter }
 
+    private var closeListener: () -> Unit = {}
+
+    constructor(closeListener: () -> Unit) : this() {
+        this.closeListener = closeListener
+    }
+
     override fun createPresenter() = presenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
@@ -49,7 +53,8 @@ class AddQuestViewController(args: Bundle? = null) :
 
         view.questName.setOnEditTextImeBackListener(object : EditTextImeBackListener {
             override fun onImeBack(ctrl: EditTextBackEvent, text: String) {
-                close()
+                closeListener()
+                view.questName.setOnEditTextImeBackListener(null)
             }
         })
 
@@ -218,15 +223,16 @@ class AddQuestViewController(args: Bundle? = null) :
         view.drawable.setTint(colorRes(R.color.colorAccent))
     }
 
-    override fun onChangeEnded(changeHandler: ControllerChangeHandler, changeType: ControllerChangeType) {
-        super.onChangeEnded(changeHandler, changeType)
-        view!!.questName.requestFocus()
-        ViewUtils.showKeyboard(view!!.questName.context, view!!.questName)
-    }
-
-    private fun close() {
-        resetForm(view!!)
+    override fun onDetach(view: View) {
+        super.onDetach(view)
         router.popController(this)
     }
 
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        view.postDelayed({
+            view.questName.requestFocus()
+            ViewUtils.showKeyboard(view.questName.context, view.questName)
+        }, shortAnimTime)
+    }
 }

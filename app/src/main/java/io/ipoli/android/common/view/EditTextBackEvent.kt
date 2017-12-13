@@ -22,13 +22,12 @@ class EditTextBackEvent : AppCompatEditText {
 
     override fun onKeyPreIme(keyCode: Int, event: KeyEvent): Boolean {
         if (event.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
-            if (onImeBackListener != null)
-                onImeBackListener!!.onImeBack(this, this.text.toString())
+            onImeBackListener?.onImeBack(this, this.text.toString())
         }
         return super.dispatchKeyEvent(event)
     }
 
-    fun setOnEditTextImeBackListener(listener: EditTextImeBackListener) {
+    fun setOnEditTextImeBackListener(listener: EditTextImeBackListener?) {
         onImeBackListener = listener
     }
 

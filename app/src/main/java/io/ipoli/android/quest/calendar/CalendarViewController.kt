@@ -127,14 +127,9 @@ class CalendarViewController(args: Bundle? = null) :
                 fab.visibility = View.INVISIBLE
                 val handler = CircularRevealChangeHandler(addContainer, addContainer, duration = 200)
                 val childRouter = getChildRouter(view!!.addContainer, "add-quest")
-                val addQuestViewController = AddQuestViewController()
-
-                addQuestViewController.addLifecycleListener(object : LifecycleListener() {
-                    override fun postDestroy(controller: Controller) {
-                        super.postDestroy(controller)
-                        closeAddContainer()
-                    }
-
+                val addQuestViewController = AddQuestViewController({
+                    childRouter.popCurrentController()
+                    closeAddContainer()
                 })
 
                 childRouter.setRoot(
@@ -163,6 +158,9 @@ class CalendarViewController(args: Bundle? = null) :
         revealAnim.addListener(object : AnimatorListenerAdapter() {
 
             override fun onAnimationEnd(animation: Animator?) {
+                if (view == null) {
+                    return
+                }
                 addContainer.visibility = View.INVISIBLE
                 view!!.addContainer.requestFocus()
                 fab.visibility = View.VISIBLE
