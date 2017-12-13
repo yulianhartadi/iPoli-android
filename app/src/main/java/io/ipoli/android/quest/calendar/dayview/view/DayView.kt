@@ -71,6 +71,7 @@ data class DayViewState(
         EDIT_QUEST,
         EVENT_UPDATED,
         EVENT_VALIDATION_ERROR,
+        NEW_EVENT_REMOVED,
         EVENT_REMOVED,
         UNDO_REMOVED_EVENT,
         QUEST_COMPLETED,

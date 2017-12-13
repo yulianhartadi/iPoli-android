@@ -197,7 +197,9 @@ class DayViewPresenter(
                 unscheduledQuests.find { it.id == eventId }?.let { unscheduledQuests.remove(it) }
                 removeQuestUseCase.execute(eventId)
                 if (eventId.isEmpty()) {
-                    state
+                    state.copy(
+                        type = NEW_EVENT_REMOVED
+                    )
                 } else {
                     state.copy(
                         type = DayViewState.StateType.EVENT_REMOVED,
