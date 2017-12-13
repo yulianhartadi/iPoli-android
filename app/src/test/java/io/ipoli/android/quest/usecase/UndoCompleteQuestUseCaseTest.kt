@@ -34,7 +34,8 @@ class UndoCompleteQuestUseCaseSpek : Spek({
             duration = 30,
             reminder = Reminder("", Time.now(), LocalDate.now()),
             experience = 20,
-            coins = 10
+            coins = 10,
+            bounty = Quest.Bounty.None
         )
 
         var questRepo = mock<QuestRepository>()
