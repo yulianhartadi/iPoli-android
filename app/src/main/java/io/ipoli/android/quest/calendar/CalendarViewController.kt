@@ -21,7 +21,9 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.ipoli.android.R
+import io.ipoli.android.R.id.addContainerBackground
 import io.ipoli.android.R.id.calendarIndicator
+import io.ipoli.android.R.string.view
 import io.ipoli.android.common.ViewUtils
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
@@ -114,6 +116,7 @@ class CalendarViewController(args: Bundle? = null) :
 
     private fun openAddContainer() {
         val addContainer = view!!.addContainer
+
         val fab = view!!.addQuest
 
         val halfWidth = addContainer.width / 2
@@ -125,8 +128,12 @@ class CalendarViewController(args: Bundle? = null) :
             override fun onAnimationEnd(animation: Animator?) {
                 addContainer.visibility = View.VISIBLE
                 fab.visibility = View.INVISIBLE
-                val handler = CircularRevealChangeHandler(addContainer, addContainer, duration = 200)
+
+                animateShowAddContainer()
+
+                val handler = CircularRevealChangeHandler(addContainer, addContainer, duration = shortAnimTime)
                 val childRouter = getChildRouter(view!!.addContainer, "add-quest")
+//                childRouter.setPopsLastView(true)
                 val addQuestViewController = AddQuestViewController({
                     childRouter.popCurrentController()
                     closeAddContainer()
@@ -137,12 +144,19 @@ class CalendarViewController(args: Bundle? = null) :
                         .pushChangeHandler(handler)
                         .popChangeHandler(handler)
                 )
-
             }
         })
     }
 
+    private fun animateShowAddContainer() {
+        val addContainerBackground = view!!.addContainerBackground
+        addContainerBackground.alpha = 0f
+        addContainerBackground.visibility = View.VISIBLE
+        addContainerBackground.animate().alpha(1f).setDuration(longAnimTime).start()
+    }
+
     private fun closeAddContainer() {
+        view!!.addContainerBackground.visibility = View.GONE
         val duration = view!!.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
         val addContainer = view!!.addContainer
         val fab = view!!.addQuest
@@ -182,11 +196,11 @@ class CalendarViewController(args: Bundle? = null) :
         val duration = view!!.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
         val fabTranslation = ObjectAnimator.ofFloat(fab, "x", x)
 
-        val fabColor = ContextCompat.getColor(fab.context, R.color.colorAccent)
-        val whiteColor = ContextCompat.getColor(fab.context, R.color.md_white)
+        val fabColor = attr(R.attr.colorAccent)
+        val primaryColor = attr(R.attr.colorPrimary)
 
-        val startColor = if (reverse) whiteColor else fabColor
-        val endColor = if (reverse) fabColor else whiteColor
+        val startColor = if (reverse) primaryColor else fabColor
+        val endColor = if (reverse) fabColor else primaryColor
 
         val rgbAnim = ObjectAnimator.ofArgb(
             fab,
