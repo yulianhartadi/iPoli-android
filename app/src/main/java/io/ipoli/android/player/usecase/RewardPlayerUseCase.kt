@@ -1,5 +1,6 @@
 package io.ipoli.android.player.usecase
 
+import io.ipoli.android.common.Reward
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.player.LevelUpScheduler
 import io.ipoli.android.player.Player
@@ -13,26 +14,29 @@ import io.ipoli.android.quest.Quest
 open class RewardPlayerUseCase(
     private val playerRepository: PlayerRepository,
     private val levelUpScheduler: LevelUpScheduler
-) : UseCase<Quest, Player> {
-    override fun execute(parameters: Quest): Player {
-        requireNotNull(parameters.experience)
-        requireNotNull(parameters.coins)
+) : UseCase<Reward, Player> {
+
+    override fun execute(parameters: Reward): Player {
+        val reward = parameters
+        requireNotNull(reward.experience)
+        requireNotNull(reward.coins)
         val player = playerRepository.find()
         requireNotNull(player)
 
-        val newPet = player!!.pet.rewardFor(parameters)
+        val newPet = player!!.pet.rewardFor(reward)
 
         val inventory = player.inventory.let {
-            if (parameters.bounty is Quest.Bounty.Food) {
-                it.addFood(parameters.bounty.food)
+            val bounty = reward.bounty
+            if (bounty is Quest.Bounty.Food) {
+                it.addFood(bounty.food)
             } else {
                 it
             }
         }
 
         val newPlayer = player
-            .addExperience(parameters.experience!!)
-            .addCoins(parameters.coins!!)
+            .addExperience(reward.experience)
+            .addCoins(reward.coins)
             .copy(
                 pet = newPet,
                 inventory = inventory

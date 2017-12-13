@@ -1,10 +1,10 @@
 package io.ipoli.android.player.usecase
 
+import io.ipoli.android.common.Reward
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.player.LevelDownScheduler
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.persistence.PlayerRepository
-import io.ipoli.android.quest.Quest
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -13,17 +13,17 @@ import io.ipoli.android.quest.Quest
 open class RemoveRewardFromPlayerUseCase(
     private val playerRepository: PlayerRepository,
     private val levelDownScheduler: LevelDownScheduler
-) : UseCase<Quest, Player> {
-    override fun execute(parameters: Quest): Player {
+) : UseCase<Reward, Player> {
+    override fun execute(parameters: Reward): Player {
         val player = playerRepository.find()
         requireNotNull(player)
-        val newPet = player!!.pet.removeRewardFor(parameters)
+        val newPet = player!!.pet.removeReward(parameters)
         val newPlayer = player
-            .removeExperience(parameters.experience!!)
-            .removeCoins(parameters.coins!!)
+            .removeExperience(parameters.experience)
+            .removeCoins(parameters.coins)
             .copy(pet = newPet)
         playerRepository.save(newPlayer)
-        if(player.level != newPlayer.level) {
+        if (player.level != newPlayer.level) {
             levelDownScheduler.schedule()
         }
         return newPlayer
