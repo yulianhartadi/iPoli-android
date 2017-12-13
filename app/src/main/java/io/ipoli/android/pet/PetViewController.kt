@@ -50,6 +50,9 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         )
 
         view.foodList.layoutManager = LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
+        view.foodList.post {
+            view.foodList.x = view.width.toFloat()
+        }
 
         return view
     }
