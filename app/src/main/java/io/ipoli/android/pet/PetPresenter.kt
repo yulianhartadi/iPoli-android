@@ -4,10 +4,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.pet.PetViewState.StateType.*
-import io.ipoli.android.pet.usecase.FeedPetUseCase
-import io.ipoli.android.pet.usecase.Parameters
-import io.ipoli.android.pet.usecase.Result
-import io.ipoli.android.pet.usecase.RevivePetUseCase
+import io.ipoli.android.pet.usecase.*
 import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
@@ -20,6 +17,7 @@ import kotlin.coroutines.experimental.CoroutineContext
 class PetPresenter(
     private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
     private val feedPetUseCase: FeedPetUseCase,
+    private val renamePetUseCase: RenamePetUseCase,
     private val revivePetUseCase: RevivePetUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<PetViewState>, PetViewState, PetIntent>(
@@ -98,6 +96,7 @@ class PetPresenter(
             }
 
             is RenamePetIntent -> {
+                renamePetUseCase.execute(RenamePetUseCase.Params(intent.name))
                 state.copy(
                     type = PET_RENAMED,
                     petName = intent.name
