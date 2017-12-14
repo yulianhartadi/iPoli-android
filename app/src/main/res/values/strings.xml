@@ -996,6 +996,8 @@
     <string name="store_current_theme">Current theme</string>
     <string name="store_buy_theme">Buy now</string>
     <string name="store_theme_in_inventory">Pick me</string>
+    <string name="undo">undo</string>
+    <string name="remove_quest_undo_message">Quest removed</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
