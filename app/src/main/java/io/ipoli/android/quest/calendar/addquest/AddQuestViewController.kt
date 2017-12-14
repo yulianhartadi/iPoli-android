@@ -190,9 +190,6 @@ class AddQuestViewController(args: Bundle? = null) :
         }
 
         state.duration?.let {
-            view.duration.setImageDrawable(IconicsDrawable(view.context)
-                .icon(GoogleMaterial.Icon.gmd_hourglass_full)
-                .sizeDp(22))
             colorSelectedIcon(view.duration)
         }
 
