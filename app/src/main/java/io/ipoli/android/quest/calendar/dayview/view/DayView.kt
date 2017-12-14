@@ -83,6 +83,7 @@ data class DayViewState(
         UNDO_QUEST_COMPLETED,
         EDIT_VIEW_DRAGGED,
         EDIT_VIEW_NAME_CHANGED,
-        PLAYER_CHANGED
+        PLAYER_CHANGED,
+        REMINDER_PICKED
     }
 }

@@ -45,7 +45,6 @@ import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
-import timber.log.Timber
 
 class DayViewController :
     MviViewController<DayViewState, DayViewController, DayViewPresenter, DayViewIntent>,
@@ -123,7 +122,6 @@ class DayViewController :
     override fun createPresenter() = presenter
 
     override fun render(state: DayViewState, view: View) {
-        Timber.d("AAA render ${state.type}")
         when (state.type) {
             SCHEDULE_LOADED -> {
                 eventsAdapter = QuestScheduledEventsAdapter(activity!!, state.scheduledQuests, calendarDayView)
@@ -246,6 +244,10 @@ class DayViewController :
                     dragView.dragEndTime.visibility = View.VISIBLE
                     dragView.dragEndTime.text = state.endTime.toString()
                 }
+            }
+
+            REMINDER_PICKED -> {
+
             }
         }
     }

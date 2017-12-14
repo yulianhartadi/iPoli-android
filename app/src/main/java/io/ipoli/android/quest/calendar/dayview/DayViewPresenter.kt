@@ -233,7 +233,10 @@ class DayViewPresenter(
             }
 
             is ReminderPickedIntent -> {
-                state.copy(reminder = intent.reminder)
+                state.copy(
+                    type = REMINDER_PICKED,
+                    reminder = intent.reminder
+                )
             }
 
             is IconPickedIntent -> {
