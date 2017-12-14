@@ -30,19 +30,24 @@ data class Category(
     val color: Color
 )
 
-enum class Color {
-    RED,
-    GREEN,
-    BLUE,
-    PURPLE,
-    BROWN,
-    ORANGE,
-    PINK,
-    TEAL,
-    DEEP_ORANGE,
-    INDIGO,
-    BLUE_GREY,
-    LIME
+enum class ColorPack(val price: Int) {
+    FREE(0),
+    PACK_BASE(300)
+}
+
+enum class Color(val pack: ColorPack) {
+    RED(ColorPack.FREE),
+    GREEN(ColorPack.FREE),
+    BLUE(ColorPack.FREE),
+    PURPLE(ColorPack.FREE),
+    BROWN(ColorPack.PACK_BASE),
+    ORANGE(ColorPack.PACK_BASE),
+    PINK(ColorPack.PACK_BASE),
+    TEAL(ColorPack.PACK_BASE),
+    DEEP_ORANGE(ColorPack.PACK_BASE),
+    INDIGO(ColorPack.PACK_BASE),
+    BLUE_GREY(ColorPack.PACK_BASE),
+    LIME(ColorPack.PACK_BASE)
 }
 
 enum class Icon {

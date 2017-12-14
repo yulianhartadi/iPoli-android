@@ -9,6 +9,7 @@ import com.couchbase.lite.Database
 import com.couchbase.lite.DatabaseConfiguration
 import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.text.CalendarFormatter
+import io.ipoli.android.common.view.ColorDialogPresenter
 import io.ipoli.android.home.HomePresenter
 import io.ipoli.android.pet.AndroidJobLowerPetStatsScheduler
 import io.ipoli.android.pet.LowerPetStatsScheduler
@@ -219,6 +220,7 @@ interface PresenterModule {
     val petStorePresenter: PetStorePresenter
     val petDialogPresenter: PetDialogPresenter
     val themeStorePresenter: ThemeStorePresenter
+    val colorDialogPresenter: ColorDialogPresenter
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
@@ -251,6 +253,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val petStorePresenter get() = PetStorePresenter(listenForPlayerChangesUseCase, buyPetUseCase, changePetUseCase, job)
     override val petDialogPresenter get() = PetDialogPresenter(findPetUseCase, job)
     override val themeStorePresenter get() = ThemeStorePresenter(listenForPlayerChangesUseCase, changeThemeUseCase, buyThemeUseCase, job)
+    override val colorDialogPresenter get() = ColorDialogPresenter(listenForPlayerChangesUseCase, job)
 }
 
 class ControllerModule(androidModule: AndroidModule,
