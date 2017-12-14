@@ -4,6 +4,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.pet.Food
 import io.ipoli.android.pet.Pet
 import io.ipoli.android.pet.PetAvatar
+import io.ipoli.android.quest.ColorPack
 import io.ipoli.android.quest.Entity
 import io.ipoli.android.store.avatars.data.Avatar
 import org.threeten.bp.LocalDateTime
@@ -26,7 +27,8 @@ data class Player(
             Food.BANANA to 1
         ),
         pets = setOf(InventoryPet.fromPet(pet)),
-        themes = setOf(currentTheme)
+        themes = setOf(currentTheme),
+        colorPacks = setOf(ColorPack.FREE)
     )
 ) : Entity {
     fun addExperience(experience: Int): Player {
@@ -85,7 +87,8 @@ data class InventoryPet(val name: String, val avatar: PetAvatar) {
 data class Inventory(
     val food: Map<Food, Int> = mapOf(),
     val pets: Set<InventoryPet> = setOf(),
-    val themes: Set<Theme> = setOf()
+    val themes: Set<Theme> = setOf(),
+    val colorPacks: Set<ColorPack> = setOf()
 ) {
     fun addFood(food: Food): Inventory {
         val quantity = this.food.let {
