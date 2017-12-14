@@ -62,7 +62,7 @@ data class DayViewState(
     val color: AndroidColor? = null,
     val reminder: ReminderViewModel? = null,
     val icon: AndroidIcon? = null,
-    val petAvatar: PetAvatar? = null
+    val petAvatar: PetAvatar = PetAvatar.ELEPHANT
 ) : ViewState {
 
     enum class StateType {
