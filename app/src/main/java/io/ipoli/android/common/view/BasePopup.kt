@@ -6,6 +6,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.PixelFormat
+import android.os.Build
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.*
@@ -35,7 +36,11 @@ class PopupBackgroundLayout : RelativeLayout {
     }
 }
 
-abstract class BasePopup(private val isAutoHide: Boolean = false) {
+abstract class BasePopup(private val isAutoHide: Boolean = false, private val position: Position = Position.CENTER) {
+
+    enum class Position {
+        CENTER, TOP, BOTTOM
+    }
 
     private lateinit var overlayView: PopupBackgroundLayout
     private lateinit var contentView: ViewGroup
@@ -58,7 +63,17 @@ abstract class BasePopup(private val isAutoHide: Boolean = false) {
         val contentLp = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
         contentLp.marginStart = ViewUtils.dpToPx(24f, context).toInt()
         contentLp.marginEnd = ViewUtils.dpToPx(24f, context).toInt()
-        contentLp.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
+        when (position) {
+            Position.CENTER -> contentLp.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
+            Position.TOP -> {
+                contentLp.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE)
+                contentLp.topMargin = ViewUtils.dpToPx(24f, context).toInt()
+            }
+            else -> {
+                contentLp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE)
+                contentLp.bottomMargin = ViewUtils.dpToPx(24f, context).toInt()
+            }
+        }
 
         overlayView.addView(contentView, contentLp)
 
@@ -128,7 +143,7 @@ abstract class BasePopup(private val isAutoHide: Boolean = false) {
         val layoutParams = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT,
-            BaseOverlayViewController.WindowOverlayCompat.TYPE_SYSTEM_ERROR,
+            WindowOverlayCompat.TYPE_SYSTEM_ERROR,
             focusable,
             PixelFormat.TRANSLUCENT)
 
@@ -152,5 +167,12 @@ abstract class BasePopup(private val isAutoHide: Boolean = false) {
         overlayView.setOnClickListener(null)
         overlayView.isClickable = false
         playExitAnimation(contentView)
+    }
+
+    internal object WindowOverlayCompat {
+        private val ANDROID_OREO = 26
+        private val TYPE_APPLICATION_OVERLAY = 2038
+
+        val TYPE_SYSTEM_ERROR = if (Build.VERSION.SDK_INT < ANDROID_OREO) WindowManager.LayoutParams.TYPE_SYSTEM_ERROR else TYPE_APPLICATION_OVERLAY
     }
 }

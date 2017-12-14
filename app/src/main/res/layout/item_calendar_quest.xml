@@ -51,7 +51,7 @@
         android:layout_marginBottom="2dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:textColor="@color/md_dark_text_54"
+        android:textColor="@color/md_light_text_87"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="10:30" />
@@ -64,7 +64,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="2dp"
-        android:textColor="@color/md_dark_text_54"
+        android:textColor="@color/md_light_text_87"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="12:30" />

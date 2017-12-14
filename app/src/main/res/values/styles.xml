@@ -72,6 +72,15 @@
         <item name="android:navigationBarColor">@color/md_deep_orange_500</item>
     </style>
 
+    <style name="Theme.myPoli.Blue_Grey" parent="Theme.myPoli.Base">
+        <item name="colorPrimary">@color/md_blue_grey_500</item>
+        <item name="colorPrimaryDark">@color/md_blue_grey_700</item>
+        <item name="colorAccent">@color/md_deep_orange_A400</item>
+        <item name="alertDialogTheme">@style/Theme.iPoli.AlertDialog</item>
+        <item name="drawerArrowStyle">@style/WhiteDrawerIconStyle</item>
+        <item name="android:navigationBarColor">@color/md_blue_grey_500</item>
+    </style>
+
     <style name="Theme.iPoli.White" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/md_white</item>
         <item name="colorPrimaryDark">@color/md_grey_300</item>

@@ -12,7 +12,7 @@ import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnticipateInterpolator
 import io.ipoli.android.R
-import io.ipoli.android.common.view.BaseOverlayViewController
+import io.ipoli.android.common.view.BasePopup
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.Pet
 import kotlinx.android.synthetic.main.view_reminder.view.*
@@ -103,7 +103,7 @@ class ReminderNotificationPopup(private val viewModel: ReminderNotificationViewM
         val layoutParams = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT,
-            BaseOverlayViewController.WindowOverlayCompat.TYPE_SYSTEM_ERROR,
+            BasePopup.WindowOverlayCompat.TYPE_SYSTEM_ERROR,
             focusable,
             PixelFormat.TRANSLUCENT)
 
