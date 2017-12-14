@@ -10,5 +10,6 @@ enum class Theme(val price: Int) {
     PINK(500),
     GREEN(500),
     BLUE(500),
-    PURPLE(500)
+    PURPLE(500),
+    BLUE_GREY(price = 500)
 }

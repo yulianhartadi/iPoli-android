@@ -44,6 +44,7 @@ import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 class DayViewController :
     MviViewController<DayViewState, DayViewController, DayViewPresenter, DayViewIntent>,
@@ -121,6 +122,7 @@ class DayViewController :
     override fun createPresenter() = presenter
 
     override fun render(state: DayViewState, view: View) {
+        Timber.d("AAA render ${state.type}")
         when (state.type) {
             SCHEDULE_LOADED -> {
                 eventsAdapter = QuestScheduledEventsAdapter(activity!!, state.scheduledQuests, calendarDayView)
@@ -182,7 +184,7 @@ class DayViewController :
                     override fun onClick() {
                         sendUndoRemovedEventIntent(state.removedEventId)
                     }
-                }).show(router)
+                }).show(view.context)
             }
 
             NEW_EVENT_REMOVED -> {
@@ -440,30 +442,49 @@ class DayViewController :
             view.startTime.text = vm.startTime
             view.endTime.text = vm.endTime
 
-            view.backgroundView.setBackgroundColor(colorRes(vm.backgroundColor.color200))
+            view.backgroundView.setBackgroundColor(colorRes(vm.backgroundColor.color500))
 
             if (vm.isCompleted) {
                 val span = SpannableString(vm.name)
                 span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
                 view.questName.text = span
+                view.questName.setTextColor(colorRes(R.color.md_dark_text_54))
+
+                view.startTime.setTextColor(colorRes(R.color.md_dark_text_54))
+                view.endTime.setTextColor(colorRes(R.color.md_dark_text_54))
+
                 view.questCategoryIndicator.setBackgroundResource(R.color.md_grey_500)
                 view.checkBox.isChecked = true
                 (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(R.color.md_grey_700)
                 view.completedBackgroundView.visibility = View.VISIBLE
-            } else {
-                view.questName.text = vm.name
-                view.questName.setTextColor(ContextCompat.getColor(context, vm.textColor))
+
                 vm.icon?.let {
                     val icon = IconicsDrawable(context)
                         .icon(it.icon)
-                        .colorRes(it.color)
+                        .colorRes(R.color.md_dark_text_26)
+                        .sizeDp(24)
+                    view.questName.setCompoundDrawablesRelative(icon, null, null, null)
+                    view.questName.compoundDrawablePadding = ViewUtils.dpToPx(8f, context).toInt()
+                }
+
+
+            } else {
+                view.questName.text = vm.name
+                view.questName.setTextColor(colorRes(R.color.md_white))
+                view.startTime.setTextColor(colorRes(R.color.md_light_text_87))
+                view.endTime.setTextColor(colorRes(R.color.md_light_text_87))
+
+                vm.icon?.let {
+                    val icon = IconicsDrawable(context)
+                        .icon(it.icon)
+                        .colorRes(R.color.md_light_text_87)
                         .sizeDp(24)
                     view.questName.setCompoundDrawablesRelative(icon, null, null, null)
                     view.questName.compoundDrawablePadding = ViewUtils.dpToPx(8f, context).toInt()
                 }
 
                 view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color700)
-                (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color500)
+                (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(R.color.md_light_text_54)
                 view.completedBackgroundView.visibility = View.INVISIBLE
             }
 

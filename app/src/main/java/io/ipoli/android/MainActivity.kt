@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
 
         if (playerRepository.find() == null) {
             val player = Player(
-                coins = 1000,
+                coins = 1500,
                 authProvider = AuthProvider(provider = ProviderType.ANONYMOUS.name)
             )
             playerRepository.save(player)

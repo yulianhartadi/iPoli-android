@@ -992,6 +992,7 @@
     <string name="theme_green">Nature Calls</string>
     <string name="theme_blue">Blue Lagoon</string>
     <string name="theme_purple">Dreamland</string>
+    <string name="theme_blue_grey">Silver Mist</string>
     <string name="store_current_theme">Current theme</string>
     <string name="store_buy_theme">Buy now</string>
     <string name="store_theme_in_inventory">Pick me</string>
