@@ -12,21 +12,21 @@
         android:layout_centerVertical="true" />
 
     <ImageView
-        android:id="@+id/pet"
+        android:id="@+id/petHead"
         android:layout_width="42dp"
         android:layout_height="42dp"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
-        android:src="@drawable/pet_5_head" />
+        android:layout_marginStart="16dp" />
 
     <TextView
+        android:id="@+id/petMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginStart="8dp"
-        android:layout_toEndOf="@id/pet"
+        android:layout_toEndOf="@id/petHead"
         android:layout_toStartOf="@id/undoAction"
         android:textColor="@color/md_white"
         tools:text="How ya doing?" />
@@ -40,6 +40,6 @@
         android:layout_centerVertical="true"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="UNDO"
+        android:text="@string/undo"
         android:textColor="@color/md_white" />
 </RelativeLayout>

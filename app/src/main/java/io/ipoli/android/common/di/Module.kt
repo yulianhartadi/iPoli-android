@@ -243,7 +243,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val calendarFormatter by required { calendarFormatter }
     private val job by required { job }
     override val homePresenter get() = HomePresenter(job)
-    override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, undoRemoveQuestUseCase, completeQuestUseCase, undoCompleteQuestUseCase, job)
+    override val dayViewPresenter get() = DayViewPresenter(listenForPlayerChangesUseCase, loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, undoRemoveQuestUseCase, completeQuestUseCase, undoCompleteQuestUseCase, job)
     override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter, findPetUseCase, job)
     override val calendarPresenter get() = CalendarPresenter(listenForPlayerChangesUseCase, calendarFormatter, job)
     override val addQuestPresenter get() = AddQuestPresenter(saveQuestUseCase, job)

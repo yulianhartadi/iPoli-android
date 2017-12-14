@@ -29,6 +29,7 @@ import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.*
+import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.quest.calendar.CalendarViewController
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
@@ -132,6 +133,10 @@ class DayViewController :
                 updateUnscheduledQuestsHeight(view)
             }
 
+            PLAYER_CHANGED -> {
+
+            }
+
             ADD_NEW_SCHEDULED_QUEST -> {
 
                 colorPickListener = { showColorPicker(state.color) }
@@ -180,11 +185,11 @@ class DayViewController :
             }
 
             EVENT_REMOVED -> {
-                PetMessageViewController(object : PetMessageViewController.UndoClickedListener {
-                    override fun onClick() {
-                        sendUndoRemovedEventIntent(state.removedEventId)
-                    }
-                }).show(view.context)
+                PetMessagePopup(
+                    stringRes(R.string.remove_quest_undo_message),
+                    AndroidPetAvatar.valueOf(state.petAvatar!!.name),
+                    { sendUndoRemovedEventIntent(state.removedEventId) }
+                ).show(view.context)
             }
 
             NEW_EVENT_REMOVED -> {
