@@ -16,8 +16,7 @@ import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.mvi.ViewStateRenderer
-import io.ipoli.android.common.view.ColorDialogViewState.Type.DATA_LOADED
-import io.ipoli.android.common.view.ColorDialogViewState.Type.PLAYER_CHANGED
+import io.ipoli.android.common.view.ColorDialogViewState.Type.*
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.Player
@@ -37,7 +36,7 @@ import kotlin.coroutines.experimental.CoroutineContext
 
 sealed class ColorDialogIntent : Intent
 
-object LoadDataIntent : ColorDialogIntent()
+data class LoadDataIntent(val selectedColor: Color? = null) : ColorDialogIntent()
 data class ChangePlayerIntent(val player: Player) : ColorDialogIntent()
 
 data class ColorDialogViewState(
@@ -59,8 +58,8 @@ class ColorDialogPresenter(
     coroutineContext: CoroutineContext) :
     BaseMviPresenter<ViewStateRenderer<ColorDialogViewState>, ColorDialogViewState, ColorDialogIntent>(
         ColorDialogViewState(ColorDialogViewState.Type.LOADING),
-    coroutineContext
-) {
+        coroutineContext
+    ) {
     override fun reduceState(intent: ColorDialogIntent, state: ColorDialogViewState) =
         when (intent) {
             is LoadDataIntent -> {
@@ -69,12 +68,14 @@ class ColorDialogPresenter(
                         sendChannel.send(ChangePlayerIntent(it))
                     }
                 }
-                state
+                state.copy(
+                    selectedColor = intent.selectedColor
+                )
             }
 
             is ChangePlayerIntent -> {
                 val player = intent.player
-                val type = if(state.petAvatar == null) {
+                val type = if (state.petAvatar == null) {
                     DATA_LOADED
                 } else {
                     PLAYER_CHANGED
@@ -82,12 +83,17 @@ class ColorDialogPresenter(
                 state.copy(
                     type = type,
                     petAvatar = player.pet.avatar,
-                    viewModels = AndroidColor.values().map {
-                        ColorPickerDialogController.ColorViewModel(it, it == state.selectedColor ?: false)
-                    }
+                    viewModels = createViewModels(state)
                 )
             }
         }
+
+    private fun createViewModels(state: ColorDialogViewState): List<ColorPickerDialogController.ColorViewModel> {
+        val selectedColor = AndroidColor.valueOf(state.selectedColor!!.name)
+        return AndroidColor.values().map {
+            ColorPickerDialogController.ColorViewModel(it, it == selectedColor)
+        }
+    }
 }
 
 class ColorPickerDialogController : MviDialogController<ColorDialogViewState, ColorPickerDialogController, ColorDialogPresenter, ColorDialogIntent>
@@ -116,14 +122,6 @@ class ColorPickerDialogController : MviDialogController<ColorDialogViewState, Co
         val inflater = LayoutInflater.from(activity!!)
 
         val contentView = inflater.inflate(R.layout.dialog_color_picker, null)
-//        val colorGrid = contentView.colorGrid
-//        colorGrid.layoutManager = GridLayoutManager(activity!!, 4)
-//
-//        val colorViewModels = AndroidColor.values().map {
-//            ColorViewModel(it, it == selectedColor ?: false)
-//        }
-//
-//        colorGrid.adapter = ColorAdapter(colorViewModels)
 
         val dialog = AlertDialog.Builder(activity!!)
             .setView(contentView)
@@ -136,21 +134,26 @@ class ColorPickerDialogController : MviDialogController<ColorDialogViewState, Co
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-        send(LoadDataIntent)
+        val color = selectedColor?.let {
+            Color.valueOf(it.name)
+        }
+        send(LoadDataIntent(color))
     }
 
     override fun render(state: ColorDialogViewState, view: View) {
         when (state.type) {
-            DATA_LOADED -> {
-                changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
+            LOADING -> {
                 val colorGrid = view.colorGrid
                 colorGrid.layoutManager = GridLayoutManager(activity!!, 4)
-
                 val colorViewModels = AndroidColor.values().map {
                     ColorViewModel(it, it == selectedColor ?: false)
                 }
-
                 colorGrid.adapter = ColorAdapter(colorViewModels)
+            }
+
+            DATA_LOADED -> {
+                changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
+                (view.colorGrid.adapter as ColorAdapter).updateAll(state.viewModels)
             }
 
             PLAYER_CHANGED -> {
@@ -159,9 +162,9 @@ class ColorPickerDialogController : MviDialogController<ColorDialogViewState, Co
         }
     }
 
-    data class ColorViewModel(val color: AndroidColor, val isSelected: Boolean, val isLocked : Boolean = false)
+    data class ColorViewModel(val color: AndroidColor, val isSelected: Boolean, val isLocked: Boolean = false)
 
-    inner class ColorAdapter(private val colors: List<ColorViewModel>) : RecyclerView.Adapter<ColorAdapter.ViewHolder>() {
+    inner class ColorAdapter(private var colors: List<ColorViewModel>) : RecyclerView.Adapter<ColorAdapter.ViewHolder>() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val vm = colors[position]
             val iv = holder.itemView as ImageView
@@ -184,6 +187,11 @@ class ColorPickerDialogController : MviDialogController<ColorDialogViewState, Co
             ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_color_picker, parent, false))
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
+
+        fun updateAll(viewModels: List<ColorViewModel>) {
+            this.colors = viewModels
+            notifyDataSetChanged()
+        }
 
     }
 }

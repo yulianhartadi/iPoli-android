@@ -5,9 +5,10 @@ import android.view.View
 import io.ipoli.android.R
 import io.ipoli.android.pet.AndroidPetAvatar
 import kotlinx.android.synthetic.main.popup_pet_message.view.*
+import java.util.concurrent.TimeUnit
 
 class PetMessagePopup(
-    private val message : String,
+    private val message: String,
     private val avatar: AndroidPetAvatar,
     private val undoListener: () -> Unit
 ) : BasePopup(position = Position.BOTTOM) {
@@ -22,5 +23,6 @@ class PetMessagePopup(
             undoListener()
             hide()
         }
+        autoHideAfter(TimeUnit.SECONDS.toMillis(2))
     }
 }
