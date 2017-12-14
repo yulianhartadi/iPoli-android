@@ -20,7 +20,7 @@ import space.traversal.kapsule.required
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 12/3/17.
  */
-class TextPickerDialogController : MviDialogController<PetDialogViewState, ColorPickerDialogController, PetDialogPresenter, LoadPetIntent>
+class TextPickerDialogController : MviDialogController<PetDialogViewState, TextPickerDialogController, PetDialogPresenter, LoadPetIntent>
     , ViewStateRenderer<PetDialogViewState>, Injects<ControllerModule> {
 
     private val presenter by required { petDialogPresenter }
@@ -66,7 +66,7 @@ class TextPickerDialogController : MviDialogController<PetDialogViewState, Color
                 val text = textView.text.toString()
                 if (text.isNotEmpty()) {
                     listener(text)
-                    dialog.hide()
+                    dialog.dismiss()
                 } else {
                     textView.error = stringRes(R.string.text_picker_empty_error)
                 }
