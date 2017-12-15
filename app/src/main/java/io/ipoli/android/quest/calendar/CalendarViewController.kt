@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
-import android.support.v7.widget.Toolbar
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.bluelinelabs.conductor.Controller
@@ -398,9 +397,11 @@ class CalendarViewController(args: Bundle? = null) :
 
     fun onStartEdit() {
         view!!.addQuest.visible = false
+        view!!.pager.isLocked = true
     }
 
     fun onStopEdit() {
         view!!.addQuest.visible = true
+        view!!.pager.isLocked = false
     }
 }
