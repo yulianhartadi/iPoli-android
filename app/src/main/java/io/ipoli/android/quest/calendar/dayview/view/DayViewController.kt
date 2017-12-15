@@ -29,6 +29,7 @@ import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.*
+import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.calendar.CalendarViewController
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
@@ -397,7 +398,10 @@ class DayViewController :
 
     private fun showIconPicker(selectedIcon: AndroidIcon?) {
         IconPickerDialogController({ icon ->
-            send(IconPickedIntent(icon))
+            val ic = icon?.let {
+                Icon.valueOf(it.name)
+            }
+            send(IconPickedIntent(ic))
         }, selectedIcon).showDialog(router, "icon-picker")
     }
 

@@ -5,6 +5,7 @@ import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.AndroidIcon
+import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.usecase.Schedule
 import io.ipoli.android.reminder.view.picker.ReminderViewModel
 import org.threeten.bp.LocalDate
@@ -30,7 +31,7 @@ data class RemoveEventIntent(val eventId: String) : DayViewIntent()
 data class ScheduleLoadedIntent(val schedule: Schedule) : DayViewIntent()
 data class UndoRemoveEventIntent(val eventId: String) : DayViewIntent()
 data class ReminderPickedIntent(val reminder: ReminderViewModel?) : DayViewIntent()
-data class IconPickedIntent(val icon: AndroidIcon?) : DayViewIntent()
+data class IconPickedIntent(val icon: Icon?) : DayViewIntent()
 data class ColorPickedIntent(val color: AndroidColor) : DayViewIntent()
 data class CompleteQuestIntent(val questId: String) : DayViewIntent()
 data class UndoCompleteQuestIntent(val questId: String) : DayViewIntent()

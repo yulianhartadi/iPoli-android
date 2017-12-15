@@ -90,9 +90,9 @@ class ColorDialogPresenter(
         }
 
     private fun createViewModels(state: ColorDialogViewState, colorPacks: Set<ColorPack>): List<ColorPickerDialogController.ColorViewModel> {
-        val selectedColor = state.selectedColor!!
         return Color.values().map {
-            ColorPickerDialogController.ColorViewModel(it, it == selectedColor, !colorPacks.contains(it.pack))
+            val isSelected = if (state.selectedColor == null) false else state.selectedColor == it
+            ColorPickerDialogController.ColorViewModel(it, isSelected, !colorPacks.contains(it.pack))
         }
     }
 }
@@ -124,6 +124,8 @@ class ColorPickerDialogController : MviDialogController<ColorDialogViewState, Co
 
         val contentView = inflater.inflate(R.layout.dialog_color_picker, null)
 
+        contentView.colorGrid.layoutManager = GridLayoutManager(activity!!, 4)
+
         val dialog = AlertDialog.Builder(activity!!)
             .setView(contentView)
             .setTitle("Choose color")
@@ -146,8 +148,8 @@ class ColorPickerDialogController : MviDialogController<ColorDialogViewState, Co
             LOADING -> {
                 val colorGrid = view.colorGrid
                 colorGrid.layoutManager = GridLayoutManager(activity!!, 4)
-                val colorViewModels = AndroidColor.values().map {
-                    ColorViewModel(Color.valueOf(it.name), it == selectedColor ?: false)
+                val colorViewModels = Color.values().map {
+                    ColorViewModel(it, it == selectedColor ?: false, false)
                 }
                 colorGrid.adapter = ColorAdapter(colorViewModels)
             }
@@ -163,7 +165,7 @@ class ColorPickerDialogController : MviDialogController<ColorDialogViewState, Co
         }
     }
 
-    data class ColorViewModel(val color: Color, val isSelected: Boolean, val isLocked: Boolean = false)
+    data class ColorViewModel(val color: Color, val isSelected: Boolean, val isLocked: Boolean)
 
     inner class ColorAdapter(private var colors: List<ColorViewModel>) : RecyclerView.Adapter<ColorAdapter.ViewHolder>() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {

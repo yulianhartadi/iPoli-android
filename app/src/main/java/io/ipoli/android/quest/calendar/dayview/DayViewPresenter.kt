@@ -227,7 +227,9 @@ class DayViewPresenter(
             is IconPickedIntent -> {
                 state.copy(
                     type = ICON_PICKED,
-                    icon = intent.icon
+                    icon = intent.icon?.let {
+                        AndroidIcon.valueOf(it.name)
+                    }
                 )
             }
 
