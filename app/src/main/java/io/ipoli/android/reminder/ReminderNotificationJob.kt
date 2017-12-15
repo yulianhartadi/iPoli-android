@@ -15,7 +15,8 @@ import com.evernote.android.job.util.support.PersistableBundleCompat
 import io.ipoli.android.R
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.di.ControllerModule
-import io.ipoli.android.common.di.JobModule
+import io.ipoli.android.common.di.SimpleModule
+import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.iPoliApp
 import io.ipoli.android.quest.Quest
 import io.ipoli.android.reminder.view.ReminderNotificationPopup
@@ -49,14 +50,14 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
             notificationManager.createNotificationChannel(channel)
         }
 
-        val kap = Kapsule<JobModule>()
+        val kap = Kapsule<SimpleModule>()
         val findQuestsToRemindUseCase by kap.required { findQuestToRemindUseCase }
         val snoozeQuestUseCase by kap.required { snoozeQuestUseCase }
         val completeQuestUseCase by kap.required { completeQuestUseCase }
         val findPetUseCase by kap.required { findPetUseCase }
-        kap.inject(iPoliApp.jobModule(context))
+        kap.inject(iPoliApp.simpleModule(context))
 
-        val c = ContextThemeWrapper(context, R.style.Theme_myPoli_Red)
+        val c = context.asThemedWrapper()
         val quests = findQuestsToRemindUseCase.execute(params.extras.getLong("start", -1))
         val pet = findPetUseCase.execute(Unit)
 

@@ -5,8 +5,6 @@ import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.AndroidIcon
-import io.ipoli.android.pet.PetAvatar
-import io.ipoli.android.player.Player
 import io.ipoli.android.quest.usecase.Schedule
 import io.ipoli.android.reminder.view.picker.ReminderViewModel
 import org.threeten.bp.LocalDate
@@ -39,7 +37,6 @@ data class UndoCompleteQuestIntent(val questId: String) : DayViewIntent()
 data class AddNewScheduledQuestIntent(val startTime: Time, val duration: Int) : DayViewIntent()
 data class StartEditScheduledQuestIntent(val questViewModel: DayViewController.QuestViewModel) : DayViewIntent()
 data class StartEditUnscheduledQuestIntent(val questViewModel: DayViewController.UnscheduledQuestViewModel) : DayViewIntent()
-data class ChangePlayerIntent(val player: Player) : DayViewIntent()
 
 
 object EditQuestIntent : DayViewIntent()
@@ -61,8 +58,7 @@ data class DayViewState(
     val duration: Int? = null,
     val color: AndroidColor? = null,
     val reminder: ReminderViewModel? = null,
-    val icon: AndroidIcon? = null,
-    val petAvatar: PetAvatar = PetAvatar.ELEPHANT
+    val icon: AndroidIcon? = null
 ) : ViewState {
 
     enum class StateType {
@@ -83,7 +79,6 @@ data class DayViewState(
         UNDO_QUEST_COMPLETED,
         EDIT_VIEW_DRAGGED,
         EDIT_VIEW_NAME_CHANGED,
-        PLAYER_CHANGED,
         REMINDER_PICKED
     }
 }

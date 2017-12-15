@@ -9,12 +9,23 @@ import android.graphics.PixelFormat
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.support.annotation.MainThread
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.*
 import android.widget.RelativeLayout
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
+import io.ipoli.android.common.di.SimpleModule
+import io.ipoli.android.common.mvi.Intent
+import io.ipoli.android.common.mvi.MviPresenter
+import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.ViewStateRenderer
+import io.ipoli.android.iPoliApp
+import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.experimental.launch
+import space.traversal.kapsule.Injects
+import space.traversal.kapsule.inject
 
 class PopupBackgroundLayout : RelativeLayout {
     private var onBackPressed: () -> Unit = {}
@@ -38,7 +49,8 @@ class PopupBackgroundLayout : RelativeLayout {
     }
 }
 
-abstract class BasePopup(private val isAutoHide: Boolean = false, private val position: Position = Position.CENTER) {
+abstract class MviPopup<VS : ViewState, in V : ViewStateRenderer<VS>, out P : MviPresenter<V, VS, I>, in I : Intent>
+(private val isAutoHide: Boolean = false, private val position: Position = Position.CENTER) : ViewStateRenderer<VS>, Injects<SimpleModule> {
 
     enum class Position {
         CENTER, TOP, BOTTOM
@@ -47,15 +59,23 @@ abstract class BasePopup(private val isAutoHide: Boolean = false, private val po
     private lateinit var overlayView: PopupBackgroundLayout
     private lateinit var contentView: ViewGroup
     private lateinit var windowManager: WindowManager
+    private lateinit var presenter: P
     private val autoHideHandler = Handler(Looper.getMainLooper())
 
     private val autoHideRunnable = {
         hide()
     }
 
+    protected abstract fun createPresenter(): P
+
     abstract fun createView(inflater: LayoutInflater): View
 
     fun show(context: Context) {
+        inject(iPoliApp.simpleModule(context))
+
+        presenter = createPresenter()
+        intentChannel = presenter.intentChannel()
+
         contentView = createView(LayoutInflater.from(context)) as ViewGroup
         contentView.visibility = View.INVISIBLE
 
@@ -93,6 +113,7 @@ abstract class BasePopup(private val isAutoHide: Boolean = false, private val po
 
         addViewToWindowManager(overlayView)
         overlayView.post {
+            presenter.onAttachView(this as V)
             playEnterAnimation(contentView)
         }
     }
@@ -128,11 +149,17 @@ abstract class BasePopup(private val isAutoHide: Boolean = false, private val po
         val animSet = AnimatorSet()
         animSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
-                windowManager.removeViewImmediate(overlayView)
+                onDestroy()
             }
         })
         animSet.playTogether(transAnim, fadeAnim)
         animSet.start()
+    }
+
+    private fun onDestroy() {
+        windowManager.removeViewImmediate(overlayView)
+        presenter.onDetachView()
+        presenter.onDestroy()
     }
 
     private fun addViewToWindowManager(view: ViewGroup) {
@@ -170,6 +197,21 @@ abstract class BasePopup(private val isAutoHide: Boolean = false, private val po
         overlayView.setOnClickListener(null)
         overlayView.isClickable = false
         playExitAnimation(contentView)
+    }
+
+    @MainThread
+    override fun render(state: VS) {
+        render(state, contentView)
+    }
+
+    abstract fun render(state: VS, view: View)
+
+    private lateinit var intentChannel: SendChannel<I>
+
+    protected fun send(intent: I) {
+        launch {
+            intentChannel.send(intent)
+        }
     }
 
     internal object WindowOverlayCompat {
