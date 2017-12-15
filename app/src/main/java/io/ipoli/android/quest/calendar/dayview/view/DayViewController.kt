@@ -477,7 +477,7 @@ class DayViewController :
 
             } else {
                 view.questName.text = vm.name
-                view.questName.setTextColor(colorRes(R.color.md_white))
+                view.questName.setTextColor(colorRes(R.color.md_light_text_87))
                 view.startTime.setTextColor(colorRes(R.color.md_light_text_87))
                 view.endTime.setTextColor(colorRes(R.color.md_light_text_87))
 

@@ -49,11 +49,11 @@ class DayViewPresenter(
                     }
 
                 }
-//                launch {
-//                    listenForPlayerChangesUseCase.execute(Unit).consumeEach {
-//                        sendChannel.send(ChangePlayerIntent(it))
-//                    }
-//                }
+                launch {
+                    listenForPlayerChangesUseCase.execute(Unit).consumeEach {
+                        sendChannel.send(ChangePlayerIntent(it))
+                    }
+                }
                 state.copy(type = LOADING)
             }
 
