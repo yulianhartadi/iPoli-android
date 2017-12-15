@@ -19,7 +19,7 @@ val Context.playerTheme: Int
                 return AndroidTheme.valueOf(themeName).style
             }
         }
-        return Constants.DEFAULT_THEME.style
+        return AndroidTheme.valueOf(Constants.DEFAULT_THEME.name).style
     }
 
 fun Context.asThemedWrapper() =

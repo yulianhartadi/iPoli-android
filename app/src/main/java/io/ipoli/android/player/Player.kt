@@ -18,7 +18,7 @@ data class Player(
     val authProvider: AuthProvider,
     val avatar: Avatar = Avatar.IPOLI_CLASSIC,
     val createdAt: LocalDateTime = LocalDateTime.now(),
-    val currentTheme: Theme = Theme.RED,
+    val currentTheme: Theme = Constants.DEFAULT_THEME,
     val pet: Pet = Pet(
         name = Constants.DEFAULT_PET_NAME,
         avatar = PetAvatar.ELEPHANT
@@ -78,6 +78,9 @@ data class Player(
 
     fun hasTheme(theme: Theme) =
         inventory.hasTheme(theme)
+
+    fun hasIconPack(iconPack: IconPack) =
+        inventory.hasIconPack(iconPack)
 }
 
 data class InventoryPet(val name: String, val avatar: PetAvatar) {
@@ -139,6 +142,12 @@ data class Inventory(
             pets = this.pets - currentPet + InventoryPet(name, petAvatar)
         )
     }
+
+    fun hasIconPack(iconPack: IconPack) =
+        iconPacks.contains(iconPack)
+
+    fun addIconPack(iconPack: IconPack) =
+        copy(iconPacks = this.iconPacks + iconPack)
 }
 
 data class AuthProvider(
