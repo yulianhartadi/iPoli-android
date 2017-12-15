@@ -7,6 +7,8 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.PixelFormat
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.*
@@ -45,6 +47,7 @@ abstract class BasePopup(private val isAutoHide: Boolean = false, private val po
     private lateinit var overlayView: PopupBackgroundLayout
     private lateinit var contentView: ViewGroup
     private lateinit var windowManager: WindowManager
+    private val autoHideHandler = Handler(Looper.getMainLooper())
 
     private val autoHideRunnable = {
         hide()
@@ -159,11 +162,11 @@ abstract class BasePopup(private val isAutoHide: Boolean = false, private val po
 
     protected fun autoHideAfter(millis: Long) {
         require(isAutoHide)
-        contentView.postDelayed(autoHideRunnable, millis)
+        autoHideHandler.postDelayed(autoHideRunnable, millis)
     }
 
     fun hide() {
-        contentView.removeCallbacks(autoHideRunnable)
+        autoHideHandler.removeCallbacksAndMessages(null)
         overlayView.setOnClickListener(null)
         overlayView.isClickable = false
         playExitAnimation(contentView)
