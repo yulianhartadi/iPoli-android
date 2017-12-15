@@ -173,6 +173,8 @@ class ColorPickerDialogController : MviDialogController<ColorDialogViewState, Co
 
             if (vm.isSelected) {
                 iv.setImageResource(R.drawable.ic_done_white_24dp)
+            } else {
+                iv.setImageDrawable(null)
             }
 
             iv.setOnClickListener {
