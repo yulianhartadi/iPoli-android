@@ -8,6 +8,7 @@ import io.ipoli.android.pet.Pet
 import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.*
 import io.ipoli.android.player.persistence.model.*
+import io.ipoli.android.quest.ColorPack
 import io.ipoli.android.store.avatars.data.Avatar
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
@@ -53,7 +54,8 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
                 val cip = CouchbaseInventoryPet(it)
                 InventoryPet(cip.name, PetAvatar.valueOf(cip.avatar))
             }.toSet(),
-            themes = ci.themes.map { Theme.valueOf(it) }.toSet()
+            themes = ci.themes.map { Theme.valueOf(it) }.toSet(),
+            colorPacks = ci.colorPacks.map { ColorPack.valueOf(it) }.toSet()
         )
 
         return Player(
@@ -115,6 +117,7 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             it.pets = inventory.pets
                 .map { createCouchbaseInventoryPet(it).map }
             it.themes = inventory.themes.map { it.name }
+            it.colorPacks = inventory.colorPacks.map { it.name }
         }
 
     private fun createCouchbaseInventoryPet(inventoryPet: InventoryPet) =

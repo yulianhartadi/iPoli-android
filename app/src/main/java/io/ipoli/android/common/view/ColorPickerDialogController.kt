@@ -22,6 +22,7 @@ import io.ipoli.android.pet.PetAvatar
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
 import io.ipoli.android.quest.Color
+import io.ipoli.android.quest.ColorPack
 import kotlinx.android.synthetic.main.dialog_color_picker.view.*
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
@@ -83,15 +84,15 @@ class ColorDialogPresenter(
                 state.copy(
                     type = type,
                     petAvatar = player.pet.avatar,
-                    viewModels = createViewModels(state)
+                    viewModels = createViewModels(state, player.inventory.colorPacks)
                 )
             }
         }
 
-    private fun createViewModels(state: ColorDialogViewState): List<ColorPickerDialogController.ColorViewModel> {
-        val selectedColor = AndroidColor.valueOf(state.selectedColor!!.name)
-        return AndroidColor.values().map {
-            ColorPickerDialogController.ColorViewModel(it, it == selectedColor)
+    private fun createViewModels(state: ColorDialogViewState, colorPacks: Set<ColorPack>): List<ColorPickerDialogController.ColorViewModel> {
+        val selectedColor = state.selectedColor!!
+        return Color.values().map {
+            ColorPickerDialogController.ColorViewModel(it, it == selectedColor, !colorPacks.contains(it.pack))
         }
     }
 }
@@ -146,7 +147,7 @@ class ColorPickerDialogController : MviDialogController<ColorDialogViewState, Co
                 val colorGrid = view.colorGrid
                 colorGrid.layoutManager = GridLayoutManager(activity!!, 4)
                 val colorViewModels = AndroidColor.values().map {
-                    ColorViewModel(it, it == selectedColor ?: false)
+                    ColorViewModel(Color.valueOf(it.name), it == selectedColor ?: false)
                 }
                 colorGrid.adapter = ColorAdapter(colorViewModels)
             }
@@ -162,24 +163,28 @@ class ColorPickerDialogController : MviDialogController<ColorDialogViewState, Co
         }
     }
 
-    data class ColorViewModel(val color: AndroidColor, val isSelected: Boolean, val isLocked: Boolean = false)
+    data class ColorViewModel(val color: Color, val isSelected: Boolean, val isLocked: Boolean = false)
 
     inner class ColorAdapter(private var colors: List<ColorViewModel>) : RecyclerView.Adapter<ColorAdapter.ViewHolder>() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val vm = colors[position]
             val iv = holder.itemView as ImageView
+
+            val androidColor = AndroidColor.valueOf(vm.color.name)
+
             val drawable = iv.background as GradientDrawable
-            drawable.setColor(ContextCompat.getColor(iv.context, vm.color.color500))
+            drawable.setColor(ContextCompat.getColor(iv.context, androidColor.color500))
 
-            if (vm.isSelected) {
-                iv.setImageResource(R.drawable.ic_done_white_24dp)
-            } else {
-                iv.setImageDrawable(null)
+            when {
+                vm.isSelected -> iv.setImageResource(R.drawable.ic_done_white_24dp)
+                vm.isLocked -> iv.setImageResource(R.drawable.ic_lock_white_24dp)
+                else -> iv.setImageDrawable(null)
             }
-
-            iv.setOnClickListener {
-                listener?.onColorPicked(vm.color)
-                dismissDialog()
+            if (!vm.isLocked) {
+                iv.setOnClickListener {
+                    listener?.onColorPicked(androidColor)
+                    dismissDialog()
+                }
             }
         }
 
