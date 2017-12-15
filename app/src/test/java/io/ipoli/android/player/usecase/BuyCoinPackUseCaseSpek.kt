@@ -1,9 +1,6 @@
 package io.ipoli.android.player.usecase
 
 import io.ipoli.android.TestUtil
-import io.ipoli.android.pet.Pet
-import io.ipoli.android.pet.PetAvatar
-import io.ipoli.android.player.AuthProvider
 import io.ipoli.android.player.Inventory
 import io.ipoli.android.player.Player
 import io.ipoli.android.quest.IconPack
@@ -19,27 +16,12 @@ import org.jetbrains.spek.api.dsl.it
 class BuyCoinPackUseCaseSpek : Spek({
 
     describe("BuyCoinPackUseCase") {
-
-
-        val player = Player(
-            level = 1,
-            coins = 10,
-            experience = 10,
-            authProvider = AuthProvider(),
-            pet = Pet(
-                "",
-                avatar = PetAvatar.ELEPHANT,
-                healthPoints = 30,
-                moodPoints = Pet.AWESOME_MIN_MOOD_POINTS - 1
-            )
-        )
-
         fun executeUseCase(player: Player, iconPack: IconPack) =
             BuyCoinPackUseCase(TestUtil.playerRepoMock(player)).execute(BuyCoinPackUseCase.Params(iconPack))
 
         it("should require not bought icon pack") {
 
-            val p = player.copy(
+            val p = TestUtil.player().copy(
                 inventory = Inventory(
                     iconPacks = setOf(IconPack.PACK_BASE)
                 )
@@ -50,7 +32,7 @@ class BuyCoinPackUseCaseSpek : Spek({
         }
 
         it("should not buy when not enough coins") {
-            val p = player.copy(
+            val p = TestUtil.player().copy(
                 coins = IconPack.PACK_BASE.price - 1,
                 inventory = Inventory()
             )
@@ -59,7 +41,7 @@ class BuyCoinPackUseCaseSpek : Spek({
         }
 
         it("should buy icon pack") {
-            val p = player.copy(
+            val p = TestUtil.player().copy(
                 coins = IconPack.PACK_BASE.price,
                 inventory = Inventory()
             )
