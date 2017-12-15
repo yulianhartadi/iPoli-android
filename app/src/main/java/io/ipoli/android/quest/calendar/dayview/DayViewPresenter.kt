@@ -5,7 +5,6 @@ import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.AndroidIcon
-import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
 import io.ipoli.android.quest.Category
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.Icon
@@ -28,7 +27,6 @@ import kotlin.coroutines.experimental.CoroutineContext
  */
 
 class DayViewPresenter(
-    private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
     private val loadScheduleUseCase: LoadScheduleForDateUseCase,
     private val saveQuestUseCase: SaveQuestUseCase,
     private val removeQuestUseCase: RemoveQuestUseCase,
@@ -47,13 +45,7 @@ class DayViewPresenter(
                     loadScheduleUseCase.execute(intent.currentDate).consumeEach {
                         sendChannel.send(ScheduleLoadedIntent(it))
                     }
-
                 }
-//                launch {
-//                    listenForPlayerChangesUseCase.execute(Unit).consumeEach {
-//                        sendChannel.send(ChangePlayerIntent(it))
-//                    }
-//                }
                 state.copy(type = LOADING)
             }
 
@@ -64,13 +56,6 @@ class DayViewPresenter(
                     scheduledQuests = createScheduledViewModels(schedule),
                     unscheduledQuests = createUnscheduledViewModels(schedule),
                     scheduledDate = schedule.date
-                )
-            }
-
-            is ChangePlayerIntent -> {
-                state.copy(
-                    type = PLAYER_CHANGED,
-                    petAvatar = intent.player.pet.avatar
                 )
             }
 

@@ -1,18 +1,13 @@
 package io.ipoli.android.player
 
-import android.view.ContextThemeWrapper
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobRequest
-import io.ipoli.android.R
 import io.ipoli.android.common.di.ControllerModule
-import io.ipoli.android.common.di.JobModule
-import io.ipoli.android.iPoliApp
-import io.ipoli.android.pet.AndroidPetAvatar
+import io.ipoli.android.common.view.asThemedWrapper
 import io.ipoli.android.player.view.LevelUpPopup
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Injects
-import space.traversal.kapsule.Kapsule
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -21,18 +16,9 @@ import space.traversal.kapsule.Kapsule
 class LevelUpJob : Job(), Injects<ControllerModule> {
     override fun onRunJob(params: Params): Result {
 
-        val kap = Kapsule<JobModule>()
-        val findPlayerLevelUseCase by kap.required { findPlayerLevelUseCase }
-        val findPetUseCase by kap.required { findPetUseCase }
-        kap.inject(iPoliApp.jobModule(context))
-
-        val playerLevel = findPlayerLevelUseCase.execute(Unit)
-        val pet = findPetUseCase.execute(Unit)
-
-        val c = ContextThemeWrapper(context, R.style.Theme_myPoli_Red)
-
+        val c = context.asThemedWrapper()
         launch(UI) {
-            LevelUpPopup(playerLevel, AndroidPetAvatar.valueOf(pet.avatar.name)).show(c)
+            LevelUpPopup().show(c)
         }
 
         return Result.SUCCESS
