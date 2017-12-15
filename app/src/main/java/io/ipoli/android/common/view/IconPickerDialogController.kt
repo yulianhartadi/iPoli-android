@@ -155,6 +155,7 @@ class IconPickerDialogController : MviDialogController<IconPickerViewState, Icon
             IconPickerViewState.Type.DATA_LOADED -> {
                 changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
                 (view.iconGrid.adapter as IconAdapter).updateAll(state.viewModels)
+                view.viewSwitcher.showNext()
             }
 
             IconPickerViewState.Type.PLAYER_CHANGED -> {
