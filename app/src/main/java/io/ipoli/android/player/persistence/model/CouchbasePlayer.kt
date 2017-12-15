@@ -52,6 +52,7 @@ data class CouchbaseInventory(val map: MutableMap<String, Any?> = mutableMapOf()
     var pets: List<MutableMap<String, Any?>> by map
     var themes: List<String> by map
     var colorPacks: List<String> by map
+    var iconPacks: List<String> by map
 }
 
 data class CouchbaseInventoryPet(val map: MutableMap<String, Any?> = mutableMapOf()) {
