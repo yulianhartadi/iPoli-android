@@ -4,13 +4,12 @@ import io.ipoli.android.common.UseCase
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.persistence.PlayerRepository
 import io.ipoli.android.quest.IconPack
-import io.ipoli.android.theme.usecase.BuyThemeUseCase
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 15.12.17.
  */
-class BuyCoinPackUseCase(private val playerRepository: PlayerRepository) : UseCase<BuyCoinPackUseCase.Params, BuyCoinPackUseCase.Result> {
+class BuyIconPackUseCase(private val playerRepository: PlayerRepository) : UseCase<BuyIconPackUseCase.Params, BuyIconPackUseCase.Result> {
 
     override fun execute(parameters: Params): Result {
 

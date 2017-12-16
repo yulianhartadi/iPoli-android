@@ -13,11 +13,11 @@ import org.jetbrains.spek.api.dsl.it
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 15.12.17.
  */
-class BuyCoinPackUseCaseSpek : Spek({
+class BuyIconPackUseCaseSpek : Spek({
 
-    describe("BuyCoinPackUseCase") {
+    describe("BuyIconPackUseCase") {
         fun executeUseCase(player: Player, iconPack: IconPack) =
-            BuyCoinPackUseCase(TestUtil.playerRepoMock(player)).execute(BuyCoinPackUseCase.Params(iconPack))
+            BuyIconPackUseCase(TestUtil.playerRepoMock(player)).execute(BuyIconPackUseCase.Params(iconPack))
 
         it("should require not bought icon pack") {
 
@@ -37,7 +37,7 @@ class BuyCoinPackUseCaseSpek : Spek({
                 inventory = Inventory()
             )
             val result = executeUseCase(p, IconPack.PACK_BASE)
-            result.`should be`(BuyCoinPackUseCase.Result.TooExpensive)
+            result.`should be`(BuyIconPackUseCase.Result.TooExpensive)
         }
 
         it("should buy icon pack") {
@@ -46,8 +46,8 @@ class BuyCoinPackUseCaseSpek : Spek({
                 inventory = Inventory()
             )
             val result = executeUseCase(p, IconPack.PACK_BASE)
-            result.`should be instance of`(BuyCoinPackUseCase.Result.IconPackBought::class)
-            val newPlayer = (result as BuyCoinPackUseCase.Result.IconPackBought).player
+            result.`should be instance of`(BuyIconPackUseCase.Result.IconPackBought::class)
+            val newPlayer = (result as BuyIconPackUseCase.Result.IconPackBought).player
             newPlayer.coins.`should be equal to`(p.coins - IconPack.PACK_BASE.price)
             newPlayer.hasIconPack(IconPack.PACK_BASE).`should be true`()
         }

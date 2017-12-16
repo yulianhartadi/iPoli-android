@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/viewSwitcher"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/container"
     style="@style/DialogContainer"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:inAnimation="@anim/slide_in_right"
-    android:outAnimation="@anim/slide_out_left">
-
+    android:layout_height="wrap_content">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/iconGrid"
@@ -18,14 +15,37 @@
         android:layout_marginStart="16dp" />
 
     <LinearLayout
+        android:id="@+id/unlockContainer"
         android:layout_width="match_parent"
+        android:visibility="invisible"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/icon_pack" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hello World"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:drawablePadding="8dp"
+            android:drawableStart="@drawable/ic_life_coin_32dp"
+            android:text="500"
             android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+        <Button
+            android:id="@+id/buyIconPack"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:paddingStart="32dp"
+            android:paddingEnd="32dp"
+            android:text="Unlock all icons" />
     </LinearLayout>
-</ViewSwitcher>
+</FrameLayout>

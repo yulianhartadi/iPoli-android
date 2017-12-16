@@ -1,9 +1,11 @@
 package io.ipoli.android.common.view
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.support.annotation.DrawableRes
 import android.support.annotation.MainThread
+import android.support.annotation.StringRes
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
@@ -81,9 +83,9 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
     fun showDialog(router: Router, tag: String?) {
         dismissed = false
         router.pushController(RouterTransaction.with(this)
-            .pushChangeHandler(SimpleSwapChangeHandler(false))
-            .popChangeHandler(SimpleSwapChangeHandler(false))
-            .tag(tag))
+                .pushChangeHandler(SimpleSwapChangeHandler(false))
+                .popChangeHandler(SimpleSwapChangeHandler(false))
+                .tag(tag))
     }
 
     /**
@@ -112,7 +114,7 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
 }
 
 abstract class MviDialogController<VS : ViewState, in V : ViewStateRenderer<VS>, out P : MviPresenter<V, VS, I>, in I : Intent>(
-    args: Bundle? = null
+        args: Bundle? = null
 ) : MviViewController<VS, V, P, I>(args) {
     data class DialogView(val dialog: AlertDialog, val view: View)
 
@@ -166,9 +168,9 @@ abstract class MviDialogController<VS : ViewState, in V : ViewStateRenderer<VS>,
     fun showDialog(router: Router, tag: String?) {
         dismissed = false
         router.pushController(RouterTransaction.with(this)
-            .pushChangeHandler(SimpleSwapChangeHandler(false))
-            .popChangeHandler(SimpleSwapChangeHandler(false))
-            .tag(tag))
+                .pushChangeHandler(SimpleSwapChangeHandler(false))
+                .popChangeHandler(SimpleSwapChangeHandler(false))
+                .tag(tag))
     }
 
     /**
@@ -189,6 +191,43 @@ abstract class MviDialogController<VS : ViewState, in V : ViewStateRenderer<VS>,
 
     protected fun changeIcon(@DrawableRes icon: Int) {
         dialog.setIcon(icon)
+    }
+
+    protected fun changeTitle(@StringRes title: Int) {
+        dialog.setTitle(title)
+    }
+
+    protected fun changeNeutralButtonText(@StringRes text: Int) {
+        dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setText(text)
+    }
+
+    protected fun changePositiveButtonText(@StringRes text: Int) {
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setText(text)
+    }
+
+    protected fun changeNegativeButtonText(@StringRes text: Int) {
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setText(text)
+    }
+
+    protected fun setNeutralButtonListener(listener: (() -> Unit)?) {
+        dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener {
+            if (listener != null) listener()
+            else dismissDialog()
+        }
+    }
+
+    protected fun sePositiveButtonListener(listener: (() -> Unit)?) {
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+            if (listener != null) listener()
+            else dismissDialog()
+        }
+    }
+
+    protected fun setNegativeButtonListener(listener: (() -> Unit)?) {
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener {
+            if (listener != null) listener()
+            else dismissDialog()
+        }
     }
 
     /**

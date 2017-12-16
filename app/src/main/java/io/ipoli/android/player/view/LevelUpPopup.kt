@@ -117,7 +117,7 @@ class LevelUpPopup : MviPopup<LevelUpViewState, LevelUpPopup, LevelUpPresenter, 
             Glide.with(contentView.context)
                 .load(rewardUrl)
                 .into(reward)
-            contentView.viewSwitcher.showNext()
+            contentView.container.showNext()
         }
     }
 

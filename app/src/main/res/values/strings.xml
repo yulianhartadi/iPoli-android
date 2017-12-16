@@ -996,8 +996,13 @@
     <string name="store_current_theme">Current theme</string>
     <string name="store_buy_theme">Buy now</string>
     <string name="store_theme_in_inventory">Pick me</string>
-    <string name="undo">undo</string>
+    <string name="undo">Undo</string>
     <string name="remove_quest_undo_message">Quest removed</string>
+    <string name="back">Back</string>
+    <string name="unlock_icon_pack_title">Buy the Icon Pack</string>
+    <string name="icon_picker_title">Choose icon</string>
+    <string name="no_icon">No icon</string>
+    <string name="icon_pack_not_enough_coins">Icon Pack too expensive</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
