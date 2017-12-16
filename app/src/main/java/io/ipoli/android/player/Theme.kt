@@ -6,10 +6,10 @@ package io.ipoli.android.player
  */
 enum class Theme(val price: Int) {
     RED(0),
-    ORANGE(0),
-    PINK(500),
-    GREEN(500),
-    BLUE(500),
-    PURPLE(500),
-    BLUE_GREY(price = 500)
+    BLUE_GREY(50),
+    ORANGE(300),
+    PINK(600),
+    GREEN(300),
+    BLUE(300),
+    PURPLE(400)
 }

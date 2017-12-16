@@ -197,18 +197,18 @@ enum class PetMood {
 }
 
 enum class PetAvatar(val price: Int, val feedingCategory: FeedingCategory) {
-    SEAL(600, FeedingCategory.CARNIVOROUS),
+    SEAL(700, FeedingCategory.CARNIVOROUS),
     DONKEY(500, FeedingCategory.HERBIVOROUS),
-    ELEPHANT(500, FeedingCategory.HERBIVOROUS),
-    BEAVER(500, FeedingCategory.HERBIVOROUS),
-    CHICKEN(700, FeedingCategory.OMNIVOROUS),
-    BEAR(500, FeedingCategory.OMNIVOROUS),
-    LION(500, FeedingCategory.CARNIVOROUS),
-    CAT(500, FeedingCategory.CARNIVOROUS),
-    MONKEY(500, FeedingCategory.OMNIVOROUS),
+    PIG(100, FeedingCategory.OMNIVOROUS),
+    ELEPHANT(600, FeedingCategory.HERBIVOROUS),
+    BEAVER(600, FeedingCategory.HERBIVOROUS),
+    CHICKEN(600, FeedingCategory.OMNIVOROUS),
+    BEAR(550, FeedingCategory.OMNIVOROUS),
+    LION(800, FeedingCategory.CARNIVOROUS),
+    CAT(400, FeedingCategory.CARNIVOROUS),
+    MONKEY(550, FeedingCategory.OMNIVOROUS),
     DUCK(500, FeedingCategory.OMNIVOROUS),
-    PIG(500, FeedingCategory.OMNIVOROUS),
-    ZEBRA(500, FeedingCategory.HERBIVOROUS);
+    ZEBRA(800, FeedingCategory.HERBIVOROUS);
 
     enum class FeedingCategory { OMNIVOROUS, CARNIVOROUS, HERBIVOROUS }
 }
@@ -227,6 +227,13 @@ enum class AndroidPetAvatar(
             GOOD to R.drawable.pet_1_good,
             HAPPY to R.drawable.pet_1_happy,
             AWESOME to R.drawable.pet_1_awesome
+        )),
+    PIG(R.string.pet_pig, R.string.pet_pig_description, R.drawable.pet_11, R.drawable.pet_11_head, R.drawable.pet_11_dead,
+        mapOf(
+            SAD to R.drawable.pet_11_sad,
+            GOOD to R.drawable.pet_11_good,
+            HAPPY to R.drawable.pet_11_happy,
+            AWESOME to R.drawable.pet_11_awesome
         )),
     DONKEY(R.string.pet_donkey, R.string.pet_donkey_description, R.drawable.pet_2, R.drawable.pet_2_head, R.drawable.pet_2_dead,
         mapOf(
@@ -292,13 +299,6 @@ enum class AndroidPetAvatar(
             GOOD to R.drawable.pet_10_good,
             HAPPY to R.drawable.pet_10_happy,
             AWESOME to R.drawable.pet_10_awesome
-        )),
-    PIG(R.string.pet_pig, R.string.pet_pig_description, R.drawable.pet_11, R.drawable.pet_11_head, R.drawable.pet_11_dead,
-        mapOf(
-            SAD to R.drawable.pet_11_sad,
-            GOOD to R.drawable.pet_11_good,
-            HAPPY to R.drawable.pet_11_happy,
-            AWESOME to R.drawable.pet_11_awesome
         )),
     ZEBRA(R.string.pet_zebra, R.string.pet_zebra_description, R.drawable.pet_12, R.drawable.pet_12_head, R.drawable.pet_12_dead,
         mapOf(

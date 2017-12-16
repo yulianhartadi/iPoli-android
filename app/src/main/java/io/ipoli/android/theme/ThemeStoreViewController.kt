@@ -47,7 +47,7 @@ class ThemeStoreViewController(args: Bundle? = null) :
         inventoryToolbar.toolbarTitle.setText(R.string.themes)
 
         view.themePager.clipToPadding = false
-        view.themePager.pageMargin = ViewUtils.dpToPx(32f, view.context).toInt()
+        view.themePager.pageMargin = ViewUtils.dpToPx(16f, view.context).toInt()
         return view
     }
 
@@ -148,7 +148,12 @@ class ThemeStoreViewController(args: Bundle? = null) :
             a.recycle()
 
             view.themeName.setText(theme.title)
-            view.themePrice.text = vm.theme.price.toString()
+
+            view.themePrice.text = if (vm.theme.price == 0) {
+                stringRes(R.string.free)
+            } else {
+                vm.theme.price.toString()
+            }
 
             val action = view.themeAction
             val current = view.themeCurrent

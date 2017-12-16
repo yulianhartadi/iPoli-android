@@ -39,7 +39,7 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
         inventoryToolbar.toolbarTitle.setText(R.string.store)
 
         view.petPager.clipToPadding = false
-        view.petPager.pageMargin = ViewUtils.dpToPx(32f, view.context).toInt()
+        view.petPager.pageMargin = ViewUtils.dpToPx(16f, view.context).toInt()
         return view
     }
 

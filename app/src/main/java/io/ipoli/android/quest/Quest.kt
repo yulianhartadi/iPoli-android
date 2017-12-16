@@ -32,42 +32,42 @@ data class Category(
 
 enum class ColorPack(val price: Int) {
     FREE(0),
-    BASIC(300)
+    BASIC(400)
 }
 
 enum class Color(val pack: ColorPack) {
-    RED(ColorPack.FREE),
     GREEN(ColorPack.FREE),
-    BLUE(ColorPack.FREE),
-    PURPLE(ColorPack.FREE),
-    BROWN(ColorPack.BASIC),
-    ORANGE(ColorPack.BASIC),
+    BLUE_GREY(ColorPack.FREE),
+    BLUE(ColorPack.BASIC),
+    RED(ColorPack.BASIC),
+    INDIGO(ColorPack.FREE),
+    ORANGE(ColorPack.FREE),
     PINK(ColorPack.BASIC),
     TEAL(ColorPack.BASIC),
     DEEP_ORANGE(ColorPack.BASIC),
-    INDIGO(ColorPack.BASIC),
-    BLUE_GREY(ColorPack.BASIC),
+    PURPLE(ColorPack.BASIC),
+    BROWN(ColorPack.BASIC),
     LIME(ColorPack.BASIC)
 }
 
 enum class Icon(val pack: IconPack) {
     HOME(IconPack.FREE),
-    FRIENDS(IconPack.FREE),
-    RESTAURANT(IconPack.FREE),
-    PAW(IconPack.FREE),
+    FRIENDS(IconPack.BASIC),
+    RESTAURANT(IconPack.BASIC),
+    PAW(IconPack.BASIC),
     BRIEFCASE(IconPack.FREE),
     BOOK(IconPack.FREE),
-    HEART(IconPack.FREE),
+    HEART(IconPack.BASIC),
     RUN(IconPack.FREE),
-    MED_KIT(IconPack.FREE),
+    MED_KIT(IconPack.BASIC),
     TREE(IconPack.BASIC),
     BEER(IconPack.BASIC),
-    PLANE(IconPack.BASIC),
+    PLANE(IconPack.FREE),
     COMPASS(IconPack.BASIC),
     LIGHT_BULB(IconPack.BASIC),
     CAR(IconPack.BASIC),
     WRENCH(IconPack.BASIC),
-    STAR(IconPack.BASIC),
+    STAR(IconPack.FREE),
     FITNESS(IconPack.BASIC),
     COFFEE(IconPack.BASIC),
     BUS(IconPack.BASIC),
@@ -77,10 +77,10 @@ enum class Icon(val pack: IconPack) {
     FLASK(IconPack.BASIC),
     SHOPPING_CART(IconPack.BASIC),
     BIKE(IconPack.BASIC),
-    TRAIN(IconPack.BASIC),
-    PIZZA(IconPack.BASIC),
+    TRAIN(IconPack.FREE),
+    PIZZA(IconPack.FREE),
     PHONE(IconPack.BASIC),
-    CLOUD(IconPack.BASIC),
+    CLOUD(IconPack.FREE),
     SUN(IconPack.BASIC),
     AMERICAN_FOOTBALL(IconPack.BASIC),
     TROPHY(IconPack.BASIC),
@@ -91,7 +91,7 @@ enum class Icon(val pack: IconPack) {
 
 enum class IconPack(val price: Int) {
     FREE(0),
-    BASIC(300)
+    BASIC(600)
 }
 
 data class Quest(
