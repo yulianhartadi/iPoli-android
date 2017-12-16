@@ -9,7 +9,7 @@ import com.couchbase.lite.Database
 import com.couchbase.lite.DatabaseConfiguration
 import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.text.CalendarFormatter
-import io.ipoli.android.common.view.ColorDialogPresenter
+import io.ipoli.android.common.view.ColorPickerPresenter
 import io.ipoli.android.common.view.IconPickerDialogPresenter
 import io.ipoli.android.common.view.PetMessagePresenter
 import io.ipoli.android.home.HomePresenter
@@ -163,6 +163,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val buyThemeUseCase get() = BuyThemeUseCase(playerRepository)
     override val renamePetUseCase get() = RenamePetUseCase(playerRepository)
     override val buyIconPackUseCase get() = BuyIconPackUseCase(playerRepository)
+    override val buyColorPackUseCase get() = BuyColorPackUseCase(playerRepository)
 }
 
 interface PopupUseCaseModule {
@@ -213,6 +214,7 @@ interface UseCaseModule {
     val buyThemeUseCase: BuyThemeUseCase
     val renamePetUseCase: RenamePetUseCase
     val buyIconPackUseCase: BuyIconPackUseCase
+    val buyColorPackUseCase: BuyColorPackUseCase
 }
 
 interface PresenterModule {
@@ -225,7 +227,7 @@ interface PresenterModule {
     val petStorePresenter: PetStorePresenter
     val petDialogPresenter: PetDialogPresenter
     val themeStorePresenter: ThemeStorePresenter
-    val colorDialogPresenter: ColorDialogPresenter
+    val colorPickerPresenter: ColorPickerPresenter
     val iconPickerPresenter: IconPickerDialogPresenter
 
 }
@@ -251,6 +253,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val timeUnitFormatter by required { timeUnitFormatter }
     private val calendarFormatter by required { calendarFormatter }
     private val buyIconPackUseCase by required { buyIconPackUseCase }
+    private val buyColorPackUseCase by required { buyColorPackUseCase }
     private val job by required { job }
     override val homePresenter get() = HomePresenter(job)
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, undoRemoveQuestUseCase, completeQuestUseCase, undoCompleteQuestUseCase, job)
@@ -261,7 +264,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val petStorePresenter get() = PetStorePresenter(listenForPlayerChangesUseCase, buyPetUseCase, changePetUseCase, job)
     override val petDialogPresenter get() = PetDialogPresenter(findPetUseCase, job)
     override val themeStorePresenter get() = ThemeStorePresenter(listenForPlayerChangesUseCase, changeThemeUseCase, buyThemeUseCase, job)
-    override val colorDialogPresenter get() = ColorDialogPresenter(listenForPlayerChangesUseCase, job)
+    override val colorPickerPresenter get() = ColorPickerPresenter(listenForPlayerChangesUseCase, buyColorPackUseCase, job)
     override val iconPickerPresenter get() = IconPickerDialogPresenter(listenForPlayerChangesUseCase, buyIconPackUseCase, job)
 }
 
@@ -285,12 +288,12 @@ class ControllerModule(androidModule: AndroidModule,
                        repositoryModule: RepositoryModule,
                        useCaseModule: UseCaseModule,
                        presenterModule: PresenterModule) :
-        AndroidModule by androidModule,
-        NavigationModule by navigationModule,
-        RepositoryModule by repositoryModule,
-        UseCaseModule by useCaseModule,
-        PresenterModule by presenterModule,
-        HasModules {
+    AndroidModule by androidModule,
+    NavigationModule by navigationModule,
+    RepositoryModule by repositoryModule,
+    UseCaseModule by useCaseModule,
+    PresenterModule by presenterModule,
+    HasModules {
     override val modules = setOf(androidModule, navigationModule, repositoryModule, useCaseModule, presenterModule)
 }
 
@@ -298,10 +301,10 @@ class SimpleModule(androidModule: AndroidModule,
                    repositoryModule: RepositoryModule,
                    useCaseModule: PopupUseCaseModule,
                    presenterModule: PopupPresenterModule) :
-        AndroidModule by androidModule,
-        RepositoryModule by repositoryModule,
-        PopupUseCaseModule by useCaseModule,
-        PopupPresenterModule by presenterModule,
-        HasModules {
+    AndroidModule by androidModule,
+    RepositoryModule by repositoryModule,
+    PopupUseCaseModule by useCaseModule,
+    PopupPresenterModule by presenterModule,
+    HasModules {
     override val modules = setOf(androidModule, repositoryModule, useCaseModule, presenterModule)
 }

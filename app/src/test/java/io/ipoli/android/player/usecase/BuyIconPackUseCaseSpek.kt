@@ -23,33 +23,33 @@ class BuyIconPackUseCaseSpek : Spek({
 
             val p = TestUtil.player().copy(
                 inventory = Inventory(
-                    iconPacks = setOf(IconPack.PACK_BASE)
+                    iconPacks = setOf(IconPack.BASIC)
                 )
             )
 
-            val exec = { executeUseCase(p, IconPack.PACK_BASE) }
+            val exec = { executeUseCase(p, IconPack.BASIC) }
             exec shouldThrow IllegalArgumentException::class
         }
 
         it("should not buy when not enough coins") {
             val p = TestUtil.player().copy(
-                coins = IconPack.PACK_BASE.price - 1,
+                coins = IconPack.BASIC.price - 1,
                 inventory = Inventory()
             )
-            val result = executeUseCase(p, IconPack.PACK_BASE)
+            val result = executeUseCase(p, IconPack.BASIC)
             result.`should be`(BuyIconPackUseCase.Result.TooExpensive)
         }
 
         it("should buy icon pack") {
             val p = TestUtil.player().copy(
-                coins = IconPack.PACK_BASE.price,
+                coins = IconPack.BASIC.price,
                 inventory = Inventory()
             )
-            val result = executeUseCase(p, IconPack.PACK_BASE)
+            val result = executeUseCase(p, IconPack.BASIC)
             result.`should be instance of`(BuyIconPackUseCase.Result.IconPackBought::class)
             val newPlayer = (result as BuyIconPackUseCase.Result.IconPackBought).player
-            newPlayer.coins.`should be equal to`(p.coins - IconPack.PACK_BASE.price)
-            newPlayer.hasIconPack(IconPack.PACK_BASE).`should be true`()
+            newPlayer.coins.`should be equal to`(p.coins - IconPack.BASIC.price)
+            newPlayer.hasIconPack(IconPack.BASIC).`should be true`()
         }
     }
 

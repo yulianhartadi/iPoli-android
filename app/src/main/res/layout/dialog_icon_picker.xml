@@ -17,24 +17,26 @@
     <LinearLayout
         android:id="@+id/unlockContainer"
         android:layout_width="match_parent"
-        android:visibility="invisible"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="invisible">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:maxHeight="350dp"
+            android:scaleType="center"
             android:src="@drawable/icon_pack" />
 
         <TextView
+            android:id="@+id/iconPackPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
             android:drawablePadding="8dp"
             android:drawableStart="@drawable/ic_life_coin_32dp"
-            android:text="500"
             android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
         <Button
@@ -44,8 +46,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
-            android:paddingStart="32dp"
             android:paddingEnd="32dp"
-            android:text="Unlock all icons" />
+            android:paddingStart="32dp"
+            android:text="@string/buy_icon_pack" />
     </LinearLayout>
 </FrameLayout>

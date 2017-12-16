@@ -32,7 +32,7 @@ data class Category(
 
 enum class ColorPack(val price: Int) {
     FREE(0),
-    PACK_BASE(300)
+    BASIC(300)
 }
 
 enum class Color(val pack: ColorPack) {
@@ -40,14 +40,14 @@ enum class Color(val pack: ColorPack) {
     GREEN(ColorPack.FREE),
     BLUE(ColorPack.FREE),
     PURPLE(ColorPack.FREE),
-    BROWN(ColorPack.PACK_BASE),
-    ORANGE(ColorPack.PACK_BASE),
-    PINK(ColorPack.PACK_BASE),
-    TEAL(ColorPack.PACK_BASE),
-    DEEP_ORANGE(ColorPack.PACK_BASE),
-    INDIGO(ColorPack.PACK_BASE),
-    BLUE_GREY(ColorPack.PACK_BASE),
-    LIME(ColorPack.PACK_BASE)
+    BROWN(ColorPack.BASIC),
+    ORANGE(ColorPack.BASIC),
+    PINK(ColorPack.BASIC),
+    TEAL(ColorPack.BASIC),
+    DEEP_ORANGE(ColorPack.BASIC),
+    INDIGO(ColorPack.BASIC),
+    BLUE_GREY(ColorPack.BASIC),
+    LIME(ColorPack.BASIC)
 }
 
 enum class Icon(val pack: IconPack) {
@@ -60,38 +60,38 @@ enum class Icon(val pack: IconPack) {
     HEART(IconPack.FREE),
     RUN(IconPack.FREE),
     MED_KIT(IconPack.FREE),
-    TREE(IconPack.PACK_BASE),
-    BEER(IconPack.PACK_BASE),
-    PLANE(IconPack.PACK_BASE),
-    COMPASS(IconPack.PACK_BASE),
-    LIGHT_BULB(IconPack.PACK_BASE),
-    CAR(IconPack.PACK_BASE),
-    WRENCH(IconPack.PACK_BASE),
-    STAR(IconPack.PACK_BASE),
-    FITNESS(IconPack.PACK_BASE),
-    COFFEE(IconPack.PACK_BASE),
-    BUS(IconPack.PACK_BASE),
-    ACADEMIC(IconPack.PACK_BASE),
-    CAKE(IconPack.PACK_BASE),
-    GAME_CONTROLLER(IconPack.PACK_BASE),
-    FLASK(IconPack.PACK_BASE),
-    SHOPPING_CART(IconPack.PACK_BASE),
-    BIKE(IconPack.PACK_BASE),
-    TRAIN(IconPack.PACK_BASE),
-    PIZZA(IconPack.PACK_BASE),
-    PHONE(IconPack.PACK_BASE),
-    CLOUD(IconPack.PACK_BASE),
-    SUN(IconPack.PACK_BASE),
-    AMERICAN_FOOTBALL(IconPack.PACK_BASE),
-    TROPHY(IconPack.PACK_BASE),
-    FOOTBALL(IconPack.PACK_BASE),
-    MONEY(IconPack.PACK_BASE),
-    CAMERA(IconPack.PACK_BASE)
+    TREE(IconPack.BASIC),
+    BEER(IconPack.BASIC),
+    PLANE(IconPack.BASIC),
+    COMPASS(IconPack.BASIC),
+    LIGHT_BULB(IconPack.BASIC),
+    CAR(IconPack.BASIC),
+    WRENCH(IconPack.BASIC),
+    STAR(IconPack.BASIC),
+    FITNESS(IconPack.BASIC),
+    COFFEE(IconPack.BASIC),
+    BUS(IconPack.BASIC),
+    ACADEMIC(IconPack.BASIC),
+    CAKE(IconPack.BASIC),
+    GAME_CONTROLLER(IconPack.BASIC),
+    FLASK(IconPack.BASIC),
+    SHOPPING_CART(IconPack.BASIC),
+    BIKE(IconPack.BASIC),
+    TRAIN(IconPack.BASIC),
+    PIZZA(IconPack.BASIC),
+    PHONE(IconPack.BASIC),
+    CLOUD(IconPack.BASIC),
+    SUN(IconPack.BASIC),
+    AMERICAN_FOOTBALL(IconPack.BASIC),
+    TROPHY(IconPack.BASIC),
+    FOOTBALL(IconPack.BASIC),
+    MONEY(IconPack.BASIC),
+    CAMERA(IconPack.BASIC)
 }
 
 enum class IconPack(val price: Int) {
     FREE(0),
-    PACK_BASE(300)
+    BASIC(300)
 }
 
 data class Quest(

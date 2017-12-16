@@ -49,10 +49,10 @@ sealed class IconPickerIntent : Intent {
 }
 
 data class IconPickerViewState(
-        val type: Type,
-        val petAvatar: PetAvatar? = null,
-        val selectedIcon: Icon? = null,
-        val viewModels: List<IconPickerDialogController.IconViewModel> = listOf()
+    val type: Type,
+    val petAvatar: PetAvatar? = null,
+    val selectedIcon: Icon? = null,
+    val viewModels: List<IconPickerDialogController.IconViewModel> = listOf()
 ) : ViewState {
     enum class Type {
         LOADING,
@@ -64,13 +64,13 @@ data class IconPickerViewState(
 }
 
 class IconPickerDialogPresenter(
-        private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
-        private val buyIconPackUseCase: BuyIconPackUseCase,
-        coroutineContext: CoroutineContext) :
-        BaseMviPresenter<ViewStateRenderer<IconPickerViewState>, IconPickerViewState, IconPickerIntent>(
-                IconPickerViewState(LOADING),
-                coroutineContext
-        ) {
+    private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
+    private val buyIconPackUseCase: BuyIconPackUseCase,
+    coroutineContext: CoroutineContext) :
+    BaseMviPresenter<ViewStateRenderer<IconPickerViewState>, IconPickerViewState, IconPickerIntent>(
+        IconPickerViewState(LOADING),
+        coroutineContext
+    ) {
     override fun reduceState(intent: IconPickerIntent, state: IconPickerViewState): IconPickerViewState {
         return when (intent) {
             is IconPickerIntent.LoadData -> {
@@ -80,7 +80,7 @@ class IconPickerDialogPresenter(
                     }
                 }
                 state.copy(
-                        selectedIcon = intent.selectedIcon
+                    selectedIcon = intent.selectedIcon
                 )
             }
 
@@ -88,21 +88,21 @@ class IconPickerDialogPresenter(
                 val player = intent.player
 
                 state.copy(
-                        type = DATA_CHANGED,
-                        petAvatar = player.pet.avatar,
-                        viewModels = createViewModels(state, player.inventory.iconPacks)
+                    type = DATA_CHANGED,
+                    petAvatar = player.pet.avatar,
+                    viewModels = createViewModels(state, player.inventory.iconPacks)
                 )
             }
 
             is IconPickerIntent.UnlockItem -> {
                 state.copy(
-                        type = SHOW_UNLOCK
+                    type = SHOW_UNLOCK
                 )
             }
 
             is IconPickerIntent.ShowIcons -> {
                 state.copy(
-                        type = SHOW_ICONS
+                    type = SHOW_ICONS
                 )
             }
 
@@ -113,7 +113,7 @@ class IconPickerDialogPresenter(
                     is BuyIconPackUseCase.Result.TooExpensive -> IconPickerViewState.Type.ICON_PACK_TOO_EXPENSIVE
                 }
                 state.copy(
-                        type = type
+                    type = type
                 )
             }
         }
@@ -128,7 +128,7 @@ class IconPickerDialogPresenter(
 }
 
 class IconPickerDialogController : MviDialogController<IconPickerViewState, IconPickerDialogController, IconPickerDialogPresenter, IconPickerIntent>
-        , ViewStateRenderer<IconPickerViewState>, Injects<ControllerModule> {
+    , ViewStateRenderer<IconPickerViewState>, Injects<ControllerModule> {
 
     private var listener: (Icon?) -> Unit = {}
     private var selectedIcon: AndroidIcon? = null
@@ -152,13 +152,13 @@ class IconPickerDialogController : MviDialogController<IconPickerViewState, Icon
         contentView.iconGrid.layoutManager = GridLayoutManager(activity!!, 4)
 
         val dialog = AlertDialog.Builder(activity!!)
-                .setView(contentView)
-                .setTitle(R.string.icon_picker_title)
-                .setNegativeButton(R.string.cancel, null)
-                .setNeutralButton(R.string.no_icon, { _, _ ->
-                    listener(null)
-                })
-                .create()
+            .setView(contentView)
+            .setTitle(R.string.icon_picker_title)
+            .setNegativeButton(R.string.cancel, null)
+            .setNeutralButton(R.string.no_icon, { _, _ ->
+                listener(null)
+            })
+            .create()
 
         return DialogView(dialog, contentView)
     }
@@ -192,16 +192,7 @@ class IconPickerDialogController : MviDialogController<IconPickerViewState, Icon
                 val fadeIn = ObjectAnimator.ofFloat(dialog.window.decorView, "alpha", 0.5f, 1f)
                 fadeIn.addListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationStart(animation: Animator?) {
-                        view.iconGrid.visibility = View.GONE
-                        view.unlockContainer.visibility = View.VISIBLE
-                        changeTitle(R.string.unlock_icon_pack_title)
-                        changeNeutralButtonText(R.string.back)
-                        setNeutralButtonListener {
-                            send(IconPickerIntent.ShowIcons)
-                        }
-                        view.buyIconPack.setOnClickListener {
-                            send(IconPickerIntent.BuyIconPack(IconPack.PACK_BASE))
-                        }
+                        renderBuyIconPack(view)
                     }
                 })
 
@@ -229,6 +220,20 @@ class IconPickerDialogController : MviDialogController<IconPickerViewState, Icon
         }
     }
 
+    private fun renderBuyIconPack(view: View) {
+        view.iconGrid.visibility = View.GONE
+        view.unlockContainer.visibility = View.VISIBLE
+        changeTitle(R.string.unlock_icon_pack_title)
+        changeNeutralButtonText(R.string.back)
+        setNeutralButtonListener {
+            send(IconPickerIntent.ShowIcons)
+        }
+        view.buyIconPack.setOnClickListener {
+            send(IconPickerIntent.BuyIconPack(IconPack.BASIC))
+        }
+        view.iconPackPrice.text = IconPack.BASIC.price.toString()
+    }
+
     data class IconViewModel(val icon: Icon, val isSelected: Boolean, val isLocked: Boolean)
 
     inner class IconAdapter(private var icons: List<IconViewModel>) : RecyclerView.Adapter<IconAdapter.ViewHolder>() {
@@ -240,11 +245,11 @@ class IconPickerDialogController : MviDialogController<IconPickerViewState, Icon
             val androidIcon = AndroidIcon.valueOf(vm.icon.name)
 
             iconView.setImageDrawable(
-                    IconicsDrawable(iconView.context)
-                            .icon(androidIcon.icon)
-                            .colorRes(if (vm.isSelected) R.color.md_white else androidIcon.color)
-                            .paddingDp(8)
-                            .sizeDp(48)
+                IconicsDrawable(iconView.context)
+                    .icon(androidIcon.icon)
+                    .colorRes(if (vm.isSelected) R.color.md_white else androidIcon.color)
+                    .paddingDp(8)
+                    .sizeDp(48)
             )
 
             if (vm.isSelected) {
@@ -274,7 +279,7 @@ class IconPickerDialogController : MviDialogController<IconPickerViewState, Icon
         override fun getItemCount() = icons.size
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-                ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_icon_picker, parent, false))
+            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_icon_picker, parent, false))
 
         fun updateAll(viewModels: List<IconViewModel>) {
             this.icons = viewModels

@@ -81,6 +81,9 @@ data class Player(
 
     fun hasIconPack(iconPack: IconPack) =
         inventory.hasIconPack(iconPack)
+
+    fun hasColorPack(colorPack: ColorPack) =
+        inventory.hasColorPack(colorPack)
 }
 
 data class InventoryPet(val name: String, val avatar: PetAvatar) {
@@ -148,6 +151,12 @@ data class Inventory(
 
     fun addIconPack(iconPack: IconPack) =
         copy(iconPacks = this.iconPacks + iconPack)
+
+    fun hasColorPack(colorPack: ColorPack) =
+        colorPacks.contains(colorPack)
+
+    fun addColorPack(colorPack: ColorPack) =
+        copy(colorPacks = this.colorPacks + colorPack)
 }
 
 data class AuthProvider(
