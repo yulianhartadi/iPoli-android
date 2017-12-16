@@ -989,7 +989,7 @@
     <string name="theme_red">Dragon Breath</string>
     <string name="theme_orange">Orange Juice</string>
     <string name="theme_pink">Pinky Swear</string>
-    <string name="theme_green">Nature Calls</string>
+    <string name="theme_green">Inspiration</string>
     <string name="theme_blue">Blue Lagoon</string>
     <string name="theme_purple">Dreamland</string>
     <string name="theme_blue_grey">Silver Mist</string>
@@ -1008,6 +1008,7 @@
     <string name="unlock_color_pack_title">Buy the Color Pack</string>
     <string name="color_picker_title">Choose color</string>
     <string name="color_pack_not_enough_coins">Color Pack is too expensive</string>
+    <string name="free">FREE</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

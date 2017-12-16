@@ -25,7 +25,7 @@ data class Player(
     ),
     val inventory: Inventory = Inventory(
         food = mapOf(
-            Food.BANANA to 1
+            Food.BANANA to 2
         ),
         pets = setOf(InventoryPet.fromPet(pet)),
         themes = setOf(currentTheme),

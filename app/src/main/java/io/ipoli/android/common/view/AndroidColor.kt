@@ -79,7 +79,7 @@ enum class AndroidColor(@ColorRes val color200: Int,
 
     LIME(
         R.color.md_lime_200,
-        R.color.md_lime_500,
-        R.color.md_lime_700,
-        R.color.md_blue_grey_900);
+        R.color.md_lime_600,
+        R.color.md_lime_800,
+        R.color.md_lime_900);
 }
