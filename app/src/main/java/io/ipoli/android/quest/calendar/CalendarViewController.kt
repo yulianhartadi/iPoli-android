@@ -100,6 +100,12 @@ class CalendarViewController(args: Bundle? = null) :
     }
 
     private fun initAddQuest(view: View) {
+        view.addContainerBackground.setOnClickListener {
+            addContainerRouter(view).popCurrentController()
+            ViewUtils.hideKeyboard(view)
+            closeAddContainer()
+        }
+
         view.addQuest.setOnClickListener {
             openAddContainer()
         }
@@ -123,8 +129,7 @@ class CalendarViewController(args: Bundle? = null) :
                 animateShowAddContainer()
 
                 val handler = CircularRevealChangeHandler(addContainer, addContainer, duration = shortAnimTime)
-                val childRouter = getChildRouter(view!!.addContainer, "add-quest")
-//                childRouter.setPopsLastView(true)
+                val childRouter = addContainerRouter(view!!)
                 val addQuestViewController = AddQuestViewController({
                     childRouter.popCurrentController()
                     closeAddContainer()
@@ -138,6 +143,9 @@ class CalendarViewController(args: Bundle? = null) :
             }
         })
     }
+
+    private fun addContainerRouter(view: View) =
+        getChildRouter(view.addContainer, "add-quest")
 
     private fun animateShowAddContainer() {
         val addContainerBackground = view!!.addContainerBackground
