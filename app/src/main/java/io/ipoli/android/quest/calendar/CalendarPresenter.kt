@@ -105,12 +105,15 @@ class CalendarPresenter(
                     else -> XP_AND_COINS_CHANGED
                 }
 
+                val thisLevelXP = ExperienceForLevelGenerator.forLevel(player.level).toInt()
+                val nextLevelXP = ExperienceForLevelGenerator.forLevel(player.level + 1).toInt()
+
                 state.copy(
                     type = type,
                     level = player.level,
-                    progress = player.experience.toInt(),
+                    progress = player.experience.toInt() - thisLevelXP,
                     coins = player.coins,
-                    maxProgress = ExperienceForLevelGenerator.forLevel(player.level + 1).toInt()
+                    maxProgress = nextLevelXP - thisLevelXP
                 )
             }
         }
