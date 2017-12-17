@@ -26,7 +26,6 @@ import kotlinx.android.synthetic.main.popup_quest_complete.view.*
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
-import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 data class QuestCompleteViewState(
@@ -51,7 +50,6 @@ class QuestCompletePresenter(private val listenForPlayerChangesUseCase: ListenFo
             is QuestCompleteIntent.LoadData -> {
                 launch {
                     listenForPlayerChangesUseCase.execute(Unit).consumeEach {
-                        Timber.d("AAA change player intent")
                         sendChannel.send(QuestCompleteIntent.ChangePlayer(it))
                     }
                 }
@@ -125,7 +123,7 @@ class QuestCompletePopup(
 
         val coinsAnim = ValueAnimator.ofInt(0, state.coins!!)
         coinsAnim.addUpdateListener {
-            earnedCoins.text = "+ ${it.animatedValue} life coins"
+            earnedCoins.text = "+ ${it.animatedValue} Life Coins"
         }
 
         val anim = AnimatorSet()
