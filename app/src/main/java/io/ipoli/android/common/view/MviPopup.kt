@@ -84,8 +84,8 @@ abstract class MviPopup<VS : ViewState, in V : ViewStateRenderer<VS>, out P : Mv
         overlayView.setBackgroundResource(R.color.md_dark_text_12)
 
         val contentLp = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
-        contentLp.marginStart = ViewUtils.dpToPx(24f, context).toInt()
-        contentLp.marginEnd = ViewUtils.dpToPx(24f, context).toInt()
+        contentLp.marginStart = ViewUtils.dpToPx(32f, context).toInt()
+        contentLp.marginEnd = ViewUtils.dpToPx(32f, context).toInt()
         when (position) {
             Position.CENTER -> contentLp.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
             Position.TOP -> {
