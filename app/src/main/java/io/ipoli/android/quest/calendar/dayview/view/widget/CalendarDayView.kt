@@ -8,6 +8,7 @@ import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Looper
+import android.support.annotation.LayoutRes
 import android.support.transition.AutoTransition
 import android.support.transition.TransitionManager
 import android.support.v7.widget.LinearLayoutManager
@@ -119,7 +120,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         val eventId: String = "",
         val height: Int? = null,
         val isNewEvent: Boolean = false,
-        val visibleHours: Int = DEFAULT_VISIBLE_HOURS,
+        val visibleHours: Int?,
         val hourHeight: Float = 0f,
         val zoomDistance: Float? = null,
         val isScrollLocked: Boolean = false,
@@ -143,6 +144,9 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private lateinit var dragImage: Drawable
     private var dragImageSize: Int = toPx(16)
     private var dragImagePadding: Int = toPx(0)
+    private var initialVisibleHours: Int = 0
+    @LayoutRes
+    private var timeLineLayout: Int = 0
 
     private lateinit var editModeBackground: View
     private lateinit var topDragView: View
@@ -273,7 +277,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         })
 
     private fun setupTimeLine() {
-        timeLineView = inflater.inflate(R.layout.calendar_time_line, eventContainer, false)
+        timeLineView = inflater.inflate(timeLineLayout, eventContainer, false)
 
         timeLineView.post {
             val timeLineHeight = timeLineView.height
@@ -289,8 +293,11 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun setupFSM() {
-        val hourHeight = getScreenHeight() / DEFAULT_VISIBLE_HOURS.toFloat()
-        fsm = FSM(State(State.Type.VIEW, hourHeight = hourHeight), this)
+        val hourHeight = getScreenHeight() / initialVisibleHours.toFloat()
+        fsm = FSM(
+            State(State.Type.VIEW, hourHeight = hourHeight, visibleHours = initialVisibleHours),
+            this
+        )
 
         listenForZoom()
 
@@ -621,7 +628,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun createNewZoomState(state: State, event: Event.Zoom): State {
-        val visibleHours = calculateNewVisibleHours(state.visibleHours, event.scaleFactor)
+        val visibleHours = calculateNewVisibleHours(state.visibleHours!!, event.scaleFactor)
         return state.copy(
             visibleHours = visibleHours,
             zoomDistance = event.zoomDistance,
@@ -644,7 +651,10 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun resizeTimeLine(minuteHeight: Float) {
-        timeLineView.setTopPosition(Time.now().toPosition(minuteHeight))
+        timeLineView.post {
+            val timeLineHeight = timeLineView.height
+            timeLineView.setTopPosition(Time.now().toPosition(minuteHeight) - timeLineHeight / 2)
+        }
     }
 
     private fun resizeCalendarEvents(minuteHeight: Float) {
@@ -716,6 +726,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             dragImage = a.getDrawable(R.styleable.CalendarDayView_dragImage)
             dragImageSize = a.getDimensionPixelSize(R.styleable.CalendarDayView_dragImageSize, dragImageSize)
             dragImagePadding = a.getDimensionPixelSize(R.styleable.CalendarDayView_dragImagePadding, dragImagePadding)
+            initialVisibleHours = a.getInt(R.styleable.CalendarDayView_visibleHours, DEFAULT_VISIBLE_HOURS)
+            timeLineLayout = a.getResourceId(R.styleable.CalendarDayView_timeLineLayout, R.layout.calendar_time_line)
             a.recycle()
         }
     }
@@ -723,7 +735,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     private fun setupEditBackgroundView() {
         editModeBackground = View(context)
         editModeBackground.layoutParams = FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        editModeBackground.setBackgroundResource(R.color.md_dark_text_12)
+        editModeBackground.setBackgroundResource(R.color.md_dark_text_26)
         editModeBackground.visibility = View.GONE
         addView(editModeBackground)
     }
@@ -764,6 +776,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     fun setUnscheduledEventsAdapter(adapter: UnscheduledEventsAdapter<*>) {
         unscheduledEventsAdapter = adapter
         unscheduledEvents.adapter = adapter
+        unscheduledEventsDivider.visible = adapter.itemCount != 0
     }
 
     fun setScheduledEventsAdapter(adapter: ScheduledEventsAdapter<*>) {
@@ -991,7 +1004,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun getMinutesFor(height: Int): Int =
-        (height / fsm.state.minuteHeight).toInt()
+        Math.ceil((height / fsm.state.minuteHeight).toDouble()).toInt()
 
     private fun showViews(vararg views: View) =
         views.forEach { it.visibility = View.VISIBLE }
@@ -1038,7 +1051,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun scrollPositionFrom(time: Time): Int {
-        val hourOffset = Math.floor((fsm.state.visibleHours * .3)).toInt()
+        val hourOffset = Math.floor((fsm.state.visibleHours!! * .3)).toInt()
         val scrollHours = max(hourOffset, time.hours - hourOffset)
         return Time.at(scrollHours, time.getMinutes()).toPosition(fsm.state.minuteHeight).toInt()
     }

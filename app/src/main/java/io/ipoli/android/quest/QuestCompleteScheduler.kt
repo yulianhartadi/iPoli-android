@@ -1,18 +1,16 @@
 package io.ipoli.android.quest
 
-import android.view.ContextThemeWrapper
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
-import io.ipoli.android.R
+import io.ipoli.android.common.Reward
 import io.ipoli.android.common.di.ControllerModule
-import io.ipoli.android.common.di.JobModule
-import io.ipoli.android.iPoliApp
+import io.ipoli.android.common.view.asThemedWrapper
+import io.ipoli.android.pet.Food
 import io.ipoli.android.quest.view.QuestCompletePopup
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Injects
-import space.traversal.kapsule.Kapsule
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -21,18 +19,25 @@ import space.traversal.kapsule.Kapsule
 
 class QuestCompleteJob : Job(), Injects<ControllerModule> {
     override fun onRunJob(params: Params): Result {
-        val questId = params.extras.getString("questId", "")
+        val experience = params.extras.getInt("experience", 0)
+        val coins = params.extras.getInt("coins", 0)
 
-        val kap = Kapsule<JobModule>()
-        val findCompletedQuestUseCase by kap.required { findCompletedQuestUseCase }
-        kap.inject(iPoliApp.jobModule(context))
+        require(experience > 0)
+        require(coins > 0)
 
-        val quest = findCompletedQuestUseCase.execute(questId)
+        val bountyParam = params.extras.getString("bounty", null)
+        val bounty = bountyParam?.let {
+            Food.valueOf(it)
+        }
 
-        val c = ContextThemeWrapper(context, R.style.Theme_iPoli)
+        val c = context.asThemedWrapper()
 
         launch(UI) {
-            QuestCompletePopup(quest.experience!!, quest.coins!!).show(c)
+            QuestCompletePopup(
+                experience,
+                coins,
+                bounty
+            ).show(c)
         }
 
         return Result.SUCCESS
@@ -44,13 +49,19 @@ class QuestCompleteJob : Job(), Injects<ControllerModule> {
 }
 
 interface QuestCompleteScheduler {
-    fun schedule(questId: String)
+    fun schedule(reward: Reward)
 }
 
 class AndroidJobQuestCompleteScheduler : QuestCompleteScheduler {
-    override fun schedule(questId: String) {
+    override fun schedule(reward: Reward) {
         val bundle = PersistableBundleCompat()
-        bundle.putString("questId", questId)
+        bundle.putInt("experience", reward.experience)
+        bundle.putInt("coins", reward.coins)
+        val bounty = reward.bounty
+        if (bounty is Quest.Bounty.Food) {
+            bundle.putString("bounty", bounty.food.name)
+        }
+
         JobRequest.Builder(QuestCompleteJob.TAG)
             .setExtras(bundle)
             .startNow()

@@ -7,36 +7,28 @@ import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
-import android.support.v4.content.ContextCompat
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
-import android.support.v7.widget.Toolbar
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
-import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
-import io.ipoli.android.common.mvi.ViewStateRenderer
-import io.ipoli.android.common.view.RevealAnimator
+import io.ipoli.android.common.view.*
 import io.ipoli.android.common.view.changehandler.CircularRevealChangeHandler
-import io.ipoli.android.common.view.colorRes
-import io.ipoli.android.common.view.intRes
-import io.ipoli.android.common.view.visible
+import io.ipoli.android.pet.PetViewController
 import io.ipoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import io.ipoli.android.quest.calendar.CalendarViewState.StateType.*
 import io.ipoli.android.quest.calendar.addquest.AddQuestViewController
 import io.ipoli.android.quest.calendar.dayview.view.DayViewController
 import kotlinx.android.synthetic.main.controller_calendar.view.*
-import kotlinx.android.synthetic.main.controller_calendar_toolbar.view.*
+import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
 import org.threeten.bp.LocalDate
-import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
 import sun.bob.mcalendarview.CellConfig
 import sun.bob.mcalendarview.MarkStyle
@@ -45,9 +37,7 @@ import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
 
 class CalendarViewController(args: Bundle? = null) :
-    MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>(args),
-    Injects<ControllerModule>,
-    ViewStateRenderer<CalendarViewState> {
+    MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>(args) {
 
     companion object {
         const val MAX_VISIBLE_DAYS = 100
@@ -61,7 +51,7 @@ class CalendarViewController(args: Bundle? = null) :
 
     private val pageChangeListener = object : ViewPager.SimpleOnPageChangeListener() {
         override fun onPageSelected(position: Int) {
-            send(SwipeChangeDateIntent(position))
+            send(CalendarIntent.SwipeChangeDate(position))
         }
     }
 
@@ -71,12 +61,10 @@ class CalendarViewController(args: Bundle? = null) :
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
-
         val view = inflater.inflate(R.layout.controller_calendar, container, false)
+        setHasOptionsMenu(true)
 
-        val toolbar = activity!!.findViewById<Toolbar>(R.id.toolbar)
-        calendarToolbar = inflater.inflate(R.layout.controller_calendar_toolbar, toolbar, false) as ViewGroup
-        toolbar.addView(calendarToolbar)
+        calendarToolbar = addToolbarView(R.layout.view_calendar_toolbar) as ViewGroup
 
         initDayPicker(view, calendarToolbar)
 
@@ -85,14 +73,38 @@ class CalendarViewController(args: Bundle? = null) :
         return view
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.calendar_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.actionPet) {
+            showPet()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun showPet() {
+        val handler = FadeChangeHandler()
+        router.pushController(
+            RouterTransaction.with(PetViewController())
+                .pushChangeHandler(handler)
+                .popChangeHandler(handler)
+        )
+    }
+
     private fun initAddQuest(view: View) {
-        view.addQuest.setOnClickListener {
-            openAddContainer()
+        view.addContainerBackground.setOnClickListener {
+            addContainerRouter(view).popCurrentController()
+            ViewUtils.hideKeyboard(view)
+            closeAddContainer()
         }
     }
 
-    private fun openAddContainer() {
+    private fun openAddContainer(currentDate: LocalDate) {
         val addContainer = view!!.addContainer
+
         val fab = view!!.addQuest
 
         val halfWidth = addContainer.width / 2
@@ -104,29 +116,37 @@ class CalendarViewController(args: Bundle? = null) :
             override fun onAnimationEnd(animation: Animator?) {
                 addContainer.visibility = View.VISIBLE
                 fab.visibility = View.INVISIBLE
-                val handler = CircularRevealChangeHandler(addContainer, addContainer, duration = 200)
-                val childRouter = getChildRouter(view!!.addContainer, "add-quest")
-                val addQuestViewController = AddQuestViewController()
 
-                addQuestViewController.addLifecycleListener(object : LifecycleListener() {
-                    override fun postDestroy(controller: Controller) {
-                        super.postDestroy(controller)
-                        closeAddContainer()
-                    }
+                animateShowAddContainer()
 
-                })
+                val handler = CircularRevealChangeHandler(addContainer, addContainer, duration = shortAnimTime)
+                val childRouter = addContainerRouter(view!!)
+                val addQuestViewController = AddQuestViewController({
+                    childRouter.popCurrentController()
+                    closeAddContainer()
+                }, currentDate)
 
                 childRouter.setRoot(
                     RouterTransaction.with(addQuestViewController)
                         .pushChangeHandler(handler)
                         .popChangeHandler(handler)
                 )
-
             }
         })
     }
 
+    private fun addContainerRouter(view: View) =
+        getChildRouter(view.addContainer, "add-quest")
+
+    private fun animateShowAddContainer() {
+        val addContainerBackground = view!!.addContainerBackground
+        addContainerBackground.alpha = 0f
+        addContainerBackground.visibility = View.VISIBLE
+        addContainerBackground.animate().alpha(1f).setDuration(longAnimTime).start()
+    }
+
     private fun closeAddContainer() {
+        view!!.addContainerBackground.visibility = View.GONE
         val duration = view!!.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
         val addContainer = view!!.addContainer
         val fab = view!!.addQuest
@@ -142,6 +162,9 @@ class CalendarViewController(args: Bundle? = null) :
         revealAnim.addListener(object : AnimatorListenerAdapter() {
 
             override fun onAnimationEnd(animation: Animator?) {
+                if (view == null) {
+                    return
+                }
                 addContainer.visibility = View.INVISIBLE
                 view!!.addContainer.requestFocus()
                 fab.visibility = View.VISIBLE
@@ -163,11 +186,11 @@ class CalendarViewController(args: Bundle? = null) :
         val duration = view!!.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
         val fabTranslation = ObjectAnimator.ofFloat(fab, "x", x)
 
-        val fabColor = ContextCompat.getColor(fab.context, R.color.colorAccent)
-        val whiteColor = ContextCompat.getColor(fab.context, R.color.md_white)
+        val fabColor = attr(R.attr.colorAccent)
+        val primaryColor = attr(R.attr.colorPrimary)
 
-        val startColor = if (reverse) whiteColor else fabColor
-        val endColor = if (reverse) fabColor else whiteColor
+        val startColor = if (reverse) primaryColor else fabColor
+        val endColor = if (reverse) fabColor else primaryColor
 
         val rgbAnim = ObjectAnimator.ofArgb(
             fab,
@@ -179,44 +202,40 @@ class CalendarViewController(args: Bundle? = null) :
             fab.backgroundTintList = ColorStateList.valueOf(value)
         })
 
-        val fabSet = AnimatorSet()
-        fabSet.playTogether(fabTranslation, rgbAnim)
-        fabSet.interpolator = AccelerateDecelerateInterpolator()
-        fabSet.duration = duration
-        return fabSet
+        return AnimatorSet().also {
+            it.playTogether(fabTranslation, rgbAnim)
+            it.interpolator = AccelerateDecelerateInterpolator()
+            it.duration = duration
+        }
     }
 
     override fun onAttach(view: View) {
+        hideBackButton()
         super.onAttach(view)
-        send(LoadDataIntent(LocalDate.now()))
+        send(CalendarIntent.LoadData(LocalDate.now()))
     }
 
     private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
         view.datePickerContainer.visibility = View.GONE
-        val calendarIndicator = calendarToolbar.calendarIndicator
-        view.datePicker.setMarkedStyle(MarkStyle.BACKGROUND, colorRes(R.color.colorAccent))
+
+        view.datePicker.setMarkedStyle(MarkStyle.BACKGROUND, attr(R.attr.colorAccent))
 
         val currentDate = LocalDate.now()
         view.datePicker.markDate(DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth))
 
-        calendarToolbar.setOnClickListener {
-            calendarIndicator.animate().rotationBy(180f).duration = 200
-            send(ExpandToolbarIntent)
-        }
+        calendarToolbar.sendOnClick(CalendarIntent.ExpandToolbar)
 
-        view.expander.setOnClickListener {
-            send(ExpandToolbarWeekIntent)
-        }
+        view.expander.sendOnClick(CalendarIntent.ExpandToolbarWeek)
 
         view.datePicker.setOnDateClickListener(object : OnDateClickListener() {
             override fun onDateClick(v: View, date: DateData) {
-                send(CalendarChangeDateIntent(date.year, date.month, date.day))
+                send(CalendarIntent.CalendarChangeDate(date.year, date.month, date.day))
             }
         })
 
         view.datePicker.setOnMonthScrollListener(object : OnMonthScrollListener() {
             override fun onMonthChange(year: Int, month: Int) {
-                send(ChangeMonthIntent(year, month))
+                send(CalendarIntent.ChangeMonth(year, month))
             }
 
             override fun onMonthScroll(positionOffset: Float) {
@@ -234,50 +253,53 @@ class CalendarViewController(args: Bundle? = null) :
         calendarToolbar.date.text = state.dateText
         view.currentMonth.text = state.monthText
 
-        if (state.type == LOADING) {
-            levelProgress.visible = false
+        view.addQuest.setOnClickListener {
+            openAddContainer(state.currentDate)
         }
 
-        if (state.type == XP_AND_COINS_CHANGED) {
-            levelProgress.visible = true
-            val animator = ObjectAnimator.ofInt(levelProgress, "progress", levelProgress.progress, state.progress)
-            animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
-            animator.start()
-            calendarToolbar.playerCoins.text = state.coins.toString()
-        }
+        when (state.type) {
 
-        if (state.type == LEVEL_CHANGED) {
-            levelProgress.progress = state.progress
-            levelProgress.max = state.maxProgress
-            calendarToolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
-        }
+            LOADING -> levelProgress.visible = false
 
-        if (state.type == DATE_PICKER_CHANGED) {
-            renderDatePicker(state.datePickerState, view, state.currentDate)
-        }
+            XP_AND_COINS_CHANGED -> {
+                levelProgress.visible = true
+                val animator = ObjectAnimator.ofInt(levelProgress, "progress", levelProgress.progress, state.progress)
+                animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
+                animator.start()
+                calendarToolbar.playerCoins.text = state.coins.toString()
+            }
 
-        if (state.type == DATA_LOADED) {
-            removeDayViewPagerAdapter(view)
-            createDayViewPagerAdapter(state, view)
-        }
+            LEVEL_CHANGED -> {
+                levelProgress.max = state.maxProgress
+                levelProgress.progress = state.progress
+                calendarToolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
+            }
 
-        if (state.type == PLAYER_LOADED) {
-            levelProgress.visible = true
-            levelProgress.progress = state.progress
-            levelProgress.max = state.maxProgress
-            calendarToolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
-            calendarToolbar.playerCoins.text = state.coins.toString()
-        }
+            DATE_PICKER_CHANGED -> renderDatePicker(state.datePickerState, view, state.currentDate)
 
-        if (state.type == CALENDAR_DATE_CHANGED) {
-            markSelectedDate(view, state.currentDate)
-            removeDayViewPagerAdapter(view)
-            createDayViewPagerAdapter(state, view)
-        }
+            DATA_LOADED -> {
+                removeDayViewPagerAdapter(view)
+                createDayViewPagerAdapter(state, view)
+            }
 
-        if (state.type == SWIPE_DATE_CHANGED) {
-            markSelectedDate(view, state.currentDate)
-            updateDayViewPagerAdapter(state)
+            PLAYER_LOADED -> {
+                levelProgress.visible = true
+                levelProgress.max = state.maxProgress
+                levelProgress.progress = state.progress
+                calendarToolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
+                calendarToolbar.playerCoins.text = state.coins.toString()
+            }
+
+            CALENDAR_DATE_CHANGED -> {
+                markSelectedDate(view, state.currentDate)
+                removeDayViewPagerAdapter(view)
+                createDayViewPagerAdapter(state, view)
+            }
+
+            SWIPE_DATE_CHANGED -> {
+                markSelectedDate(view, state.currentDate)
+                updateDayViewPagerAdapter(state)
+            }
         }
     }
 
@@ -290,6 +312,7 @@ class CalendarViewController(args: Bundle? = null) :
     }
 
     private fun showWeekDatePicker(view: View, currentDate: LocalDate) {
+        calendarToolbar.calendarIndicator.animate().rotation(180f).duration = shortAnimTime
         val layoutParams = view.pager.layoutParams as ViewGroup.MarginLayoutParams
         CellConfig.Month2WeekPos = CellConfig.middlePosition
         CellConfig.ifMonth = false
@@ -310,6 +333,7 @@ class CalendarViewController(args: Bundle? = null) :
     }
 
     private fun hideDatePicker(view: View, currentDate: LocalDate) {
+        calendarToolbar.calendarIndicator.animate().rotation(0f).duration = shortAnimTime
         view.datePickerContainer.visibility = View.GONE
         val layoutParams = view.pager.layoutParams as ViewGroup.MarginLayoutParams
         layoutParams.topMargin = 0
@@ -348,8 +372,7 @@ class CalendarViewController(args: Bundle? = null) :
             view.pager.adapter = null
         }
 
-        val toolbar = activity!!.findViewById<Toolbar>(R.id.toolbar)
-        toolbar.removeView(calendarToolbar)
+        removeToolbarView(calendarToolbar)
 
         super.onDestroyView(view)
     }
@@ -372,9 +395,11 @@ class CalendarViewController(args: Bundle? = null) :
 
     fun onStartEdit() {
         view!!.addQuest.visible = false
+        view!!.pager.isLocked = true
     }
 
     fun onStopEdit() {
         view!!.addQuest.visible = true
+        view!!.pager.isLocked = false
     }
 }

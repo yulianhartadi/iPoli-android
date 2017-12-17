@@ -12,9 +12,10 @@ import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnticipateInterpolator
 import io.ipoli.android.R
-import io.ipoli.android.common.view.BaseOverlayViewController
+import io.ipoli.android.common.view.MviPopup
+import io.ipoli.android.pet.AndroidPetAvatar
+import io.ipoli.android.pet.Pet
 import kotlinx.android.synthetic.main.view_reminder.view.*
-
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -25,11 +26,11 @@ data class ReminderNotificationViewModel(
     val questId: String,
     val name: String,
     val message: String,
-    val startTimeMessage: String
+    val startTimeMessage: String,
+    val pet: Pet
 )
 
-
-class ReminderNotificationPopup(private val reminder: ReminderNotificationViewModel, private val listener: OnClickListener) {
+class ReminderNotificationPopup(private val viewModel: ReminderNotificationViewModel, private val listener: OnClickListener) {
 
     interface OnClickListener {
         fun onDismiss()
@@ -51,10 +52,12 @@ class ReminderNotificationPopup(private val reminder: ReminderNotificationViewMo
 
     private fun initUI() {
         with(overlayView) {
-            name.text = reminder.name
-            message.text = reminder.message
-            startTimeMessage.text = reminder.startTimeMessage
-
+            name.text = viewModel.name
+            message.text = viewModel.message
+            startTimeMessage.text = viewModel.startTimeMessage
+            val petAvatar = AndroidPetAvatar.valueOf(viewModel.pet.avatar.name)
+            pet.setImageResource(petAvatar.image)
+            petState.setImageResource(petAvatar.moodImage[viewModel.pet.mood]!!)
         }
         initButtons()
     }
@@ -100,7 +103,7 @@ class ReminderNotificationPopup(private val reminder: ReminderNotificationViewMo
         val layoutParams = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT,
-            BaseOverlayViewController.WindowOverlayCompat.TYPE_SYSTEM_ERROR,
+            MviPopup.WindowOverlayCompat.TYPE_SYSTEM_ERROR,
             focusable,
             PixelFormat.TRANSLUCENT)
 

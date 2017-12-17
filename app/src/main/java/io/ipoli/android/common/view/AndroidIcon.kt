@@ -47,5 +47,5 @@ enum class AndroidIcon(val icon: IIcon, @ColorRes val color: Int) {
     TROPHY(Entypo.Icon.ent_trophy, R.color.md_yellow_600),
     FOOTBALL(Ionicons.Icon.ion_ios_football, R.color.md_orange_500),
     MONEY(Entypo.Icon.ent_credit, R.color.md_green_500),
-    CAMERA(Ionicons.Icon.ion_ios_videocam, R.color.md_purple_500),
+    CAMERA(Ionicons.Icon.ion_ios_videocam, R.color.md_purple_300),
 }

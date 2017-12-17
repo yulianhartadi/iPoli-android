@@ -48,7 +48,9 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
     private fun stateReduceActor(view: V) = actor<I>(coroutineContext + CommonPool, Channel.CONFLATED) {
         var state = initialState
         launch(coroutineContext + UI) {
+
             renderInitialState(view)
+
             channel.consumeEach { intent ->
 
                 val oldState = state
@@ -70,7 +72,7 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
         val data = JSONObject()
         data.put("initial", initialState)
         Amplitude.getInstance().logEvent("change_state", data)
-        Timber.d("intial state $initialState")
+        Timber.d("initial state $initialState")
         view.render(initialState)
     }
 

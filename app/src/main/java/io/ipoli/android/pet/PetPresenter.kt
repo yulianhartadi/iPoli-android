@@ -4,10 +4,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.pet.PetViewState.StateType.*
-import io.ipoli.android.pet.usecase.FeedPetUseCase
-import io.ipoli.android.pet.usecase.Parameters
-import io.ipoli.android.pet.usecase.Result
-import io.ipoli.android.pet.usecase.RevivePetUseCase
+import io.ipoli.android.pet.usecase.*
 import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
@@ -20,6 +17,7 @@ import kotlin.coroutines.experimental.CoroutineContext
 class PetPresenter(
     private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
     private val feedPetUseCase: FeedPetUseCase,
+    private val renamePetUseCase: RenamePetUseCase,
     private val revivePetUseCase: RevivePetUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<PetViewState>, PetViewState, PetIntent>(
@@ -34,9 +32,7 @@ class PetPresenter(
                         sendChannel.send(ChangePlayerIntent(it))
                     }
                 }
-                state.copy(
-                    type = DATA_LOADED
-                )
+                state
             }
             is ShowFoodListIntent -> {
                 state.copy(
@@ -56,10 +52,13 @@ class PetPresenter(
                     is Result.TooExpensive -> state.copy(type = FOOD_TOO_EXPENSIVE)
                     is Result.PetFed -> {
 
+                        val pet = result.player.pet
                         state.copy(
                             type = PET_FED,
                             food = intent.food,
-                            wasFoodTasty = result.wasFoodTasty
+                            wasFoodTasty = result.wasFoodTasty,
+                            mood = pet.mood,
+                            isDead = pet.isDead
                         )
                     }
                 }
@@ -68,8 +67,14 @@ class PetPresenter(
             is ChangePlayerIntent -> {
                 val food = intent.player.inventory.food
                 val pet = intent.player.pet
+
+                val type = when {
+                    state.petName.isEmpty() -> DATA_LOADED
+                    else -> PET_CHANGED
+                }
+
                 state.copy(
-                    type = PET_CHANGED,
+                    type = type,
                     petName = pet.name,
                     stateName = pet.mood.name.toLowerCase().capitalize(),
                     mp = pet.moodPoints,
@@ -80,6 +85,7 @@ class PetPresenter(
                     avatar = pet.avatar,
                     mood = pet.mood,
                     isDead = pet.isDead,
+                    playerCoins = intent.player.coins,
                     foodViewModels = createFoodViewModels(food)
                 )
             }
@@ -91,14 +97,11 @@ class PetPresenter(
             }
 
             is RenamePetIntent -> {
-                if (intent.name.isNotEmpty()) {
-                    state.copy(
-                        type = PET_RENAMED,
-                        petName = intent.name
-                    )
-                } else {
-                    state
-                }
+                renamePetUseCase.execute(RenamePetUseCase.Params(intent.name))
+                state.copy(
+                    type = PET_RENAMED,
+                    petName = intent.name
+                )
             }
 
             is RevivePetIntent -> {
@@ -119,7 +122,7 @@ class PetPresenter(
     private fun createFoodViewModels(inventoryFood: Map<Food, Int>) =
         Food.values().map {
             PetViewController.PetFoodViewModel(
-                it.image, it.price, it, inventoryFood.getOrDefault(it, 0)
+                it.image, it.price, it, inventoryFood[it] ?: 0
             )
         }
 

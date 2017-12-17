@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/pet_message_background">
+
+    <View
+        android:layout_width="72dp"
+        android:layout_height="42dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true" />
+
+    <ImageView
+        android:id="@+id/petHead"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp" />
+
+    <TextView
+        android:id="@+id/petMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@id/petHead"
+        android:layout_toStartOf="@id/undoAction"
+        android:textColor="@color/md_white"
+        tools:text="How ya doing?" />
+
+    <Button
+        android:id="@+id/undoAction"
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/undo"
+        android:textColor="@color/md_white" />
+</RelativeLayout>

@@ -6,7 +6,6 @@ import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.quest.Category
 import io.ipoli.android.quest.Color
-import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.Reminder
 import io.ipoli.android.quest.calendar.addquest.StateType.*
 import io.ipoli.android.quest.usecase.Result
@@ -32,56 +31,61 @@ class AddQuestPresenter(
 ) {
     override fun reduceState(intent: AddQuestIntent, state: AddQuestViewState) =
         when (intent) {
-            is PickDateIntent ->
+
+            is AddQuestIntent.LoadData ->
+                state.copy(
+                    type = DEFAULT,
+                    date = intent.startDate
+                )
+
+            is AddQuestIntent.PickDate ->
                 state.copy(type = PICK_DATE)
 
-            is DatePickedIntent -> {
+            is AddQuestIntent.DatePicked -> {
                 val date = LocalDate.of(intent.year, intent.month, intent.day)
                 state.copy(type = DEFAULT, date = date)
             }
 
-            is PickTimeIntent ->
+            is AddQuestIntent.PickTime ->
                 state.copy(type = PICK_TIME)
 
-            is TimePickedIntent ->
+            is AddQuestIntent.TimePicked ->
                 state.copy(type = DEFAULT, time = intent.time)
 
-            is PickDurationIntent ->
+            is AddQuestIntent.PickDuration ->
                 state.copy(type = PICK_DURATION)
 
-            is DurationPickedIntent ->
+            is AddQuestIntent.DurationPicked ->
                 state.copy(type = DEFAULT, duration = intent.minutes)
 
-            is PickColorIntent ->
+            is AddQuestIntent.PickColor ->
                 state.copy(type = PICK_COLOR)
 
-            is ColorPickedIntent ->
+            is AddQuestIntent.ColorPicked ->
                 state.copy(type = DEFAULT, color = intent.color)
 
-            is PickIconIntent ->
+            is AddQuestIntent.PickIcon ->
                 state.copy(type = PICK_ICON)
 
-            is IconPickedIntent ->
+            is AddQuestIntent.IconPicked ->
                 state.copy(type = DEFAULT, icon = intent.icon)
 
-            is PickReminderIntent ->
+            is AddQuestIntent.PickReminder ->
                 state.copy(type = PICK_REMINDER)
 
-            is ReminderPickedIntent ->
+            is AddQuestIntent.ReminderPicked ->
                 state.copy(type = DEFAULT, reminder = intent.reminder)
 
-            is SaveQuestIntent -> {
+            is AddQuestIntent.SaveQuest -> {
                 val color = state.color ?: Color.GREEN
-                val icon = state.icon?.let { Icon.valueOf(it.name) }
                 val scheduledDate = state.date ?: LocalDate.now()
-                val reminder = state.time?.let {
-                    createQuestReminder(state.reminder, scheduledDate, state.time.toMinuteOfDay())
-                }
+
+                val reminder = createReminder(state, scheduledDate)
 
                 val questParams = SaveQuestUseCase.Parameters(
                     name = intent.name,
                     color = Color.valueOf(color.name),
-                    icon = icon,
+                    icon = state.icon,
                     category = Category("WELLNESS", Color.GREEN),
                     scheduledDate = scheduledDate,
                     startTime = state.time,
@@ -97,7 +101,16 @@ class AddQuestPresenter(
             }
         }
 
-    private fun createQuestReminder(reminder: ReminderViewModel?, scheduledDate: LocalDate, startMinute: Int): Reminder? {
+    private fun createReminder(state: AddQuestViewState, scheduledDate: LocalDate) =
+        state.time?.let {
+            if (state.reminder != null) {
+                createReminderFromViewModel(state.reminder, scheduledDate, it.toMinuteOfDay())
+            } else {
+                createDefaultReminder(scheduledDate, it.toMinuteOfDay())
+            }
+        }
+
+    private fun createReminderFromViewModel(reminder: ReminderViewModel?, scheduledDate: LocalDate, startMinute: Int): Reminder? {
         return reminder?.let {
             val time = Time.of(startMinute)
             val questDateTime = LocalDateTime.of(scheduledDate, LocalTime.of(time.hours, time.getMinutes()))
@@ -106,5 +119,8 @@ class AddQuestPresenter(
             Reminder(it.message, Time.at(toLocalTime.hour, toLocalTime.minute), reminderDateTime.toLocalDate())
         }
     }
+
+    private fun createDefaultReminder(scheduledDate: LocalDate, startMinute: Int) =
+        Reminder("", Time.of(startMinute), scheduledDate)
 
 }

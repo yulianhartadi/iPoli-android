@@ -13,7 +13,6 @@
         android:layout_height="42dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
-        android:src="@drawable/pet_5_head"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -68,10 +67,12 @@
     <ImageView
         android:id="@+id/bounty"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="32dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
         android:src="@drawable/food_fruit_1"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"

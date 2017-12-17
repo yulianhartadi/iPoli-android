@@ -4,6 +4,7 @@ import io.ipoli.android.Constants
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.parser.ReminderMinutesParser
+import io.ipoli.android.pet.usecase.FindPetUseCase
 import io.ipoli.android.reminder.view.formatter.ReminderTimeFormatter
 import io.ipoli.android.reminder.view.formatter.TimeUnitFormatter
 import io.ipoli.android.reminder.view.picker.ReminderPickerViewState.StateType.*
@@ -16,6 +17,7 @@ import kotlin.coroutines.experimental.CoroutineContext
 class ReminderPickerDialogPresenter(
     private val reminderTimeFormatter: ReminderTimeFormatter,
     private val timeUnitFormatter: TimeUnitFormatter,
+    private val findPetUseCase: FindPetUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<ReminderPickerViewState>, ReminderPickerViewState, ReminderPickerIntent>(
     ReminderPickerViewState(type = ReminderPickerViewState.StateType.LOADING), coroutineContext) {
@@ -24,10 +26,13 @@ class ReminderPickerDialogPresenter(
         return when (intent) {
 
             is LoadReminderDataIntent -> {
+                val stateWithPet = state.copy(
+                    petAvatar = findPetUseCase.execute(Unit).avatar
+                )
                 if (intent.reminder == null) {
-                    loadNewReminderData(state)
+                    loadNewReminderData(stateWithPet)
                 } else {
-                    loadExistingReminderData(intent.reminder, state)
+                    loadExistingReminderData(intent.reminder, stateWithPet)
                 }
             }
 

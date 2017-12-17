@@ -1,15 +1,22 @@
 package io.ipoli.android.common.view
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
+import android.support.annotation.DrawableRes
 import android.support.annotation.MainThread
+import android.support.annotation.StringRes
+import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.SimpleSwapChangeHandler
+import io.ipoli.android.R
 import io.ipoli.android.common.mvi.*
 
 /**
@@ -21,7 +28,7 @@ import io.ipoli.android.common.mvi.*
  */
 abstract class BaseDialogController : RestoreViewOnCreateController {
 
-    private lateinit var dialog: Dialog
+    protected lateinit var dialog: Dialog
     private var dismissed: Boolean = false
 
     /**
@@ -37,7 +44,15 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
     protected constructor(args: Bundle?) : super(args)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
-        dialog = onCreateDialog(savedViewState)
+        val headerView = createHeaderView(inflater)
+        onHeaderViewCreated(headerView)
+        val contentView = onCreateContentView(inflater, savedViewState)
+
+        val dialogBuilder = AlertDialog.Builder(activity!!)
+            .setView(contentView)
+            .setCustomTitle(headerView)
+        dialog = onCreateDialog(dialogBuilder, contentView, savedViewState)
+
         dialog.ownerActivity = activity!!
         dialog.setOnDismissListener { dismissDialog() }
         if (savedViewState != null) {
@@ -48,6 +63,18 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
         }
         return View(activity)
     }
+
+    protected open fun createHeaderView(inflater: LayoutInflater): View {
+        return inflater.inflate(R.layout.view_dialog_header, null)
+    }
+
+    protected open fun onHeaderViewCreated(headerView: View) {
+
+    }
+
+    protected abstract fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View
+
+    protected abstract fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog
 
     override fun onSaveViewState(view: View, outState: Bundle) {
         super.onSaveViewState(view, outState)
@@ -95,14 +122,6 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
         dismissed = true
     }
 
-    /**
-     * Build your own custom Dialog container such as an [android.app.AlertDialog]
-     *
-     * @param savedViewState A bundle for the view's state, which would have been created in [.onSaveViewState] or `null` if no saved state exists.
-     * @return Return a new Dialog instance to be displayed by the Controller
-     */
-    protected abstract fun onCreateDialog(savedViewState: Bundle?): Dialog
-
     companion object {
 
         private val SAVED_DIALOG_STATE_TAG = "android:savedDialogState"
@@ -112,16 +131,22 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
 abstract class MviDialogController<VS : ViewState, in V : ViewStateRenderer<VS>, out P : MviPresenter<V, VS, I>, in I : Intent>(
     args: Bundle? = null
 ) : MviViewController<VS, V, P, I>(args) {
-    data class DialogView(val dialog: Dialog, val view: View)
 
-    protected lateinit var dialog: Dialog
+    protected lateinit var dialog: AlertDialog
     private lateinit var contentView: View
     private var dismissed: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
-        val dv = onCreateDialog(savedViewState)
-        dialog = dv.dialog
-        contentView = dv.view
+
+        val headerView = createHeaderView(inflater)
+        onHeaderViewCreated(headerView)
+        contentView = onCreateContentView(inflater, savedViewState)
+
+        val dialogBuilder = AlertDialog.Builder(activity!!)
+            .setView(contentView)
+            .setCustomTitle(headerView)
+        dialog = onCreateDialog(dialogBuilder, contentView, savedViewState)
+        onDialogCreated(dialog, contentView)
 
         dialog.ownerActivity = activity!!
         dialog.setOnDismissListener { dismissDialog() }
@@ -132,6 +157,22 @@ abstract class MviDialogController<VS : ViewState, in V : ViewStateRenderer<VS>,
             }
         }
         return View(activity)
+    }
+
+    protected open fun createHeaderView(inflater: LayoutInflater): View {
+        return inflater.inflate(R.layout.view_dialog_header, null)
+    }
+
+    protected open fun onHeaderViewCreated(headerView: View) {
+
+    }
+
+    protected abstract fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View
+
+    protected abstract fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog
+
+    protected open fun onDialogCreated(dialog: AlertDialog, contentView: View) {
+
     }
 
     override fun onSaveViewState(view: View, outState: Bundle) {
@@ -185,13 +226,48 @@ abstract class MviDialogController<VS : ViewState, in V : ViewStateRenderer<VS>,
         render(state, contentView)
     }
 
-    /**
-     * Build your own custom Dialog container such as an [android.app.AlertDialog]
-     *
-     * @param savedViewState A bundle for the view's state, which would have been created in [.onSaveViewState] or `null` if no saved state exists.
-     * @return Return a new Dialog instance to be displayed by the Controller
-     */
-    protected abstract fun onCreateDialog(savedViewState: Bundle?): DialogView
+    protected fun changeIcon(@DrawableRes icon: Int) {
+        val headerIcon = dialog.findViewById<ImageView>(R.id.dialogHeaderIcon)
+        headerIcon?.setImageResource(icon)
+    }
+
+    protected fun changeTitle(@StringRes title: Int) {
+        val headerTitle = dialog.findViewById<TextView>(R.id.dialogHeaderTitle)
+        headerTitle?.setText(title)
+    }
+
+    protected fun changeNeutralButtonText(@StringRes text: Int) {
+        dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setText(text)
+    }
+
+    protected fun changePositiveButtonText(@StringRes text: Int) {
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setText(text)
+    }
+
+    protected fun changeNegativeButtonText(@StringRes text: Int) {
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setText(text)
+    }
+
+    protected fun setNeutralButtonListener(listener: (() -> Unit)?) {
+        dialog.getButton(DialogInterface.BUTTON_NEUTRAL).setOnClickListener {
+            if (listener != null) listener()
+            else dismissDialog()
+        }
+    }
+
+    protected fun sePositiveButtonListener(listener: (() -> Unit)?) {
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+            if (listener != null) listener()
+            else dismissDialog()
+        }
+    }
+
+    protected fun setNegativeButtonListener(listener: (() -> Unit)?) {
+        dialog.getButton(DialogInterface.BUTTON_NEGATIVE).setOnClickListener {
+            if (listener != null) listener()
+            else dismissDialog()
+        }
+    }
 
     companion object {
 

@@ -11,15 +11,15 @@ import org.threeten.bp.LocalDate
  * on 10/21/17.
  */
 
-sealed class CalendarIntent : Intent
-
-data class LoadDataIntent(val currentDate: LocalDate) : CalendarIntent()
-data class SwipeChangeDateIntent(val position: Int) : CalendarIntent()
-data class CalendarChangeDateIntent(val year: Int, val month: Int, val day: Int) : CalendarIntent()
-data class ChangeMonthIntent(val year: Int, val month: Int) : CalendarIntent()
-object ExpandToolbarIntent : CalendarIntent()
-object ExpandToolbarWeekIntent : CalendarIntent()
-data class ChangePlayerIntent(val player: Player) : CalendarIntent()
+sealed class CalendarIntent : Intent {
+    data class LoadData(val currentDate: LocalDate) : CalendarIntent()
+    data class SwipeChangeDate(val position: Int) : CalendarIntent()
+    data class CalendarChangeDate(val year: Int, val month: Int, val day: Int) : CalendarIntent()
+    data class ChangeMonth(val year: Int, val month: Int) : CalendarIntent()
+    object ExpandToolbar : CalendarIntent()
+    object ExpandToolbarWeek : CalendarIntent()
+    data class ChangePlayer(val player: Player) : CalendarIntent()
+}
 
 data class CalendarViewState(
     val type: StateType = DATA_LOADED,

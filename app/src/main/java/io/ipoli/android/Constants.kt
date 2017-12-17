@@ -1,6 +1,7 @@
 package io.ipoli.android
 
 import io.ipoli.android.common.datetime.Time
+import io.ipoli.android.player.Theme
 import org.threeten.bp.DayOfWeek
 import java.util.*
 
@@ -186,6 +187,14 @@ interface Constants {
 
         val KEY_ACHIEVEMENT_ACTION = "achievement_action"
         val KEY_ACHIEVEMENT_ACTION_CLASS = "achievement_action_class"
+
+        // 0.48 = 122
+        val MEDIUM_ALPHA = 122
+        val NO_TRANSPARENCY_ALPHA = 255
+
+        const val KEY_THEME = "CURRENT_THEME"
+
+        val DEFAULT_THEME = Theme.RED
 
         val LEVEL_UP_REWARDS = listOf<String>(
             "https://media2.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif",
