@@ -19,7 +19,6 @@ import android.view.animation.AccelerateInterpolator
 import android.widget.ImageView
 import android.widget.Toast
 import io.ipoli.android.R
-import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
@@ -33,9 +32,9 @@ import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
 import io.ipoli.android.quest.Color
 import io.ipoli.android.quest.ColorPack
 import kotlinx.android.synthetic.main.dialog_color_picker.view.*
+import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
-import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -130,8 +129,8 @@ class ColorPickerPresenter(
     }
 }
 
-class ColorPickerDialogController : MviDialogController<ColorPickerViewState, ColorPickerDialogController, ColorPickerPresenter, ColorPickerIntent>
-    , ViewStateRenderer<ColorPickerViewState>, Injects<ControllerModule> {
+class ColorPickerDialogController :
+    MviDialogController<ColorPickerViewState, ColorPickerDialogController, ColorPickerPresenter, ColorPickerIntent> {
 
     interface ColorPickedListener {
         fun onColorPicked(color: AndroidColor)
@@ -151,26 +150,26 @@ class ColorPickerDialogController : MviDialogController<ColorPickerViewState, Co
 
     override fun createPresenter() = presenter
 
-    override fun onCreateDialog(savedViewState: Bundle?): DialogView {
+    override fun onHeaderViewCreated(headerView: View) {
+        headerView.dialogHeaderTitle.setText(R.string.color_picker_title)
+    }
 
-        val inflater = LayoutInflater.from(activity!!)
-
+    override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
         val contentView = inflater.inflate(R.layout.dialog_color_picker, null)
-
         contentView.colorGrid.layoutManager = GridLayoutManager(activity!!, 4)
+        return contentView
+    }
 
-        val dialog = AlertDialog.Builder(activity!!)
-            .setView(contentView)
-            .setTitle(R.string.color_picker_title)
+    override fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog =
+        dialogBuilder
             .setNegativeButton(R.string.cancel, null)
-            .setNeutralButton("Back", null)
+            .setNeutralButton(R.string.back, null)
             .create()
 
+    override fun onDialogCreated(dialog: AlertDialog, contentView: View) {
         dialog.setOnShowListener {
             dialog.getButton(DialogInterface.BUTTON_NEUTRAL).visibility = View.GONE
         }
-
-        return DialogView(dialog, contentView)
     }
 
     override fun onAttach(view: View) {

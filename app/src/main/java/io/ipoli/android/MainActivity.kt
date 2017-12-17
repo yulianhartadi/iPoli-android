@@ -14,6 +14,7 @@ import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import io.ipoli.android.common.di.ControllerModule
+import io.ipoli.android.common.view.AndroidTheme
 import io.ipoli.android.common.view.playerTheme
 import io.ipoli.android.home.HomeViewController
 import io.ipoli.android.player.AuthProvider
@@ -90,13 +91,5 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         val actionBar = supportActionBar!!
         actionBar.setDisplayHomeAsUpEnabled(false)
         actionBar.setDisplayShowHomeEnabled(false)
-    }
-
-    fun animateFadeIn() {
-        val root = findViewById<CoordinatorLayout>(R.id.rootCoordinator)
-        root.alpha = 0f
-        val fadeIn = ObjectAnimator.ofFloat(root, "alpha", 0f, 1f)
-        fadeIn.duration = resources.getInteger(android.R.integer.config_longAnimTime).toLong()
-        fadeIn.start()
     }
 }

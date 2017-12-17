@@ -14,7 +14,6 @@ import android.view.animation.AccelerateInterpolator
 import android.widget.Toast
 import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.R
-import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.BaseMviPresenter
 import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
@@ -29,9 +28,9 @@ import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.IconPack
 import kotlinx.android.synthetic.main.dialog_icon_picker.view.*
 import kotlinx.android.synthetic.main.item_icon_picker.view.*
+import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
-import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -127,8 +126,8 @@ class IconPickerDialogPresenter(
     }
 }
 
-class IconPickerDialogController : MviDialogController<IconPickerViewState, IconPickerDialogController, IconPickerDialogPresenter, IconPickerIntent>
-    , ViewStateRenderer<IconPickerViewState>, Injects<ControllerModule> {
+class IconPickerDialogController :
+    MviDialogController<IconPickerViewState, IconPickerDialogController, IconPickerDialogPresenter, IconPickerIntent> {
 
     private var listener: (Icon?) -> Unit = {}
     private var selectedIcon: AndroidIcon? = null
@@ -144,24 +143,23 @@ class IconPickerDialogController : MviDialogController<IconPickerViewState, Icon
 
     override fun createPresenter() = presenter
 
-    override fun onCreateDialog(savedViewState: Bundle?): DialogView {
+    override fun onHeaderViewCreated(headerView: View) {
+        headerView.dialogHeaderTitle.setText(R.string.icon_picker_title)
+    }
 
-        val inflater = LayoutInflater.from(activity!!)
-
+    override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
         val contentView = inflater.inflate(R.layout.dialog_icon_picker, null)
         contentView.iconGrid.layoutManager = GridLayoutManager(activity!!, 4)
+        return contentView
+    }
 
-        val dialog = AlertDialog.Builder(activity!!)
-            .setView(contentView)
-            .setTitle(R.string.icon_picker_title)
+    override fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog =
+        dialogBuilder
             .setNegativeButton(R.string.cancel, null)
             .setNeutralButton(R.string.no_icon, { _, _ ->
                 listener(null)
             })
             .create()
-
-        return DialogView(dialog, contentView)
-    }
 
     override fun onAttach(view: View) {
         super.onAttach(view)
@@ -253,7 +251,7 @@ class IconPickerDialogController : MviDialogController<IconPickerViewState, Icon
             )
 
             if (vm.isSelected) {
-                iconView.setBackgroundResource(R.drawable.selected_icon_background)
+                iconView.setBackgroundResource(R.drawable.oval_background)
                 iconView.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorAccent))
                 view.lockedIcon.visibility = View.GONE
             } else if (vm.isLocked) {

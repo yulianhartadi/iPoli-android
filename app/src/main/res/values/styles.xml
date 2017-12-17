@@ -21,6 +21,7 @@
     <style name="Theme.myPoli.Red" parent="Theme.myPoli.Base">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryLight">@color/md_red_300</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="alertDialogTheme">@style/Theme.iPoli.AlertDialog</item>
         <item name="drawerArrowStyle">@style/WhiteDrawerIconStyle</item>
@@ -30,6 +31,7 @@
     <style name="Theme.myPoli.Pink" parent="Theme.myPoli.Base">
         <item name="colorPrimary">@color/md_pink_500</item>
         <item name="colorPrimaryDark">@color/md_pink_700</item>
+        <item name="colorPrimaryLight">@color/md_pink_300</item>
         <item name="colorAccent">@color/md_deep_purple_A200</item>
         <item name="alertDialogTheme">@style/Theme.iPoli.AlertDialog</item>
         <item name="drawerArrowStyle">@style/WhiteDrawerIconStyle</item>
@@ -39,6 +41,7 @@
     <style name="Theme.myPoli.Blue" parent="Theme.myPoli.Base">
         <item name="colorPrimary">@color/md_blue_500</item>
         <item name="colorPrimaryDark">@color/md_blue_700</item>
+        <item name="colorPrimaryLight">@color/md_blue_300</item>
         <item name="colorAccent">@color/md_red_A400</item>
         <item name="alertDialogTheme">@style/Theme.iPoli.AlertDialog</item>
         <item name="drawerArrowStyle">@style/WhiteDrawerIconStyle</item>
@@ -48,6 +51,7 @@
     <style name="Theme.myPoli.Green" parent="Theme.myPoli.Base">
         <item name="colorPrimary">@color/md_green_500</item>
         <item name="colorPrimaryDark">@color/md_green_700</item>
+        <item name="colorPrimaryLight">@color/md_green_300</item>
         <item name="colorAccent">@color/md_pink_A400</item>
         <item name="alertDialogTheme">@style/Theme.iPoli.AlertDialog</item>
         <item name="drawerArrowStyle">@style/WhiteDrawerIconStyle</item>
@@ -57,6 +61,7 @@
     <style name="Theme.myPoli.Purple" parent="Theme.myPoli.Base">
         <item name="colorPrimary">@color/md_purple_500</item>
         <item name="colorPrimaryDark">@color/md_purple_700</item>
+        <item name="colorPrimaryLight">@color/md_purple_300</item>
         <item name="colorAccent">@color/md_green_A700</item>
         <item name="alertDialogTheme">@style/Theme.iPoli.AlertDialog</item>
         <item name="drawerArrowStyle">@style/WhiteDrawerIconStyle</item>
@@ -66,6 +71,7 @@
     <style name="Theme.myPoli.Orange" parent="Theme.myPoli.Base">
         <item name="colorPrimary">@color/md_deep_orange_500</item>
         <item name="colorPrimaryDark">@color/md_deep_orange_700</item>
+        <item name="colorPrimaryLight">@color/md_deep_orange_300</item>
         <item name="colorAccent">@color/md_indigo_A200</item>
         <item name="alertDialogTheme">@style/Theme.iPoli.AlertDialog</item>
         <item name="drawerArrowStyle">@style/WhiteDrawerIconStyle</item>
@@ -75,6 +81,7 @@
     <style name="Theme.myPoli.Blue_Grey" parent="Theme.myPoli.Base">
         <item name="colorPrimary">@color/md_blue_grey_500</item>
         <item name="colorPrimaryDark">@color/md_blue_grey_700</item>
+        <item name="colorPrimaryLight">@color/md_blue_grey_300</item>
         <item name="colorAccent">@color/md_deep_orange_A400</item>
         <item name="alertDialogTheme">@style/Theme.iPoli.AlertDialog</item>
         <item name="drawerArrowStyle">@style/WhiteDrawerIconStyle</item>
@@ -84,6 +91,7 @@
     <style name="Theme.iPoli.White" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/md_white</item>
         <item name="colorPrimaryDark">@color/md_grey_300</item>
+        <item name="colorPrimaryLight">@color/md_grey_100</item>
         <item name="colorAccent">@color/md_red_A400</item>
         <item name="alertDialogTheme">@style/Theme.iPoli.AlertDialog</item>
         <item name="drawerArrowStyle">@style/WhiteDrawerIconStyle</item>

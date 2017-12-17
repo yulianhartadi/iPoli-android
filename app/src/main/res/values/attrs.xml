@@ -22,4 +22,5 @@
         <attr name="visibleHours" format="integer" />
         <attr name="timeLineLayout" format="reference" />
     </declare-styleable>
+    <attr name="colorPrimaryLight" format="color" />
 </resources>

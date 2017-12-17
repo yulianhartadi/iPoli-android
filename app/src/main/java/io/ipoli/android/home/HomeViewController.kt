@@ -14,6 +14,7 @@ import io.ipoli.android.R
 import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
 import io.ipoli.android.common.mvi.ViewStateRenderer
+import io.ipoli.android.common.view.DurationPickerDialogController
 import io.ipoli.android.common.view.FeedbackDialogController
 import io.ipoli.android.quest.calendar.CalendarViewController
 import io.ipoli.android.theme.ThemeStoreViewController
@@ -91,6 +92,8 @@ class HomeViewController(args: Bundle? = null) :
                     .popChangeHandler(handler)
             )
         }
+
+//        DurationPickerDialogController().showDialog(childRouter, "hello")
 
         send(LoadDataIntent)
 //        actionBarDrawerToggle.syncState()
