@@ -4,8 +4,8 @@ import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
 import io.ipoli.android.Constants
 import io.ipoli.android.R
+import io.ipoli.android.common.Reward
 import io.ipoli.android.pet.PetMood.*
-import io.ipoli.android.quest.Quest
 import java.lang.Math.abs
 
 /**
@@ -17,7 +17,7 @@ data class Pet(
     val avatar: PetAvatar,
     val moodPoints: Int = Constants.DEFAULT_PET_HP,
     val healthPoints: Int = Constants.DEFAULT_PET_MP,
-    val mood: PetMood = moodFor(healthPoints),
+    val mood: PetMood = moodFor(moodPoints),
     val experienceBonus: Float = bonusFor(mood, MAX_XP_BONUS),
     val coinBonus: Float = bonusFor(mood, MAX_COIN_BONUS),
     val bountyBonus: Float = bonusFor(mood, MAX_BOUNTY_BONUS)
@@ -59,6 +59,7 @@ data class Pet(
             bountyBonus = bonusFor(newMood, MAX_BOUNTY_BONUS)
         )
     }
+
     fun setHealthAndMoodPoints(healthPoints: Int, moodPoints: Int): Pet {
         require(healthPoints >= 0)
         require(moodPoints >= 0)
@@ -75,11 +76,9 @@ data class Pet(
         )
     }
 
-
-    fun rewardFor(quest: Quest): Pet {
-
-        val rewardHP = healthPointsForXP(quest.experience!!)
-        val rewardMP = moodPointsForXP(quest.experience)
+    fun rewardFor(reward: Reward): Pet {
+        val rewardHP = healthPointsForXP(reward.experience)
+        val rewardMP = moodPointsForXP(reward.experience)
         return addHealthAndMoodPoints(rewardHP, rewardMP)
     }
 
@@ -112,9 +111,9 @@ data class Pet(
             Math.min(moodPoints + rewardMoodPoints * moodBonusMultiplier, MAX_MP)
         }
 
-    fun removeRewardFor(quest: Quest): Pet {
-        val rewardHP = healthPointsForXP(quest.experience!!)
-        val rewardMP = moodPointsForXP(quest.experience)
+    fun removeReward(reward: Reward): Pet {
+        val rewardHP = healthPointsForXP(reward.experience)
+        val rewardMP = moodPointsForXP(reward.experience)
         return removeHealthAndMoodPoints(rewardHP, rewardMP)
     }
 
@@ -141,6 +140,11 @@ data class Pet(
         if (newHealthPoints == 0) {
             return 0
         }
+
+        if (newHealthPoints < SICK_CUTOFF) {
+            return Math.max(Math.min(moodPoints - rewardMoodPoints, GOOD_MIN_MOOD_POINTS - 1), 0)
+        }
+
         val notHealthyAnymore = oldHealthPoints >= HEALTHY_CUTOFF && newHealthPoints < HEALTHY_CUTOFF
         val reduceMultiplier = if (notHealthyAnymore) 2 else 1
         return Math.max(moodPoints - rewardMoodPoints * reduceMultiplier, 0)
@@ -193,18 +197,18 @@ enum class PetMood {
 }
 
 enum class PetAvatar(val price: Int, val feedingCategory: FeedingCategory) {
-    SEAL(600, FeedingCategory.CARNIVOROUS),
+    SEAL(700, FeedingCategory.CARNIVOROUS),
     DONKEY(500, FeedingCategory.HERBIVOROUS),
-    ELEPHANT(500, FeedingCategory.HERBIVOROUS),
-    BEAVER(500, FeedingCategory.HERBIVOROUS),
-    CHICKEN(700, FeedingCategory.OMNIVOROUS),
-    BEAR(500, FeedingCategory.OMNIVOROUS),
-    LION(500, FeedingCategory.CARNIVOROUS),
-    CAT(500, FeedingCategory.CARNIVOROUS),
-    MONKEY(500, FeedingCategory.OMNIVOROUS),
+    PIG(100, FeedingCategory.OMNIVOROUS),
+    ELEPHANT(600, FeedingCategory.HERBIVOROUS),
+    BEAVER(600, FeedingCategory.HERBIVOROUS),
+    CHICKEN(600, FeedingCategory.OMNIVOROUS),
+    BEAR(550, FeedingCategory.OMNIVOROUS),
+    LION(800, FeedingCategory.CARNIVOROUS),
+    CAT(400, FeedingCategory.CARNIVOROUS),
+    MONKEY(550, FeedingCategory.OMNIVOROUS),
     DUCK(500, FeedingCategory.OMNIVOROUS),
-    PIG(500, FeedingCategory.OMNIVOROUS),
-    ZEBRA(500, FeedingCategory.HERBIVOROUS);
+    ZEBRA(800, FeedingCategory.HERBIVOROUS);
 
     enum class FeedingCategory { OMNIVOROUS, CARNIVOROUS, HERBIVOROUS }
 }
@@ -213,7 +217,7 @@ enum class AndroidPetAvatar(
     @StringRes val petName: Int,
     @StringRes val description: Int,
     @DrawableRes val image: Int,
-    @DrawableRes val headPicture: Int,
+    @DrawableRes val headImage: Int,
     @DrawableRes val deadStateImage: Int,
     val moodImage: Map<PetMood, Int>) {
 
@@ -223,6 +227,13 @@ enum class AndroidPetAvatar(
             GOOD to R.drawable.pet_1_good,
             HAPPY to R.drawable.pet_1_happy,
             AWESOME to R.drawable.pet_1_awesome
+        )),
+    PIG(R.string.pet_pig, R.string.pet_pig_description, R.drawable.pet_11, R.drawable.pet_11_head, R.drawable.pet_11_dead,
+        mapOf(
+            SAD to R.drawable.pet_11_sad,
+            GOOD to R.drawable.pet_11_good,
+            HAPPY to R.drawable.pet_11_happy,
+            AWESOME to R.drawable.pet_11_awesome
         )),
     DONKEY(R.string.pet_donkey, R.string.pet_donkey_description, R.drawable.pet_2, R.drawable.pet_2_head, R.drawable.pet_2_dead,
         mapOf(
@@ -288,13 +299,6 @@ enum class AndroidPetAvatar(
             GOOD to R.drawable.pet_10_good,
             HAPPY to R.drawable.pet_10_happy,
             AWESOME to R.drawable.pet_10_awesome
-        )),
-    PIG(R.string.pet_pig, R.string.pet_pig_description, R.drawable.pet_11, R.drawable.pet_11_head, R.drawable.pet_11_dead,
-        mapOf(
-            SAD to R.drawable.pet_11_sad,
-            GOOD to R.drawable.pet_11_good,
-            HAPPY to R.drawable.pet_11_happy,
-            AWESOME to R.drawable.pet_11_awesome
         )),
     ZEBRA(R.string.pet_zebra, R.string.pet_zebra_description, R.drawable.pet_12, R.drawable.pet_12_head, R.drawable.pet_12_dead,
         mapOf(

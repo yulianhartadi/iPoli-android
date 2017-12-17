@@ -9,11 +9,15 @@ import com.couchbase.lite.Database
 import com.couchbase.lite.DatabaseConfiguration
 import io.ipoli.android.common.navigation.Navigator
 import io.ipoli.android.common.text.CalendarFormatter
+import io.ipoli.android.common.view.ColorPickerPresenter
+import io.ipoli.android.common.view.IconPickerDialogPresenter
+import io.ipoli.android.common.view.PetMessagePresenter
 import io.ipoli.android.home.HomePresenter
 import io.ipoli.android.pet.AndroidJobLowerPetStatsScheduler
 import io.ipoli.android.pet.LowerPetStatsScheduler
+import io.ipoli.android.pet.PetDialogPresenter
 import io.ipoli.android.pet.PetPresenter
-import io.ipoli.android.pet.shop.PetShopPresenter
+import io.ipoli.android.pet.store.PetStorePresenter
 import io.ipoli.android.pet.usecase.*
 import io.ipoli.android.player.AndroidLevelDownScheduler
 import io.ipoli.android.player.AndroidLevelUpScheduler
@@ -21,10 +25,8 @@ import io.ipoli.android.player.LevelDownScheduler
 import io.ipoli.android.player.LevelUpScheduler
 import io.ipoli.android.player.persistence.CouchbasePlayerRepository
 import io.ipoli.android.player.persistence.PlayerRepository
-import io.ipoli.android.player.usecase.FindPlayerLevelUseCase
-import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
-import io.ipoli.android.player.usecase.RemoveRewardFromPlayerUseCase
-import io.ipoli.android.player.usecase.RewardPlayerUseCase
+import io.ipoli.android.player.usecase.*
+import io.ipoli.android.player.view.LevelUpPresenter
 import io.ipoli.android.quest.AndroidJobQuestCompleteScheduler
 import io.ipoli.android.quest.QuestCompleteScheduler
 import io.ipoli.android.quest.calendar.CalendarPresenter
@@ -33,11 +35,15 @@ import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.data.persistence.CouchbaseQuestRepository
 import io.ipoli.android.quest.data.persistence.QuestRepository
 import io.ipoli.android.quest.usecase.*
+import io.ipoli.android.quest.view.QuestCompletePresenter
 import io.ipoli.android.reminder.AndroidJobReminderScheduler
 import io.ipoli.android.reminder.ReminderScheduler
 import io.ipoli.android.reminder.view.formatter.ReminderTimeFormatter
 import io.ipoli.android.reminder.view.formatter.TimeUnitFormatter
 import io.ipoli.android.reminder.view.picker.ReminderPickerDialogPresenter
+import io.ipoli.android.theme.ThemeStorePresenter
+import io.ipoli.android.theme.usecase.BuyThemeUseCase
+import io.ipoli.android.theme.usecase.ChangeThemeUseCase
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import space.traversal.kapsule.HasModules
@@ -60,7 +66,7 @@ class CouchbaseRepositoryModule : RepositoryModule, Injects<ControllerModule> {
     override val playerRepository get() = CouchbasePlayerRepository(database, job + CommonPool)
 }
 
-class CouchbaseJobRepositoryModule : RepositoryModule, Injects<JobModule> {
+class CouchbaseJobRepositoryModule : RepositoryModule, Injects<SimpleModule> {
     private val database by required { database }
     private val job by required { job }
     override val questRepository get() = CouchbaseQuestRepository(database, job + CommonPool)
@@ -152,19 +158,26 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val revivePetUseCase get() = RevivePetUseCase(playerRepository)
     override val buyPetUseCase get() = BuyPetUseCase(playerRepository)
     override val changePetUseCase get() = ChangePetUseCase(playerRepository)
+    override val findPetUseCase get() = FindPetUseCase(playerRepository)
+    override val changeThemeUseCase get() = ChangeThemeUseCase(playerRepository)
+    override val buyThemeUseCase get() = BuyThemeUseCase(playerRepository)
+    override val renamePetUseCase get() = RenamePetUseCase(playerRepository)
+    override val buyIconPackUseCase get() = BuyIconPackUseCase(playerRepository)
+    override val buyColorPackUseCase get() = BuyColorPackUseCase(playerRepository)
 }
 
-interface JobUseCaseModule {
+interface PopupUseCaseModule {
     val findQuestToRemindUseCase: FindQuestsToRemindUseCase
     val snoozeQuestUseCase: SnoozeQuestUseCase
     val completeQuestUseCase: CompleteQuestUseCase
-    val findCompletedQuestUseCase: FindCompletedQuestUseCase
     val findPlayerLevelUseCase: FindPlayerLevelUseCase
     val rewardPlayerUseCase: RewardPlayerUseCase
     val lowerPetStatsUseCase: LowerPetStatsUseCase
+    val findPetUseCase: FindPetUseCase
+    val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase
 }
 
-class AndroidJobUseCaseModule : JobUseCaseModule, Injects<JobModule> {
+class AndroidPopupUseCaseModule : PopupUseCaseModule, Injects<SimpleModule> {
     private val questRepository by required { questRepository }
     private val playerRepository by required { playerRepository }
     private val reminderScheduler by required { reminderScheduler }
@@ -173,10 +186,11 @@ class AndroidJobUseCaseModule : JobUseCaseModule, Injects<JobModule> {
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
     override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, playerRepository, reminderScheduler, questCompleteScheduler, rewardPlayerUseCase)
-    override val findCompletedQuestUseCase get() = FindCompletedQuestUseCase(questRepository)
     override val findPlayerLevelUseCase get() = FindPlayerLevelUseCase(playerRepository)
     override val rewardPlayerUseCase get() = RewardPlayerUseCase(playerRepository, levelUpScheduler)
     override val lowerPetStatsUseCase get() = LowerPetStatsUseCase(questRepository, playerRepository)
+    override val findPetUseCase get() = FindPetUseCase(playerRepository)
+    override val listenForPlayerChangesUseCase get() = ListenForPlayerChangesUseCase(playerRepository)
 }
 
 interface UseCaseModule {
@@ -195,6 +209,12 @@ interface UseCaseModule {
     val revivePetUseCase: RevivePetUseCase
     val buyPetUseCase: BuyPetUseCase
     val changePetUseCase: ChangePetUseCase
+    val findPetUseCase: FindPetUseCase
+    val changeThemeUseCase: ChangeThemeUseCase
+    val buyThemeUseCase: BuyThemeUseCase
+    val renamePetUseCase: RenamePetUseCase
+    val buyIconPackUseCase: BuyIconPackUseCase
+    val buyColorPackUseCase: BuyColorPackUseCase
 }
 
 interface PresenterModule {
@@ -204,7 +224,12 @@ interface PresenterModule {
     val reminderPickerPresenter: ReminderPickerDialogPresenter
     val addQuestPresenter: AddQuestPresenter
     val petPresenter: PetPresenter
-    val petShopPresenter: PetShopPresenter
+    val petStorePresenter: PetStorePresenter
+    val petDialogPresenter: PetDialogPresenter
+    val themeStorePresenter: ThemeStorePresenter
+    val colorPickerPresenter: ColorPickerPresenter
+    val iconPickerPresenter: IconPickerDialogPresenter
+
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
@@ -219,18 +244,43 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val feedPetUseCase by required { feedPetUseCase }
     private val buyPetUseCase by required { buyPetUseCase }
     private val changePetUseCase by required { changePetUseCase }
+    private val findPetUseCase by required { findPetUseCase }
+    private val renamePetUseCase by required { renamePetUseCase }
+    private val changeThemeUseCase by required { changeThemeUseCase }
+    private val buyThemeUseCase by required { buyThemeUseCase }
     private val navigator by required { navigator }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
     private val timeUnitFormatter by required { timeUnitFormatter }
     private val calendarFormatter by required { calendarFormatter }
+    private val buyIconPackUseCase by required { buyIconPackUseCase }
+    private val buyColorPackUseCase by required { buyColorPackUseCase }
     private val job by required { job }
     override val homePresenter get() = HomePresenter(job)
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, undoRemoveQuestUseCase, completeQuestUseCase, undoCompleteQuestUseCase, job)
-    override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter, job)
+    override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter, findPetUseCase, job)
     override val calendarPresenter get() = CalendarPresenter(listenForPlayerChangesUseCase, calendarFormatter, job)
     override val addQuestPresenter get() = AddQuestPresenter(saveQuestUseCase, job)
-    override val petPresenter get() = PetPresenter(listenForPlayerChangesUseCase, feedPetUseCase, revivePetUseCase, job)
-    override val petShopPresenter get() = PetShopPresenter(listenForPlayerChangesUseCase, buyPetUseCase, changePetUseCase, job)
+    override val petPresenter get() = PetPresenter(listenForPlayerChangesUseCase, feedPetUseCase, renamePetUseCase, revivePetUseCase, job)
+    override val petStorePresenter get() = PetStorePresenter(listenForPlayerChangesUseCase, buyPetUseCase, changePetUseCase, job)
+    override val petDialogPresenter get() = PetDialogPresenter(findPetUseCase, job)
+    override val themeStorePresenter get() = ThemeStorePresenter(listenForPlayerChangesUseCase, changeThemeUseCase, buyThemeUseCase, job)
+    override val colorPickerPresenter get() = ColorPickerPresenter(listenForPlayerChangesUseCase, buyColorPackUseCase, job)
+    override val iconPickerPresenter get() = IconPickerDialogPresenter(listenForPlayerChangesUseCase, buyIconPackUseCase, job)
+}
+
+interface PopupPresenterModule {
+    val petMessagePresenter: PetMessagePresenter
+    val levelUpPresenter: LevelUpPresenter
+    val questCompletePresenter: QuestCompletePresenter
+}
+
+class AndroidPopupPresenterModule : PopupPresenterModule, Injects<SimpleModule> {
+    private val listenForPlayerChangesUseCase by required { listenForPlayerChangesUseCase }
+    private val job by required { job }
+
+    override val petMessagePresenter get() = PetMessagePresenter(listenForPlayerChangesUseCase, job)
+    override val levelUpPresenter get() = LevelUpPresenter(listenForPlayerChangesUseCase, job)
+    override val questCompletePresenter get() = QuestCompletePresenter(listenForPlayerChangesUseCase, job)
 }
 
 class ControllerModule(androidModule: AndroidModule,
@@ -247,12 +297,14 @@ class ControllerModule(androidModule: AndroidModule,
     override val modules = setOf(androidModule, navigationModule, repositoryModule, useCaseModule, presenterModule)
 }
 
-class JobModule(androidModule: AndroidModule,
-                repositoryModule: RepositoryModule,
-                useCaseModule: JobUseCaseModule) :
+class SimpleModule(androidModule: AndroidModule,
+                   repositoryModule: RepositoryModule,
+                   useCaseModule: PopupUseCaseModule,
+                   presenterModule: PopupPresenterModule) :
     AndroidModule by androidModule,
     RepositoryModule by repositoryModule,
-    JobUseCaseModule by useCaseModule,
+    PopupUseCaseModule by useCaseModule,
+    PopupPresenterModule by presenterModule,
     HasModules {
-    override val modules = setOf(androidModule, repositoryModule, useCaseModule)
+    override val modules = setOf(androidModule, repositoryModule, useCaseModule, presenterModule)
 }

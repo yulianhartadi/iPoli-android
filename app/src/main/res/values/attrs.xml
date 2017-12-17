@@ -19,5 +19,8 @@
         <attr name="dragImage" format="reference" />
         <attr name="dragImageSize" format="dimension" />
         <attr name="dragImagePadding" format="dimension" />
+        <attr name="visibleHours" format="integer" />
+        <attr name="timeLineLayout" format="reference" />
     </declare-styleable>
+    <attr name="colorPrimaryLight" format="color" />
 </resources>

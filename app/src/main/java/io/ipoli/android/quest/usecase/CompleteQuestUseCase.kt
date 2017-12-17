@@ -1,6 +1,7 @@
 package io.ipoli.android.quest.usecase
 
 import io.ipoli.android.Constants
+import io.ipoli.android.common.SimpleReward
 import io.ipoli.android.common.UseCase
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.pet.Food
@@ -50,9 +51,14 @@ class CompleteQuestUseCase(
             reminderScheduler.schedule(quests.first().reminder!!.toMillis())
         }
 
-        rewardPlayerUseCase.execute(newQuest)
+        val reward = SimpleReward(
+            newQuest.experience!!,
+            newQuest.coins!!,
+            if (quest.bounty == null) bounty else Quest.Bounty.None
+        )
+        rewardPlayerUseCase.execute(reward)
 
-        questCompleteScheduler.schedule(parameters)
+        questCompleteScheduler.schedule(reward)
         return newQuest
     }
 

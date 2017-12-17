@@ -36,10 +36,11 @@ class iPoliApp : Application() {
             presenterModule = AndroidPresenterModule()
         ).transitive()
 
-        fun jobModule(context: Context) = JobModule(
+        fun simpleModule(context: Context) = SimpleModule(
             androidModule = MainAndroidModule(context),
             repositoryModule = CouchbaseJobRepositoryModule(),
-            useCaseModule = AndroidJobUseCaseModule()
+            useCaseModule = AndroidPopupUseCaseModule(),
+            presenterModule = AndroidPopupPresenterModule()
         ).transitive()
     }
 

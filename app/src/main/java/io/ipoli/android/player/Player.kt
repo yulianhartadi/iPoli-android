@@ -4,7 +4,9 @@ import io.ipoli.android.Constants
 import io.ipoli.android.pet.Food
 import io.ipoli.android.pet.Pet
 import io.ipoli.android.pet.PetAvatar
+import io.ipoli.android.quest.ColorPack
 import io.ipoli.android.quest.Entity
+import io.ipoli.android.quest.IconPack
 import io.ipoli.android.store.avatars.data.Avatar
 import org.threeten.bp.LocalDateTime
 
@@ -16,15 +18,19 @@ data class Player(
     val authProvider: AuthProvider,
     val avatar: Avatar = Avatar.IPOLI_CLASSIC,
     val createdAt: LocalDateTime = LocalDateTime.now(),
+    val currentTheme: Theme = Constants.DEFAULT_THEME,
     val pet: Pet = Pet(
         name = Constants.DEFAULT_PET_NAME,
         avatar = PetAvatar.ELEPHANT
     ),
     val inventory: Inventory = Inventory(
         food = mapOf(
-            Food.BANANA to 1
+            Food.BANANA to 2
         ),
-        pets = listOf(InventoryPet.fromPet(pet))
+        pets = setOf(InventoryPet.fromPet(pet)),
+        themes = setOf(currentTheme),
+        colorPacks = setOf(ColorPack.FREE),
+        iconPacks = setOf(IconPack.FREE)
     )
 ) : Entity {
     fun addExperience(experience: Int): Player {
@@ -69,6 +75,15 @@ data class Player(
 
     fun hasPet(petAvatar: PetAvatar) =
         inventory.hasPet(petAvatar)
+
+    fun hasTheme(theme: Theme) =
+        inventory.hasTheme(theme)
+
+    fun hasIconPack(iconPack: IconPack) =
+        inventory.hasIconPack(iconPack)
+
+    fun hasColorPack(colorPack: ColorPack) =
+        inventory.hasColorPack(colorPack)
 }
 
 data class InventoryPet(val name: String, val avatar: PetAvatar) {
@@ -77,7 +92,13 @@ data class InventoryPet(val name: String, val avatar: PetAvatar) {
     }
 }
 
-data class Inventory(val food: Map<Food, Int> = mapOf(), val pets: List<InventoryPet> = listOf()) {
+data class Inventory(
+    val food: Map<Food, Int> = mapOf(),
+    val pets: Set<InventoryPet> = setOf(),
+    val themes: Set<Theme> = setOf(),
+    val colorPacks: Set<ColorPack> = setOf(),
+    val iconPacks: Set<IconPack> = setOf()
+) {
     fun addFood(food: Food): Inventory {
         val quantity = this.food.let {
             if (it.containsKey(food)) it[food]!! + 1 else 1
@@ -110,6 +131,32 @@ data class Inventory(val food: Map<Food, Int> = mapOf(), val pets: List<Inventor
 
     fun getPet(petAvatar: PetAvatar) =
         pets.first { it.avatar == petAvatar }
+
+    fun hasTheme(theme: Theme) = themes.contains(theme)
+
+    fun addTheme(theme: Theme)
+        = copy(themes = this.themes + theme)
+
+    fun changePetName(name: String, petAvatar: PetAvatar): Inventory {
+
+        val currentPet = getPet(petAvatar)
+
+        return copy(
+            pets = this.pets - currentPet + InventoryPet(name, petAvatar)
+        )
+    }
+
+    fun hasIconPack(iconPack: IconPack) =
+        iconPacks.contains(iconPack)
+
+    fun addIconPack(iconPack: IconPack) =
+        copy(iconPacks = this.iconPacks + iconPack)
+
+    fun hasColorPack(colorPack: ColorPack) =
+        colorPacks.contains(colorPack)
+
+    fun addColorPack(colorPack: ColorPack) =
+        copy(colorPacks = this.colorPacks + colorPack)
 }
 
 data class AuthProvider(

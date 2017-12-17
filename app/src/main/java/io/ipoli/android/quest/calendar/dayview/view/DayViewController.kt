@@ -25,10 +25,9 @@ import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.isNotEqual
 import io.ipoli.android.common.datetime.startOfDayUTC
-import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
-import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.*
+import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.calendar.CalendarViewController
 import io.ipoli.android.quest.calendar.dayview.DayViewPresenter
 import io.ipoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
@@ -42,14 +41,11 @@ import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 import kotlinx.android.synthetic.main.unscheduled_quest_item.view.*
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.LocalDate
-import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
 
 class DayViewController :
     MviViewController<DayViewState, DayViewController, DayViewPresenter, DayViewIntent>,
-    Injects<ControllerModule>,
-    CalendarDayView.CalendarChangeListener,
-    ViewStateRenderer<DayViewState> {
+    CalendarDayView.CalendarChangeListener {
 
     private lateinit var currentDate: LocalDate
 
@@ -121,7 +117,6 @@ class DayViewController :
     override fun createPresenter() = presenter
 
     override fun render(state: DayViewState, view: View) {
-
         when (state.type) {
             SCHEDULE_LOADED -> {
                 eventsAdapter = QuestScheduledEventsAdapter(activity!!, state.scheduledQuests, calendarDayView)
@@ -179,11 +174,14 @@ class DayViewController :
             }
 
             EVENT_REMOVED -> {
-                PetMessageViewController(object : PetMessageViewController.UndoClickedListener {
-                    override fun onClick() {
-                        sendUndoRemovedEventIntent(state.removedEventId)
-                    }
-                }).show(router)
+                PetMessagePopup(
+                    stringRes(R.string.remove_quest_undo_message),
+                    { sendUndoRemovedEventIntent(state.removedEventId) }
+                ).show(view.context)
+            }
+
+            NEW_EVENT_REMOVED -> {
+
             }
 
             COLOR_PICKED -> {
@@ -236,6 +234,10 @@ class DayViewController :
                     dragView.dragEndTime.visibility = View.VISIBLE
                     dragView.dragEndTime.text = state.endTime.toString()
                 }
+            }
+
+            REMINDER_PICKED -> {
+
             }
         }
     }
@@ -391,7 +393,10 @@ class DayViewController :
 
     private fun showIconPicker(selectedIcon: AndroidIcon?) {
         IconPickerDialogController({ icon ->
-            send(IconPickedIntent(icon))
+            val ic = icon?.let {
+                Icon.valueOf(it.name)
+            }
+            send(IconPickedIntent(ic))
         }, selectedIcon).showDialog(router, "icon-picker")
     }
 
@@ -437,30 +442,49 @@ class DayViewController :
             view.startTime.text = vm.startTime
             view.endTime.text = vm.endTime
 
-            view.backgroundView.setBackgroundColor(colorRes(vm.backgroundColor.color200))
+            view.backgroundView.setBackgroundColor(colorRes(vm.backgroundColor.color500))
 
             if (vm.isCompleted) {
                 val span = SpannableString(vm.name)
                 span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
                 view.questName.text = span
+                view.questName.setTextColor(colorRes(R.color.md_dark_text_54))
+
+                view.startTime.setTextColor(colorRes(R.color.md_dark_text_54))
+                view.endTime.setTextColor(colorRes(R.color.md_dark_text_54))
+
                 view.questCategoryIndicator.setBackgroundResource(R.color.md_grey_500)
                 view.checkBox.isChecked = true
                 (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(R.color.md_grey_700)
                 view.completedBackgroundView.visibility = View.VISIBLE
-            } else {
-                view.questName.text = vm.name
-                view.questName.setTextColor(ContextCompat.getColor(context, vm.textColor))
+
                 vm.icon?.let {
                     val icon = IconicsDrawable(context)
                         .icon(it.icon)
-                        .colorRes(it.color)
+                        .colorRes(R.color.md_dark_text_26)
+                        .sizeDp(24)
+                    view.questName.setCompoundDrawablesRelative(icon, null, null, null)
+                    view.questName.compoundDrawablePadding = ViewUtils.dpToPx(8f, context).toInt()
+                }
+
+
+            } else {
+                view.questName.text = vm.name
+                view.questName.setTextColor(colorRes(R.color.md_white))
+                view.startTime.setTextColor(colorRes(R.color.md_light_text_87))
+                view.endTime.setTextColor(colorRes(R.color.md_light_text_87))
+
+                vm.icon?.let {
+                    val icon = IconicsDrawable(context)
+                        .icon(it.icon)
+                        .colorRes(R.color.md_light_text_87)
                         .sizeDp(24)
                     view.questName.setCompoundDrawablesRelative(icon, null, null, null)
                     view.questName.compoundDrawablePadding = ViewUtils.dpToPx(8f, context).toInt()
                 }
 
                 view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color700)
-                (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color500)
+                (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(R.color.md_light_text_54)
                 view.completedBackgroundView.visibility = View.INVISIBLE
             }
 

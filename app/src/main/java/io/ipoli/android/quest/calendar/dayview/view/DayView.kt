@@ -5,6 +5,7 @@ import io.ipoli.android.common.mvi.Intent
 import io.ipoli.android.common.mvi.ViewState
 import io.ipoli.android.common.view.AndroidColor
 import io.ipoli.android.common.view.AndroidIcon
+import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.usecase.Schedule
 import io.ipoli.android.reminder.view.picker.ReminderViewModel
 import org.threeten.bp.LocalDate
@@ -26,10 +27,11 @@ data class LoadDataIntent(val currentDate: LocalDate) : DayViewIntent()
 
 //data class EditUnscheduledEventIntent(val event: UnscheduledEvent) : DayViewIntent()
 data class RemoveEventIntent(val eventId: String) : DayViewIntent()
+
 data class ScheduleLoadedIntent(val schedule: Schedule) : DayViewIntent()
 data class UndoRemoveEventIntent(val eventId: String) : DayViewIntent()
 data class ReminderPickedIntent(val reminder: ReminderViewModel?) : DayViewIntent()
-data class IconPickedIntent(val icon: AndroidIcon?) : DayViewIntent()
+data class IconPickedIntent(val icon: Icon?) : DayViewIntent()
 data class ColorPickedIntent(val color: AndroidColor) : DayViewIntent()
 data class CompleteQuestIntent(val questId: String) : DayViewIntent()
 data class UndoCompleteQuestIntent(val questId: String) : DayViewIntent()
@@ -71,11 +73,13 @@ data class DayViewState(
         EDIT_QUEST,
         EVENT_UPDATED,
         EVENT_VALIDATION_ERROR,
+        NEW_EVENT_REMOVED,
         EVENT_REMOVED,
         UNDO_REMOVED_EVENT,
         QUEST_COMPLETED,
         UNDO_QUEST_COMPLETED,
         EDIT_VIEW_DRAGGED,
-        EDIT_VIEW_NAME_CHANGED
+        EDIT_VIEW_NAME_CHANGED,
+        REMINDER_PICKED
     }
 }

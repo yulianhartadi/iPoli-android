@@ -15,7 +15,9 @@ import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.MviDialogController
 import io.ipoli.android.common.view.stringRes
+import io.ipoli.android.pet.AndroidPetAvatar
 import kotlinx.android.synthetic.main.dialog_reminder_picker.view.*
+import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
 
@@ -37,8 +39,7 @@ enum class TimeUnit(val minutes: Long) {
 data class ReminderViewModel(val message: String, val minutesFromStart: Long)
 
 class ReminderPickerDialogController :
-    MviDialogController<ReminderPickerViewState, ReminderPickerDialogController, ReminderPickerDialogPresenter, ReminderPickerIntent>
-    , ViewStateRenderer<ReminderPickerViewState>, Injects<ControllerModule> {
+    MviDialogController<ReminderPickerViewState, ReminderPickerDialogController, ReminderPickerDialogPresenter, ReminderPickerIntent> {
 
     private var listener: ReminderPickedListener? = null
 
@@ -55,10 +56,90 @@ class ReminderPickerDialogController :
 
     override fun createPresenter() = presenter
 
+    override fun onHeaderViewCreated(headerView: View) {
+        headerView.dialogHeaderTitle.setText(R.string.reminder_dialog_title)
+    }
+
+    override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
+        val contentView = inflater.inflate(R.layout.dialog_reminder_picker, null)
+
+        with(contentView) {
+
+            message.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    send(ChangeMessageIntent(s.toString()))
+                }
+
+            })
+
+            predefinedTimes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    send(ChangePredefinedTimeIntent(position))
+                }
+            }
+
+            customTimeUnits.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    send(ChangeTimeUnitIntent(position))
+                }
+
+            }
+
+            customTime.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    send(ChangeCustomTimeIntent(s.toString()))
+                }
+
+            })
+        }
+        return contentView
+    }
+
+    override fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog =
+        dialogBuilder
+            .setPositiveButton(R.string.dialog_ok, null)
+            .setNegativeButton(R.string.cancel, { _, _ -> ViewUtils.hideKeyboard(contentView) })
+            .setNeutralButton(R.string.do_not_remind, { _, _ ->
+                listener?.onReminderPicked(null)
+            })
+            .create()
+
+    override fun onDialogCreated(dialog: AlertDialog, contentView: View) {
+        dialog.setOnShowListener {
+            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+                send(PickReminderIntent)
+            }
+        }
+    }
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        send(LoadReminderDataIntent(reminder))
+    }
+
     override fun render(state: ReminderPickerViewState, view: View) {
 
         when (state.type) {
             ReminderPickerViewState.StateType.NEW_REMINDER -> {
+                changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
                 ViewUtils.showViews(view.predefinedTimes)
                 ViewUtils.hideViews(view.customTimeContainer)
                 view.message.setText(state.message)
@@ -71,6 +152,7 @@ class ReminderPickerDialogController :
             }
 
             ReminderPickerViewState.StateType.EDIT_REMINDER -> {
+                changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
                 view.message.setText(state.message)
                 view.message.setSelection(state.message.length)
 
@@ -122,83 +204,6 @@ class ReminderPickerDialogController :
     private fun showCustomTimeViews(dialogView: View) {
         ViewUtils.showViews(dialogView.customTimeContainer)
         ViewUtils.hideViews(dialogView.predefinedTimes)
-    }
-
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-        send(LoadReminderDataIntent(reminder))
-    }
-
-    override fun onCreateDialog(savedViewState: Bundle?): DialogView {
-
-        val contentView = LayoutInflater.from(activity!!).inflate(R.layout.dialog_reminder_picker, null)
-
-        with(contentView) {
-
-            message.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(s: Editable?) {
-                }
-
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    send(ChangeMessageIntent(s.toString()))
-                }
-
-            })
-
-            predefinedTimes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                }
-
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    send(ChangePredefinedTimeIntent(position))
-                }
-            }
-
-            customTimeUnits.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                }
-
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    send(ChangeTimeUnitIntent(position))
-                }
-
-            }
-
-            customTime.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(s: Editable?) {
-                }
-
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    send(ChangeCustomTimeIntent(s.toString()))
-                }
-
-            })
-        }
-
-        val dialog = AlertDialog.Builder(activity!!)
-            .setView(contentView)
-            .setTitle(R.string.reminder_dialog_title)
-            .setIcon(R.drawable.pet_5_head)
-            .setPositiveButton(R.string.dialog_ok, null)
-            .setNegativeButton(R.string.cancel, { _, _ -> ViewUtils.hideKeyboard(contentView) })
-            .setNeutralButton(R.string.do_not_remind, { _, _ ->
-                listener?.onReminderPicked(null)
-            })
-            .create()
-
-        dialog.setOnShowListener {
-            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
-                send(PickReminderIntent)
-            }
-        }
-
-        return DialogView(dialog, contentView)
     }
 
     interface ReminderPickedListener {

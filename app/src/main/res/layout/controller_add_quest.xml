@@ -5,7 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/md_white">
+    android:background="?attr/colorPrimary">
 
     <io.ipoli.android.common.view.EditTextBackEvent
         android:id="@+id/questName"
@@ -14,6 +14,8 @@
         android:layout_marginBottom="8dp"
         android:backgroundTint="@android:color/transparent"
         android:hint="e.g. Go for a run"
+        android:textColor="@color/md_white"
+        android:textColorHint="@color/md_light_text_54"
         android:imeOptions="actionDone"
         android:inputType="textCapSentences"
         android:paddingEnd="16dp"
@@ -28,7 +30,7 @@
         android:layout_height="24dp"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
-        android:src="@drawable/ic_event_black_18dp"
+        android:src="@drawable/ic_event_white_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -38,7 +40,7 @@
         android:layout_height="24dp"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
-        android:src="@drawable/ic_clock_black_24dp"
+        android:src="@drawable/ic_clock_white_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/scheduleDate" />
 
@@ -58,7 +60,7 @@
         android:layout_height="24dp"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="16dp"
-        android:src="@drawable/ic_color_palette_black_24dp"
+        android:src="@drawable/ic_color_palette_white_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/duration" />
 
@@ -69,7 +71,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
-        android:src="@drawable/ic_reminder_black_24dp"
+        android:src="@drawable/ic_reminder_white_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/done"
         app:layout_constraintHorizontal_bias="0.0"
@@ -82,7 +84,7 @@
         android:layout_height="24dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_done_black_24dp"
+        android:src="@drawable/ic_done_white_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -94,5 +96,5 @@
         android:layout_marginStart="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/color"
-        app:srcCompat="@drawable/ic_icon_black_24dp" />
+        app:srcCompat="@drawable/ic_icon_white_24dp" />
 </android.support.constraint.ConstraintLayout>

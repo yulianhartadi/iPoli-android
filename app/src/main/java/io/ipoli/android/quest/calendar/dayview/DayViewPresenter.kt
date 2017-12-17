@@ -62,6 +62,7 @@ class DayViewPresenter(
             is AddNewScheduledQuestIntent -> {
                 state.copy(
                     type = ADD_NEW_SCHEDULED_QUEST,
+                    editId = "",
                     name = "",
                     color = AndroidColor.GREEN,
                     icon = null,
@@ -106,8 +107,13 @@ class DayViewPresenter(
                     Icon.valueOf(it.name)
                 }
 
+                val reminder = if (state.reminder != null) {
+                    createQuestReminder(state.reminder, state.scheduledDate, state.startTime!!.toMinuteOfDay())
+                } else {
+                    createDefaultReminder(state.scheduledDate, state.startTime!!.toMinuteOfDay())
+                }
+
                 val questParams = SaveQuestUseCase.Parameters(
-                    id = state.editId,
                     name = state.name,
                     color = color,
                     icon = icon,
@@ -115,7 +121,7 @@ class DayViewPresenter(
                     scheduledDate = state.scheduledDate,
                     startTime = state.startTime,
                     duration = state.duration!!,
-                    reminder = createQuestReminder(state.reminder, state.scheduledDate, state.startTime!!.toMinuteOfDay())
+                    reminder = reminder
                 )
                 val result = saveQuestUseCase.execute(questParams)
                 savedQuestViewState(result, state)
@@ -191,7 +197,9 @@ class DayViewPresenter(
                 unscheduledQuests.find { it.id == eventId }?.let { unscheduledQuests.remove(it) }
                 removeQuestUseCase.execute(eventId)
                 if (eventId.isEmpty()) {
-                    state
+                    state.copy(
+                        type = NEW_EVENT_REMOVED
+                    )
                 } else {
                     state.copy(
                         type = DayViewState.StateType.EVENT_REMOVED,
@@ -210,13 +218,18 @@ class DayViewPresenter(
             }
 
             is ReminderPickedIntent -> {
-                state.copy(reminder = intent.reminder)
+                state.copy(
+                    type = REMINDER_PICKED,
+                    reminder = intent.reminder
+                )
             }
 
             is IconPickedIntent -> {
                 state.copy(
                     type = ICON_PICKED,
-                    icon = intent.icon
+                    icon = intent.icon?.let {
+                        AndroidIcon.valueOf(it.name)
+                    }
                 )
             }
 

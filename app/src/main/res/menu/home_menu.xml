@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
-        android:id="@+id/action_pet"
-        android:icon="@drawable/ic_pets_white_24dp"
-        android:title="Pet"
+        android:id="@+id/actionFeedback"
+        android:icon="@drawable/ic_comment_white_24dp"
+        android:title="@string/feedback"
+        android:orderInCategory="100"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_feedback"
-        android:icon="@drawable/ic_comment_white_24dp"
-        android:title="Feedback"
-        app:showAsAction="ifRoom" />
+        android:id="@+id/actionThemes"
+        android:icon="@drawable/ic_color_palette_white_24dp"
+        android:title="@string/themes"
+        android:orderInCategory="99"
+        app:showAsAction="never" />
 </menu>

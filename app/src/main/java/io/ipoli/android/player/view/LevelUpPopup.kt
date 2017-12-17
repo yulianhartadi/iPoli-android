@@ -8,29 +8,106 @@ import android.support.v4.view.animation.LinearOutSlowInInterpolator
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
+import com.amplitude.api.Amplitude
 import com.bumptech.glide.Glide
 import io.ipoli.android.Constants
 import io.ipoli.android.R
-import io.ipoli.android.common.view.BasePopup
+import io.ipoli.android.common.mvi.BaseMviPresenter
+import io.ipoli.android.common.mvi.Intent
+import io.ipoli.android.common.mvi.ViewState
+import io.ipoli.android.common.mvi.ViewStateRenderer
+import io.ipoli.android.common.view.MviPopup
 import io.ipoli.android.common.view.anim.TypewriterTextAnimator
 import io.ipoli.android.common.view.visible
+import io.ipoli.android.pet.AndroidPetAvatar
+import io.ipoli.android.pet.PetAvatar
+import io.ipoli.android.player.Player
+import io.ipoli.android.player.usecase.ListenForPlayerChangesUseCase
 import kotlinx.android.synthetic.main.popup_level_up.view.*
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
+import org.json.JSONObject
+import space.traversal.kapsule.required
+import kotlin.coroutines.experimental.CoroutineContext
 
-class LevelUpPopup(private val level: Int) : BasePopup() {
+
+data class LevelUpViewState(
+    val level: Int? = null,
+    val avatar: PetAvatar? = null
+) : ViewState
+
+sealed class LevelUpIntent : Intent {
+    object LoadData : LevelUpIntent()
+    data class ChangePlayer(val player: Player) : LevelUpIntent()
+}
+
+class LevelUpPresenter(
+    private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
+    coroutineContext: CoroutineContext) : BaseMviPresenter<ViewStateRenderer<LevelUpViewState>, LevelUpViewState, LevelUpIntent>(
+    LevelUpViewState(),
+    coroutineContext
+) {
+    override fun reduceState(intent: LevelUpIntent, state: LevelUpViewState) =
+        when (intent) {
+            is LevelUpIntent.LoadData -> {
+                launch {
+                    listenForPlayerChangesUseCase.execute(Unit).consumeEach {
+                        sendChannel.send(LevelUpIntent.ChangePlayer(it))
+                    }
+                }
+                state
+            }
+
+            is LevelUpIntent.ChangePlayer -> {
+                val player = intent.player
+                state.copy(
+                    level = player.level,
+                    avatar = player.pet.avatar
+                )
+            }
+        }
+
+}
+
+class LevelUpPopup : MviPopup<LevelUpViewState, LevelUpPopup, LevelUpPresenter, LevelUpIntent>() {
+
+    private val presenter by required { levelUpPresenter }
+
+    override fun createPresenter() = presenter
+
+    override fun render(state: LevelUpViewState, view: View) {
+        state.avatar?.let {
+            val androidAvatar = AndroidPetAvatar.valueOf(it.name)
+            view.pet.setImageResource(androidAvatar.headImage)
+            val data = JSONObject()
+            data.put("level", state.level)
+            view.positive.setOnClickListener {
+                data.put("sentiment", "positive")
+                Amplitude.getInstance().logEvent("reward_response", data)
+                hide()
+            }
+            view.negative.setOnClickListener {
+                data.put("sentiment", "negative")
+                Amplitude.getInstance().logEvent("reward_response", data)
+                hide()
+            }
+            startTypingAnimation(view, state.level!!)
+        }
+    }
 
     override fun createView(inflater: LayoutInflater): View =
         inflater.inflate(R.layout.popup_level_up, null)
 
     override fun onViewShown(contentView: View) {
-        startTypingAnimation(contentView)
+        send(LevelUpIntent.LoadData)
     }
 
-    private fun startTypingAnimation(contentView: View) {
+    private fun startTypingAnimation(contentView: View, level: Int) {
         val title = contentView.title
 
         val typewriterTitleAnim = TypewriterTextAnimator.of(title, "You reached new level")
         val animSet = AnimatorSet()
-        animSet.playSequentially(typewriterTitleAnim, levelBadgeAnimation(contentView),
+        animSet.playSequentially(typewriterTitleAnim, levelBadgeAnimation(contentView, level),
             claimRewardAnimation(contentView))
         animSet.start()
 
@@ -40,11 +117,11 @@ class LevelUpPopup(private val level: Int) : BasePopup() {
             Glide.with(contentView.context)
                 .load(rewardUrl)
                 .into(reward)
-            contentView.viewSwitcher.showNext()
+            contentView.container.showNext()
         }
     }
 
-    private fun levelBadgeAnimation(contentView: View): Animator {
+    private fun levelBadgeAnimation(contentView: View, level: Int): Animator {
         val badge = contentView.badge
         val levelView = contentView.playerLevel
         levelView.text = level.toString()
