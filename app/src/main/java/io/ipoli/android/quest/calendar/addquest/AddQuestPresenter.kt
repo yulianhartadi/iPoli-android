@@ -31,45 +31,52 @@ class AddQuestPresenter(
 ) {
     override fun reduceState(intent: AddQuestIntent, state: AddQuestViewState) =
         when (intent) {
-            is PickDateIntent ->
+
+            is AddQuestIntent.LoadData ->
+                state.copy(
+                    type = DEFAULT,
+                    date = intent.startDate
+                )
+
+            is AddQuestIntent.PickDate ->
                 state.copy(type = PICK_DATE)
 
-            is DatePickedIntent -> {
+            is AddQuestIntent.DatePicked -> {
                 val date = LocalDate.of(intent.year, intent.month, intent.day)
                 state.copy(type = DEFAULT, date = date)
             }
 
-            is PickTimeIntent ->
+            is AddQuestIntent.PickTime ->
                 state.copy(type = PICK_TIME)
 
-            is TimePickedIntent ->
+            is AddQuestIntent.TimePicked ->
                 state.copy(type = DEFAULT, time = intent.time)
 
-            is PickDurationIntent ->
+            is AddQuestIntent.PickDuration ->
                 state.copy(type = PICK_DURATION)
 
-            is DurationPickedIntent ->
+            is AddQuestIntent.DurationPicked ->
                 state.copy(type = DEFAULT, duration = intent.minutes)
 
-            is PickColorIntent ->
+            is AddQuestIntent.PickColor ->
                 state.copy(type = PICK_COLOR)
 
-            is ColorPickedIntent ->
+            is AddQuestIntent.ColorPicked ->
                 state.copy(type = DEFAULT, color = intent.color)
 
-            is PickIconIntent ->
+            is AddQuestIntent.PickIcon ->
                 state.copy(type = PICK_ICON)
 
-            is IconPickedIntent ->
+            is AddQuestIntent.IconPicked ->
                 state.copy(type = DEFAULT, icon = intent.icon)
 
-            is PickReminderIntent ->
+            is AddQuestIntent.PickReminder ->
                 state.copy(type = PICK_REMINDER)
 
-            is ReminderPickedIntent ->
+            is AddQuestIntent.ReminderPicked ->
                 state.copy(type = DEFAULT, reminder = intent.reminder)
 
-            is SaveQuestIntent -> {
+            is AddQuestIntent.SaveQuest -> {
                 val color = state.color ?: Color.GREEN
                 val scheduledDate = state.date ?: LocalDate.now()
 

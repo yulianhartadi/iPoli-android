@@ -40,9 +40,7 @@ import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
 
 class CalendarViewController(args: Bundle? = null) :
-    MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>(args),
-    Injects<ControllerModule>,
-    ViewStateRenderer<CalendarViewState> {
+    MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>(args) {
 
     companion object {
         const val MAX_VISIBLE_DAYS = 100
@@ -56,7 +54,7 @@ class CalendarViewController(args: Bundle? = null) :
 
     private val pageChangeListener = object : ViewPager.SimpleOnPageChangeListener() {
         override fun onPageSelected(position: Int) {
-            send(SwipeChangeDateIntent(position))
+            send(CalendarIntent.SwipeChangeDate(position))
         }
     }
 
@@ -105,13 +103,9 @@ class CalendarViewController(args: Bundle? = null) :
             ViewUtils.hideKeyboard(view)
             closeAddContainer()
         }
-
-        view.addQuest.setOnClickListener {
-            openAddContainer()
-        }
     }
 
-    private fun openAddContainer() {
+    private fun openAddContainer(currentDate: LocalDate) {
         val addContainer = view!!.addContainer
 
         val fab = view!!.addQuest
@@ -133,7 +127,7 @@ class CalendarViewController(args: Bundle? = null) :
                 val addQuestViewController = AddQuestViewController({
                     childRouter.popCurrentController()
                     closeAddContainer()
-                })
+                }, currentDate)
 
                 childRouter.setRoot(
                     RouterTransaction.with(addQuestViewController)
@@ -221,7 +215,7 @@ class CalendarViewController(args: Bundle? = null) :
     override fun onAttach(view: View) {
         hideBackButton()
         super.onAttach(view)
-        send(LoadDataIntent(LocalDate.now()))
+        send(CalendarIntent.LoadData(LocalDate.now()))
     }
 
     private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
@@ -232,23 +226,19 @@ class CalendarViewController(args: Bundle? = null) :
         val currentDate = LocalDate.now()
         view.datePicker.markDate(DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth))
 
-        calendarToolbar.setOnClickListener {
-            send(ExpandToolbarIntent)
-        }
+        calendarToolbar.sendOnClick(CalendarIntent.ExpandToolbar)
 
-        view.expander.setOnClickListener {
-            send(ExpandToolbarWeekIntent)
-        }
+        view.expander.sendOnClick(CalendarIntent.ExpandToolbarWeek)
 
         view.datePicker.setOnDateClickListener(object : OnDateClickListener() {
             override fun onDateClick(v: View, date: DateData) {
-                send(CalendarChangeDateIntent(date.year, date.month, date.day))
+                send(CalendarIntent.CalendarChangeDate(date.year, date.month, date.day))
             }
         })
 
         view.datePicker.setOnMonthScrollListener(object : OnMonthScrollListener() {
             override fun onMonthChange(year: Int, month: Int) {
-                send(ChangeMonthIntent(year, month))
+                send(CalendarIntent.ChangeMonth(year, month))
             }
 
             override fun onMonthScroll(positionOffset: Float) {
@@ -265,6 +255,10 @@ class CalendarViewController(args: Bundle? = null) :
         calendarToolbar.day.text = state.dayText
         calendarToolbar.date.text = state.dateText
         view.currentMonth.text = state.monthText
+
+        view.addQuest.setOnClickListener {
+            openAddContainer(state.currentDate)
+        }
 
         if (state.type == LOADING) {
             levelProgress.visible = false

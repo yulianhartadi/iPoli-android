@@ -30,8 +30,6 @@ import space.traversal.kapsule.required
 class ThemeStoreViewController(args: Bundle? = null) :
     MviViewController<ThemeStoreViewState, ThemeStoreViewController, ThemeStorePresenter, ThemeStoreIntent>(args) {
 
-    var currentPosition = -1
-
     private lateinit var inventoryToolbar: ViewGroup
 
     private val presenter by required { themeStorePresenter }
@@ -49,16 +47,6 @@ class ThemeStoreViewController(args: Bundle? = null) :
         view.themePager.clipToPadding = false
         view.themePager.pageMargin = ViewUtils.dpToPx(16f, view.context).toInt()
         return view
-    }
-
-    override fun onSaveViewState(view: View, outState: Bundle) {
-        outState.putInt("themePosition", view.themePager.currentItem)
-        super.onSaveViewState(view, outState)
-    }
-
-    override fun onRestoreViewState(view: View, savedViewState: Bundle) {
-        currentPosition = savedViewState.getInt("themePosition")
-        (activity as MainActivity).animateFadeIn()
     }
 
     override fun onAttach(view: View) {
@@ -90,9 +78,6 @@ class ThemeStoreViewController(args: Bundle? = null) :
             PLAYER_CHANGED -> {
                 inventoryToolbar.playerCoins.text = state.playerCoins.toString()
                 (view.themePager.adapter as ThemePagerAdapter).updateAll(state.viewModels)
-                if (currentPosition >= 0) {
-                    view.themePager.currentItem = currentPosition
-                }
             }
 
             THEME_CHANGED -> {
@@ -140,12 +125,12 @@ class ThemeStoreViewController(args: Bundle? = null) :
             val primaryDarkColor = a.getResourceId(a.getIndex(attrs.indexOf(R.attr.colorPrimaryDark)), 0)
             val accentColor = a.getColor(a.getIndex(attrs.indexOf(R.attr.colorAccent)), 0)
 
+            a.recycle()
+
             view.themeToolbar.setBackgroundResource(primaryColor)
             view.themeNavigationBar.setBackgroundResource(primaryColor)
             view.themeStatusBar.setBackgroundResource(primaryDarkColor)
             view.themeFab.backgroundTintList = ColorStateList.valueOf(accentColor)
-
-            a.recycle()
 
             view.themeName.setText(theme.title)
 
