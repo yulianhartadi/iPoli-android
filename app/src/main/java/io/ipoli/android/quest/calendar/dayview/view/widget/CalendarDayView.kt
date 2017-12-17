@@ -1004,7 +1004,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
     }
 
     private fun getMinutesFor(height: Int): Int =
-        (height / fsm.state.minuteHeight).toInt()
+        Math.ceil((height / fsm.state.minuteHeight).toDouble()).toInt()
 
     private fun showViews(vararg views: View) =
         views.forEach { it.visibility = View.VISIBLE }
