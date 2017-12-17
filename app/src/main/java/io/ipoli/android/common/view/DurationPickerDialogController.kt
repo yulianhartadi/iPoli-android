@@ -52,7 +52,7 @@ class DurationPickerDialogController :
         val contentView = inflater.inflate(R.layout.dialog_duration_picker, null)
 
         val durationPicker = contentView.durationPicker
-        durationPicker.labelSize = ViewUtils.spToPx(14, contentView.context)
+        durationPicker.labelSize = ViewUtils.spToPx(16, contentView.context)
         durationPicker.max = 25
         durationPicker.setOnProgressChangedListener { progress ->
             currentMinutes = updateMinutes(progress)
