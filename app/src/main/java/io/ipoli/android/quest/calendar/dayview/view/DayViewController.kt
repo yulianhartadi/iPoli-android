@@ -25,9 +25,7 @@ import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.datetime.Time
 import io.ipoli.android.common.datetime.isNotEqual
 import io.ipoli.android.common.datetime.startOfDayUTC
-import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
-import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.*
 import io.ipoli.android.quest.Icon
 import io.ipoli.android.quest.calendar.CalendarViewController
@@ -43,14 +41,11 @@ import kotlinx.android.synthetic.main.item_calendar_quest.view.*
 import kotlinx.android.synthetic.main.unscheduled_quest_item.view.*
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.LocalDate
-import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
 
 class DayViewController :
     MviViewController<DayViewState, DayViewController, DayViewPresenter, DayViewIntent>,
-    Injects<ControllerModule>,
-    CalendarDayView.CalendarChangeListener,
-    ViewStateRenderer<DayViewState> {
+    CalendarDayView.CalendarChangeListener {
 
     private lateinit var currentDate: LocalDate
 

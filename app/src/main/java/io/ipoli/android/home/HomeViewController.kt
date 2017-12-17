@@ -11,16 +11,12 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import io.ipoli.android.Constants
 import io.ipoli.android.R
-import io.ipoli.android.common.di.ControllerModule
 import io.ipoli.android.common.mvi.MviViewController
-import io.ipoli.android.common.mvi.ViewStateRenderer
-import io.ipoli.android.common.view.DurationPickerDialogController
 import io.ipoli.android.common.view.FeedbackDialogController
 import io.ipoli.android.quest.calendar.CalendarViewController
 import io.ipoli.android.theme.ThemeStoreViewController
 import kotlinx.android.synthetic.main.controller_home.view.*
 import org.json.JSONObject
-import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
 
 /**
@@ -28,9 +24,7 @@ import space.traversal.kapsule.required
  * on 8/19/17.
  */
 class HomeViewController(args: Bundle? = null) :
-    MviViewController<HomeViewState, HomeViewController, HomePresenter, HomeIntent>(args),
-    Injects<ControllerModule>,
-    ViewStateRenderer<HomeViewState> {
+    MviViewController<HomeViewState, HomeViewController, HomePresenter, HomeIntent>(args) {
 
     private val presenter by required { homePresenter }
 
@@ -86,7 +80,7 @@ class HomeViewController(args: Bundle? = null) :
         val childRouter = getChildRouter(view.controllerContainer, null)
         if (!childRouter.hasRootController()) {
             childRouter.setRoot(
-            RouterTransaction.with(CalendarViewController())
+                RouterTransaction.with(CalendarViewController())
 //                RouterTransaction.with(ThemeStoreViewController())
                     .pushChangeHandler(handler)
                     .popChangeHandler(handler)
