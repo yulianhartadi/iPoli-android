@@ -5,19 +5,19 @@
     android:layout_height="match_parent"
     android:padding="24dp">
 
-    <com.sdsmdg.harjot.crollerTest.Croller xmlns:android="http://schemas.android.com/apk/res/android"
+    <com.sdsmdg.harjot.crollerTest.Croller
         android:id="@+id/durationPicker"
         android:layout_width="250dp"
         android:layout_height="250dp"
         android:layout_centerInParent="true"
-        app:back_circle_color="@color/md_white"
-        app:indicator_color="@color/colorAccent"
-        app:indicator_width="10"
+        app:back_circle_color="?attr/colorPrimary"
+        app:indicator_color="?attr/colorAccent"
+        app:indicator_width="15"
         app:is_continuous="false"
         app:label_color="@color/md_dark_text_54"
-        app:main_circle_color="@color/md_green_100"
-        app:progress_primary_circle_size="10"
-        app:progress_primary_color="@color/colorAccent"
+        app:main_circle_color="@color/md_white"
+        app:progress_primary_circle_size="15"
+        app:progress_primary_color="?attr/colorAccent"
         app:progress_secondary_circle_size="5"
-        app:progress_secondary_color="@color/md_green_A100" />
+        app:progress_secondary_color="?attr/colorAccent" />
 </RelativeLayout>

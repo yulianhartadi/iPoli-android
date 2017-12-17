@@ -205,11 +205,11 @@ class CalendarViewController(args: Bundle? = null) :
             fab.backgroundTintList = ColorStateList.valueOf(value)
         })
 
-        val fabSet = AnimatorSet()
-        fabSet.playTogether(fabTranslation, rgbAnim)
-        fabSet.interpolator = AccelerateDecelerateInterpolator()
-        fabSet.duration = duration
-        return fabSet
+        return AnimatorSet().also {
+            it.playTogether(fabTranslation, rgbAnim)
+            it.interpolator = AccelerateDecelerateInterpolator()
+            it.duration = duration
+        }
     }
 
     override fun onAttach(view: View) {
@@ -260,50 +260,49 @@ class CalendarViewController(args: Bundle? = null) :
             openAddContainer(state.currentDate)
         }
 
-        if (state.type == LOADING) {
-            levelProgress.visible = false
-        }
+        when (state.type) {
 
-        if (state.type == XP_AND_COINS_CHANGED) {
-            levelProgress.visible = true
-            val animator = ObjectAnimator.ofInt(levelProgress, "progress", levelProgress.progress, state.progress)
-            animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
-            animator.start()
-            calendarToolbar.playerCoins.text = state.coins.toString()
-        }
+            LOADING -> levelProgress.visible = false
 
-        if (state.type == LEVEL_CHANGED) {
-            levelProgress.max = state.maxProgress
-            levelProgress.progress = state.progress
-            calendarToolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
-        }
+            XP_AND_COINS_CHANGED -> {
+                levelProgress.visible = true
+                val animator = ObjectAnimator.ofInt(levelProgress, "progress", levelProgress.progress, state.progress)
+                animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
+                animator.start()
+                calendarToolbar.playerCoins.text = state.coins.toString()
+            }
 
-        if (state.type == DATE_PICKER_CHANGED) {
-            renderDatePicker(state.datePickerState, view, state.currentDate)
-        }
+            LEVEL_CHANGED -> {
+                levelProgress.max = state.maxProgress
+                levelProgress.progress = state.progress
+                calendarToolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
+            }
 
-        if (state.type == DATA_LOADED) {
-            removeDayViewPagerAdapter(view)
-            createDayViewPagerAdapter(state, view)
-        }
+            DATE_PICKER_CHANGED -> renderDatePicker(state.datePickerState, view, state.currentDate)
 
-        if (state.type == PLAYER_LOADED) {
-            levelProgress.visible = true
-            levelProgress.max = state.maxProgress
-            levelProgress.progress = state.progress
-            calendarToolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
-            calendarToolbar.playerCoins.text = state.coins.toString()
-        }
+            DATA_LOADED -> {
+                removeDayViewPagerAdapter(view)
+                createDayViewPagerAdapter(state, view)
+            }
 
-        if (state.type == CALENDAR_DATE_CHANGED) {
-            markSelectedDate(view, state.currentDate)
-            removeDayViewPagerAdapter(view)
-            createDayViewPagerAdapter(state, view)
-        }
+            PLAYER_LOADED -> {
+                levelProgress.visible = true
+                levelProgress.max = state.maxProgress
+                levelProgress.progress = state.progress
+                calendarToolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
+                calendarToolbar.playerCoins.text = state.coins.toString()
+            }
 
-        if (state.type == SWIPE_DATE_CHANGED) {
-            markSelectedDate(view, state.currentDate)
-            updateDayViewPagerAdapter(state)
+            CALENDAR_DATE_CHANGED -> {
+                markSelectedDate(view, state.currentDate)
+                removeDayViewPagerAdapter(view)
+                createDayViewPagerAdapter(state, view)
+            }
+
+            SWIPE_DATE_CHANGED -> {
+                markSelectedDate(view, state.currentDate)
+                updateDayViewPagerAdapter(state)
+            }
         }
     }
 
