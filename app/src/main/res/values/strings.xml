@@ -181,7 +181,7 @@
     <string name="quest_challenge_question">Challenge</string>
     <string name="quest_pick_challenge">Pick a challenge</string>
     <string name="help_dialog_challenges_title">Ready to achieve more?</string>
-    <string name="reminder_dialog_title">When should you be reminded?</string>
+    <string name="reminder_dialog_title">When should I remind you?</string>
     <string name="reminder_dialog_add_custom_time_value">Please, add time value</string>
     <string name="do_not_remind">Don\'t remind</string>
     <string name="ready_to_start">Ready to start?</string>

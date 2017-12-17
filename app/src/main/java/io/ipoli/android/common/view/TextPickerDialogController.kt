@@ -6,22 +6,20 @@ import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import io.ipoli.android.R
-import io.ipoli.android.common.di.ControllerModule
-import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.LoadPetIntent
 import io.ipoli.android.pet.PetDialogPresenter
 import io.ipoli.android.pet.PetDialogViewState
 import kotlinx.android.synthetic.main.dialog_text_picker.view.*
-import space.traversal.kapsule.Injects
+import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import space.traversal.kapsule.required
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 12/3/17.
  */
-class TextPickerDialogController : MviDialogController<PetDialogViewState, TextPickerDialogController, PetDialogPresenter, LoadPetIntent>
-    , ViewStateRenderer<PetDialogViewState>, Injects<ControllerModule> {
+class TextPickerDialogController :
+    MviDialogController<PetDialogViewState, TextPickerDialogController, PetDialogPresenter, LoadPetIntent> {
 
     private val presenter by required { petDialogPresenter }
 
@@ -42,9 +40,11 @@ class TextPickerDialogController : MviDialogController<PetDialogViewState, TextP
 
     constructor(args: Bundle? = null) : super(args)
 
-    override fun onCreateDialog(savedViewState: Bundle?): DialogView {
-        val inflater = LayoutInflater.from(activity!!)
+    override fun onHeaderViewCreated(headerView: View) {
+        headerView.dialogHeaderTitle.text = title
+    }
 
+    override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
         val contentView = inflater.inflate(R.layout.dialog_text_picker, null)
 
         val textView = contentView.text
@@ -52,17 +52,19 @@ class TextPickerDialogController : MviDialogController<PetDialogViewState, TextP
         textView.setSelection(textView.text.length)
 
         contentView.textLayout.hint = hint
+        return contentView
+    }
 
-        val dialog = AlertDialog.Builder(activity!!)
-            .setView(contentView)
-            .setTitle(title)
-            .setIcon(R.drawable.pet_5_head)
+    override fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog =
+        dialogBuilder
             .setPositiveButton(R.string.dialog_ok, null)
             .setNegativeButton(R.string.cancel, null)
             .create()
 
+    override fun onDialogCreated(dialog: AlertDialog, contentView: View) {
         dialog.setOnShowListener {
             dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+                val textView = contentView.text
                 val text = textView.text.toString()
                 if (text.isNotEmpty()) {
                     listener(text)
@@ -72,8 +74,6 @@ class TextPickerDialogController : MviDialogController<PetDialogViewState, TextP
                 }
             }
         }
-
-        return DialogView(dialog, contentView)
     }
 
     override fun onAttach(view: View) {

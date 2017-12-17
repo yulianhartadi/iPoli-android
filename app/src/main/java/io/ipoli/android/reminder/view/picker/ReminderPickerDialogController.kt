@@ -17,6 +17,7 @@ import io.ipoli.android.common.view.MviDialogController
 import io.ipoli.android.common.view.stringRes
 import io.ipoli.android.pet.AndroidPetAvatar
 import kotlinx.android.synthetic.main.dialog_reminder_picker.view.*
+import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
 
@@ -38,8 +39,7 @@ enum class TimeUnit(val minutes: Long) {
 data class ReminderViewModel(val message: String, val minutesFromStart: Long)
 
 class ReminderPickerDialogController :
-    MviDialogController<ReminderPickerViewState, ReminderPickerDialogController, ReminderPickerDialogPresenter, ReminderPickerIntent>
-    , ViewStateRenderer<ReminderPickerViewState>, Injects<ControllerModule> {
+    MviDialogController<ReminderPickerViewState, ReminderPickerDialogController, ReminderPickerDialogPresenter, ReminderPickerIntent> {
 
     private var listener: ReminderPickedListener? = null
 
@@ -56,9 +56,12 @@ class ReminderPickerDialogController :
 
     override fun createPresenter() = presenter
 
-    override fun onCreateDialog(savedViewState: Bundle?): DialogView {
+    override fun onHeaderViewCreated(headerView: View) {
+        headerView.dialogHeaderTitle.setText(R.string.reminder_dialog_title)
+    }
 
-        val contentView = LayoutInflater.from(activity!!).inflate(R.layout.dialog_reminder_picker, null)
+    override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
+        val contentView = inflater.inflate(R.layout.dialog_reminder_picker, null)
 
         with(contentView) {
 
@@ -107,10 +110,11 @@ class ReminderPickerDialogController :
 
             })
         }
+        return contentView
+    }
 
-        val dialog = AlertDialog.Builder(activity!!)
-            .setView(contentView)
-            .setTitle(R.string.reminder_dialog_title)
+    override fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog =
+        dialogBuilder
             .setPositiveButton(R.string.dialog_ok, null)
             .setNegativeButton(R.string.cancel, { _, _ -> ViewUtils.hideKeyboard(contentView) })
             .setNeutralButton(R.string.do_not_remind, { _, _ ->
@@ -118,13 +122,12 @@ class ReminderPickerDialogController :
             })
             .create()
 
+    override fun onDialogCreated(dialog: AlertDialog, contentView: View) {
         dialog.setOnShowListener {
             dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
                 send(PickReminderIntent)
             }
         }
-
-        return DialogView(dialog, contentView)
     }
 
     override fun onAttach(view: View) {

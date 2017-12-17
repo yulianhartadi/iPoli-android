@@ -7,15 +7,13 @@ import android.view.View
 import io.ipoli.android.Constants
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
-import io.ipoli.android.common.di.ControllerModule
-import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.text.DurationFormatter.formatShort
 import io.ipoli.android.pet.AndroidPetAvatar
 import io.ipoli.android.pet.LoadPetIntent
 import io.ipoli.android.pet.PetDialogPresenter
 import io.ipoli.android.pet.PetDialogViewState
 import kotlinx.android.synthetic.main.dialog_duration_picker.view.*
-import space.traversal.kapsule.Injects
+import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import space.traversal.kapsule.required
 
 /**
@@ -23,8 +21,7 @@ import space.traversal.kapsule.required
  * on 9/2/17.
  */
 class DurationPickerDialogController :
-    MviDialogController<PetDialogViewState, DurationPickerDialogController, PetDialogPresenter, LoadPetIntent>
-    , ViewStateRenderer<PetDialogViewState>, Injects<ControllerModule> {
+    MviDialogController<PetDialogViewState, DurationPickerDialogController, PetDialogPresenter, LoadPetIntent> {
 
     interface DurationPickedListener {
         fun onDurationPicked(minutes: Int)
@@ -45,10 +42,7 @@ class DurationPickerDialogController :
 
     override fun createPresenter() = presenter
 
-    override fun onCreateDialog(savedViewState: Bundle?): DialogView {
-
-        val inflater = LayoutInflater.from(activity!!)
-
+    override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
         val contentView = inflater.inflate(R.layout.dialog_duration_picker, null)
 
         val durationPicker = contentView.durationPicker
@@ -59,17 +53,20 @@ class DurationPickerDialogController :
             durationPicker.label = formatShort(currentMinutes)
         }
 
-        val dialog = AlertDialog.Builder(activity!!)
-            .setView(contentView)
-            .setTitle(R.string.quest_duration_question)
-            .setPositiveButton(R.string.dialog_ok, { _, _ ->
+        return contentView
+    }
+
+    override fun onHeaderViewCreated(headerView: View) {
+        headerView.dialogHeaderTitle.setText(R.string.quest_duration_question)
+    }
+
+    override fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog =
+        dialogBuilder.
+            setPositiveButton(R.string.dialog_ok, { _, _ ->
                 listener!!.onDurationPicked(currentMinutes)
             })
             .setNegativeButton(R.string.cancel, null)
             .create()
-
-        return DialogView(dialog, contentView)
-    }
 
     override fun onAttach(view: View) {
         super.onAttach(view)
