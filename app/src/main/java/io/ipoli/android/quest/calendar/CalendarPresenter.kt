@@ -35,10 +35,10 @@ class CalendarPresenter(
 
     override fun reduceState(intent: CalendarIntent, state: CalendarViewState): CalendarViewState =
         when (intent) {
-            is LoadDataIntent -> {
+            is CalendarIntent.LoadData -> {
                 launch {
                     listenForPlayerChangesUseCase.execute(Unit).consumeEach {
-                        sendChannel.send(ChangePlayerIntent(it))
+                        sendChannel.send(CalendarIntent.ChangePlayer(it))
                     }
                 }
                 val date = intent.currentDate
@@ -52,19 +52,19 @@ class CalendarPresenter(
                     dateText = dateText
                 )
             }
-            is ExpandToolbarIntent -> {
+            is CalendarIntent.ExpandToolbar -> {
                 when (state.datePickerState) {
                     INVISIBLE -> state.copy(type = DATE_PICKER_CHANGED, datePickerState = SHOW_WEEK)
                     else -> state.copy(type = DATE_PICKER_CHANGED, datePickerState = INVISIBLE)
                 }
             }
-            is ExpandToolbarWeekIntent -> {
+            is CalendarIntent.ExpandToolbarWeek -> {
                 when (state.datePickerState) {
                     SHOW_WEEK -> state.copy(type = DATE_PICKER_CHANGED, datePickerState = SHOW_MONTH)
                     else -> state.copy(type = DATE_PICKER_CHANGED, datePickerState = SHOW_WEEK)
                 }
             }
-            is CalendarChangeDateIntent -> {
+            is CalendarIntent.CalendarChangeDate -> {
                 val newDate = LocalDate.of(intent.year, intent.month, intent.day)
                 val (dayText, dateText) = formatDayAndDate(newDate)
                 state.copy(
@@ -76,7 +76,7 @@ class CalendarPresenter(
                     adapterPosition = MID_POSITION
                 )
             }
-            is SwipeChangeDateIntent -> {
+            is CalendarIntent.SwipeChangeDate -> {
                 val newDate = state.currentDate.plusDays((intent.position - state.adapterPosition).toLong())
                 val (dayText, dateText) = formatDayAndDate(newDate)
                 state.copy(
@@ -88,7 +88,7 @@ class CalendarPresenter(
                     adapterPosition = intent.position
                 )
             }
-            is ChangeMonthIntent -> {
+            is CalendarIntent.ChangeMonth -> {
                 val newDate = LocalDate.of(intent.year, intent.month, 1)
                 state.copy(
                     type = DEFAULT,
@@ -96,7 +96,7 @@ class CalendarPresenter(
                 )
             }
 
-            is ChangePlayerIntent -> {
+            is CalendarIntent.ChangePlayer -> {
                 val player = intent.player
 
                 val type = when {

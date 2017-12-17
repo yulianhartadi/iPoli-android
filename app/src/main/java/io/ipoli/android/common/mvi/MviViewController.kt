@@ -98,4 +98,15 @@ protected constructor(args: Bundle? = null)
     }
 
     abstract fun render(state: VS, view: View)
+
+    fun View.sendOnClick(intent: I) {
+        sendOnClickAndExec(intent, {})
+    }
+
+    fun View.sendOnClickAndExec(intent: I, block: () -> Unit) {
+        setOnClickListener {
+            send(intent)
+            block()
+        }
+    }
 }
