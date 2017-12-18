@@ -470,8 +470,8 @@ class DayViewController :
                         .icon(it.icon)
                         .colorRes(R.color.md_dark_text_26)
                         .sizeDp(24)
-                    view.questName.setCompoundDrawablesRelative(icon, null, null, null)
-                    view.questName.compoundDrawablePadding = ViewUtils.dpToPx(8f, context).toInt()
+
+                    view.questIcon.setImageDrawable(icon)
                 }
 
 
@@ -486,8 +486,7 @@ class DayViewController :
                         .icon(it.icon)
                         .colorRes(R.color.md_light_text_87)
                         .sizeDp(24)
-                    view.questName.setCompoundDrawablesRelative(icon, null, null, null)
-                    view.questName.compoundDrawablePadding = ViewUtils.dpToPx(8f, context).toInt()
+                    view.questIcon.setImageDrawable(icon)
                 }
 
                 view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color700)
