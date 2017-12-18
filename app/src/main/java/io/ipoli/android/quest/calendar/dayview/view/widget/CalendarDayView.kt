@@ -910,7 +910,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
 //
 //            State.Type.VIEW -> {
-//                hideViews(editModeBackground, topDragView, bottomDragView)
+//                goneViews(editModeBackground, topDragView, bottomDragView)
 //            }
         }
     }

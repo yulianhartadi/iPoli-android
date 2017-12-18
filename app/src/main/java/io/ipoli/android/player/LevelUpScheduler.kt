@@ -36,7 +36,7 @@ interface LevelUpScheduler {
 class AndroidLevelUpScheduler : LevelUpScheduler {
     override fun schedule() {
         JobRequest.Builder(LevelUpJob.TAG)
-            .setExact(1500)
+            .setExact(1000)
             .build()
             .schedule()
     }

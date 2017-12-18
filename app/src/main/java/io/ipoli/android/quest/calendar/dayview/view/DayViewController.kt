@@ -549,23 +549,25 @@ class DayViewController :
         }
 
         override fun adaptViewForHeight(adapterView: View, height: Float) {
-            val heightDp = ViewUtils.pxToDp(height.toInt(), adapterView.context)
-//            with(adapterView) {
-//                when {
-//                    heightDp < 12 -> ViewUtils.hideViews(checkBox, startTime, endTime)
-//                    heightDp < 26 -> {
-//                        ViewUtils.showViews(startTime, endTime)
-//                        ViewUtils.hideViews(checkBox)
-//                        ViewUtils.setMarginTop(startTime, 0)
-//                        ViewUtils.setMarginBottom(endTime, 0)
-//                    }
-//                    else -> {
-//                        ViewUtils.showViews(checkBox, startTime, endTime)
-//                        ViewUtils.setMarginTop(startTime, 8)
-//                        ViewUtils.setMarginBottom(endTime, 8)
-//                    }
-//                }
-//            }
+            val cbHeight = adapterView.checkBox.height
+            val avHeight = adapterView.height
+            val stHeight = adapterView.startTime.height
+            val etHeight = adapterView.endTime.height
+
+            with(adapterView) {
+                when {
+                    avHeight <= cbHeight -> ViewUtils.goneViews(checkBox, startTime, endTime)
+                    avHeight > cbHeight && avHeight < cbHeight + stHeight + etHeight + ViewUtils.dpToPx(4f, adapterView.context) -> {
+                        ViewUtils.showViews(checkBox)
+                        ViewUtils.hideViews(startTime, endTime)
+                    }
+                    else -> {
+                        ViewUtils.showViews(checkBox, startTime, endTime)
+                        ViewUtils.setMarginTop(startTime, 2)
+                        ViewUtils.setMarginBottom(endTime, 2)
+                    }
+                }
+            }
         }
 
         private fun tintList(@ColorRes color: Int) = ContextCompat.getColorStateList(context, color)

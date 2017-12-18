@@ -11,14 +11,11 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import io.ipoli.android.R
 import io.ipoli.android.common.ViewUtils
-import io.ipoli.android.common.di.ControllerModule
-import io.ipoli.android.common.mvi.ViewStateRenderer
 import io.ipoli.android.common.view.MviDialogController
 import io.ipoli.android.common.view.stringRes
 import io.ipoli.android.pet.AndroidPetAvatar
 import kotlinx.android.synthetic.main.dialog_reminder_picker.view.*
 import kotlinx.android.synthetic.main.view_dialog_header.view.*
-import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
 
 typealias TimeUnitConverter = java.util.concurrent.TimeUnit
@@ -141,7 +138,7 @@ class ReminderPickerDialogController :
             ReminderPickerViewState.StateType.NEW_REMINDER -> {
                 changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
                 ViewUtils.showViews(view.predefinedTimes)
-                ViewUtils.hideViews(view.customTimeContainer)
+                ViewUtils.goneViews(view.customTimeContainer)
                 view.message.setText(state.message)
                 view.message.setSelection(state.message.length)
 
@@ -158,7 +155,7 @@ class ReminderPickerDialogController :
 
                 if (state.predefinedIndex != null) {
                     ViewUtils.showViews(view.predefinedTimes)
-                    ViewUtils.hideViews(view.customTimeContainer)
+                    ViewUtils.goneViews(view.customTimeContainer)
                     val predefinedTimesAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, state.predefinedValues)
                     predefinedTimesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     view.predefinedTimes.adapter = predefinedTimesAdapter
@@ -203,7 +200,7 @@ class ReminderPickerDialogController :
 
     private fun showCustomTimeViews(dialogView: View) {
         ViewUtils.showViews(dialogView.customTimeContainer)
-        ViewUtils.hideViews(dialogView.predefinedTimes)
+        ViewUtils.goneViews(dialogView.predefinedTimes)
     }
 
     interface ReminderPickedListener {
