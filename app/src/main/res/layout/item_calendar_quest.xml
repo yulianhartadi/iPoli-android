@@ -18,8 +18,7 @@
     <View
         android:id="@+id/questCategoryIndicator"
         android:layout_width="4dp"
-        android:layout_height="match_parent"
-        android:alpha="1" />
+        android:layout_height="match_parent" />
 
     <View
         android:id="@+id/completedBackgroundView"
@@ -31,66 +30,58 @@
         android:id="@+id/questName"
         style="@style/Calendar.Quest.Name"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginEnd="16dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:textAlignment="viewStart"
+        app:layout_constraintBottom_toTopOf="@+id/questSchedule"
+        app:layout_constraintEnd_toStartOf="@+id/questIcon"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"
-        app:layout_constraintStart_toEndOf="@+id/questIcon"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.499"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@+id/checkBox"
+        app:layout_constraintTop_toTopOf="@+id/completedBackgroundView"
+        app:layout_constraintVertical_chainStyle="packed"
         tools:text="Workout" />
 
     <TextView
-        android:id="@+id/startTime"
+        android:id="@+id/questSchedule"
         style="@style/Calendar.Quest.StartTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="2dp"
-        android:textColor="@color/md_light_text_87"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="10:30" />
-
-    <TextView
-        android:id="@+id/endTime"
-        style="@style/Calendar.Quest.EndTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp"
-        android:layout_marginStart="16dp"
-        android:gravity="bottom"
-        android:textColor="@color/md_light_text_87"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="12:30" />
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="@+id/questName"
+        app:layout_constraintTop_toBottomOf="@+id/questName"
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="10:30 - 12:45" />
 
     <CheckBox
         android:id="@+id/checkBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/endTime"
-        app:layout_constraintEnd_toEndOf="@+id/startTime"
-        app:layout_constraintStart_toStartOf="@+id/startTime"
-        app:layout_constraintTop_toBottomOf="@+id/startTime"
-        app:layout_constraintVertical_bias="0.5" />
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/questName"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/questIcon"
         android:layout_width="24dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/questName"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toEndOf="@+id/checkBox"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/questName"
         app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

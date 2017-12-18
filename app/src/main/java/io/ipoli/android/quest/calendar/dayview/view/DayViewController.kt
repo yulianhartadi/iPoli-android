@@ -446,8 +446,8 @@ class DayViewController :
                 true
             }
 
-            view.startTime.text = vm.startTime
-            view.endTime.text = vm.endTime
+            view.questSchedule.text = "${vm.startTime} - ${vm.endTime}"
+            view.questSchedule.setTextColor(colorRes(R.color.md_dark_text_54))
 
             view.backgroundView.setBackgroundColor(colorRes(vm.backgroundColor.color200))
 
@@ -456,9 +456,6 @@ class DayViewController :
                 span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
                 view.questName.text = span
                 view.questName.setTextColor(colorRes(R.color.md_dark_text_54))
-
-                view.startTime.setTextColor(colorRes(R.color.md_dark_text_54))
-                view.endTime.setTextColor(colorRes(R.color.md_dark_text_54))
 
                 view.checkBox.isChecked = true
                 (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(R.color.md_grey_700)
@@ -479,9 +476,7 @@ class DayViewController :
                 view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color700)
 
                 view.questName.text = vm.name
-                view.questName.setTextColor(colorRes(R.color.md_dark_text_54))
-                view.startTime.setTextColor(colorRes(R.color.md_dark_text_54))
-                view.endTime.setTextColor(colorRes(R.color.md_dark_text_54))
+                view.questName.setTextColor(colorRes(vm.textColor))
 
                 vm.icon?.let {
                     val icon = IconicsDrawable(context)
@@ -550,25 +545,25 @@ class DayViewController :
         }
 
         override fun adaptViewForHeight(adapterView: View, height: Float) {
-            val cbHeight = adapterView.checkBox.height
-            val avHeight = adapterView.height
-            val stHeight = adapterView.startTime.height
-            val etHeight = adapterView.endTime.height
-
-            with(adapterView) {
-                when {
-                    avHeight <= cbHeight -> ViewUtils.goneViews(checkBox, startTime, endTime)
-                    avHeight > cbHeight && avHeight < cbHeight + stHeight + etHeight + ViewUtils.dpToPx(4f, adapterView.context) -> {
-                        ViewUtils.showViews(checkBox)
-                        ViewUtils.hideViews(startTime, endTime)
-                    }
-                    else -> {
-                        ViewUtils.showViews(checkBox, startTime, endTime)
-                        ViewUtils.setMarginTop(startTime, 2)
-                        ViewUtils.setMarginBottom(endTime, 2)
-                    }
-                }
-            }
+//            val cbHeight = adapterView.checkBox.height
+//            val avHeight = adapterView.height
+//            val stHeight = adapterView.startTime.height
+//            val etHeight = adapterView.endTime.height
+//
+//            with(adapterView) {
+//                when {
+//                    avHeight <= cbHeight -> ViewUtils.goneViews(checkBox, startTime, endTime)
+//                    avHeight > cbHeight && avHeight < cbHeight + stHeight + etHeight + ViewUtils.dpToPx(4f, adapterView.context) -> {
+//                        ViewUtils.showViews(checkBox)
+//                        ViewUtils.hideViews(startTime, endTime)
+//                    }
+//                    else -> {
+//                        ViewUtils.showViews(checkBox, startTime, endTime)
+//                        ViewUtils.setMarginTop(startTime, 2)
+//                        ViewUtils.setMarginBottom(endTime, 2)
+//                    }
+//                }
+//            }
         }
 
         private fun tintList(@ColorRes color: Int) = ContextCompat.getColorStateList(context, color)
