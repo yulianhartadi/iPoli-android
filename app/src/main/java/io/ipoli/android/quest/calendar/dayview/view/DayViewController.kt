@@ -449,7 +449,7 @@ class DayViewController :
             view.startTime.text = vm.startTime
             view.endTime.text = vm.endTime
 
-            view.backgroundView.setBackgroundColor(colorRes(vm.backgroundColor.color500))
+            view.backgroundView.setBackgroundColor(colorRes(vm.backgroundColor.color300))
 
             if (vm.isCompleted) {
                 val span = SpannableString(vm.name)
@@ -460,7 +460,6 @@ class DayViewController :
                 view.startTime.setTextColor(colorRes(R.color.md_dark_text_54))
                 view.endTime.setTextColor(colorRes(R.color.md_dark_text_54))
 
-                view.questCategoryIndicator.setBackgroundResource(R.color.md_grey_500)
                 view.checkBox.isChecked = true
                 (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(R.color.md_grey_700)
                 view.completedBackgroundView.visibility = View.VISIBLE
@@ -476,22 +475,24 @@ class DayViewController :
 
 
             } else {
+
+                view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color700)
+
                 view.questName.text = vm.name
-                view.questName.setTextColor(colorRes(R.color.md_white))
-                view.startTime.setTextColor(colorRes(R.color.md_light_text_87))
-                view.endTime.setTextColor(colorRes(R.color.md_light_text_87))
+                view.questName.setTextColor(colorRes(vm.textColor))
+                view.startTime.setTextColor(colorRes(R.color.md_dark_text_54))
+                view.endTime.setTextColor(colorRes(R.color.md_dark_text_54))
 
                 vm.icon?.let {
                     val icon = IconicsDrawable(context)
                         .icon(it.icon)
-                        .colorRes(R.color.md_light_text_87)
+                        .colorRes(vm.backgroundColor.color600)
                         .sizeDp(24)
                     view.questIcon.visible = true
                     view.questIcon.setImageDrawable(icon)
                 }
 
-                view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color700)
-                (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(R.color.md_light_text_54)
+                (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color700)
                 view.completedBackgroundView.visibility = View.INVISIBLE
             }
 
@@ -587,23 +588,43 @@ class DayViewController :
         (R.layout.unscheduled_quest_item, items.toMutableList(), calendarDayView) {
 
         override fun ViewHolder.bind(event: UnscheduledQuestViewModel, calendarDayView: CalendarDayView) {
-            (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(event.backgroundColor.color200, itemView.context)
             itemView.setOnLongClickListener {
                 send(StartEditUnscheduledQuestIntent(event))
                 calendarDayView.startEventRescheduling(events[adapterPosition])
                 true
             }
 
+            (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(event.backgroundColor.color500, itemView.context)
+
             if (!event.isCompleted) {
-                itemView.name.text = event.name
-                itemView.name.setTextColor(ContextCompat.getColor(itemView.context, event.textColor))
-                (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(event.backgroundColor.color500, itemView.context)
+                itemView.unscheduledQuestName.text = event.name
+                itemView.unscheduledQuestName.setTextColor(ContextCompat.getColor(itemView.context, event.textColor))
+
+
+                event.icon?.let {
+                    val icon = IconicsDrawable(itemView.context)
+                        .icon(it.icon)
+                        .colorRes(it.color)
+                        .sizeDp(24)
+                    itemView.unscheduledQuestIcon.visible = true
+                    itemView.unscheduledQuestIcon.setImageDrawable(icon)
+                }
+
             } else {
                 val span = SpannableString(event.name)
                 span.setSpan(StrikethroughSpan(), 0, event.name.length, 0)
-                itemView.name.text = span
+                itemView.unscheduledQuestName.text = span
                 itemView.unscheduledDone.isChecked = true
-                (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(R.color.md_grey_700, itemView.context)
+
+                event.icon?.let {
+                    val icon = IconicsDrawable(itemView.context)
+                        .icon(it.icon)
+                        .colorRes(R.color.md_dark_text_26)
+                        .sizeDp(24)
+                    itemView.unscheduledQuestIcon.visible = true
+                    itemView.unscheduledQuestIcon.setImageDrawable(icon)
+                }
+
             }
 
             itemView.unscheduledDone.setOnCheckedChangeListener { _, checked ->
