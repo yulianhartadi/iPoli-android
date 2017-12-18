@@ -25,6 +25,9 @@ object ViewUtils {
         views.forEach { it.visibility = View.VISIBLE }
 
     fun hideViews(vararg views: View) =
+        views.forEach { it.visibility = View.INVISIBLE }
+
+    fun goneViews(vararg views: View) =
         views.forEach { it.visibility = View.GONE }
 
     fun hideKeyboard(view: View) {
