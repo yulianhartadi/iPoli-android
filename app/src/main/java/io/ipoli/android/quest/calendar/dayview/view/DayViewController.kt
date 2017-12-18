@@ -16,7 +16,6 @@ import android.text.TextWatcher
 import android.text.style.StrikethroughSpan
 import android.util.TypedValue
 import android.view.*
-import android.widget.LinearLayout
 import com.mikepenz.iconics.IconicsDrawable
 import io.ipoli.android.Constants
 import io.ipoli.android.R
@@ -199,13 +198,17 @@ class DayViewController :
 
             ICON_PICKED -> {
                 iconPickedListener = { showIconPicker(state.icon) }
-                val dragView = view.dragContainer
-                dragView.dragIcon.setImageDrawable(
-                    IconicsDrawable(dragView.context)
-                        .icon(state.icon!!.icon)
-                        .colorRes(R.color.md_white)
-                        .sizeDp(24)
-                )
+                val dragIcon = view.dragContainer.dragIcon
+                if (state.icon == null) {
+                    dragIcon.setImageDrawable(null)
+                } else {
+                    dragIcon.setImageDrawable(
+                        IconicsDrawable(dragIcon.context)
+                            .icon(state.icon.icon)
+                            .colorRes(R.color.md_white)
+                            .sizeDp(24)
+                    )
+                }
             }
 
             QUEST_COMPLETED -> {
@@ -555,33 +558,13 @@ class DayViewController :
                         ViewUtils.hideViews(checkBox)
                         ViewUtils.setMarginTop(startTime, 0)
                         ViewUtils.setMarginBottom(endTime, 0)
-
-                        if (indicatorContainer.orientation == LinearLayout.VERTICAL) {
-                            indicatorContainer.orientation = LinearLayout.HORIZONTAL
-                            reverseIndicators(indicatorContainer)
-                        }
                     }
                     else -> {
                         ViewUtils.showViews(checkBox, startTime, endTime)
                         ViewUtils.setMarginTop(startTime, 8)
                         ViewUtils.setMarginBottom(endTime, 8)
-                        if (indicatorContainer.orientation == LinearLayout.HORIZONTAL) {
-                            indicatorContainer.orientation = LinearLayout.VERTICAL
-                            reverseIndicators(indicatorContainer)
-                        }
                     }
                 }
-            }
-        }
-
-        private fun reverseIndicators(indicatorContainer: ViewGroup) {
-            val indicators = (0 until indicatorContainer.childCount)
-                .map { indicatorContainer.getChildAt(it) }.reversed()
-
-            indicatorContainer.removeAllViews()
-
-            indicators.forEach {
-                indicatorContainer.addView(it)
             }
         }
 

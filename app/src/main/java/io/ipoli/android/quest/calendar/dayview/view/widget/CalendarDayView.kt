@@ -44,9 +44,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             fun execute(state: State, event: E): State
         }
 
-        class ActionNotFound(actionKey: Pair<*, *>) :
-            RuntimeException("Trying to execute undefined action for (${actionKey.first}, ${actionKey.second})")
-
         private var currentState: State = initialState
         private val actions = mutableMapOf<Pair<State.Type, KClass<*>>, Action<*>>()
 
@@ -304,10 +301,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fsm.transition(State.Type.VIEW, Event.StartCalendarEventEdit::class, { s, e ->
             val topPosition = startDrag(e.view)
 
-//            val timeMapper = PositionToTimeMapper(s.minuteHeight)
-//            val topRelativePos = topPosition - unscheduledEvents.height + scrollView.scrollY
             val event = scheduledEventsAdapter!!.events[e.position]
-//            listener?.onStartEditScheduledEvent(e.position)
 
             s.copy(
                 type = State.Type.DRAG,
@@ -324,7 +318,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             val topPosition = startDrag(e.view)
 
             val event = unscheduledEventsAdapter!!.events[e.position]
-//            listener?.onStartEditUnscheduledEvent(e.position)
             s.copy(
                 type = State.Type.DRAG,
                 eventId = event.id,
@@ -532,21 +525,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     }
 
-    private fun createCalendarEvent(s: State, isNew: Boolean = false): CalendarEvent {
-        return object : CalendarEvent {
-            override val id = if (isNew) "" else s.eventId
-            override val duration = durationForEvent(s)
-            override val startMinute = startTimeForEvent(s).toMinuteOfDay()
-        }
-    }
-
-    private fun createUnscheduledEvent(s: State): UnscheduledEvent {
-        return object : UnscheduledEvent {
-            override val id = s.eventId
-            override val duration = durationForEvent(s)
-        }
-    }
-
     private fun prepareForViewState() {
         dragView?.visible = false
 
@@ -558,9 +536,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
     private fun shouldScheduleUnscheduledEvent(s: State) =
         !isInUnscheduledEventsArea(dragView!!.topLocationOnScreen.toFloat()) && s.unscheduledEventAdapterPosition != null
-
-    private fun shouldRescheduleScheduledEvent(s: State) =
-        !isInUnscheduledEventsArea(dragView!!.topLocationOnScreen.toFloat()) && s.eventAdapterPosition != null
 
     private fun shouldUnscheduleScheduledEvent(s: State) =
         isInUnscheduledEventsArea(dragView!!.topLocationOnScreen.toFloat()) && s.eventAdapterPosition != null
@@ -576,22 +551,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             timeMapper.timeAt(topRelativePos),
             timeMapper.timeAt(topRelativePos + height)
         )
-    }
-
-    private fun durationForEvent(s: State): Int {
-        val timeMapper = PositionToTimeMapper(s.minuteHeight)
-        val topRelativePos = dragTopRelativePosition(s)
-        val startTime = timeMapper.timeAt(topRelativePos)
-        val endTime = timeMapper.timeAt(topRelativePos + s.height!!)
-        return endTime.toMinuteOfDay() - startTime.toMinuteOfDay()
-    }
-
-    private fun dragTopRelativePosition(s: State) =
-        s.topDragViewPosition!! - unscheduledEvents.height + scrollView.scrollY
-
-    private fun startTimeForEvent(s: State): Time {
-        val timeMapper = PositionToTimeMapper(s.minuteHeight)
-        return timeMapper.timeAt(dragTopRelativePosition(s))
     }
 
     private fun isInUnscheduledEventsArea(topPosition: Float) =
@@ -956,9 +915,6 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         }
     }
 
-    private fun roundPositionToMinutes(position: Int, roundedToMinutes: Int = 5) =
-        roundPositionToMinutes(position.toFloat(), roundedToMinutes)
-
     private fun roundPositionToMinutes(position: Float, roundedToMinutes: Int = 5) =
         PositionToTimeMapper(fsm.state.minuteHeight).timeAt(position, roundedToMinutes).toPosition(fsm.state.minuteHeight)
 
@@ -1001,8 +957,10 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         return metrics.heightPixels
     }
 
-    private fun getMinutesFor(height: Int): Int =
-        Math.ceil((height / fsm.state.minuteHeight).toDouble()).toInt()
+    private fun getMinutesFor(height: Int): Int {
+        val minutes = height / fsm.state.minuteHeight
+        return roundMinutes(minutes)
+    }
 
     private fun showViews(vararg views: View) =
         views.forEach { it.visibility = View.VISIBLE }
@@ -1072,6 +1030,18 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             adapter.bind(v, h)
         }
     }
+
+    private fun roundMinutes(minutes: Float, roundToMinutes: Int = 5): Int {
+        val remainder = minutes % roundToMinutes.toFloat()
+        return if (remainder >= cutoff(roundToMinutes)) {
+            minutes + roundToMinutes - remainder
+        } else {
+            minutes - remainder
+        }.toInt()
+    }
+
+    private fun cutoff(roundedToMinutes: Int): Float =
+        Math.floor(roundedToMinutes.toDouble() / 2).toFloat()
 
     interface CalendarChangeListener {
         fun onStartEditNewScheduledEvent(startTime: Time, duration: Int)
