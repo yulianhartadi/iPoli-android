@@ -73,12 +73,14 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
 
     override fun listenForScheduledBetween(startDate: LocalDate, endDate: LocalDate) =
         listenForChanges(
-            property("scheduledDate")
+            where = property("scheduledDate")
                 .between(startDate.startOfDayUTC(), endDate.startOfDayUTC())
         )
 
     override fun listenForDate(date: LocalDate) =
-        listenForChanges(property("scheduledDate").equalTo(date.startOfDayUTC()))
+        listenForChanges(
+            where = property("scheduledDate"
+            ).equalTo(date.startOfDayUTC()))
 
     override fun findNextQuestsToRemind(afterTime: Long): List<Quest> {
 
@@ -88,24 +90,25 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         val time = Time.at(e.hour, e.minute)
         val minDate = Function.min(property("reminder.date"))
         val minMinute = Function.min(property("reminder.minute"))
-        val query = select(
-            SelectResult.all(),
-            SelectResult.expression(Expression.meta().id),
-            SelectResult.expression(minDate),
-            SelectResult.expression(minMinute)
-        )
-            .where(
-                property("reminder.date").greaterThanOrEqualTo(remindDate)
-                    .and(property("reminder.minute").greaterThan(time.toMinuteOfDay()))
-                    .and(property("type").equalTo(modelType))
-                    .and(property("completedAtDate").isNullOrMissing)
-            )
-            .groupBy(property("_id"))
-            .having(
-                property("reminder.minute").equalTo(minMinute).and(
+
+        val query = createQuery(
+            select = select(
+                SelectResult.all(),
+                SelectResult.expression(Expression.meta().id),
+                SelectResult.expression(minDate),
+                SelectResult.expression(minMinute)
+            ),
+            where = property("reminder.date").greaterThanOrEqualTo(remindDate)
+                .and(property("reminder.minute").greaterThan(time.toMinuteOfDay()))
+                .and(property("type").equalTo(modelType))
+                .and(property("completedAtDate").isNullOrMissing),
+            groupBy = GroupClause(
+                groupBy = property("_id"),
+                having = property("reminder.minute").equalTo(minMinute).and(
                     property("reminder.date").equalTo(minDate)
                 )
             )
+        )
         return toEntities(query.run().iterator())
     }
 
@@ -113,20 +116,21 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         val remindDate = DateUtils.fromMillis(time).startOfDayUTC()
         val e = Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault())
         val remindTime = Time.at(e.hour, e.minute)
-        val query = selectAll()
-            .where(
-                property("reminder.date").equalTo(remindDate)
-                    .and(property("reminder.minute").equalTo(remindTime.toMinuteOfDay()))
-                    .and(property("type").equalTo(modelType))
-                    .and(property("completedAtDate").isNullOrMissing)
-            )
+        val query = createQuery(
+            where = property("reminder.date").equalTo(remindDate)
+                .and(property("reminder.minute").equalTo(remindTime.toMinuteOfDay()))
+                .and(property("type").equalTo(modelType))
+                .and(property("completedAtDate").isNullOrMissing)
+        )
         return toEntities(query.run().iterator())
 
     }
 
     override fun findCompletedForDate(date: LocalDate): List<Quest> {
-        val query = createQuery(property("completedAtDate")
-            .between(date.startOfDayUTC(), date.startOfDayUTC()))
+        val query = createQuery(
+            where = property("completedAtDate")
+                .between(date.startOfDayUTC(), date.startOfDayUTC())
+        )
         return toEntities(query.run().iterator())
     }
 
