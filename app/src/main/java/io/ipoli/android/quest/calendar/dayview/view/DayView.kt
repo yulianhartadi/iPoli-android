@@ -43,7 +43,8 @@ data class StartEditUnscheduledQuestIntent(val questViewModel: DayViewController
 object EditQuestIntent : DayViewIntent()
 object AddQuestIntent : DayViewIntent()
 object EditUnscheduledQuestIntent : DayViewIntent()
-data class DragEditViewIntent(val startTime: Time?, val endTime: Time?, val duration: Int) : DayViewIntent()
+data class DragMoveViewIntent(val startTime: Time?, val endTime: Time?) : DayViewIntent()
+data class DragResizeViewIntent(val startTime: Time?, val endTime: Time?, val duration: Int) : DayViewIntent()
 data class ChangeEditViewNameIntent(val name: String) : DayViewIntent()
 
 data class DayViewState(

@@ -368,10 +368,8 @@ class CalendarDayView : FrameLayout, StateChangeListener {
             val topPosition = calculateTopPosition(e.y)
 
             val (startTime: Time?, endTime: Time?) = calculateStartAndEndTime(topPosition, s.height!!, s.minuteHeight)
-            listener?.onMoveEvent(dragView!!,
-                startTime,
-                endTime,
-                getMinutesFor(dragView!!.height))
+            listener?.onMoveEvent(startTime, endTime)
+
             s.copy(
                 topDragViewPosition = topPosition,
                 topDragIndicatorPosition = topPosition - dragImageSize / 2,
@@ -389,7 +387,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
                 return@transition s
             }
             val (startTime: Time?, endTime: Time?) = calculateStartAndEndTime(topPosition, height, s.minuteHeight)
-            listener?.onMoveEvent(dragView!!, startTime, endTime, getMinutesFor(height))
+            listener?.onResizeEvent(startTime, endTime, getMinutesFor(height))
 
             s.copy(
                 topDragViewPosition = topPosition,
@@ -407,7 +405,7 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
             val topPosition = bottomPosition - height
             val (startTime: Time?, endTime: Time?) = calculateStartAndEndTime(topPosition, height, s.minuteHeight)
-            listener?.onMoveEvent(dragView!!, startTime, endTime, getMinutesFor(height))
+            listener?.onResizeEvent(startTime, endTime, getMinutesFor(height))
 
             s.copy(
                 bottomDragIndicatorPosition = bottomPosition - dragImageSize / 2,
@@ -461,18 +459,18 @@ class CalendarDayView : FrameLayout, StateChangeListener {
 
         fsm.transition(State.Type.EDIT, Event.CompleteEditRequest::class, { s, _ ->
             if (s.isNewEvent) {
-                listener?.onAddEvent(createCalendarEvent(s, true))
+                listener?.onAddEvent()
             } else if (s.eventAdapterPosition != null) {
                 if (shouldUnscheduleScheduledEvent(s)) {
-                    listener?.onEditUnscheduledEvent(createUnscheduledEvent(s))
+                    listener?.onEditUnscheduledEvent()
                 } else {
-                    listener?.onEditCalendarEvent(createCalendarEvent(s), s.eventAdapterPosition)
+                    listener?.onEditCalendarEvent()
                 }
             } else if (s.unscheduledEventAdapterPosition != null) {
                 if (shouldScheduleUnscheduledEvent(s)) {
-                    listener?.onEditUnscheduledCalendarEvent(createCalendarEvent(s), s.unscheduledEventAdapterPosition)
+                    listener?.onEditUnscheduledCalendarEvent()
                 } else {
-                    listener?.onEditUnscheduledEvent(createUnscheduledEvent(s))
+                    listener?.onEditUnscheduledEvent()
                 }
             }
             s
@@ -1079,13 +1077,13 @@ class CalendarDayView : FrameLayout, StateChangeListener {
         fun onStartEditNewScheduledEvent(startTime: Time, duration: Int)
         fun onDragViewClick(dragView: View)
         fun onEventValidationError(dragView: View)
-        fun onMoveEvent(dragView: View, startTime: Time?, endTime: Time?, duration: Int)
-
+        fun onMoveEvent(startTime: Time?, endTime: Time?)
+        fun onResizeEvent(startTime: Time?, endTime: Time?, duration: Int)
         fun onZoomEvent(adapterView: View)
-        fun onAddEvent(event: CalendarEvent)
-        fun onEditCalendarEvent(event: CalendarEvent, adapterPosition: Int)
-        fun onEditUnscheduledCalendarEvent(event: CalendarEvent, adapterPosition: Int)
-        fun onEditUnscheduledEvent(event: UnscheduledEvent)
+        fun onAddEvent()
+        fun onEditCalendarEvent()
+        fun onEditUnscheduledCalendarEvent()
+        fun onEditUnscheduledEvent()
         fun onRemoveEvent(eventId: String)
     }
 

@@ -250,7 +250,15 @@ class DayViewPresenter(
                 state.copy(type = UNDO_QUEST_COMPLETED)
             }
 
-            is DragEditViewIntent -> {
+            is DragMoveViewIntent -> {
+                state.copy(
+                    type = EDIT_VIEW_DRAGGED,
+                    startTime = intent.startTime,
+                    endTime = intent.endTime
+                )
+            }
+
+            is DragResizeViewIntent -> {
                 state.copy(
                     type = EDIT_VIEW_DRAGGED,
                     startTime = intent.startTime,
