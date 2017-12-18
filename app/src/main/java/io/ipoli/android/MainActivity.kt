@@ -1,27 +1,22 @@
 package io.ipoli.android
 
-import android.animation.ObjectAnimator
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.support.design.widget.AppBarLayout
-import android.support.design.widget.CoordinatorLayout
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import io.ipoli.android.common.datetime.DateUtils
 import io.ipoli.android.common.di.ControllerModule
-import io.ipoli.android.common.view.AndroidTheme
 import io.ipoli.android.common.view.playerTheme
 import io.ipoli.android.home.HomeViewController
 import io.ipoli.android.player.AuthProvider
 import io.ipoli.android.player.Player
 import io.ipoli.android.player.persistence.model.ProviderType
-import org.threeten.bp.LocalDate
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required

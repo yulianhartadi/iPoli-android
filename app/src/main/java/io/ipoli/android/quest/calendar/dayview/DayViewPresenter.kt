@@ -191,10 +191,6 @@ class DayViewPresenter(
 
             is RemoveEventIntent -> {
                 val eventId = intent.eventId
-                val scheduledQuests = state.scheduledQuests.toMutableList()
-                val unscheduledQuests = state.unscheduledQuests.toMutableList()
-                scheduledQuests.find { it.id == eventId }?.let { scheduledQuests.remove(it) }
-                unscheduledQuests.find { it.id == eventId }?.let { unscheduledQuests.remove(it) }
                 removeQuestUseCase.execute(eventId)
                 if (eventId.isEmpty()) {
                     state.copy(
@@ -204,8 +200,6 @@ class DayViewPresenter(
                     state.copy(
                         type = DayViewState.StateType.EVENT_REMOVED,
                         removedEventId = eventId,
-                        scheduledQuests = scheduledQuests,
-                        unscheduledQuests = unscheduledQuests,
                         reminder = null
                     )
                 }
