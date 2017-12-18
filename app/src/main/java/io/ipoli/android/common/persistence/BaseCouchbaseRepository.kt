@@ -28,21 +28,61 @@ abstract class BaseCouchbaseRepository<E, out T>(protected val database: Databas
             limit = 1
         )
 
-    protected fun listenForChange(where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null) =
-        sendLiveResult(createQuery(where, limit, orderBy))
+    protected fun listenForChange(select: From? = null, where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null) =
+        sendLiveResult(createQuery(select, where, limit, orderBy))
 
-    protected fun listenForChanges(where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null) =
-        sendLiveResults(createQuery(where, limit, orderBy))
+    protected fun listenForChanges(select: From? = null, where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null) =
+        sendLiveResults(createQuery(select, where, limit, orderBy))
 
-    protected fun createQuery(where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null): Query {
+    data class GroupClause(val groupBy: Expression, val having: Expression)
+
+    protected fun createQuery(
+        select: From? = null,
+        where: Expression? = null,
+        limit: Int? = null,
+        orderBy: Ordering? = null,
+        groupBy: GroupClause? = null
+    ): Query {
         val typeWhere = Expression.property("type").equalTo(modelType)
             .and(Expression.property("removedAt").isNullOrMissing)
         val w = if (where == null) typeWhere else typeWhere.and(where)
 
-        val q = selectAll().where(w)
-        orderBy?.let { q.orderBy(it) }
-        limit?.let { q.limit(it) }
-        return q
+        val selectClause = select ?: selectAll()
+
+        val q = selectClause.where(w)
+
+        when {
+            groupBy != null -> {
+                val group = q.groupBy(groupBy.groupBy).having(groupBy.having)
+
+                if (orderBy != null) {
+                    val order = group.orderBy(orderBy)
+
+                    if (limit != null) {
+                        return order.limit(limit)
+                    }
+
+                    return order
+                }
+
+                if (limit != null) {
+                    return group.limit(limit)
+                }
+
+                return group
+            }
+            orderBy != null -> {
+                val order = q.orderBy(orderBy)
+
+                if (limit != null) {
+                    return order.limit(limit)
+                }
+
+                return order
+            }
+            limit != null -> return q.limit(limit)
+            else -> return q
+        }
     }
 
     override fun listenForAll() = listenForChanges()
@@ -107,8 +147,8 @@ abstract class BaseCouchbaseRepository<E, out T>(protected val database: Databas
         query.run()
     }
 
-    private fun runQuery(where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null) =
-        createQuery(where, limit, orderBy).run().iterator()
+    private fun runQuery(select: From? = null, where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null) =
+        createQuery(select, where, limit, orderBy).run().iterator()
 
     override fun find() =
         toEntities(
