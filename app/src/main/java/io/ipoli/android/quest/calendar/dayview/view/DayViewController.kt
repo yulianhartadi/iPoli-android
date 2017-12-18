@@ -479,7 +479,7 @@ class DayViewController :
                 view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color700)
 
                 view.questName.text = vm.name
-                view.questName.setTextColor(colorRes(vm.textColor))
+                view.questName.setTextColor(colorRes(R.color.md_dark_text_54))
                 view.startTime.setTextColor(colorRes(R.color.md_dark_text_54))
                 view.endTime.setTextColor(colorRes(R.color.md_dark_text_54))
 
