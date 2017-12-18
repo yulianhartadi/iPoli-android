@@ -331,27 +331,31 @@ class DayViewController :
         send(RemoveEventIntent(eventId))
     }
 
-    override fun onMoveEvent(dragView: View, startTime: Time?, endTime: Time?, duration: Int) {
-        send(DragEditViewIntent(startTime, endTime, duration))
+    override fun onMoveEvent(startTime: Time?, endTime: Time?) {
+        send(DragMoveViewIntent(startTime, endTime))
+    }
+
+    override fun onResizeEvent(startTime: Time?, endTime: Time?, duration: Int) {
+        send(DragResizeViewIntent(startTime, endTime, duration))
     }
 
     override fun onZoomEvent(adapterView: View) {
         eventsAdapter.adaptViewForHeight(adapterView, ViewUtils.pxToDp(adapterView.height, adapterView.context))
     }
 
-    override fun onAddEvent(event: CalendarEvent) {
+    override fun onAddEvent() {
         send(AddQuestIntent)
     }
 
-    override fun onEditCalendarEvent(event: CalendarEvent, adapterPosition: Int) {
+    override fun onEditCalendarEvent() {
         send(EditQuestIntent)
     }
 
-    override fun onEditUnscheduledCalendarEvent(event: CalendarEvent, adapterPosition: Int) {
+    override fun onEditUnscheduledCalendarEvent() {
         send(EditQuestIntent)
     }
 
-    override fun onEditUnscheduledEvent(event: UnscheduledEvent) {
+    override fun onEditUnscheduledEvent() {
         send(EditUnscheduledQuestIntent)
     }
 
