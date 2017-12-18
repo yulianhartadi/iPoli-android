@@ -269,9 +269,7 @@ class ColorPickerDialogController :
                     dismissDialog()
                 }
             } else {
-                iv.setOnClickListener {
-                    send(ColorPickerIntent.UnlockColorPack)
-                }
+                iv.sendOnClick(ColorPickerIntent.UnlockColorPack)
             }
         }
 
