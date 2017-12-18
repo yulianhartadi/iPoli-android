@@ -30,15 +30,14 @@
     <TextView
         android:id="@+id/questName"
         style="@style/Calendar.Quest.Name"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
         android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/indicatorContainer"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/startTime"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/checkBox"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.5"
         tools:text="Workout" />
@@ -73,55 +72,10 @@
         android:id="@+id/checkBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
         app:layout_constraintBottom_toTopOf="@+id/endTime"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/startTime"
+        app:layout_constraintStart_toStartOf="@+id/startTime"
         app:layout_constraintTop_toBottomOf="@+id/startTime"
         app:layout_constraintVertical_bias="0.5" />
-
-    <LinearLayout
-        android:id="@+id/indicatorContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"
-        android:orientation="vertical"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
-
-        <ImageView
-            android:id="@+id/challengeIndicator"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
-            android:scaleType="fitXY"
-            android:visibility="invisible"
-            app:srcCompat="@drawable/ic_sword_black_24dp" />
-
-        <ImageView
-            android:id="@+id/repeatingQuestIndicator"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
-            android:scaleType="fitXY"
-            android:visibility="invisible"
-            app:srcCompat="@drawable/ic_repeating_quest_24dp_transparent" />
-
-        <ImageView
-            android:id="@+id/priorityIndicator"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
-            android:scaleType="fitXY"
-            android:visibility="invisible"
-            app:srcCompat="@drawable/ic_star_accent_24dp" />
-    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
