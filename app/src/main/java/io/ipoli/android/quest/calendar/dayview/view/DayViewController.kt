@@ -449,7 +449,7 @@ class DayViewController :
             view.startTime.text = vm.startTime
             view.endTime.text = vm.endTime
 
-            view.backgroundView.setBackgroundColor(colorRes(vm.backgroundColor.color300))
+            view.backgroundView.setBackgroundColor(colorRes(vm.backgroundColor.color200))
 
             if (vm.isCompleted) {
                 val span = SpannableString(vm.name)
