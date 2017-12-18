@@ -470,7 +470,7 @@ class DayViewController :
                         .icon(it.icon)
                         .colorRes(R.color.md_dark_text_26)
                         .sizeDp(24)
-
+                    view.questIcon.visible = true
                     view.questIcon.setImageDrawable(icon)
                 }
 
@@ -486,6 +486,7 @@ class DayViewController :
                         .icon(it.icon)
                         .colorRes(R.color.md_light_text_87)
                         .sizeDp(24)
+                    view.questIcon.visible = true
                     view.questIcon.setImageDrawable(icon)
                 }
 
@@ -549,22 +550,22 @@ class DayViewController :
 
         override fun adaptViewForHeight(adapterView: View, height: Float) {
             val heightDp = ViewUtils.pxToDp(height.toInt(), adapterView.context)
-            with(adapterView) {
-                when {
-                    heightDp < 12 -> ViewUtils.hideViews(checkBox, startTime, endTime)
-                    heightDp < 26 -> {
-                        ViewUtils.showViews(startTime, endTime)
-                        ViewUtils.hideViews(checkBox)
-                        ViewUtils.setMarginTop(startTime, 0)
-                        ViewUtils.setMarginBottom(endTime, 0)
-                    }
-                    else -> {
-                        ViewUtils.showViews(checkBox, startTime, endTime)
-                        ViewUtils.setMarginTop(startTime, 8)
-                        ViewUtils.setMarginBottom(endTime, 8)
-                    }
-                }
-            }
+//            with(adapterView) {
+//                when {
+//                    heightDp < 12 -> ViewUtils.hideViews(checkBox, startTime, endTime)
+//                    heightDp < 26 -> {
+//                        ViewUtils.showViews(startTime, endTime)
+//                        ViewUtils.hideViews(checkBox)
+//                        ViewUtils.setMarginTop(startTime, 0)
+//                        ViewUtils.setMarginBottom(endTime, 0)
+//                    }
+//                    else -> {
+//                        ViewUtils.showViews(checkBox, startTime, endTime)
+//                        ViewUtils.setMarginTop(startTime, 8)
+//                        ViewUtils.setMarginBottom(endTime, 8)
+//                    }
+//                }
+//            }
         }
 
         private fun tintList(@ColorRes color: Int) = ContextCompat.getColorStateList(context, color)
