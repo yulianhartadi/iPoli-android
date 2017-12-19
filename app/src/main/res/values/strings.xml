@@ -1009,6 +1009,10 @@
     <string name="color_picker_title">Choose color</string>
     <string name="color_pack_not_enough_coins">Color Pack is too expensive</string>
     <string name="free">FREE</string>
+    <string name="icon">Icon</string>
+    <string name="color">Color</string>
+    <string name="remove">Remove</string>
+    <string name="reminder">Reminder</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

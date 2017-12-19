@@ -21,7 +21,7 @@ import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.MviPresenter
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.mvi.ViewStateRenderer
-import mypoli.android.iPoliApp
+import mypoli.android.myPoliApp
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Injects
@@ -71,7 +71,7 @@ abstract class MviPopup<VS : ViewState, in V : ViewStateRenderer<VS>, out P : Mv
     abstract fun createView(inflater: LayoutInflater): View
 
     fun show(context: Context) {
-        inject(iPoliApp.simpleModule(context))
+        inject(myPoliApp.simpleModule(context))
 
         presenter = createPresenter()
         intentChannel = presenter.intentChannel()

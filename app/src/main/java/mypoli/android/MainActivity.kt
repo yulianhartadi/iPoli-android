@@ -11,7 +11,6 @@ import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import mypoli.android.R
 import mypoli.android.common.di.ControllerModule
 import mypoli.android.common.view.playerTheme
 import mypoli.android.home.HomeViewController
@@ -54,7 +53,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         }
 
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
-        inject(iPoliApp.controllerModule(this, router))
+        inject(myPoliApp.controllerModule(this, router))
 
         if (playerRepository.find() == null) {
             val player = Player(
