@@ -7,6 +7,10 @@ import android.view.LayoutInflater
 import com.bluelinelabs.conductor.Router
 import com.couchbase.lite.Database
 import com.couchbase.lite.DatabaseConfiguration
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Job
+import mypoli.android.AndroidJobReminderScheduler
+import mypoli.android.ReminderScheduler
 import mypoli.android.common.navigation.Navigator
 import mypoli.android.common.text.CalendarFormatter
 import mypoli.android.common.view.ColorPickerPresenter
@@ -36,16 +40,12 @@ import mypoli.android.quest.data.persistence.CouchbaseQuestRepository
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.quest.usecase.*
 import mypoli.android.quest.view.QuestCompletePresenter
-import mypoli.android.AndroidJobReminderScheduler
-import mypoli.android.ReminderScheduler
 import mypoli.android.reminder.view.formatter.ReminderTimeFormatter
 import mypoli.android.reminder.view.formatter.TimeUnitFormatter
 import mypoli.android.reminder.view.picker.ReminderPickerDialogPresenter
 import mypoli.android.theme.ThemeStorePresenter
 import mypoli.android.theme.usecase.BuyThemeUseCase
 import mypoli.android.theme.usecase.ChangeThemeUseCase
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.Job
 import space.traversal.kapsule.HasModules
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
@@ -130,7 +130,7 @@ class MainAndroidModule(private val context: Context) : AndroidModule {
     override val lowerPetStatsScheduler get() = AndroidJobLowerPetStatsScheduler()
 
     override val database: Database
-        get() = Database("iPoli", DatabaseConfiguration(context.applicationContext))
+        get() = Database("myPoli", DatabaseConfiguration(context.applicationContext))
 
     override val job get() = Job()
 }
