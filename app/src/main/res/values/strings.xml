@@ -54,7 +54,7 @@
         <item>Last 3 months</item>
     </string-array>
 
-    <string name="title_activity_main">iPoli</string>
+    <string name="title_activity_main">myPoli</string>
 
     <string name="save">SAVE</string>
     <string name="title_fragment_repeating_quests">Repeating Quests</string>
@@ -63,16 +63,16 @@
     <string name="invite_friends">Invite Friends</string>
     <string name="cannot_edit_completed_quests">Completed quests cannot be edited</string>
     <string name="fragment_overview_title">Your Journey Ahead</string>
-    <string name="widget_journey_name">iPoli: Daily Journey</string>
+    <string name="widget_journey_name">myPoli: Daily Journey</string>
     <string name="add">ADD</string>
     <string name="rate_dialog_initial_title">Hey Hero</string>
-    <string name="rate_dialog_initial_message">Do you love iPoli?</string>
+    <string name="rate_dialog_initial_message">Do you love myPoli?</string>
     <string name="dialog_yes">Yes</string>
     <string name="dialog_no">No</string>
     <string name="dialog_ok">OK</string>
     <string name="rate_dialog_never_ask_again">Never ask again</string>
     <string name="rate_dialog_rate_title">Me too!</string>
-    <string name="rate_dialog_rate_message">Encourage us by rating iPoli on Google Play?</string>
+    <string name="rate_dialog_rate_message">Encourage us by rating myPoli on Google Play?</string>
     <string name="rate_dialog_feedback_title">Please, help me improve</string>
     <string name="rate_dialog_feedback_send">Send</string>
     <string name="rate_dialog_feedback_no">No, thanks</string>
@@ -90,10 +90,10 @@
     <string name="help_wanted_chooser_title">Ask us for help</string>
     <string name="help_dialog_calendar_text1">Calendar is the place where you can control your daily schedule.</string>
     <string name="help_dialog_calendar_text2">Above the calendar is the area with your unscheduled quests for the day.</string>
-    <string name="help_dialog_calendar_text3">In grey you can see where iPoli recommends to schedule them.</string>
+    <string name="help_dialog_calendar_text3">In grey you can see where myPoli recommends to schedule them.</string>
     <string name="help_dialog_calendar_drag">Touch, hold and drag quest to schedule it</string>
     <string name="help_dialog_repeating_quests_text1">Repeating Quests are called all your repeating tasks.</string>
-    <string name="help_dialog_repeating_quests_text2">iPoli automatically makes a quest in your calendar for the repeating one if you have to do it on a particular date.</string>
+    <string name="help_dialog_repeating_quests_text2">myPoli automatically makes a quest in your calendar for the repeating one if you have to do it on a particular date.</string>
     <string name="help_dialog_repeating_quests_text3">From this screen you can track your weekly progress.</string>
     <string name="help_dialog_inbox_text1">This is the place with all your unscheduled quests.</string>
     <string name="help_dialog_inbox_text2">If you don\'t complete a quest during the day it will automatically move to your Inbox.</string>
@@ -245,7 +245,7 @@
     <string name="mark_done">MARK DONE</string>
     <string name="pick_challenge">PICK CHALLENGE</string>
     <string name="challenge_accepted">Challenge accepted!</string>
-    <string name="widget_agenda_empty">iPoli wants a quest!</string>
+    <string name="widget_agenda_empty">myPoli wants a quest!</string>
     <string name="quests">Quests</string>
     <string name="quest_started">Quest started</string>
     <string name="quest_stopped">Quest stopped</string>
@@ -259,7 +259,7 @@
     <string name="time_of_day_picker_title">When you are most productive?</string>
     <string name="quest_times_a_day_question">How many times a day?</string>
     <string name="title_activity_agenda">Your calendar</string>
-    <string name="migration_text">Oh no, you have to wait!\niPoli is eating a biscuit and upgrading your experience</string>
+    <string name="migration_text">Oh no, you have to wait!\nmyPoli is eating a biscuit and upgrading your experience</string>
     <string name="agenda_daily_journey">Daily Journey for %s</string>
     <string name="add_quest_by_date">By %s</string>
     <string name="agenda_daily_journey_format">MMMM d\'%s\'</string>
@@ -331,13 +331,13 @@
     <string name="continue_as_guest">Continue as Guest*</string>
     <string name="sign_in_slogan">Join more than 20,000 heroes!</string>
     <string name="guest_sign_up_warning">* When using Guest login your data is NOT guaranteed to be safely stored. Also, synchronization between your devices will not work! Use other sign up options if you want cloud-based, multi-device synchronization!</string>
-    <string name="sign_in_internet">iPoli needs internet to sign you in!</string>
+    <string name="sign_in_internet">myPoli needs internet to sign you in!</string>
     <string name="sign_in_loading_dialog_title">Letting you in</string>
     <string name="sign_in_loading_dialog_message">I hope that this will be quick and painless</string>
     <string name="sync_calendars_loading_dialog_title">Importing events</string>
     <string name="sync_calendars_loading_dialog_message">I hope that this will be quick and painless</string>
     <string name="title_sign_in_activity">Sign Up</string>
-    <string name="using_as_guest">You are using iPoli as Guest</string>
+    <string name="using_as_guest">You are using myPoli as Guest</string>
     <string name="widget_quick_add_validation">You must sign up to add quests</string>
     <string name="choose_calendars_title">Choose calendars</string>
     <string name="sync_calendars_count">%d calendars selected</string>
@@ -356,8 +356,8 @@
     <string name="settings_select_sync_calendars">Calendars to sync</string>
     <string name="settings_sync_google_calendars">Sync Google calendars</string>
     <string name="empty_eisenhower_matrix_text">No quests for this date. Why not add some?</string>
-    <string name="allow_read_calendars_perm_reason">iPoli needs to read your calendars to import your events as quests</string>
-    <string name="allow_read_calendars_perm_reason_disable_option">iPoli needs to read your calendars to import your events as quests. You can disable it from Settings.</string>
+    <string name="allow_read_calendars_perm_reason">myPoli needs to read your calendars to import your events as quests</string>
+    <string name="allow_read_calendars_perm_reason_disable_option">myPoli needs to read your calendars to import your events as quests. You can disable it from Settings.</string>
     <string name="sync_calendars_delete_loading_dialog_title">Deleting quests</string>
     <string name="challenge_deadline_question">When is the deadline?</string>
     <string name="add_reminder_button">+ Add reminder</string>
@@ -367,15 +367,15 @@
     <string name="settings_persistent_notification_title">Persistent notification</string>
     <string name="settings_persistent_notification_desc">Quickly view your daily quests and progress</string>
     <string name="settings_tutorial_title">Show tutorial</string>
-    <string name="settings_tutorial_desc">View tutorial again to find out more about iPoli</string>
+    <string name="settings_tutorial_desc">View tutorial again to find out more about myPoli</string>
     <string name="settings_about_title">About</string>
     <string name="settings_rate_title">Encourage us</string>
-    <string name="settings_rate_desc">Rate iPoli on Google Play and share your opinion</string>
+    <string name="settings_rate_desc">Rate myPoli on Google Play and share your opinion</string>
     <string name="settings_app_version">App version</string>
     <string name="duplicate">Duplicate</string>
     <string name="mark_as_done">Mark as done</string>
     <string name="reminder_message">Message (e.g. Don\'t be lazy)</string>
-    <string name="rate_dialog_feedback_hint">What do you think of iPoli …</string>
+    <string name="rate_dialog_feedback_hint">What do you think of myPoli …</string>
     <string name="repeat_type_flexible">Flexible</string>
     <string name="repeat_frequency">Frequency</string>
     <string name="sunday_short">Sun</string>
@@ -705,8 +705,8 @@
     <string name="monthly_plan">Monthly Plan</string>
     <string name="yearly_plan">For the Smart Ones</string>
     <string name="quarterly_plan">Quarterly Plan</string>
-    <string name="avatar_name_ipoli_classic">Classic iPoli</string>
-    <string name="avatar_name_ipoli_yellow_glasses">Fancy iPoli</string>
+    <string name="avatar_name_ipoli_classic">Classic myPoli</string>
+    <string name="avatar_name_ipoli_yellow_glasses">Fancy myPoli</string>
     <string name="avatar_name_macarena">Lady Luck</string>
     <string name="avatar_name_macarena_mexican">Mamacita</string>
     <string name="avatar_name_blondy">Miss Charming</string>
@@ -742,7 +742,7 @@
     <string name="power_up_sync_calendars_sub_title">Import all your events</string>
     <string name="power_up_sync_calendars_short_desc">Import and sync events and tasks from your other calendars</string>
     <string name="power_up_sync_calendars_long_desc">
-        Keep iPoli up to date by syncing events and tasks from your calendars.
+        Keep myPoli up to date by syncing events and tasks from your calendars.
         Assign different category for each calendar (work, personal, …)
     </string>
 
@@ -772,10 +772,10 @@
     </string>
 
     <string name="power_up_reminders_sub_title">Never forget anything</string>
-    <string name="power_up_reminders_short_desc">Let iPoli remind you when it\'s time for the next quest</string>
+    <string name="power_up_reminders_short_desc">Let myPoli remind you when it\'s time for the next quest</string>
     <string name="power_up_reminders_long_desc">
         Add reminders to your quests. No need to look at your phone or watch all the time,
-        focus on the current task and iPoli will notify you when the next one comes.
+        focus on the current task and myPoli will notify you when the next one comes.
     </string>
 
     <string name="custom_duration">Custom duration</string>
@@ -874,10 +874,10 @@
     <string name="dialog_delete_post_title">Delete post</string>
     <string name="dialog_delete_post_message">Sure you want to delete this amazing post?</string>
     <string name="trial_expiring_message">To continue using all power-ups become premium member or buy them with coins</string>
-    <string name="trial_expiring_title">iPoli trial expires today</string>
-    <string name="membership_expiring_title">iPoli membership is expiring</string>
-    <string name="membership_no_payment_title">iPoli membership payment problem</string>
-    <string name="power_ups_expiring_title">iPoli power-ups are getting locked</string>
+    <string name="trial_expiring_title">myPoli trial expires today</string>
+    <string name="membership_expiring_title">myPoli membership is expiring</string>
+    <string name="membership_no_payment_title">myPoli membership payment problem</string>
+    <string name="power_ups_expiring_title">myPoli power-ups are getting locked</string>
     <plurals name="membership_no_payment_message">
         <item quantity="one">There is a problem with your subscription payment. You have %d day left to renew your membership</item>
         <item quantity="other">There is a problem with your subscription payment. You have %d days left to renew your membership</item>
@@ -948,7 +948,7 @@
     <string name="achievement_complete_quests_in_row_name">Grand master</string>
     <string name="achievement_complete_quests_in_row_desc">Complete at least 1 quest for 100 days in a row</string>
     <string name="achievement_send_feedback_name">Community Service</string>
-    <string name="achievement_send_feedback_desc">Send Feedback about iPoli</string>
+    <string name="achievement_send_feedback_desc">Send Feedback about myPoli</string>
 
     <string name="pick_challenge_to_start">Pick a challenge to start with</string>
     <string name="growth_awesomeness_score">Awesomeness score</string>
