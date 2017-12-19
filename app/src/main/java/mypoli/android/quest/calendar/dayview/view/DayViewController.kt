@@ -399,7 +399,14 @@ class DayViewController :
                 return true
             }
 
-            override fun onPrepareActionMode(p0: ActionMode?, p1: Menu?) = false
+            override fun onPrepareActionMode(p0: ActionMode?, menu: Menu?): Boolean {
+                menu!!.findItem(R.id.chooseReminder).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                menu.findItem(R.id.chooseIcon).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                menu.findItem(R.id.chooseColor).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                menu.findItem(R.id.removeEvent).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                return true
+            }
+
 
             override fun onDestroyActionMode(p0: ActionMode?) {
                 cancelEdit()
@@ -412,8 +419,6 @@ class DayViewController :
     private fun showReminderPicker(selectedReminder: ReminderViewModel?) {
         ReminderPickerDialogController(object : ReminderPickerDialogController.ReminderPickedListener {
             override fun onReminderPicked(reminder: ReminderViewModel?) {
-//                calendarDayView.requestFocus()
-//                ViewUtils.hideKeyboard(calendarDayView)
                 send(ReminderPickedIntent(reminder))
             }
         }, selectedReminder)
