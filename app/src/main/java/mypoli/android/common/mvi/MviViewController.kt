@@ -7,7 +7,7 @@ import android.view.View
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import mypoli.android.common.di.ControllerModule
-import mypoli.android.iPoliApp
+import mypoli.android.myPoliApp
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Injects
@@ -89,7 +89,7 @@ protected constructor(args: Bundle? = null)
     }
 
     override fun onContextAvailable(context: Context) {
-        inject(iPoliApp.controllerModule(context, router))
+        inject(myPoliApp.controllerModule(context, router))
     }
 
     @MainThread

@@ -58,6 +58,8 @@ class DayViewController :
 
     private var iconPickedListener: () -> Unit = {}
 
+    private var reminderPickedListener: () -> Unit = {}
+
     constructor(currentDate: LocalDate) : this() {
         this.currentDate = currentDate
     }
@@ -129,6 +131,7 @@ class DayViewController :
 
                 colorPickListener = { showColorPicker(state.color) }
                 iconPickedListener = { showIconPicker(state.icon) }
+                reminderPickedListener = { showReminderPicker(state.reminder) }
 
                 startActionMode()
                 (parentController as CalendarViewController).onStartEdit()
@@ -142,6 +145,8 @@ class DayViewController :
             START_EDIT_SCHEDULED_QUEST -> {
                 colorPickListener = { showColorPicker(state.color) }
                 iconPickedListener = { showIconPicker(state.icon) }
+                reminderPickedListener = { showReminderPicker(state.reminder) }
+
                 startActionMode()
                 (parentController as CalendarViewController).onStartEdit()
                 val dragView = view.dragContainer
@@ -154,6 +159,8 @@ class DayViewController :
             START_EDIT_UNSCHEDULED_QUEST -> {
                 colorPickListener = { showColorPicker(state.color) }
                 iconPickedListener = { showIconPicker(state.icon) }
+                reminderPickedListener = { showReminderPicker(state.reminder) }
+
                 startActionMode()
                 (parentController as CalendarViewController).onStartEdit()
                 val dragView = view.dragContainer
@@ -220,6 +227,7 @@ class DayViewController :
             EDIT_QUEST -> {
                 colorPickListener = { showColorPicker(state.color) }
                 iconPickedListener = { showIconPicker(state.icon) }
+                reminderPickedListener = { showReminderPicker(state.reminder) }
                 startActionMode()
             }
 
@@ -240,7 +248,7 @@ class DayViewController :
             }
 
             REMINDER_PICKED -> {
-
+                reminderPickedListener = { showReminderPicker(state.reminder) }
             }
         }
     }
@@ -308,16 +316,16 @@ class DayViewController :
 
         })
 
-        dragView.reminder.setOnClickListener {
-            ReminderPickerDialogController(object : ReminderPickerDialogController.ReminderPickedListener {
-                override fun onReminderPicked(reminder: ReminderViewModel?) {
-                    calendarDayView.requestFocus()
-                    ViewUtils.hideKeyboard(calendarDayView)
-                    send(ReminderPickedIntent(reminder))
-                }
-            }, reminder)
-                .showDialog(router, "pick_reminder_tag")
-        }
+//        dragView.reminder.setOnClickListener {
+//            ReminderPickerDialogController(object : ReminderPickerDialogController.ReminderPickedListener {
+//                override fun onReminderPicked(reminder: ReminderViewModel?) {
+//                    calendarDayView.requestFocus()
+//                    ViewUtils.hideKeyboard(calendarDayView)
+//                    send(ReminderPickedIntent(reminder))
+//                }
+//            }, reminder)
+//                .showDialog(router, "pick_reminder_tag")
+//        }
     }
 
     override fun onDragViewClick(dragView: View) {
@@ -366,6 +374,9 @@ class DayViewController :
         parentController?.view?.startActionMode(object : ActionMode.Callback {
             override fun onActionItemClicked(am: ActionMode, item: MenuItem): Boolean {
                 when (item.itemId) {
+                    R.id.chooseReminder -> {
+                        reminderPickedListener()
+                    }
 
                     R.id.chooseIcon -> {
                         iconPickedListener()
@@ -396,6 +407,17 @@ class DayViewController :
                 actionMode = null
             }
         })
+    }
+
+    private fun showReminderPicker(selectedReminder: ReminderViewModel?) {
+        ReminderPickerDialogController(object : ReminderPickerDialogController.ReminderPickedListener {
+            override fun onReminderPicked(reminder: ReminderViewModel?) {
+//                calendarDayView.requestFocus()
+//                ViewUtils.hideKeyboard(calendarDayView)
+                send(ReminderPickedIntent(reminder))
+            }
+        }, selectedReminder)
+            .showDialog(router, "reminder-picker")
     }
 
     private fun showIconPicker(selectedIcon: AndroidIcon?) {

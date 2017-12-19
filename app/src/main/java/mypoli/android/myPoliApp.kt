@@ -23,7 +23,7 @@ import timber.log.Timber
  * on 7/7/17.
  */
 
-class iPoliApp : Application() {
+class myPoliApp : Application() {
 
     companion object {
         lateinit var refWatcher: RefWatcher

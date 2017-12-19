@@ -11,7 +11,6 @@ import com.evernote.android.job.Job
 import com.evernote.android.job.JobManager
 import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
-import mypoli.android.R
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.di.ControllerModule
 import mypoli.android.common.di.SimpleModule
@@ -53,7 +52,7 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
         val snoozeQuestUseCase by kap.required { snoozeQuestUseCase }
         val completeQuestUseCase by kap.required { completeQuestUseCase }
         val findPetUseCase by kap.required { findPetUseCase }
-        kap.inject(iPoliApp.simpleModule(context))
+        kap.inject(myPoliApp.simpleModule(context))
 
         val c = context.asThemedWrapper()
         val quests = findQuestsToRemindUseCase.execute(params.extras.getLong("start", -1))
