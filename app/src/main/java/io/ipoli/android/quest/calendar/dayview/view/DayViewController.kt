@@ -41,6 +41,7 @@ import kotlinx.android.synthetic.main.unscheduled_quest_item.view.*
 import kotlinx.android.synthetic.main.view_calendar_day.view.*
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 class DayViewController :
     MviViewController<DayViewState, DayViewController, DayViewPresenter, DayViewIntent>,
@@ -527,6 +528,7 @@ class DayViewController :
             }
 
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(view.questName, 8, 16, 1, TypedValue.COMPLEX_UNIT_SP)
+            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(view.questSchedule, 8, 14, 1, TypedValue.COMPLEX_UNIT_SP)
 
             view.post {
                 adaptViewForHeight(view, ViewUtils.pxToDp(view.height, context))
@@ -545,25 +547,28 @@ class DayViewController :
         }
 
         override fun adaptViewForHeight(adapterView: View, height: Float) {
-//            val cbHeight = adapterView.checkBox.height
-//            val avHeight = adapterView.height
-//            val stHeight = adapterView.startTime.height
-//            val etHeight = adapterView.endTime.height
-//
-//            with(adapterView) {
-//                when {
-//                    avHeight <= cbHeight -> ViewUtils.goneViews(checkBox, startTime, endTime)
-//                    avHeight > cbHeight && avHeight < cbHeight + stHeight + etHeight + ViewUtils.dpToPx(4f, adapterView.context) -> {
-//                        ViewUtils.showViews(checkBox)
-//                        ViewUtils.hideViews(startTime, endTime)
-//                    }
-//                    else -> {
-//                        ViewUtils.showViews(checkBox, startTime, endTime)
-//                        ViewUtils.setMarginTop(startTime, 2)
-//                        ViewUtils.setMarginBottom(endTime, 2)
-//                    }
-//                }
-//            }
+            val cbHeight = adapterView.checkBox.height
+            val avHeight = adapterView.height
+            val shHeight = adapterView.questSchedule.height
+            val nameHeight = adapterView.questName.height
+
+//            Timber.d("AAAA $avHeight, $cbHeight, $nameHeight, $shHeight")
+//            Timber.d("AAAA2 ${adapterView.measuredHeight}, ${adapterView.checkBox.measuredHeight}, ${adapterView.questName.measuredHeight}, ${adapterView.questSchedule.measuredHeight}")
+
+            with(adapterView) {
+                when {
+                    avHeight <= cbHeight -> {
+                        ViewUtils.goneViews(checkBox, questSchedule)
+                    }
+                    avHeight > cbHeight && avHeight < shHeight + nameHeight + ViewUtils.dpToPx(8f, adapterView.context) -> {
+                        ViewUtils.showViews(checkBox)
+                        ViewUtils.goneViews(questSchedule)
+                    }
+                    else -> {
+                        ViewUtils.showViews(checkBox, questSchedule)
+                    }
+                }
+            }
         }
 
         private fun tintList(@ColorRes color: Int) = ContextCompat.getColorStateList(context, color)
