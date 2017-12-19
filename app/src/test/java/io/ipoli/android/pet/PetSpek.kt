@@ -1,8 +1,8 @@
-package io.ipoli.android.pet
+package mypoli.android.pet
 
-import io.ipoli.android.TestUtil
-import io.ipoli.android.common.SimpleReward
-import io.ipoli.android.quest.Quest
+import mypoli.android.TestUtil
+import mypoli.android.common.SimpleReward
+import mypoli.android.quest.Quest
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be true`
 import org.amshove.kluent.`should be`

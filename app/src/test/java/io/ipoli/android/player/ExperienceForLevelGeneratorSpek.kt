@@ -1,4 +1,4 @@
-package io.ipoli.android.player
+package mypoli.android.player
 
 import org.amshove.kluent.`should be equal to`
 import org.jetbrains.spek.api.Spek

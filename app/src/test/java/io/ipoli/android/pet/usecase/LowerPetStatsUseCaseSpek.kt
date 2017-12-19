@@ -1,17 +1,17 @@
-package io.ipoli.android.pet.usecase
+package mypoli.android.pet.usecase
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import io.ipoli.android.Constants
-import io.ipoli.android.pet.Pet
-import io.ipoli.android.pet.PetAvatar
-import io.ipoli.android.player.AuthProvider
-import io.ipoli.android.player.Player
-import io.ipoli.android.player.persistence.PlayerRepository
-import io.ipoli.android.quest.Category
-import io.ipoli.android.quest.Color
-import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.Constants
+import mypoli.android.pet.Pet
+import mypoli.android.pet.PetAvatar
+import mypoli.android.player.AuthProvider
+import mypoli.android.player.Player
+import mypoli.android.player.persistence.PlayerRepository
+import mypoli.android.quest.Category
+import mypoli.android.quest.Color
+import mypoli.android.quest.Quest
+import mypoli.android.quest.data.persistence.QuestRepository
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be greater than`
 import org.amshove.kluent.any

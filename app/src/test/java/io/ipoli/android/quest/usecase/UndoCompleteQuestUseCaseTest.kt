@@ -1,16 +1,15 @@
-package io.ipoli.android.quest.usecase
+package mypoli.android.quest.usecase
 
 import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import io.ipoli.android.common.datetime.Time
-import io.ipoli.android.player.usecase.RemoveRewardFromPlayerUseCase
-import io.ipoli.android.quest.Category
-import io.ipoli.android.quest.Color
-import io.ipoli.android.quest.Quest
-import io.ipoli.android.quest.Reminder
-import io.ipoli.android.quest.data.persistence.QuestRepository
-import io.ipoli.android.reminder.ReminderScheduler
+import mypoli.android.common.datetime.Time
+import mypoli.android.player.usecase.RemoveRewardFromPlayerUseCase
+import mypoli.android.quest.Category
+import mypoli.android.quest.Color
+import mypoli.android.quest.Quest
+import mypoli.android.quest.Reminder
+import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.ReminderScheduler
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe

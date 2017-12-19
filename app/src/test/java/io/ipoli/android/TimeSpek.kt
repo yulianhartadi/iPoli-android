@@ -1,6 +1,6 @@
-package io.ipoli.android
+package mypoli.android
 
-import io.ipoli.android.common.datetime.Time
+import mypoli.android.common.datetime.Time
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be false`
 import org.amshove.kluent.`should be true`

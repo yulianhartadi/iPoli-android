@@ -1,10 +1,10 @@
-package io.ipoli.android.pet.usecase
+package mypoli.android.pet.usecase
 
-import io.ipoli.android.Constants
-import io.ipoli.android.TestUtil
-import io.ipoli.android.pet.Pet
-import io.ipoli.android.pet.PetAvatar
-import io.ipoli.android.player.Player
+import mypoli.android.Constants
+import mypoli.android.TestUtil
+import mypoli.android.pet.Pet
+import mypoli.android.pet.PetAvatar
+import mypoli.android.player.Player
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should be`
