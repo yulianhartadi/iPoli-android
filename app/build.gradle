@@ -20,8 +20,8 @@ android {
         applicationId "mypoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 315
-        versionName "2.0.0-alpha16"
+        versionCode 1
+        versionName "All Systems GO"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -31,9 +31,6 @@ android {
             // @TODO Fix proguard rules
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            ndk {
-                abiFilter 'armeabi-v7a'
-            }
         }
     }
 
@@ -71,7 +68,7 @@ dependencies {
             exclude group: it
         }
     }
-    implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
         transitive = true
     }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
