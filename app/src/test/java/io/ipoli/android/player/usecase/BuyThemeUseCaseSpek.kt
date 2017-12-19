@@ -1,13 +1,13 @@
-package io.ipoli.android.player.usecase
+package mypoli.android.player.usecase
 
-import io.ipoli.android.R.id.price
-import io.ipoli.android.TestUtil
-import io.ipoli.android.pet.PetAvatar
-import io.ipoli.android.pet.usecase.BuyPetUseCase
-import io.ipoli.android.player.Inventory
-import io.ipoli.android.player.Player
-import io.ipoli.android.player.Theme
-import io.ipoli.android.theme.usecase.BuyThemeUseCase
+import mypoli.android.R.id.price
+import mypoli.android.TestUtil
+import mypoli.android.pet.PetAvatar
+import mypoli.android.pet.usecase.BuyPetUseCase
+import mypoli.android.player.Inventory
+import mypoli.android.player.Player
+import mypoli.android.player.Theme
+import mypoli.android.theme.usecase.BuyThemeUseCase
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe

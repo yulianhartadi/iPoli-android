@@ -1,4 +1,4 @@
-package io.ipoli.android
+package mypoli.android
 
 import android.support.test.espresso.Espresso
 import android.support.test.espresso.assertion.ViewAssertions
@@ -7,7 +7,7 @@ import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import io.ipoli.android.reward.list.RewardListController
+import mypoli.android.reward.list.RewardListController
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test

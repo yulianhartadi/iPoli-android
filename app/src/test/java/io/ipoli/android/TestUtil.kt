@@ -1,14 +1,14 @@
-package io.ipoli.android
+package mypoli.android
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doAnswer
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import io.ipoli.android.pet.Pet
-import io.ipoli.android.pet.PetAvatar
-import io.ipoli.android.player.AuthProvider
-import io.ipoli.android.player.Player
-import io.ipoli.android.player.persistence.PlayerRepository
+import mypoli.android.pet.Pet
+import mypoli.android.pet.PetAvatar
+import mypoli.android.player.AuthProvider
+import mypoli.android.player.Player
+import mypoli.android.player.persistence.PlayerRepository
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>

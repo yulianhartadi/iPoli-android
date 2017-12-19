@@ -1,11 +1,11 @@
-package io.ipoli.android.pet.usecase
+package mypoli.android.pet.usecase
 
-import io.ipoli.android.TestUtil
-import io.ipoli.android.pet.Pet
-import io.ipoli.android.pet.PetAvatar
-import io.ipoli.android.player.Inventory
-import io.ipoli.android.player.InventoryPet
-import io.ipoli.android.player.Player
+import mypoli.android.TestUtil
+import mypoli.android.pet.Pet
+import mypoli.android.pet.PetAvatar
+import mypoli.android.player.Inventory
+import mypoli.android.player.InventoryPet
+import mypoli.android.player.Player
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe

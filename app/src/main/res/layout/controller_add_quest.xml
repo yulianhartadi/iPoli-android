@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:background="?attr/colorPrimary">
 
-    <io.ipoli.android.common.view.EditTextBackEvent
+    <mypoli.android.common.view.EditTextBackEvent
         android:id="@+id/questName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

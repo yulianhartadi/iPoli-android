@@ -1,16 +1,16 @@
-package io.ipoli.android.player.usecase
+package mypoli.android.player.usecase
 
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.reset
-import io.ipoli.android.TestUtil
-import io.ipoli.android.common.Reward
-import io.ipoli.android.common.SimpleReward
-import io.ipoli.android.pet.Food
-import io.ipoli.android.player.ExperienceForLevelGenerator
-import io.ipoli.android.player.Inventory
-import io.ipoli.android.player.LevelUpScheduler
-import io.ipoli.android.player.Player
-import io.ipoli.android.quest.Quest
+import mypoli.android.TestUtil
+import mypoli.android.common.Reward
+import mypoli.android.common.SimpleReward
+import mypoli.android.pet.Food
+import mypoli.android.player.ExperienceForLevelGenerator
+import mypoli.android.player.Inventory
+import mypoli.android.player.LevelUpScheduler
+import mypoli.android.player.Player
+import mypoli.android.quest.Quest
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
