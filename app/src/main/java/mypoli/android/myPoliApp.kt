@@ -13,7 +13,7 @@ import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
 import io.fabric.sdk.android.Fabric
 import mypoli.android.common.di.*
-import mypoli.android.common.job.iPoliJobCreator
+import mypoli.android.common.job.myPoliJobCreator
 import space.traversal.kapsule.transitive
 import timber.log.Timber
 
@@ -84,7 +84,7 @@ class myPoliApp : Application() {
             refWatcher = LeakCanary.install(this)
         }
 
-        JobManager.create(this).addJobCreator(iPoliJobCreator())
+        JobManager.create(this).addJobCreator(myPoliJobCreator())
 
         val currentUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler({ thread, exception ->

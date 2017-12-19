@@ -208,7 +208,7 @@ abstract class BaseCouchbaseRepository<E, out T>(protected val database: Databas
     protected fun toEntityObject(row: Result): E {
         val rowMap = row.toMap()
         @Suppress("UNCHECKED_CAST")
-        val map = rowMap["iPoli"] as MutableMap<String, Any?>
+        val map = rowMap["myPoli"] as MutableMap<String, Any?>
         map.put("id", rowMap["_id"])
         return toEntityObject(map)
     }
