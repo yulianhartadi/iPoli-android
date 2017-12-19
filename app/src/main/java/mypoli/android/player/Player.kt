@@ -29,8 +29,8 @@ data class Player(
         ),
         pets = setOf(InventoryPet.fromPet(pet)),
         themes = setOf(currentTheme),
-        colorPacks = setOf(ColorPack.FREE, ColorPack.BASIC),
-        iconPacks = setOf(IconPack.FREE, IconPack.BASIC)
+        colorPacks = setOf(ColorPack.FREE),
+        iconPacks = setOf(IconPack.FREE)
     )
 ) : Entity {
     fun addExperience(experience: Int): Player {
