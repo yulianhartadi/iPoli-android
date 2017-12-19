@@ -10,6 +10,9 @@ import android.view.View
 import android.widget.ImageView
 import com.amplitude.api.Amplitude
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.popup_level_up.view.*
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import mypoli.android.Constants
 import mypoli.android.R
 import mypoli.android.common.mvi.BaseMviPresenter
@@ -23,9 +26,6 @@ import mypoli.android.pet.AndroidPetAvatar
 import mypoli.android.pet.PetAvatar
 import mypoli.android.player.Player
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
-import kotlinx.android.synthetic.main.popup_level_up.view.*
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import org.json.JSONObject
 import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
@@ -37,7 +37,7 @@ data class LevelUpViewState(
 ) : ViewState
 
 sealed class LevelUpIntent : Intent {
-    object LoadData : LevelUpIntent()
+    data class LoadData(val newLevel: Int) : LevelUpIntent()
     data class ChangePlayer(val player: Player) : LevelUpIntent()
 }
 
@@ -55,13 +55,14 @@ class LevelUpPresenter(
                         sendChannel.send(LevelUpIntent.ChangePlayer(it))
                     }
                 }
-                state
+                state.copy(
+                    level = intent.newLevel
+                )
             }
 
             is LevelUpIntent.ChangePlayer -> {
                 val player = intent.player
                 state.copy(
-                    level = player.level,
                     avatar = player.pet.avatar
                 )
             }
@@ -69,7 +70,7 @@ class LevelUpPresenter(
 
 }
 
-class LevelUpPopup : MviPopup<LevelUpViewState, LevelUpPopup, LevelUpPresenter, LevelUpIntent>() {
+class LevelUpPopup(private val newLevel: Int) : MviPopup<LevelUpViewState, LevelUpPopup, LevelUpPresenter, LevelUpIntent>() {
 
     private val presenter by required { levelUpPresenter }
 
@@ -99,7 +100,7 @@ class LevelUpPopup : MviPopup<LevelUpViewState, LevelUpPopup, LevelUpPresenter, 
         inflater.inflate(R.layout.popup_level_up, null)
 
     override fun onViewShown(contentView: View) {
-        send(LevelUpIntent.LoadData)
+        send(LevelUpIntent.LoadData(newLevel))
     }
 
     private fun startTypingAnimation(contentView: View, level: Int) {

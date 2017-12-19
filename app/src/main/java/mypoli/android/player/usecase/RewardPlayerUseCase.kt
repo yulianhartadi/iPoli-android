@@ -42,7 +42,7 @@ open class RewardPlayerUseCase(
                 inventory = inventory
             )
         if (newPlayer.level != player.level) {
-            levelUpScheduler.schedule()
+            levelUpScheduler.schedule(newPlayer.level)
         }
         playerRepository.save(newPlayer)
         return newPlayer

@@ -2,11 +2,12 @@ package mypoli.android.player
 
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobRequest
+import com.evernote.android.job.util.support.PersistableBundleCompat
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.di.ControllerModule
 import mypoli.android.common.view.asThemedWrapper
 import mypoli.android.player.view.LevelUpPopup
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Injects
 
 /**
@@ -14,11 +15,14 @@ import space.traversal.kapsule.Injects
  * on 11/15/17.
  */
 class LevelUpJob : Job(), Injects<ControllerModule> {
+
     override fun onRunJob(params: Params): Result {
 
+        val newLevel = params.extras.getInt(KEY_NEW_LEVEL, -1)
+        require(newLevel > 0, { "LevelUpJob received incorrect level param: $newLevel" })
         val c = context.asThemedWrapper()
         launch(UI) {
-            LevelUpPopup().show(c)
+            LevelUpPopup(newLevel).show(c)
         }
 
         return Result.SUCCESS
@@ -26,16 +30,24 @@ class LevelUpJob : Job(), Injects<ControllerModule> {
 
     companion object {
         val TAG = "job_level_up_tag"
+
+        val KEY_NEW_LEVEL = "NEW_LEVEL"
     }
 }
 
 interface LevelUpScheduler {
-    fun schedule()
+    fun schedule(newLevel: Int)
 }
 
 class AndroidLevelUpScheduler : LevelUpScheduler {
-    override fun schedule() {
+
+    override fun schedule(newLevel: Int) {
+
+        val params = PersistableBundleCompat()
+        params.putInt(LevelUpJob.KEY_NEW_LEVEL, newLevel)
+
         JobRequest.Builder(LevelUpJob.TAG)
+            .setExtras(params)
             .setExact(1000)
             .build()
             .schedule()
