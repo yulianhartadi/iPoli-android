@@ -20,8 +20,8 @@ android {
         applicationId "mypoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 1
-        versionName "All Systems GO"
+        versionCode 2
+        versionName "All Systems GO GO"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
