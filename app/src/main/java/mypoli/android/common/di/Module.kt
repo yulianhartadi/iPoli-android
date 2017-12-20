@@ -16,6 +16,7 @@ import mypoli.android.common.text.CalendarFormatter
 import mypoli.android.common.view.ColorPickerPresenter
 import mypoli.android.common.view.IconPickerDialogPresenter
 import mypoli.android.common.view.PetMessagePresenter
+import mypoli.android.common.view.RateDialogPresenter
 import mypoli.android.home.HomePresenter
 import mypoli.android.pet.AndroidJobLowerPetStatsScheduler
 import mypoli.android.pet.LowerPetStatsScheduler
@@ -229,6 +230,7 @@ interface PresenterModule {
     val themeStorePresenter: ThemeStorePresenter
     val colorPickerPresenter: ColorPickerPresenter
     val iconPickerPresenter: IconPickerDialogPresenter
+    val rateDialogPresenter: RateDialogPresenter
 
 }
 
@@ -266,6 +268,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val themeStorePresenter get() = ThemeStorePresenter(listenForPlayerChangesUseCase, changeThemeUseCase, buyThemeUseCase, job)
     override val colorPickerPresenter get() = ColorPickerPresenter(listenForPlayerChangesUseCase, buyColorPackUseCase, job)
     override val iconPickerPresenter get() = IconPickerDialogPresenter(listenForPlayerChangesUseCase, buyIconPackUseCase, job)
+    override val rateDialogPresenter get() = RateDialogPresenter(listenForPlayerChangesUseCase, job)
 }
 
 interface PopupPresenterModule {
