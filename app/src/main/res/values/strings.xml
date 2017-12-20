@@ -72,7 +72,7 @@
     <string name="dialog_ok">OK</string>
     <string name="rate_dialog_never_ask_again">Never ask again</string>
     <string name="rate_dialog_rate_title">Me too!</string>
-    <string name="rate_dialog_rate_message">Encourage us by rating myPoli on Google Play?</string>
+    <string name="rate_dialog_rate_message">It would be really helpful if you rate myPoli on Google Play</string>
     <string name="rate_dialog_feedback_title">Please, help me improve</string>
     <string name="rate_dialog_feedback_send">Send</string>
     <string name="rate_dialog_feedback_no">No, thanks</string>
@@ -1014,7 +1014,7 @@
     <string name="remove">Remove</string>
     <string name="reminder">Reminder</string>
     <string name="dialog_later">later</string>
-    <string name="dialog_great">great</string>
+    <string name="dialog_lets_go">Let\'s go</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

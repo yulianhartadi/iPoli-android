@@ -86,7 +86,7 @@ class HomeViewController(args: Bundle? = null) :
                     .popChangeHandler(handler)
             )
         }
-//        RateDialogController().showDialog(router, "ASAs")
+//        RatePopup().showDialog(router, "ASAs")
 
 //        DurationPickerDialogController().showDialog(childRouter, "hello")
 

@@ -3,6 +3,7 @@ package mypoli.android
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.provider.Settings
 import android.support.design.widget.AppBarLayout
 import android.support.v7.app.AppCompatActivity
@@ -12,7 +13,6 @@ import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import mypoli.android.common.di.ControllerModule
-import mypoli.android.common.view.RateDialogController
 import mypoli.android.common.view.playerTheme
 import mypoli.android.home.HomeViewController
 import mypoli.android.player.AuthProvider
@@ -21,6 +21,7 @@ import mypoli.android.player.persistence.model.ProviderType
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -53,6 +54,8 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
             }
         }
 
+        incrementAppRun()
+
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         inject(myPoliApp.controllerModule(this, router))
 
@@ -67,6 +70,12 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         if (!router.hasRootController()) {
             router.setRoot(RouterTransaction.with(HomeViewController()))
         }
+    }
+
+    private fun incrementAppRun() {
+        val pm = PreferenceManager.getDefaultSharedPreferences(this)
+        val run = pm.getInt(Constants.KEY_APP_RUN_COUNT, 0)
+        pm.edit().putInt(Constants.KEY_APP_RUN_COUNT, run + 1).apply()
     }
 
     override fun onBackPressed() {

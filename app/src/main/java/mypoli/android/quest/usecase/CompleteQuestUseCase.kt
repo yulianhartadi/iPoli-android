@@ -1,6 +1,7 @@
 package mypoli.android.quest.usecase
 
 import mypoli.android.Constants
+import mypoli.android.ReminderScheduler
 import mypoli.android.common.SimpleReward
 import mypoli.android.common.UseCase
 import mypoli.android.common.datetime.Time
@@ -10,7 +11,7 @@ import mypoli.android.player.usecase.RewardPlayerUseCase
 import mypoli.android.quest.Quest
 import mypoli.android.quest.QuestCompleteScheduler
 import mypoli.android.quest.data.persistence.QuestRepository
-import mypoli.android.ReminderScheduler
+import mypoli.android.rate.RatePopupScheduler
 import org.threeten.bp.LocalDate
 import java.util.*
 
@@ -23,6 +24,7 @@ class CompleteQuestUseCase(
     private val playerRepository: PlayerRepository,
     private val reminderScheduler: ReminderScheduler,
     private val questCompleteScheduler: QuestCompleteScheduler,
+    private val ratePopupScheduler: RatePopupScheduler,
     private val rewardPlayerUseCase: RewardPlayerUseCase,
     private val randomSeed: Long? = null
 ) : UseCase<String, Quest> {
@@ -59,6 +61,7 @@ class CompleteQuestUseCase(
         rewardPlayerUseCase.execute(reward)
 
         questCompleteScheduler.schedule(reward)
+        ratePopupScheduler.schedule()
         return newQuest
     }
 
