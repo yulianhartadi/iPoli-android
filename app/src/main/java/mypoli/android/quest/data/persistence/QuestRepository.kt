@@ -1,10 +1,9 @@
 package mypoli.android.quest.data.persistence
 
-import com.couchbase.lite.Database
-import com.couchbase.lite.Expression
+import com.couchbase.lite.*
 import com.couchbase.lite.Expression.property
 import com.couchbase.lite.Function
-import com.couchbase.lite.SelectResult
+import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.datetime.startOfDayUTC
@@ -13,7 +12,6 @@ import mypoli.android.common.persistence.CouchbasePersistedModel
 import mypoli.android.common.persistence.Repository
 import mypoli.android.pet.Food
 import mypoli.android.quest.*
-import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.ZoneId
@@ -107,7 +105,8 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
                 having = property("reminder.minute").equalTo(minMinute).and(
                     property("reminder.date").equalTo(minDate)
                 )
-            )
+            ),
+            orderBy = Ordering.expression(property("reminder.minute"))
         )
         return toEntities(query.run().iterator())
     }
