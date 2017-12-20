@@ -1013,6 +1013,8 @@
     <string name="color">Color</string>
     <string name="remove">Remove</string>
     <string name="reminder">Reminder</string>
+    <string name="dialog_later">later</string>
+    <string name="dialog_great">great</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

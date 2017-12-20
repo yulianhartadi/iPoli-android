@@ -255,7 +255,7 @@ abstract class MviDialogController<VS : ViewState, in V : ViewStateRenderer<VS>,
         }
     }
 
-    protected fun sePositiveButtonListener(listener: (() -> Unit)?) {
+    protected fun setPositiveButtonListener(listener: (() -> Unit)?) {
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
             if (listener != null) listener()
             else dismissDialog()

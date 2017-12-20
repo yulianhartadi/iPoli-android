@@ -9,13 +9,13 @@ import android.widget.Toast
 import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
+import kotlinx.android.synthetic.main.controller_home.view.*
 import mypoli.android.Constants
 import mypoli.android.R
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.FeedbackDialogController
 import mypoli.android.quest.calendar.CalendarViewController
 import mypoli.android.theme.ThemeStoreViewController
-import kotlinx.android.synthetic.main.controller_home.view.*
 import org.json.JSONObject
 import space.traversal.kapsule.required
 
@@ -86,6 +86,7 @@ class HomeViewController(args: Bundle? = null) :
                     .popChangeHandler(handler)
             )
         }
+//        RateDialogController().showDialog(router, "ASAs")
 
 //        DurationPickerDialogController().showDialog(childRouter, "hello")
 
