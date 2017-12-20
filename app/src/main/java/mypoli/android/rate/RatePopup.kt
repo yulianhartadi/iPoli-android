@@ -124,12 +124,15 @@ class RatePopup :
                 neutral.visibility = View.VISIBLE
 
                 positive.setOnClickListener {
+                    logEvent("rate_initial", "answer", "yes")
                     send(RateIntent.ShowRate)
                 }
                 negative.setOnClickListener {
+                    logEvent("rate_initial", "answer", "no")
                     send(RateIntent.ShowFeedback)
                 }
                 neutral.setOnClickListener {
+                    logEvent("rate_initial", "answer", "never")
                     saveDoNotShowAgainPref(view.context)
                     hide()
                 }
@@ -146,13 +149,15 @@ class RatePopup :
                 positive.setOnClickListener {
                     val feedback = view.feedback.text.toString()
                     if (feedback.isNotEmpty()) {
-                        Amplitude.getInstance().logEvent("rate_feedback",
-                            JSONObject().put("feedback", feedback))
-                        Toast.makeText(view.context, "Thank you!", Toast.LENGTH_SHORT).show()
+                        logEvent("rate_negative", "feedback", feedback)
+                        Toast.makeText(view.context, R.string.thank_you, Toast.LENGTH_SHORT).show()
                     }
                     hide()
                 }
-                negative.setOnClickListener { hide() }
+                negative.setOnClickListener {
+                    logEvent("rate_negative", "answer", "no")
+                    hide()
+                }
 
                 view.viewSwitcher.showNext()
             }
@@ -165,6 +170,7 @@ class RatePopup :
                 positive.setText(R.string.dialog_lets_go)
                 negative.setText(R.string.dialog_later)
                 positive.setOnClickListener {
+                    logEvent("rate_positive", "answer", "yes")
                     saveDoNotShowAgainPref(view.context)
                     val uri = Uri.parse("market://details?id=" + view.context.packageName)
                     val linkToMarket = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
@@ -172,11 +178,17 @@ class RatePopup :
                     hide()
                 }
                 negative.setOnClickListener {
+                    logEvent("rate_positive", "answer", "no")
                     hide()
                 }
                 view.viewSwitcher.showNext()
             }
         }
+    }
+
+    private fun logEvent(name: String, paramName: String, paramValue: String) {
+        Amplitude.getInstance().logEvent(name,
+            JSONObject().put(paramName, paramValue))
     }
 
     private fun changeTitle(view: View, @StringRes title: Int) {

@@ -1015,6 +1015,7 @@
     <string name="reminder">Reminder</string>
     <string name="dialog_later">later</string>
     <string name="dialog_lets_go">Let\'s go</string>
+    <string name="thank_you">Thank you!</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
