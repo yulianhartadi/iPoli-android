@@ -65,6 +65,8 @@ interface Constants {
 
         val KEY_APP_RUN_COUNT = "APP_RUN_COUNT"
 
+        val KEY_SHOULD_SHOW_RATE_DIALOG = "SHOULD_SHOW_RATE_DIALOG"
+
         val KEY_APP_VERSION_CODE = "APP_VERSION_CODE"
 
         val KEY_PLAYER_ID = "PLAYER_ID"

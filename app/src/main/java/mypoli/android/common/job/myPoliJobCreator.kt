@@ -5,6 +5,7 @@ import com.evernote.android.job.JobCreator
 import mypoli.android.ReminderNotificationJob
 import mypoli.android.player.LevelUpJob
 import mypoli.android.quest.QuestCompleteJob
+import mypoli.android.rate.RatePopupJob
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -16,6 +17,7 @@ class myPoliJobCreator : JobCreator {
             ReminderNotificationJob.TAG -> ReminderNotificationJob()
             QuestCompleteJob.TAG -> QuestCompleteJob()
             LevelUpJob.TAG -> LevelUpJob()
+            RatePopupJob.TAG -> RatePopupJob()
             else -> null
         }
 }

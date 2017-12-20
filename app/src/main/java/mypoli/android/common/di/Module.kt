@@ -16,7 +16,6 @@ import mypoli.android.common.text.CalendarFormatter
 import mypoli.android.common.view.ColorPickerPresenter
 import mypoli.android.common.view.IconPickerDialogPresenter
 import mypoli.android.common.view.PetMessagePresenter
-import mypoli.android.common.view.RateDialogPresenter
 import mypoli.android.home.HomePresenter
 import mypoli.android.pet.AndroidJobLowerPetStatsScheduler
 import mypoli.android.pet.LowerPetStatsScheduler
@@ -41,6 +40,9 @@ import mypoli.android.quest.data.persistence.CouchbaseQuestRepository
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.quest.usecase.*
 import mypoli.android.quest.view.QuestCompletePresenter
+import mypoli.android.rate.AndroidRatePopupScheduler
+import mypoli.android.rate.RatePresenter
+import mypoli.android.rate.RatePopupScheduler
 import mypoli.android.reminder.view.formatter.ReminderTimeFormatter
 import mypoli.android.reminder.view.formatter.TimeUnitFormatter
 import mypoli.android.reminder.view.picker.ReminderPickerDialogPresenter
@@ -97,6 +99,8 @@ interface AndroidModule {
 
     val lowerPetStatsScheduler: LowerPetStatsScheduler
 
+    val ratePopupScheduler: RatePopupScheduler
+
     val job: Job
 }
 
@@ -130,6 +134,8 @@ class MainAndroidModule(private val context: Context) : AndroidModule {
 
     override val lowerPetStatsScheduler get() = AndroidJobLowerPetStatsScheduler()
 
+    override val ratePopupScheduler get() = AndroidRatePopupScheduler()
+
     override val database: Database
         get() = Database("myPoli", DatabaseConfiguration(context.applicationContext))
 
@@ -143,6 +149,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     private val questCompleteScheduler by required { questCompleteScheduler }
     private val levelUpScheduler by required { levelUpScheduler }
     private val levelDownScheduler by required { levelDownScheduler }
+    private val rateDialogScheduler by required { ratePopupScheduler }
     override val loadScheduleForDateUseCase
         get() = LoadScheduleForDateUseCase(questRepository)
     override val saveQuestUseCase get() = SaveQuestUseCase(questRepository, reminderScheduler)
@@ -150,7 +157,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val undoRemoveQuestUseCase get() = UndoRemovedQuestUseCase(questRepository)
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
-    override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, playerRepository, reminderScheduler, questCompleteScheduler, rewardPlayerUseCase)
+    override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, playerRepository, reminderScheduler, questCompleteScheduler, rateDialogScheduler, rewardPlayerUseCase)
     override val undoCompletedQuestUseCase get() = UndoCompletedQuestUseCase(questRepository, reminderScheduler, removeRewardFromPlayerUseCase)
     override val listenForPlayerChangesUseCase get() = ListenForPlayerChangesUseCase(playerRepository)
     override val rewardPlayerUseCase get() = RewardPlayerUseCase(playerRepository, levelUpScheduler)
@@ -184,9 +191,10 @@ class AndroidPopupUseCaseModule : PopupUseCaseModule, Injects<SimpleModule> {
     private val reminderScheduler by required { reminderScheduler }
     private val questCompleteScheduler by required { questCompleteScheduler }
     private val levelUpScheduler by required { levelUpScheduler }
+    private val rateDialogScheduler by required { ratePopupScheduler }
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
-    override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, playerRepository, reminderScheduler, questCompleteScheduler, rewardPlayerUseCase)
+    override val completeQuestUseCase get() = CompleteQuestUseCase(questRepository, playerRepository, reminderScheduler, questCompleteScheduler, rateDialogScheduler, rewardPlayerUseCase)
     override val findPlayerLevelUseCase get() = FindPlayerLevelUseCase(playerRepository)
     override val rewardPlayerUseCase get() = RewardPlayerUseCase(playerRepository, levelUpScheduler)
     override val lowerPetStatsUseCase get() = LowerPetStatsUseCase(questRepository, playerRepository)
@@ -230,8 +238,6 @@ interface PresenterModule {
     val themeStorePresenter: ThemeStorePresenter
     val colorPickerPresenter: ColorPickerPresenter
     val iconPickerPresenter: IconPickerDialogPresenter
-    val rateDialogPresenter: RateDialogPresenter
-
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
@@ -268,13 +274,13 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val themeStorePresenter get() = ThemeStorePresenter(listenForPlayerChangesUseCase, changeThemeUseCase, buyThemeUseCase, job)
     override val colorPickerPresenter get() = ColorPickerPresenter(listenForPlayerChangesUseCase, buyColorPackUseCase, job)
     override val iconPickerPresenter get() = IconPickerDialogPresenter(listenForPlayerChangesUseCase, buyIconPackUseCase, job)
-    override val rateDialogPresenter get() = RateDialogPresenter(listenForPlayerChangesUseCase, job)
 }
 
 interface PopupPresenterModule {
     val petMessagePresenter: PetMessagePresenter
     val levelUpPresenter: LevelUpPresenter
     val questCompletePresenter: QuestCompletePresenter
+    val ratePresenter: RatePresenter
 }
 
 class AndroidPopupPresenterModule : PopupPresenterModule, Injects<SimpleModule> {
@@ -284,6 +290,7 @@ class AndroidPopupPresenterModule : PopupPresenterModule, Injects<SimpleModule> 
     override val petMessagePresenter get() = PetMessagePresenter(listenForPlayerChangesUseCase, job)
     override val levelUpPresenter get() = LevelUpPresenter(listenForPlayerChangesUseCase, job)
     override val questCompletePresenter get() = QuestCompletePresenter(listenForPlayerChangesUseCase, job)
+    override val ratePresenter get() = RatePresenter(listenForPlayerChangesUseCase, job)
 }
 
 class ControllerModule(androidModule: AndroidModule,

@@ -1,28 +1,29 @@
-package mypoli.android.common.view
+package mypoli.android.rate
 
-import android.content.DialogInterface
+import android.content.Context
 import android.net.Uri
-import android.os.Bundle
-import android.support.v7.app.AlertDialog
+import android.preference.PreferenceManager
+import android.support.annotation.StringRes
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import com.amplitude.api.Amplitude
 import kotlinx.android.synthetic.main.dialog_rate.view.*
-import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
+import mypoli.android.Constants
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.mvi.ViewStateRenderer
-import mypoli.android.common.view.RateViewState.Type.*
+import mypoli.android.common.view.MviPopup
 import mypoli.android.pet.AndroidPetAvatar
 import mypoli.android.pet.PetAvatar
 import mypoli.android.player.Player
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
+import mypoli.android.rate.RateViewState.Type.*
 import org.json.JSONObject
 import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
@@ -52,7 +53,7 @@ data class RateViewState(
     }
 }
 
-class RateDialogPresenter(
+class RatePresenter(
     private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
     coroutineContext: CoroutineContext) :
     BaseMviPresenter<ViewStateRenderer<RateViewState>, RateViewState, RateIntent>(
@@ -92,85 +93,98 @@ class RateDialogPresenter(
 
 }
 
-class RateDialogController :
-    MviDialogController<RateViewState, RateDialogController, RateDialogPresenter, RateIntent>() {
+class RatePopup :
+    MviPopup<RateViewState, RatePopup, RatePresenter, RateIntent>() {
 
-    private val presenter by required { rateDialogPresenter }
+    override fun createView(inflater: LayoutInflater): View {
+        val view = inflater.inflate(R.layout.dialog_rate, null)
+        changeTitle(view, R.string.rate_dialog_initial_title)
+        view.positive.setText(R.string.dialog_yes)
+        view.negative.setText(R.string.dialog_no)
+        view.neutral.setText(R.string.rate_dialog_never_ask_again)
+        return view
+    }
+
+    private val presenter by required { ratePresenter }
 
     override fun createPresenter() = presenter
 
-    override fun onAttach(view: View) {
-        super.onAttach(view)
+    override fun onViewShown(contentView: View) {
         send(RateIntent.LoadData)
     }
 
     override fun render(state: RateViewState, view: View) {
+        val neutral = view.neutral
+        val negative = view.negative
+        val positive = view.positive
+
         when (state.type) {
             DATA_CHANGED -> {
-                changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
-                dialog.getButton(DialogInterface.BUTTON_NEUTRAL).visibility = View.VISIBLE
-                setPositiveButtonListener {
+                view.dialogHeaderIcon.setImageResource(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
+                neutral.visibility = View.VISIBLE
+
+                positive.setOnClickListener {
                     send(RateIntent.ShowRate)
                 }
-                setNegativeButtonListener {
+                negative.setOnClickListener {
                     send(RateIntent.ShowFeedback)
                 }
-                setNeutralButtonListener {
-                    //never ask again
+                neutral.setOnClickListener {
+                    saveDoNotShowAgainPref(view.context)
+                    hide()
                 }
             }
 
             SHOW_FEEDBACK -> {
-                dialog.getButton(DialogInterface.BUTTON_NEUTRAL).visibility = View.INVISIBLE
-                changeTitle(R.string.rate_dialog_feedback_title)
+                neutral.visibility = View.INVISIBLE
+                changeTitle(view, R.string.rate_dialog_feedback_title)
                 ViewUtils.goneViews(view.rate)
                 ViewUtils.showViews(view.feedbackLayout)
-                changePositiveButtonText(R.string.rate_dialog_feedback_send)
-                changeNegativeButtonText(R.string.rate_dialog_feedback_no)
-                setPositiveButtonListener {
+                positive.setText(R.string.rate_dialog_feedback_send)
+                negative.setText(R.string.rate_dialog_feedback_no)
+
+                positive.setOnClickListener {
                     val feedback = view.feedback.text.toString()
                     if (feedback.isNotEmpty()) {
                         Amplitude.getInstance().logEvent("rate_feedback",
                             JSONObject().put("feedback", feedback))
-                        Toast.makeText(activity!!, "Thank you!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(view.context, "Thank you!", Toast.LENGTH_SHORT).show()
                     }
-                    dismissDialog()
+                    hide()
                 }
-                setNegativeButtonListener(null)
+                negative.setOnClickListener { hide() }
 
-                view.container.showNext()
+                view.viewSwitcher.showNext()
             }
 
             SHOW_RATE -> {
-                dialog.getButton(DialogInterface.BUTTON_NEUTRAL).visibility = View.INVISIBLE
-                changeTitle(R.string.rate_dialog_rate_title)
+                neutral.visibility = View.INVISIBLE
+                changeTitle(view, R.string.rate_dialog_rate_title)
                 ViewUtils.goneViews(view.feedbackLayout)
                 ViewUtils.showViews(view.rate)
-                changePositiveButtonText(R.string.dialog_great)
-                changeNegativeButtonText(R.string.dialog_later)
-                setPositiveButtonListener {
-                    val uri = Uri.parse("market://details?id=" + activity!!.packageName)
+                positive.setText(R.string.dialog_lets_go)
+                negative.setText(R.string.dialog_later)
+                positive.setOnClickListener {
+                    saveDoNotShowAgainPref(view.context)
+                    val uri = Uri.parse("market://details?id=" + view.context.packageName)
                     val linkToMarket = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
-                    startActivity(linkToMarket)
+                    view.context.startActivity(linkToMarket)
+                    hide()
                 }
-                setNegativeButtonListener(null)
-                view.container.showNext()
+                negative.setOnClickListener {
+                    hide()
+                }
+                view.viewSwitcher.showNext()
             }
         }
     }
 
-    override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
-        return inflater.inflate(R.layout.dialog_rate, null)
+    private fun changeTitle(view: View, @StringRes title: Int) {
+        view.dialogHeaderTitle.setText(title)
     }
 
-    override fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog =
-        dialogBuilder
-            .setPositiveButton(R.string.dialog_yes, null)
-            .setNegativeButton(R.string.dialog_no, null)
-            .setNeutralButton(R.string.rate_dialog_never_ask_again, null)
-            .create()
-
-    override fun onHeaderViewCreated(headerView: View) {
-        headerView.dialogHeaderTitle.setText(R.string.rate_dialog_initial_title)
+    private fun saveDoNotShowAgainPref(context: Context) {
+        val pm = PreferenceManager.getDefaultSharedPreferences(context)
+        pm.edit().putBoolean(Constants.KEY_SHOULD_SHOW_RATE_DIALOG, false).apply()
     }
 }
