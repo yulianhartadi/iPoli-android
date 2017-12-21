@@ -34,9 +34,9 @@ class BuyPetUseCaseSpek : Spek({
             exec shouldThrow IllegalArgumentException::class
         }
 
-        it("should not buy when not enough diamonds") {
+        it("should not buy when not enough gems") {
             val player = TestUtil.player().copy(
-                diamonds = PetAvatar.ELEPHANT.price - 1,
+                gems = PetAvatar.ELEPHANT.price - 1,
                 inventory = Inventory()
             )
             val result = executeUseCase(player, PetAvatar.ELEPHANT)
@@ -45,13 +45,13 @@ class BuyPetUseCaseSpek : Spek({
 
         it("should buy pet") {
             val player = TestUtil.player().copy(
-                diamonds = PetAvatar.ELEPHANT.price,
+                gems = PetAvatar.ELEPHANT.price,
                 inventory = Inventory()
             )
             val result = executeUseCase(player, PetAvatar.ELEPHANT)
             result.`should be instance of`(BuyPetUseCase.Result.PetBought::class)
             val newPlayer = (result as BuyPetUseCase.Result.PetBought).player
-            newPlayer.diamonds.`should be equal to`(player.diamonds - PetAvatar.ELEPHANT.price)
+            newPlayer.gems.`should be equal to`(player.gems - PetAvatar.ELEPHANT.price)
             newPlayer.hasPet(PetAvatar.ELEPHANT).`should be true`()
         }
     }

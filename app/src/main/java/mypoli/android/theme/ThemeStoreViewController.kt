@@ -44,7 +44,7 @@ class ThemeStoreViewController(args: Bundle? = null) :
         inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
         inventoryToolbar.toolbarTitle.setText(R.string.themes)
 
-        inventoryToolbar.playerDiamonds.setOnClickListener {
+        inventoryToolbar.playerGems.setOnClickListener {
             send(ShowCurrencyConverter)
         }
 
@@ -80,7 +80,7 @@ class ThemeStoreViewController(args: Bundle? = null) :
             }
 
             PLAYER_CHANGED -> {
-                inventoryToolbar.playerDiamonds.text = state.playerDiamonds.toString()
+                inventoryToolbar.playerGems.text = state.playerGems.toString()
                 (view.themePager.adapter as ThemePagerAdapter).updateAll(state.viewModels)
             }
 

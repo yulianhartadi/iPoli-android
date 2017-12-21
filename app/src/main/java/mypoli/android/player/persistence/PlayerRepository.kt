@@ -64,7 +64,7 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             id = cp.id,
             level = cp.level,
             coins = cp.coins,
-            diamonds = cp.diamonds,
+            gems = cp.gems,
             experience = cp.experience,
             authProvider = authProvider,
             avatar = Avatar.fromCode(cp.avatarCode)!!,
@@ -81,7 +81,7 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             it.type = CouchbasePlayer.TYPE
             it.level = entity.level
             it.coins = entity.coins
-            it.diamonds = entity.diamonds
+            it.gems = entity.gems
             it.experience = entity.experience
             it.authProvider = createCouchbaseAuthProvider(entity.authProvider).map
             it.avatarCode = entity.avatar.code
