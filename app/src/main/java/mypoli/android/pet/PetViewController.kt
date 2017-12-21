@@ -18,15 +18,15 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
+import kotlinx.android.synthetic.main.controller_pet.view.*
+import kotlinx.android.synthetic.main.item_pet_food.view.*
+import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
 import mypoli.android.pet.PetViewState.StateType.*
 import mypoli.android.pet.store.PetStoreViewController
-import kotlinx.android.synthetic.main.controller_pet.view.*
-import kotlinx.android.synthetic.main.item_pet_food.view.*
-import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import space.traversal.kapsule.required
 
 /**
@@ -109,7 +109,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 if (!state.isDead) {
                     playEnterAnimation(view)
                 }
-                inventoryToolbar.playerGems.text = state.playerCoins.toString()
+                inventoryToolbar.playerGems.text = state.playerGems.toString()
             }
             FOOD_LIST_SHOWN -> {
                 playShowFoodListAnimation(view)
@@ -153,7 +153,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
             PET_CHANGED -> {
 
-                inventoryToolbar.playerGems.text = state.playerCoins.toString()
+                inventoryToolbar.playerGems.text = state.playerGems.toString()
 
                 (view.foodList.adapter as PetFoodAdapter).updateAll(state.foodViewModels)
 
@@ -376,7 +376,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             } else {
                 foodPrice.text = vm.price.toString()
                 foodPrice.setCompoundDrawablesWithIntrinsicBounds(
-                    ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_life_coin_16dp),
+                    ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_gem_16dp),
                     null, null, null)
             }
             holder.itemView.setOnClickListener {
