@@ -18,12 +18,12 @@ class BuyPetUseCase(private val playerRepository: PlayerRepository) : UseCase<Pe
         requireNotNull(player)
         require(!player!!.hasPet(avatar))
 
-        if (player.coins < avatar.price) {
+        if (player.diamonds < avatar.price) {
             return BuyPetUseCase.Result.TooExpensive
         }
 
         val newPlayer = player.copy(
-            coins = player.coins - avatar.price,
+            diamonds = player.diamonds - avatar.price,
             inventory = player.inventory.addPet(
                 Pet(
                     name = Constants.DEFAULT_PET_NAME,

@@ -56,7 +56,7 @@ class RewardPlayerUseCaseSpek : Spek({
                 reward.copy(experience = xp, coins = coins)
             )
             newPlayer.level.`should be`(player.level + 1)
-            Verify on levelUpScheduler that levelUpScheduler.schedule() was called
+            Verify on levelUpScheduler that levelUpScheduler.schedule(newPlayer.level) was called
         }
 
         it("should give reward to the Pet") {

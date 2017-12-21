@@ -33,9 +33,9 @@ class BuyThemeUseCaseSpek : Spek({
             exec shouldThrow IllegalArgumentException::class
         }
 
-        it("should not buy when not enough coins") {
+        it("should not buy when not enough diamonds") {
             val player = TestUtil.player().copy(
-                coins = Theme.BLUE.price - 1,
+                diamonds = Theme.BLUE.price - 1,
                 inventory = Inventory()
             )
             val result = executeUseCase(player, Theme.BLUE)
@@ -44,13 +44,13 @@ class BuyThemeUseCaseSpek : Spek({
 
         it("should buy theme") {
             val player = TestUtil.player().copy(
-                coins = Theme.BLUE.price,
+                diamonds = Theme.BLUE.price,
                 inventory = Inventory()
             )
             val result = executeUseCase(player, Theme.BLUE)
             result.`should be instance of`(BuyThemeUseCase.Result.ThemeBought::class)
             val newPlayer = (result as BuyThemeUseCase.Result.ThemeBought).player
-            newPlayer.coins.`should be equal to`(player.coins - Theme.BLUE.price)
+            newPlayer.diamonds.`should be equal to`(player.diamonds - Theme.BLUE.price)
             newPlayer.hasTheme(Theme.BLUE).`should be true`()
         }
     }
