@@ -1,5 +1,7 @@
 package mypoli.android.pet.store
 
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.pet.AndroidPetAvatar
@@ -9,8 +11,6 @@ import mypoli.android.pet.usecase.BuyPetUseCase
 import mypoli.android.pet.usecase.ChangePetUseCase
 import mypoli.android.player.Player
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -42,7 +42,7 @@ class PetStorePresenter(
             is ChangePlayerIntent -> {
                 state.copy(
                     type = PLAYER_CHANGED,
-                    playerCoins = intent.player.coins,
+                    playerDiamonds = intent.player.diamonds,
                     petViewModels = createPetViewModels(intent.player)
                 )
             }

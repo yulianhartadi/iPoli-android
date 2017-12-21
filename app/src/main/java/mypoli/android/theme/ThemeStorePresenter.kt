@@ -1,5 +1,7 @@
 package mypoli.android.theme
 
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.player.Player
@@ -10,8 +12,6 @@ import mypoli.android.theme.usecase.BuyThemeUseCase
 import mypoli.android.theme.usecase.BuyThemeUseCase.Result.ThemeBought
 import mypoli.android.theme.usecase.BuyThemeUseCase.Result.TooExpensive
 import mypoli.android.theme.usecase.ChangeThemeUseCase
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -47,7 +47,7 @@ class ThemeStorePresenter(
                 state.copy(
                     type = PLAYER_CHANGED,
                     theme = player.currentTheme,
-                    playerCoins = player.coins,
+                    playerDiamonds = player.diamonds,
                     viewModels = createThemeViewModels(player)
                 )
             }

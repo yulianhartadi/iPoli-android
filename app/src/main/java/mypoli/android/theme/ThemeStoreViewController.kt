@@ -76,7 +76,7 @@ class ThemeStoreViewController(args: Bundle? = null) :
             }
 
             PLAYER_CHANGED -> {
-                inventoryToolbar.playerCoins.text = state.playerCoins.toString()
+                inventoryToolbar.playerDiamonds.text = state.playerDiamonds.toString()
                 (view.themePager.adapter as ThemePagerAdapter).updateAll(state.viewModels)
             }
 

@@ -19,7 +19,7 @@
         tools:text="Store" />
 
     <TextView
-        android:id="@+id/playerCoins"
+        android:id="@+id/playerDiamonds"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
