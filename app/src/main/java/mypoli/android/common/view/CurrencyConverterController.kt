@@ -1,14 +1,19 @@
 package mypoli.android.common.view
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import kotlinx.android.synthetic.main.dialog_currency_converter.view.*
-import kotlinx.android.synthetic.main.view_dialog_header.view.*
+import kotlinx.android.synthetic.main.view_currency_converter_dialog_header.view.*
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.Constants
@@ -152,7 +157,66 @@ class CurrencyConverterController :
                 })
 
                 view.convert.setOnClickListener {
-                    send(Convert(view.seekBar.progress))
+                    view.convert.visibility = View.INVISIBLE
+
+                    val duration = 1600
+
+                    val a = ObjectAnimator.ofFloat(view.arrows, "rotation", 0f, 720f)
+                    a.duration = duration.toLong()
+
+
+                    val b = ObjectAnimator.ofFloat(view.lifeCoin, "alpha", 0f, 1f, 0f, 1f, 0f)
+                    b.startDelay = (duration / 4).toLong()
+                    b.duration = (duration / 2).toLong()
+                    b.interpolator = AccelerateDecelerateInterpolator()
+                    b.addListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            val c = ObjectAnimator.ofFloat(view.gem, "alpha", 0f, 1f)
+                            c.duration = (duration / 4).toLong()
+                            c.start()
+                        }
+                    })
+
+
+                    val set = AnimatorSet()
+                    set.playTogether(a, b)
+
+                    set.addListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationStart(animation: Animator?) {
+                            view.arrows.visibility = View.VISIBLE
+                            view.lifeCoin.visibility = View.VISIBLE
+                        }
+
+                        override fun onAnimationEnd(animation: Animator?) {
+                            view.arrows.visibility = View.INVISIBLE
+                            view.lifeCoin.visibility = View.INVISIBLE
+                            view.lifeCoin.alpha = 1f
+
+                            val originalX = view.gem.x
+                            val originalY = view.gem.y
+
+                            val x = ObjectAnimator.ofFloat(view.gem, "x", view.width.toFloat() - 2 * dialog.findViewById<TextView>(R.id.headerGems)!!.width)
+                            val y = ObjectAnimator.ofFloat(view.gem, "y", 0f)
+                            val alpha = ObjectAnimator.ofFloat(view.gem, "alpha", 1f, 0f)
+
+                            val s = AnimatorSet()
+                            s.playTogether(x, y, alpha)
+                            s.duration = longAnimTime
+
+                            s.addListener(object : AnimatorListenerAdapter() {
+
+                                override fun onAnimationEnd(animation: Animator?) {
+                                    send(Convert(view.seekBar.progress))
+                                    view.convert.visibility = View.VISIBLE
+                                    view.gem.x = originalX
+                                    view.gem.y = originalY
+                                }
+                            })
+                            s.start()
+                        }
+                    })
+
+                    set.start()
                 }
 
             }
