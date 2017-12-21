@@ -14,6 +14,7 @@ data class Player(
     override val id: String = "",
     val level: Int = 1,
     val coins: Int = Constants.DEFAULT_PLAYER_COINS,
+    val diamonds:Int = 0,
     val experience: Long = Constants.DEFAULT_PLAYER_XP,
     val authProvider: AuthProvider,
     val avatar: Avatar = Avatar.IPOLI_CLASSIC,
