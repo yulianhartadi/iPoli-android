@@ -5,7 +5,6 @@
     <string name="title_edit_quest">Edit quest</string>
     <string name="quest_deleted">Quest deleted</string>
     <string name="repeating_quest_deleted">Repeating Quest deleted</string>
-    <string name="done">Done</string>
     <string name="quest_complete">Quest complete</string>
     <string name="quest_complete_with_reward">Quest complete! +%1$d XP +%2$d coins.</string>
     <string name="achievement_with_reward">%1$s +%2$d XP +%3$d coins.</string>
@@ -1019,6 +1018,7 @@
     <string name="thank_you">Thank you!</string>
     <string name="currency_converter_title">Get some cash</string>
     <string name="convert">Convert</string>
+    <string name="done">Done</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

@@ -51,7 +51,8 @@ data class CurrencyConverterViewState(
     val playerGems: Int = 0,
     val maxGemsToConvert: Int = 0,
     val convertCoins: Int = 0,
-    val convertGems: Int = 0
+    val convertGems: Int = 0,
+    val enableConvert: Boolean = false
 ) : ViewState {
     enum class Type {
         LOADING,
@@ -91,7 +92,8 @@ class CurrencyConverterPresenter(
                     playerGems = player.gems,
                     maxGemsToConvert = player.coins / Constants.GEM_COINS_PRICE,
                     convertCoins = player.coins,
-                    convertGems = 0
+                    convertGems = 0,
+                    enableConvert = false
                 )
             }
 
@@ -100,7 +102,8 @@ class CurrencyConverterPresenter(
                 state.copy(
                     type = CONVERT_DEAL_CHANGED,
                     convertCoins = state.playerCoins - intent.progress * Constants.GEM_COINS_PRICE,
-                    convertGems = intent.progress
+                    convertGems = intent.progress,
+                    enableConvert = intent.progress > 0
                 )
             }
 
@@ -156,67 +159,10 @@ class CurrencyConverterController :
 
                 })
 
+                view.convert.isEnabled = state.enableConvert
+
                 view.convert.setOnClickListener {
-                    view.convert.visibility = View.INVISIBLE
-
-                    val duration = 1600
-
-                    val a = ObjectAnimator.ofFloat(view.arrows, "rotation", 0f, 720f)
-                    a.duration = duration.toLong()
-
-
-                    val b = ObjectAnimator.ofFloat(view.lifeCoin, "alpha", 0f, 1f, 0f, 1f, 0f)
-                    b.startDelay = (duration / 4).toLong()
-                    b.duration = (duration / 2).toLong()
-                    b.interpolator = AccelerateDecelerateInterpolator()
-                    b.addListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
-                            val c = ObjectAnimator.ofFloat(view.gem, "alpha", 0f, 1f)
-                            c.duration = (duration / 4).toLong()
-                            c.start()
-                        }
-                    })
-
-
-                    val set = AnimatorSet()
-                    set.playTogether(a, b)
-
-                    set.addListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationStart(animation: Animator?) {
-                            view.arrows.visibility = View.VISIBLE
-                            view.lifeCoin.visibility = View.VISIBLE
-                        }
-
-                        override fun onAnimationEnd(animation: Animator?) {
-                            view.arrows.visibility = View.INVISIBLE
-                            view.lifeCoin.visibility = View.INVISIBLE
-                            view.lifeCoin.alpha = 1f
-
-                            val originalX = view.gem.x
-                            val originalY = view.gem.y
-
-                            val x = ObjectAnimator.ofFloat(view.gem, "x", view.width.toFloat() - 2 * dialog.findViewById<TextView>(R.id.headerGems)!!.width)
-                            val y = ObjectAnimator.ofFloat(view.gem, "y", 0f)
-                            val alpha = ObjectAnimator.ofFloat(view.gem, "alpha", 1f, 0f)
-
-                            val s = AnimatorSet()
-                            s.playTogether(x, y, alpha)
-                            s.duration = longAnimTime
-
-                            s.addListener(object : AnimatorListenerAdapter() {
-
-                                override fun onAnimationEnd(animation: Animator?) {
-                                    send(Convert(view.seekBar.progress))
-                                    view.convert.visibility = View.VISIBLE
-                                    view.gem.x = originalX
-                                    view.gem.y = originalY
-                                }
-                            })
-                            s.start()
-                        }
-                    })
-
-                    set.start()
+                    playConvertAnimation(view, { send(Convert(view.seekBar.progress)) })
                 }
 
             }
@@ -224,6 +170,7 @@ class CurrencyConverterController :
             CONVERT_DEAL_CHANGED -> {
                 view.coins.text = state.convertCoins.toString()
                 view.gems.text = state.convertGems.toString()
+                view.convert.isEnabled = state.enableConvert
             }
 
             GEMS_CONVERTED -> {
@@ -236,13 +183,91 @@ class CurrencyConverterController :
         }
     }
 
+    private fun playConvertAnimation(view: View, endListener: () -> Unit) {
+        view.convert.visibility = View.INVISIBLE
+
+        val duration: Long = 1600
+
+        val rotationAnim = createRotationAnimation(view, duration)
+        val lifeCoinAnim = createLifeCoinAnimation(view, duration / 2, duration / 4)
+        lifeCoinAnim.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                playGemAlphaAnimation(view, duration / 4)
+            }
+        })
+
+        val set = AnimatorSet()
+        set.playTogether(rotationAnim, lifeCoinAnim)
+
+        set.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator?) {
+                view.rotationImage.visibility = View.VISIBLE
+                view.lifeCoin.visibility = View.VISIBLE
+            }
+
+            override fun onAnimationEnd(animation: Animator?) {
+                view.rotationImage.visibility = View.INVISIBLE
+                view.lifeCoin.visibility = View.INVISIBLE
+                view.lifeCoin.alpha = 1f
+
+                playGemTranslationAnimation(view, endListener)
+            }
+        })
+
+        set.start()
+    }
+
+    private fun playGemAlphaAnimation(view: View, duration: Long) {
+        val gemAlphaAnim = ObjectAnimator.ofFloat(view.gem, "alpha", 0f, 1f)
+        gemAlphaAnim.duration = duration
+        gemAlphaAnim.start()
+    }
+
+    private fun createLifeCoinAnimation(view: View, duration: Long, delay: Long): ObjectAnimator {
+        val lifeCoinAlphaAnim = ObjectAnimator.ofFloat(view.lifeCoin, "alpha", 0f, 1f, 0f, 1f, 0f)
+        lifeCoinAlphaAnim.startDelay = delay
+        lifeCoinAlphaAnim.duration = duration
+        lifeCoinAlphaAnim.interpolator = AccelerateDecelerateInterpolator()
+        return lifeCoinAlphaAnim
+    }
+
+    private fun createRotationAnimation(view: View, duration: Long): ObjectAnimator {
+        val rotationAnim = ObjectAnimator.ofFloat(view.rotationImage, "rotation", 0f, 720f)
+        rotationAnim.duration = duration
+        return rotationAnim
+    }
+
+    private fun playGemTranslationAnimation(view: View, endListener: () -> Unit) {
+        val originalX = view.gem.x
+        val originalY = view.gem.y
+
+        val x = ObjectAnimator.ofFloat(view.gem, "x", view.width.toFloat() - 2 * dialog.findViewById<TextView>(R.id.headerGems)!!.width)
+        val y = ObjectAnimator.ofFloat(view.gem, "y", 0f)
+        val alpha = ObjectAnimator.ofFloat(view.gem, "alpha", 1f, 0f)
+
+        val set = AnimatorSet()
+        set.playTogether(x, y, alpha)
+        set.duration = longAnimTime
+
+        set.addListener(object : AnimatorListenerAdapter() {
+
+            override fun onAnimationEnd(animation: Animator?) {
+                endListener()
+                view.convert.visibility = View.VISIBLE
+                view.gem.x = originalX
+                view.gem.y = originalY
+            }
+        })
+        set.start()
+    }
+
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
         return inflater.inflate(R.layout.dialog_currency_converter, null)
     }
 
     override fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog =
         dialogBuilder
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(R.string.done, null)
             .create()
 
     override fun onHeaderViewCreated(headerView: View) {

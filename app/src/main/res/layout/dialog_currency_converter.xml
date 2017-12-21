@@ -79,7 +79,7 @@
         app:srcCompat="@drawable/gems" />
 
     <ImageView
-        android:id="@+id/arrows"
+        android:id="@+id/rotationImage"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginEnd="8dp"
@@ -97,9 +97,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/arrows"
-        app:layout_constraintEnd_toStartOf="@+id/arrows"
-        app:layout_constraintTop_toTopOf="@+id/arrows"
+        app:layout_constraintBottom_toBottomOf="@+id/rotationImage"
+        app:layout_constraintEnd_toStartOf="@+id/rotationImage"
+        app:layout_constraintTop_toTopOf="@+id/rotationImage"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/ic_life_coin_32dp" />
 
@@ -109,9 +109,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:alpha="0"
-        app:layout_constraintBottom_toBottomOf="@+id/arrows"
-        app:layout_constraintStart_toEndOf="@+id/arrows"
-        app:layout_constraintTop_toTopOf="@+id/arrows"
+        app:layout_constraintBottom_toBottomOf="@+id/rotationImage"
+        app:layout_constraintStart_toEndOf="@+id/rotationImage"
+        app:layout_constraintTop_toTopOf="@+id/rotationImage"
         app:srcCompat="@drawable/ic_gem_32dp" />
 
 </android.support.constraint.ConstraintLayout>
