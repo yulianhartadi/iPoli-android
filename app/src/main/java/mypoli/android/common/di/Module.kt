@@ -14,6 +14,7 @@ import mypoli.android.ReminderScheduler
 import mypoli.android.common.navigation.Navigator
 import mypoli.android.common.text.CalendarFormatter
 import mypoli.android.common.view.ColorPickerPresenter
+import mypoli.android.common.view.CurrencyConverterPresenter
 import mypoli.android.common.view.IconPickerDialogPresenter
 import mypoli.android.common.view.PetMessagePresenter
 import mypoli.android.home.HomePresenter
@@ -41,8 +42,8 @@ import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.quest.usecase.*
 import mypoli.android.quest.view.QuestCompletePresenter
 import mypoli.android.rate.AndroidRatePopupScheduler
-import mypoli.android.rate.RatePresenter
 import mypoli.android.rate.RatePopupScheduler
+import mypoli.android.rate.RatePresenter
 import mypoli.android.reminder.view.formatter.ReminderTimeFormatter
 import mypoli.android.reminder.view.formatter.TimeUnitFormatter
 import mypoli.android.reminder.view.picker.ReminderPickerDialogPresenter
@@ -238,6 +239,7 @@ interface PresenterModule {
     val themeStorePresenter: ThemeStorePresenter
     val colorPickerPresenter: ColorPickerPresenter
     val iconPickerPresenter: IconPickerDialogPresenter
+    val currencyConverterPresenter: CurrencyConverterPresenter
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
@@ -274,6 +276,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val themeStorePresenter get() = ThemeStorePresenter(listenForPlayerChangesUseCase, changeThemeUseCase, buyThemeUseCase, job)
     override val colorPickerPresenter get() = ColorPickerPresenter(listenForPlayerChangesUseCase, buyColorPackUseCase, job)
     override val iconPickerPresenter get() = IconPickerDialogPresenter(listenForPlayerChangesUseCase, buyIconPackUseCase, job)
+    override val currencyConverterPresenter get() = CurrencyConverterPresenter(listenForPlayerChangesUseCase, job)
 }
 
 interface PopupPresenterModule {

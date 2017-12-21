@@ -44,6 +44,10 @@ class ThemeStoreViewController(args: Bundle? = null) :
         inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
         inventoryToolbar.toolbarTitle.setText(R.string.themes)
 
+        inventoryToolbar.playerDiamonds.setOnClickListener {
+            send(ShowCurrencyConverter)
+        }
+
         view.themePager.clipToPadding = false
         view.themePager.pageMargin = ViewUtils.dpToPx(16f, view.context).toInt()
         return view
@@ -98,6 +102,10 @@ class ThemeStoreViewController(args: Bundle? = null) :
 
             THEME_TOO_EXPENSIVE -> {
                 Toast.makeText(view.context, "Theme too expensive", Toast.LENGTH_SHORT).show()
+            }
+
+            SHOW_CURRENCY_CONVERTER -> {
+                CurrencyConverterController().showDialog(router, "currency-converter")
             }
         }
     }

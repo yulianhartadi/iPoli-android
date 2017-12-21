@@ -17,6 +17,7 @@ import mypoli.android.common.view.*
 import mypoli.android.pet.AndroidPetAvatar
 import mypoli.android.pet.PetAvatar
 import mypoli.android.pet.PetMood
+import mypoli.android.pet.store.PetStoreIntent.*
 import mypoli.android.pet.store.PetStoreViewState.StateType.*
 import space.traversal.kapsule.required
 
@@ -37,6 +38,9 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
 
         inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
         inventoryToolbar.toolbarTitle.setText(R.string.store)
+        inventoryToolbar.playerDiamonds.setOnClickListener {
+            send(ShowCurrencyConverter)
+        }
 
         view.petPager.clipToPadding = false
         view.petPager.pageMargin = ViewUtils.dpToPx(16f, view.context).toInt()
@@ -46,7 +50,7 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
     override fun onAttach(view: View) {
         showBackButton()
         super.onAttach(view)
-        send(LoadDataIntent)
+        send(LoadData)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -70,6 +74,10 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
 
             PET_TOO_EXPENSIVE -> {
                 Toast.makeText(view.context, "Pet too expensive", Toast.LENGTH_SHORT).show()
+            }
+
+            SHOW_CURRENCY_CONVERTER -> {
+                CurrencyConverterController().showDialog(router, "currency-converter")
             }
         }
     }
@@ -105,7 +113,7 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
                     current.visible = false
                     action.text = stringRes(R.string.store_pet_in_inventory)
                     action.setOnClickListener {
-                        send(ChangePetIntent(PetAvatar.valueOf(vm.avatar.name)))
+                        send(ChangePet(PetAvatar.valueOf(vm.avatar.name)))
                     }
                     view.petState.setImageResource(avatar.moodImage[PetMood.GOOD]!!)
                 }
@@ -114,7 +122,7 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
                     current.visible = false
                     action.text = stringRes(R.string.store_buy_pet)
                     action.setOnClickListener {
-                        send(BuyPetIntent(PetAvatar.valueOf(vm.avatar.name)))
+                        send(BuyPet(PetAvatar.valueOf(vm.avatar.name)))
                     }
                     view.petState.setImageResource(avatar.moodImage[PetMood.GOOD]!!)
                 }
