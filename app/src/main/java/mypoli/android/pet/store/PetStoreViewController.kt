@@ -64,7 +64,7 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
             }
 
             PLAYER_CHANGED -> {
-                inventoryToolbar.playerCoins.text = state.playerCoins.toString()
+                inventoryToolbar.playerDiamonds.text = state.playerDiamonds.toString()
                 (view.petPager.adapter as PetPagerAdapter).updateAll(state.petViewModels)
             }
 
