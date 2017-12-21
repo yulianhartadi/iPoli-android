@@ -71,6 +71,12 @@ class ThemeStorePresenter(
                     theme = intent.theme
                 )
             }
+
+            is ShowCurrencyConverter -> {
+                state.copy(
+                    type = SHOW_CURRENCY_CONVERTER
+                )
+            }
         }
 
     private fun createThemeViewModels(player: Player) =
