@@ -34,7 +34,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"
             android:drawablePadding="8dp"
-            android:drawableStart="@drawable/ic_life_coin_32dp"
+            android:drawableStart="@drawable/ic_gem_32dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
         <Button

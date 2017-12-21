@@ -1,13 +1,13 @@
 package mypoli.android.pet
 
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import mypoli.android.Constants
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.pet.PetViewState.StateType.*
 import mypoli.android.pet.usecase.*
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -85,7 +85,7 @@ class PetPresenter(
                     avatar = pet.avatar,
                     mood = pet.mood,
                     isDead = pet.isDead,
-                    playerCoins = intent.player.coins,
+                    playerGems = intent.player.gems,
                     foodViewModels = createFoodViewModels(food)
                 )
             }
