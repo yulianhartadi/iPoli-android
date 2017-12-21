@@ -18,12 +18,12 @@ class BuyThemeUseCase(private val playerRepository: PlayerRepository) : UseCase<
         requireNotNull(player)
         require(!player!!.hasTheme(theme))
 
-        if (player.coins < theme.price) {
+        if (player.diamonds < theme.price) {
             return TooExpensive
         }
 
         val newPlayer = player.copy(
-            coins = player.coins - theme.price,
+            diamonds = player.diamonds - theme.price,
             inventory = player.inventory.addTheme(theme)
         )
 
