@@ -19,7 +19,7 @@ sealed class PetStoreIntent : Intent {
 
 data class PetStoreViewState(
     val type: StateType = StateType.DATA_LOADED,
-    val playerDiamonds: Int = 0,
+    val playerGems: Int = 0,
     val petViewModels: List<PetStoreViewController.PetViewModel> = listOf()
 ) : ViewState {
     enum class StateType {

@@ -20,7 +20,7 @@ object ShowCurrencyConverter : ThemeStoreIntent()
 data class ThemeStoreViewState(
     val type: StateType = StateType.DATA_LOADED,
     val theme: Theme? = null,
-    val playerDiamonds: Int = 0,
+    val playerGems: Int = 0,
     val viewModels: List<ThemeViewModel> = listOf()
 ) : ViewState {
     enum class StateType {

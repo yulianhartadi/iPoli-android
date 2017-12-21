@@ -38,7 +38,7 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
 
         inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
         inventoryToolbar.toolbarTitle.setText(R.string.store)
-        inventoryToolbar.playerDiamonds.setOnClickListener {
+        inventoryToolbar.playerGems.setOnClickListener {
             send(ShowCurrencyConverter)
         }
 
@@ -68,7 +68,7 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
             }
 
             PLAYER_CHANGED -> {
-                inventoryToolbar.playerDiamonds.text = state.playerDiamonds.toString()
+                inventoryToolbar.playerGems.text = state.playerGems.toString()
                 (view.petPager.adapter as PetPagerAdapter).updateAll(state.petViewModels)
             }
 

@@ -43,7 +43,7 @@ class PetStorePresenter(
             is ChangePlayer -> {
                 state.copy(
                     type = PLAYER_CHANGED,
-                    playerDiamonds = intent.player.diamonds,
+                    playerGems = intent.player.gems,
                     petViewModels = createPetViewModels(intent.player)
                 )
             }

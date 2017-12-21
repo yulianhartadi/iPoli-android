@@ -109,7 +109,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 if (!state.isDead) {
                     playEnterAnimation(view)
                 }
-                inventoryToolbar.playerDiamonds.text = state.playerCoins.toString()
+                inventoryToolbar.playerGems.text = state.playerCoins.toString()
             }
             FOOD_LIST_SHOWN -> {
                 playShowFoodListAnimation(view)
@@ -153,7 +153,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
             PET_CHANGED -> {
 
-                inventoryToolbar.playerDiamonds.text = state.playerCoins.toString()
+                inventoryToolbar.playerGems.text = state.playerCoins.toString()
 
                 (view.foodList.adapter as PetFoodAdapter).updateAll(state.foodViewModels)
 
