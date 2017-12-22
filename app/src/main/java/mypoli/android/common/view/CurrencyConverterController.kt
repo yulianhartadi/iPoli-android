@@ -52,7 +52,8 @@ data class CurrencyConverterViewState(
     val maxGemsToConvert: Int = 0,
     val convertCoins: Int = 0,
     val convertGems: Int = 0,
-    val enableConvert: Boolean = false
+    val enableConvert: Boolean = false,
+    val exchangeRateCoins: Int = 0
 ) : ViewState {
     enum class Type {
         LOADING,
@@ -93,7 +94,9 @@ class CurrencyConverterPresenter(
                     maxGemsToConvert = player.coins / Constants.GEM_COINS_PRICE,
                     convertCoins = player.coins,
                     convertGems = 0,
-                    enableConvert = false
+                    enableConvert = false,
+                    exchangeRateCoins = 115
+
                 )
             }
 
@@ -140,6 +143,7 @@ class CurrencyConverterController :
                 dialog.findViewById<TextView>(R.id.headerGems)!!.text = state.playerGems.toString()
                 view.coins.text = state.convertCoins.toString()
                 view.gems.text = state.convertGems.toString()
+                view.exchangeRateCoins.text = state.exchangeRateCoins.toString()
 
                 view.seekBar.max = state.maxGemsToConvert
                 view.seekBar.progress = 0
