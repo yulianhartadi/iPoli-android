@@ -20,8 +20,8 @@ android {
         applicationId "mypoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 4
-        versionName "All Systems GO GO GO GO"
+        versionCode 5
+        versionName "Gems are here"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
