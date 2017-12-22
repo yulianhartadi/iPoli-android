@@ -3,6 +3,7 @@ package mypoli.android.pet.usecase
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import mypoli.android.Constants
+import mypoli.android.TestUtil
 import mypoli.android.pet.Pet
 import mypoli.android.pet.PetAvatar
 import mypoli.android.player.AuthProvider
@@ -54,9 +55,7 @@ class LowerPetStatsUseCaseSpek : Spek({
 
             val questRepo = mock<QuestRepository>()
 
-            val playerRepo = mock<PlayerRepository> {
-                on { find() } doReturn player
-            }
+            val playerRepo = TestUtil.playerRepoMock(player)
 
             val useCase = LowerPetStatsUseCase(
                 questRepo,
