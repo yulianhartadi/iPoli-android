@@ -95,7 +95,7 @@ class CurrencyConverterPresenter(
                     convertCoins = player.coins,
                     convertGems = 0,
                     enableConvert = false,
-                    exchangeRateCoins = 115
+                    exchangeRateCoins = Constants.GEM_COINS_PRICE
 
                 )
             }
