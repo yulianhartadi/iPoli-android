@@ -101,12 +101,12 @@ data class Inventory(
     val colorPacks: Set<ColorPack> = setOf(),
     val iconPacks: Set<IconPack> = setOf()
 ) {
-    fun addFood(food: Food): Inventory {
-        val quantity = this.food.let {
-            if (it.containsKey(food)) it[food]!! + 1 else 1
+    fun addFood(food: Food, quantity: Int = 1): Inventory {
+        val qty = this.food.let {
+            if (it.containsKey(food)) it[food]!! + 1 else quantity
         }
         return copy(
-            food = this.food + Pair(food, quantity)
+            food = this.food + Pair(food, qty)
         )
     }
 

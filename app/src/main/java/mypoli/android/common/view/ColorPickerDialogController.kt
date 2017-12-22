@@ -211,7 +211,7 @@ class ColorPickerDialogController :
                 view.buyColorPack.setOnClickListener {
                     send(ColorPickerIntent.BuyColorPack(ColorPack.BASIC))
                 }
-                view.colorPackPrice.text = ColorPack.BASIC.price.toString()
+                view.colorPackPrice.text = ColorPack.BASIC.gemPrice.toString()
             }
 
             SHOW_COLORS -> {

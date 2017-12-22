@@ -38,13 +38,15 @@ class FeedPetUseCaseSpek : Spek({
 
             it("should buy food and feed pet") {
                 val player = player().copy(
-                    gems = Food.BANANA.price,
+                    gems = Food.BANANA.price.gems,
                     inventory = Inventory()
                 )
 
                 val result = executeUseCase(player, Food.BANANA)
                 result.`should be instance of`(Result.PetFed::class)
-                (result as Result.PetFed).player.gems.`should be equal to`(0)
+                val newPlayer = (result as Result.PetFed).player
+                newPlayer.gems.`should be equal to`(0)
+                newPlayer.inventory.food[Food.BANANA]!!.`should be equal to`(Food.BANANA.price.quantity - 1)
             }
 
             it("should use food from inventory") {
@@ -62,14 +64,14 @@ class FeedPetUseCaseSpek : Spek({
 
             it("should buy new food and not use food from inventory") {
                 val player = player().copy(
-                    gems = Food.APPLE.price,
+                    gems = Food.APPLE.price.gems,
                     inventory = Inventory(mapOf(Food.BANANA to 1))
                 )
 
                 val result = executeUseCase(player, Food.APPLE)
                 result.`should be instance of`(Result.PetFed::class)
                 val newPlayer = (result as Result.PetFed).player
-                newPlayer.inventory.`should equal`(player.inventory)
+                newPlayer.inventory.`should equal`(player.inventory.addFood(Food.APPLE, Food.APPLE.price.quantity - 1))
             }
         }
 

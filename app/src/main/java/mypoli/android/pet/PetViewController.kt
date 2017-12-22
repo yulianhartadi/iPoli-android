@@ -7,8 +7,10 @@ import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
+import android.support.v4.widget.TextViewCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.TypedValue
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
@@ -151,6 +153,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             FOOD_TOO_EXPENSIVE -> {
+                CurrencyConverterController().showDialog(router, "currency-converter")
                 Toast.makeText(view.context, "Food too expensive", Toast.LENGTH_SHORT).show()
             }
 
@@ -366,7 +369,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         super.onDestroyView(view)
     }
 
-    data class PetFoodViewModel(@DrawableRes val image: Int, val price: Int, val food: Food, val quantity: Int = 0)
+    data class PetFoodViewModel(@DrawableRes val image: Int, val price: Food.Price, val food: Food, val quantity: Int = 0)
 
     inner class PetFoodAdapter(private var foodItems: List<PetFoodViewModel>) : RecyclerView.Adapter<PetFoodAdapter.ViewHolder>() {
         override fun getItemCount() = foodItems.size
@@ -376,11 +379,12 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             holder.itemView.foodImage.setImageResource(vm.image)
 
             val foodPrice = holder.itemView.foodPrice
+            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(foodPrice, 10, 14, 1, TypedValue.COMPLEX_UNIT_SP)
             if (vm.quantity > 0) {
                 foodPrice.text = "x" + vm.quantity.toString()
                 foodPrice.setCompoundDrawables(null, null, null, null)
             } else {
-                foodPrice.text = vm.price.toString()
+                foodPrice.text = "${vm.price.gems} = x${vm.price.quantity}"
                 foodPrice.setCompoundDrawablesWithIntrinsicBounds(
                     ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_gem_16dp),
                     null, null, null)

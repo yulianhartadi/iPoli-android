@@ -26,7 +26,7 @@ class FeedPetUseCase(private val playerRepository: PlayerRepository) : UseCase<P
         val player = playerRepository.find()
         requireNotNull(player)
 
-        if (player!!.gems < food.price && !player.inventory.hasFood(food)) {
+        if (player!!.gems < food.price.gems && !player.inventory.hasFood(food)) {
             return Result.TooExpensive
         }
 
@@ -49,7 +49,8 @@ class FeedPetUseCase(private val playerRepository: PlayerRepository) : UseCase<P
         } else {
             player.copy(
                 pet = newPet,
-                gems = player.gems - food.price
+                gems = player.gems - food.price.gems,
+                inventory = player.inventory.addFood(food, food.price.quantity - 1)
             )
         }
 

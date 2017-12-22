@@ -21,7 +21,7 @@ class PetPresenter(
     private val revivePetUseCase: RevivePetUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<PetViewState>, PetViewState, PetIntent>(
-    PetViewState(LOADING, reviveCost = Constants.REVIVE_PET_COST),
+    PetViewState(LOADING, reviveCost = Constants.REVIVE_PET_GEM_PRICE),
     coroutineContext
 ) {
     override fun reduceState(intent: PetIntent, state: PetViewState) =

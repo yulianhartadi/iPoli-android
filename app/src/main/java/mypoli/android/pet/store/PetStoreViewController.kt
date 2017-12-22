@@ -99,7 +99,7 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
             val avatar = vm.avatar
             view.petName.setText(avatar.petName)
             view.pet.setImageResource(avatar.image)
-            view.petPrice.text = PetAvatar.valueOf(avatar.name).price.toString()
+            view.petPrice.text = PetAvatar.valueOf(avatar.name).gemPrice.toString()
             view.petDescription.setText(avatar.description)
             val action = view.petAction
             val current = view.currentPet
