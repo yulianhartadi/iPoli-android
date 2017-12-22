@@ -12,11 +12,16 @@ import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import com.couchbase.lite.DataSource
+import com.couchbase.lite.Expression
+import com.couchbase.lite.Query
+import com.couchbase.lite.SelectResult
 import mypoli.android.common.di.ControllerModule
 import mypoli.android.common.view.playerTheme
 import mypoli.android.home.HomeViewController
 import mypoli.android.player.AuthProvider
 import mypoli.android.player.Player
+import mypoli.android.player.persistence.model.CouchbasePlayer
 import mypoli.android.player.persistence.model.ProviderType
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -30,6 +35,8 @@ import timber.log.Timber
 class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
 
     lateinit var router: Router
+
+    private val database by required { database }
 
     private val playerRepository by required { playerRepository }
     private val petStatsChangeScheduler by required { lowerPetStatsScheduler }
@@ -58,6 +65,19 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
 
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         inject(myPoliApp.controllerModule(this, router))
+
+
+//        val resultSet = Query.select(SelectResult.expression(Expression.meta().id))
+//            .from(DataSource.database(database))
+//            .where(Expression.property("type").equalTo(CouchbasePlayer.TYPE))
+//            .limit(1).run()
+//
+//        val playerId = resultSet.next().getString("_id")
+//        Timber.d("AAAA $playerId")
+//
+//        val doc = database.getDocument(playerId)
+//        doc.setInt("gems", 12)
+//        database.save(doc)
 
         if (playerRepository.find() == null) {
             val player = Player(
