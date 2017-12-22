@@ -1,7 +1,6 @@
 package mypoli.android
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -13,21 +12,15 @@ import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import com.couchbase.lite.DataSource
-import com.couchbase.lite.Expression
-import com.couchbase.lite.Query
-import com.couchbase.lite.SelectResult
 import mypoli.android.common.di.ControllerModule
 import mypoli.android.common.view.playerTheme
 import mypoli.android.home.HomeViewController
 import mypoli.android.player.AuthProvider
 import mypoli.android.player.Player
-import mypoli.android.player.persistence.model.CouchbasePlayer
 import mypoli.android.player.persistence.model.ProviderType
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
