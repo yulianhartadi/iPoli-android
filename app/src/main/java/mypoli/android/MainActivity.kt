@@ -1,6 +1,7 @@
 package mypoli.android
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -66,30 +67,27 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         inject(myPoliApp.controllerModule(this, router))
 
-
-//        val resultSet = Query.select(SelectResult.expression(Expression.meta().id))
-//            .from(DataSource.database(database))
-//            .where(Expression.property("type").equalTo(CouchbasePlayer.TYPE))
-//            .limit(1).run()
-//
-//        val playerId = resultSet.next().getString("_id")
-//        Timber.d("AAAA $playerId")
-//
-//        val doc = database.getDocument(playerId)
-//        doc.setInt("gems", 12)
-//        database.save(doc)
-
-        if (playerRepository.find() == null) {
+        if (!playerRepository.hasPlayer()) {
             val player = Player(
                 coins = 5000,
-                authProvider = AuthProvider(provider = ProviderType.ANONYMOUS.name)
+                authProvider = AuthProvider(provider = ProviderType.ANONYMOUS.name),
+                schemaVersion = Constants.SCHEMA_VERSION
             )
             playerRepository.save(player)
             petStatsChangeScheduler.schedule()
+        } else {
+            migrateIfNeeded()
         }
 
         if (!router.hasRootController()) {
             router.setRoot(RouterTransaction.with(HomeViewController()))
+        }
+    }
+
+    private fun migrateIfNeeded() {
+        val playerSchema = playerRepository.findSchemaVersion()
+        if (playerSchema == null || playerSchema != Constants.SCHEMA_VERSION) {
+            Migration(database).run()
         }
     }
 
