@@ -58,6 +58,9 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         }
 
         inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
+        inventoryToolbar.playerGems.setOnClickListener {
+            send(ShowCurrencyConverter)
+        }
 
         return view
     }
@@ -178,6 +181,9 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 view.foodList.visible = true
             }
 
+            SHOW_CURRENCY_CONVERTER -> {
+                CurrencyConverterController().showDialog(router, "currency-converter")
+            }
         }
     }
 
