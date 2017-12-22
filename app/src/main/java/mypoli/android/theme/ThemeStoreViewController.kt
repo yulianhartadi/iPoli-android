@@ -143,10 +143,10 @@ class ThemeStoreViewController(args: Bundle? = null) :
 
             view.themeName.setText(theme.title)
 
-            view.themePrice.text = if (vm.theme.price == 0) {
+            view.themePrice.text = if (vm.theme.gemPrice == 0) {
                 stringRes(R.string.free)
             } else {
-                vm.theme.price.toString()
+                vm.theme.gemPrice.toString()
             }
 
             val action = view.themeAction

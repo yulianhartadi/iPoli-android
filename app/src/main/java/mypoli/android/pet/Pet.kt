@@ -196,19 +196,19 @@ enum class PetMood {
     SAD, GOOD, HAPPY, AWESOME
 }
 
-enum class PetAvatar(val price: Int, val feedingCategory: FeedingCategory) {
-    SEAL(700, FeedingCategory.CARNIVOROUS),
-    DONKEY(500, FeedingCategory.HERBIVOROUS),
-    PIG(100, FeedingCategory.OMNIVOROUS),
-    ELEPHANT(600, FeedingCategory.HERBIVOROUS),
-    BEAVER(600, FeedingCategory.HERBIVOROUS),
-    CHICKEN(600, FeedingCategory.OMNIVOROUS),
-    BEAR(550, FeedingCategory.OMNIVOROUS),
-    LION(800, FeedingCategory.CARNIVOROUS),
-    CAT(400, FeedingCategory.CARNIVOROUS),
-    MONKEY(550, FeedingCategory.OMNIVOROUS),
-    DUCK(500, FeedingCategory.OMNIVOROUS),
-    ZEBRA(800, FeedingCategory.HERBIVOROUS);
+enum class PetAvatar(val gemPrice: Int, val feedingCategory: FeedingCategory) {
+    SEAL(7, FeedingCategory.CARNIVOROUS),
+    DONKEY(5, FeedingCategory.HERBIVOROUS),
+    PIG(1, FeedingCategory.OMNIVOROUS),
+    ELEPHANT(6, FeedingCategory.HERBIVOROUS),
+    BEAVER(6, FeedingCategory.HERBIVOROUS),
+    CHICKEN(6, FeedingCategory.OMNIVOROUS),
+    BEAR(5, FeedingCategory.OMNIVOROUS),
+    LION(8, FeedingCategory.CARNIVOROUS),
+    CAT(4, FeedingCategory.CARNIVOROUS),
+    MONKEY(5, FeedingCategory.OMNIVOROUS),
+    DUCK(5, FeedingCategory.OMNIVOROUS),
+    ZEBRA(8, FeedingCategory.HERBIVOROUS);
 
     enum class FeedingCategory { OMNIVOROUS, CARNIVOROUS, HERBIVOROUS }
 }

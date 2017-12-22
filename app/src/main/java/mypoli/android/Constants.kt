@@ -158,7 +158,7 @@ interface Constants {
 
         val XP_TO_PET_HP_RATIO = 13.2
         val XP_TO_PET_MOOD_RATIO = 11.1
-        val REVIVE_PET_COST = 300
+        val REVIVE_PET_GEM_PRICE = 3
         val PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index"
         val RANDOM_SEED = 42 // duh!
         val MAX_TIMES_A_DAY_COUNT = 8

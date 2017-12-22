@@ -232,7 +232,7 @@ class IconPickerDialogController :
         view.buyIconPack.setOnClickListener {
             send(IconPickerIntent.BuyIconPack(IconPack.BASIC))
         }
-        view.iconPackPrice.text = IconPack.BASIC.price.toString()
+        view.iconPackPrice.text = IconPack.BASIC.gemPrice.toString()
     }
 
     data class IconViewModel(val icon: Icon, val isSelected: Boolean, val isLocked: Boolean)

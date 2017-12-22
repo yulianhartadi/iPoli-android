@@ -18,12 +18,12 @@ class BuyIconPackUseCase(private val playerRepository: PlayerRepository) : UseCa
         requireNotNull(player)
         require(!player!!.hasIconPack(iconPack))
 
-        if (player.gems < iconPack.price) {
+        if (player.gems < iconPack.gemPrice) {
             return Result.TooExpensive
         }
 
         val newPlayer = player.copy(
-            gems = player.gems - iconPack.price,
+            gems = player.gems - iconPack.gemPrice,
             inventory = player.inventory.addIconPack(iconPack)
         )
 
