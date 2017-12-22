@@ -73,6 +73,7 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
             }
 
             PET_TOO_EXPENSIVE -> {
+                CurrencyConverterController().showDialog(router, "currency-converter")
                 Toast.makeText(view.context, "Pet too expensive", Toast.LENGTH_SHORT).show()
             }
 
