@@ -1,6 +1,6 @@
 package mypoli.android.player.persistence
 
-import com.couchbase.lite.Database
+import com.couchbase.lite.*
 import mypoli.android.common.persistence.BaseCouchbaseRepository
 import mypoli.android.common.persistence.Repository
 import mypoli.android.pet.Food
@@ -20,9 +20,31 @@ import kotlin.coroutines.experimental.CoroutineContext
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 8/2/17.
  */
-interface PlayerRepository : Repository<Player>
+interface PlayerRepository : Repository<Player> {
+    fun hasPlayer(): Boolean
+    fun findSchemaVersion(): Int?
+}
 
 class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineContext) : BaseCouchbaseRepository<Player, CouchbasePlayer>(database, coroutineContext), PlayerRepository {
+
+    override fun findSchemaVersion(): Int? {
+        val resultSet = Query.select(SelectResult.expression(Expression.property("schemaVersion")))
+            .from(DataSource.database(database))
+            .where(Expression.property("type").equalTo(CouchbasePlayer.TYPE))
+            .limit(1).run()
+
+        return resultSet.next()?.getInt("schemaVersion")
+    }
+
+    override fun hasPlayer(): Boolean {
+        val resultSet = Query.select(SelectResult.expression(Expression.meta().id))
+            .from(DataSource.database(database))
+            .where(Expression.property("type").equalTo(CouchbasePlayer.TYPE))
+            .limit(1).run()
+        return resultSet.next() != null
+    }
+
+
     override val modelType = CouchbasePlayer.TYPE
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Player {
@@ -62,6 +84,7 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
 
         return Player(
             id = cp.id,
+            schemaVersion = cp.schemaVersion,
             level = cp.level,
             coins = cp.coins,
             gems = cp.gems,
@@ -79,6 +102,7 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
         CouchbasePlayer().also {
             it.id = entity.id
             it.type = CouchbasePlayer.TYPE
+            it.schemaVersion = entity.schemaVersion
             it.level = entity.level
             it.coins = entity.coins
             it.gems = entity.gems

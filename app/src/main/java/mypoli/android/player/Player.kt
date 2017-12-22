@@ -12,6 +12,7 @@ import org.threeten.bp.LocalDateTime
 
 data class Player(
     override val id: String = "",
+    val schemaVersion: Int = Constants.SCHEMA_VERSION,
     val level: Int = 1,
     val coins: Int = Constants.DEFAULT_PLAYER_COINS,
     val gems:Int = 0,
