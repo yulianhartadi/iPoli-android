@@ -2,7 +2,6 @@ package mypoli.android
 
 import com.couchbase.lite.*
 import mypoli.android.player.persistence.model.CouchbasePlayer
-import timber.log.Timber
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -17,12 +16,11 @@ class Migration(private val database: Database) {
             .limit(1).run()
 
         val playerId = resultSet.next().getString("_id")
-        Timber.d("AAAA $playerId")
-
         val doc = database.getDocument(playerId)
+
         if (!doc.contains("schemaVersion")) {
             doc.setInt("schemaVersion", Constants.SCHEMA_VERSION)
-            doc.setInt("gems", 12)
+            doc.setInt("gems", 0)
             database.save(doc)
         }
 
