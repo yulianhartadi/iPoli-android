@@ -18,6 +18,7 @@ object TestUtil {
     fun player() = Player(
         level = 1,
         coins = 10,
+        gems = 0,
         experience = 10,
         authProvider = AuthProvider(),
         pet = Pet(

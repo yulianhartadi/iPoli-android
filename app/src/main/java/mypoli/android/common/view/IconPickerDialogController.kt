@@ -1,6 +1,9 @@
 package mypoli.android.common.view
 
-import android.animation.*
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.transition.TransitionManager
@@ -13,6 +16,11 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.widget.Toast
 import com.mikepenz.iconics.IconicsDrawable
+import kotlinx.android.synthetic.main.dialog_icon_picker.view.*
+import kotlinx.android.synthetic.main.item_icon_picker.view.*
+import kotlinx.android.synthetic.main.view_dialog_header.view.*
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import mypoli.android.R
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.Intent
@@ -26,11 +34,6 @@ import mypoli.android.player.usecase.BuyIconPackUseCase
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
 import mypoli.android.quest.Icon
 import mypoli.android.quest.IconPack
-import kotlinx.android.synthetic.main.dialog_icon_picker.view.*
-import kotlinx.android.synthetic.main.item_icon_picker.view.*
-import kotlinx.android.synthetic.main.view_dialog_header.view.*
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -70,8 +73,8 @@ class IconPickerDialogPresenter(
         IconPickerViewState(LOADING),
         coroutineContext
     ) {
-    override fun reduceState(intent: IconPickerIntent, state: IconPickerViewState): IconPickerViewState {
-        return when (intent) {
+    override fun reduceState(intent: IconPickerIntent, state: IconPickerViewState) =
+        when (intent) {
             is IconPickerIntent.LoadData -> {
                 launch {
                     listenForPlayerChangesUseCase.execute(Unit).consumeEach {
@@ -116,7 +119,6 @@ class IconPickerDialogPresenter(
                 )
             }
         }
-    }
 
     private fun createViewModels(state: IconPickerViewState, iconPacks: Set<IconPack>): List<IconPickerDialogController.IconViewModel> {
         return Icon.values().map {
@@ -213,6 +215,7 @@ class IconPickerDialogController :
             }
 
             ICON_PACK_TOO_EXPENSIVE -> {
+                CurrencyConverterController().showDialog(router, "currency-converter")
                 Toast.makeText(view.context, stringRes(R.string.icon_pack_not_enough_coins), Toast.LENGTH_SHORT).show()
             }
         }
@@ -229,7 +232,7 @@ class IconPickerDialogController :
         view.buyIconPack.setOnClickListener {
             send(IconPickerIntent.BuyIconPack(IconPack.BASIC))
         }
-        view.iconPackPrice.text = IconPack.BASIC.price.toString()
+        view.iconPackPrice.text = IconPack.BASIC.gemPrice.toString()
     }
 
     data class IconViewModel(val icon: Icon, val isSelected: Boolean, val isLocked: Boolean)

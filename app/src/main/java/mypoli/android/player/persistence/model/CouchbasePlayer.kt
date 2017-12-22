@@ -10,8 +10,10 @@ import mypoli.android.common.persistence.CouchbasePersistedModel
 data class CouchbasePlayer(override val map: MutableMap<String, Any?> = mutableMapOf()) : CouchbasePersistedModel {
     override var type: String by map
     override var id: String by map
+    var schemaVersion: Int by map
     var level: Int by map
     var coins: Int by map
+    var gems: Int by map
     var experience: Long by map
     var authProvider: MutableMap<String, Any?> by map
     var avatarCode: Int by map

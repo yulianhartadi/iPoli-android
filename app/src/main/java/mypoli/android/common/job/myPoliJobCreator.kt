@@ -3,6 +3,7 @@ package mypoli.android.common.job
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobCreator
 import mypoli.android.ReminderNotificationJob
+import mypoli.android.pet.LowerPetStatsJob
 import mypoli.android.player.LevelUpJob
 import mypoli.android.quest.QuestCompleteJob
 import mypoli.android.rate.RatePopupJob
@@ -18,6 +19,7 @@ class myPoliJobCreator : JobCreator {
             QuestCompleteJob.TAG -> QuestCompleteJob()
             LevelUpJob.TAG -> LevelUpJob()
             RatePopupJob.TAG -> RatePopupJob()
+            LowerPetStatsJob.TAG -> LowerPetStatsJob()
             else -> null
         }
 }

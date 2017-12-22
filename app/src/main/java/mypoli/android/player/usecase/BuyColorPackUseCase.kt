@@ -18,12 +18,12 @@ class BuyColorPackUseCase(private val playerRepository: PlayerRepository) : UseC
         requireNotNull(player)
         require(!player!!.hasColorPack(colorPack))
 
-        if (player.coins < colorPack.price) {
+        if (player.gems < colorPack.gemPrice) {
             return BuyColorPackUseCase.Result.TooExpensive
         }
 
         val newPlayer = player.copy(
-            coins = player.coins - colorPack.price,
+            gems = player.gems - colorPack.gemPrice,
             inventory = player.inventory.addColorPack(colorPack)
         )
 

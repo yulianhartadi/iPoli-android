@@ -7,8 +7,10 @@ import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
+import android.support.v4.widget.TextViewCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.TypedValue
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
@@ -18,15 +20,15 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
+import kotlinx.android.synthetic.main.controller_pet.view.*
+import kotlinx.android.synthetic.main.item_pet_food.view.*
+import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
 import mypoli.android.pet.PetViewState.StateType.*
 import mypoli.android.pet.store.PetStoreViewController
-import kotlinx.android.synthetic.main.controller_pet.view.*
-import kotlinx.android.synthetic.main.item_pet_food.view.*
-import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import space.traversal.kapsule.required
 
 /**
@@ -58,6 +60,9 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         }
 
         inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
+        inventoryToolbar.playerGems.setOnClickListener {
+            send(ShowCurrencyConverter)
+        }
 
         return view
     }
@@ -109,7 +114,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 if (!state.isDead) {
                     playEnterAnimation(view)
                 }
-                inventoryToolbar.playerCoins.text = state.playerCoins.toString()
+                inventoryToolbar.playerGems.text = state.playerGems.toString()
             }
             FOOD_LIST_SHOWN -> {
                 playShowFoodListAnimation(view)
@@ -148,12 +153,13 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             FOOD_TOO_EXPENSIVE -> {
+                CurrencyConverterController().showDialog(router, "currency-converter")
                 Toast.makeText(view.context, "Food too expensive", Toast.LENGTH_SHORT).show()
             }
 
             PET_CHANGED -> {
 
-                inventoryToolbar.playerCoins.text = state.playerCoins.toString()
+                inventoryToolbar.playerGems.text = state.playerGems.toString()
 
                 (view.foodList.adapter as PetFoodAdapter).updateAll(state.foodViewModels)
 
@@ -178,6 +184,9 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 view.foodList.visible = true
             }
 
+            SHOW_CURRENCY_CONVERTER -> {
+                CurrencyConverterController().showDialog(router, "currency-converter")
+            }
         }
     }
 
@@ -360,7 +369,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         super.onDestroyView(view)
     }
 
-    data class PetFoodViewModel(@DrawableRes val image: Int, val price: Int, val food: Food, val quantity: Int = 0)
+    data class PetFoodViewModel(@DrawableRes val image: Int, val price: Food.Price, val food: Food, val quantity: Int = 0)
 
     inner class PetFoodAdapter(private var foodItems: List<PetFoodViewModel>) : RecyclerView.Adapter<PetFoodAdapter.ViewHolder>() {
         override fun getItemCount() = foodItems.size
@@ -370,13 +379,14 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             holder.itemView.foodImage.setImageResource(vm.image)
 
             val foodPrice = holder.itemView.foodPrice
+            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(foodPrice, 10, 14, 1, TypedValue.COMPLEX_UNIT_SP)
             if (vm.quantity > 0) {
                 foodPrice.text = "x" + vm.quantity.toString()
                 foodPrice.setCompoundDrawables(null, null, null, null)
             } else {
-                foodPrice.text = vm.price.toString()
+                foodPrice.text = "${vm.price.gems} = x${vm.price.quantity}"
                 foodPrice.setCompoundDrawablesWithIntrinsicBounds(
-                    ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_life_coin_16dp),
+                    ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_gem_16dp),
                     null, null, null)
             }
             holder.itemView.setOnClickListener {

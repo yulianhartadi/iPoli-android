@@ -5,7 +5,6 @@
     <string name="title_edit_quest">Edit quest</string>
     <string name="quest_deleted">Quest deleted</string>
     <string name="repeating_quest_deleted">Repeating Quest deleted</string>
-    <string name="done">Done</string>
     <string name="quest_complete">Quest complete</string>
     <string name="quest_complete_with_reward">Quest complete! +%1$d XP +%2$d coins.</string>
     <string name="achievement_with_reward">%1$s +%2$d XP +%3$d coins.</string>
@@ -1003,6 +1002,7 @@
     <string name="icon_picker_title">Choose icon</string>
     <string name="no_icon">No icon</string>
     <string name="icon_pack_not_enough_coins">Icon Pack too expensive</string>
+    <string name="iconvert_gems_not_enough_coins">Gems too expensive</string>
     <string name="buy_color_pack">Unlock all colors</string>
     <string name="buy_icon_pack">Unlock all icons</string>
     <string name="unlock_color_pack_title">Buy the Color Pack</string>
@@ -1016,6 +1016,9 @@
     <string name="dialog_later">later</string>
     <string name="dialog_lets_go">Let\'s go</string>
     <string name="thank_you">Thank you!</string>
+    <string name="currency_converter_title">Get some Gems</string>
+    <string name="convert">Convert</string>
+    <string name="done">Done</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

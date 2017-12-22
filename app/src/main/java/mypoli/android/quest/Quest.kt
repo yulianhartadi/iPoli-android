@@ -30,9 +30,9 @@ data class Category(
     val color: Color
 )
 
-enum class ColorPack(val price: Int) {
+enum class ColorPack(val gemPrice: Int) {
     FREE(0),
-    BASIC(400)
+    BASIC(4)
 }
 
 enum class Color(val pack: ColorPack) {
@@ -89,9 +89,9 @@ enum class Icon(val pack: IconPack) {
     CAMERA(IconPack.BASIC)
 }
 
-enum class IconPack(val price: Int) {
+enum class IconPack(val gemPrice: Int) {
     FREE(0),
-    BASIC(600)
+    BASIC(6)
 }
 
 data class Quest(

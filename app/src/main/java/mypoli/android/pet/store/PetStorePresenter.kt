@@ -1,16 +1,17 @@
 package mypoli.android.pet.store
 
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.pet.AndroidPetAvatar
 import mypoli.android.pet.PetAvatar
+import mypoli.android.pet.store.PetStoreIntent.*
 import mypoli.android.pet.store.PetStoreViewState.StateType.*
 import mypoli.android.pet.usecase.BuyPetUseCase
 import mypoli.android.pet.usecase.ChangePetUseCase
 import mypoli.android.player.Player
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -28,10 +29,10 @@ class PetStorePresenter(
 ) {
     override fun reduceState(intent: PetStoreIntent, state: PetStoreViewState) =
         when (intent) {
-            is LoadDataIntent -> {
+            is PetStoreIntent.LoadData -> {
                 launch {
                     listenForPlayerChangesUseCase.execute(Unit).consumeEach {
-                        sendChannel.send(ChangePlayerIntent(it))
+                        sendChannel.send(ChangePlayer(it))
                     }
                 }
                 state.copy(
@@ -39,15 +40,15 @@ class PetStorePresenter(
                 )
             }
 
-            is ChangePlayerIntent -> {
+            is ChangePlayer -> {
                 state.copy(
                     type = PLAYER_CHANGED,
-                    playerCoins = intent.player.coins,
+                    playerGems = intent.player.gems,
                     petViewModels = createPetViewModels(intent.player)
                 )
             }
 
-            is BuyPetIntent -> {
+            is BuyPet -> {
                 val result = buyPetUseCase.execute(intent.pet)
                 when (result) {
                     is BuyPetUseCase.Result.TooExpensive -> state.copy(
@@ -59,10 +60,16 @@ class PetStorePresenter(
                 }
             }
 
-            is ChangePetIntent -> {
+            is ChangePet -> {
                 changePetUseCase.execute(intent.pet)
                 state.copy(
                     type = PET_CHANGED
+                )
+            }
+
+            is ShowCurrencyConverter -> {
+                state.copy(
+                    type = SHOW_CURRENCY_CONVERTER
                 )
             }
         }

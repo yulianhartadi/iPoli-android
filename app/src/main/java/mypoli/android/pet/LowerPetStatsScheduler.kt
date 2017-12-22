@@ -3,6 +3,7 @@ package mypoli.android.pet
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
+import mypoli.android.Constants
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.di.ControllerModule
 import mypoli.android.common.di.SimpleModule
@@ -39,9 +40,9 @@ class LowerPetStatsJob : Job(), Injects<ControllerModule> {
 class AndroidJobLowerPetStatsScheduler : LowerPetStatsScheduler {
     override fun schedule() {
         val currentTime = Time.now()
-        val morning = Time.atHours(9)
-        val afternoon = Time.atHours(14)
-        val evening = Time.atHours(19)
+        val morning = Constants.CHANGE_PET_STATS_MORNING_TIME
+        val afternoon = Constants.CHANGE_PET_STATS_AFTERNOON_TIME
+        val evening = Constants.CHANGE_PET_STATS_EVENING_TIME
 
         val lowerStatsTime = when {
             currentTime.isBetween(morning - 30, afternoon - 1) -> afternoon

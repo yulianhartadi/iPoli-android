@@ -44,6 +44,10 @@ class ThemeStoreViewController(args: Bundle? = null) :
         inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
         inventoryToolbar.toolbarTitle.setText(R.string.themes)
 
+        inventoryToolbar.playerGems.setOnClickListener {
+            send(ShowCurrencyConverter)
+        }
+
         view.themePager.clipToPadding = false
         view.themePager.pageMargin = ViewUtils.dpToPx(16f, view.context).toInt()
         return view
@@ -76,7 +80,7 @@ class ThemeStoreViewController(args: Bundle? = null) :
             }
 
             PLAYER_CHANGED -> {
-                inventoryToolbar.playerCoins.text = state.playerCoins.toString()
+                inventoryToolbar.playerGems.text = state.playerGems.toString()
                 (view.themePager.adapter as ThemePagerAdapter).updateAll(state.viewModels)
             }
 
@@ -97,7 +101,12 @@ class ThemeStoreViewController(args: Bundle? = null) :
             }
 
             THEME_TOO_EXPENSIVE -> {
+                CurrencyConverterController().showDialog(router, "currency-converter")
                 Toast.makeText(view.context, "Theme too expensive", Toast.LENGTH_SHORT).show()
+            }
+
+            SHOW_CURRENCY_CONVERTER -> {
+                CurrencyConverterController().showDialog(router, "currency-converter")
             }
         }
     }
@@ -134,10 +143,10 @@ class ThemeStoreViewController(args: Bundle? = null) :
 
             view.themeName.setText(theme.title)
 
-            view.themePrice.text = if (vm.theme.price == 0) {
+            view.themePrice.text = if (vm.theme.gemPrice == 0) {
                 stringRes(R.string.free)
             } else {
-                vm.theme.price.toString()
+                vm.theme.gemPrice.toString()
             }
 
             val action = view.themeAction

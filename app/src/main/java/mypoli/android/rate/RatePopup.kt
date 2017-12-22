@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import com.amplitude.api.Amplitude
-import kotlinx.android.synthetic.main.dialog_rate.view.*
+import kotlinx.android.synthetic.main.popup_rate.view.*
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.Constants
@@ -97,7 +97,7 @@ class RatePopup :
     MviPopup<RateViewState, RatePopup, RatePresenter, RateIntent>() {
 
     override fun createView(inflater: LayoutInflater): View {
-        val view = inflater.inflate(R.layout.dialog_rate, null)
+        val view = inflater.inflate(R.layout.popup_rate, null)
         changeTitle(view, R.string.rate_dialog_initial_title)
         view.positive.setText(R.string.dialog_yes)
         view.negative.setText(R.string.dialog_no)
