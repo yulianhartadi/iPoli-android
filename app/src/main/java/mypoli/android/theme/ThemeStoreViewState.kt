@@ -15,14 +15,21 @@ object LoadDataIntent : ThemeStoreIntent()
 data class ChangePlayerIntent(val player: Player) : ThemeStoreIntent()
 data class BuyThemeIntent(val theme : Theme) : ThemeStoreIntent()
 data class ChangeThemeIntent(val theme : Theme) : ThemeStoreIntent()
+object ShowCurrencyConverter : ThemeStoreIntent()
 
 data class ThemeStoreViewState(
     val type: StateType = StateType.DATA_LOADED,
     val theme: Theme? = null,
-    val playerCoins: Int = 0,
+    val playerGems: Int = 0,
     val viewModels: List<ThemeViewModel> = listOf()
 ) : ViewState {
     enum class StateType {
-        LOADING, DATA_LOADED, PLAYER_CHANGED, THEME_CHANGED, THEME_BOUGHT, THEME_TOO_EXPENSIVE
+        LOADING,
+        DATA_LOADED,
+        PLAYER_CHANGED,
+        THEME_CHANGED,
+        THEME_BOUGHT,
+        THEME_TOO_EXPENSIVE,
+        SHOW_CURRENCY_CONVERTER
     }
 }

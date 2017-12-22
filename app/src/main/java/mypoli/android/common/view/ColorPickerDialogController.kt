@@ -18,6 +18,10 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.widget.ImageView
 import android.widget.Toast
+import kotlinx.android.synthetic.main.dialog_color_picker.view.*
+import kotlinx.android.synthetic.main.view_dialog_header.view.*
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import mypoli.android.R
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.Intent
@@ -31,10 +35,6 @@ import mypoli.android.player.usecase.BuyColorPackUseCase
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
 import mypoli.android.quest.Color
 import mypoli.android.quest.ColorPack
-import kotlinx.android.synthetic.main.dialog_color_picker.view.*
-import kotlinx.android.synthetic.main.view_dialog_header.view.*
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -211,7 +211,7 @@ class ColorPickerDialogController :
                 view.buyColorPack.setOnClickListener {
                     send(ColorPickerIntent.BuyColorPack(ColorPack.BASIC))
                 }
-                view.colorPackPrice.text = ColorPack.BASIC.price.toString()
+                view.colorPackPrice.text = ColorPack.BASIC.gemPrice.toString()
             }
 
             SHOW_COLORS -> {
@@ -233,6 +233,7 @@ class ColorPickerDialogController :
             }
 
             COLOR_PACK_TOO_EXPENSIVE -> {
+                CurrencyConverterController().showDialog(router, "currency-converter")
                 Toast.makeText(view.context, stringRes(R.string.color_pack_not_enough_coins), Toast.LENGTH_SHORT).show()
             }
         }

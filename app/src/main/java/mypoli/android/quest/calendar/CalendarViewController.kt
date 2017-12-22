@@ -266,7 +266,7 @@ class CalendarViewController(args: Bundle? = null) :
                 val animator = ObjectAnimator.ofInt(levelProgress, "progress", levelProgress.progress, state.progress)
                 animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
                 animator.start()
-                calendarToolbar.playerCoins.text = state.coins.toString()
+                calendarToolbar.playerGems.text = state.coins.toString()
             }
 
             LEVEL_CHANGED -> {
@@ -287,7 +287,7 @@ class CalendarViewController(args: Bundle? = null) :
                 levelProgress.max = state.maxProgress
                 levelProgress.progress = state.progress
                 calendarToolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
-                calendarToolbar.playerCoins.text = state.coins.toString()
+                calendarToolbar.playerGems.text = state.coins.toString()
             }
 
             CALENDAR_DATE_CHANGED -> {

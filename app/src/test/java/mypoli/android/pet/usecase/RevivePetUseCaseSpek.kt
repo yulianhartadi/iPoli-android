@@ -40,7 +40,7 @@ class RevivePetUseCaseSpek : Spek({
         it("should not revive when not enough coins") {
             val pet = TestUtil.player().pet
             val player = TestUtil.player().copy(
-                coins = Constants.REVIVE_PET_COST - 1,
+                coins = Constants.REVIVE_PET_GEM_PRICE - 1,
                 pet = pet.copy(
                     healthPoints = 0,
                     moodPoints = 0
@@ -53,7 +53,7 @@ class RevivePetUseCaseSpek : Spek({
         it("should revive pet") {
             val pet = TestUtil.player().pet
             val player = TestUtil.player().copy(
-                coins = Constants.REVIVE_PET_COST,
+                coins = Constants.REVIVE_PET_GEM_PRICE,
                 pet = pet.copy(
                     healthPoints = 0,
                     moodPoints = 0

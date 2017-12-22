@@ -12,8 +12,10 @@ import org.threeten.bp.LocalDateTime
 
 data class Player(
     override val id: String = "",
+    val schemaVersion: Int = Constants.SCHEMA_VERSION,
     val level: Int = 1,
     val coins: Int = Constants.DEFAULT_PLAYER_COINS,
+    val gems:Int = 0,
     val experience: Long = Constants.DEFAULT_PLAYER_XP,
     val authProvider: AuthProvider,
     val avatar: Avatar = Avatar.IPOLI_CLASSIC,
@@ -99,12 +101,12 @@ data class Inventory(
     val colorPacks: Set<ColorPack> = setOf(),
     val iconPacks: Set<IconPack> = setOf()
 ) {
-    fun addFood(food: Food): Inventory {
-        val quantity = this.food.let {
-            if (it.containsKey(food)) it[food]!! + 1 else 1
+    fun addFood(food: Food, quantity: Int = 1): Inventory {
+        val qty = this.food.let {
+            if (it.containsKey(food)) it[food]!! + 1 else quantity
         }
         return copy(
-            food = this.food + Pair(food, quantity)
+            food = this.food + Pair(food, qty)
         )
     }
 

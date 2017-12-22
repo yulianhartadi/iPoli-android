@@ -4,6 +4,7 @@ import mypoli.android.Constants
 import mypoli.android.common.UseCase
 import mypoli.android.common.datetime.Time
 import mypoli.android.pet.Pet
+import mypoli.android.player.Player
 import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.quest.Quest
 import mypoli.android.quest.data.persistence.QuestRepository
@@ -20,17 +21,19 @@ class LowerPetStatsUseCase(
     private val randomSeed: Long = System.currentTimeMillis()
 ) : UseCase<Time, Pet> {
 
+    private lateinit var player: Player
+
     override fun execute(parameters: Time): Pet {
-        val player = playerRepository.find()
-        requireNotNull(player)
-        val pet = player!!.pet
+        val p = playerRepository.find()
+        requireNotNull(p)
+        player = p!!
 
         if (parameters == Constants.CHANGE_PET_STATS_MORNING_TIME) {
 
             val healthPenalty = MORNING_HEALTH_POINTS_PENALTIES[Random(randomSeed).nextInt(MORNING_HEALTH_POINTS_PENALTIES.size)]
             val moodPenalty = MORNING_MOOD_POINTS_PENALTIES[Random(randomSeed).nextInt(MORNING_MOOD_POINTS_PENALTIES.size)]
 
-            return pet.removeHealthAndMoodPoints(healthPenalty, moodPenalty)
+            return savePlayer(healthPenalty, moodPenalty)
         }
 
         val (intervalStart, intervalEnd) = if (parameters == Constants.CHANGE_PET_STATS_AFTERNOON_TIME) {
@@ -48,23 +51,29 @@ class LowerPetStatsUseCase(
         val intervalDuration = intervalStart.minutesTo(intervalEnd)
 
         if (totalDuration >= HIGH_PRODUCTIVE_TIME_COEF * intervalDuration) {
-            return pet
+            return player.pet
         }
 
         if (totalDuration >= MEDIUM_PRODUCTIVE_TIME_COEF * intervalDuration) {
-            return pet.removeHealthAndMoodPoints(LOW_PENALTY, LOW_PENALTY)
+            return savePlayer(LOW_PENALTY, LOW_PENALTY)
         }
 
         if (totalDuration >= LOW_PRODUCTIVE_TIME_COEF * intervalDuration) {
-            return pet.removeHealthAndMoodPoints(MEDIUM_PENALTY, MEDIUM_PENALTY)
+            return savePlayer(MEDIUM_PENALTY, MEDIUM_PENALTY)
         }
 
         if (totalDuration > 0) {
-            return pet.removeHealthAndMoodPoints(HIGH_PENALTY, HIGH_PENALTY)
+            return savePlayer(HIGH_PENALTY, HIGH_PENALTY)
         }
 
-        return pet.removeHealthAndMoodPoints(MAX_PENALTY, MAX_PENALTY)
+        return savePlayer(MAX_PENALTY, MAX_PENALTY)
     }
+
+    private fun savePlayer(healthPenalty: Int, moodPenalty: Int) =
+        playerRepository.save(player.copy(
+            pet = player.pet.removeHealthAndMoodPoints(healthPenalty, moodPenalty)
+        )).pet
+
 
     companion object {
         val MORNING_HEALTH_POINTS_PENALTIES = intArrayOf(3, 4, 5, 6, 7)

@@ -89,6 +89,7 @@ interface Constants {
         val DEFAULT_PLAYER_XP: Long = 20
         val DEFAULT_PLAYER_LEVEL = 1
         val DEFAULT_PLAYER_COINS: Int = 10
+        val GEM_COINS_PRICE = 100
         //        val DEFAULT_PLAYER_AVATAR = Avatar.IPOLI_CLASSIC
 //        val DEFAULT_PLAYER_PRODUCTIVE_TIMES: Set<TimeOfDay> = HashSet<Any>(listOf(TimeOfDay.MORNING))
         val DEFAULT_PLAYER_WORK_START_MINUTE = 10 * 60
@@ -157,11 +158,11 @@ interface Constants {
 
         val XP_TO_PET_HP_RATIO = 13.2
         val XP_TO_PET_MOOD_RATIO = 11.1
-        val REVIVE_PET_COST = 300
+        val REVIVE_PET_GEM_PRICE = 3
         val PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index"
         val RANDOM_SEED = 42 // duh!
         val MAX_TIMES_A_DAY_COUNT = 8
-        val SCHEMA_VERSION = 9
+        val SCHEMA_VERSION = 1
 
         val MAX_PENALTY_COEFFICIENT = 0.5
         val NO_QUESTS_PENALTY_COEFFICIENT = 0.3

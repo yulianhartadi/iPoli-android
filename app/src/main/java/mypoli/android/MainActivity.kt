@@ -21,7 +21,6 @@ import mypoli.android.player.persistence.model.ProviderType
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -30,6 +29,8 @@ import timber.log.Timber
 class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
 
     lateinit var router: Router
+
+    private val database by required { database }
 
     private val playerRepository by required { playerRepository }
     private val petStatsChangeScheduler by required { lowerPetStatsScheduler }
@@ -59,16 +60,26 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         inject(myPoliApp.controllerModule(this, router))
 
-        if (playerRepository.find() == null) {
+        if (!playerRepository.hasPlayer()) {
             val player = Player(
-                authProvider = AuthProvider(provider = ProviderType.ANONYMOUS.name)
+                authProvider = AuthProvider(provider = ProviderType.ANONYMOUS.name),
+                schemaVersion = Constants.SCHEMA_VERSION
             )
             playerRepository.save(player)
             petStatsChangeScheduler.schedule()
+        } else {
+            migrateIfNeeded()
         }
 
         if (!router.hasRootController()) {
             router.setRoot(RouterTransaction.with(HomeViewController()))
+        }
+    }
+
+    private fun migrateIfNeeded() {
+        val playerSchema = playerRepository.findSchemaVersion()
+        if (playerSchema == null || playerSchema != Constants.SCHEMA_VERSION) {
+            Migration(database).run()
         }
     }
 

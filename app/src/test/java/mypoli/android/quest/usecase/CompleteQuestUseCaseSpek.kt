@@ -1,6 +1,7 @@
 package mypoli.android.quest.usecase
 
 import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.reset
 import mypoli.android.TestUtil
@@ -11,6 +12,8 @@ import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.player.usecase.RewardPlayerUseCase
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.ReminderScheduler
+import mypoli.android.quest.*
+import mypoli.android.rate.RatePopupScheduler
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -48,6 +51,7 @@ class CompleteQuestUseCaseSpek : Spek({
 
         val questCompleteScheduler = mock<QuestCompleteScheduler>()
         val reminderScheduler = mock<ReminderScheduler>()
+        val ratePopupScheduler = mock<RatePopupScheduler>()
         val rewardPlayerUseCase = mock<RewardPlayerUseCase>()
 
         val playerRepo = mock<PlayerRepository> {
@@ -59,6 +63,7 @@ class CompleteQuestUseCaseSpek : Spek({
             playerRepo,
             reminderScheduler,
             questCompleteScheduler,
+            ratePopupScheduler,
             rewardPlayerUseCase,
             42
         )
@@ -116,6 +121,7 @@ class CompleteQuestUseCaseSpek : Spek({
                 playerRepo,
                 reminderScheduler,
                 questCompleteScheduler,
+                ratePopupScheduler,
                 rewardPlayerUseCase,
                 4096
             )
@@ -132,6 +138,7 @@ class CompleteQuestUseCaseSpek : Spek({
                 playerRepo,
                 reminderScheduler,
                 questCompleteScheduler,
+                ratePopupScheduler,
                 rewardPlayerUseCase,
                 4096
             )
@@ -155,6 +162,7 @@ class CompleteQuestUseCaseSpek : Spek({
                 playerRepo,
                 reminderScheduler,
                 questCompleteScheduler,
+                ratePopupScheduler,
                 rewardPlayerUseCaseMock
             )
 
