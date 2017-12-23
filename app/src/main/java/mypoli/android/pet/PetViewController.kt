@@ -384,7 +384,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 foodPrice.text = "x" + vm.quantity.toString()
                 foodPrice.setCompoundDrawables(null, null, null, null)
             } else {
-                foodPrice.text = "${vm.price.gems} = x${vm.price.quantity}"
+                foodPrice.text = "= x${vm.price.quantity}"
                 foodPrice.setCompoundDrawablesWithIntrinsicBounds(
                     ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_gem_16dp),
                     null, null, null)
