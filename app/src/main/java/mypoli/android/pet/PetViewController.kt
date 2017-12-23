@@ -4,6 +4,9 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.app.WallpaperManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Bundle
 import android.support.annotation.DrawableRes
 import android.support.constraint.ConstraintLayout
@@ -31,6 +34,7 @@ import mypoli.android.common.view.*
 import mypoli.android.pet.PetViewState.StateType.*
 import mypoli.android.pet.store.PetStoreViewController
 import space.traversal.kapsule.required
+
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -236,8 +240,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     }
 
     private fun playItemFabsAnimation(view: View, reverse: Boolean = false) {
-        val startValue = if(reverse) 1f else 0f
-        val endValue = if(reverse) 0f else 1f
+        val startValue = if (reverse) 1f else 0f
+        val endValue = if (reverse) 0f else 1f
 
         val anims = listOf<FloatingActionButton>(
             view.fabBodyItems,
@@ -254,9 +258,41 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
         val anim = AnimatorSet()
-        if(reverse) anim.playSequentially(anims)
+        if (reverse) anim.playSequentially(anims)
         else anim.playSequentially(anims.reversed())
         anim.start()
+    }
+
+    private fun setPetAsWallpaper(view: View) {
+        val b = loadBitmapFromView(view)
+
+        val wallpaperManager = WallpaperManager.getInstance(applicationContext)
+        val desiredWidth = wallpaperManager.desiredMinimumWidth
+        val desiredHeight = wallpaperManager.desiredMinimumHeight
+
+        val originalWidth = b.width
+        val originalHeight = b.height
+
+        val hScaleFactor = originalWidth.toFloat() / desiredWidth.toFloat()
+        val vScaleFactor = originalHeight.toFloat() / desiredHeight.toFloat()
+
+        val scaleFactor = Math.max(hScaleFactor, vScaleFactor)
+
+        val wallWidth = originalWidth / scaleFactor
+        val wallHeight = originalHeight / scaleFactor
+
+        val wallpaperBmp = Bitmap.createScaledBitmap(
+            b,
+            wallWidth.toInt(),
+            wallHeight.toInt(),
+            true
+        )
+
+        b.recycle()
+
+        wallpaperManager.setBitmap(wallpaperBmp)
+
+        wallpaperBmp.recycle()
     }
 
     private fun resizePet(view: View) {
@@ -472,6 +508,14 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     override fun onDestroyView(view: View) {
         removeToolbarView(inventoryToolbar)
         super.onDestroyView(view)
+    }
+
+    fun loadBitmapFromView(v: View): Bitmap {
+        val b = Bitmap.createBitmap(v.width, v.height, Bitmap.Config.ARGB_8888)
+        val c = Canvas(b)
+        v.layout(v.left, v.top, v.right, v.bottom)
+        v.draw(c)
+        return b
     }
 
     data class PetFoodViewModel(@DrawableRes val image: Int, val price: Food.Price, val food: Food, val quantity: Int = 0)
