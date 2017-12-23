@@ -138,6 +138,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 view.itemList.adapter = PetFoodAdapter(state.foodViewModels)
                 view.fabItems.isClickable = false
                 playShowItemsAnimation(view, view.fabFood, view.fabItems)
+
                 view.fabFood.setImageResource(R.drawable.ic_close_white_24dp)
                 view.fabFood.setOnClickListener {
                     send(HideFoodListIntent)
@@ -178,7 +179,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
             FOOD_TOO_EXPENSIVE -> {
                 CurrencyConverterController().showDialog(router, "currency-converter")
-                Toast.makeText(view.context, "Food too expensive", Toast.LENGTH_SHORT).show()
+                Toast.makeText(view.context, stringRes(R.string.food_too_expensive), Toast.LENGTH_SHORT).show()
             }
 
             PET_CHANGED -> {
@@ -193,7 +194,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             RENAME_PET ->
                 TextPickerDialogController({ text ->
                     send(RenamePetIntent(text))
-                }, "Give me a name", state.petName, hint = "Rename your pet")
+                }, stringRes(R.string.dialog_rename_pet_title), state.petName, hint = stringRes(R.string.dialog_rename_pet_hint))
                     .showDialog(router, "text-picker-tag")
 
             PET_RENAMED ->
@@ -241,9 +242,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             ITEM_LIST_HIDDEN -> {
                 ViewUtils.goneViews(view.fabHeadItems, view.fabFaceItems, view.fabBodyItems)
                 view.fabFood.isClickable = true
-
                 val heightOffset = (view.fabItems.height + ViewUtils.dpToPx(16f, view.context)) * 2
-
                 playHideFoodListAnimation(view, view.fabItems, view.fabFood, heightOffset)
                 view.fabItems.setImageResource(R.drawable.ic_sword_white_24dp)
                 view.fabItems.setOnClickListener {
@@ -254,11 +253,11 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     }
 
     private fun createPopupAnimator(view: View): Animator {
-        val fabHeadItemsAnim = AnimatorInflater.loadAnimator(view.context, R.animator.popup)
-        fabHeadItemsAnim.setTarget(view)
-        fabHeadItemsAnim.interpolator = OvershootInterpolator()
-        fabHeadItemsAnim.duration = shortAnimTime
-        return fabHeadItemsAnim
+        val animator = AnimatorInflater.loadAnimator(view.context, R.animator.popup)
+        animator.setTarget(view)
+        animator.interpolator = OvershootInterpolator()
+        animator.duration = shortAnimTime
+        return animator
     }
 
     private fun setPetAsWallpaper(view: View) {
