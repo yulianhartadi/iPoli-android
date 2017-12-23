@@ -30,6 +30,9 @@ object ViewUtils {
     fun goneViews(vararg views: View) =
         views.forEach { it.visibility = View.GONE }
 
+    fun zeroAlpha(vararg views: View) =
+        views.forEach { it.alpha = 0f }
+
     fun hideKeyboard(view: View) {
         val m = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         m.hideSoftInputFromWindow(view.windowToken, 0)
