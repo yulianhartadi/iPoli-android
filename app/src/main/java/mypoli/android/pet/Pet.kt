@@ -196,6 +196,23 @@ enum class PetMood {
     SAD, GOOD, HAPPY, AWESOME
 }
 
+enum class PetItemType {
+    HEAD, FACE, BODY
+}
+
+enum class PetItem(
+    val experienceBonus: Int,
+    val coinBonus: Int,
+    val bountyBonus: Int,
+    val type: PetItemType,
+    val gemPrice: Int
+) {
+    GLASSES(1, 1, 1, PetItemType.FACE, 2),
+    BEARD(-5, 5, 3, PetItemType.FACE, 2),
+    MASK(10, -5, 2, PetItemType.FACE, 2),
+    RED_HAT(1, 1, 1, PetItemType.HEAD, 4)
+}
+
 enum class PetAvatar(val gemPrice: Int, val feedingCategory: FeedingCategory) {
     SEAL(7, FeedingCategory.CARNIVOROUS),
     DONKEY(5, FeedingCategory.HERBIVOROUS),
