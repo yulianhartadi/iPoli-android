@@ -212,7 +212,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 val heightOffset = (view.fabItems.height + ViewUtils.dpToPx(16f, view.context)) * 2
 
                 playHideFoodListAnimation(view, view.fabItems, view.fabFood, heightOffset)
-                view.fabItems.setImageResource(R.drawable.ic_shield)
+                view.fabItems.setImageResource(R.drawable.ic_sword_white_24dp)
                 view.fabItems.setOnClickListener {
                     send(PetIntent.ShowItemList)
                 }
