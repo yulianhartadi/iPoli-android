@@ -118,9 +118,21 @@ class PetPresenter(
                 }
             }
 
-            is ShowCurrencyConverter -> {
+            is PetIntent.ShowCurrencyConverter -> {
                 state.copy(
                     type = SHOW_CURRENCY_CONVERTER
+                )
+            }
+
+            is PetIntent.ShowItemList -> {
+                state.copy(
+                    type = ITEM_LIST_SHOWN
+                )
+            }
+
+            is PetIntent.HideItemList -> {
+                state.copy(
+                    type = ITEM_LIST_HIDDEN
                 )
             }
         }
