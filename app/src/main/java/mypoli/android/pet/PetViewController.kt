@@ -9,10 +9,8 @@ import android.support.annotation.DrawableRes
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat
-import android.support.v4.widget.TextViewCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.TypedValue
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.ImageView
@@ -251,6 +249,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         if (scale < 1) {
             val lp = petView.layoutParams as ConstraintLayout.LayoutParams
             lp.height = newPetHeight.toInt()
+            lp.width = (petView.width * scale).toInt()
             lp.verticalBias = PET_BOTTOM_BORDER_PERCENT
             petView.layoutParams = lp
 
@@ -259,6 +258,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
             val hlp = hatView.layoutParams as ConstraintLayout.LayoutParams
             hlp.height = newHatHeight.toInt()
+            hlp.width = (hatView.width * scale).toInt()
             hatView.layoutParams = hlp
         } else {
             val lp = petView.layoutParams as ConstraintLayout.LayoutParams
@@ -459,7 +459,6 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             holder.itemView.foodImage.setImageResource(vm.image)
 
             val foodPrice = holder.itemView.foodPrice
-            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(foodPrice, 10, 14, 1, TypedValue.COMPLEX_UNIT_SP)
             if (vm.quantity > 0) {
                 foodPrice.text = "x" + vm.quantity.toString()
                 foodPrice.setCompoundDrawables(null, null, null, null)
