@@ -1019,6 +1019,9 @@
     <string name="currency_converter_title">Get some Gems</string>
     <string name="convert">Convert</string>
     <string name="done">Done</string>
+    <string name="food_too_expensive">Food too expensive</string>
+    <string name="dialog_rename_pet_title">Give me a name</string>
+    <string name="dialog_rename_pet_hint">Rename your pet</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
