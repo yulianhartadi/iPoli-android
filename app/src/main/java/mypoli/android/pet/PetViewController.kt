@@ -135,6 +135,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 inventoryToolbar.playerGems.text = state.playerGems.toString()
             }
             FOOD_LIST_SHOWN -> {
+                view.itemList.adapter = PetFoodAdapter(state.foodViewModels)
                 view.fabItems.isClickable = false
                 playShowItemsAnimation(view, view.fabFood, view.fabItems)
                 view.fabFood.setImageResource(R.drawable.ic_close_white_24dp)
