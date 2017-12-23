@@ -16,12 +16,12 @@ class RevivePetUseCase(private val playerRepository: PlayerRepository) : UseCase
         val pet = player!!.pet
         require(pet.isDead)
 
-        if (player.coins < Constants.REVIVE_PET_GEM_PRICE) {
+        if (player.gems < Constants.REVIVE_PET_GEM_PRICE) {
             return Result.TooExpensive
         }
 
         val newPlayer = player.copy(
-            coins = player.coins - Constants.REVIVE_PET_GEM_PRICE,
+            gems = player.gems - Constants.REVIVE_PET_GEM_PRICE,
             pet = player.pet.setHealthAndMoodPoints(
                 Constants.DEFAULT_PET_HP,
                 Constants.DEFAULT_PET_MP
