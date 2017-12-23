@@ -41,6 +41,7 @@ data class PetViewState(
     val mood: PetMood? = null,
     val isDead: Boolean = false,
     val foodViewModels: List<PetViewController.PetFoodViewModel> = listOf(),
+    val itemViewModels: List<PetViewController.PetItemViewModel> = listOf(),
     val playerGems: Int = 0
 ) : ViewState {
     enum class StateType {

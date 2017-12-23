@@ -3,6 +3,7 @@ package mypoli.android.pet
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.Constants
+import mypoli.android.R
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.pet.PetViewState.StateType.*
@@ -125,8 +126,16 @@ class PetPresenter(
             }
 
             is PetIntent.ShowItemList -> {
+
+                val vms = listOf(
+                    PetViewController.PetItemViewModel(R.drawable.pet_item_body_sweater_red_deer, 2, PetItem.RED_HAT),
+                    PetViewController.PetItemViewModel(R.drawable.pet_item_body_sweater_red_snowflakes, 2, PetItem.RED_HAT),
+                    PetViewController.PetItemViewModel(R.drawable.pet_item_body_sweater_red_white, 2, PetItem.RED_HAT)
+                )
+
                 state.copy(
-                    type = ITEM_LIST_SHOWN
+                    type = ITEM_LIST_SHOWN,
+                    itemViewModels = vms
                 )
             }
 

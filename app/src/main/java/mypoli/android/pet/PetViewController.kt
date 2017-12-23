@@ -6,6 +6,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.support.annotation.DrawableRes
+import android.support.constraint.ConstraintLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.TextViewCompat
@@ -23,6 +24,7 @@ import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import kotlinx.android.synthetic.main.controller_pet.view.*
 import kotlinx.android.synthetic.main.item_pet_food.view.*
+import kotlinx.android.synthetic.main.item_pet_item.view.*
 import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
@@ -55,9 +57,9 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 .sizeDp(24)
         )
 
-        view.foodList.layoutManager = LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
-        view.foodList.post {
-            view.foodList.x = view.width.toFloat()
+        view.itemList.layoutManager = LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
+        view.itemList.post {
+            view.itemList.x = view.width.toFloat()
         }
 
         inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
@@ -103,10 +105,15 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         return super.onOptionsItemSelected(item)
     }
 
+    companion object {
+        val PET_TOP_BORDER_PERCENT = 0.33f
+        val PET_BOTTOM_BORDER_PERCENT = 0.74f
+    }
+
     override fun render(state: PetViewState, view: View) {
         when (state.type) {
             DATA_LOADED -> {
-                view.foodList.adapter = PetFoodAdapter(state.foodViewModels)
+                view.itemList.adapter = PetFoodAdapter(state.foodViewModels)
                 view.fabFood.setOnClickListener {
                     send(ShowFoodListIntent)
                 }
@@ -115,9 +122,16 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 }
                 renderPet(state, view)
 
-                if (!state.isDead) {
-                    playEnterAnimation(view)
+                view.post {
+                    resizePet(view)
+                    view.post {
+                        if (!state.isDead) {
+                            playEnterAnimation(view)
+                        }
+                    }
                 }
+
+
                 inventoryToolbar.playerGems.text = state.playerGems.toString()
             }
             FOOD_LIST_SHOWN -> {
@@ -170,7 +184,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
                 inventoryToolbar.playerGems.text = state.playerGems.toString()
 
-                (view.foodList.adapter as PetFoodAdapter).updateAll(state.foodViewModels)
+                (view.itemList.adapter as PetFoodAdapter).updateAll(state.foodViewModels)
 
                 renderPet(state, view)
             }
@@ -190,7 +204,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
             PET_REVIVED -> {
                 view.fabFood.visible = true
-                view.foodList.visible = true
+                view.itemList.visible = true
             }
 
             SHOW_CURRENCY_CONVERTER -> {
@@ -198,6 +212,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             ITEM_LIST_SHOWN -> {
+                view.itemList.adapter = PetItemAdapter(state.itemViewModels)
                 view.fabFood.isClickable = false
                 playShowItemsAnimation(view, view.fabItems, view.fabFood)
                 view.fabItems.setImageResource(R.drawable.ic_close_white_24dp)
@@ -217,6 +232,37 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                     send(PetIntent.ShowItemList)
                 }
             }
+        }
+    }
+
+    private fun resizePet(view: View) {
+        val petView = view.pet
+        val hatView = view.hat
+
+        val viewHeight = view.height
+        val bottomY = PET_BOTTOM_BORDER_PERCENT * viewHeight
+        val topY = PET_TOP_BORDER_PERCENT * viewHeight
+
+        val newPetHeight = bottomY - topY
+        val originalPetHeight = petView.height
+        val scale = newPetHeight / originalPetHeight
+
+        if (scale < 1) {
+            val lp = petView.layoutParams as ConstraintLayout.LayoutParams
+            lp.height = newPetHeight.toInt()
+            lp.verticalBias = PET_BOTTOM_BORDER_PERCENT
+            petView.layoutParams = lp
+
+            val originalHatHeight = hatView.height
+            val newHatHeight = originalHatHeight * scale
+
+            val hlp = hatView.layoutParams as ConstraintLayout.LayoutParams
+            hlp.height = newHatHeight.toInt()
+            hatView.layoutParams = hlp
+        } else {
+            val lp = petView.layoutParams as ConstraintLayout.LayoutParams
+            lp.verticalBias = PET_BOTTOM_BORDER_PERCENT
+            petView.layoutParams = lp
         }
     }
 
@@ -255,7 +301,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             view.reviveCost.text = state.reviveCost.toString()
 
             view.fabFood.visible = false
-            view.foodList.visible = false
+            view.itemList.visible = false
 
             view.revive.setOnClickListener {
                 send(RevivePetIntent)
@@ -367,8 +413,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     private fun playHideFoodListAnimation(view: View, moveFAB: FloatingActionButton, showFAB: FloatingActionButton, heightOffset: Float) {
         val foodListAnim = AnimatorSet()
         foodListAnim.playTogether(
-            ObjectAnimator.ofFloat(view.foodList, "alpha", 1f, 0f),
-            ObjectAnimator.ofFloat(view.foodList, "x", 0f, view.width.toFloat())
+            ObjectAnimator.ofFloat(view.itemList, "alpha", 1f, 0f),
+            ObjectAnimator.ofFloat(view.itemList, "x", 0f, view.width.toFloat())
         )
         val animator = AnimatorSet()
 
@@ -384,13 +430,13 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     private fun playShowItemsAnimation(view: View, moveView: View, hideView: View) {
         val foodListAnim = AnimatorSet()
         foodListAnim.playTogether(
-            ObjectAnimator.ofFloat(view.foodList, "alpha", 0f, 1f),
-            ObjectAnimator.ofFloat(view.foodList, "x", view.width.toFloat(), 0f)
+            ObjectAnimator.ofFloat(view.itemList, "alpha", 0f, 1f),
+            ObjectAnimator.ofFloat(view.itemList, "x", view.width.toFloat(), 0f)
         )
         val animator = AnimatorSet()
         animator.playSequentially(
             ObjectAnimator.ofFloat(hideView, "alpha", 1f, 0f),
-            ObjectAnimator.ofFloat(moveView, "y", moveView.y, view.foodList.y - moveView.height - ViewUtils.dpToPx(8f, view.context)),
+            ObjectAnimator.ofFloat(moveView, "y", moveView.y, view.itemList.y - moveView.height - ViewUtils.dpToPx(8f, view.context)),
             foodListAnim
         )
         animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
@@ -404,7 +450,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
     data class PetFoodViewModel(@DrawableRes val image: Int, val price: Food.Price, val food: Food, val quantity: Int = 0)
 
-    inner class PetFoodAdapter(private var foodItems: List<PetFoodViewModel>) : RecyclerView.Adapter<PetFoodAdapter.ViewHolder>() {
+    inner class PetFoodAdapter(private var foodItems: List<PetFoodViewModel>) : RecyclerView.Adapter<ViewHolder>() {
         override fun getItemCount() = foodItems.size
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -434,8 +480,29 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_pet_food, parent, false))
+    }
 
-        inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
+
+    data class PetItemViewModel(@DrawableRes val image: Int, val gemPrice: Int?, val item: PetItem)
+
+    inner class PetItemAdapter(private var petItems: List<PetItemViewModel>) : RecyclerView.Adapter<ViewHolder>() {
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_pet_item, parent, false))
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val vm = petItems[position]
+            holder.itemView.itemImage.setImageResource(vm.image)
+
+            vm.gemPrice?.let {
+                holder.itemView.itemPrice.text = it.toString()
+            }
+        }
+
+        override fun getItemCount() = petItems.size
+
+
     }
 }
 
