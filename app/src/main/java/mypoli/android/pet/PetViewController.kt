@@ -6,6 +6,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.support.annotation.DrawableRes
+import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat
 import android.support.v4.widget.TextViewCompat
 import android.support.v7.widget.LinearLayoutManager
@@ -47,9 +48,16 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         val view = inflater.inflate(R.layout.controller_pet, container, false)
         setHasOptionsMenu(true)
 
-        view.fab.setImageDrawable(
+        view.fabFood.setImageDrawable(
             IconicsDrawable(view.context)
                 .icon(Ionicons.Icon.ion_pizza)
+                .colorRes(R.color.md_white)
+                .sizeDp(24)
+        )
+
+        view.fabItems.setImageDrawable(
+            IconicsDrawable(view.context)
+                .icon(Ionicons.Icon.ion_tshirt_outline)
                 .colorRes(R.color.md_white)
                 .sizeDp(24)
         )
@@ -61,7 +69,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
         inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
         inventoryToolbar.playerGems.setOnClickListener {
-            send(ShowCurrencyConverter)
+            send(PetIntent.ShowCurrencyConverter)
         }
 
         return view
@@ -106,8 +114,11 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         when (state.type) {
             DATA_LOADED -> {
                 view.foodList.adapter = PetFoodAdapter(state.foodViewModels)
-                view.fab.setOnClickListener {
+                view.fabFood.setOnClickListener {
                     send(ShowFoodListIntent)
+                }
+                view.fabItems.setOnClickListener {
+                    send(PetIntent.ShowItemList)
                 }
                 renderPet(state, view)
 
@@ -117,22 +128,27 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 inventoryToolbar.playerGems.text = state.playerGems.toString()
             }
             FOOD_LIST_SHOWN -> {
-                playShowFoodListAnimation(view)
-                view.fab.setImageResource(R.drawable.ic_close_white_24dp)
-                view.fab.setOnClickListener {
+                view.fabItems.isClickable = false
+                playShowItemsAnimation(view, view.fabFood, view.fabItems)
+                view.fabFood.setImageResource(R.drawable.ic_close_white_24dp)
+                view.fabFood.setOnClickListener {
                     send(HideFoodListIntent)
                 }
             }
 
             FOOD_LIST_HIDDEN -> {
-                playHideFoodListAnimation(view)
-                view.fab.setImageDrawable(
+                view.fabItems.isClickable = true
+
+                val heightOffset = view.fabFood.height + ViewUtils.dpToPx(16f, view.context)
+
+                playHideFoodListAnimation(view, view.fabFood, view.fabItems, heightOffset)
+                view.fabFood.setImageDrawable(
                     IconicsDrawable(view.context)
                         .icon(Ionicons.Icon.ion_pizza)
                         .colorRes(R.color.md_white)
                         .sizeDp(24)
                 )
-                view.fab.setOnClickListener {
+                view.fabFood.setOnClickListener {
                     send(ShowFoodListIntent)
                 }
             }
@@ -180,12 +196,38 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             PET_REVIVED -> {
-                view.fab.visible = true
+                view.fabFood.visible = true
                 view.foodList.visible = true
             }
 
             SHOW_CURRENCY_CONVERTER -> {
                 CurrencyConverterController().showDialog(router, "currency-converter")
+            }
+
+            ITEM_LIST_SHOWN -> {
+                view.fabFood.isClickable = false
+                playShowItemsAnimation(view, view.fabItems, view.fabFood)
+                view.fabItems.setImageResource(R.drawable.ic_close_white_24dp)
+                view.fabItems.setOnClickListener {
+                    send(PetIntent.HideItemList)
+                }
+            }
+
+            ITEM_LIST_HIDDEN -> {
+                view.fabFood.isClickable = true
+
+                val heightOffset = (view.fabItems.height + ViewUtils.dpToPx(16f, view.context)) * 2
+
+                playHideFoodListAnimation(view, view.fabItems, view.fabFood, heightOffset)
+                view.fabItems.setImageDrawable(
+                    IconicsDrawable(view.context)
+                        .icon(Ionicons.Icon.ion_tshirt_outline)
+                        .colorRes(R.color.md_white)
+                        .sizeDp(24)
+                )
+                view.fabItems.setOnClickListener {
+                    send(PetIntent.ShowItemList)
+                }
             }
         }
     }
@@ -224,7 +266,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             view.reviveHint.text = stringRes(R.string.revive_hint, state.petName)
             view.reviveCost.text = state.reviveCost.toString()
 
-            view.fab.visible = false
+            view.fabFood.visible = false
             view.foodList.visible = false
 
             view.revive.setOnClickListener {
@@ -334,22 +376,24 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         return anim
     }
 
-    private fun playHideFoodListAnimation(view: View) {
+    private fun playHideFoodListAnimation(view: View, moveFAB: FloatingActionButton, showFAB: FloatingActionButton, heightOffset: Float) {
         val foodListAnim = AnimatorSet()
         foodListAnim.playTogether(
             ObjectAnimator.ofFloat(view.foodList, "alpha", 1f, 0f),
             ObjectAnimator.ofFloat(view.foodList, "x", 0f, view.width.toFloat())
         )
         val animator = AnimatorSet()
+
         animator.playSequentially(
             foodListAnim,
-            ObjectAnimator.ofFloat(view.fab, "y", view.fab.y, view.foodList.y + ViewUtils.dpToPx(8f, view.context))
+            ObjectAnimator.ofFloat(moveFAB, "y", moveFAB.y, view.height - heightOffset),
+            ObjectAnimator.ofFloat(showFAB, "alpha", 0f, 1f)
         )
         animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
         animator.start()
     }
 
-    private fun playShowFoodListAnimation(view: View) {
+    private fun playShowItemsAnimation(view: View, moveView: View, hideView: View) {
         val foodListAnim = AnimatorSet()
         foodListAnim.playTogether(
             ObjectAnimator.ofFloat(view.foodList, "alpha", 0f, 1f),
@@ -357,7 +401,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         )
         val animator = AnimatorSet()
         animator.playSequentially(
-            ObjectAnimator.ofFloat(view.fab, "y", view.fab.y, view.foodList.y - view.fab.height - ViewUtils.dpToPx(8f, view.context)),
+            ObjectAnimator.ofFloat(hideView, "alpha", 1f, 0f),
+            ObjectAnimator.ofFloat(moveView, "y", moveView.y, view.foodList.y - moveView.height - ViewUtils.dpToPx(8f, view.context)),
             foodListAnim
         )
         animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
@@ -405,3 +450,4 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
     }
 }
+
