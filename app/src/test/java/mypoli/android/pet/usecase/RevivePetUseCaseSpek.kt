@@ -20,9 +20,8 @@ import org.jetbrains.spek.api.dsl.it
 class RevivePetUseCaseSpek : Spek({
     describe("RevivePetUseCase") {
 
-        fun executeUseCase(player: Player): RevivePetUseCase.Result {
-            return RevivePetUseCase(TestUtil.playerRepoMock(player)).execute(Unit)
-        }
+        fun executeUseCase(player: Player) =
+            RevivePetUseCase(TestUtil.playerRepoMock(player)).execute(Unit)
 
         it("should require dead pet") {
             val player = TestUtil.player().copy(
@@ -37,10 +36,10 @@ class RevivePetUseCaseSpek : Spek({
             exec shouldThrow IllegalArgumentException::class
         }
 
-        it("should not revive when not enough coins") {
+        it("should not revive when not enough gems") {
             val pet = TestUtil.player().pet
             val player = TestUtil.player().copy(
-                coins = Constants.REVIVE_PET_GEM_PRICE - 1,
+                gems = Constants.REVIVE_PET_GEM_PRICE - 1,
                 pet = pet.copy(
                     healthPoints = 0,
                     moodPoints = 0
@@ -53,7 +52,7 @@ class RevivePetUseCaseSpek : Spek({
         it("should revive pet") {
             val pet = TestUtil.player().pet
             val player = TestUtil.player().copy(
-                coins = Constants.REVIVE_PET_GEM_PRICE,
+                gems = Constants.REVIVE_PET_GEM_PRICE,
                 pet = pet.copy(
                     healthPoints = 0,
                     moodPoints = 0
@@ -62,7 +61,7 @@ class RevivePetUseCaseSpek : Spek({
             val result = executeUseCase(player)
             result.`should be instance of`(RevivePetUseCase.Result.PetRevived::class)
             val newPlayer = (result as RevivePetUseCase.Result.PetRevived).player
-            newPlayer.coins.`should be equal to`(0)
+            newPlayer.gems.`should be equal to`(0)
             val newPet = newPlayer.pet
             newPet.healthPoints.`should be equal to`(Constants.DEFAULT_PET_HP)
             newPet.moodPoints.`should be equal to`(Constants.DEFAULT_PET_MP)
