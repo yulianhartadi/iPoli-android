@@ -105,7 +105,7 @@
                 android:drawablePadding="4dp"
                 android:drawableStart="@drawable/ic_gem_24dp"
                 android:gravity="center_vertical"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/reviveHint"
