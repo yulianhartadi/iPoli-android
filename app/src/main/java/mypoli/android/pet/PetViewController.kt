@@ -1,10 +1,8 @@
 package mypoli.android.pet
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
+import android.animation.*
 import android.app.WallpaperManager
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
@@ -16,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
@@ -133,7 +132,6 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                     }
                 }
 
-
                 inventoryToolbar.playerGems.text = state.playerGems.toString()
             }
             FOOD_LIST_SHOWN -> {
@@ -222,9 +220,26 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 view.fabItems.setOnClickListener {
                     send(PetIntent.HideItemList)
                 }
+
+                listOf(view.fabHeadItems, view.fabFaceItems, view.fabBodyItems)
+                    .forEach {
+                        it.visible = true
+                        it.alpha = 0f
+                    }
+
+                val fabBodyAnim = createPopupAnimator(view.fabBodyItems)
+                val fabFaceAnim = createPopupAnimator(view.fabFaceItems)
+                val fabHeadAnim = createPopupAnimator(view.fabHeadItems)
+
+                val animatorSet = AnimatorSet()
+                animatorSet.playSequentially(fabBodyAnim, fabFaceAnim, fabHeadAnim)
+                animatorSet.start()
+
+                view.fabBodyItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimaryDark))
             }
 
             ITEM_LIST_HIDDEN -> {
+                ViewUtils.goneViews(view.fabHeadItems, view.fabFaceItems, view.fabBodyItems)
                 view.fabFood.isClickable = true
 
                 val heightOffset = (view.fabItems.height + ViewUtils.dpToPx(16f, view.context)) * 2
@@ -236,6 +251,14 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 }
             }
         }
+    }
+
+    private fun createPopupAnimator(view: View): Animator {
+        val fabHeadItemsAnim = AnimatorInflater.loadAnimator(view.context, R.animator.popup)
+        fabHeadItemsAnim.setTarget(view)
+        fabHeadItemsAnim.interpolator = OvershootInterpolator()
+        fabHeadItemsAnim.duration = shortAnimTime
+        return fabHeadItemsAnim
     }
 
     private fun setPetAsWallpaper(view: View) {
