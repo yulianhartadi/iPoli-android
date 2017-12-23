@@ -55,13 +55,6 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 .sizeDp(24)
         )
 
-        view.fabItems.setImageDrawable(
-            IconicsDrawable(view.context)
-                .icon(Ionicons.Icon.ion_tshirt_outline)
-                .colorRes(R.color.md_white)
-                .sizeDp(24)
-        )
-
         view.foodList.layoutManager = LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
         view.foodList.post {
             view.foodList.x = view.width.toFloat()
@@ -219,12 +212,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 val heightOffset = (view.fabItems.height + ViewUtils.dpToPx(16f, view.context)) * 2
 
                 playHideFoodListAnimation(view, view.fabItems, view.fabFood, heightOffset)
-                view.fabItems.setImageDrawable(
-                    IconicsDrawable(view.context)
-                        .icon(Ionicons.Icon.ion_tshirt_outline)
-                        .colorRes(R.color.md_white)
-                        .sizeDp(24)
-                )
+                view.fabItems.setImageResource(R.drawable.ic_shield)
                 view.fabItems.setOnClickListener {
                     send(PetIntent.ShowItemList)
                 }
