@@ -136,6 +136,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 view.itemList.adapter = PetFoodAdapter(state.foodViewModels)
                 view.fabItems.isClickable = false
                 playShowItemsAnimation(view, view.fabFood, view.fabItems)
+
                 view.fabFood.setImageResource(R.drawable.ic_close_white_24dp)
                 view.fabFood.setOnClickListener {
                     send(HideFoodListIntent)
@@ -176,7 +177,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
             FOOD_TOO_EXPENSIVE -> {
                 CurrencyConverterController().showDialog(router, "currency-converter")
-                Toast.makeText(view.context, "Food too expensive", Toast.LENGTH_SHORT).show()
+                Toast.makeText(view.context, stringRes(R.string.food_too_expensive), Toast.LENGTH_SHORT).show()
             }
 
             PET_CHANGED -> {
@@ -191,7 +192,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             RENAME_PET ->
                 TextPickerDialogController({ text ->
                     send(RenamePetIntent(text))
-                }, "Give me a name", state.petName, hint = "Rename your pet")
+                }, stringRes(R.string.dialog_rename_pet_title), state.petName, hint = stringRes(R.string.dialog_rename_pet_hint))
                     .showDialog(router, "text-picker-tag")
 
             PET_RENAMED ->
@@ -214,6 +215,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 view.itemList.adapter = PetItemAdapter(state.itemViewModels)
                 view.fabFood.isClickable = false
                 playShowItemsAnimation(view, view.fabItems, view.fabFood)
+                playItemFabsAnimation(view)
                 view.fabItems.setImageResource(R.drawable.ic_close_white_24dp)
                 view.fabItems.setOnClickListener {
                     send(PetIntent.HideItemList)
@@ -222,16 +224,39 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
             ITEM_LIST_HIDDEN -> {
                 view.fabFood.isClickable = true
-
                 val heightOffset = (view.fabItems.height + ViewUtils.dpToPx(16f, view.context)) * 2
-
                 playHideFoodListAnimation(view, view.fabItems, view.fabFood, heightOffset)
+                playItemFabsAnimation(view, true)
                 view.fabItems.setImageResource(R.drawable.ic_sword_white_24dp)
                 view.fabItems.setOnClickListener {
                     send(PetIntent.ShowItemList)
                 }
             }
         }
+    }
+
+    private fun playItemFabsAnimation(view: View, reverse: Boolean = false) {
+        val startValue = if(reverse) 1f else 0f
+        val endValue = if(reverse) 0f else 1f
+
+        val anims = listOf<FloatingActionButton>(
+            view.fabBodyItems,
+            view.fabFaceItems,
+            view.fabHeadItems)
+            .map {
+                val anim = AnimatorSet()
+                anim.playTogether(
+                    ObjectAnimator.ofFloat(it, "scaleX", startValue, endValue),
+                    ObjectAnimator.ofFloat(it, "scaleY", startValue, endValue),
+                    ObjectAnimator.ofFloat(it, "alpha", startValue, endValue)
+                )
+                anim
+            }
+
+        val anim = AnimatorSet()
+        if(reverse) anim.playSequentially(anims)
+        else anim.playSequentially(anims.reversed())
+        anim.start()
     }
 
     private fun resizePet(view: View) {
