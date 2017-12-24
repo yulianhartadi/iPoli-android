@@ -189,7 +189,7 @@
                 tools:text="+7%" />
 
             <TextView
-                android:id="@+id/curItemUnlockChanceBonus"
+                android:id="@+id/curItemBountyBonus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -206,7 +206,7 @@
                 tools:text="+3%" />
 
             <TextView
-                android:id="@+id/newItemUnlockChanceBonus"
+                android:id="@+id/newItemBountyBonus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
@@ -235,7 +235,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/separator"
-                app:layout_constraintTop_toBottomOf="@+id/newItemUnlockChanceBonus"
+                app:layout_constraintTop_toBottomOf="@+id/newItemBountyBonus"
                 app:layout_constraintVertical_bias="0.0" />
 
             <TextView
@@ -293,11 +293,11 @@
                 android:drawablePadding="2dp"
                 android:text="+0 ="
                 android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                app:layout_constraintBottom_toBottomOf="@+id/newItemUnlockChanceBonus"
+                app:layout_constraintBottom_toBottomOf="@+id/newItemBountyBonus"
                 app:layout_constraintEnd_toEndOf="@+id/newXPBonusDiff"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/newXPBonusDiff"
-                app:layout_constraintTop_toTopOf="@+id/newItemUnlockChanceBonus"
+                app:layout_constraintTop_toTopOf="@+id/newItemBountyBonus"
                 tools:text="+0 =" />
 
             <android.support.constraint.Group
