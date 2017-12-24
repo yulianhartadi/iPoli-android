@@ -243,49 +243,6 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
                 view.curItems.visibility = View.INVISIBLE
                 view.noItem.visibility = View.VISIBLE
-
-//
-//                view.newCoinBonusDiff.setTextColor(colorRes(R.color.md_green_700))
-//
-//                view.newCoinBonusDiff.setCompoundDrawablesWithIntrinsicBounds(
-//                    null,
-//                    null,
-//                    IconicsDrawable(view.context)
-//                        .icon(Ionicons.Icon.ion_arrow_up_b)
-//                        .colorRes(R.color.md_green_500)
-//                        .sizeDp(12),
-//                    null)
-//
-//                view.newXPBonusDiff.setTextColor(colorRes(R.color.md_red_700))
-//
-//                view.newXPBonusDiff.setCompoundDrawablesWithIntrinsicBounds(
-//                    null,
-//                    null,
-//                    IconicsDrawable(view.context)
-//                        .icon(Ionicons.Icon.ion_arrow_down_b)
-//                        .colorRes(R.color.md_red_500)
-//                        .sizeDp(12),
-//                    null)
-
-//                val noChangeIcon = IconicsDrawable(view.context)
-//                    .icon(Ionicons.Icon.ion_code)
-//                    .colorRes(R.color.md_black)
-//                    .sizeDp(12)
-
-//                view.newBountyBonusDiff.setCompoundDrawablesWithIntrinsicBounds(
-//                    null, null,
-//                    noChangeIcon,
-//                    null
-//                )
-
-//                view.comparedItemXpBonus.setCompoundDrawablesWithIntrinsicBounds(
-//                    ContextCompat.getDrawable(view.context, R.drawable.ic_star_yellow_16dp),
-//                    null,
-//                    IconicsDrawable(view.context)
-//                        .icon(Ionicons.Icon.ion_android_arrow_down)
-//                        .colorRes(R.color.md_red_700)
-//                        .sizeDp(16),
-//                    null)
             }
 
             ITEM_LIST_HIDDEN -> {
@@ -304,64 +261,53 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 val adapter = view.itemList.adapter as PetItemAdapter
                 adapter.updateAll(state.itemViewModels)
 
-                val selectedItem = state.newItem!!
-                
-                view.newItemImage.setImageResource(selectedItem.image)
+                state.currentItem?.let {
+                    view.curItems.visible = true
+                    view.noItem.visible = false
+                    view.curItemImage.setImageResource(it.image)
+
+                    renderItemBonus(
+                        it.coinBonus,
+                        it.coinBonusChange,
+                        view.curItemCoinBonus
+                    )
+
+                    renderItemBonus(
+                        it.xpBonus,
+                        it.xpBonusChange,
+                        view.curItemXpBonus
+                    )
+
+                    renderItemBonus(
+                        it.bountyBonus,
+                        it.bountyBonusChange,
+                        view.curItemBountyBonus
+                    )
+                }
+
+                val newItem = state.newItem!!
+
+                view.newItemImage.setImageResource(newItem.image)
 
                 renderItemBonus(
-                    selectedItem.coinBonus,
-                    selectedItem.coinBonusChange,
+                    newItem.coinBonus,
+                    newItem.coinBonusChange,
                     view.newItemCoinBonus
                 )
 
                 renderItemBonus(
-                    selectedItem.xpBonus,
-                    selectedItem.xpBonusChange,
+                    newItem.xpBonus,
+                    newItem.xpBonusChange,
                     view.newItemXpBonus
                 )
 
                 renderItemBonus(
-                    selectedItem.bountyBonus,
-                    selectedItem.bountyBonusChange,
-                    view.newItemUnlockChanceBonus
+                    newItem.bountyBonus,
+                    newItem.bountyBonusChange,
+                    view.newItemBountyBonus
                 )
 
                 val itemComparison = state.itemComparison!!
-
-//                view.newCoinBonusDiff.text = itemComparison.coinBonusDiff.toString()
-//
-//                val coinChange = itemComparison.coinBonusChange
-//
-//                when (coinChange) {
-//                    ItemComparisonViewModel.Change.POSITIVE -> {
-//                        view.newCoinBonusDiff.setTextColor(colorRes(R.color.md_green_700))
-//                        view.newCoinBonusDiff.setCompoundDrawablesWithIntrinsicBounds(
-//                            null,
-//                            null,
-//                            IconicsDrawable(view.context)
-//                                .icon(Ionicons.Icon.ion_arrow_up_b)
-//                                .colorRes(R.color.md_green_500)
-//                                .sizeDp(12),
-//                            null)
-//                    }
-//                    ItemComparisonViewModel.Change.NEGATIVE -> {
-//                        view.newCoinBonusDiff.setTextColor(colorRes(R.color.md_red_700))
-//                        view.newCoinBonusDiff.setCompoundDrawablesWithIntrinsicBounds(
-//                            null,
-//                            null,
-//                            IconicsDrawable(view.context)
-//                                .icon(Ionicons.Icon.ion_arrow_down_b)
-//                                .colorRes(R.color.md_red_500)
-//                                .sizeDp(12),
-//                            null)
-//                    }
-//                    ItemComparisonViewModel.Change.NO_CHANGE -> {
-//
-//                    }
-//                }
-//
-//                view.newXPBonusDiff.text = itemComparison.xpBonusDiff.toString()
-//                view.newBountyBonusDiff.text = itemComparison.bountyBonusDiff.toString()
 
                 renderItemChangeResult(itemComparison.coinBonusDiff, itemComparison.coinBonusChange, view.newCoinBonusDiff)
                 renderItemChangeResult(itemComparison.xpBonusDiff, itemComparison.xpBonusChange, view.newXPBonusDiff)
