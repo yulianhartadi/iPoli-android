@@ -43,6 +43,7 @@ data class PetViewState(
     val isDead: Boolean = false,
     val foodViewModels: List<PetViewController.PetFoodViewModel> = listOf(),
     val itemViewModels: List<PetViewController.PetItemViewModel> = listOf(),
+    val currentItem: PetViewController.CompareItemViewModel? = null,
     val newItem: PetViewController.CompareItemViewModel? = null,
     val itemComparison: PetViewController.ItemComparisonViewModel? = null,
     val playerGems: Int = 0

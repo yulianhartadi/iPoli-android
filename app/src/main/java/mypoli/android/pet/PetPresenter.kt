@@ -135,10 +135,23 @@ class PetPresenter(
                     PetViewController.PetItemViewModel(R.drawable.pet_item_body_sweater_red_white, 2, PetItem.MASK)
                 )
 
+                val current = vms.last()
+                val currentItem = current.item
+
+                val cItem = PetViewController.CompareItemViewModel(
+                    image = current.image,
+                    coinBonus = currentItem.coinBonus,
+                    coinBonusChange = changeOf(currentItem.coinBonus),
+                    xpBonus = currentItem.experienceBonus,
+                    xpBonusChange = changeOf(currentItem.experienceBonus),
+                    bountyBonus = currentItem.bountyBonus,
+                    bountyBonusChange = changeOf(currentItem.bountyBonus)
+                )
+
                 val selected = vms.first { it.selected }
                 val selectedItem = selected.item
 
-                val compareItem = PetViewController.CompareItemViewModel(
+                val nItem = PetViewController.CompareItemViewModel(
                     image = selected.image,
                     coinBonus = selectedItem.coinBonus,
                     coinBonusChange = changeOf(selectedItem.coinBonus),
@@ -151,7 +164,8 @@ class PetPresenter(
                 state.copy(
                     type = ITEM_LIST_SHOWN,
                     itemViewModels = vms,
-                    newItem = compareItem
+                    currentItem = cItem,
+                    newItem = nItem
                 )
             }
 
@@ -162,12 +176,24 @@ class PetPresenter(
             }
 
             is PetIntent.CompareItem -> {
-                val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(null, intent.newItem))
                 val vms = state.itemViewModels.map {
                     it.copy(
                         selected = it.item == intent.newItem
                     )
                 }
+
+                val current = vms.last()
+                val currentItem = current.item
+
+                val cItem = PetViewController.CompareItemViewModel(
+                    image = current.image,
+                    coinBonus = currentItem.coinBonus,
+                    coinBonusChange = changeOf(currentItem.coinBonus),
+                    xpBonus = currentItem.experienceBonus,
+                    xpBonusChange = changeOf(currentItem.experienceBonus),
+                    bountyBonus = currentItem.bountyBonus,
+                    bountyBonusChange = changeOf(currentItem.bountyBonus)
+                )
 
                 val selected = vms.first { it.selected }
                 val selectedItem = selected.item
@@ -182,9 +208,12 @@ class PetPresenter(
                     bountyBonusChange = changeOf(selectedItem.bountyBonus)
                 )
 
+                val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(currentItem, intent.newItem))
+
                 state.copy(
                     type = COMPARE_ITEM,
                     itemViewModels = vms,
+                    currentItem = cItem,
                     newItem = compareItem,
                     itemComparison = PetViewController.ItemComparisonViewModel(
                         coinBonusDiff = cmpRes.coinBonus,
