@@ -207,7 +207,7 @@ enum class PetItem(
     val type: PetItemType,
     val gemPrice: Int
 ) {
-    GLASSES(1, 1, 1, PetItemType.FACE, 2),
+    GLASSES(4, 5, -9, PetItemType.FACE, 2),
     BEARD(-5, 5, 3, PetItemType.FACE, 2),
     MASK(10, -5, 2, PetItemType.FACE, 2),
     RED_HAT(1, 1, 1, PetItemType.HEAD, 4)

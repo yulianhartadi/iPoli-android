@@ -6,6 +6,7 @@ import mypoli.android.Constants
 import mypoli.android.R
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
+import mypoli.android.pet.PetViewController.ItemComparisonViewModel.Change.*
 import mypoli.android.pet.PetViewState.StateType.*
 import mypoli.android.pet.usecase.*
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
@@ -20,6 +21,7 @@ class PetPresenter(
     private val feedPetUseCase: FeedPetUseCase,
     private val renamePetUseCase: RenamePetUseCase,
     private val revivePetUseCase: RevivePetUseCase,
+    private val comparePetItemsUseCase: ComparePetItemsUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<PetViewState>, PetViewState, PetIntent>(
     PetViewState(LOADING, reviveCost = Constants.REVIVE_PET_GEM_PRICE),
@@ -133,9 +135,23 @@ class PetPresenter(
                     PetViewController.PetItemViewModel(R.drawable.pet_item_body_sweater_red_white, 2, PetItem.MASK)
                 )
 
+                val selected = vms.first { it.selected }
+                val selectedItem = selected.item
+
+                val compareItem = PetViewController.CompareItemViewModel(
+                    image = selected.image,
+                    coinBonus = selectedItem.coinBonus,
+                    coinBonusChange = changeOf(selectedItem.coinBonus),
+                    xpBonus = selectedItem.experienceBonus,
+                    xpBonusChange = changeOf(selectedItem.experienceBonus),
+                    bountyBonus = selectedItem.bountyBonus,
+                    bountyBonusChange = changeOf(selectedItem.bountyBonus)
+                )
+
                 state.copy(
                     type = ITEM_LIST_SHOWN,
-                    itemViewModels = vms
+                    itemViewModels = vms,
+                    newItem = compareItem
                 )
             }
 
@@ -146,16 +162,47 @@ class PetPresenter(
             }
 
             is PetIntent.CompareItem -> {
+                val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(null, intent.newItem))
+                val vms = state.itemViewModels.map {
+                    it.copy(
+                        selected = it.item == intent.newItem
+                    )
+                }
+
+                val selected = vms.first { it.selected }
+                val selectedItem = selected.item
+
+                val compareItem = PetViewController.CompareItemViewModel(
+                    image = selected.image,
+                    coinBonus = selectedItem.coinBonus,
+                    coinBonusChange = changeOf(selectedItem.coinBonus),
+                    xpBonus = selectedItem.experienceBonus,
+                    xpBonusChange = changeOf(selectedItem.experienceBonus),
+                    bountyBonus = selectedItem.bountyBonus,
+                    bountyBonusChange = changeOf(selectedItem.bountyBonus)
+                )
 
                 state.copy(
                     type = COMPARE_ITEM,
-                    itemViewModels = state.itemViewModels.map {
-                        it.copy(
-                            selected = it.item == intent.newItem
-                        )
-                    }
+                    itemViewModels = vms,
+                    newItem = compareItem,
+                    itemComparison = PetViewController.ItemComparisonViewModel(
+                        coinBonusDiff = cmpRes.coinBonus,
+                        coinBonusChange = changeOf(cmpRes.coinBonus),
+                        xpBonusDiff = cmpRes.experienceBonus,
+                        xpBonusChange = changeOf(cmpRes.experienceBonus),
+                        bountyBonusDiff = cmpRes.bountyBonus,
+                        bountyBonusChange = changeOf(cmpRes.bountyBonus)
+                    )
                 )
             }
+        }
+
+    private fun changeOf(value: Int) =
+        when {
+            value > 0 -> POSITIVE
+            value < 0 -> NEGATIVE
+            else -> NO_CHANGE
         }
 
     private fun createFoodViewModels(inventoryFood: Map<Food, Int>) =

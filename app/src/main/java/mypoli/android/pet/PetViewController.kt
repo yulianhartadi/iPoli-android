@@ -17,6 +17,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
@@ -33,7 +34,6 @@ import mypoli.android.common.view.*
 import mypoli.android.pet.PetViewState.StateType.*
 import mypoli.android.pet.store.PetStoreViewController
 import space.traversal.kapsule.required
-import timber.log.Timber
 
 
 /**
@@ -237,34 +237,35 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 anim.duration = shortAnimTime
                 anim.start()
 
+                val selectedItem = state.newItem!!
 
-                view.newItemImage.setImageResource(state.itemViewModels[0].image)
+                view.newItemImage.setImageResource(selectedItem.image)
 
                 view.curItems.visibility = View.INVISIBLE
                 view.noItem.visibility = View.VISIBLE
 
-
-                view.newCoinBonusDiff.setTextColor(colorRes(R.color.md_green_700))
-
-                view.newCoinBonusDiff.setCompoundDrawablesWithIntrinsicBounds(
-                    null,
-                    null,
-                    IconicsDrawable(view.context)
-                        .icon(Ionicons.Icon.ion_arrow_up_b)
-                        .colorRes(R.color.md_green_500)
-                        .sizeDp(12),
-                    null)
-
-                view.newXPBonusDiff.setTextColor(colorRes(R.color.md_red_700))
-
-                view.newXPBonusDiff.setCompoundDrawablesWithIntrinsicBounds(
-                    null,
-                    null,
-                    IconicsDrawable(view.context)
-                        .icon(Ionicons.Icon.ion_arrow_down_b)
-                        .colorRes(R.color.md_red_500)
-                        .sizeDp(12),
-                    null)
+//
+//                view.newCoinBonusDiff.setTextColor(colorRes(R.color.md_green_700))
+//
+//                view.newCoinBonusDiff.setCompoundDrawablesWithIntrinsicBounds(
+//                    null,
+//                    null,
+//                    IconicsDrawable(view.context)
+//                        .icon(Ionicons.Icon.ion_arrow_up_b)
+//                        .colorRes(R.color.md_green_500)
+//                        .sizeDp(12),
+//                    null)
+//
+//                view.newXPBonusDiff.setTextColor(colorRes(R.color.md_red_700))
+//
+//                view.newXPBonusDiff.setCompoundDrawablesWithIntrinsicBounds(
+//                    null,
+//                    null,
+//                    IconicsDrawable(view.context)
+//                        .icon(Ionicons.Icon.ion_arrow_down_b)
+//                        .colorRes(R.color.md_red_500)
+//                        .sizeDp(12),
+//                    null)
 
 //                val noChangeIcon = IconicsDrawable(view.context)
 //                    .icon(Ionicons.Icon.ion_code)
@@ -302,6 +303,122 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             COMPARE_ITEM -> {
                 val adapter = view.itemList.adapter as PetItemAdapter
                 adapter.updateAll(state.itemViewModels)
+
+                val selectedItem = state.newItem!!
+
+                view.newItemImage.setImageResource(selectedItem.image)
+
+                renderItemBonus(
+                    selectedItem.coinBonus,
+                    selectedItem.coinBonusChange,
+                    view.newItemCoinBonus
+                )
+
+                renderItemBonus(
+                    selectedItem.xpBonus,
+                    selectedItem.xpBonusChange,
+                    view.newItemXpBonus
+                )
+
+                renderItemBonus(
+                    selectedItem.bountyBonus,
+                    selectedItem.bountyBonusChange,
+                    view.newItemUnlockChanceBonus
+                )
+
+                val itemComparison = state.itemComparison!!
+
+//                view.newCoinBonusDiff.text = itemComparison.coinBonusDiff.toString()
+//
+//                val coinChange = itemComparison.coinBonusChange
+//
+//                when (coinChange) {
+//                    ItemComparisonViewModel.Change.POSITIVE -> {
+//                        view.newCoinBonusDiff.setTextColor(colorRes(R.color.md_green_700))
+//                        view.newCoinBonusDiff.setCompoundDrawablesWithIntrinsicBounds(
+//                            null,
+//                            null,
+//                            IconicsDrawable(view.context)
+//                                .icon(Ionicons.Icon.ion_arrow_up_b)
+//                                .colorRes(R.color.md_green_500)
+//                                .sizeDp(12),
+//                            null)
+//                    }
+//                    ItemComparisonViewModel.Change.NEGATIVE -> {
+//                        view.newCoinBonusDiff.setTextColor(colorRes(R.color.md_red_700))
+//                        view.newCoinBonusDiff.setCompoundDrawablesWithIntrinsicBounds(
+//                            null,
+//                            null,
+//                            IconicsDrawable(view.context)
+//                                .icon(Ionicons.Icon.ion_arrow_down_b)
+//                                .colorRes(R.color.md_red_500)
+//                                .sizeDp(12),
+//                            null)
+//                    }
+//                    ItemComparisonViewModel.Change.NO_CHANGE -> {
+//
+//                    }
+//                }
+//
+//                view.newXPBonusDiff.text = itemComparison.xpBonusDiff.toString()
+//                view.newBountyBonusDiff.text = itemComparison.bountyBonusDiff.toString()
+
+                renderItemChangeResult(itemComparison.coinBonusDiff, itemComparison.coinBonusChange, view.newCoinBonusDiff)
+                renderItemChangeResult(itemComparison.xpBonusDiff, itemComparison.xpBonusChange, view.newXPBonusDiff)
+                renderItemChangeResult(itemComparison.bountyBonusDiff, itemComparison.bountyBonusChange, view.newBountyBonusDiff)
+            }
+        }
+    }
+
+    private fun renderItemBonus(bonus: Int, changeType: ItemComparisonViewModel.Change, bonusView: TextView) {
+        when (changeType) {
+            ItemComparisonViewModel.Change.POSITIVE -> {
+                bonusView.text = "+$bonus%"
+            }
+            ItemComparisonViewModel.Change.NEGATIVE -> {
+                bonusView.text = "$bonus%"
+            }
+            ItemComparisonViewModel.Change.NO_CHANGE -> {
+                bonusView.text = "$bonus%"
+            }
+        }
+    }
+
+    private fun renderItemChangeResult(change: Int, changeType: ItemComparisonViewModel.Change, changeView: TextView) {
+
+        when (changeType) {
+            ItemComparisonViewModel.Change.POSITIVE -> {
+                changeView.text = "+$change"
+                changeView.setTextColor(colorRes(R.color.md_green_700))
+                changeView.setCompoundDrawablesWithIntrinsicBounds(
+                    null,
+                    null,
+                    IconicsDrawable(changeView.context)
+                        .icon(Ionicons.Icon.ion_arrow_up_b)
+                        .colorRes(R.color.md_green_500)
+                        .sizeDp(12),
+                    null)
+            }
+            ItemComparisonViewModel.Change.NEGATIVE -> {
+                changeView.text = change.toString()
+                changeView.setTextColor(colorRes(R.color.md_red_700))
+                changeView.setCompoundDrawablesWithIntrinsicBounds(
+                    null,
+                    null,
+                    IconicsDrawable(changeView.context)
+                        .icon(Ionicons.Icon.ion_arrow_down_b)
+                        .colorRes(R.color.md_red_500)
+                        .sizeDp(12),
+                    null)
+            }
+            ItemComparisonViewModel.Change.NO_CHANGE -> {
+                changeView.text = "$change="
+                changeView.setTextColor(colorRes(R.color.md_dark_text_87))
+                changeView.setCompoundDrawablesWithIntrinsicBounds(
+                    null,
+                    null,
+                    null,
+                    null)
             }
         }
     }
@@ -629,7 +746,6 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             val vm = petItems[position]
             holder.itemView.itemImage.setImageResource(vm.image)
 
-            Timber.d("AAA vm ${vm.selected}")
             if (vm.selected) {
                 holder.itemView.setBackgroundColor(colorRes(R.color.md_grey_200))
             } else {
@@ -646,9 +762,29 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         override fun getItemCount() = petItems.size
 
         fun updateAll(petItems: List<PetItemViewModel>) {
-            Timber.d("AAA petItems ${petItems}")
             this.petItems = petItems
             notifyDataSetChanged()
         }
     }
+
+    data class ItemComparisonViewModel(
+        val coinBonusDiff: Int,
+        val coinBonusChange: Change,
+        val xpBonusDiff: Int,
+        val xpBonusChange: Change,
+        val bountyBonusDiff: Int,
+        val bountyBonusChange: Change
+    ) {
+        enum class Change { POSITIVE, NEGATIVE, NO_CHANGE }
+    }
+
+    data class CompareItemViewModel(
+        @DrawableRes val image: Int,
+        val coinBonus: Int,
+        val coinBonusChange: ItemComparisonViewModel.Change,
+        val xpBonus: Int,
+        val xpBonusChange: ItemComparisonViewModel.Change,
+        val bountyBonus: Int,
+        val bountyBonusChange: ItemComparisonViewModel.Change
+    )
 }
