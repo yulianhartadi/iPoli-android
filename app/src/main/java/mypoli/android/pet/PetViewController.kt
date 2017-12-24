@@ -1,9 +1,6 @@
 package mypoli.android.pet
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
+import android.animation.*
 import android.app.WallpaperManager
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
@@ -225,11 +222,12 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 view.fabItems.setOnClickListener {
                     send(PetIntent.HideItemList)
                 }
-                
+
                 view.fabBodyItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimaryDark))
             }
 
             ITEM_LIST_HIDDEN -> {
+//                ViewUtils.goneViews(view.fabHeadItems, view.fabFaceItems, view.fabBodyItems)
                 view.fabFood.isClickable = true
                 val heightOffset = (view.fabItems.height + ViewUtils.dpToPx(16f, view.context)) * 2
                 playHideFoodListAnimation(view, view.fabItems, view.fabFood, heightOffset)
@@ -242,25 +240,21 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         }
     }
 
-    private fun playItemFabsAnimation(view: View, reverse: Boolean = false) {
-        val startValue = if (reverse) 1f else 0f
-        val endValue = if (reverse) 0f else 1f
+    private fun createPopupAnimator(view: View, reverse: Boolean = false): Animator {
+        val anim = if (reverse) R.animator.popout else R.animator.popup
+        val animator = AnimatorInflater.loadAnimator(view.context, anim)
+        animator.setTarget(view)
+        animator.interpolator = OvershootInterpolator()
+        animator.duration = shortAnimTime
+        return animator
+    }
 
+    private fun playItemFabsAnimation(view: View, reverse: Boolean = false) {
         val anims = listOf<FloatingActionButton>(
             view.fabBodyItems,
             view.fabFaceItems,
             view.fabHeadItems)
-            .map {
-                val anim = AnimatorSet()
-                anim.playTogether(
-                    ObjectAnimator.ofFloat(it, "scaleX", startValue, endValue),
-                    ObjectAnimator.ofFloat(it, "scaleY", startValue, endValue),
-                    ObjectAnimator.ofFloat(it, "alpha", startValue, endValue)
-                )
-                anim.duration = shortAnimTime
-                anim.interpolator = OvershootInterpolator()
-                anim
-            }
+            .map { createPopupAnimator(it, reverse) }
 
         val anim = AnimatorSet()
         if (reverse) anim.playSequentially(anims.reversed())
