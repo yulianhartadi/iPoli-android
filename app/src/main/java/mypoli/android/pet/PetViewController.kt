@@ -33,6 +33,7 @@ import mypoli.android.common.view.*
 import mypoli.android.pet.PetViewState.StateType.*
 import mypoli.android.pet.store.PetStoreViewController
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 
 /**
@@ -224,6 +225,66 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 }
 
                 view.fabBodyItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimaryDark))
+
+                view.reviveContainer.visibility = View.GONE
+                view.statsContainer.visibility = View.GONE
+                val anim = ObjectAnimator.ofFloat(view.cardContainer, "y", (-view.cardContainer.height).toFloat(), 0f)
+                anim.addListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationStart(animation: Animator?) {
+                        view.compareItemsContainer.visibility = View.VISIBLE
+                    }
+                })
+                anim.duration = shortAnimTime
+                anim.start()
+
+
+                view.newItemImage.setImageResource(state.itemViewModels[0].image)
+
+                view.curItems.visibility = View.INVISIBLE
+                view.noItem.visibility = View.VISIBLE
+
+
+                view.newCoinBonusDiff.setTextColor(colorRes(R.color.md_green_700))
+
+                view.newCoinBonusDiff.setCompoundDrawablesWithIntrinsicBounds(
+                    null,
+                    null,
+                    IconicsDrawable(view.context)
+                        .icon(Ionicons.Icon.ion_arrow_up_b)
+                        .colorRes(R.color.md_green_500)
+                        .sizeDp(12),
+                    null)
+
+                view.newXPBonusDiff.setTextColor(colorRes(R.color.md_red_700))
+
+                view.newXPBonusDiff.setCompoundDrawablesWithIntrinsicBounds(
+                    null,
+                    null,
+                    IconicsDrawable(view.context)
+                        .icon(Ionicons.Icon.ion_arrow_down_b)
+                        .colorRes(R.color.md_red_500)
+                        .sizeDp(12),
+                    null)
+
+//                val noChangeIcon = IconicsDrawable(view.context)
+//                    .icon(Ionicons.Icon.ion_code)
+//                    .colorRes(R.color.md_black)
+//                    .sizeDp(12)
+
+//                view.newBountyBonusDiff.setCompoundDrawablesWithIntrinsicBounds(
+//                    null, null,
+//                    noChangeIcon,
+//                    null
+//                )
+
+//                view.comparedItemXpBonus.setCompoundDrawablesWithIntrinsicBounds(
+//                    ContextCompat.getDrawable(view.context, R.drawable.ic_star_yellow_16dp),
+//                    null,
+//                    IconicsDrawable(view.context)
+//                        .icon(Ionicons.Icon.ion_android_arrow_down)
+//                        .colorRes(R.color.md_red_700)
+//                        .sizeDp(16),
+//                    null)
             }
 
             ITEM_LIST_HIDDEN -> {
@@ -236,6 +297,11 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 view.fabItems.setOnClickListener {
                     send(PetIntent.ShowItemList)
                 }
+            }
+
+            COMPARE_ITEM -> {
+                val adapter = view.itemList.adapter as PetItemAdapter
+                adapter.updateAll(state.itemViewModels)
             }
         }
     }
@@ -552,7 +618,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
-    data class PetItemViewModel(@DrawableRes val image: Int, val gemPrice: Int?, val item: PetItem)
+    data class PetItemViewModel(@DrawableRes val image: Int, val gemPrice: Int?, val item: PetItem, val selected: Boolean = false)
 
     inner class PetItemAdapter(private var petItems: List<PetItemViewModel>) : RecyclerView.Adapter<ViewHolder>() {
 
@@ -563,14 +629,26 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             val vm = petItems[position]
             holder.itemView.itemImage.setImageResource(vm.image)
 
+            Timber.d("AAA vm ${vm.selected}")
+            if (vm.selected) {
+                holder.itemView.setBackgroundColor(colorRes(R.color.md_grey_200))
+            } else {
+                holder.itemView.background = null
+            }
+
             vm.gemPrice?.let {
                 holder.itemView.itemPrice.text = it.toString()
             }
+
+            holder.itemView.sendOnClick(PetIntent.CompareItem(vm.item))
         }
 
         override fun getItemCount() = petItems.size
 
-
+        fun updateAll(petItems: List<PetItemViewModel>) {
+            Timber.d("AAA petItems ${petItems}")
+            this.petItems = petItems
+            notifyDataSetChanged()
+        }
     }
 }
-

@@ -14,7 +14,7 @@ import mypoli.android.Constants
 import mypoli.android.R
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.FeedbackDialogController
-import mypoli.android.quest.calendar.CalendarViewController
+import mypoli.android.pet.PetViewController
 import mypoli.android.theme.ThemeStoreViewController
 import org.json.JSONObject
 import space.traversal.kapsule.required
@@ -80,13 +80,14 @@ class HomeViewController(args: Bundle? = null) :
         val childRouter = getChildRouter(view.controllerContainer, null)
         if (!childRouter.hasRootController()) {
             childRouter.setRoot(
-                RouterTransaction.with(CalendarViewController())
+                RouterTransaction.with(PetViewController())
+//                RouterTransaction.with(CalendarViewController())
 //                RouterTransaction.with(ThemeStoreViewController())
                     .pushChangeHandler(handler)
                     .popChangeHandler(handler)
             )
         }
-//        RatePopup().showDialog(router, "ASAs")
+//        RatePopup().show(view.context)
 
 //        DurationPickerDialogController().showDialog(childRouter, "hello")
 

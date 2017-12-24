@@ -128,9 +128,9 @@ class PetPresenter(
             is PetIntent.ShowItemList -> {
 
                 val vms = listOf(
-                    PetViewController.PetItemViewModel(R.drawable.pet_item_body_sweater_red_deer, 2, PetItem.RED_HAT),
-                    PetViewController.PetItemViewModel(R.drawable.pet_item_body_sweater_red_snowflakes, 2, PetItem.RED_HAT),
-                    PetViewController.PetItemViewModel(R.drawable.pet_item_body_sweater_red_white, 2, PetItem.RED_HAT)
+                    PetViewController.PetItemViewModel(R.drawable.pet_item_body_sweater_red_deer, 2, PetItem.RED_HAT, selected = true),
+                    PetViewController.PetItemViewModel(R.drawable.pet_item_body_sweater_red_snowflakes, 2, PetItem.GLASSES),
+                    PetViewController.PetItemViewModel(R.drawable.pet_item_body_sweater_red_white, 2, PetItem.MASK)
                 )
 
                 state.copy(
@@ -142,6 +142,18 @@ class PetPresenter(
             is PetIntent.HideItemList -> {
                 state.copy(
                     type = ITEM_LIST_HIDDEN
+                )
+            }
+
+            is PetIntent.CompareItem -> {
+
+                state.copy(
+                    type = COMPARE_ITEM,
+                    itemViewModels = state.itemViewModels.map {
+                        it.copy(
+                            selected = it.item == intent.newItem
+                        )
+                    }
                 )
             }
         }
