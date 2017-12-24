@@ -94,7 +94,7 @@ class RatePresenter(
 }
 
 class RatePopup :
-    MviPopup<RateViewState, RatePopup, RatePresenter, RateIntent>() {
+    MviPopup<RateViewState, RatePopup, RatePresenter, RateIntent>(isAutoHide = true) {
 
     override fun createView(inflater: LayoutInflater): View {
         val view = inflater.inflate(R.layout.popup_rate, null)
