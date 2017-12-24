@@ -304,7 +304,7 @@
                 android:id="@+id/curItems"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:constraint_referenced_ids="curItemUnlockChanceBonus,curItemImage,curItemXpBonus,curItemCoinBonus" />
+                app:constraint_referenced_ids="curItemBountyBonus,curItemImage,curItemXpBonus,curItemCoinBonus" />
 
         </android.support.constraint.ConstraintLayout>
 
