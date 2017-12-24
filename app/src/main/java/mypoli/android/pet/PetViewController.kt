@@ -305,7 +305,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 adapter.updateAll(state.itemViewModels)
 
                 val selectedItem = state.newItem!!
-
+                
                 view.newItemImage.setImageResource(selectedItem.image)
 
                 renderItemBonus(

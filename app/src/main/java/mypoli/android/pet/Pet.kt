@@ -213,6 +213,16 @@ enum class PetItem(
     RED_HAT(1, 1, 1, PetItemType.HEAD, 4)
 }
 
+enum class AndroidPetItem(
+    @StringRes val itemName: Int,
+    @DrawableRes val image: Int) {
+
+    GLASSES(R.string.pet_bear, R.drawable.pet_item_face_glasses),
+    BEARD(R.string.pet_bear, R.drawable.pet_item_face_beard),
+    MASK(R.string.pet_bear, R.drawable.pet_item_face_mask),
+    RED_HAT(R.string.pet_bear, R.drawable.pet_item_head_had_red)
+}
+
 enum class PetAvatar(val gemPrice: Int, val feedingCategory: FeedingCategory) {
     SEAL(7, FeedingCategory.CARNIVOROUS),
     DONKEY(5, FeedingCategory.HERBIVOROUS),
