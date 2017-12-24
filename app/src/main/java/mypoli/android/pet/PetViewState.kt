@@ -12,6 +12,7 @@ sealed class PetIntent : Intent {
     object ShowCurrencyConverter : PetIntent()
     object ShowItemList : PetIntent()
     object HideItemList : PetIntent()
+    data class CompareItem(val newItem: PetItem) : PetIntent()
 }
 
 object LoadDataIntent : PetIntent()
@@ -48,6 +49,6 @@ data class PetViewState(
         LOADING, DATA_LOADED, FOOD_LIST_SHOWN, FOOD_LIST_HIDDEN, PET_FED,
         FOOD_TOO_EXPENSIVE, PET_CHANGED, RENAME_PET, PET_RENAMED,
         PET_REVIVED, REVIVE_TOO_EXPENSIVE, SHOW_CURRENCY_CONVERTER,
-        ITEM_LIST_SHOWN, ITEM_LIST_HIDDEN
+        ITEM_LIST_SHOWN, ITEM_LIST_HIDDEN, COMPARE_ITEM
     }
 }

@@ -57,6 +57,7 @@
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="@+id/pet"
         app:layout_constraintEnd_toEndOf="@+id/pet"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/pet"
         app:srcCompat="@drawable/pet_3_item_head_christmas_horns" />
 
@@ -69,6 +70,243 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/compareItemsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible">
+
+            <View
+                android:id="@+id/separator"
+                android:layout_width="5dp"
+                android:layout_height="0dp"
+                android:background="?attr/colorAccent"
+                android:visibility="visible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/curItemImage"
+                android:layout_width="78dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                app:layout_constraintEnd_toStartOf="@+id/curItemCoinBonus"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/pet_item_head_christmas_horns" />
+
+            <ImageView
+                android:id="@+id/newItemImage"
+                android:layout_width="78dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                app:layout_constraintEnd_toStartOf="@+id/newItemCoinBonus"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/separator"
+                app:layout_constraintStart_toStartOf="@+id/separator"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/pet_item_head_had_red" />
+
+            <TextView
+                android:id="@+id/curItemCoinBonus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:drawablePadding="4dp"
+                android:drawableStart="@drawable/ic_life_coin_24dp"
+                android:gravity="center_vertical"
+                android:text="+5%"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                app:layout_constraintEnd_toStartOf="@+id/separator"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/curItemImage"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="+5%" />
+
+
+            <TextView
+                android:id="@+id/newItemCoinBonus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:drawablePadding="4dp"
+                android:drawableStart="@drawable/ic_life_coin_24dp"
+                android:gravity="center_vertical"
+                android:text="+5%"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                app:layout_constraintEnd_toStartOf="@+id/newCoinBonusDiff"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/newItemImage"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="+5%" />
+
+            <TextView
+                android:id="@+id/curItemXpBonus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                android:drawablePadding="4dp"
+                android:drawableStart="@drawable/ic_star_yellow_24dp"
+                android:gravity="center_vertical"
+                android:text="+7%"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                app:layout_constraintEnd_toStartOf="@+id/separator"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/curItemCoinBonus"
+                app:layout_constraintTop_toBottomOf="@+id/curItemCoinBonus"
+                tools:text="+7%" />
+
+            <TextView
+                android:id="@+id/newItemXpBonus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                android:drawablePadding="4dp"
+                android:drawableStart="@drawable/ic_star_yellow_24dp"
+                android:gravity="center_vertical"
+                android:text="-2%"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/newItemCoinBonus"
+                app:layout_constraintTop_toBottomOf="@+id/newItemCoinBonus"
+                tools:text="+7%" />
+
+            <TextView
+                android:id="@+id/curItemUnlockChanceBonus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                android:drawablePadding="4dp"
+                android:drawableStart="@drawable/ic_four_leaf_clover_24dp"
+                android:gravity="center_vertical"
+                android:text="+3%"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                app:layout_constraintEnd_toStartOf="@+id/separator"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/curItemCoinBonus"
+                app:layout_constraintTop_toBottomOf="@+id/curItemXpBonus"
+                tools:text="+3%" />
+
+            <TextView
+                android:id="@+id/newItemUnlockChanceBonus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                android:drawablePadding="4dp"
+                android:drawableStart="@drawable/ic_four_leaf_clover_24dp"
+                android:gravity="center_vertical"
+                android:text="3%"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/newItemCoinBonus"
+                app:layout_constraintTop_toBottomOf="@+id/newItemXpBonus"
+                tools:text="+3%" />
+
+            <Button
+                android:id="@+id/button2"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Buy"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/separator"
+                app:layout_constraintTop_toBottomOf="@+id/newItemUnlockChanceBonus"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/noItem"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="No item equipped"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/md_dark_text_54"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/separator"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/newCoinBonusDiff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:drawablePadding="2dp"
+                android:text="+1"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                app:layout_constraintBottom_toBottomOf="@+id/newItemCoinBonus"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/newItemCoinBonus"
+                app:layout_constraintTop_toTopOf="@+id/newItemCoinBonus"
+                tools:text="+1" />
+
+            <TextView
+                android:id="@+id/newXPBonusDiff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="2dp"
+                android:text="-2"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                app:layout_constraintBottom_toBottomOf="@+id/newItemXpBonus"
+                app:layout_constraintEnd_toEndOf="@+id/newCoinBonusDiff"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/newCoinBonusDiff"
+                app:layout_constraintTop_toTopOf="@+id/newItemXpBonus"
+                tools:text="-2" />
+
+            <TextView
+                android:id="@+id/newBountyBonusDiff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="2dp"
+                android:text="+0 ="
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                app:layout_constraintBottom_toBottomOf="@+id/newItemUnlockChanceBonus"
+                app:layout_constraintEnd_toEndOf="@+id/newXPBonusDiff"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/newXPBonusDiff"
+                app:layout_constraintTop_toTopOf="@+id/newItemUnlockChanceBonus"
+                tools:text="+0 =" />
+
+            <android.support.constraint.Group
+                android:id="@+id/curItems"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="curItemUnlockChanceBonus,curItemImage,curItemXpBonus,curItemCoinBonus" />
+
+        </android.support.constraint.ConstraintLayout>
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/reviveContainer"
