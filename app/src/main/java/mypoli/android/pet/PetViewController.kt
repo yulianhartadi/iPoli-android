@@ -1,6 +1,9 @@
 package mypoli.android.pet
 
-import android.animation.*
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.app.WallpaperManager
 import android.content.res.ColorStateList
 import android.graphics.Bitmap
@@ -217,33 +220,20 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 view.itemList.adapter = PetItemAdapter(state.itemViewModels)
                 view.fabFood.isClickable = false
                 playShowItemsAnimation(view, view.fabItems, view.fabFood)
+                playItemFabsAnimation(view)
                 view.fabItems.setImageResource(R.drawable.ic_close_white_24dp)
                 view.fabItems.setOnClickListener {
                     send(PetIntent.HideItemList)
                 }
-
-                listOf(view.fabHeadItems, view.fabFaceItems, view.fabBodyItems)
-                    .forEach {
-                        it.visible = true
-                        it.alpha = 0f
-                    }
-
-                val fabBodyAnim = createPopupAnimator(view.fabBodyItems)
-                val fabFaceAnim = createPopupAnimator(view.fabFaceItems)
-                val fabHeadAnim = createPopupAnimator(view.fabHeadItems)
-
-                val animatorSet = AnimatorSet()
-                animatorSet.playSequentially(fabBodyAnim, fabFaceAnim, fabHeadAnim)
-                animatorSet.start()
-
+                
                 view.fabBodyItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimaryDark))
             }
 
             ITEM_LIST_HIDDEN -> {
-                ViewUtils.goneViews(view.fabHeadItems, view.fabFaceItems, view.fabBodyItems)
                 view.fabFood.isClickable = true
                 val heightOffset = (view.fabItems.height + ViewUtils.dpToPx(16f, view.context)) * 2
                 playHideFoodListAnimation(view, view.fabItems, view.fabFood, heightOffset)
+                playItemFabsAnimation(view, true)
                 view.fabItems.setImageResource(R.drawable.ic_sword_white_24dp)
                 view.fabItems.setOnClickListener {
                     send(PetIntent.ShowItemList)
@@ -252,12 +242,30 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         }
     }
 
-    private fun createPopupAnimator(view: View): Animator {
-        val animator = AnimatorInflater.loadAnimator(view.context, R.animator.popup)
-        animator.setTarget(view)
-        animator.interpolator = OvershootInterpolator()
-        animator.duration = shortAnimTime
-        return animator
+    private fun playItemFabsAnimation(view: View, reverse: Boolean = false) {
+        val startValue = if (reverse) 1f else 0f
+        val endValue = if (reverse) 0f else 1f
+
+        val anims = listOf<FloatingActionButton>(
+            view.fabBodyItems,
+            view.fabFaceItems,
+            view.fabHeadItems)
+            .map {
+                val anim = AnimatorSet()
+                anim.playTogether(
+                    ObjectAnimator.ofFloat(it, "scaleX", startValue, endValue),
+                    ObjectAnimator.ofFloat(it, "scaleY", startValue, endValue),
+                    ObjectAnimator.ofFloat(it, "alpha", startValue, endValue)
+                )
+                anim.duration = shortAnimTime
+                anim.interpolator = OvershootInterpolator()
+                anim
+            }
+
+        val anim = AnimatorSet()
+        if (reverse) anim.playSequentially(anims.reversed())
+        else anim.playSequentially(anims)
+        anim.start()
     }
 
     private fun setPetAsWallpaper(view: View) {
