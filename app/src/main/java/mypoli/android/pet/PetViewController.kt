@@ -220,11 +220,12 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 playShowItemsAnimation(view, view.fabItems, view.fabFood)
                 playItemFabsAnimation(view)
                 view.fabItems.setImageResource(R.drawable.ic_close_white_24dp)
-                view.fabItems.setOnClickListener {
-                    send(PetIntent.HideItemList)
-                }
+                view.fabItems.sendOnClick(PetIntent.HideItemList)
 
                 view.fabBodyItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimaryDark))
+                view.fabHeadItems.sendOnClick(PetIntent.ShowHeadItemList)
+                view.fabFaceItems.sendOnClick(PetIntent.ShowFaceItemList)
+                view.fabBodyItems.sendOnClick(PetIntent.ShowBodyItemList)
 
                 view.reviveContainer.visibility = View.GONE
                 view.statsContainer.visibility = View.GONE
@@ -237,82 +238,89 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 anim.duration = shortAnimTime
                 anim.start()
 
-                val selectedItem = state.newItem!!
-
-                view.newItemImage.setImageResource(selectedItem.image)
-
-                view.curItems.visibility = View.INVISIBLE
-                view.noItem.visibility = View.VISIBLE
+                renderItemComparison(state, view)
             }
 
             ITEM_LIST_HIDDEN -> {
-//                ViewUtils.goneViews(view.fabHeadItems, view.fabFaceItems, view.fabBodyItems)
                 view.fabFood.isClickable = true
                 val heightOffset = (view.fabItems.height + ViewUtils.dpToPx(16f, view.context)) * 2
                 playHideFoodListAnimation(view, view.fabItems, view.fabFood, heightOffset)
                 playItemFabsAnimation(view, true)
                 view.fabItems.setImageResource(R.drawable.ic_sword_white_24dp)
-                view.fabItems.setOnClickListener {
-                    send(PetIntent.ShowItemList)
-                }
+                view.fabItems.sendOnClick(PetIntent.ShowItemList)
             }
 
-            COMPARE_ITEM -> {
+            COMPARE_ITEMS -> {
                 val adapter = view.itemList.adapter as PetItemAdapter
                 adapter.updateAll(state.itemViewModels)
-
-                state.currentItem?.let {
-                    view.curItems.visible = true
-                    view.noItem.visible = false
-                    view.curItemImage.setImageResource(it.image)
-
-                    renderItemBonus(
-                        it.coinBonus,
-                        it.coinBonusChange,
-                        view.curItemCoinBonus
-                    )
-
-                    renderItemBonus(
-                        it.xpBonus,
-                        it.xpBonusChange,
-                        view.curItemXpBonus
-                    )
-
-                    renderItemBonus(
-                        it.bountyBonus,
-                        it.bountyBonusChange,
-                        view.curItemBountyBonus
-                    )
-                }
-
-                val newItem = state.newItem!!
-
-                view.newItemImage.setImageResource(newItem.image)
-
-                renderItemBonus(
-                    newItem.coinBonus,
-                    newItem.coinBonusChange,
-                    view.newItemCoinBonus
-                )
-
-                renderItemBonus(
-                    newItem.xpBonus,
-                    newItem.xpBonusChange,
-                    view.newItemXpBonus
-                )
-
-                renderItemBonus(
-                    newItem.bountyBonus,
-                    newItem.bountyBonusChange,
-                    view.newItemBountyBonus
-                )
-
-                val itemComparison = state.itemComparison!!
-
-                renderItemChangeResult(itemComparison.coinBonusDiff, itemComparison.coinBonusChange, view.newCoinBonusDiff)
-                renderItemChangeResult(itemComparison.xpBonusDiff, itemComparison.xpBonusChange, view.newXPBonusDiff)
-                renderItemChangeResult(itemComparison.bountyBonusDiff, itemComparison.bountyBonusChange, view.newBountyBonusDiff)
+                renderItemComparison(state, view)
             }
+
+            CHANGE_ITEM_CATEGORY -> {
+                val adapter = view.itemList.adapter as PetItemAdapter
+                adapter.updateAll(state.itemViewModels)
+                renderItemComparison(state, view)
+            }
+        }
+    }
+
+    private fun renderItemComparison(state: PetViewState, view: View) {
+        if (state.currentItem != null) {
+            state.currentItem.let {
+                view.curItems.visible = true
+                view.noItem.visible = false
+                view.curItemImage.setImageResource(it.image)
+
+                renderItemBonus(
+                    it.coinBonus,
+                    it.coinBonusChange,
+                    view.curItemCoinBonus
+                )
+
+                renderItemBonus(
+                    it.xpBonus,
+                    it.xpBonusChange,
+                    view.curItemXpBonus
+                )
+
+                renderItemBonus(
+                    it.bountyBonus,
+                    it.bountyBonusChange,
+                    view.curItemBountyBonus
+                )
+            }
+        } else {
+
+            view.curItems.visibility = View.INVISIBLE
+            view.noItem.visibility = View.VISIBLE
+        }
+
+        state.newItem?.let {
+            view.newItemImage.setImageResource(it.image)
+
+            renderItemBonus(
+                it.coinBonus,
+                it.coinBonusChange,
+                view.newItemCoinBonus
+            )
+
+            renderItemBonus(
+                it.xpBonus,
+                it.xpBonusChange,
+                view.newItemXpBonus
+            )
+
+            renderItemBonus(
+                it.bountyBonus,
+                it.bountyBonusChange,
+                view.newItemBountyBonus
+            )
+        }
+
+        state.itemComparison?.let {
+            renderItemChangeResult(it.coinBonusDiff, it.coinBonusChange, view.newCoinBonusDiff)
+            renderItemChangeResult(it.xpBonusDiff, it.xpBonusChange, view.newXPBonusDiff)
+            renderItemChangeResult(it.bountyBonusDiff, it.bountyBonusChange, view.newBountyBonusDiff)
         }
     }
 
@@ -726,6 +734,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
     data class CompareItemViewModel(
         @DrawableRes val image: Int,
+        val item: PetItem,
         val coinBonus: Int,
         val coinBonusChange: ItemComparisonViewModel.Change,
         val xpBonus: Int,
