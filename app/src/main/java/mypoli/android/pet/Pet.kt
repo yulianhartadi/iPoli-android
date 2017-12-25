@@ -256,7 +256,8 @@ enum class AndroidPetAvatar(
     @DrawableRes val image: Int,
     @DrawableRes val headImage: Int,
     @DrawableRes val deadStateImage: Int,
-    val moodImage: Map<PetMood, Int>) {
+    val moodImage: Map<PetMood, Int>,
+    val items: Map<PetItem, Int>) {
 
     SEAL(R.string.pet_seal, R.string.pet_seal_description, R.drawable.pet_1, R.drawable.pet_1_head, R.drawable.pet_1_dead,
         mapOf(
@@ -264,6 +265,17 @@ enum class AndroidPetAvatar(
             GOOD to R.drawable.pet_1_good,
             HAPPY to R.drawable.pet_1_happy,
             AWESOME to R.drawable.pet_1_awesome
+        ),
+        mapOf(
+            PetItem.GLASSES to R.drawable.pet_1_item_face_glasses,
+            PetItem.BEARD to R.drawable.pet_1_item_beard,
+            PetItem.MASK to R.drawable.pet_1_item_face_mask,
+            PetItem.RED_HAT to R.drawable.pet_1_item_head_had_red,
+            PetItem.HORNS to R.drawable.pet_1_item_head_christmas_horns,
+            PetItem.RED_WHITE_HAT to R.drawable.pet_1_item_head_had_red_white,
+            PetItem.RED_WHITE_SWEATER to R.drawable.pet_1_item_sweater_red_white,
+            PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_1_item_sweater_red_snowflakes,
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_1_item_sweater_red_deer
         )),
     PIG(R.string.pet_pig, R.string.pet_pig_description, R.drawable.pet_11, R.drawable.pet_11_head, R.drawable.pet_11_dead,
         mapOf(
@@ -271,6 +283,17 @@ enum class AndroidPetAvatar(
             GOOD to R.drawable.pet_11_good,
             HAPPY to R.drawable.pet_11_happy,
             AWESOME to R.drawable.pet_11_awesome
+        ),
+        mapOf(
+            PetItem.GLASSES to R.drawable.pet_11_item_face_glasses,
+            PetItem.BEARD to R.drawable.pet_11_item_beard,
+            PetItem.MASK to R.drawable.pet_11_item_face_mask,
+            PetItem.RED_HAT to R.drawable.pet_11_item_head_had_red,
+            PetItem.HORNS to R.drawable.pet_11_item_head_christmas_horns,
+            PetItem.RED_WHITE_HAT to R.drawable.pet_11_item_head_had_red_white,
+            PetItem.RED_WHITE_SWEATER to R.drawable.pet_11_item_sweater_red_white,
+            PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_11_item_sweater_red_snowflakes,
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_11_item_sweater_red_deer
         )),
     DONKEY(R.string.pet_donkey, R.string.pet_donkey_description, R.drawable.pet_2, R.drawable.pet_2_head, R.drawable.pet_2_dead,
         mapOf(
@@ -278,22 +301,53 @@ enum class AndroidPetAvatar(
             GOOD to R.drawable.pet_2_good,
             HAPPY to R.drawable.pet_2_happy,
             AWESOME to R.drawable.pet_2_awesome
-        )
-    ),
+        ),
+        mapOf(
+            PetItem.GLASSES to R.drawable.pet_2_item_face_glasses,
+            PetItem.BEARD to R.drawable.pet_2_item_beard,
+            PetItem.MASK to R.drawable.pet_2_item_face_mask,
+            PetItem.RED_HAT to R.drawable.pet_2_item_head_had_red,
+            PetItem.HORNS to R.drawable.pet_2_item_head_christmas_horns,
+            PetItem.RED_WHITE_HAT to R.drawable.pet_2_item_head_had_red_white,
+            PetItem.RED_WHITE_SWEATER to R.drawable.pet_2_item_sweater_red_white,
+            PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_2_item_sweater_red_snowflakes,
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_2_item_sweater_red_deer
+        )),
     ELEPHANT(R.string.pet_elephant, R.string.pet_elephant_description, R.drawable.pet_3, R.drawable.pet_3_head, R.drawable.pet_3_dead,
         mapOf(
             SAD to R.drawable.pet_3_sad,
             GOOD to R.drawable.pet_3_good,
             HAPPY to R.drawable.pet_3_happy,
             AWESOME to R.drawable.pet_3_awesome
-        )
-    ),
+        ),
+        mapOf(
+            PetItem.GLASSES to R.drawable.pet_3_item_face_glasses,
+            PetItem.BEARD to R.drawable.pet_3_item_beard,
+            PetItem.MASK to R.drawable.pet_3_item_face_mask,
+            PetItem.RED_HAT to R.drawable.pet_3_item_head_had_red,
+            PetItem.HORNS to R.drawable.pet_3_item_head_christmas_horns,
+            PetItem.RED_WHITE_HAT to R.drawable.pet_3_item_head_had_red_white,
+            PetItem.RED_WHITE_SWEATER to R.drawable.pet_3_item_sweater_red_white,
+            PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_3_item_sweater_red_snowflakes,
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_3_item_sweater_red_deer
+        )),
     BEAVER(R.string.pet_beaver, R.string.pet_beaver_description, R.drawable.pet_4, R.drawable.pet_4_head, R.drawable.pet_4_dead,
         mapOf(
             SAD to R.drawable.pet_4_sad,
             GOOD to R.drawable.pet_4_good,
             HAPPY to R.drawable.pet_4_happy,
             AWESOME to R.drawable.pet_4_awesome
+        ),
+        mapOf(
+            PetItem.GLASSES to R.drawable.pet_4_item_face_glasses,
+            PetItem.BEARD to R.drawable.pet_4_item_beard,
+            PetItem.MASK to R.drawable.pet_4_item_face_mask,
+            PetItem.RED_HAT to R.drawable.pet_4_item_head_had_red,
+            PetItem.HORNS to R.drawable.pet_4_item_head_christmas_horns,
+            PetItem.RED_WHITE_HAT to R.drawable.pet_4_item_head_had_red_white,
+            PetItem.RED_WHITE_SWEATER to R.drawable.pet_4_item_sweater_red_white,
+            PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_4_item_sweater_red_snowflakes,
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_4_item_sweater_red_deer
         )),
     CHICKEN(R.string.pet_chicken, R.string.pet_chicken_description, R.drawable.pet_5, R.drawable.pet_5_head, R.drawable.pet_5_dead,
         mapOf(
@@ -301,6 +355,17 @@ enum class AndroidPetAvatar(
             GOOD to R.drawable.pet_5_good,
             HAPPY to R.drawable.pet_5_happy,
             AWESOME to R.drawable.pet_5_awesome
+        ),
+        mapOf(
+            PetItem.GLASSES to R.drawable.pet_5_item_face_glasses,
+            PetItem.BEARD to R.drawable.pet_5_item_beard,
+            PetItem.MASK to R.drawable.pet_5_item_face_mask,
+            PetItem.RED_HAT to R.drawable.pet_5_item_head_had_red,
+            PetItem.HORNS to R.drawable.pet_5_item_head_christmas_horns,
+            PetItem.RED_WHITE_HAT to R.drawable.pet_5_item_head_had_red_white,
+            PetItem.RED_WHITE_SWEATER to R.drawable.pet_5_item_sweater_red_white,
+            PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_5_item_sweater_red_snowflakes,
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_5_item_sweater_red_deer
         )),
     BEAR(R.string.pet_bear, R.string.pet_bear_description, R.drawable.pet_6, R.drawable.pet_6_head, R.drawable.pet_6_dead,
         mapOf(
@@ -308,6 +373,17 @@ enum class AndroidPetAvatar(
             GOOD to R.drawable.pet_6_good,
             HAPPY to R.drawable.pet_6_happy,
             AWESOME to R.drawable.pet_6_awesome
+        ),
+        mapOf(
+            PetItem.GLASSES to R.drawable.pet_6_item_face_glasses,
+            PetItem.BEARD to R.drawable.pet_6_item_beard,
+            PetItem.MASK to R.drawable.pet_6_item_face_mask,
+            PetItem.RED_HAT to R.drawable.pet_6_item_head_had_red,
+            PetItem.HORNS to R.drawable.pet_6_item_head_christmas_horns,
+            PetItem.RED_WHITE_HAT to R.drawable.pet_6_item_head_had_red_white,
+            PetItem.RED_WHITE_SWEATER to R.drawable.pet_6_item_sweater_red_white,
+            PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_6_item_sweater_red_snowflakes,
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_6_item_sweater_red_deer
         )),
     LION(R.string.pet_lion, R.string.pet_lion_description, R.drawable.pet_7, R.drawable.pet_7_head, R.drawable.pet_7_dead,
         mapOf(
@@ -315,6 +391,17 @@ enum class AndroidPetAvatar(
             GOOD to R.drawable.pet_7_good,
             HAPPY to R.drawable.pet_7_happy,
             AWESOME to R.drawable.pet_7_awesome
+        ),
+        mapOf(
+            PetItem.GLASSES to R.drawable.pet_7_item_face_glasses,
+            PetItem.BEARD to R.drawable.pet_7_item_beard,
+            PetItem.MASK to R.drawable.pet_7_item_face_mask,
+            PetItem.RED_HAT to R.drawable.pet_7_item_head_had_red,
+            PetItem.HORNS to R.drawable.pet_7_item_head_christmas_horns,
+            PetItem.RED_WHITE_HAT to R.drawable.pet_7_item_head_had_red_white,
+            PetItem.RED_WHITE_SWEATER to R.drawable.pet_7_item_sweater_red_white,
+            PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_7_item_sweater_red_snowflakes,
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_7_item_sweater_red_deer
         )),
     CAT(R.string.pet_cat, R.string.pet_cat_description, R.drawable.pet_8, R.drawable.pet_8_head, R.drawable.pet_8_dead,
         mapOf(
@@ -322,6 +409,17 @@ enum class AndroidPetAvatar(
             GOOD to R.drawable.pet_8_good,
             HAPPY to R.drawable.pet_8_happy,
             AWESOME to R.drawable.pet_8_awesome
+        ),
+        mapOf(
+            PetItem.GLASSES to R.drawable.pet_8_item_face_glasses,
+            PetItem.BEARD to R.drawable.pet_8_item_beard,
+            PetItem.MASK to R.drawable.pet_8_item_face_mask,
+            PetItem.RED_HAT to R.drawable.pet_8_item_head_had_red,
+            PetItem.HORNS to R.drawable.pet_8_item_head_christmas_horns,
+            PetItem.RED_WHITE_HAT to R.drawable.pet_8_item_head_had_red_white,
+            PetItem.RED_WHITE_SWEATER to R.drawable.pet_8_item_sweater_red_white,
+            PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_8_item_sweater_red_snowflakes,
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_8_item_sweater_red_deer
         )),
     MONKEY(R.string.pet_monkey, R.string.pet_monkey_description, R.drawable.pet_9, R.drawable.pet_9_head, R.drawable.pet_9_dead,
         mapOf(
@@ -329,6 +427,17 @@ enum class AndroidPetAvatar(
             GOOD to R.drawable.pet_9_good,
             HAPPY to R.drawable.pet_9_happy,
             AWESOME to R.drawable.pet_9_awesome
+        ),
+        mapOf(
+            PetItem.GLASSES to R.drawable.pet_9_item_face_glasses,
+            PetItem.BEARD to R.drawable.pet_9_item_beard,
+            PetItem.MASK to R.drawable.pet_9_item_face_mask,
+            PetItem.RED_HAT to R.drawable.pet_9_item_head_had_red,
+            PetItem.HORNS to R.drawable.pet_9_item_head_christmas_horns,
+            PetItem.RED_WHITE_HAT to R.drawable.pet_9_item_head_had_red_white,
+            PetItem.RED_WHITE_SWEATER to R.drawable.pet_9_item_sweater_red_white,
+            PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_9_item_sweater_red_snowflakes,
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_9_item_sweater_red_deer
         )),
     DUCK(R.string.pet_duck, R.string.pet_duck_description, R.drawable.pet_10, R.drawable.pet_10_head, R.drawable.pet_10_dead,
         mapOf(
@@ -336,6 +445,17 @@ enum class AndroidPetAvatar(
             GOOD to R.drawable.pet_10_good,
             HAPPY to R.drawable.pet_10_happy,
             AWESOME to R.drawable.pet_10_awesome
+        ),
+        mapOf(
+            PetItem.GLASSES to R.drawable.pet_10_item_face_glasses,
+            PetItem.BEARD to R.drawable.pet_10_item_beard,
+            PetItem.MASK to R.drawable.pet_10_item_face_mask,
+            PetItem.RED_HAT to R.drawable.pet_10_item_head_had_red,
+            PetItem.HORNS to R.drawable.pet_10_item_head_christmas_horns,
+            PetItem.RED_WHITE_HAT to R.drawable.pet_10_item_head_had_red_white,
+            PetItem.RED_WHITE_SWEATER to R.drawable.pet_10_item_sweater_red_white,
+            PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_10_item_sweater_red_snowflakes,
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_10_item_sweater_red_deer
         )),
     ZEBRA(R.string.pet_zebra, R.string.pet_zebra_description, R.drawable.pet_12, R.drawable.pet_12_head, R.drawable.pet_12_dead,
         mapOf(
@@ -343,5 +463,16 @@ enum class AndroidPetAvatar(
             GOOD to R.drawable.pet_12_good,
             HAPPY to R.drawable.pet_12_happy,
             AWESOME to R.drawable.pet_12_awesome
+        ),
+        mapOf(
+            PetItem.GLASSES to R.drawable.pet_12_item_face_glasses,
+            PetItem.BEARD to R.drawable.pet_12_item_beard,
+            PetItem.MASK to R.drawable.pet_12_item_face_mask,
+            PetItem.RED_HAT to R.drawable.pet_12_item_head_had_red,
+            PetItem.HORNS to R.drawable.pet_12_item_head_christmas_horns,
+            PetItem.RED_WHITE_HAT to R.drawable.pet_12_item_sweater_red_white,
+            PetItem.RED_WHITE_SWEATER to R.drawable.pet_12_item_sweater_red_white,
+            PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_12_item_sweater_red_snowflakes,
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_12_item_sweater_red_deer
         ))
 }
