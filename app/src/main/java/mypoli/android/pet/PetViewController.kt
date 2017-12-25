@@ -141,9 +141,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 playShowItemsAnimation(view, view.fabFood, view.fabItems)
 
                 view.fabFood.setImageResource(R.drawable.ic_close_white_24dp)
-                view.fabFood.setOnClickListener {
-                    send(HideFoodListIntent)
-                }
+                view.fabFood.sendOnClick(HideFoodListIntent)
             }
 
             FOOD_LIST_HIDDEN -> {
@@ -321,6 +319,17 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         state.newItem?.let {
             view.newItemImage.setImageResource(it.image)
 
+            state.newHatItemImage?.let {
+                view.hat.setImageResource(it)
+            }
+            state.newMaskItemImage?.let {
+                view.mask.setImageResource(it)
+
+            }
+            state.newBodyArmorItemImage?.let {
+                view.bodyArmor.setImageResource(it)
+            }
+
             renderItemBonus(
                 it.coinBonus,
                 it.coinBonusChange,
@@ -455,6 +464,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     }
 
     private fun resizePet(view: View) {
+
         val petView = view.pet
         val hatView = view.hat
 
@@ -491,8 +501,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         val anims = listOf<ImageView>(
             view.pet,
             view.petState,
-            view.body,
-            view.face,
+            view.bodyArmor,
+            view.mask,
             view.hat)
             .map {
                 ObjectAnimator.ofFloat(it, "y",
@@ -512,6 +522,15 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         val avatar = AndroidPetAvatar.valueOf(state.avatar!!.name)
 
         view.pet.setImageResource(avatar.image)
+        state.equippedHatItem?.let {
+            view.hat.setImageResource(it.image)
+        }
+        state.equippedMaskItem?.let {
+            view.mask.setImageResource(it.image)
+        }
+        state.equippedBodyArmorItem?.let {
+            view.bodyArmor.setImageResource(it.image)
+        }
 
         if (state.isDead) {
             view.reviveContainer.visibility = View.VISIBLE

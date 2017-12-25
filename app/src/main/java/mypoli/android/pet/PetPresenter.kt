@@ -89,9 +89,9 @@ class PetPresenter(
                     type = type,
                     petName = pet.name,
                     stateName = pet.mood.name.toLowerCase().capitalize(),
-                    hatItem = toItemViewModel(equipment.hat),
-                    maskItem = toItemViewModel(equipment.mask),
-                    bodyArmorItem = toItemViewModel(equipment.bodyArmor),
+                    equippedHatItem = toItemViewModel(equipment.hat),
+                    equippedMaskItem = toItemViewModel(equipment.mask),
+                    equippedBodyArmorItem = toItemViewModel(equipment.bodyArmor),
                     mp = pet.moodPoints,
                     hp = pet.healthPoints,
                     coinsBonus = pet.coinBonus,
@@ -165,6 +165,16 @@ class PetPresenter(
 
                 val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(state.currentItem?.item, intent.newItem))
 
+
+                val petItems = AndroidPetAvatar.valueOf(state.avatar!!.name).items
+                val petCompareItemImage = petItems[compareItem.item]
+                val itemType = compareItem.item.type
+
+                val newItemImage: (PetItemType, PetViewController.EquipmentItemViewModel?) -> Int? =
+                    { type, equippedImage ->
+                        if (itemType == type) petCompareItemImage else equippedImage?.image
+                    }
+
                 state.copy(
                     type = COMPARE_ITEMS,
                     itemViewModels = vms,
@@ -176,7 +186,10 @@ class PetPresenter(
                         xpBonusChange = changeOf(cmpRes.experienceBonus),
                         bountyBonusDiff = cmpRes.bountyBonus,
                         bountyBonusChange = changeOf(cmpRes.bountyBonus)
-                    )
+                    ),
+                    newHatItemImage = newItemImage(PetItemType.HAT, state.equippedHatItem),
+                    newMaskItemImage = newItemImage(PetItemType.MASK, state.equippedMaskItem),
+                    newBodyArmorItemImage = newItemImage(PetItemType.BODY_ARMOR, state.equippedBodyArmorItem)
                 )
             }
 
@@ -200,13 +213,13 @@ class PetPresenter(
 
         val current = when (itemType) {
             PetItemType.HAT -> {
-                state.hatItem
+                state.equippedHatItem
             }
             PetItemType.MASK -> {
-                state.maskItem
+                state.equippedMaskItem
             }
             PetItemType.BODY_ARMOR -> {
-                state.bodyArmorItem
+                state.equippedBodyArmorItem
             }
         }
 
