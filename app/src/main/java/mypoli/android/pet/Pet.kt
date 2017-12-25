@@ -15,6 +15,7 @@ import java.lang.Math.abs
 data class Pet(
     val name: String,
     val avatar: PetAvatar,
+    val equipment: PetEquipment = PetEquipment(),
     val moodPoints: Int = Constants.DEFAULT_PET_HP,
     val healthPoints: Int = Constants.DEFAULT_PET_MP,
     val mood: PetMood = moodFor(moodPoints),
@@ -192,12 +193,18 @@ data class Pet(
     }
 }
 
+data class PetEquipment(
+    val hat: PetItem? = null,
+    val mask: PetItem? = null,
+    val bodyArmor: PetItem? = null
+)
+
 enum class PetMood {
     SAD, GOOD, HAPPY, AWESOME
 }
 
 enum class PetItemType {
-    HEAD, FACE, BODY
+    HAT, MASK, BODY_ARMOR
 }
 
 enum class PetItem(
@@ -207,15 +214,15 @@ enum class PetItem(
     val type: PetItemType,
     val gemPrice: Int
 ) {
-    GLASSES(4, 5, -9, PetItemType.FACE, 2),
-    BEARD(-5, 5, 3, PetItemType.FACE, 2),
-    MASK(10, -5, 2, PetItemType.FACE, 2),
-    RED_HAT(1, 1, 1, PetItemType.HEAD, 4),
-    HORNS(1, 1, 1, PetItemType.HEAD, 4),
-    RED_WHITE_HAT(1, 1, 1, PetItemType.HEAD, 4),
-    RED_WHITE_SWEATER(4, 4, 1, PetItemType.BODY, 4),
-    RED_SNOWFLAKES_SWEATER(2, -3, 2, PetItemType.BODY, 4),
-    RED_DEER_SWEATER(6, -5, 9, PetItemType.BODY, 4)
+    GLASSES(4, 5, -9, PetItemType.MASK, 2),
+    BEARD(-5, 5, 3, PetItemType.MASK, 2),
+    MASK(10, -5, 2, PetItemType.MASK, 2),
+    RED_HAT(1, 1, 1, PetItemType.HAT, 4),
+    HORNS(1, 1, 1, PetItemType.HAT, 4),
+    RED_WHITE_HAT(1, 1, 1, PetItemType.HAT, 4),
+    RED_WHITE_SWEATER(4, 4, 1, PetItemType.BODY_ARMOR, 4),
+    RED_SNOWFLAKES_SWEATER(2, -3, 2, PetItemType.BODY_ARMOR, 4),
+    RED_DEER_SWEATER(6, -5, 9, PetItemType.BODY_ARMOR, 4)
 }
 
 enum class AndroidPetItem(

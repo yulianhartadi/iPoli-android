@@ -42,11 +42,18 @@ data class CouchbaseAuthProvider(val map: MutableMap<String, Any?> = mutableMapO
 data class CouchbasePet(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var name: String by map
     var avatar: String by map
+    var equipment: MutableMap<String, Any?> by map
     var moodPoints: Int by map
     var healthPoints: Int by map
     var experienceBonus: Float by map
     var coinBonus: Float by map
     var itemDropChanceBonus: Float by map
+}
+
+data class CouchbasePetEquipment(val map: MutableMap<String, Any?> = mutableMapOf()) {
+    var hat: String? by map
+    var mask: String? by map
+    var bodyArmor: String? by map
 }
 
 data class CouchbaseInventory(val map: MutableMap<String, Any?> = mutableMapOf()) {
