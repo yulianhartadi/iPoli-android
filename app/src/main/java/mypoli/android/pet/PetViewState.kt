@@ -49,6 +49,7 @@ data class PetViewState(
     val currentItem: PetViewController.CompareItemViewModel? = null,
     val newItem: PetViewController.CompareItemViewModel? = null,
     val itemComparison: PetViewController.ItemComparisonViewModel? = null,
+    val currentItemsType: PetItemType? = null,
     val playerGems: Int = 0
 ) : ViewState {
     enum class StateType {

@@ -220,6 +220,7 @@ class PetPresenter(
             itemViewModels = vms,
             currentItem = cItem,
             newItem = nItem,
+            currentItemsType = itemType,
             itemComparison = PetViewController.ItemComparisonViewModel(
                 coinBonusDiff = cmpRes.coinBonus,
                 coinBonusChange = changeOf(cmpRes.coinBonus),
