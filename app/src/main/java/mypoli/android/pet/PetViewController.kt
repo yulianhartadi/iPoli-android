@@ -222,7 +222,17 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 view.fabItems.setImageResource(R.drawable.ic_close_white_24dp)
                 view.fabItems.sendOnClick(PetIntent.HideItemList)
 
-                view.fabBodyItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimaryDark))
+                val itemsType = state.currentItemsType!!
+
+                view.fabHeadItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
+                view.fabFaceItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
+                view.fabBodyItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
+                when (itemsType) {
+                    PetItemType.HEAD -> view.fabHeadItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimaryDark))
+                    PetItemType.FACE -> view.fabFaceItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimaryDark))
+                    PetItemType.BODY -> view.fabBodyItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimaryDark))
+                }
+
                 view.fabHeadItems.sendOnClick(PetIntent.ShowHeadItemList)
                 view.fabFaceItems.sendOnClick(PetIntent.ShowFaceItemList)
                 view.fabBodyItems.sendOnClick(PetIntent.ShowBodyItemList)
@@ -257,6 +267,19 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             CHANGE_ITEM_CATEGORY -> {
+
+                view.fabHeadItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
+                view.fabFaceItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
+                view.fabBodyItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
+
+                val itemsType = state.currentItemsType!!
+
+                when (itemsType) {
+                    PetItemType.HEAD -> view.fabHeadItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimaryDark))
+                    PetItemType.FACE -> view.fabFaceItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimaryDark))
+                    PetItemType.BODY -> view.fabBodyItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimaryDark))
+                }
+
                 val adapter = view.itemList.adapter as PetItemAdapter
                 adapter.updateAll(state.itemViewModels)
                 renderItemComparison(state, view)
