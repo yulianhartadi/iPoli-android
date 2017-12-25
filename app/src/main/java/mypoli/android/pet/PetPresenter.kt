@@ -127,7 +127,7 @@ class PetPresenter(
             }
 
             is PetIntent.ShowItemList ->
-                changeItemTypeState(state, PetItemType.BODY, ITEM_LIST_SHOWN)
+                changeItemTypeState(state, PetItemType.BODY_ARMOR, ITEM_LIST_SHOWN)
 
             is PetIntent.CompareItem -> {
                 val vms = state.itemViewModels.map {
@@ -168,13 +168,13 @@ class PetPresenter(
             }
 
             is PetIntent.ShowHeadItemList ->
-                changeItemTypeState(state, PetItemType.HEAD, CHANGE_ITEM_CATEGORY)
+                changeItemTypeState(state, PetItemType.HAT, CHANGE_ITEM_CATEGORY)
 
             is PetIntent.ShowFaceItemList ->
-                changeItemTypeState(state, PetItemType.FACE, CHANGE_ITEM_CATEGORY)
+                changeItemTypeState(state, PetItemType.MASK, CHANGE_ITEM_CATEGORY)
 
             is PetIntent.ShowBodyItemList ->
-                changeItemTypeState(state, PetItemType.BODY, CHANGE_ITEM_CATEGORY)
+                changeItemTypeState(state, PetItemType.BODY_ARMOR, CHANGE_ITEM_CATEGORY)
 
             is PetIntent.HideItemList ->
                 state.copy(

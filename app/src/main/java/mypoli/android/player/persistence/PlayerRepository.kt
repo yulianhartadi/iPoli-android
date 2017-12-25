@@ -3,9 +3,7 @@ package mypoli.android.player.persistence
 import com.couchbase.lite.*
 import mypoli.android.common.persistence.BaseCouchbaseRepository
 import mypoli.android.common.persistence.Repository
-import mypoli.android.pet.Food
-import mypoli.android.pet.Pet
-import mypoli.android.pet.PetAvatar
+import mypoli.android.pet.*
 import mypoli.android.player.*
 import mypoli.android.player.persistence.model.*
 import mypoli.android.quest.ColorPack
@@ -63,6 +61,7 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
         val pet = Pet(
             name = cPet.name,
             avatar = PetAvatar.valueOf(cPet.avatar),
+            equipment = createPetEquipment(cPet),
             moodPoints = cPet.moodPoints,
             healthPoints = cPet.healthPoints,
             coinBonus = cPet.coinBonus,
@@ -98,6 +97,12 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
         )
     }
 
+    private fun createPetEquipment(couchbasePet: CouchbasePet): PetEquipment {
+        val e = CouchbasePetEquipment(couchbasePet.equipment)
+        val toPetItem: (String?) -> PetItem? = { it?.let { PetItem.valueOf(it) } }
+        return PetEquipment(toPetItem(e.hat), toPetItem(e.mask), toPetItem(e.bodyArmor))
+    }
+
     override fun toCouchbaseObject(entity: Player) =
         CouchbasePlayer().also {
             it.id = entity.id
@@ -119,11 +124,19 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
         CouchbasePet().also {
             it.name = pet.name
             it.avatar = pet.avatar.name
+            it.equipment = createCouchbasePetEquipment(pet.equipment).map
             it.healthPoints = pet.healthPoints
             it.moodPoints = pet.moodPoints
             it.coinBonus = pet.coinBonus
             it.experienceBonus = pet.experienceBonus
             it.itemDropChanceBonus = pet.bountyBonus
+        }
+
+    private fun createCouchbasePetEquipment(equipment: PetEquipment) =
+        CouchbasePetEquipment().also {
+            it.hat = equipment.hat?.name
+            it.mask = equipment.mask?.name
+            it.bodyArmor = equipment.bodyArmor?.name
         }
 
     private fun createCouchbaseAuthProvider(authProvider: AuthProvider) =
