@@ -322,6 +322,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             state.newHatItemImage?.let {
                 view.hat.setImageResource(it)
             }
+
             state.newMaskItemImage?.let {
                 view.mask.setImageResource(it)
 
@@ -464,7 +465,6 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     }
 
     private fun resizePet(view: View) {
-
         val petView = view.pet
         val hatView = view.hat
 
@@ -483,7 +483,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             lp.verticalBias = PET_BOTTOM_BORDER_PERCENT
             petView.layoutParams = lp
 
-            val originalHatHeight = hatView.height
+            val hatDrawable = view.context.resources.getDrawable(R.drawable.pet_3_item_head_christmas_horns, null)
+            val originalHatHeight = hatDrawable.intrinsicHeight
             val newHatHeight = originalHatHeight * scale
 
             val hlp = hatView.layoutParams as ConstraintLayout.LayoutParams
