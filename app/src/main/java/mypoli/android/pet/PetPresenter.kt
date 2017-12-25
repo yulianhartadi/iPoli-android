@@ -3,7 +3,6 @@ package mypoli.android.pet
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.Constants
-import mypoli.android.R
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.pet.PetViewController.ItemComparisonViewModel.Change.*
@@ -129,17 +128,14 @@ class PetPresenter(
 
             is PetIntent.ShowItemList -> {
 
-                val vms = listOf(
-                    PetViewController.PetItemViewModel(R.drawable.pet_item_body_sweater_red_deer, 2, PetItem.RED_HAT, selected = true),
-                    PetViewController.PetItemViewModel(R.drawable.pet_item_body_sweater_red_snowflakes, 2, PetItem.GLASSES),
-                    PetViewController.PetItemViewModel(R.drawable.pet_item_body_sweater_red_white, 2, PetItem.MASK)
-                )
+                val vms = createPetItemViewModels(PetItemType.BODY, PetItem.RED_WHITE_SWEATER)
 
-                val current = vms.last()
+                val current = vms.first()
                 val currentItem = current.item
 
                 val cItem = PetViewController.CompareItemViewModel(
                     image = current.image,
+                    item = currentItem,
                     coinBonus = currentItem.coinBonus,
                     coinBonusChange = changeOf(currentItem.coinBonus),
                     xpBonus = currentItem.experienceBonus,
@@ -153,6 +149,7 @@ class PetPresenter(
 
                 val nItem = PetViewController.CompareItemViewModel(
                     image = selected.image,
+                    item = selectedItem,
                     coinBonus = selectedItem.coinBonus,
                     coinBonusChange = changeOf(selectedItem.coinBonus),
                     xpBonus = selectedItem.experienceBonus,
@@ -182,24 +179,12 @@ class PetPresenter(
                     )
                 }
 
-                val current = vms.last()
-                val currentItem = current.item
-
-                val cItem = PetViewController.CompareItemViewModel(
-                    image = current.image,
-                    coinBonus = currentItem.coinBonus,
-                    coinBonusChange = changeOf(currentItem.coinBonus),
-                    xpBonus = currentItem.experienceBonus,
-                    xpBonusChange = changeOf(currentItem.experienceBonus),
-                    bountyBonus = currentItem.bountyBonus,
-                    bountyBonusChange = changeOf(currentItem.bountyBonus)
-                )
-
                 val selected = vms.first { it.selected }
                 val selectedItem = selected.item
 
                 val compareItem = PetViewController.CompareItemViewModel(
                     image = selected.image,
+                    item = selectedItem,
                     coinBonus = selectedItem.coinBonus,
                     coinBonusChange = changeOf(selectedItem.coinBonus),
                     xpBonus = selectedItem.experienceBonus,
@@ -208,12 +193,11 @@ class PetPresenter(
                     bountyBonusChange = changeOf(selectedItem.bountyBonus)
                 )
 
-                val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(currentItem, intent.newItem))
+                val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(state.currentItem?.item, intent.newItem))
 
                 state.copy(
                     type = COMPARE_ITEM,
                     itemViewModels = vms,
-                    currentItem = cItem,
                     newItem = compareItem,
                     itemComparison = PetViewController.ItemComparisonViewModel(
                         coinBonusDiff = cmpRes.coinBonus,
@@ -233,6 +217,18 @@ class PetPresenter(
             value < 0 -> NEGATIVE
             else -> NO_CHANGE
         }
+
+    private fun createPetItemViewModels(petItemType: PetItemType, selectedItem: PetItem) =
+        PetItem.values()
+            .filter { it.type == petItemType }
+            .map {
+                PetViewController.PetItemViewModel(
+                    AndroidPetItem.valueOf(it.name).image,
+                    it.gemPrice,
+                    it,
+                    it == selectedItem
+                )
+            }
 
     private fun createFoodViewModels(inventoryFood: Map<Food, Int>) =
         Food.values().map {

@@ -213,9 +213,9 @@ enum class PetItem(
     RED_HAT(1, 1, 1, PetItemType.HEAD, 4),
     HORNS(1, 1, 1, PetItemType.HEAD, 4),
     RED_WHITE_HAT(1, 1, 1, PetItemType.HEAD, 4),
-    RED_WHITE_SWEATER(1, 1, 1, PetItemType.BODY, 4),
-    RED_SNOWFLAKES_SWEATER(1, 1, 1, PetItemType.BODY, 4),
-    RED_DEER_SWEATER(1, 1, 1, PetItemType.BODY, 4)
+    RED_WHITE_SWEATER(4, 4, 1, PetItemType.BODY, 4),
+    RED_SNOWFLAKES_SWEATER(2, -3, 2, PetItemType.BODY, 4),
+    RED_DEER_SWEATER(6, -5, 9, PetItemType.BODY, 4)
 }
 
 enum class AndroidPetItem(
