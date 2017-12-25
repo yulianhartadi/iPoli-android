@@ -75,10 +75,23 @@ class PetPresenter(
                     else -> PET_CHANGED
                 }
 
+                val equipment = pet.equipment
+
+                val petItems = AndroidPetAvatar.valueOf(pet.avatar.name).items
+
+                val toItemViewModel: (PetItem?) -> PetViewController.EquipmentItemViewModel? = {
+                    it?.let {
+                        PetViewController.EquipmentItemViewModel(petItems[it]!!, it)
+                    }
+                }
+
                 state.copy(
                     type = type,
                     petName = pet.name,
                     stateName = pet.mood.name.toLowerCase().capitalize(),
+                    hatItem = toItemViewModel(equipment.hat),
+                    maskItem = toItemViewModel(equipment.mask),
+                    bodyArmorItem = toItemViewModel(equipment.bodyArmor),
                     mp = pet.moodPoints,
                     hp = pet.healthPoints,
                     coinsBonus = pet.coinBonus,
@@ -185,19 +198,31 @@ class PetPresenter(
     private fun changeItemTypeState(state: PetViewState, itemType: PetItemType, stateType: PetViewState.StateType): PetViewState {
         val vms = createPetItemViewModels(itemType, PetItem.values().first { it.type == itemType })
 
-        val current = vms.first()
-        val currentItem = current.item
+        val current = when (itemType) {
+            PetItemType.HAT -> {
+                state.hatItem
+            }
+            PetItemType.MASK -> {
+                state.maskItem
+            }
+            PetItemType.BODY_ARMOR -> {
+                state.bodyArmorItem
+            }
+        }
 
-        val cItem = PetViewController.CompareItemViewModel(
-            image = current.image,
-            item = currentItem,
-            coinBonus = currentItem.coinBonus,
-            coinBonusChange = changeOf(currentItem.coinBonus),
-            xpBonus = currentItem.experienceBonus,
-            xpBonusChange = changeOf(currentItem.experienceBonus),
-            bountyBonus = currentItem.bountyBonus,
-            bountyBonusChange = changeOf(currentItem.bountyBonus)
-        )
+        val currentItem = current?.let {
+            val item = it.item
+            PetViewController.CompareItemViewModel(
+                image = it.image,
+                item = item,
+                coinBonus = item.coinBonus,
+                coinBonusChange = changeOf(item.coinBonus),
+                xpBonus = item.experienceBonus,
+                xpBonusChange = changeOf(item.experienceBonus),
+                bountyBonus = item.bountyBonus,
+                bountyBonusChange = changeOf(item.bountyBonus)
+            )
+        }
 
         val selected = vms.first { it.selected }
         val selectedItem = selected.item
@@ -213,12 +238,12 @@ class PetPresenter(
             bountyBonusChange = changeOf(selectedItem.bountyBonus)
         )
 
-        val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(currentItem, selectedItem))
+        val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(currentItem?.item, selectedItem))
 
         return state.copy(
             type = stateType,
             itemViewModels = vms,
-            currentItem = cItem,
+            currentItem = currentItem,
             newItem = nItem,
             currentItemsType = itemType,
             itemComparison = PetViewController.ItemComparisonViewModel(

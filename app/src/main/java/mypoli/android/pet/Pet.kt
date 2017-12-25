@@ -264,7 +264,8 @@ enum class AndroidPetAvatar(
     @DrawableRes val headImage: Int,
     @DrawableRes val deadStateImage: Int,
     val moodImage: Map<PetMood, Int>,
-    val items: Map<PetItem, Int>) {
+    val items: Map<PetItem, Int>
+) {
 
     SEAL(R.string.pet_seal, R.string.pet_seal_description, R.drawable.pet_1, R.drawable.pet_1_head, R.drawable.pet_1_dead,
         mapOf(

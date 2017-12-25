@@ -744,6 +744,11 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         }
     }
 
+    data class EquipmentItemViewModel(
+        @DrawableRes val image: Int,
+        val item: PetItem
+    )
+
     data class ItemComparisonViewModel(
         val coinBonusDiff: Int,
         val coinBonusChange: Change,
