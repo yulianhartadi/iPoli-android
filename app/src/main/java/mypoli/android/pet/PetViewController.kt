@@ -220,11 +220,12 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 playShowItemsAnimation(view, view.fabItems, view.fabFood)
                 playItemFabsAnimation(view)
                 view.fabItems.setImageResource(R.drawable.ic_close_white_24dp)
-                view.fabItems.setOnClickListener {
-                    send(PetIntent.HideItemList)
-                }
+                view.fabItems.sendOnClick(PetIntent.HideItemList)
 
                 view.fabBodyItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimaryDark))
+                view.fabHeadItems.sendOnClick(PetIntent.ShowHeadItemList)
+                view.fabFaceItems.sendOnClick(PetIntent.ShowFaceItemList)
+                view.fabBodyItems.sendOnClick(PetIntent.ShowBodyItemList)
 
                 view.reviveContainer.visibility = View.GONE
                 view.statsContainer.visibility = View.GONE
@@ -238,17 +239,9 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 anim.start()
 
                 renderItemComparison(state, view)
-
-//                val selectedItem = state.newItem!!
-//
-//                view.newItemImage.setImageResource(selectedItem.image)
-//
-//                view.curItems.visibility = View.INVISIBLE
-//                view.noItem.visibility = View.VISIBLE
             }
 
             ITEM_LIST_HIDDEN -> {
-//                ViewUtils.goneViews(view.fabHeadItems, view.fabFaceItems, view.fabBodyItems)
                 view.fabFood.isClickable = true
                 val heightOffset = (view.fabItems.height + ViewUtils.dpToPx(16f, view.context)) * 2
                 playHideFoodListAnimation(view, view.fabItems, view.fabFood, heightOffset)
@@ -257,10 +250,15 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 view.fabItems.sendOnClick(PetIntent.ShowItemList)
             }
 
-            COMPARE_ITEM -> {
+            COMPARE_ITEMS -> {
                 val adapter = view.itemList.adapter as PetItemAdapter
                 adapter.updateAll(state.itemViewModels)
+                renderItemComparison(state, view)
+            }
 
+            CHANGE_ITEM_CATEGORY -> {
+                val adapter = view.itemList.adapter as PetItemAdapter
+                adapter.updateAll(state.itemViewModels)
                 renderItemComparison(state, view)
             }
         }

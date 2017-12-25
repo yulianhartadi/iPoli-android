@@ -126,51 +126,8 @@ class PetPresenter(
                 )
             }
 
-            is PetIntent.ShowItemList -> {
-
-                val vms = createPetItemViewModels(PetItemType.BODY, PetItem.RED_WHITE_SWEATER)
-
-                val current = vms.first()
-                val currentItem = current.item
-
-                val cItem = PetViewController.CompareItemViewModel(
-                    image = current.image,
-                    item = currentItem,
-                    coinBonus = currentItem.coinBonus,
-                    coinBonusChange = changeOf(currentItem.coinBonus),
-                    xpBonus = currentItem.experienceBonus,
-                    xpBonusChange = changeOf(currentItem.experienceBonus),
-                    bountyBonus = currentItem.bountyBonus,
-                    bountyBonusChange = changeOf(currentItem.bountyBonus)
-                )
-
-                val selected = vms.first { it.selected }
-                val selectedItem = selected.item
-
-                val nItem = PetViewController.CompareItemViewModel(
-                    image = selected.image,
-                    item = selectedItem,
-                    coinBonus = selectedItem.coinBonus,
-                    coinBonusChange = changeOf(selectedItem.coinBonus),
-                    xpBonus = selectedItem.experienceBonus,
-                    xpBonusChange = changeOf(selectedItem.experienceBonus),
-                    bountyBonus = selectedItem.bountyBonus,
-                    bountyBonusChange = changeOf(selectedItem.bountyBonus)
-                )
-
-                state.copy(
-                    type = ITEM_LIST_SHOWN,
-                    itemViewModels = vms,
-                    currentItem = cItem,
-                    newItem = nItem
-                )
-            }
-
-            is PetIntent.HideItemList -> {
-                state.copy(
-                    type = ITEM_LIST_HIDDEN
-                )
-            }
+            is PetIntent.ShowItemList ->
+                changeItemTypeState(state, PetItemType.BODY, ITEM_LIST_SHOWN)
 
             is PetIntent.CompareItem -> {
                 val vms = state.itemViewModels.map {
@@ -196,7 +153,7 @@ class PetPresenter(
                 val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(state.currentItem?.item, intent.newItem))
 
                 state.copy(
-                    type = COMPARE_ITEM,
+                    type = COMPARE_ITEMS,
                     itemViewModels = vms,
                     newItem = compareItem,
                     itemComparison = PetViewController.ItemComparisonViewModel(
@@ -209,7 +166,70 @@ class PetPresenter(
                     )
                 )
             }
+
+            is PetIntent.ShowHeadItemList ->
+                changeItemTypeState(state, PetItemType.HEAD, CHANGE_ITEM_CATEGORY)
+
+            is PetIntent.ShowFaceItemList ->
+                changeItemTypeState(state, PetItemType.FACE, CHANGE_ITEM_CATEGORY)
+
+            is PetIntent.ShowBodyItemList ->
+                changeItemTypeState(state, PetItemType.BODY, CHANGE_ITEM_CATEGORY)
+
+            is PetIntent.HideItemList ->
+                state.copy(
+                    type = ITEM_LIST_HIDDEN
+                )
         }
+
+    private fun changeItemTypeState(state: PetViewState, itemType: PetItemType, stateType: PetViewState.StateType): PetViewState {
+        val vms = createPetItemViewModels(itemType, PetItem.values().first { it.type == itemType })
+
+        val current = vms.first()
+        val currentItem = current.item
+
+        val cItem = PetViewController.CompareItemViewModel(
+            image = current.image,
+            item = currentItem,
+            coinBonus = currentItem.coinBonus,
+            coinBonusChange = changeOf(currentItem.coinBonus),
+            xpBonus = currentItem.experienceBonus,
+            xpBonusChange = changeOf(currentItem.experienceBonus),
+            bountyBonus = currentItem.bountyBonus,
+            bountyBonusChange = changeOf(currentItem.bountyBonus)
+        )
+
+        val selected = vms.first { it.selected }
+        val selectedItem = selected.item
+
+        val nItem = PetViewController.CompareItemViewModel(
+            image = selected.image,
+            item = selectedItem,
+            coinBonus = selectedItem.coinBonus,
+            coinBonusChange = changeOf(selectedItem.coinBonus),
+            xpBonus = selectedItem.experienceBonus,
+            xpBonusChange = changeOf(selectedItem.experienceBonus),
+            bountyBonus = selectedItem.bountyBonus,
+            bountyBonusChange = changeOf(selectedItem.bountyBonus)
+        )
+
+        val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(currentItem, selectedItem))
+
+        return state.copy(
+            type = stateType,
+            itemViewModels = vms,
+            currentItem = cItem,
+            newItem = nItem,
+            itemComparison = PetViewController.ItemComparisonViewModel(
+                coinBonusDiff = cmpRes.coinBonus,
+                coinBonusChange = changeOf(cmpRes.coinBonus),
+                xpBonusDiff = cmpRes.experienceBonus,
+                xpBonusChange = changeOf(cmpRes.experienceBonus),
+                bountyBonusDiff = cmpRes.bountyBonus,
+                bountyBonusChange = changeOf(cmpRes.bountyBonus)
+            )
+        )
+    }
 
     private fun changeOf(value: Int) =
         when {
