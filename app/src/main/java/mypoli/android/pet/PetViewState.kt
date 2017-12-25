@@ -1,5 +1,6 @@
 package mypoli.android.pet
 
+import android.support.annotation.DrawableRes
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.player.Player
@@ -44,9 +45,12 @@ data class PetViewState(
     val avatar: PetAvatar? = null,
     val mood: PetMood? = null,
     val isDead: Boolean = false,
-    val hatItem: PetViewController.EquipmentItemViewModel? = null,
-    val maskItem: PetViewController.EquipmentItemViewModel? = null,
-    val bodyArmorItem: PetViewController.EquipmentItemViewModel? = null,
+    val equippedHatItem: PetViewController.EquipmentItemViewModel? = null,
+    val equippedMaskItem: PetViewController.EquipmentItemViewModel? = null,
+    val equippedBodyArmorItem: PetViewController.EquipmentItemViewModel? = null,
+    @DrawableRes val newHatItemImage: Int? = null,
+    @DrawableRes val newMaskItemImage: Int? = null,
+    @DrawableRes val newBodyArmorItemImage: Int? = null,
     val foodViewModels: List<PetViewController.PetFoodViewModel> = listOf(),
     val itemViewModels: List<PetViewController.PetItemViewModel> = listOf(),
     val currentItem: PetViewController.CompareItemViewModel? = null,

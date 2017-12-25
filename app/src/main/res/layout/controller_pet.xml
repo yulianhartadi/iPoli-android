@@ -23,43 +23,41 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="fitCenter"
-        app:layout_constraintBottom_toBottomOf="@+id/body"
-        app:layout_constraintEnd_toEndOf="@+id/body"
-        app:layout_constraintStart_toStartOf="@+id/body"
+        app:layout_constraintBottom_toBottomOf="@+id/bodyArmor"
+        app:layout_constraintEnd_toEndOf="@+id/bodyArmor"
+        app:layout_constraintStart_toStartOf="@+id/bodyArmor"
         app:layout_constraintTop_toTopOf="@+id/pet" />
 
     <ImageView
-        android:id="@+id/body"
+        android:id="@+id/bodyArmor"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="@+id/pet"
         app:layout_constraintEnd_toEndOf="@+id/pet"
         app:layout_constraintStart_toStartOf="@+id/pet"
-        app:layout_constraintTop_toTopOf="@+id/pet"
-        app:srcCompat="@drawable/pet_3_item_sweater_red_snowflakes" />
+        app:layout_constraintTop_toTopOf="@+id/pet" />
 
     <ImageView
-        android:id="@+id/face"
+        android:id="@+id/mask"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="fitCenter"
-        app:layout_constraintBottom_toBottomOf="@+id/body"
-        app:layout_constraintEnd_toEndOf="@+id/body"
-        app:layout_constraintStart_toStartOf="@+id/body"
+        app:layout_constraintBottom_toBottomOf="@+id/bodyArmor"
+        app:layout_constraintEnd_toEndOf="@+id/bodyArmor"
+        app:layout_constraintStart_toStartOf="@+id/bodyArmor"
         app:layout_constraintTop_toTopOf="@+id/pet" />
 
     <ImageView
         android:id="@+id/hat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:adjustViewBounds="false"
         android:scaleType="fitCenter"
+        android:adjustViewBounds="false"
         app:layout_constraintBottom_toBottomOf="@+id/pet"
         app:layout_constraintEnd_toEndOf="@+id/pet"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/pet"
-        app:srcCompat="@drawable/pet_3_item_head_christmas_horns" />
+        app:layout_constraintStart_toStartOf="@+id/pet" />
 
     <android.support.v7.widget.CardView
         android:id="@+id/cardContainer"
