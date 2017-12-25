@@ -253,6 +253,15 @@ class PetPresenter(
 
         val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(currentItem?.item, selectedItem))
 
+        val petItems = AndroidPetAvatar.valueOf(state.avatar!!.name).items
+        val petCompareItemImage = petItems[nItem.item]
+        val newItemType = nItem.item.type
+
+        val newItemImage: (PetItemType, PetViewController.EquipmentItemViewModel?) -> Int? =
+            { type, equippedImage ->
+                if (newItemType == type) petCompareItemImage else equippedImage?.image
+            }
+
         return state.copy(
             type = stateType,
             itemViewModels = vms,
@@ -266,7 +275,10 @@ class PetPresenter(
                 xpBonusChange = changeOf(cmpRes.experienceBonus),
                 bountyBonusDiff = cmpRes.bountyBonus,
                 bountyBonusChange = changeOf(cmpRes.bountyBonus)
-            )
+            ),
+            newHatItemImage = newItemImage(PetItemType.HAT, state.equippedHatItem),
+            newMaskItemImage = newItemImage(PetItemType.MASK, state.equippedMaskItem),
+            newBodyArmorItemImage = newItemImage(PetItemType.BODY_ARMOR, state.equippedBodyArmorItem)
         )
     }
 

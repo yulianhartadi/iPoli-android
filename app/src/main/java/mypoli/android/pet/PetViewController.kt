@@ -265,7 +265,6 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             CHANGE_ITEM_CATEGORY -> {
-
                 view.fabHeadItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
                 view.fabFaceItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
                 view.fabBodyItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
@@ -319,17 +318,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         state.newItem?.let {
             view.newItemImage.setImageResource(it.image)
 
-            state.newHatItemImage?.let {
-                view.hat.setImageResource(it)
-            }
-
-            state.newMaskItemImage?.let {
-                view.mask.setImageResource(it)
-
-            }
-            state.newBodyArmorItemImage?.let {
-                view.bodyArmor.setImageResource(it)
-            }
+            renderNewPetItems(state, view)
 
             renderItemBonus(
                 it.coinBonus,
@@ -523,15 +512,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         val avatar = AndroidPetAvatar.valueOf(state.avatar!!.name)
 
         view.pet.setImageResource(avatar.image)
-        state.equippedHatItem?.let {
-            view.hat.setImageResource(it.image)
-        }
-        state.equippedMaskItem?.let {
-            view.mask.setImageResource(it.image)
-        }
-        state.equippedBodyArmorItem?.let {
-            view.bodyArmor.setImageResource(it.image)
-        }
+        renderEquippedPetItems(state, view)
 
         if (state.isDead) {
             view.reviveContainer.visibility = View.VISIBLE
@@ -566,6 +547,26 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         }
 
         view.stateName.text = state.stateName
+    }
+
+    private fun renderEquippedPetItems(state: PetViewState, view: View) {
+        val setItem: (ImageView, EquipmentItemViewModel?) -> Unit = { iv, vm ->
+            if (vm == null) iv.setImageDrawable(null)
+            else iv.setImageResource(vm.image)
+        }
+        setItem(view.hat, state.equippedHatItem)
+        setItem(view.mask, state.equippedMaskItem)
+        setItem(view.bodyArmor, state.equippedBodyArmorItem)
+    }
+
+    private fun renderNewPetItems(state: PetViewState, view: View) {
+        val setItem: (ImageView, Int?) -> Unit = { iv, image ->
+            if (image == null) iv.setImageDrawable(null)
+            else iv.setImageResource(image)
+        }
+        setItem(view.hat, state.newHatItemImage)
+        setItem(view.mask, state.newMaskItemImage)
+        setItem(view.bodyArmor, state.newBodyArmorItemImage)
     }
 
     private fun renderPetName(name: String) {
