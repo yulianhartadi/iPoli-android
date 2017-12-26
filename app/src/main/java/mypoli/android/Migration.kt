@@ -1,6 +1,7 @@
 package mypoli.android
 
 import com.couchbase.lite.*
+import com.couchbase.lite.Array
 import mypoli.android.player.persistence.model.CouchbasePlayer
 
 /**
@@ -21,6 +22,14 @@ class Migration(private val database: Database) {
         if (!doc.contains("schemaVersion")) {
             doc.setInt("schemaVersion", Constants.SCHEMA_VERSION)
             doc.setInt("gems", 0)
+            database.save(doc)
+        } else if (Constants.SCHEMA_VERSION == 2) {
+            val inventoryPets = doc.getDictionary("inventory").getArray("pets")
+            inventoryPets.forEach {
+                (it as Dictionary).setArray("items", Array())
+            }
+            val pet = doc.getDictionary("pet")
+            pet.setDictionary("equipment", Dictionary())
             database.save(doc)
         }
 
