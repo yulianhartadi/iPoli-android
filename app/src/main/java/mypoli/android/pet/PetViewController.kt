@@ -238,6 +238,11 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 (view.itemList.adapter as PetItemAdapter).updateAll(state.itemViewModels)
                 renderItemComparison(state, view)
             }
+
+            ITEM_TOO_EXPENSIVE -> {
+                CurrencyConverterController().showDialog(router, "currency-converter")
+                Toast.makeText(view.context, stringRes(R.string.pet_item_too_expensive), Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

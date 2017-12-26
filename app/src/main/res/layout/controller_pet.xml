@@ -89,7 +89,7 @@
 
             <ImageView
                 android:id="@+id/curItemImage"
-                android:layout_width="78dp"
+                android:layout_width="72dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
@@ -103,7 +103,7 @@
 
             <ImageView
                 android:id="@+id/newItemImage"
-                android:layout_width="78dp"
+                android:layout_width="72dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
