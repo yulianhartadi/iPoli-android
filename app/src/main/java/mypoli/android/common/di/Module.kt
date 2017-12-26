@@ -177,6 +177,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val comparePetItemsUseCase get() = ComparePetItemsUseCase()
     override val buyPetItemUseCase get() = BuyPetItemUseCase(playerRepository)
     override val equipPetItemUseCase get() = EquipPetItemUseCase(playerRepository)
+    override val takeOffPetItemUseCase get() = TakeOffPetItemUseCase(playerRepository)
 }
 
 interface PopupUseCaseModule {
@@ -233,6 +234,7 @@ interface UseCaseModule {
     val comparePetItemsUseCase: ComparePetItemsUseCase
     val buyPetItemUseCase: BuyPetItemUseCase
     val equipPetItemUseCase: EquipPetItemUseCase
+    val takeOffPetItemUseCase: TakeOffPetItemUseCase
 }
 
 interface PresenterModule {
@@ -276,13 +278,14 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val comparePetItemsUseCase by required { comparePetItemsUseCase }
     private val buyPetItemUseCase by required { buyPetItemUseCase }
     private val equipPetItemUseCase by required { equipPetItemUseCase }
+    private val takeOffPetItemUseCase by required { takeOffPetItemUseCase }
     private val job by required { job }
     override val homePresenter get() = HomePresenter(job)
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, undoRemoveQuestUseCase, completeQuestUseCase, undoCompleteQuestUseCase, job)
     override val reminderPickerPresenter get() = ReminderPickerDialogPresenter(reminderTimeFormatter, timeUnitFormatter, findPetUseCase, job)
     override val calendarPresenter get() = CalendarPresenter(listenForPlayerChangesUseCase, calendarFormatter, job)
     override val addQuestPresenter get() = AddQuestPresenter(saveQuestUseCase, job)
-    override val petPresenter get() = PetPresenter(listenForPlayerChangesUseCase, feedPetUseCase, renamePetUseCase, revivePetUseCase, comparePetItemsUseCase, buyPetItemUseCase, equipPetItemUseCase, job)
+    override val petPresenter get() = PetPresenter(listenForPlayerChangesUseCase, feedPetUseCase, renamePetUseCase, revivePetUseCase, comparePetItemsUseCase, buyPetItemUseCase, equipPetItemUseCase, takeOffPetItemUseCase, job)
     override val petStorePresenter get() = PetStorePresenter(listenForPlayerChangesUseCase, buyPetUseCase, changePetUseCase, job)
     override val petDialogPresenter get() = PetDialogPresenter(findPetUseCase, job)
     override val themeStorePresenter get() = ThemeStorePresenter(listenForPlayerChangesUseCase, changeThemeUseCase, buyThemeUseCase, job)

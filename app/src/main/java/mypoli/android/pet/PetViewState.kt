@@ -59,7 +59,7 @@ data class PetViewState(
     val equippedItem: PetViewController.CompareItemViewModel? = null,
     val newItem: PetViewController.CompareItemViewModel? = null,
     val itemComparison: PetViewController.ItemComparisonViewModel? = null,
-    val currentItemsType: PetItemType? = null,
+    val comparedItemsType: PetItemType? = null,
     val boughtItems: Set<PetItem> = setOf(),
     val playerGems: Int = 0
 ) : ViewState {

@@ -147,18 +147,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             FOOD_LIST_HIDDEN -> {
-                view.fabItems.isClickable = true
-
-                val heightOffset = view.fabFood.height + ViewUtils.dpToPx(16f, view.context)
-
-                playHideListAnimation(view, view.foodList, view.fabFood, view.fabItems, heightOffset)
-                view.fabFood.setImageDrawable(
-                    IconicsDrawable(view.context)
-                        .icon(Ionicons.Icon.ion_pizza)
-                        .colorRes(R.color.md_white)
-                        .sizeDp(24)
-                )
-                view.fabFood.sendOnClick(ShowFoodListIntent)
+                resetFoodList(view)
             }
 
             PET_FED -> {
@@ -188,6 +177,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 (view.foodList.adapter as PetFoodAdapter).updateAll(state.foodViewModels)
                 (view.itemList.adapter as PetItemAdapter).updateAll(state.itemViewModels)
 
+                renderItemComparison(state, view)
                 renderPet(state, view)
             }
 
@@ -205,8 +195,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             PET_REVIVED -> {
-                view.fabFood.visible = true
-                view.foodList.visible = true
+                setMenusVisibility(view, true)
             }
 
             SHOW_CURRENCY_CONVERTER -> {
@@ -223,31 +212,19 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
                 renderItemCategoryFabs(view, state)
 
-                view.fabHeadItems.sendOnClick(PetIntent.ShowHeadItemList)
-                view.fabFaceItems.sendOnClick(PetIntent.ShowFaceItemList)
-                view.fabBodyItems.sendOnClick(PetIntent.ShowBodyItemList)
+                view.fabHatItems.sendOnClick(PetIntent.ShowHeadItemList)
+                view.fabMaskItems.sendOnClick(PetIntent.ShowFaceItemList)
+                view.fabBodyArmorItems.sendOnClick(PetIntent.ShowBodyItemList)
 
-                view.reviveContainer.visibility = View.GONE
-                view.statsContainer.visibility = View.GONE
-                val anim = ObjectAnimator.ofFloat(view.cardContainer, "y", (-view.cardContainer.height).toFloat(), 0f)
-                anim.addListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationStart(animation: Animator?) {
-                        view.compareItemsContainer.visibility = View.VISIBLE
-                    }
-                })
-                anim.duration = shortAnimTime
-                anim.start()
+                playCardContainerChangeAnimation(view, view.compareItemsContainer)
 
                 renderItemComparison(state, view)
             }
 
             ITEM_LIST_HIDDEN -> {
-                view.fabFood.isClickable = true
-                val heightOffset = (view.fabItems.height + ViewUtils.dpToPx(16f, view.context)) * 2
-                playHideListAnimation(view, view.itemList, view.fabItems, view.fabFood, heightOffset)
-                playItemFabsAnimation(view, true)
-                view.fabItems.setImageResource(R.drawable.ic_sword_white_24dp)
-                view.fabItems.sendOnClick(PetIntent.ShowItemList)
+                resetItemList(view)
+                playCardContainerChangeAnimation(view, view.statsContainer)
+                renderEquippedPetItems(state, view)
             }
 
             COMPARE_ITEMS -> {
@@ -264,17 +241,83 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         }
     }
 
-    private fun renderItemCategoryFabs(view: View, state: PetViewState) {
-        view.fabHeadItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
-        view.fabFaceItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
-        view.fabBodyItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
+    private fun setMenusVisibility(view: View, visible: Boolean) {
+        listOf(
+            view.fabFood,
+            view.fabItems,
+            view.foodList,
+            view.itemList,
+            view.fabHatItems,
+            view.fabMaskItems,
+            view.fabBodyArmorItems
+        ).forEach {
+            it.visible = visible
+        }
+    }
 
-        val itemsType = state.currentItemsType!!
+    private fun resetItemList(view: View) {
+        view.fabFood.isClickable = true
+        val heightOffset = (view.fabItems.height + ViewUtils.dpToPx(16f, view.context)) * 2
+        playHideListAnimation(view, view.itemList, view.fabItems, view.fabFood, heightOffset)
+        playItemFabsAnimation(view, true)
+        view.fabItems.setImageResource(R.drawable.ic_sword_white_24dp)
+        view.fabItems.sendOnClick(PetIntent.ShowItemList)
+    }
+
+    private fun resetFoodList(view: View) {
+        view.fabItems.isClickable = true
+
+        val heightOffset = view.fabFood.height + ViewUtils.dpToPx(16f, view.context)
+
+        playHideListAnimation(view, view.foodList, view.fabFood, view.fabItems, heightOffset)
+        view.fabFood.setImageDrawable(
+            IconicsDrawable(view.context)
+                .icon(Ionicons.Icon.ion_pizza)
+                .colorRes(R.color.md_white)
+                .sizeDp(24)
+        )
+        view.fabFood.sendOnClick(ShowFoodListIntent)
+    }
+
+    private fun playCardContainerChangeAnimation(view: View, showView: View) {
+        val containerHeight = view.cardContainer.height.toFloat()
+
+        val widthSpec = View.MeasureSpec.makeMeasureSpec(showView.width, View.MeasureSpec.EXACTLY)
+        val heightSpec = View.MeasureSpec.makeMeasureSpec(showView.height, View.MeasureSpec.EXACTLY)
+        showView.measure(widthSpec, heightSpec)
+        val showViewHeight = showView.measuredHeight
+
+        val slideUpAnim = ObjectAnimator.ofFloat(view.cardContainer, "y", 0f, -containerHeight)
+        slideUpAnim.duration = shortAnimTime
+
+        val slideDownAnim = ObjectAnimator.ofFloat(view.cardContainer, "y", -showViewHeight.toFloat(), 0f)
+        slideDownAnim.duration = shortAnimTime
+
+        slideDownAnim.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationStart(animation: Animator?) {
+                listOf(view.reviveContainer, view.statsContainer, view.compareItemsContainer)
+                    .filter { it != showView }
+                    .forEach { it.visibility = View.GONE }
+                showView.visibility = View.VISIBLE
+            }
+        })
+
+        val anim = AnimatorSet()
+        anim.playSequentially(slideUpAnim, slideDownAnim)
+        anim.start()
+    }
+
+    private fun renderItemCategoryFabs(view: View, state: PetViewState) {
+        view.fabHatItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
+        view.fabMaskItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
+        view.fabBodyArmorItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
+
+        val itemsType = state.comparedItemsType!!
 
         when (itemsType) {
-            PetItemType.HAT -> view.fabHeadItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorAccent))
-            PetItemType.MASK -> view.fabFaceItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorAccent))
-            PetItemType.BODY_ARMOR -> view.fabBodyItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorAccent))
+            PetItemType.HAT -> view.fabHatItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorAccent))
+            PetItemType.MASK -> view.fabMaskItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorAccent))
+            PetItemType.BODY_ARMOR -> view.fabBodyArmorItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorAccent))
         }
     }
 
@@ -315,13 +358,16 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         state.newItem?.let {
             view.newItemImage.setImageResource(it.image)
 
-            if (it.isBought) {
-                view.equipItem.visibility = View.VISIBLE
-                view.buyItem.visibility = View.INVISIBLE
+            if (it.isEquipped) {
+                view.equipItem.visible = false
+                view.buyItem.visible = false
+            } else if (it.isBought) {
+                view.equipItem.visible = true
+                view.buyItem.visible = false
                 view.equipItem.sendOnClick(PetIntent.EquipItem(state.newItem.item))
             } else {
-                view.equipItem.visibility = View.INVISIBLE
-                view.buyItem.visibility = View.VISIBLE
+                view.equipItem.visible = false
+                view.buyItem.visible = true
                 view.buyItem.sendOnClick(PetIntent.BuyItem(state.newItem.item))
             }
 
@@ -417,9 +463,9 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
     private fun playItemFabsAnimation(view: View, reverse: Boolean = false) {
         val anims = listOf<FloatingActionButton>(
-            view.fabBodyItems,
-            view.fabFaceItems,
-            view.fabHeadItems)
+            view.fabBodyArmorItems,
+            view.fabMaskItems,
+            view.fabHatItems)
             .map { createPopupAnimator(it, reverse) }
 
         val anim = AnimatorSet()
@@ -523,21 +569,24 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
         if (state.isDead) {
             view.reviveContainer.visibility = View.VISIBLE
+            view.compareItemsContainer.visibility = View.GONE
             view.statsContainer.visibility = View.GONE
             view.petState.setImageResource(avatar.deadStateImage)
 
             view.reviveHint.text = stringRes(R.string.revive_hint, state.petName)
             view.reviveCost.text = state.reviveCost.toString()
 
-            view.fabFood.visible = false
-            view.fabItems.visible = false
-            view.itemList.visible = false
-            view.foodList.visible = false
+            setMenusVisibility(view, false)
+            resetFoodList(view)
+            resetItemList(view)
+
+            ViewUtils.goneViews(view.hat, view.mask, view.bodyArmor)
 
             view.revive.sendOnClick(RevivePetIntent)
-        } else {
+        } else if (state.comparedItemsType == null) {
             view.statsContainer.visibility = View.VISIBLE
             view.reviveContainer.visibility = View.GONE
+            view.compareItemsContainer.visibility = View.GONE
             playProgressAnimation(view.healthProgress, view.healthProgress.progress, state.hp)
             view.healthPoints.text = state.hp.toString() + "/" + state.maxHP
             view.healthProgress.max = state.maxHP
@@ -549,8 +598,10 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             view.coinBonus.text = "+ %.2f".format(state.coinsBonus) + "%"
             view.xpBonus.text = "+ %.2f".format(state.xpBonus) + "%"
             view.unlockChanceBonus.text = "+ %.2f".format(state.unlockChanceBonus) + "%"
-
             view.petState.setImageResource(avatar.moodImage[state.mood]!!)
+            ViewUtils.showViews(view.hat, view.mask, view.bodyArmor)
+        } else {
+            ViewUtils.showViews(view.hat, view.mask, view.bodyArmor)
         }
 
         view.stateName.text = state.stateName

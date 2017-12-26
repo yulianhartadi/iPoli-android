@@ -23,9 +23,9 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="fitCenter"
-        app:layout_constraintBottom_toBottomOf="@+id/bodyArmor"
-        app:layout_constraintEnd_toEndOf="@+id/bodyArmor"
-        app:layout_constraintStart_toStartOf="@+id/bodyArmor"
+        app:layout_constraintBottom_toBottomOf="@+id/pet"
+        app:layout_constraintEnd_toEndOf="@+id/pet"
+        app:layout_constraintStart_toStartOf="@+id/pet"
         app:layout_constraintTop_toTopOf="@+id/pet" />
 
     <ImageView
@@ -43,9 +43,9 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="fitCenter"
-        app:layout_constraintBottom_toBottomOf="@+id/bodyArmor"
-        app:layout_constraintEnd_toEndOf="@+id/bodyArmor"
-        app:layout_constraintStart_toStartOf="@+id/bodyArmor"
+        app:layout_constraintBottom_toBottomOf="@+id/pet"
+        app:layout_constraintEnd_toEndOf="@+id/pet"
+        app:layout_constraintStart_toStartOf="@+id/pet"
         app:layout_constraintTop_toTopOf="@+id/pet" />
 
     <ImageView
@@ -239,7 +239,7 @@
 
             <Button
                 android:id="@+id/takeOff"
-                style="@style/Widget.AppCompat.Button.Colored"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -587,7 +587,7 @@
         app:srcCompat="@drawable/ic_sword_white_24dp" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabBodyItems"
+        android:id="@+id/fabBodyArmorItems"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -606,7 +606,7 @@
         app:srcCompat="@drawable/ic_armor" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabFaceItems"
+        android:id="@+id/fabMaskItems"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -625,7 +625,7 @@
         app:srcCompat="@drawable/ic_carnival_mask" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabHeadItems"
+        android:id="@+id/fabHatItems"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"

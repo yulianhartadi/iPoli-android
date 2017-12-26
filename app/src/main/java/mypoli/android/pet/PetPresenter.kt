@@ -23,6 +23,7 @@ class PetPresenter(
     private val comparePetItemsUseCase: ComparePetItemsUseCase,
     private val buyPetItemUseCase: BuyPetItemUseCase,
     private val equipPetItemUseCase: EquipPetItemUseCase,
+    private val takeOffPetItemUseCase: TakeOffPetItemUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<PetViewState>, PetViewState, PetIntent>(
     PetViewState(LOADING, reviveCost = Constants.REVIVE_PET_GEM_PRICE),
@@ -89,19 +90,8 @@ class PetPresenter(
                 }
 
                 val boughtItems = player.inventory.getPet(pet.avatar).items
-                val itemVms = state.currentItemsType?.let {
-                    val itemType = it
-                    val equippedPetItems = listOfNotNull(equipment.hat, equipment.mask, equipment.bodyArmor).toSet()
-                    createPetItemViewModels(
-                        itemType,
-                        PetItem.values().first { it.type == itemType },
-                        boughtItems,
-                        equippedPetItems
-                    )
-                } ?: listOf()
 
-                state.copy(
-                    type = type,
+                val newState = state.copy(
                     petName = pet.name,
                     stateName = pet.mood.name.toLowerCase().capitalize(),
                     equippedHatItem = toItemViewModel(equipment.hat),
@@ -116,10 +106,23 @@ class PetPresenter(
                     mood = pet.mood,
                     isDead = pet.isDead,
                     playerGems = player.gems,
-                    itemViewModels = itemVms,
                     foodViewModels = createFoodViewModels(food),
                     boughtItems = boughtItems
                 )
+
+                if (state.comparedItemsType != null) {
+
+                    changeItemTypeState(
+                        newState,
+                        state.comparedItemsType,
+                        type,
+                        state.itemViewModels.first { it.isSelected }.item
+                    )
+                } else {
+                    newState.copy(
+                        type = type
+                    )
+                }
             }
 
             is RenamePetRequestIntent -> {
@@ -243,15 +246,23 @@ class PetPresenter(
             }
 
             is PetIntent.TakeItemOff -> {
-                state
+                takeOffPetItemUseCase.execute(TakeOffPetItemUseCase.Params(intent.item))
+                state.copy(
+                    type = ITEM_TAKEN_OFF
+                )
             }
         }
 
-    private fun changeItemTypeState(state: PetViewState, itemType: PetItemType, stateType: PetViewState.StateType): PetViewState {
+    private fun changeItemTypeState(
+        state: PetViewState,
+        itemType: PetItemType,
+        stateType: PetViewState.StateType,
+        selectedItem: PetItem = PetItem.values().first { it.type == itemType }
+    ): PetViewState {
 
         val equippedPetItems = listOfNotNull(state.equippedHatItem?.item, state.equippedMaskItem?.item, state.equippedBodyArmorItem?.item).toSet()
 
-        val vms = createPetItemViewModels(itemType, PetItem.values().first { it.type == itemType }, state.boughtItems, equippedPetItems)
+        val vms = createPetItemViewModels(itemType, selectedItem, state.boughtItems, equippedPetItems)
 
         val equipped = when (itemType) {
             PetItemType.HAT -> {
@@ -281,11 +292,8 @@ class PetPresenter(
             )
         }
 
-        val selected = vms.first { it.isSelected }
-        val selectedItem = selected.item
-
-        val nItem = PetViewController.CompareItemViewModel(
-            image = selected.image,
+        val newItem = PetViewController.CompareItemViewModel(
+            image = vms.first { it.isSelected }.image,
             item = selectedItem,
             coinBonus = selectedItem.coinBonus,
             coinBonusChange = changeOf(selectedItem.coinBonus),
@@ -300,8 +308,8 @@ class PetPresenter(
         val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(equippedItem?.item, selectedItem))
 
         val petItems = AndroidPetAvatar.valueOf(state.avatar!!.name).items
-        val petCompareItemImage = petItems[nItem.item]
-        val newItemType = nItem.item.type
+        val petCompareItemImage = petItems[newItem.item]
+        val newItemType = newItem.item.type
 
         val newItemImage: (PetItemType, PetViewController.EquipmentItemViewModel?) -> Int? =
             { type, equippedImage ->
@@ -312,8 +320,8 @@ class PetPresenter(
             type = stateType,
             itemViewModels = vms,
             equippedItem = equippedItem,
-            newItem = nItem,
-            currentItemsType = itemType,
+            newItem = newItem,
+            comparedItemsType = itemType,
             itemComparison = PetViewController.ItemComparisonViewModel(
                 coinBonusDiff = cmpRes.coinBonus,
                 coinBonusChange = changeOf(cmpRes.coinBonus),
