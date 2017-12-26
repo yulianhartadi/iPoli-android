@@ -487,7 +487,7 @@ enum class AndroidPetAvatar(
             PetItem.MASK to R.drawable.pet_12_item_face_mask,
             PetItem.RED_HAT to R.drawable.pet_12_item_head_had_red,
             PetItem.HORNS to R.drawable.pet_12_item_head_christmas_horns,
-            PetItem.RED_WHITE_HAT to R.drawable.pet_12_item_sweater_red_white,
+            PetItem.RED_WHITE_HAT to R.drawable.pet_12_item_head_had_red_white,
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_12_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_12_item_sweater_red_snowflakes,
             PetItem.RED_DEER_SWEATER to R.drawable.pet_12_item_sweater_red_deer
