@@ -28,7 +28,7 @@ class BuyPetUseCaseSpek : Spek({
 
             val player = TestUtil.player().copy(
                 pet = pet,
-                inventory = Inventory(pets = setOf(InventoryPet.fromPet(pet)))
+                inventory = Inventory(pets = setOf(InventoryPet.createFromPet(pet)))
             )
             val exec = { executeUseCase(player, pet.avatar) }
             exec shouldThrow IllegalArgumentException::class

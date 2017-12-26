@@ -74,7 +74,11 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             food = ci.food.entries.associate { Food.valueOf(it.key) to it.value.toInt() },
             pets = ci.pets.map {
                 val cip = CouchbaseInventoryPet(it)
-                InventoryPet(cip.name, PetAvatar.valueOf(cip.avatar))
+                InventoryPet(
+                    cip.name,
+                    PetAvatar.valueOf(cip.avatar),
+                    cip.items.map { PetItem.valueOf(it) }.toSet()
+                )
             }.toSet(),
             themes = ci.themes.map { Theme.valueOf(it) }.toSet(),
             colorPacks = ci.colorPacks.map { ColorPack.valueOf(it) }.toSet(),
@@ -166,5 +170,6 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
         CouchbaseInventoryPet().also {
             it.name = inventoryPet.name
             it.avatar = inventoryPet.avatar.name
+            it.items = inventoryPet.items.map { it.name }
         }
 }

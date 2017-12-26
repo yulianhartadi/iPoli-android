@@ -191,6 +191,15 @@ data class Pet(
                 else -> SAD
             }
     }
+
+    fun equipItem(item: PetItem) =
+        copy(
+            equipment = when (item.type) {
+                PetItemType.HAT -> equipment.copy(hat = item)
+                PetItemType.MASK -> equipment.copy(mask = item)
+                PetItemType.BODY_ARMOR -> equipment.copy(bodyArmor = item)
+            }
+        )
 }
 
 data class PetEquipment(

@@ -4,6 +4,7 @@ import mypoli.android.Constants
 import mypoli.android.pet.Food
 import mypoli.android.pet.Pet
 import mypoli.android.pet.PetAvatar
+import mypoli.android.pet.PetItem
 import mypoli.android.quest.ColorPack
 import mypoli.android.quest.Entity
 import mypoli.android.quest.IconPack
@@ -15,7 +16,7 @@ data class Player(
     val schemaVersion: Int = Constants.SCHEMA_VERSION,
     val level: Int = 1,
     val coins: Int = Constants.DEFAULT_PLAYER_COINS,
-    val gems:Int = 0,
+    val gems: Int = 0,
     val experience: Long = Constants.DEFAULT_PLAYER_XP,
     val authProvider: AuthProvider,
     val avatar: Avatar = Avatar.IPOLI_CLASSIC,
@@ -29,7 +30,7 @@ data class Player(
         food = mapOf(
             Food.BANANA to 2
         ),
-        pets = setOf(InventoryPet.fromPet(pet)),
+        pets = setOf(InventoryPet.createFromPet(pet)),
         themes = setOf(currentTheme),
         colorPacks = setOf(ColorPack.FREE),
         iconPacks = setOf(IconPack.FREE)
@@ -88,10 +89,21 @@ data class Player(
         inventory.hasColorPack(colorPack)
 }
 
-data class InventoryPet(val name: String, val avatar: PetAvatar) {
+data class InventoryPet(val name: String, val avatar: PetAvatar, val items: Set<PetItem> = setOf()) {
     companion object {
-        fun fromPet(pet: Pet) = InventoryPet(pet.name, pet.avatar)
+        fun createFromPet(pet: Pet): InventoryPet {
+            val equipment = pet.equipment
+            return InventoryPet(pet.name, pet.avatar,
+                listOfNotNull(
+                    equipment.hat,
+                    equipment.mask,
+                    equipment.bodyArmor
+                ).toSet()
+            )
+        }
     }
+
+    fun hasItem(item: PetItem) = items.contains(item)
 }
 
 data class Inventory(
@@ -125,7 +137,7 @@ data class Inventory(
 
     fun addPet(pet: Pet) =
         copy(
-            pets = this.pets + InventoryPet.fromPet(pet)
+            pets = this.pets + InventoryPet.createFromPet(pet)
         )
 
     fun hasPet(petAvatar: PetAvatar) =
@@ -144,7 +156,7 @@ data class Inventory(
         val currentPet = getPet(petAvatar)
 
         return copy(
-            pets = this.pets - currentPet + InventoryPet(name, petAvatar)
+            pets = this.pets - currentPet + InventoryPet(name, currentPet.avatar, currentPet.items)
         )
     }
 
@@ -159,6 +171,17 @@ data class Inventory(
 
     fun addColorPack(colorPack: ColorPack) =
         copy(colorPacks = this.colorPacks + colorPack)
+
+    fun addPetItem(itemPair: Pair<PetItem, PetAvatar>): Inventory {
+
+        val (item, petAvatar) = itemPair
+
+        val currentPet = getPet(petAvatar)
+
+        return copy(
+            pets = this.pets - currentPet + InventoryPet(currentPet.name, currentPet.avatar, currentPet.items + item)
+        )
+    }
 }
 
 data class AuthProvider(

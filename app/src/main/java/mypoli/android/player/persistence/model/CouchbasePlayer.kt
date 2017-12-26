@@ -67,6 +67,7 @@ data class CouchbaseInventory(val map: MutableMap<String, Any?> = mutableMapOf()
 data class CouchbaseInventoryPet(val map: MutableMap<String, Any?> = mutableMapOf()) {
     var name: String by map
     var avatar: String by map
+    var items: List<String> by map
 }
 
 enum class ProviderType {

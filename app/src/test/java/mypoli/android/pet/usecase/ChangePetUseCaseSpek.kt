@@ -45,8 +45,8 @@ class ChangePetUseCaseSpek : Spek({
                 pet = currentPet,
                 inventory = Inventory(
                     pets = setOf(
-                        InventoryPet.fromPet(currentPet),
-                        InventoryPet.fromPet(newPet)
+                        InventoryPet.createFromPet(currentPet),
+                        InventoryPet.createFromPet(newPet)
                     )
                 )
             )
