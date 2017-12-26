@@ -26,7 +26,7 @@ class Migration(private val database: Database) {
             doc = database.getDocument(playerId)
         }
 
-        if (Constants.SCHEMA_VERSION == 2) {
+        if (doc.getInt("schemaVersion") == 1) {
             val inventoryPets = doc.getDictionary("inventory").getArray("pets")
             inventoryPets.forEach {
                 (it as Dictionary).setArray("items", Array())
