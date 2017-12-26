@@ -163,7 +163,7 @@ class CurrencyConverterController :
 
                 })
 
-                view.convert.isEnabled = state.enableConvert
+                enableConvertButton(view, state.enableConvert)
 
                 view.convert.setOnClickListener {
                     playConvertAnimation(view, { send(Convert(view.seekBar.progress)) })
@@ -174,7 +174,7 @@ class CurrencyConverterController :
             CONVERT_DEAL_CHANGED -> {
                 view.coins.text = state.convertCoins.toString()
                 view.gems.text = state.convertGems.toString()
-                view.convert.isEnabled = state.enableConvert
+                enableConvertButton(view, state.enableConvert)
             }
 
             GEMS_CONVERTED -> {
@@ -184,6 +184,15 @@ class CurrencyConverterController :
             GEMS_TOO_EXPENSIVE -> {
                 Toast.makeText(view.context, stringRes(R.string.iconvert_gems_not_enough_coins), Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun enableConvertButton(view: View, enabled : Boolean) {
+        view.convert.isEnabled = enabled
+        if (enabled) {
+            view.convert.setTextColor(colorRes(R.color.md_white))
+        } else {
+            view.convert.setTextColor(colorRes(R.color.md_dark_text_26))
         }
     }
 
