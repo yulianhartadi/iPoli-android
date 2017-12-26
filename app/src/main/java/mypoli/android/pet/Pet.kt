@@ -223,30 +223,34 @@ enum class PetItem(
     val type: PetItemType,
     val gemPrice: Int
 ) {
-    GLASSES(4, 5, -9, PetItemType.MASK, 2),
-    BEARD(-5, 5, 3, PetItemType.MASK, 2),
-    MASK(10, -5, 2, PetItemType.MASK, 2),
-    RED_HAT(1, 1, 1, PetItemType.HAT, 4),
-    HORNS(1, 1, 1, PetItemType.HAT, 4),
-    RED_WHITE_HAT(1, 1, 1, PetItemType.HAT, 4),
-    RED_WHITE_SWEATER(4, 4, 1, PetItemType.BODY_ARMOR, 4),
-    RED_SNOWFLAKES_SWEATER(2, -3, 2, PetItemType.BODY_ARMOR, 4),
-    RED_DEER_SWEATER(6, -5, 9, PetItemType.BODY_ARMOR, 4)
+    BEARD(-3, 2, 1, PetItemType.MASK, 1),
+    GLASSES(4, 5, -9, PetItemType.MASK, 4),
+    MASK(8, -3, 4, PetItemType.MASK, 7),
+
+
+    RED_HAT(4, -3, 2, PetItemType.HAT, 3),
+    RED_WHITE_HAT(1, 1, 5, PetItemType.HAT, 4),
+    HORNS(2, 10, 1, PetItemType.HAT, 9),
+
+
+    RED_DEER_SWEATER(11, -5, 0, PetItemType.BODY_ARMOR, 5),
+    RED_SNOWFLAKES_SWEATER(2, 7, 2, PetItemType.BODY_ARMOR, 8),
+    RED_WHITE_SWEATER(5, 5, 9, PetItemType.BODY_ARMOR, 11)
 }
 
 enum class AndroidPetItem(
     @StringRes val itemName: Int,
     @DrawableRes val image: Int) {
 
-    GLASSES(R.string.pet_bear, R.drawable.pet_item_face_glasses),
-    BEARD(R.string.pet_bear, R.drawable.pet_item_face_beard),
-    MASK(R.string.pet_bear, R.drawable.pet_item_face_mask),
-    RED_HAT(R.string.pet_bear, R.drawable.pet_item_head_had_red),
-    HORNS(R.string.pet_bear, R.drawable.pet_item_head_christmas_horns),
-    RED_WHITE_HAT(R.string.pet_bear, R.drawable.pet_item_head_had_red_white),
-    RED_WHITE_SWEATER(R.string.pet_bear, R.drawable.pet_item_body_sweater_red_white),
-    RED_SNOWFLAKES_SWEATER(R.string.pet_bear, R.drawable.pet_item_body_sweater_red_snowflakes),
-    RED_DEER_SWEATER(R.string.pet_bear, R.drawable.pet_item_body_sweater_red_deer)
+    GLASSES(R.string.pet_item_glasses, R.drawable.pet_item_face_glasses),
+    BEARD(R.string.pet_item_beard, R.drawable.pet_item_face_beard),
+    MASK(R.string.pet_item_mask, R.drawable.pet_item_face_mask),
+    RED_HAT(R.string.pet_item_red_hat, R.drawable.pet_item_head_had_red),
+    HORNS(R.string.pet_item_horns, R.drawable.pet_item_head_christmas_horns),
+    RED_WHITE_HAT(R.string.pet_item_red_white_hat, R.drawable.pet_item_head_had_red_white),
+    RED_WHITE_SWEATER(R.string.pet_item_red_white_sweater, R.drawable.pet_item_body_sweater_red_white),
+    RED_SNOWFLAKES_SWEATER(R.string.pet_item_snowflakes_sweater, R.drawable.pet_item_body_sweater_red_snowflakes),
+    RED_DEER_SWEATER(R.string.pet_item_red_deer_sweater, R.drawable.pet_item_body_sweater_red_deer)
 }
 
 enum class PetAvatar(val gemPrice: Int, val feedingCategory: FeedingCategory) {

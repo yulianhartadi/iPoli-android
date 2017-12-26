@@ -1023,6 +1023,15 @@
     <string name="dialog_rename_pet_title">Give me a name</string>
     <string name="dialog_rename_pet_hint">Rename your pet</string>
     <string name="pet_item_too_expensive">Item is too expensive</string>
+    <string name="pet_item_glasses">Elvis Eyes</string>
+    <string name="pet_item_beard">Smoking Hot</string>
+    <string name="pet_item_mask">Spidy Sense</string>
+    <string name="pet_item_red_hat">Santa Mood</string>
+    <string name="pet_item_horns">Rudolph Power</string>
+    <string name="pet_item_red_white_hat">Classy Look</string>
+    <string name="pet_item_red_white_sweater">Grandma Style</string>
+    <string name="pet_item_snowflakes_sweater">Sleeping Beauty</string>
+    <string name="pet_item_red_deer_sweater">Comfy Stuff</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

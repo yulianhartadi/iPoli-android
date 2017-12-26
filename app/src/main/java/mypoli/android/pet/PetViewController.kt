@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
 import android.support.annotation.DrawableRes
+import android.support.annotation.StringRes
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat
@@ -333,6 +334,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 view.curItems.visible = true
                 view.noItem.visible = false
                 view.curItemImage.setImageResource(it.image)
+                view.curItemName.setText(it.name)
 
                 renderItemBonus(
                     it.coinBonus,
@@ -362,6 +364,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
         state.newItem?.let {
             view.newItemImage.setImageResource(it.image)
+            view.newItemName.setText(it.name)
 
             if (it.isEquipped) {
                 view.equipItem.visible = false
@@ -874,6 +877,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
     data class CompareItemViewModel(
         @DrawableRes val image: Int,
+        @StringRes val name: Int,
         val item: PetItem,
         val coinBonus: Int,
         val coinBonusChange: ItemComparisonViewModel.Change,

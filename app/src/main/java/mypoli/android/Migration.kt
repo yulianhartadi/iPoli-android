@@ -20,7 +20,7 @@ class Migration(private val database: Database) {
         var doc = database.getDocument(playerId)
 
         if (!doc.contains("schemaVersion")) {
-            doc.setInt("schemaVersion", Constants.SCHEMA_VERSION)
+            doc.setInt("schemaVersion", 1)
             doc.setInt("gems", 0)
             database.save(doc)
             doc = database.getDocument(playerId)
@@ -37,6 +37,7 @@ class Migration(private val database: Database) {
             equipment.setString("mask", null)
             equipment.setString("bodyArmor", null)
             pet.setDictionary("equipment", equipment)
+            doc.setInt("schemaVersion", 2)
             database.save(doc)
         }
 

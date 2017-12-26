@@ -62,8 +62,6 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
 
         if (!playerRepository.hasPlayer()) {
             val player = Player(
-                gems = 100,
-                coins = 4000,
                 authProvider = AuthProvider(provider = ProviderType.ANONYMOUS.name),
                 schemaVersion = Constants.SCHEMA_VERSION
             )

@@ -98,7 +98,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/curItemCoinBonus"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/curItemName"
                 app:srcCompat="@drawable/pet_item_head_christmas_horns" />
 
             <ImageView
@@ -113,7 +113,7 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/separator"
                 app:layout_constraintStart_toStartOf="@+id/separator"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/newItemName"
                 app:srcCompat="@drawable/pet_item_head_had_red" />
 
             <TextView
@@ -131,7 +131,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/separator"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/curItemImage"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/curItemName"
                 tools:text="+5%" />
 
 
@@ -149,7 +149,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/newCoinBonusDiff"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/newItemImage"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/newItemName"
                 tools:text="+5%" />
 
             <TextView
@@ -242,7 +242,6 @@
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
@@ -319,7 +318,7 @@
                 android:id="@+id/curItems"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:constraint_referenced_ids="curItemBountyBonus,curItemImage,curItemXpBonus,curItemCoinBonus,takeOff" />
+                app:constraint_referenced_ids="curItemBountyBonus,curItemImage,curItemXpBonus,curItemCoinBonus,takeOff,curItemName" />
 
             <Button
                 android:id="@+id/equipItem"
@@ -333,6 +332,32 @@
                 app:layout_constraintStart_toStartOf="@+id/buyItem"
                 app:layout_constraintTop_toTopOf="@+id/buyItem"
                 tools:text="Equip" />
+
+            <TextView
+                android:id="@+id/curItemName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                app:layout_constraintEnd_toStartOf="@+id/separator"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Cool" />
+
+            <TextView
+                android:id="@+id/newItemName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/separator"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Cool" />
 
         </android.support.constraint.ConstraintLayout>
 
