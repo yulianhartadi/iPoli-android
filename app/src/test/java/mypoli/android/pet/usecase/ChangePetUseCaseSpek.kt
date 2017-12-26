@@ -3,9 +3,12 @@ package mypoli.android.pet.usecase
 import mypoli.android.TestUtil
 import mypoli.android.pet.Pet
 import mypoli.android.pet.PetAvatar
+import mypoli.android.pet.PetEquipment
+import mypoli.android.pet.PetItem
 import mypoli.android.player.Inventory
 import mypoli.android.player.InventoryPet
 import mypoli.android.player.Player
+import org.amshove.kluent.`should be null`
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.shouldThrow
 import org.jetbrains.spek.api.Spek
@@ -35,7 +38,8 @@ class ChangePetUseCaseSpek : Spek({
         it("should change pet") {
             val currentPet = Pet(
                 name = "",
-                avatar = PetAvatar.ELEPHANT
+                avatar = PetAvatar.ELEPHANT,
+                equipment = PetEquipment(PetItem.RED_HAT)
             )
             val newPet = Pet(
                 name = "",
@@ -53,6 +57,7 @@ class ChangePetUseCaseSpek : Spek({
 
             val newPlayer = executeUseCase(player, newPet.avatar)
             newPlayer.pet.avatar.`should be`(newPet.avatar)
+            newPlayer.pet.equipment.hat.`should be null`()
         }
     }
 })
