@@ -88,7 +88,8 @@ interface Constants {
         val API_RESOURCE_SOURCE = "ipoli-android"
         val DEFAULT_PLAYER_XP: Long = 20
         val DEFAULT_PLAYER_LEVEL = 1
-        val DEFAULT_PLAYER_COINS: Int = 10
+        val DEFAULT_PLAYER_COINS = 10
+        val DEFAULT_PLAYER_GEMS = 1
         val GEM_COINS_PRICE = 100
         //        val DEFAULT_PLAYER_AVATAR = Avatar.IPOLI_CLASSIC
 //        val DEFAULT_PLAYER_PRODUCTIVE_TIMES: Set<TimeOfDay> = HashSet<Any>(listOf(TimeOfDay.MORNING))

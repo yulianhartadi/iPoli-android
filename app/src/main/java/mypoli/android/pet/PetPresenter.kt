@@ -171,9 +171,10 @@ class PetPresenter(
 
                 val selected = vms.first { it.isSelected }
                 val selectedItem = selected.item
-
+                val androidPetItem = AndroidPetItem.valueOf(selected.item.name)
                 val newItem = PetViewController.CompareItemViewModel(
                     image = selected.image,
+                    name = androidPetItem.itemName,
                     item = selectedItem,
                     coinBonus = selectedItem.coinBonus,
                     coinBonusChange = changeOf(selectedItem.coinBonus),
@@ -278,8 +279,10 @@ class PetPresenter(
 
         val equippedItem = equipped?.let {
             val item = it.item
+            val androidPetItem = AndroidPetItem.valueOf(item.name)
             PetViewController.CompareItemViewModel(
-                image = AndroidPetItem.valueOf(item.name).image,
+                image = androidPetItem.image,
+                name = androidPetItem.itemName,
                 item = item,
                 coinBonus = item.coinBonus,
                 coinBonusChange = changeOf(item.coinBonus),
@@ -292,8 +295,11 @@ class PetPresenter(
             )
         }
 
+        val selectedVM = vms.first { it.isSelected }
+        val androidPetItem = AndroidPetItem.valueOf(selectedVM.item.name)
         val newItem = PetViewController.CompareItemViewModel(
-            image = vms.first { it.isSelected }.image,
+            image = selectedVM.image,
+            name = androidPetItem.itemName,
             item = selectedItem,
             coinBonus = selectedItem.coinBonus,
             coinBonusChange = changeOf(selectedItem.coinBonus),
