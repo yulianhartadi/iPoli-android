@@ -17,6 +17,8 @@ sealed class PetIntent : Intent {
     object ShowHeadItemList : PetIntent()
     object ShowFaceItemList : PetIntent()
     object ShowBodyItemList : PetIntent()
+    data class BuyItem(val item : PetItem) : PetIntent()
+    data class EquipItem(val item : PetItem) : PetIntent()
 }
 
 object LoadDataIntent : PetIntent()
@@ -53,16 +55,18 @@ data class PetViewState(
     @DrawableRes val newBodyArmorItemImage: Int? = null,
     val foodViewModels: List<PetViewController.PetFoodViewModel> = listOf(),
     val itemViewModels: List<PetViewController.PetItemViewModel> = listOf(),
-    val currentItem: PetViewController.CompareItemViewModel? = null,
+    val equippedItem: PetViewController.CompareItemViewModel? = null,
     val newItem: PetViewController.CompareItemViewModel? = null,
     val itemComparison: PetViewController.ItemComparisonViewModel? = null,
     val currentItemsType: PetItemType? = null,
+    val boughtItems: Set<PetItem> = setOf(),
     val playerGems: Int = 0
 ) : ViewState {
     enum class StateType {
         LOADING, DATA_LOADED, FOOD_LIST_SHOWN, FOOD_LIST_HIDDEN, PET_FED,
         FOOD_TOO_EXPENSIVE, PET_CHANGED, RENAME_PET, PET_RENAMED,
         PET_REVIVED, REVIVE_TOO_EXPENSIVE, SHOW_CURRENCY_CONVERTER,
-        ITEM_LIST_SHOWN, ITEM_LIST_HIDDEN, COMPARE_ITEMS, CHANGE_ITEM_CATEGORY
+        ITEM_LIST_SHOWN, ITEM_LIST_HIDDEN, COMPARE_ITEMS, CHANGE_ITEM_CATEGORY,
+        ITEM_TOO_EXPENSIVE, ITEM_BOUGHT, ITEM_EQUIPPED
     }
 }
