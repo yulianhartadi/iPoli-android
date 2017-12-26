@@ -29,7 +29,11 @@ class Migration(private val database: Database) {
                 (it as Dictionary).setArray("items", Array())
             }
             val pet = doc.getDictionary("pet")
-            pet.setDictionary("equipment", Dictionary())
+            val equipment = Dictionary()
+            equipment.setString("hat", null)
+            equipment.setString("mask", null)
+            equipment.setString("bodyArmor", null)
+            pet.setDictionary("equipment", equipment)
             database.save(doc)
         }
 
