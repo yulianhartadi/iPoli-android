@@ -17,13 +17,16 @@ class Migration(private val database: Database) {
             .limit(1).run()
 
         val playerId = resultSet.next().getString("_id")
-        val doc = database.getDocument(playerId)
+        var doc = database.getDocument(playerId)
 
         if (!doc.contains("schemaVersion")) {
             doc.setInt("schemaVersion", Constants.SCHEMA_VERSION)
             doc.setInt("gems", 0)
             database.save(doc)
-        } else if (Constants.SCHEMA_VERSION == 2) {
+            doc = database.getDocument(playerId)
+        }
+
+        if (Constants.SCHEMA_VERSION == 2) {
             val inventoryPets = doc.getDictionary("inventory").getArray("pets")
             inventoryPets.forEach {
                 (it as Dictionary).setArray("items", Array())
