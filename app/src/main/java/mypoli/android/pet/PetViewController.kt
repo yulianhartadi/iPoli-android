@@ -303,6 +303,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                     it.bountyBonusChange,
                     view.curItemBountyBonus
                 )
+
+                view.takeOff.sendOnClick(PetIntent.TakeItemOff(it.item))
             }
         } else {
 
@@ -823,6 +825,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         val xpBonusChange: ItemComparisonViewModel.Change,
         val bountyBonus: Int,
         val bountyBonusChange: ItemComparisonViewModel.Change,
-        val isBought: Boolean
+        val isBought: Boolean,
+        val isEquipped: Boolean
     )
 }
