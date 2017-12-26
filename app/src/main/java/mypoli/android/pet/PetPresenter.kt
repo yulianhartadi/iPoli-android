@@ -88,9 +88,16 @@ class PetPresenter(
                     }
                 }
 
+                val boughtItems = player.inventory.getPet(pet.avatar).items
                 val itemVms = state.currentItemsType?.let {
                     val itemType = it
-                    createPetItemViewModels(itemType, PetItem.values().first { it.type == itemType })
+                    val equippedPetItems = listOfNotNull(equipment.hat, equipment.mask, equipment.bodyArmor).toSet()
+                    createPetItemViewModels(
+                        itemType,
+                        PetItem.values().first { it.type == itemType },
+                        boughtItems,
+                        equippedPetItems
+                    )
                 } ?: listOf()
 
                 state.copy(
@@ -111,7 +118,7 @@ class PetPresenter(
                     playerGems = player.gems,
                     itemViewModels = itemVms,
                     foodViewModels = createFoodViewModels(food),
-                    boughtItems = player.inventory.getPet(pet.avatar).items
+                    boughtItems = boughtItems
                 )
             }
 
@@ -155,11 +162,11 @@ class PetPresenter(
             is PetIntent.CompareItem -> {
                 val vms = state.itemViewModels.map {
                     it.copy(
-                        selected = it.item == intent.newItem
+                        isSelected = it.item == intent.newItem
                     )
                 }
 
-                val selected = vms.first { it.selected }
+                val selected = vms.first { it.isSelected }
                 val selectedItem = selected.item
 
                 val newItem = PetViewController.CompareItemViewModel(
@@ -236,7 +243,10 @@ class PetPresenter(
         }
 
     private fun changeItemTypeState(state: PetViewState, itemType: PetItemType, stateType: PetViewState.StateType): PetViewState {
-        val vms = createPetItemViewModels(itemType, PetItem.values().first { it.type == itemType })
+
+        val equippedPetItems = listOfNotNull(state.equippedHatItem?.item, state.equippedMaskItem?.item, state.equippedBodyArmorItem?.item).toSet()
+
+        val vms = createPetItemViewModels(itemType, PetItem.values().first { it.type == itemType }, state.boughtItems, equippedPetItems)
 
         val equipped = when (itemType) {
             PetItemType.HAT -> {
@@ -265,7 +275,7 @@ class PetPresenter(
             )
         }
 
-        val selected = vms.first { it.selected }
+        val selected = vms.first { it.isSelected }
         val selectedItem = selected.item
 
         val nItem = PetViewController.CompareItemViewModel(
@@ -318,15 +328,17 @@ class PetPresenter(
             else -> NO_CHANGE
         }
 
-    private fun createPetItemViewModels(petItemType: PetItemType, selectedItem: PetItem) =
+    private fun createPetItemViewModels(petItemType: PetItemType, selectedItem: PetItem, boughtItems: Set<PetItem>, equippedPetItems: Set<PetItem>) =
         PetItem.values()
             .filter { it.type == petItemType }
             .map {
                 PetViewController.PetItemViewModel(
-                    AndroidPetItem.valueOf(it.name).image,
-                    it.gemPrice,
-                    it,
-                    it == selectedItem
+                    image = AndroidPetItem.valueOf(it.name).image,
+                    gemPrice = it.gemPrice,
+                    item = it,
+                    isSelected = it == selectedItem,
+                    isBought = boughtItems.contains(it),
+                    isEquipped = equippedPetItems.contains(it)
                 )
             }
 
