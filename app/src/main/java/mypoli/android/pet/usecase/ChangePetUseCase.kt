@@ -2,6 +2,7 @@ package mypoli.android.pet.usecase
 
 import mypoli.android.common.UseCase
 import mypoli.android.pet.PetAvatar
+import mypoli.android.pet.PetEquipment
 import mypoli.android.player.Player
 import mypoli.android.player.persistence.PlayerRepository
 
@@ -20,7 +21,8 @@ class ChangePetUseCase(private val playerRepository: PlayerRepository) : UseCase
         val newPlayer = player.copy(
             pet = player.pet.copy(
                 name = inventoryPet.name,
-                avatar = inventoryPet.avatar
+                avatar = inventoryPet.avatar,
+                equipment = PetEquipment()
             )
         )
 
