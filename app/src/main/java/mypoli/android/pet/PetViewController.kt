@@ -31,8 +31,6 @@ import mypoli.android.R
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
-import mypoli.android.pet.PetViewController.Companion.PET_BOTTOM_BORDER_PERCENT
-import mypoli.android.pet.PetViewController.Companion.PET_TOP_BORDER_PERCENT
 import mypoli.android.pet.PetViewState.StateType.*
 import mypoli.android.pet.store.PetStoreViewController
 import space.traversal.kapsule.required
