@@ -19,6 +19,7 @@ sealed class PetIntent : Intent {
     object ShowBodyItemList : PetIntent()
     data class BuyItem(val item : PetItem) : PetIntent()
     data class EquipItem(val item : PetItem) : PetIntent()
+    data class TakeItemOff(val item : PetItem) : PetIntent()
 }
 
 object LoadDataIntent : PetIntent()
@@ -67,6 +68,6 @@ data class PetViewState(
         FOOD_TOO_EXPENSIVE, PET_CHANGED, RENAME_PET, PET_RENAMED,
         PET_REVIVED, REVIVE_TOO_EXPENSIVE, SHOW_CURRENCY_CONVERTER,
         ITEM_LIST_SHOWN, ITEM_LIST_HIDDEN, COMPARE_ITEMS, CHANGE_ITEM_CATEGORY,
-        ITEM_TOO_EXPENSIVE, ITEM_BOUGHT, ITEM_EQUIPPED
+        ITEM_TOO_EXPENSIVE, ITEM_BOUGHT, ITEM_EQUIPPED, ITEM_TAKEN_OFF
     }
 }

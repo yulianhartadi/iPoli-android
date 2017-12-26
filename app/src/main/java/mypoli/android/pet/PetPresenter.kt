@@ -178,7 +178,8 @@ class PetPresenter(
                     xpBonusChange = changeOf(selectedItem.experienceBonus),
                     bountyBonus = selectedItem.bountyBonus,
                     bountyBonusChange = changeOf(selectedItem.bountyBonus),
-                    isBought = state.boughtItems.contains(selectedItem)
+                    isBought = state.boughtItems.contains(selectedItem),
+                    isEquipped = selectedItem == state.equippedItem?.item ?: false
                 )
 
                 val petItems = AndroidPetAvatar.valueOf(state.avatar!!.name).items
@@ -240,6 +241,10 @@ class PetPresenter(
                     type = ITEM_EQUIPPED
                 )
             }
+
+            is PetIntent.TakeItemOff -> {
+                state
+            }
         }
 
     private fun changeItemTypeState(state: PetViewState, itemType: PetItemType, stateType: PetViewState.StateType): PetViewState {
@@ -271,7 +276,8 @@ class PetPresenter(
                 xpBonusChange = changeOf(item.experienceBonus),
                 bountyBonus = item.bountyBonus,
                 bountyBonusChange = changeOf(item.bountyBonus),
-                isBought = true
+                isBought = true,
+                isEquipped = true
             )
         }
 
@@ -287,7 +293,8 @@ class PetPresenter(
             xpBonusChange = changeOf(selectedItem.experienceBonus),
             bountyBonus = selectedItem.bountyBonus,
             bountyBonusChange = changeOf(selectedItem.bountyBonus),
-            isBought = state.boughtItems.contains(selectedItem)
+            isBought = state.boughtItems.contains(selectedItem),
+            isEquipped = equippedPetItems.contains(selectedItem)
         )
 
         val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(equippedItem?.item, selectedItem))
