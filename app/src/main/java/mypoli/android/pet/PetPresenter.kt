@@ -21,6 +21,8 @@ class PetPresenter(
     private val renamePetUseCase: RenamePetUseCase,
     private val revivePetUseCase: RevivePetUseCase,
     private val comparePetItemsUseCase: ComparePetItemsUseCase,
+    private val buyPetItemUseCase: BuyPetItemUseCase,
+    private val equipPetItemUseCase: EquipPetItemUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<PetViewState>, PetViewState, PetIntent>(
     PetViewState(LOADING, reviveCost = Constants.REVIVE_PET_GEM_PRICE),
@@ -67,8 +69,9 @@ class PetPresenter(
             }
 
             is ChangePlayerIntent -> {
-                val food = intent.player.inventory.food
-                val pet = intent.player.pet
+                val player = intent.player
+                val food = player.inventory.food
+                val pet = player.pet
 
                 val type = when {
                     state.petName.isEmpty() -> DATA_LOADED
@@ -85,6 +88,11 @@ class PetPresenter(
                     }
                 }
 
+                val itemVms = state.currentItemsType?.let {
+                    val itemType = it
+                    createPetItemViewModels(itemType, PetItem.values().first { it.type == itemType })
+                } ?: listOf()
+
                 state.copy(
                     type = type,
                     petName = pet.name,
@@ -100,8 +108,10 @@ class PetPresenter(
                     avatar = pet.avatar,
                     mood = pet.mood,
                     isDead = pet.isDead,
-                    playerGems = intent.player.gems,
-                    foodViewModels = createFoodViewModels(food)
+                    playerGems = player.gems,
+                    itemViewModels = itemVms,
+                    foodViewModels = createFoodViewModels(food),
+                    boughtItems = player.inventory.getPet(pet.avatar).items
                 )
             }
 
@@ -152,7 +162,7 @@ class PetPresenter(
                 val selected = vms.first { it.selected }
                 val selectedItem = selected.item
 
-                val compareItem = PetViewController.CompareItemViewModel(
+                val newItem = PetViewController.CompareItemViewModel(
                     image = selected.image,
                     item = selectedItem,
                     coinBonus = selectedItem.coinBonus,
@@ -160,25 +170,25 @@ class PetPresenter(
                     xpBonus = selectedItem.experienceBonus,
                     xpBonusChange = changeOf(selectedItem.experienceBonus),
                     bountyBonus = selectedItem.bountyBonus,
-                    bountyBonusChange = changeOf(selectedItem.bountyBonus)
+                    bountyBonusChange = changeOf(selectedItem.bountyBonus),
+                    isBought = state.boughtItems.contains(selectedItem)
                 )
 
-                val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(state.currentItem?.item, intent.newItem))
-
-
                 val petItems = AndroidPetAvatar.valueOf(state.avatar!!.name).items
-                val petCompareItemImage = petItems[compareItem.item]
-                val itemType = compareItem.item.type
+                val petCompareItemImage = petItems[newItem.item]
+                val itemType = newItem.item.type
 
                 val newItemImage: (PetItemType, PetViewController.EquipmentItemViewModel?) -> Int? =
                     { type, equippedImage ->
                         if (itemType == type) petCompareItemImage else equippedImage?.image
                     }
 
+                val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(state.equippedItem?.item, intent.newItem))
+
                 state.copy(
                     type = COMPARE_ITEMS,
                     itemViewModels = vms,
-                    newItem = compareItem,
+                    newItem = newItem,
                     itemComparison = PetViewController.ItemComparisonViewModel(
                         coinBonusDiff = cmpRes.coinBonus,
                         coinBonusChange = changeOf(cmpRes.coinBonus),
@@ -206,12 +216,29 @@ class PetPresenter(
                 state.copy(
                     type = ITEM_LIST_HIDDEN
                 )
+
+            is PetIntent.BuyItem -> {
+                val result = buyPetItemUseCase.execute(BuyPetItemUseCase.Params(intent.item))
+                state.copy(
+                    type = when (result) {
+                        is BuyPetItemUseCase.Result.TooExpensive -> ITEM_TOO_EXPENSIVE
+                        is BuyPetItemUseCase.Result.ItemBought -> ITEM_BOUGHT
+                    }
+                )
+            }
+
+            is PetIntent.EquipItem -> {
+                equipPetItemUseCase.execute(EquipPetItemUseCase.Params(intent.item))
+                state.copy(
+                    type = ITEM_EQUIPPED
+                )
+            }
         }
 
     private fun changeItemTypeState(state: PetViewState, itemType: PetItemType, stateType: PetViewState.StateType): PetViewState {
         val vms = createPetItemViewModels(itemType, PetItem.values().first { it.type == itemType })
 
-        val current = when (itemType) {
+        val equipped = when (itemType) {
             PetItemType.HAT -> {
                 state.equippedHatItem
             }
@@ -223,17 +250,18 @@ class PetPresenter(
             }
         }
 
-        val currentItem = current?.let {
+        val equippedItem = equipped?.let {
             val item = it.item
             PetViewController.CompareItemViewModel(
-                image = it.image,
+                image = AndroidPetItem.valueOf(item.name).image,
                 item = item,
                 coinBonus = item.coinBonus,
                 coinBonusChange = changeOf(item.coinBonus),
                 xpBonus = item.experienceBonus,
                 xpBonusChange = changeOf(item.experienceBonus),
                 bountyBonus = item.bountyBonus,
-                bountyBonusChange = changeOf(item.bountyBonus)
+                bountyBonusChange = changeOf(item.bountyBonus),
+                isBought = true
             )
         }
 
@@ -248,10 +276,11 @@ class PetPresenter(
             xpBonus = selectedItem.experienceBonus,
             xpBonusChange = changeOf(selectedItem.experienceBonus),
             bountyBonus = selectedItem.bountyBonus,
-            bountyBonusChange = changeOf(selectedItem.bountyBonus)
+            bountyBonusChange = changeOf(selectedItem.bountyBonus),
+            isBought = state.boughtItems.contains(selectedItem)
         )
 
-        val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(currentItem?.item, selectedItem))
+        val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(equippedItem?.item, selectedItem))
 
         val petItems = AndroidPetAvatar.valueOf(state.avatar!!.name).items
         val petCompareItemImage = petItems[nItem.item]
@@ -265,7 +294,7 @@ class PetPresenter(
         return state.copy(
             type = stateType,
             itemViewModels = vms,
-            currentItem = currentItem,
+            equippedItem = equippedItem,
             newItem = nItem,
             currentItemsType = itemType,
             itemComparison = PetViewController.ItemComparisonViewModel(
