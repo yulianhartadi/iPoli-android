@@ -738,7 +738,14 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
-    data class PetItemViewModel(@DrawableRes val image: Int, val gemPrice: Int?, val item: PetItem, val selected: Boolean = false)
+    data class PetItemViewModel(
+        @DrawableRes val image: Int,
+        val gemPrice: Int,
+        val item: PetItem,
+        val isSelected: Boolean = false,
+        val isBought: Boolean = false,
+        val isEquipped: Boolean = false
+    )
 
     inner class PetItemAdapter(private var petItems: List<PetItemViewModel>) : RecyclerView.Adapter<ViewHolder>() {
 
@@ -749,14 +756,35 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             val vm = petItems[position]
             holder.itemView.itemImage.setImageResource(vm.image)
 
-            if (vm.selected) {
+            if (vm.isSelected) {
                 holder.itemView.setBackgroundColor(colorRes(R.color.md_grey_200))
             } else {
                 holder.itemView.background = null
             }
 
-            vm.gemPrice?.let {
-                holder.itemView.itemPrice.text = it.toString()
+            val price = holder.itemView.itemPrice
+            when {
+                vm.isEquipped -> {
+                    price.setCompoundDrawablesWithIntrinsicBounds(
+                        IconicsDrawable(holder.itemView.context)
+                            .icon(Ionicons.Icon.ion_android_done)
+                            .color(attr(R.attr.colorAccent))
+                            .sizeDp(16),
+                        null, null, null
+                    )
+                    price.text = ""
+
+                }
+                vm.isBought -> {
+                    price.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
+                    price.text = ""
+                }
+                else -> {
+                    price.setCompoundDrawablesWithIntrinsicBounds(
+                        ContextCompat.getDrawable(price.context, R.drawable.ic_gem_16dp), null, null, null
+                    )
+                    price.text = vm.gemPrice.toString()
+                }
             }
 
             holder.itemView.sendOnClick(PetIntent.CompareItem(vm.item))
