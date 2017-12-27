@@ -47,6 +47,7 @@ import mypoli.android.rate.RatePresenter
 import mypoli.android.reminder.view.formatter.ReminderTimeFormatter
 import mypoli.android.reminder.view.formatter.TimeUnitFormatter
 import mypoli.android.reminder.view.picker.ReminderPickerDialogPresenter
+import mypoli.android.store.GemStorePresenter
 import mypoli.android.theme.ThemeStorePresenter
 import mypoli.android.theme.usecase.BuyThemeUseCase
 import mypoli.android.theme.usecase.ChangeThemeUseCase
@@ -250,6 +251,7 @@ interface PresenterModule {
     val colorPickerPresenter: ColorPickerPresenter
     val iconPickerPresenter: IconPickerDialogPresenter
     val currencyConverterPresenter: CurrencyConverterPresenter
+    val gemStorePresenter: GemStorePresenter
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
@@ -292,6 +294,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val colorPickerPresenter get() = ColorPickerPresenter(listenForPlayerChangesUseCase, buyColorPackUseCase, job)
     override val iconPickerPresenter get() = IconPickerDialogPresenter(listenForPlayerChangesUseCase, buyIconPackUseCase, job)
     override val currencyConverterPresenter get() = CurrencyConverterPresenter(listenForPlayerChangesUseCase, convertCoinsToGemsUseCase, job)
+    override val gemStorePresenter get() = GemStorePresenter(job)
 }
 
 interface PopupPresenterModule {

@@ -12,6 +12,8 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
+import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.dialog_currency_converter.view.*
 import kotlinx.android.synthetic.main.view_currency_converter_dialog_header.view.*
 import kotlinx.coroutines.experimental.channels.consumeEach
@@ -29,6 +31,7 @@ import mypoli.android.pet.PetAvatar
 import mypoli.android.player.Player
 import mypoli.android.player.usecase.ConvertCoinsToGemsUseCase
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
+import mypoli.android.store.GemStoreViewController
 import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -123,8 +126,8 @@ class CurrencyConverterPresenter(
         }
 }
 
-class CurrencyConverterController :
-    MviDialogController<CurrencyConverterViewState, CurrencyConverterController, CurrencyConverterPresenter, CurrencyConverterIntent>() {
+class CurrencyConverterDialogController :
+    MviDialogController<CurrencyConverterViewState, CurrencyConverterDialogController, CurrencyConverterPresenter, CurrencyConverterIntent>() {
 
     private val presenter by required { currencyConverterPresenter }
 
@@ -187,7 +190,7 @@ class CurrencyConverterController :
         }
     }
 
-    private fun enableConvertButton(view: View, enabled : Boolean) {
+    private fun enableConvertButton(view: View, enabled: Boolean) {
         view.convert.isEnabled = enabled
         if (enabled) {
             view.convert.setTextColor(colorRes(R.color.md_white))
@@ -275,7 +278,26 @@ class CurrencyConverterController :
     }
 
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
-        return inflater.inflate(R.layout.dialog_currency_converter, null)
+        val view = inflater.inflate(R.layout.dialog_currency_converter, null)
+        view.basicPlanContainer.setOnClickListener {
+            showGemStore()
+        }
+        view.smartestPlanContainer.setOnClickListener {
+            showGemStore()
+        }
+        view.mostExpensivePlanContainer.setOnClickListener {
+            showGemStore()
+        }
+        return view
+    }
+
+    private fun showGemStore() {
+        val handler = FadeChangeHandler()
+        router.pushController(
+            RouterTransaction.with(GemStoreViewController())
+                .pushChangeHandler(handler)
+                .popChangeHandler(handler)
+        )
     }
 
     override fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog =
