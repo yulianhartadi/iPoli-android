@@ -164,14 +164,13 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
                 android:drawablePadding="4dp"
-                android:drawableStart="@drawable/ic_gem_24dp"
-                android:text="12"
+                android:text="19,99 USD"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 android:textColor="@color/md_white"
                 app:layout_constraintBottom_toBottomOf="@+id/view6"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/view6"
-                tools:text="12" />
+                tools:text="19.99 USD" />
 
             <ImageView
                 android:id="@+id/imageView7"
@@ -192,11 +191,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:text="19.99 USD"
+                android:text="x12"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 app:layout_constraintBottom_toTopOf="@+id/giftBackground"
                 app:layout_constraintEnd_toStartOf="@+id/button3"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/imageView7" />
 
             <Button
