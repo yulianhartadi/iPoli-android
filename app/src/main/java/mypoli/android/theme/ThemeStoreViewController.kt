@@ -101,12 +101,12 @@ class ThemeStoreViewController(args: Bundle? = null) :
             }
 
             THEME_TOO_EXPENSIVE -> {
-                CurrencyConverterController().showDialog(router, "currency-converter")
+                CurrencyConverterDialogController().showDialog(router, "currency-converter")
                 Toast.makeText(view.context, "Theme too expensive", Toast.LENGTH_SHORT).show()
             }
 
             SHOW_CURRENCY_CONVERTER -> {
-                CurrencyConverterController().showDialog(router, "currency-converter")
+                CurrencyConverterDialogController().showDialog(router, "currency-converter")
             }
         }
     }

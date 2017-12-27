@@ -167,7 +167,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             FOOD_TOO_EXPENSIVE -> {
-                CurrencyConverterController().showDialog(router, "currency-converter")
+                CurrencyConverterDialogController().showDialog(router, "currency-converter")
                 Toast.makeText(view.context, stringRes(R.string.food_too_expensive), Toast.LENGTH_SHORT).show()
             }
 
@@ -200,7 +200,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             SHOW_CURRENCY_CONVERTER -> {
-                CurrencyConverterController().showDialog(router, "currency-converter")
+                CurrencyConverterDialogController().showDialog(router, "currency-converter")
             }
 
             ITEM_LIST_SHOWN -> {
@@ -241,7 +241,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             ITEM_TOO_EXPENSIVE -> {
-                CurrencyConverterController().showDialog(router, "currency-converter")
+                CurrencyConverterDialogController().showDialog(router, "currency-converter")
                 Toast.makeText(view.context, stringRes(R.string.pet_item_too_expensive), Toast.LENGTH_SHORT).show()
             }
         }
