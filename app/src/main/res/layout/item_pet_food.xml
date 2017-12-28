@@ -2,7 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="92dp"
+    android:layout_width="96dp"
     android:layout_height="match_parent"
     android:background="?attr/selectableItemBackgroundBorderless"
     android:clickable="true"
@@ -18,8 +18,7 @@
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/coins_donation_pack" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/foodPrice"
@@ -27,13 +26,13 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
         android:layout_marginTop="8dp"
-        android:drawablePadding="4dp"
-        android:drawableStart="@drawable/ic_life_coin_16dp"
-        android:gravity="center_vertical"
+        android:drawableStart="@drawable/ic_gem_16dp"
+        android:gravity="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/foodImage"
-        app:layout_constraintStart_toStartOf="@+id/foodImage"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/foodImage"
         tools:text="13 coins" />
+
 </android.support.constraint.ConstraintLayout>

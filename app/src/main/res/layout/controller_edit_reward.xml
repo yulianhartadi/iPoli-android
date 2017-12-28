@@ -27,7 +27,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginEnd="16dp"
             android:layout_marginStart="24dp"
-            app:hintTextAppearance="@style/TextAppearance.iPoli.EditText">
+            app:hintTextAppearance="@style/TextAppearance.myPoli.EditText">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/name"
