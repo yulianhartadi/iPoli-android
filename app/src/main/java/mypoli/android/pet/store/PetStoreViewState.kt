@@ -31,6 +31,6 @@ data class PetStoreViewState(
         PET_BOUGHT,
         PET_CHANGED,
         SHOW_CURRENCY_CONVERTER,
-        SHOW_UNLOCK_PET
+        SHOW_GEM_STORE
     }
 }

@@ -75,7 +75,7 @@ class PetStorePresenter(
 
             is UnlockPet -> {
                 state.copy(
-                    type = SHOW_UNLOCK_PET
+                    type = SHOW_GEM_STORE
                 )
             }
         }

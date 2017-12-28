@@ -294,7 +294,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val colorPickerPresenter get() = ColorPickerPresenter(listenForPlayerChangesUseCase, buyColorPackUseCase, job)
     override val iconPickerPresenter get() = IconPickerDialogPresenter(listenForPlayerChangesUseCase, buyIconPackUseCase, job)
     override val currencyConverterPresenter get() = CurrencyConverterPresenter(listenForPlayerChangesUseCase, convertCoinsToGemsUseCase, job)
-    override val gemStorePresenter get() = GemStorePresenter(job)
+    override val gemStorePresenter get() = GemStorePresenter(listenForPlayerChangesUseCase, job)
 }
 
 interface PopupPresenterModule {

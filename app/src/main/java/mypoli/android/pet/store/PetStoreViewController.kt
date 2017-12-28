@@ -84,7 +84,7 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
                 CurrencyConverterDialogController().showDialog(router, "currency-converter")
             }
 
-            SHOW_UNLOCK_PET -> {
+            SHOW_GEM_STORE -> {
                 showGemStore()
             }
         }
