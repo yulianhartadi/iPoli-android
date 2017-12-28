@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.dialog_currency_converter.view.*
 import kotlinx.android.synthetic.main.view_currency_converter_dialog_header.view.*
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
+import mypoli.android.BillingConstants
 import mypoli.android.Constants
 import mypoli.android.R
 import mypoli.android.common.mvi.BaseMviPresenter
@@ -32,6 +33,13 @@ import mypoli.android.player.Player
 import mypoli.android.player.usecase.ConvertCoinsToGemsUseCase
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
 import mypoli.android.store.GemStoreViewController
+import mypoli.android.store.purchase.AndroidInAppPurchaseManager
+import mypoli.android.store.purchase.GemPack
+import mypoli.android.store.purchase.GemPackType
+import mypoli.android.store.purchase.InAppPurchaseManager
+import org.solovyev.android.checkout.ActivityCheckout
+import org.solovyev.android.checkout.Billing
+import org.solovyev.android.checkout.Checkout
 import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -43,6 +51,7 @@ import kotlin.coroutines.experimental.CoroutineContext
 sealed class CurrencyConverterIntent : Intent {
     object LoadData : CurrencyConverterIntent()
     data class ChangePlayer(val player: Player) : CurrencyConverterIntent()
+    data class GemPacksLoaded(val gemPacks: List<GemPack>) : CurrencyConverterIntent()
     data class ChangeConvertDeal(val progress: Int) : CurrencyConverterIntent()
     data class Convert(val gems: Int) : CurrencyConverterIntent()
 }
@@ -56,14 +65,16 @@ data class CurrencyConverterViewState(
     val convertCoins: Int = 0,
     val convertGems: Int = 0,
     val enableConvert: Boolean = false,
-    val exchangeRateCoins: Int = 0
+    val exchangeRateCoins: Int = 0,
+    val gemPacks: List<GemPack> = listOf()
 ) : ViewState {
     enum class Type {
         LOADING,
         DATA_CHANGED,
         CONVERT_DEAL_CHANGED,
         GEMS_CONVERTED,
-        GEMS_TOO_EXPENSIVE
+        GEMS_TOO_EXPENSIVE,
+        GEM_PACKS_LOADED
     }
 }
 
@@ -75,12 +86,20 @@ class CurrencyConverterPresenter(
         CurrencyConverterViewState(LOADING),
         coroutineContext
     ) {
+
+    lateinit var purchaseManager: InAppPurchaseManager
+
     override fun reduceState(intent: CurrencyConverterIntent, state: CurrencyConverterViewState) =
         when (intent) {
             is CurrencyConverterIntent.LoadData -> {
                 launch {
                     listenForPlayerChangesUseCase.execute(Unit).consumeEach {
                         sendChannel.send(ChangePlayer(it))
+                    }
+                }
+                purchaseManager.loadAll {
+                    launch {
+                        sendChannel.send(GemPacksLoaded(it))
                     }
                 }
                 state
@@ -100,6 +119,13 @@ class CurrencyConverterPresenter(
                     enableConvert = false,
                     exchangeRateCoins = Constants.GEM_COINS_PRICE
 
+                )
+            }
+
+            is GemPacksLoaded -> {
+                state.copy(
+                    type = GEM_PACKS_LOADED,
+                    gemPacks = intent.gemPacks
                 )
             }
 
@@ -132,6 +158,43 @@ class CurrencyConverterDialogController :
     private val presenter by required { currencyConverterPresenter }
 
     override fun createPresenter() = presenter
+
+    private lateinit var checkout: ActivityCheckout
+
+    override fun createHeaderView(inflater: LayoutInflater): View =
+        inflater.inflate(R.layout.view_currency_converter_dialog_header, null)
+
+    override fun onHeaderViewCreated(headerView: View) {
+        headerView.dialogHeaderTitle.setText(R.string.currency_converter_title)
+    }
+
+    override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
+        val view = inflater.inflate(R.layout.dialog_currency_converter, null)
+        view.basicPackContainer.setOnClickListener {
+            showGemStore()
+        }
+        view.smartPackContainer.setOnClickListener {
+            showGemStore()
+        }
+        view.platinumPackContainer.setOnClickListener {
+            showGemStore()
+        }
+
+        val billing = Billing(activity!!, object : Billing.DefaultConfiguration() {
+            override fun getPublicKey() =
+                BillingConstants.appPublicKey
+        })
+
+        checkout = Checkout.forActivity(activity!!, billing)
+        checkout.start()
+        presenter.purchaseManager = AndroidInAppPurchaseManager(checkout, activity!!.resources)
+        return view
+    }
+
+    override fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog =
+        dialogBuilder
+            .setNegativeButton(R.string.done, null)
+            .create()
 
     override fun onAttach(view: View) {
         super.onAttach(view)
@@ -172,6 +235,25 @@ class CurrencyConverterDialogController :
                     playConvertAnimation(view, { send(Convert(view.seekBar.progress)) })
                 }
 
+            }
+
+            GEM_PACKS_LOADED -> {
+                state.gemPacks.forEach {
+                    when (it.type) {
+                        GemPackType.BASIC -> {
+                            view.basicPackPrice.text = it.price
+                            view.basicPackTitle.text = it.shortTitle
+                        }
+                        GemPackType.SMART -> {
+                            view.smartPackPrice.text = it.price
+                            view.smartPackTitle.text = it.shortTitle
+                        }
+                        GemPackType.PLATINUM -> {
+                            view.platinumPackPrice.text = it.price
+                            view.platinumPackTitle.text = it.shortTitle
+                        }
+                    }
+                }
             }
 
             CONVERT_DEAL_CHANGED -> {
@@ -277,20 +359,6 @@ class CurrencyConverterDialogController :
         set.start()
     }
 
-    override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
-        val view = inflater.inflate(R.layout.dialog_currency_converter, null)
-        view.basicPackContainer.setOnClickListener {
-            showGemStore()
-        }
-        view.smartPackContainer.setOnClickListener {
-            showGemStore()
-        }
-        view.platinumPackContainer.setOnClickListener {
-            showGemStore()
-        }
-        return view
-    }
-
     private fun showGemStore() {
         val handler = FadeChangeHandler()
         router.pushController(
@@ -300,15 +368,8 @@ class CurrencyConverterDialogController :
         )
     }
 
-    override fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog =
-        dialogBuilder
-            .setNegativeButton(R.string.done, null)
-            .create()
-
-    override fun onHeaderViewCreated(headerView: View) {
-        headerView.dialogHeaderTitle.setText(R.string.currency_converter_title)
+    override fun onDestroy() {
+        checkout.stop()
+        super.onDestroy()
     }
-
-    override fun createHeaderView(inflater: LayoutInflater): View =
-        inflater.inflate(R.layout.view_currency_converter_dialog_header, null)
 }

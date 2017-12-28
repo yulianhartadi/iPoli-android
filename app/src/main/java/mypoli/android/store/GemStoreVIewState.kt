@@ -11,6 +11,7 @@ import mypoli.android.player.Player
 sealed class GemStoreIntent : Intent {
     object LoadData : GemStoreIntent()
     data class ChangePlayer(val player: Player) : GemStoreIntent()
+    object BuyBasicPack: GemStoreIntent()
 }
 
 data class GemStoreViewState(

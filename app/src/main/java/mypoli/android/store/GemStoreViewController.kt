@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.android.synthetic.main.controller_gem_store.view.*
 import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import mypoli.android.R
 import mypoli.android.common.mvi.MviViewController
@@ -47,6 +48,10 @@ class GemStoreViewController(args: Bundle? = null) : MviViewController<GemStoreV
         inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
         inventoryToolbar.toolbarTitle.setText(R.string.gem_store)
 
+        view.basicPackBuy.setOnClickListener {
+
+        }
+
         return view
     }
 
@@ -65,6 +70,7 @@ class GemStoreViewController(args: Bundle? = null) : MviViewController<GemStoreV
         when (state.type) {
             PLAYER_CHANGED -> {
                 inventoryToolbar.playerGems.text = state.playerGems.toString()
+
             }
         }
 

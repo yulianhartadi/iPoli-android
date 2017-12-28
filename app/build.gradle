@@ -87,6 +87,7 @@ dependencies {
     implementation 'com.evernote:android-job:1.2.1'
     implementation 'com.amplitude:android-sdk:2.16.0'
     implementation 'com.sdsmdg.harjot:croller:1.0.7'
+    implementation 'org.solovyev.android:checkout:1.2.1'
 
     implementation 'com.github.bumptech.glide:glide:4.3.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.3.1'
