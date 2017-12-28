@@ -181,7 +181,6 @@
                 android:id="@+id/view3"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginTop="8dp"
                 android:background="?attr/colorPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/basicPackImage" />
@@ -204,15 +203,15 @@
             <ImageView
                 android:id="@+id/basicPackImage"
                 android:layout_width="wrap_content"
-                android:layout_height="42dp"
+                android:layout_height="48dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/basicPackTitle"
-                app:srcCompat="@drawable/gems" />
+                app:srcCompat="@drawable/ic_gems_basic_pack_24dp" />
 
             <TextView
                 android:id="@+id/basicPackPrice"
@@ -260,7 +259,6 @@
                 android:id="@+id/view2"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginTop="8dp"
                 android:background="?attr/colorAccent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/smartPackImage" />
@@ -284,14 +282,14 @@
             <ImageView
                 android:id="@+id/smartPackImage"
                 android:layout_width="wrap_content"
-                android:layout_height="42dp"
+                android:layout_height="48dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:adjustViewBounds="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/smartPackTitle"
-                app:srcCompat="@drawable/gems" />
+                app:srcCompat="@drawable/ic_gems_smart_pack_24dp" />
 
             <TextView
                 android:id="@+id/smartPackPrice"
@@ -353,7 +351,6 @@
                 android:id="@+id/view4"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginTop="8dp"
                 android:background="?attr/colorPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/platinumPackImage" />
@@ -377,14 +374,14 @@
             <ImageView
                 android:id="@+id/platinumPackImage"
                 android:layout_width="wrap_content"
-                android:layout_height="42dp"
+                android:layout_height="48dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:adjustViewBounds="true"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/platinumPackTitle"
-                app:srcCompat="@drawable/gems" />
+                app:srcCompat="@drawable/ic_gems_platinum_pack_24dp" />
 
             <TextView
                 android:id="@+id/platinumPackPrice"

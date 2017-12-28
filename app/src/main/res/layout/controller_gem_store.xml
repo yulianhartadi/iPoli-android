@@ -77,7 +77,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/basicHeaderBackground"
-                app:srcCompat="@drawable/gems" />
+                app:srcCompat="@drawable/ic_gems_basic_pack_24dp" />
 
             <TextView
                 android:id="@+id/basicPackGems"
@@ -185,7 +185,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/giftBackground"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/smartHeaderBackground"
-                app:srcCompat="@drawable/gems" />
+                app:srcCompat="@drawable/ic_gems_smart_pack_24dp" />
 
             <TextView
                 android:id="@+id/smartPackGems"
@@ -359,7 +359,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/platinumHeaderBackground"
-                app:srcCompat="@drawable/gems" />
+                app:srcCompat="@drawable/ic_gems_platinum_pack_24dp" />
 
             <TextView
                 android:id="@+id/platinumPackGems"
