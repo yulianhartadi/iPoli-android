@@ -18,14 +18,14 @@
     <View
         android:id="@+id/questCategoryIndicator"
         android:layout_width="4dp"
-        android:layout_height="match_parent"
-        android:alpha="1" />
+        android:layout_height="match_parent" />
 
     <View
         android:id="@+id/completedBackgroundView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/md_grey_500" />
+        android:visibility="invisible"
+        android:background="@color/md_grey_400" />
 
     <TextView
         android:id="@+id/questName"
@@ -34,94 +34,54 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/indicatorContainer"
+        android:gravity="bottom"
+        android:textAlignment="viewStart"
+        app:layout_constraintBottom_toTopOf="@+id/questSchedule"
+        app:layout_constraintEnd_toStartOf="@+id/questIcon"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/startTime"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@+id/checkBox"
+        app:layout_constraintTop_toTopOf="@+id/completedBackgroundView"
+        app:layout_constraintVertical_chainStyle="packed"
         tools:text="Workout" />
 
     <TextView
-        android:id="@+id/startTime"
+        android:id="@+id/questSchedule"
         style="@style/Calendar.Quest.StartTime"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:textColor="@color/md_light_text_87"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="10:30" />
-
-    <TextView
-        android:id="@+id/endTime"
-        style="@style/Calendar.Quest.EndTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="2dp"
-        android:textColor="@color/md_light_text_87"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="12:30" />
+        app:layout_constraintEnd_toEndOf="@+id/questName"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="@+id/questName"
+        app:layout_constraintTop_toBottomOf="@+id/questName"
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="10:30 - 12:45" />
 
     <CheckBox
         android:id="@+id/checkBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        app:layout_constraintBottom_toTopOf="@+id/endTime"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/questName"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/startTime"
-        app:layout_constraintVertical_bias="0.5" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/indicatorContainer"
-        android:layout_width="wrap_content"
+    <ImageView
+        android:id="@+id/questIcon"
+        android:layout_width="24dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
-        android:orientation="vertical"
-        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
-
-        <ImageView
-            android:id="@+id/challengeIndicator"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
-            android:scaleType="fitXY"
-            android:visibility="invisible"
-            app:srcCompat="@drawable/ic_sword_black_24dp" />
-
-        <ImageView
-            android:id="@+id/repeatingQuestIndicator"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
-            android:scaleType="fitXY"
-            android:visibility="invisible"
-            app:srcCompat="@drawable/ic_repeating_quest_24dp_transparent" />
-
-        <ImageView
-            android:id="@+id/priorityIndicator"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp"
-            android:scaleType="fitXY"
-            android:visibility="invisible"
-            app:srcCompat="@drawable/ic_star_accent_24dp" />
-    </LinearLayout>
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/questName"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

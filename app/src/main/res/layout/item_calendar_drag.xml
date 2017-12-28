@@ -45,11 +45,11 @@
         style="@style/Calendar.Quest.Name.Drag"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/dragIcon"
+        app:layout_constraintEnd_toStartOf="@+id/dragIcon"
+        app:layout_constraintStart_toEndOf="@+id/dragStartTime"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Hello World" />
 
@@ -61,28 +61,14 @@
         app:layout_constraintGuide_percent="0.5" />
 
     <ImageView
-        android:id="@+id/reminder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:background="?android:attr/selectableItemBackgroundBorderless"
-        android:paddingBottom="4dp"
-        android:paddingTop="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/ic_reminder_white_24dp" />
-
-    <ImageView
         android:id="@+id/dragIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/dragStartTime"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@drawable/ic_icon_white_24dp" />
 </android.support.constraint.ConstraintLayout>

@@ -12,7 +12,7 @@
         android:layout_marginEnd="24dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="20dp"
-        app:hintTextAppearance="@style/TextAppearance.iPoli.EditText">
+        app:hintTextAppearance="@style/TextAppearance.myPoli.EditText">
 
         <EditText
             android:id="@+id/feedback"
