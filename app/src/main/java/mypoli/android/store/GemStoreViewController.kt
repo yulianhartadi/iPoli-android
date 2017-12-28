@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.mikepenz.google_material_typeface_library.GoogleMaterial
+import com.mikepenz.iconics.IconicsDrawable
 import kotlinx.android.synthetic.main.controller_gem_store.view.*
 import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import mypoli.android.BillingConstants
@@ -54,6 +56,13 @@ class GemStoreViewController(args: Bundle? = null) : MviViewController<GemStoreV
 
         registerForActivityResult(AndroidInAppPurchaseManager.PURCHASE_REQUEST_CODE)
 
+        view.mostPopular.setCompoundDrawablesWithIntrinsicBounds(
+            IconicsDrawable(view.context)
+                .icon(GoogleMaterial.Icon.gmd_favorite)
+                .colorRes(R.color.md_white)
+                .sizeDp(24),
+            null, null, null)
+
         return view
     }
 
@@ -74,7 +83,7 @@ class GemStoreViewController(args: Bundle? = null) : MviViewController<GemStoreV
             PLAYER_CHANGED -> {
                 inventoryToolbar.playerGems.text = state.playerGems.toString()
                 if (state.isGiftPurchased) {
-                    view.giftContainer.visibility = View.GONE
+                    showMostPopular(view)
                 }
             }
 
@@ -84,16 +93,19 @@ class GemStoreViewController(args: Bundle? = null) : MviViewController<GemStoreV
                         GemPackType.BASIC -> {
                             view.basicPackPrice.text = it.price
                             view.basicPackTitle.text = it.title
+                            view.basicPackGems.text = "x ${it.gems}"
                             view.basicPackBuy.sendOnClick(GemStoreIntent.BuyGemPack(it))
                         }
                         GemPackType.SMART -> {
                             view.smartPackPrice.text = it.price
                             view.smartPackTitle.text = it.title
+                            view.smartPackGems.text = "x ${it.gems}"
                             view.smartPackBuy.sendOnClick(GemStoreIntent.BuyGemPack(it))
                         }
                         GemPackType.PLATINUM -> {
                             view.platinumPackPrice.text = it.price
                             view.platinumPackTitle.text = it.title
+                            view.platinumPackGems.text = "x ${it.gems}"
                             view.platinumPackBuy.sendOnClick(GemStoreIntent.BuyGemPack(it))
                         }
                     }
@@ -105,7 +117,7 @@ class GemStoreViewController(args: Bundle? = null) : MviViewController<GemStoreV
             }
 
             DOG_UNLOCKED -> {
-                view.giftContainer.visibility = View.GONE
+                showMostPopular(view)
                 Toast.makeText(view.context, R.string.gift_unlocked, Toast.LENGTH_LONG).show()
             }
 
@@ -113,6 +125,13 @@ class GemStoreViewController(args: Bundle? = null) : MviViewController<GemStoreV
                 Toast.makeText(view.context, R.string.purchase_failed, Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    private fun showMostPopular(view: View) {
+        view.giftContainer.visibility = View.GONE
+        view.mostPopular.visibility = View.VISIBLE
+
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

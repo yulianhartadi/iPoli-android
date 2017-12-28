@@ -30,14 +30,11 @@
                 <View
                     android:id="@+id/basicHeaderBackground"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginBottom="24dp"
-                    android:background="@color/colorPrimary"
-                    app:layout_constraintBottom_toTopOf="@+id/basicPackGems"
+                    android:layout_height="48dp"
+                    android:background="?attr/colorPrimary"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/basicPackTitle"
@@ -46,7 +43,6 @@
                     android:layout_marginBottom="8dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
-                    android:text="Basic Pack"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     android:textColor="@color/md_white"
                     app:layout_constraintBottom_toBottomOf="@+id/basicHeaderBackground"
@@ -61,7 +57,6 @@
                     android:layout_marginBottom="8dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginTop="8dp"
-                    android:text="4.99 USD"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                     android:textColor="@color/md_white"
                     app:layout_constraintBottom_toBottomOf="@+id/basicHeaderBackground"
@@ -87,15 +82,15 @@
                     android:id="@+id/basicPackGems"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
-                    android:text="x8"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textColor="@color/md_dark_text_87"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/basicPackBuy"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toEndOf="@+id/basicPackImage"
+                    app:layout_constraintTop_toBottomOf="@+id/basicHeaderBackground"
                     tools:text="x8" />
 
                 <Button
@@ -103,12 +98,12 @@
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
+                    android:layout_marginBottom="16dp"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="16dp"
                     android:paddingEnd="32dp"
                     android:paddingStart="32dp"
-                    android:text="Buy Now"
+                    android:text="@string/buy_now"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/basicHeaderBackground"
@@ -137,14 +132,11 @@
                 <View
                     android:id="@+id/smartHeaderBackground"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginBottom="24dp"
-                    android:background="@color/colorAccent"
-                    app:layout_constraintBottom_toTopOf="@+id/smartPackGems"
+                    android:layout_height="48dp"
+                    android:background="?attr/colorAccent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/smartPackTitle"
@@ -153,7 +145,6 @@
                     android:layout_marginBottom="8dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
-                    android:text="Smart Pack"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     android:textColor="@color/md_white"
                     app:layout_constraintBottom_toBottomOf="@+id/smartHeaderBackground"
@@ -169,7 +160,6 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginTop="8dp"
                     android:drawablePadding="4dp"
-                    android:text="19,99 USD"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                     android:textColor="@color/md_white"
                     app:layout_constraintBottom_toBottomOf="@+id/smartHeaderBackground"
@@ -195,30 +185,29 @@
                     android:id="@+id/smartPackGems"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
-                    android:text="x12"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textColor="@color/md_dark_text_87"
                     app:layout_constraintBottom_toTopOf="@+id/giftBackground"
                     app:layout_constraintEnd_toStartOf="@+id/smartPackBuy"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toEndOf="@+id/smartPackImage" />
+                    app:layout_constraintStart_toEndOf="@+id/smartPackImage"
+                    app:layout_constraintTop_toBottomOf="@+id/smartHeaderBackground"
+                    tools:text="x12" />
 
                 <Button
                     android:id="@+id/smartPackBuy"
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginTop="24dp"
-                    android:backgroundTint="@color/colorPrimary"
+                    android:layout_marginTop="16dp"
+                    android:backgroundTint="?attr/colorPrimary"
                     android:paddingEnd="32dp"
                     android:paddingStart="32dp"
-                    android:text="Buy Now"
+                    android:text="@string/buy_now"
                     android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button.Colored"
-                    app:layout_constraintBottom_toTopOf="@+id/giftBackground"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/smartHeaderBackground"
                     tools:text="Buy Now" />
@@ -226,11 +215,13 @@
                 <View
                     android:id="@+id/giftBackground"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:background="@color/colorAccent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="16dp"
+                    android:background="?attr/colorAccent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent" />
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/smartPackBuy" />
 
                 <ImageView
                     android:id="@+id/smartPackGiftImage"
@@ -249,14 +240,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="24dp"
                     android:drawablePadding="8dp"
                     android:drawableStart="@drawable/ic_gift_white_24dp"
-                    android:text="Special Gift"
+                    android:text="@string/smart_pack_gift_title"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     android:textColor="@color/md_white"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/giftBackground" />
+                    app:layout_constraintTop_toBottomOf="@+id/smartPackBuy" />
 
                 <View
                     android:id="@+id/view7"
@@ -278,7 +269,7 @@
                     android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
-                    android:text="As a special thank you this purchase will unlock Fluffy the god"
+                    android:text="@string/smart_pack_gift_description"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:textColor="@color/md_white"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -290,7 +281,26 @@
                     android:id="@+id/giftContainer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:constraint_referenced_ids="giftBackground,view7,smartPackGiftTitle,smartPackGiftImage,smartPackGiftDescription" />
+                    android:visibility="visible"
+                    app:constraint_referenced_ids="view7,smartPackGiftTitle,smartPackGiftImage,smartPackGiftDescription" />
+
+                <TextView
+                    android:id="@+id/mostPopular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/most_popular"
+                    android:drawablePadding="8dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textColor="@color/md_white"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/giftBackground"
+                    app:layout_constraintEnd_toEndOf="@+id/giftBackground"
+                    app:layout_constraintStart_toStartOf="@+id/giftBackground"
+                    app:layout_constraintTop_toTopOf="@+id/giftBackground" />
 
             </android.support.constraint.ConstraintLayout>
 
@@ -319,14 +329,11 @@
                 <View
                     android:id="@+id/platinumHeaderBackground"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginBottom="24dp"
-                    android:background="@color/colorPrimary"
-                    app:layout_constraintBottom_toTopOf="@+id/platinumPackGems"
+                    android:layout_height="48dp"
+                    android:background="?attr/colorPrimary"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/platinumPackTitle"
@@ -335,7 +342,6 @@
                     android:layout_marginBottom="8dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
-                    android:text="Platinum Pack"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     android:textColor="@color/md_white"
                     app:layout_constraintBottom_toBottomOf="@+id/platinumHeaderBackground"
@@ -350,7 +356,6 @@
                     android:layout_marginBottom="8dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginTop="8dp"
-                    android:text="49.99 USD"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                     android:textColor="@color/md_white"
                     app:layout_constraintBottom_toBottomOf="@+id/platinumHeaderBackground"
@@ -376,15 +381,15 @@
                     android:id="@+id/platinumPackGems"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
-                    android:text="x20"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textColor="@color/md_dark_text_87"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/platinumPackBuy"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toEndOf="@+id/platinumPackImage"
+                    app:layout_constraintTop_toBottomOf="@+id/platinumHeaderBackground"
                     tools:text="x20" />
 
                 <Button
@@ -392,12 +397,12 @@
                     style="@style/Widget.AppCompat.Button.Borderless.Colored"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
+                    android:layout_marginBottom="16dp"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginTop="16dp"
                     android:paddingEnd="32dp"
                     android:paddingStart="32dp"
-                    android:text="Buy Now"
+                    android:text="@string/buy_now"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/platinumHeaderBackground"
