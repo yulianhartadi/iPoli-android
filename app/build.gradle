@@ -20,8 +20,8 @@ android {
         applicationId "mypoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 6
-        versionName "Pet Item Magic"
+        versionCode 7
+        versionName "Buy Some Gems"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
