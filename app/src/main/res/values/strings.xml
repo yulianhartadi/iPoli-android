@@ -1040,6 +1040,9 @@
     <string name="gem_pack_basic_title_short">Basic</string>
     <string name="gem_pack_smart_title_short">Smart</string>
     <string name="gem_pack_platinum_title_short">Platinum</string>
+    <string name="purchase_failed">Unable to complete purchase. Please, try again later</string>
+    <string name="gift_unlocked">Wohoo! Take your dog from the pet store!</string>
+    <string name="gem_pack_purchased">Use your new gems wisely!</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

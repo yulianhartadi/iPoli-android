@@ -16,7 +16,6 @@ import mypoli.android.home.HomeViewController
 import mypoli.android.player.AuthProvider
 import mypoli.android.player.Player
 import mypoli.android.player.persistence.model.ProviderType
-import org.solovyev.android.checkout.ActivityCheckout
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -33,8 +32,6 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
 
     private val playerRepository by required { playerRepository }
     private val petStatsChangeScheduler by required { lowerPetStatsScheduler }
-
-    private lateinit var checkout: ActivityCheckout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,36 +52,6 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
 //                startActivityForResult(intent, 0)
 //            }
         }
-
-
-//        val billing = Billing(this, object : Billing.DefaultConfiguration() {
-//            override fun getPublicKey(): String {
-//                return BillingConstants.appPublicKey
-//            }
-//        })
-//
-//        Timber.d("AAAAA before")
-//
-//        checkout = Checkout.forActivity(this, billing)
-//        checkout.start()
-//
-//        val skus = listOf("test")
-//
-//        checkout.loadInventory(
-//            Inventory.Request.create()
-//                .loadAllPurchases()
-//                .loadSkus(ProductTypes.IN_APP, skus)
-//        ) { products ->
-//            val appPurchases = products.get(ProductTypes.IN_APP)
-//            appPurchases.getSku("test")
-//
-//
-//            products.forEach {
-//                Timber.d("AAAA ${it.skus}")
-//            }
-//            Timber.d("AAAA ${products.size()}")
-//            Timber.d("AAAA ${appPurchases.skus}")
-//        }
 
         incrementAppRun()
 
@@ -128,7 +95,6 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         router.onActivityResult(requestCode, resultCode, data)
-        checkout.onActivityResult(requestCode, resultCode, data);
     }
 
     fun showBackButton() {
