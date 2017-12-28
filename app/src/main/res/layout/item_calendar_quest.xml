@@ -35,7 +35,6 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:gravity="bottom"
-        android:textAlignment="viewStart"
         app:layout_constraintBottom_toTopOf="@+id/questSchedule"
         app:layout_constraintEnd_toStartOf="@+id/questIcon"
         app:layout_constraintHorizontal_bias="0.5"

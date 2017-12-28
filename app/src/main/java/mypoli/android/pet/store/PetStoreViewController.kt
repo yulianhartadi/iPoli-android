@@ -7,6 +7,8 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.controller_pet_store.view.*
 import kotlinx.android.synthetic.main.item_pet_store.view.*
 import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
@@ -19,6 +21,7 @@ import mypoli.android.pet.PetAvatar
 import mypoli.android.pet.PetMood
 import mypoli.android.pet.store.PetStoreIntent.*
 import mypoli.android.pet.store.PetStoreViewState.StateType.*
+import mypoli.android.store.GemStoreViewController
 import space.traversal.kapsule.required
 
 /**
@@ -38,9 +41,7 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
 
         inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
         inventoryToolbar.toolbarTitle.setText(R.string.store)
-        inventoryToolbar.playerGems.setOnClickListener {
-            send(ShowCurrencyConverter)
-        }
+        inventoryToolbar.playerGems.sendOnClick(ShowCurrencyConverter)
 
         view.petPager.clipToPadding = false
         view.petPager.pageMargin = ViewUtils.dpToPx(16f, view.context).toInt()
@@ -73,12 +74,16 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
             }
 
             PET_TOO_EXPENSIVE -> {
-                CurrencyConverterController().showDialog(router, "currency-converter")
+                CurrencyConverterDialogController().showDialog(router, "currency-converter")
                 Toast.makeText(view.context, "Pet too expensive", Toast.LENGTH_SHORT).show()
             }
 
             SHOW_CURRENCY_CONVERTER -> {
-                CurrencyConverterController().showDialog(router, "currency-converter")
+                CurrencyConverterDialogController().showDialog(router, "currency-converter")
+            }
+
+            SHOW_GEM_STORE -> {
+                showGemStore()
             }
         }
     }
@@ -88,7 +93,16 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
         super.onDestroyView(view)
     }
 
-    data class PetViewModel(val avatar: AndroidPetAvatar, val isBought: Boolean = false, val isCurrent: Boolean = false)
+    private fun showGemStore() {
+        val handler = FadeChangeHandler()
+        router.pushController(
+            RouterTransaction.with(GemStoreViewController())
+                .pushChangeHandler(handler)
+                .popChangeHandler(handler)
+        )
+    }
+
+    data class PetViewModel(val avatar: AndroidPetAvatar, val isBought: Boolean = false, val isCurrent: Boolean = false, val isLocked: Boolean = false)
 
     inner class PetPagerAdapter(private var viewModels: List<PetViewModel>) : PagerAdapter() {
 
@@ -118,12 +132,22 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
                     }
                     view.petState.setImageResource(avatar.moodImage[PetMood.GOOD]!!)
                 }
+                vm.isLocked -> {
+                    action.visible = true
+                    current.visible = false
+                    action.text = stringRes(R.string.unlock)
+                    action.setOnClickListener {
+                        send(UnlockPet(PetAvatar.valueOf(vm.avatar.name)))
+                    }
+                    view.petState.setImageResource(avatar.moodImage[PetMood.GOOD]!!)
+                }
                 else -> {
                     action.visible = true
                     current.visible = false
                     action.text = stringRes(R.string.store_buy_pet)
                     action.setOnClickListener {
                         send(BuyPet(PetAvatar.valueOf(vm.avatar.name)))
+
                     }
                     view.petState.setImageResource(avatar.moodImage[PetMood.GOOD]!!)
                 }

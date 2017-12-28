@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:colorBackground">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/basicPackContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="6dp"
+            app:cardElevation="6dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <View
+                    android:id="@+id/basicHeaderBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="?attr/colorPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/basicPackTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textColor="@color/md_white"
+                    app:layout_constraintBottom_toBottomOf="@+id/basicHeaderBackground"
+                    app:layout_constraintStart_toStartOf="@+id/basicHeaderBackground"
+                    app:layout_constraintTop_toTopOf="@+id/basicHeaderBackground"
+                    tools:text="Basic Pack" />
+
+                <TextView
+                    android:id="@+id/basicPackPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="8dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    android:textColor="@color/md_white"
+                    app:layout_constraintBottom_toBottomOf="@+id/basicHeaderBackground"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/basicHeaderBackground"
+                    tools:text="4.99 USD" />
+
+                <ImageView
+                    android:id="@+id/basicPackImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="8dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/basicHeaderBackground"
+                    app:srcCompat="@drawable/ic_gems_basic_pack_24dp" />
+
+                <TextView
+                    android:id="@+id/basicPackGems"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textColor="@color/md_dark_text_87"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/basicPackBuy"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/basicPackImage"
+                    app:layout_constraintTop_toBottomOf="@+id/basicHeaderBackground"
+                    tools:text="x8" />
+
+                <Button
+                    android:id="@+id/basicPackBuy"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    android:paddingEnd="32dp"
+                    android:paddingStart="32dp"
+                    android:text="@string/buy_now"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/basicHeaderBackground"
+                    tools:text="Buy Now" />
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/smartPackContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="6dp"
+            app:cardElevation="6dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/basicPackContainer">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <View
+                    android:id="@+id/smartHeaderBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="?attr/colorAccent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/smartPackTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textColor="@color/md_white"
+                    app:layout_constraintBottom_toBottomOf="@+id/smartHeaderBackground"
+                    app:layout_constraintStart_toStartOf="@+id/smartHeaderBackground"
+                    app:layout_constraintTop_toTopOf="@+id/smartHeaderBackground"
+                    tools:text="Smart Pack" />
+
+                <TextView
+                    android:id="@+id/smartPackPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="8dp"
+                    android:drawablePadding="4dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    android:textColor="@color/md_white"
+                    app:layout_constraintBottom_toBottomOf="@+id/smartHeaderBackground"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/smartHeaderBackground"
+                    tools:text="19.99 USD" />
+
+                <ImageView
+                    android:id="@+id/smartPackImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="8dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    app:layout_constraintBottom_toTopOf="@+id/giftBackground"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/smartHeaderBackground"
+                    app:srcCompat="@drawable/ic_gems_smart_pack_24dp" />
+
+                <TextView
+                    android:id="@+id/smartPackGems"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textColor="@color/md_dark_text_87"
+                    app:layout_constraintBottom_toTopOf="@+id/giftBackground"
+                    app:layout_constraintEnd_toStartOf="@+id/smartPackBuy"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/smartPackImage"
+                    app:layout_constraintTop_toBottomOf="@+id/smartHeaderBackground"
+                    tools:text="x12" />
+
+                <Button
+                    android:id="@+id/smartPackBuy"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    android:backgroundTint="?attr/colorPrimary"
+                    android:paddingEnd="32dp"
+                    android:paddingStart="32dp"
+                    android:text="@string/buy_now"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button.Colored"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/smartHeaderBackground"
+                    tools:text="Buy Now" />
+
+                <View
+                    android:id="@+id/giftBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="16dp"
+                    android:background="?attr/colorAccent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/smartPackBuy" />
+
+                <ImageView
+                    android:id="@+id/smartPackGiftImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="72dp"
+                    android:layout_marginEnd="32dp"
+                    android:adjustViewBounds="true"
+                    app:layout_constraintBottom_toBottomOf="@+id/giftBackground"
+                    app:layout_constraintEnd_toEndOf="@id/giftBackground"
+                    app:layout_constraintTop_toBottomOf="@+id/giftBackground"
+                    app:layout_constraintTop_toTopOf="@+id/giftBackground"
+                    app:srcCompat="@drawable/smart_pack_gift" />
+
+                <TextView
+                    android:id="@+id/smartPackGiftTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="24dp"
+                    android:drawablePadding="8dp"
+                    android:drawableStart="@drawable/ic_gift_white_24dp"
+                    android:text="@string/smart_pack_gift_title"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textColor="@color/md_white"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/smartPackBuy" />
+
+                <View
+                    android:id="@+id/view7"
+                    android:layout_width="0dp"
+                    android:layout_height="2dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/md_white"
+                    app:layout_constraintEnd_toEndOf="@id/smartPackGiftTitle"
+                    app:layout_constraintHorizontal_bias="0.48"
+                    app:layout_constraintStart_toStartOf="@id/smartPackGiftTitle"
+                    app:layout_constraintTop_toBottomOf="@id/smartPackGiftTitle" />
+
+                <TextView
+                    android:id="@+id/smartPackGiftDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/smart_pack_gift_description"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/md_white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/smartPackGiftImage"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/view7" />
+
+                <android.support.constraint.Group
+                    android:id="@+id/giftContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    app:constraint_referenced_ids="view7,smartPackGiftTitle,smartPackGiftImage,smartPackGiftDescription" />
+
+                <TextView
+                    android:id="@+id/mostPopular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/most_popular"
+                    android:drawablePadding="8dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textColor="@color/md_white"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/giftBackground"
+                    app:layout_constraintEnd_toEndOf="@+id/giftBackground"
+                    app:layout_constraintStart_toStartOf="@+id/giftBackground"
+                    app:layout_constraintTop_toTopOf="@+id/giftBackground" />
+
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/platinumPackContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="6dp"
+            app:cardElevation="6dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/smartPackContainer"
+            app:layout_constraintVertical_bias="0.0">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <View
+                    android:id="@+id/platinumHeaderBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:background="?attr/colorPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/platinumPackTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textColor="@color/md_white"
+                    app:layout_constraintBottom_toBottomOf="@+id/platinumHeaderBackground"
+                    app:layout_constraintStart_toStartOf="@+id/platinumHeaderBackground"
+                    app:layout_constraintTop_toTopOf="@+id/platinumHeaderBackground"
+                    tools:text="Platinum Pack" />
+
+                <TextView
+                    android:id="@+id/platinumPackPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="8dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    android:textColor="@color/md_white"
+                    app:layout_constraintBottom_toBottomOf="@+id/platinumHeaderBackground"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/platinumHeaderBackground"
+                    tools:text="49.99 USD" />
+
+                <ImageView
+                    android:id="@+id/platinumPackImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="8dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/platinumHeaderBackground"
+                    app:srcCompat="@drawable/ic_gems_platinum_pack_24dp" />
+
+                <TextView
+                    android:id="@+id/platinumPackGems"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    android:textColor="@color/md_dark_text_87"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/platinumPackBuy"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/platinumPackImage"
+                    app:layout_constraintTop_toBottomOf="@+id/platinumHeaderBackground"
+                    tools:text="x20" />
+
+                <Button
+                    android:id="@+id/platinumPackBuy"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    android:paddingEnd="32dp"
+                    android:paddingStart="32dp"
+                    android:text="@string/buy_now"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/platinumHeaderBackground"
+                    tools:text="Buy Now" />
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v7.widget.CardView>
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>

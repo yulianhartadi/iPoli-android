@@ -233,7 +233,7 @@ class ColorPickerDialogController :
             }
 
             COLOR_PACK_TOO_EXPENSIVE -> {
-                CurrencyConverterController().showDialog(router, "currency-converter")
+                CurrencyConverterDialogController().showDialog(router, "currency-converter")
                 Toast.makeText(view.context, stringRes(R.string.color_pack_not_enough_coins), Toast.LENGTH_SHORT).show()
             }
         }

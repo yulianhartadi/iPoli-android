@@ -10,6 +10,7 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
     mavenCentral()
     maven { url 'https://maven.google.com' }
+    
 }
 
 android {
@@ -20,8 +21,8 @@ android {
         applicationId "mypoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 6
-        versionName "Pet Item Magic"
+        versionCode 7
+        versionName "Buy Some Gems"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -87,6 +88,7 @@ dependencies {
     implementation 'com.evernote:android-job:1.2.1'
     implementation 'com.amplitude:android-sdk:2.16.0'
     implementation 'com.sdsmdg.harjot:croller:1.0.7'
+    implementation 'org.solovyev.android:checkout:1.2.1'
 
     implementation 'com.github.bumptech.glide:glide:4.3.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.3.1'

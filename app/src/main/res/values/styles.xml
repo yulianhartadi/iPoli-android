@@ -220,12 +220,11 @@
 
     <style name="Calendar.Quest" />
 
-    <style name="Calendar.Quest.Name">
-        <item name="android:textAlignment">center</item>
+    <style name="Calendar.Quest.Name" parent="TextAppearance.AppCompat.Body2">
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="Calendar.Quest.StartTime">
+    <style name="Calendar.Quest.StartTime" parent="TextAppearance.AppCompat.Body1">
         <item name="android:textSize">12sp</item>
     </style>
 

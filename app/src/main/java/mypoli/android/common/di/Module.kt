@@ -47,6 +47,8 @@ import mypoli.android.rate.RatePresenter
 import mypoli.android.reminder.view.formatter.ReminderTimeFormatter
 import mypoli.android.reminder.view.formatter.TimeUnitFormatter
 import mypoli.android.reminder.view.picker.ReminderPickerDialogPresenter
+import mypoli.android.store.GemStorePresenter
+import mypoli.android.store.usecase.PurchaseGemPackUseCase
 import mypoli.android.theme.ThemeStorePresenter
 import mypoli.android.theme.usecase.BuyThemeUseCase
 import mypoli.android.theme.usecase.ChangeThemeUseCase
@@ -178,6 +180,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val buyPetItemUseCase get() = BuyPetItemUseCase(playerRepository)
     override val equipPetItemUseCase get() = EquipPetItemUseCase(playerRepository)
     override val takeOffPetItemUseCase get() = TakeOffPetItemUseCase(playerRepository)
+    override val purchaseGemPackUseCase get() = PurchaseGemPackUseCase(playerRepository)
 }
 
 interface PopupUseCaseModule {
@@ -235,6 +238,7 @@ interface UseCaseModule {
     val buyPetItemUseCase: BuyPetItemUseCase
     val equipPetItemUseCase: EquipPetItemUseCase
     val takeOffPetItemUseCase: TakeOffPetItemUseCase
+    val purchaseGemPackUseCase: PurchaseGemPackUseCase
 }
 
 interface PresenterModule {
@@ -250,6 +254,7 @@ interface PresenterModule {
     val colorPickerPresenter: ColorPickerPresenter
     val iconPickerPresenter: IconPickerDialogPresenter
     val currencyConverterPresenter: CurrencyConverterPresenter
+    val gemStorePresenter: GemStorePresenter
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
@@ -279,6 +284,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val buyPetItemUseCase by required { buyPetItemUseCase }
     private val equipPetItemUseCase by required { equipPetItemUseCase }
     private val takeOffPetItemUseCase by required { takeOffPetItemUseCase }
+    private val purchaseGemPackUseCase by required { purchaseGemPackUseCase }
     private val job by required { job }
     override val homePresenter get() = HomePresenter(job)
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, undoRemoveQuestUseCase, completeQuestUseCase, undoCompleteQuestUseCase, job)
@@ -292,6 +298,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val colorPickerPresenter get() = ColorPickerPresenter(listenForPlayerChangesUseCase, buyColorPackUseCase, job)
     override val iconPickerPresenter get() = IconPickerDialogPresenter(listenForPlayerChangesUseCase, buyIconPackUseCase, job)
     override val currencyConverterPresenter get() = CurrencyConverterPresenter(listenForPlayerChangesUseCase, convertCoinsToGemsUseCase, job)
+    override val gemStorePresenter get() = GemStorePresenter(purchaseGemPackUseCase, listenForPlayerChangesUseCase, job)
 }
 
 interface PopupPresenterModule {
