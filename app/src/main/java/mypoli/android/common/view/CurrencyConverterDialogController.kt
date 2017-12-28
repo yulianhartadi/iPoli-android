@@ -279,13 +279,13 @@ class CurrencyConverterDialogController :
 
     override fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.dialog_currency_converter, null)
-        view.basicPlanContainer.setOnClickListener {
+        view.basicPackContainer.setOnClickListener {
             showGemStore()
         }
-        view.smartestPlanContainer.setOnClickListener {
+        view.smartPackContainer.setOnClickListener {
             showGemStore()
         }
-        view.mostExpensivePlanContainer.setOnClickListener {
+        view.platinumPackContainer.setOnClickListener {
             showGemStore()
         }
         return view
