@@ -1,8 +1,10 @@
 package mypoli.android
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.provider.Settings
 import android.support.design.widget.AppBarLayout
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -47,10 +49,10 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
             Amplitude.getInstance().setLogLevel(Log.VERBOSE)
             amplitudeClient.setOptOut(true)
 
-//            if (!Settings.canDrawOverlays(this)) {
-//                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + packageName))
-//                startActivityForResult(intent, 0)
-//            }
+            if (!Settings.canDrawOverlays(this)) {
+                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + packageName))
+                startActivityForResult(intent, 0)
+            }
         }
 
         incrementAppRun()

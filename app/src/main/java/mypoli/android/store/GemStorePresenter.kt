@@ -62,6 +62,7 @@ class GemStorePresenter(
 
             is GemStoreIntent.BuyGemPack -> {
                 purchaseManager.purchase(intent.gemPack.type, object : InAppPurchaseManager.PurchaseListener {
+
                     override fun onPurchased() {
                         val result = purchaseGemPackUseCase.execute(PurchaseGemPackUseCase.Params(intent.gemPack))
                         launch {
