@@ -3,7 +3,6 @@ package mypoli.android.store.purchase
 import android.content.res.Resources
 import mypoli.android.R
 import org.solovyev.android.checkout.*
-import java.lang.Exception
 import java.util.*
 
 
@@ -21,7 +20,6 @@ data class GemPack(
     val shortTitle: String,
     val price: String,
     val gems: Int,
-    val isPurchased: Boolean,
     val type: GemPackType
 )
 
@@ -40,6 +38,9 @@ interface InAppPurchaseManager {
 class AndroidInAppPurchaseManager(private val checkout: UiCheckout, private val resources: Resources) : InAppPurchaseManager {
 
     companion object {
+
+        val PURCHASE_REQUEST_CODE = 321
+
         val GEM_PACK_TYPE_TO_SKU = mapOf(
             GemPackType.BASIC to "test",
             GemPackType.SMART to "test",
@@ -86,7 +87,6 @@ class AndroidInAppPurchaseManager(private val checkout: UiCheckout, private val 
                     resources.getString(shortTitleRes),
                     sku.price,
                     gems,
-                    appProducts.isPurchased(sku),
                     k
                 )
             }
@@ -104,9 +104,17 @@ class AndroidInAppPurchaseManager(private val checkout: UiCheckout, private val 
                     ProductTypes.IN_APP,
                     GEM_PACK_TYPE_TO_SKU[gemPack]!!,
                     payload,
-                    checkout.createOneShotPurchaseFlow(object : RequestListener<Purchase> {
-                        override fun onSuccess(result: Purchase) {
-                            purchaseListener.onPurchased()
+                    checkout.createOneShotPurchaseFlow(PURCHASE_REQUEST_CODE, object : RequestListener<Purchase> {
+                        override fun onSuccess(purchase: Purchase) {
+                            requests.consume(purchase.token, object : RequestListener<Any> {
+                                override fun onError(response: Int, e: Exception) {
+                                    purchaseListener.onError()
+                                }
+
+                                override fun onSuccess(result: Any) {
+                                    purchaseListener.onPurchased()
+                                }
+                            })
                         }
 
                         override fun onError(response: Int, e: Exception) {
