@@ -87,6 +87,6 @@ class PetStorePresenter(
                 avatar = it,
                 isBought = player.hasPet(petAvatar),
                 isCurrent = player.pet.avatar == petAvatar,
-                isLocked = it == AndroidPetAvatar.DOG)
+                isLocked = (it == AndroidPetAvatar.DOG && !player.hasPet(PetAvatar.DOG)))
         }
 }

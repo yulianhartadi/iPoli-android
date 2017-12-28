@@ -37,5 +37,9 @@ class GemStorePresenter(
                     playerGems = intent.player.gems
                 )
             }
+
+            is GemStoreIntent.BuyBasicPack -> {
+                state
+            }
         }
 }
