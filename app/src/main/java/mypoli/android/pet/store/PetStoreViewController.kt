@@ -41,9 +41,7 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
 
         inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
         inventoryToolbar.toolbarTitle.setText(R.string.store)
-        inventoryToolbar.playerGems.setOnClickListener {
-            send(ShowCurrencyConverter)
-        }
+        inventoryToolbar.playerGems.sendOnClick(ShowCurrencyConverter)
 
         view.petPager.clipToPadding = false
         view.petPager.pageMargin = ViewUtils.dpToPx(16f, view.context).toInt()

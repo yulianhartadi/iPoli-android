@@ -77,7 +77,9 @@ class GemStorePresenter(
                         }
                     }
                 })
-                state
+                state.copy(
+                    type = PURCHASING
+                )
             }
 
             is GemStoreIntent.GemPackPurchased -> {

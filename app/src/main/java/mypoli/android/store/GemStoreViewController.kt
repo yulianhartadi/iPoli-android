@@ -3,6 +3,7 @@ package mypoli.android.store
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -70,6 +71,14 @@ class GemStoreViewController(args: Bundle? = null) : MviViewController<GemStoreV
         showBackButton()
         super.onAttach(view)
         send(GemStoreIntent.LoadData)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            router.popCurrentController()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onDestroyView(view: View) {

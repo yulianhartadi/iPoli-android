@@ -317,7 +317,7 @@ enum class AndroidPetAvatar(
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_11_item_sweater_red_snowflakes,
             PetItem.RED_DEER_SWEATER to R.drawable.pet_11_item_sweater_red_deer
         )),
-    DOG(R.string.pet_zebra, R.string.pet_zebra_description, R.drawable.pet_13, R.drawable.pet_13_head, R.drawable.pet_13_dead,
+    DOG(R.string.pet_dog, R.string.pet_dog_description, R.drawable.pet_13, R.drawable.pet_13_head, R.drawable.pet_13_dead,
         mapOf(
             SAD to R.drawable.pet_13_sad,
             GOOD to R.drawable.pet_13_good,
