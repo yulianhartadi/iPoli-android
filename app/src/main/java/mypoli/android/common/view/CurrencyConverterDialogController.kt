@@ -360,12 +360,14 @@ class CurrencyConverterDialogController :
     }
 
     private fun showGemStore() {
+        dismissDialog()
         val handler = FadeChangeHandler()
         router.pushController(
             RouterTransaction.with(GemStoreViewController())
                 .pushChangeHandler(handler)
                 .popChangeHandler(handler)
         )
+
     }
 
     override fun onDestroy() {

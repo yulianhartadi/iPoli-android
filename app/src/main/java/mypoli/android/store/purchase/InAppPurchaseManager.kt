@@ -10,7 +10,6 @@ import java.util.*
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 12/28/17.
  */
-
 enum class GemPackType {
     BASIC, SMART, PLATINUM
 }
@@ -24,10 +23,10 @@ data class GemPack(
 )
 
 interface InAppPurchaseManager {
+
     interface PurchaseListener {
         fun onPurchased()
         fun onError()
-
     }
 
     fun loadAll(cb: (List<GemPack>) -> Unit)
@@ -42,22 +41,21 @@ class AndroidInAppPurchaseManager(private val checkout: UiCheckout, private val 
         val PURCHASE_REQUEST_CODE = 321
 
         val GEM_PACK_TYPE_TO_SKU = mapOf(
-            GemPackType.BASIC to "test",
-            GemPackType.SMART to "test",
-            GemPackType.PLATINUM to "test"
+            GemPackType.BASIC to "gems_8",
+            GemPackType.SMART to "gems_15",
+            GemPackType.PLATINUM to "gems_28"
         )
 
         val GEM_PACK_TYPE_TO_GEMS = mapOf(
             GemPackType.BASIC to 8,
-            GemPackType.SMART to 12,
-            GemPackType.PLATINUM to 20
+            GemPackType.SMART to 15,
+            GemPackType.PLATINUM to 28
         )
     }
 
     override fun loadAll(cb: (List<GemPack>) -> Unit) {
 
-        val skus = listOf("test")
-//        val skus = GEM_PACK_TYPE_TO_SKU.values.toList()
+        val skus = GEM_PACK_TYPE_TO_SKU.values.toList()
 
         checkout.loadInventory(
             Inventory.Request.create()

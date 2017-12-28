@@ -32,7 +32,8 @@ data class GemStoreViewState(
         GEM_PACKS_LOADED,
         DOG_UNLOCKED,
         GEM_PACK_PURCHASED,
-        PURCHASE_FAILED
+        PURCHASE_FAILED,
+        PURCHASING
     }
 
 
