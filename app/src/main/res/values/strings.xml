@@ -1043,6 +1043,11 @@
     <string name="purchase_failed">Unable to complete purchase. Please, try again later</string>
     <string name="gift_unlocked">Wohoo! Take your dog from the pet store!</string>
     <string name="gem_pack_purchased">Use your new gems wisely!</string>
+    <string name="buy_now">Buy Now</string>
+    <string name="smart_pack_gift_title">Special Gift for You</string>
+    <string name="smart_pack_gift_description">As a special thank you, for this purchase you will unlock Gentleman, the Dog</string>
+    <string name="gift_hint">Xmas Gift</string>
+    <string name="most_popular">Most Popular</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
