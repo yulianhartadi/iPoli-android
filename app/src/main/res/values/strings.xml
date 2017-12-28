@@ -1032,6 +1032,7 @@
     <string name="pet_item_red_white_sweater">Grandma Style</string>
     <string name="pet_item_snowflakes_sweater">Sleeping Beauty</string>
     <string name="pet_item_red_deer_sweater">Comfy Stuff</string>
+    <string name="unlock">Unlock</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

@@ -72,11 +72,21 @@ class PetStorePresenter(
                     type = SHOW_CURRENCY_CONVERTER
                 )
             }
+
+            is UnlockPet -> {
+                state.copy(
+                    type = SHOW_UNLOCK_PET
+                )
+            }
         }
 
     private fun createPetViewModels(player: Player) =
         AndroidPetAvatar.values().map {
             val petAvatar = PetAvatar.valueOf(it.name)
-            PetStoreViewController.PetViewModel(it, player.hasPet(petAvatar), player.pet.avatar == petAvatar)
+            PetStoreViewController.PetViewModel(
+                avatar = it,
+                isBought = player.hasPet(petAvatar),
+                isCurrent = player.pet.avatar == petAvatar,
+                isLocked = it == AndroidPetAvatar.DOG)
         }
 }
