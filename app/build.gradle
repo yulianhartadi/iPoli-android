@@ -38,12 +38,14 @@ android {
     sourceSets {
         test.java.srcDirs += 'src/test/java'
     }
-}
 
-junitPlatform {
-    filters {
-        engines {
-            include 'spek'
+    testOptions {
+        junitPlatform {
+            filters {
+                engines {
+                    include 'spek'
+                }
+            }
         }
     }
 }
@@ -118,7 +120,7 @@ dependencies {
     testImplementation 'com.android.support.test:runner:1.0.1'
     testImplementation 'com.android.support.test:rules:1.0.1'
     testImplementation 'junit:junit:4.12'
-    testImplementation junit5()
+    testImplementation junit5.unitTests()
 
     testImplementation('org.jetbrains.spek:spek-api:1.1.5') {
         exclude group: "org.jetbrains.kotlin"
