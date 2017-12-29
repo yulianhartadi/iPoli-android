@@ -5,6 +5,7 @@ import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.TextStyle
+import org.threeten.bp.temporal.ChronoUnit
 import java.util.*
 
 /**
@@ -35,6 +36,11 @@ fun LocalDate.isBetween(start: LocalDate?, end: LocalDate?): Boolean {
 }
 
 fun LocalDate.isNotEqual(otherDate: LocalDate) = !isEqual(otherDate)
+
+fun LocalDate.datesUntil(date: LocalDate): List<LocalDate> {
+    val days = ChronoUnit.DAYS.between(this, date)
+    return (0..days).map { this.plusDays(it) }
+}
 
 fun LocalDateTime.toMillis(zoneId: ZoneId) = atZone(zoneId).toInstant().toEpochMilli()
 

@@ -2,11 +2,11 @@ package mypoli.android.challenge.usecase
 
 import mypoli.android.challenge.data.Challenge
 import mypoli.android.common.UseCase
+import mypoli.android.common.datetime.datesUntil
 import mypoli.android.quest.Category
 import mypoli.android.quest.Quest
 import mypoli.android.quest.data.persistence.QuestRepository
 import org.threeten.bp.LocalDate
-import org.threeten.bp.temporal.ChronoUnit
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -22,30 +22,24 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) : U
         val startDate = parameters.startDate
         val endDate = startDate.plusDays((challenge.durationDays - 1).toLong())
 
-        val quests = mutableListOf<Quest>()
-
-        challenge.quests.forEach {
-            when (it) {
+        val quests = challenge.quests.map { q ->
+            when (q) {
                 is Challenge.Quest.Repeating -> {
-                    val days = ChronoUnit.DAYS.between(startDate, endDate)
-                    (0..days).mapTo(quests) { i ->
-                        createFromRepeating(it, challenge, startDate.plusDays(i))
-                    }
+
+                    startDate
+                        .datesUntil(endDate)
+                        .filter { q.weekDays.contains(it.dayOfWeek) }
+                        .map {
+                            createFromRepeating(q, challenge, it)
+                        }
                 }
 
                 is Challenge.Quest.OneTime -> {
-
-                    val scheduledDate = if (it.preferredDayOfWeek != null) {
-                        startDate.with(it.preferredDayOfWeek)
-                    } else {
-                        endDate
-                    }
-
-                    val q = createFromOneTime(it, challenge, scheduledDate)
-                    quests.add(q)
+                    val scheduledDate = q.preferredDayOfWeek?.let { startDate.with(it) } ?: endDate
+                    listOf(createFromOneTime(q, challenge, scheduledDate))
                 }
             }
-        }
+        }.flatten()
 
         return quests.map { questRepository.save(it) }
     }

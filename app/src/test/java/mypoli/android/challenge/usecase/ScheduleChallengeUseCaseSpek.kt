@@ -75,8 +75,27 @@ class ScheduleChallengeUseCaseSpek : Spek({
             ), startDate = startDate)
 
             quests.size.`should be equal to`(1)
-            val quest = quests[0]
-            quest.scheduledDate.`should equal`(startDate.plusDays(1))
+            quests.first().scheduledDate.`should equal`(startDate.plusDays(1))
+        }
+
+        it("should schedule for selected days of week") {
+            val startDate = LocalDate.now().with(DayOfWeek.MONDAY)
+            val weekDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+            val quests = executeUseCase(challenge.copy(
+                durationDays = 7,
+                quests = listOf(
+                    Challenge.Quest.Repeating(
+                        "",
+                        "",
+                        1,
+                        weekDays = weekDays
+                    )
+                )
+            ), startDate = startDate)
+            quests.size.`should be equal to`(3)
+            quests.first().scheduledDate.dayOfWeek.`should equal`(weekDays[0])
+            quests[1].scheduledDate.dayOfWeek.`should equal`(weekDays[1])
+            quests[2].scheduledDate.dayOfWeek.`should equal`(weekDays[2])
         }
     }
 })
