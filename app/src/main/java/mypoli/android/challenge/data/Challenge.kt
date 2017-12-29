@@ -33,6 +33,7 @@ data class Challenge(
             val startTime: Time? = null,
             val color: Color = Color.GREEN,
             val icon: Icon = Icon.STAR,
+            val startAtDay: Int? = null,
             val preferredDayOfWeek: DayOfWeek? = null,
             val selected: Boolean = true
         ) : Quest()
@@ -44,6 +45,7 @@ data class Challenge(
             val startTime: Time? = null,
             val color: Color = Color.GREEN,
             val icon: Icon = Icon.STAR,
+            val startAtDay: Int? = null,
             val weekDays: List<DayOfWeek> = listOf(),
             val selected: Boolean = true
         ) : Quest()
