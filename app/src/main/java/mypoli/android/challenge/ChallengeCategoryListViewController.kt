@@ -21,6 +21,7 @@ class ChallengeCategoryListViewController(args: Bundle? = null) :
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_challenge_category_list, container, false)
+
         return view
     }
 

@@ -12,7 +12,7 @@ import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.controller_home.view.*
 import mypoli.android.Constants
 import mypoli.android.R
-import mypoli.android.challenge.ChallengeCategoryListViewController
+import mypoli.android.challenge.PersonalizeChallengeViewController
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.FeedbackDialogController
 import mypoli.android.store.theme.ThemeStoreViewController
@@ -82,7 +82,7 @@ class HomeViewController(args: Bundle? = null) :
             childRouter.setRoot(
 //                RouterTransaction.with(PetViewController())
 //                RouterTransaction.with(CalendarViewController())
-                RouterTransaction.with(ChallengeCategoryListViewController())
+                RouterTransaction.with(PersonalizeChallengeViewController())
 //                RouterTransaction.with(ThemeStoreViewController())
                     .pushChangeHandler(handler)
                     .popChangeHandler(handler)
