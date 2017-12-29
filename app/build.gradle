@@ -83,15 +83,15 @@ dependencies {
     implementation 'sun.bob:mcalendarview:1.1.0'
     implementation "space.traversal.kapsule:kapsule-core:0.3"
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.20'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.21'
     implementation 'com.couchbase.lite:couchbase-lite-android:2.0.0-DB021'
     implementation 'com.evernote:android-job:1.2.1'
     implementation 'com.amplitude:android-sdk:2.16.0'
     implementation 'com.sdsmdg.harjot:croller:1.0.7'
     implementation 'org.solovyev.android:checkout:1.2.1'
 
-    implementation 'com.github.bumptech.glide:glide:4.3.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.3.1'
+    implementation 'com.github.bumptech.glide:glide:4.4.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.4.0'
 
 //    debugImplementation "com.github.brianPlummer:tinydancer:0.1.1"
 //    implementation "com.github.brianPlummer:tinydancer-noop:0.1.1"
