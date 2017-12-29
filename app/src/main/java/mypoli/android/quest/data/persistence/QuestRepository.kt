@@ -92,7 +92,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         val query = createQuery(
             select = select(
                 SelectResult.all(),
-                SelectResult.expression(Expression.meta().id),
+                SelectResult.expression(Meta.id),
                 SelectResult.expression(minDate),
                 SelectResult.expression(minMinute)
             ),
@@ -108,7 +108,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             ),
             orderBy = Ordering.expression(property("reminder.minute"))
         )
-        return toEntities(query.run().iterator())
+        return toEntities(query.execute().iterator())
     }
 
     override fun findQuestsToRemind(time: Long): List<Quest> {
@@ -121,7 +121,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
                 .and(property("type").equalTo(modelType))
                 .and(property("completedAtDate").isNullOrMissing)
         )
-        return toEntities(query.run().iterator())
+        return toEntities(query.execute().iterator())
 
     }
 
@@ -130,7 +130,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
             where = property("completedAtDate")
                 .between(date.startOfDayUTC(), date.startOfDayUTC())
         )
-        return toEntities(query.run().iterator())
+        return toEntities(query.execute().iterator())
     }
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Quest {

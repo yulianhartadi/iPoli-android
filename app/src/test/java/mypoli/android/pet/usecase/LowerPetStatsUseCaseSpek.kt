@@ -4,11 +4,8 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import mypoli.android.Constants
 import mypoli.android.TestUtil
+import mypoli.android.common.datetime.Time
 import mypoli.android.pet.Pet
-import mypoli.android.pet.PetAvatar
-import mypoli.android.player.AuthProvider
-import mypoli.android.player.Player
-import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.quest.Category
 import mypoli.android.quest.Color
 import mypoli.android.quest.Quest
@@ -38,35 +35,24 @@ class LowerPetStatsUseCaseSpek : Spek({
 
         describe("execute") {
 
-            val pet = Pet(
-                "",
-                avatar = PetAvatar.ELEPHANT,
-                healthPoints = 40,
-                moodPoints = Pet.AWESOME_MIN_MOOD_POINTS - 1
+            val player = TestUtil.player().copy(
+                pet = TestUtil.player().pet.copy(
+                    healthPoints = 40,
+                    moodPoints = Pet.AWESOME_MIN_MOOD_POINTS - 1
+                )
             )
 
-            val player = Player(
-                level = 1,
-                coins = 10,
-                experience = 10,
-                authProvider = AuthProvider(),
-                pet = pet
-            )
-
-            val questRepo = mock<QuestRepository>()
+            val pet = player.pet
 
             val playerRepo = TestUtil.playerRepoMock(player)
 
-            val useCase = LowerPetStatsUseCase(
-                questRepo,
-                playerRepo,
-                randomSeed = 42
-            )
+            fun executeUseCase(questRepository: QuestRepository, time: Time) =
+                LowerPetStatsUseCase(questRepository, playerRepo, randomSeed = 42).execute(time)
 
             val eveningInterval = Constants.CHANGE_PET_STATS_AFTERNOON_TIME.minutesTo(Constants.CHANGE_PET_STATS_EVENING_TIME)
 
             it("should remove fixed HP & MP in the morning") {
-                val newPet = useCase.execute(Constants.CHANGE_PET_STATS_MORNING_TIME)
+                val newPet = executeUseCase(mock(), Constants.CHANGE_PET_STATS_MORNING_TIME)
                 val expectedHealthPoints = pet.healthPoints - LowerPetStatsUseCase.MORNING_HEALTH_POINTS_PENALTIES[0]
                 val expectedMoodPoints = pet.moodPoints - LowerPetStatsUseCase.MORNING_MOOD_POINTS_PENALTIES[0]
                 expectedHealthPoints.`should be equal to`(newPet.healthPoints)
@@ -79,13 +65,7 @@ class LowerPetStatsUseCaseSpek : Spek({
                     on { findCompletedForDate(any()) } doReturn listOf<Quest>()
                 }
 
-                val useCase = LowerPetStatsUseCase(
-                    questRepo,
-                    playerRepo,
-                    randomSeed = 42
-                )
-
-                val newPet = useCase.execute(Constants.CHANGE_PET_STATS_AFTERNOON_TIME)
+                val newPet = executeUseCase(questRepo, Constants.CHANGE_PET_STATS_AFTERNOON_TIME)
                 val expectedHealthPoints = pet.healthPoints - LowerPetStatsUseCase.MAX_PENALTY
                 val expectedMoodPoints = pet.moodPoints - LowerPetStatsUseCase.MAX_PENALTY
                 expectedHealthPoints.`should be equal to`(newPet.healthPoints)
@@ -103,13 +83,7 @@ class LowerPetStatsUseCaseSpek : Spek({
                     )
                 }
 
-                val useCase = LowerPetStatsUseCase(
-                    questRepo,
-                    playerRepo,
-                    randomSeed = 42
-                )
-
-                val newPet = useCase.execute(Constants.CHANGE_PET_STATS_AFTERNOON_TIME)
+                val newPet = executeUseCase(questRepo, Constants.CHANGE_PET_STATS_AFTERNOON_TIME)
                 pet.healthPoints.`should be equal to`(newPet.healthPoints)
                 pet.moodPoints.`should be equal to`(newPet.moodPoints)
             }
@@ -126,13 +100,7 @@ class LowerPetStatsUseCaseSpek : Spek({
                     )
                 }
 
-                val useCase = LowerPetStatsUseCase(
-                    questRepo,
-                    playerRepo,
-                    randomSeed = 42
-                )
-
-                val newPet = useCase.execute(Constants.CHANGE_PET_STATS_EVENING_TIME)
+                val newPet = executeUseCase(questRepo, Constants.CHANGE_PET_STATS_EVENING_TIME)
                 pet.healthPoints.`should be equal to`(newPet.healthPoints)
                 pet.moodPoints.`should be equal to`(newPet.moodPoints)
             }
@@ -149,13 +117,7 @@ class LowerPetStatsUseCaseSpek : Spek({
                     )
                 }
 
-                val useCase = LowerPetStatsUseCase(
-                    questRepo,
-                    playerRepo,
-                    randomSeed = 42
-                )
-
-                val newPet = useCase.execute(Constants.CHANGE_PET_STATS_EVENING_TIME)
+                val newPet = executeUseCase(questRepo, Constants.CHANGE_PET_STATS_EVENING_TIME)
                 pet.healthPoints.`should be greater than`(newPet.healthPoints)
                 pet.moodPoints.`should be greater than`(newPet.moodPoints)
             }
@@ -172,13 +134,7 @@ class LowerPetStatsUseCaseSpek : Spek({
                     )
                 }
 
-                val useCase = LowerPetStatsUseCase(
-                    questRepo,
-                    playerRepo,
-                    randomSeed = 42
-                )
-
-                val newPet = useCase.execute(Constants.CHANGE_PET_STATS_EVENING_TIME)
+                val newPet = executeUseCase(questRepo, Constants.CHANGE_PET_STATS_EVENING_TIME)
                 val expectedHealthPoints = pet.healthPoints - LowerPetStatsUseCase.LOW_PENALTY
                 val expectedMoodPoints = pet.moodPoints - LowerPetStatsUseCase.LOW_PENALTY
                 expectedHealthPoints.`should be equal to`(newPet.healthPoints)
@@ -197,13 +153,7 @@ class LowerPetStatsUseCaseSpek : Spek({
                     )
                 }
 
-                val useCase = LowerPetStatsUseCase(
-                    questRepo,
-                    playerRepo,
-                    randomSeed = 42
-                )
-
-                val newPet = useCase.execute(Constants.CHANGE_PET_STATS_EVENING_TIME)
+                val newPet = executeUseCase(questRepo, Constants.CHANGE_PET_STATS_EVENING_TIME)
                 val expectedHealthPoints = pet.healthPoints - LowerPetStatsUseCase.MEDIUM_PENALTY
                 val expectedMoodPoints = pet.moodPoints - LowerPetStatsUseCase.MEDIUM_PENALTY
                 expectedHealthPoints.`should be equal to`(newPet.healthPoints)
@@ -221,13 +171,7 @@ class LowerPetStatsUseCaseSpek : Spek({
                     )
                 }
 
-                val useCase = LowerPetStatsUseCase(
-                    questRepo,
-                    playerRepo,
-                    randomSeed = 42
-                )
-
-                val newPet = useCase.execute(Constants.CHANGE_PET_STATS_EVENING_TIME)
+                val newPet = executeUseCase(questRepo, Constants.CHANGE_PET_STATS_EVENING_TIME)
                 val expectedHealthPoints = pet.healthPoints - LowerPetStatsUseCase.HIGH_PENALTY
                 val expectedMoodPoints = pet.moodPoints - LowerPetStatsUseCase.HIGH_PENALTY
                 expectedHealthPoints.`should be equal to`(newPet.healthPoints)
