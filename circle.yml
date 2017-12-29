@@ -3,10 +3,10 @@ jobs:
   build:
     working_directory: ~/code
     docker:
-      - image: circleci/android:api-26-alpha
+      - image: circleci/android:api-27-alpha
     environment:
       JVM_OPTS: -Xmx3200m
-      ANDROID_BUILD_TOOLS: 26.0.1
+      ANDROID_BUILD_TOOLS: 27.0.3
       APPLICATION_ID: mypoli.android
       FABRIC_API_KEY: 95b02b4f720064a454d0d0a5484e95d756741950
     steps:
