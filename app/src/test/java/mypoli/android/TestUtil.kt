@@ -9,6 +9,7 @@ import mypoli.android.pet.PetAvatar
 import mypoli.android.player.AuthProvider
 import mypoli.android.player.Player
 import mypoli.android.player.persistence.PlayerRepository
+import mypoli.android.quest.data.persistence.QuestRepository
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -31,6 +32,12 @@ object TestUtil {
 
     fun playerRepoMock(player: Player) = mock<PlayerRepository> {
         on { find() } doReturn player
+        on { save(any()) } doAnswer { invocation ->
+            invocation.getArgument(0)
+        }
+    }
+
+    fun questRepoMock() = mock<QuestRepository> {
         on { save(any()) } doAnswer { invocation ->
             invocation.getArgument(0)
         }

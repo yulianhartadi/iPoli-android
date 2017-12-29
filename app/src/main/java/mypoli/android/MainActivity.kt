@@ -12,12 +12,17 @@ import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import mypoli.android.challenge.data.Challenge
+import mypoli.android.challenge.data.Challenge.Category.*
+import mypoli.android.common.datetime.Time
 import mypoli.android.common.di.ControllerModule
 import mypoli.android.common.view.playerTheme
 import mypoli.android.home.HomeViewController
 import mypoli.android.player.AuthProvider
 import mypoli.android.player.Player
 import mypoli.android.player.persistence.model.ProviderType
+import net.fortuna.ical4j.model.WeekDay
+import org.threeten.bp.DayOfWeek
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -110,4 +115,52 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         actionBar.setDisplayHomeAsUpEnabled(false)
         actionBar.setDisplayShowHomeEnabled(false)
     }
+
+    fun allChallenges() =
+        listOf(
+            Challenge(
+                getString(R.string.challenge_stress_free_mind),
+                HEALTH_AND_FITNESS,
+                listOf(
+                    Challenge.Quest.Repeating(
+                        "Meditate every day for 10 min",
+                        "Meditate",
+                        duration = 10,
+                        weekDays = DayOfWeek.values().toList(),
+                        startTime = Time.at(19, 0)
+                    ),
+                    Challenge.Quest.Repeating(
+                        "Read a book for 30 min 3 times a week",
+                        "Read a book",
+                        duration = 30,
+                        weekDays = listOf(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY, DayOfWeek.SUNDAY)
+                    ),
+                    Challenge.Quest.OneTime(
+                        "Share your troubles with a friend",
+                        "Share your troubles with a friend",
+                        preferredDayOfWeek = DayOfWeek.SATURDAY,
+                        duration = 60
+                    ),
+                    Challenge.Quest.Repeating(
+                        "Take a walk for 30 min 5 times a week",
+                        "Take a walk",
+                        duration = 30,
+                        weekDays = listOf(
+                            DayOfWeek.MONDAY,
+                            DayOfWeek.TUESDAY,
+                            DayOfWeek.THURSDAY,
+                            DayOfWeek.FRIDAY,
+                            DayOfWeek.SUNDAY
+                        )
+                    ),
+                    Challenge.Quest.Repeating(
+                        "Say 3 things that I am grateful for every morning",
+                        "Say 3 things that I am grateful for",
+                        duration = 10,
+                        weekDays = DayOfWeek.values().toList(),
+                        startTime = Time.at(10, 0)
+                    )
+                )
+            )
+        )
 }
