@@ -1,4 +1,4 @@
-package mypoli.android.theme
+package mypoli.android.store.theme
 
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
@@ -7,11 +7,11 @@ import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.player.Player
 import mypoli.android.player.Theme
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
-import mypoli.android.theme.ThemeStoreViewState.StateType.*
-import mypoli.android.theme.usecase.BuyThemeUseCase
-import mypoli.android.theme.usecase.BuyThemeUseCase.Result.ThemeBought
-import mypoli.android.theme.usecase.BuyThemeUseCase.Result.TooExpensive
-import mypoli.android.theme.usecase.ChangeThemeUseCase
+import mypoli.android.store.theme.ThemeStoreViewState.StateType.*
+import mypoli.android.store.theme.usecase.BuyThemeUseCase
+import mypoli.android.store.theme.usecase.BuyThemeUseCase.Result.ThemeBought
+import mypoli.android.store.theme.usecase.BuyThemeUseCase.Result.TooExpensive
+import mypoli.android.store.theme.usecase.ChangeThemeUseCase
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**

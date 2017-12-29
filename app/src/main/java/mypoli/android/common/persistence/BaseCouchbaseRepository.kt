@@ -1,6 +1,8 @@
 package mypoli.android.common.persistence
 
 import com.couchbase.lite.*
+import com.couchbase.lite.internal.query.LiveQuery
+import com.couchbase.lite.internal.query.QueryChangeListenerToken
 import com.couchbase.lite.query.QueryChange
 import com.couchbase.lite.query.QueryChangeListener
 import kotlinx.coroutines.experimental.channels.Channel
@@ -124,18 +126,20 @@ abstract class BaseCouchbaseRepository<E, out T>(protected val database: Databas
         channel: SendChannel<E>,
         handler: (changes: QueryChange) -> Unit
     ) {
+        val liveQuery = LiveQuery(query)
 
-        var listenerToken: ListenerToken? = null
+        var listenerToken: QueryChangeListenerToken? = null
 
         val changeListener = QueryChangeListener { changes ->
             if (channel.isClosedForSend) {
-                query.removeChangeListener(listenerToken)
+                liveQuery.removeChangeListener(listenerToken)
+                liveQuery.stop()
             } else {
                 handler(changes)
             }
         }
 
-        listenerToken = query.addChangeListener(changeListener)
+        listenerToken = liveQuery.addChangeListener(changeListener)
     }
 
     private fun runQuery(select: From? = null, where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null) =

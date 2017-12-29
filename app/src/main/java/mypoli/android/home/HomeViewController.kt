@@ -15,7 +15,7 @@ import mypoli.android.R
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.FeedbackDialogController
 import mypoli.android.quest.calendar.CalendarViewController
-import mypoli.android.theme.ThemeStoreViewController
+import mypoli.android.store.theme.ThemeStoreViewController
 import org.json.JSONObject
 import space.traversal.kapsule.required
 

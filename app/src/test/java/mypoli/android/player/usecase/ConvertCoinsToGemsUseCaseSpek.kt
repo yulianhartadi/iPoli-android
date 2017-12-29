@@ -2,14 +2,10 @@ package mypoli.android.player.usecase
 
 import mypoli.android.Constants
 import mypoli.android.TestUtil
-import mypoli.android.player.Inventory
 import mypoli.android.player.Player
-import mypoli.android.player.Theme
-import mypoli.android.theme.usecase.BuyThemeUseCase
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be instance of`
 import org.amshove.kluent.`should be`
-import org.amshove.kluent.shouldThrow
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it

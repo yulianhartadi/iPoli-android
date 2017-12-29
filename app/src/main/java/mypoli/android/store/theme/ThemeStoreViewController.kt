@@ -1,4 +1,4 @@
-package mypoli.android.theme
+package mypoli.android.store.theme
 
 import android.content.Intent
 import android.content.res.ColorStateList
@@ -20,7 +20,7 @@ import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
 import mypoli.android.player.Theme
 import mypoli.android.quest.calendar.dayview.view.widget.CalendarDayView
-import mypoli.android.theme.ThemeStoreViewState.StateType.*
+import mypoli.android.store.theme.ThemeStoreViewState.StateType.*
 import space.traversal.kapsule.required
 
 /**

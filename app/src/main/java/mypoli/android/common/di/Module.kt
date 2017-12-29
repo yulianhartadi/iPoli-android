@@ -11,6 +11,7 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import mypoli.android.AndroidJobReminderScheduler
 import mypoli.android.ReminderScheduler
+import mypoli.android.challenge.ChallengeCategoryListPresenter
 import mypoli.android.common.navigation.Navigator
 import mypoli.android.common.text.CalendarFormatter
 import mypoli.android.common.view.ColorPickerPresenter
@@ -48,10 +49,10 @@ import mypoli.android.reminder.view.formatter.ReminderTimeFormatter
 import mypoli.android.reminder.view.formatter.TimeUnitFormatter
 import mypoli.android.reminder.view.picker.ReminderPickerDialogPresenter
 import mypoli.android.store.GemStorePresenter
+import mypoli.android.store.theme.ThemeStorePresenter
+import mypoli.android.store.theme.usecase.BuyThemeUseCase
+import mypoli.android.store.theme.usecase.ChangeThemeUseCase
 import mypoli.android.store.usecase.PurchaseGemPackUseCase
-import mypoli.android.theme.ThemeStorePresenter
-import mypoli.android.theme.usecase.BuyThemeUseCase
-import mypoli.android.theme.usecase.ChangeThemeUseCase
 import space.traversal.kapsule.HasModules
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
@@ -255,6 +256,7 @@ interface PresenterModule {
     val iconPickerPresenter: IconPickerDialogPresenter
     val currencyConverterPresenter: CurrencyConverterPresenter
     val gemStorePresenter: GemStorePresenter
+    val challengeCategoryListPresenter: ChallengeCategoryListPresenter
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
@@ -299,6 +301,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val iconPickerPresenter get() = IconPickerDialogPresenter(listenForPlayerChangesUseCase, buyIconPackUseCase, job)
     override val currencyConverterPresenter get() = CurrencyConverterPresenter(listenForPlayerChangesUseCase, convertCoinsToGemsUseCase, job)
     override val gemStorePresenter get() = GemStorePresenter(purchaseGemPackUseCase, listenForPlayerChangesUseCase, job)
+    override val challengeCategoryListPresenter get() = ChallengeCategoryListPresenter(job)
 }
 
 interface PopupPresenterModule {

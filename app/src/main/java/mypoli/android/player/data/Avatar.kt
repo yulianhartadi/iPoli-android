@@ -1,4 +1,4 @@
-package mypoli.android.store.avatars.data
+package mypoli.android.player.data
 
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes

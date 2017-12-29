@@ -8,7 +8,7 @@ import mypoli.android.player.*
 import mypoli.android.player.persistence.model.*
 import mypoli.android.quest.ColorPack
 import mypoli.android.quest.IconPack
-import mypoli.android.store.avatars.data.Avatar
+import mypoli.android.player.data.Avatar
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
