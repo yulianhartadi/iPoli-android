@@ -42,6 +42,9 @@ fun LocalDate.datesUntil(date: LocalDate): List<LocalDate> {
     return (0..days).map { this.plusDays(it) }
 }
 
+fun LocalDate.daysUntil(date: LocalDate) =
+    this.until(date, ChronoUnit.DAYS)
+
 fun LocalDateTime.toMillis(zoneId: ZoneId) = atZone(zoneId).toInstant().toEpochMilli()
 
 fun LocalDateTime.toMillis() = atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()

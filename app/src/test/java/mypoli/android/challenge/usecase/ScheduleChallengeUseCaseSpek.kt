@@ -31,71 +31,136 @@ class ScheduleChallengeUseCaseSpek : Spek({
             exec shouldThrow IllegalArgumentException::class
         }
 
-        it("should not schedule after end date") {
+        describe("Repeating") {
 
-            val quests = executeUseCase(challenge.copy(
-                durationDays = 1,
-                quests = listOf(
-                    Challenge.Quest.Repeating(
-                        "", "", 1, weekDays = DayOfWeek.values().toList()
+            it("should not schedule after end date") {
+
+                val quests = executeUseCase(challenge.copy(
+                    durationDays = 1,
+                    quests = listOf(
+                        Challenge.Quest.Repeating(
+                            "", "", 1, weekDays = DayOfWeek.values().toList()
+                        )
                     )
-                )
-            ))
-            quests.size.`should be equal to`(1)
-            val quest = quests[0]
-            quest.scheduledDate.`should equal`(LocalDate.now())
-        }
+                ))
+                quests.size.`should be equal to`(1)
+                val quest = quests[0]
+                quest.scheduledDate.`should equal`(LocalDate.now())
+            }
 
-        it("should schedule repeating Quest for every day") {
+            it("should schedule repeating Quest for every day") {
 
-            val quests = executeUseCase(challenge.copy(
-                durationDays = 7,
-                quests = listOf(
-                    Challenge.Quest.Repeating(
-                        "", "", 1, weekDays = DayOfWeek.values().toList()
+                val quests = executeUseCase(challenge.copy(
+                    durationDays = 7,
+                    quests = listOf(
+                        Challenge.Quest.Repeating(
+                            "", "", 1, weekDays = DayOfWeek.values().toList()
+                        )
                     )
-                )
-            ))
+                ))
 
-            quests.size.`should be equal to`(7)
-            quests.forEachIndexed { index, quest ->
-                quest.scheduledDate.`should equal`(LocalDate.now().plusDays(index.toLong()))
+                quests.size.`should be equal to`(7)
+                quests.forEachIndexed { index, quest ->
+                    quest.scheduledDate.`should equal`(LocalDate.now().plusDays(index.toLong()))
+                }
+            }
+
+            it("should schedule for selected days of week") {
+                val startDate = LocalDate.now().with(DayOfWeek.MONDAY)
+                val weekDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+                val quests = executeUseCase(challenge.copy(
+                    durationDays = 7,
+                    quests = listOf(
+                        Challenge.Quest.Repeating(
+                            "",
+                            "",
+                            1,
+                            weekDays = weekDays
+                        )
+                    )
+                ), startDate = startDate)
+                quests.size.`should be equal to`(3)
+                quests.first().scheduledDate.dayOfWeek.`should equal`(weekDays[0])
+                quests[1].scheduledDate.dayOfWeek.`should equal`(weekDays[1])
+                quests[2].scheduledDate.dayOfWeek.`should equal`(weekDays[2])
+            }
+
+            it("should schedule start at selected day & for selected days of week") {
+                val startDate = LocalDate.now().with(DayOfWeek.MONDAY)
+                val weekDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
+                val quests = executeUseCase(challenge.copy(
+                    durationDays = 7,
+                    quests = listOf(
+                        Challenge.Quest.Repeating(
+                            "",
+                            "",
+                            1,
+                            startAtDay = 3,
+                            weekDays = weekDays
+                        )
+                    )
+                ), startDate = startDate)
+                quests.size.`should be equal to`(2)
+                quests.first().scheduledDate.dayOfWeek.`should equal`(weekDays[1])
+                quests[1].scheduledDate.dayOfWeek.`should equal`(weekDays[2])
             }
         }
 
-        it("should schedule one time Quest") {
-            val startDate = LocalDate.now().with(DayOfWeek.FRIDAY)
-            val quests = executeUseCase(challenge.copy(
-                durationDays = 7,
-                quests = listOf(
-                    Challenge.Quest.OneTime(
-                        "", "", 1, preferredDayOfWeek = DayOfWeek.SATURDAY
-                    )
-                )
-            ), startDate = startDate)
+        describe("OneTime") {
 
-            quests.size.`should be equal to`(1)
-            quests.first().scheduledDate.`should equal`(startDate.plusDays(1))
+            it("should schedule") {
+                val startDate = LocalDate.now().with(DayOfWeek.FRIDAY)
+                val quests = executeUseCase(challenge.copy(
+                    durationDays = 7,
+                    quests = listOf(
+                        Challenge.Quest.OneTime(
+                            "", "", 1, preferredDayOfWeek = DayOfWeek.SATURDAY
+                        )
+                    )
+                ), startDate = startDate)
+
+                quests.size.`should be equal to`(1)
+                quests.first().scheduledDate.`should equal`(startDate.plusDays(1))
+            }
+
+            it("should schedule when preferred day of week is unavailable") {
+                val startDate = LocalDate.now().with(DayOfWeek.MONDAY)
+                val quests = executeUseCase(challenge.copy(
+                    durationDays = 1,
+                    quests = listOf(
+                        Challenge.Quest.OneTime(
+                            "", "", 1, preferredDayOfWeek = DayOfWeek.SATURDAY
+                        )
+                    )
+                ), startDate = startDate)
+
+                quests.size.`should be equal to`(1)
+                quests.first().scheduledDate.`should equal`(startDate)
+            }
+
+            it("should schedule after start day at preferred day of week") {
+                val startDate = LocalDate.now().with(DayOfWeek.MONDAY)
+                val preferredDayOfWeek = DayOfWeek.TUESDAY
+                val quests = executeUseCase(challenge.copy(
+                    durationDays = 14,
+                    quests = listOf(
+                        Challenge.Quest.OneTime(
+                            "",
+                            "",
+                            1,
+                            startAtDay = 7,
+                            preferredDayOfWeek = preferredDayOfWeek
+                        )
+                    )),
+                    startDate = startDate
+                )
+
+                quests.size.`should be equal to`(1)
+                val expectedScheduleDate = startDate.with(preferredDayOfWeek).plusDays(7)
+                quests.first().scheduledDate.`should equal`(expectedScheduleDate)
+            }
+
         }
 
-        it("should schedule for selected days of week") {
-            val startDate = LocalDate.now().with(DayOfWeek.MONDAY)
-            val weekDays = listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
-            val quests = executeUseCase(challenge.copy(
-                durationDays = 7,
-                quests = listOf(
-                    Challenge.Quest.Repeating(
-                        "",
-                        "",
-                        1,
-                        weekDays = weekDays
-                    )
-                )
-            ), startDate = startDate)
-            quests.size.`should be equal to`(3)
-            quests.first().scheduledDate.dayOfWeek.`should equal`(weekDays[0])
-            quests[1].scheduledDate.dayOfWeek.`should equal`(weekDays[1])
-            quests[2].scheduledDate.dayOfWeek.`should equal`(weekDays[2])
-        }
     }
 })
