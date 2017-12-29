@@ -1,7 +1,6 @@
 package mypoli.android
 
 import com.couchbase.lite.*
-import com.couchbase.lite.Array
 import mypoli.android.player.persistence.model.CouchbasePlayer
 
 /**
@@ -11,28 +10,28 @@ import mypoli.android.player.persistence.model.CouchbasePlayer
 class Migration(private val database: Database) {
 
     fun run() {
-        val resultSet = Query.select(SelectResult.expression(Expression.meta().id))
+        val resultSet = Query.select(SelectResult.expression(Meta.id))
             .from(DataSource.database(database))
             .where(Expression.property("type").equalTo(CouchbasePlayer.TYPE))
-            .limit(1).run()
+            .limit(1).execute()
 
         val playerId = resultSet.next().getString("_id")
-        var doc = database.getDocument(playerId)
+        var doc = database.getDocument(playerId).toMutable()
 
         if (!doc.contains("schemaVersion")) {
             doc.setInt("schemaVersion", 1)
             doc.setInt("gems", 0)
             database.save(doc)
-            doc = database.getDocument(playerId)
+            doc = database.getDocument(playerId).toMutable()
         }
 
         if (doc.getInt("schemaVersion") == 1) {
             val inventoryPets = doc.getDictionary("inventory").getArray("pets")
             inventoryPets.forEach {
-                (it as Dictionary).setArray("items", Array())
+                (it as MutableDictionary).setArray("items", MutableArray())
             }
             val pet = doc.getDictionary("pet")
-            val equipment = Dictionary()
+            val equipment = MutableDictionary()
             equipment.setString("hat", null)
             equipment.setString("mask", null)
             equipment.setString("bodyArmor", null)

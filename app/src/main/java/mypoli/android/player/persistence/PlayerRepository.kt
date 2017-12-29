@@ -29,16 +29,16 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
         val resultSet = Query.select(SelectResult.expression(Expression.property("schemaVersion")))
             .from(DataSource.database(database))
             .where(Expression.property("type").equalTo(CouchbasePlayer.TYPE))
-            .limit(1).run()
+            .limit(1).execute()
 
         return resultSet.next()?.getInt("schemaVersion")
     }
 
     override fun hasPlayer(): Boolean {
-        val resultSet = Query.select(SelectResult.expression(Expression.meta().id))
+        val resultSet = Query.select(SelectResult.expression(Meta.id))
             .from(DataSource.database(database))
             .where(Expression.property("type").equalTo(CouchbasePlayer.TYPE))
-            .limit(1).run()
+            .limit(1).execute()
         return resultSet.next() != null
     }
 
