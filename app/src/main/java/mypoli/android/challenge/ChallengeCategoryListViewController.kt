@@ -2,12 +2,14 @@ package mypoli.android.challenge
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.controller_challenge_category_list.view.*
 import mypoli.android.R
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.setToolbar
+import mypoli.android.common.view.showBackButton
 import mypoli.android.common.view.toolbarTitle
 import space.traversal.kapsule.required
 
@@ -29,6 +31,19 @@ class ChallengeCategoryListViewController(args: Bundle? = null) :
         toolbarTitle = "Challenges"
 
         return view
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            router.popCurrentController()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun onAttach(view: View) {
+        showBackButton()
+        super.onAttach(view)
     }
 
     override fun render(state: ChallengeCategoryListViewState, view: View) {
