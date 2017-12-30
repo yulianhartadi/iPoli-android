@@ -27,6 +27,7 @@ class ChallengeCategoryListViewController(args: Bundle? = null) :
         val view = inflater.inflate(R.layout.controller_challenge_category_list, container, false)
         setToolbar(view.toolbar)
         toolbarTitle = "Challenges"
+
         return view
     }
 

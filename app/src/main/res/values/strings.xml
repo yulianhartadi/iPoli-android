@@ -1053,6 +1053,8 @@
     <string name="challenge_stress_free_mind">Stress-Free Mind</string>
     <string name="challenge_category_health_fitness_name">Health &amp; Fitness</string>
     <string name="challenge_category_health_fitness_description">Get your body moving &amp; stay healthy</string>
+    <string name="challenge_category_build_skill_name">Build a Skill</string>
+    <string name="challenge_category_build_skill_description">Get your body moving &amp; stay healthy</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
