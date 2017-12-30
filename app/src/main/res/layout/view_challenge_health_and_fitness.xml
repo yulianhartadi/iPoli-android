@@ -70,19 +70,16 @@
         <ImageView
             android:id="@+id/healthFitnessPet"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_height="0dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            app:layout_constraintBottom_toBottomOf="@+id/healthFitnessImage"
+            app:layout_constraintBottom_toTopOf="@+id/guidelinePetBottom"
             app:layout_constraintEnd_toEndOf="@+id/healthFitnessImage"
-            app:layout_constraintHorizontal_bias="0.38"
+            app:layout_constraintHorizontal_bias="0.4"
             app:layout_constraintStart_toStartOf="@+id/healthFitnessImage"
-            app:layout_constraintTop_toTopOf="@+id/healthFitnessImage"
-            app:layout_constraintVertical_bias="1.0"
+            app:layout_constraintTop_toBottomOf="@+id/guidelinePetTop"
             app:srcCompat="@drawable/challenge_category_health_and_fitness_pet_13" />
 
         <ImageView
@@ -92,28 +89,53 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            app:layout_constraintBottom_toTopOf="@+id/guideline2"
+            android:scaleType="fitXY"
+            app:layout_constraintBottom_toTopOf="@+id/guidelineBottom"
             app:layout_constraintEnd_toEndOf="@id/healthFitnessBg"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@id/healthFitnessBg"
-            app:layout_constraintTop_toBottomOf="@+id/guideline11"
-            app:layout_constraintVertical_bias="1.0"
+            app:layout_constraintTop_toBottomOf="@+id/guidelineTop"
             app:srcCompat="@drawable/challenge_category_health_and_fitness_image" />
 
-        <android.support.constraint.Guideline
-            android:id="@+id/guideline2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_end="8dp" />
+        <View
+            android:id="@+id/guidelineTop"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            app:layout_constraintBottom_toBottomOf="@+id/healthFitnessBg"
+            app:layout_constraintEnd_toEndOf="@+id/healthFitnessBg"
+            app:layout_constraintStart_toStartOf="@+id/healthFitnessBg"
+            app:layout_constraintTop_toTopOf="@+id/healthFitnessBg"
+            app:layout_constraintVertical_bias="0.19999999" />
 
-        <android.support.constraint.Guideline
-            android:id="@+id/guideline11"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_begin="32dp" />
+        <View
+            android:id="@+id/guidelinePetTop"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            app:layout_constraintBottom_toBottomOf="@+id/healthFitnessBg"
+            app:layout_constraintEnd_toEndOf="@+id/healthFitnessBg"
+            app:layout_constraintStart_toStartOf="@+id/healthFitnessBg"
+            app:layout_constraintTop_toTopOf="@+id/healthFitnessBg" />
+
+        <View
+            android:id="@+id/guidelinePetBottom"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            app:layout_constraintBottom_toBottomOf="@+id/healthFitnessBg"
+            app:layout_constraintEnd_toEndOf="@+id/healthFitnessBg"
+            app:layout_constraintStart_toStartOf="@+id/healthFitnessBg"
+            app:layout_constraintTop_toTopOf="@+id/healthFitnessBg"
+            app:layout_constraintVertical_bias="0.9" />
+
+        <View
+            android:id="@+id/guidelineBottom"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/healthFitnessBg"
+            app:layout_constraintEnd_toEndOf="@+id/healthFitnessBg"
+            app:layout_constraintStart_toStartOf="@+id/healthFitnessBg"
+            app:layout_constraintTop_toTopOf="@+id/healthFitnessBg"
+            app:layout_constraintVertical_bias="1.0" />
 
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>

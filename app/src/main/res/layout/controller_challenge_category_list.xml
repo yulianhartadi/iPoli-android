@@ -33,6 +33,8 @@
             <include layout="@layout/view_challenge_health_and_fitness" />
 
             <include layout="@layout/view_challenge_build_skill" />
+
+            <include layout="@layout/view_challenge_deep_work" />
         </LinearLayout>
 
     </ScrollView>
