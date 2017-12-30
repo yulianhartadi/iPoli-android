@@ -1057,6 +1057,10 @@
     <string name="challenge_category_build_skill_description">Get your body moving &amp; stay healthy</string>
     <string name="challenge_category_deep_work_name">Deep Work</string>
     <string name="challenge_category_deep_work_description">Get your body moving &amp; stay healthy</string>
+    <string name="challenge_category_me_time_name">Me Time</string>
+    <string name="challenge_category_me_time_description">Get your body moving &amp; stay healthy</string>
+    <string name="challenge_category_organize_my_life_name">Organize my Life</string>
+    <string name="challenge_category_organize_my_life_description">Get your body moving &amp; stay healthy</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

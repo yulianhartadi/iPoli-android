@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardCornerRadius="6dp"
+    app:cardElevation="6dp">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/organizeMyLifeBg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/challenge_category_organize_my_life_bg" />
+
+        <TextView
+            android:id="@+id/organizeMyLifeDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="16dp"
+            android:text="@string/challenge_category_organize_my_life_description"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textColor="@color/md_light_text_54"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline10"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.48" />
+
+        <TextView
+            android:id="@+id/organizeMyLifeName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="16dp"
+            android:text="@string/challenge_category_organize_my_life_name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:textColor="@color/md_light_text_87"
+            app:layout_constraintBottom_toTopOf="@+id/organizeMyLifeDesc"
+            app:layout_constraintEnd_toStartOf="@+id/guideline10"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageView
+            android:id="@+id/organizeMyLifePet"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toTopOf="@+id/guidelinePetBottom"
+            app:layout_constraintEnd_toEndOf="@+id/organizeMyLifeImage"
+            app:layout_constraintHorizontal_bias="0.65"
+            app:layout_constraintStart_toStartOf="@+id/organizeMyLifeImage"
+            app:layout_constraintTop_toBottomOf="@+id/guidelinePetTop"
+            app:srcCompat="@drawable/challenge_category_organize_my_life_pet_13" />
+
+        <ImageView
+            android:id="@+id/organizeMyLifeImage"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
+            app:layout_constraintBottom_toTopOf="@+id/guidelineBottom"
+            app:layout_constraintEnd_toEndOf="@id/organizeMyLifeBg"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@id/organizeMyLifeBg"
+            app:layout_constraintTop_toBottomOf="@+id/guidelineTop"
+            app:srcCompat="@drawable/challenge_category_organize_my_life_image" />
+
+        <View
+            android:id="@+id/guidelineTop"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            app:layout_constraintBottom_toBottomOf="@+id/organizeMyLifeBg"
+            app:layout_constraintEnd_toEndOf="@+id/organizeMyLifeBg"
+            app:layout_constraintStart_toStartOf="@+id/organizeMyLifeBg"
+            app:layout_constraintTop_toTopOf="@+id/organizeMyLifeBg"
+            app:layout_constraintVertical_bias="0.39" />
+
+        <View
+            android:id="@+id/guidelinePetTop"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            app:layout_constraintBottom_toBottomOf="@+id/organizeMyLifeBg"
+            app:layout_constraintEnd_toEndOf="@+id/organizeMyLifeBg"
+            app:layout_constraintStart_toStartOf="@+id/organizeMyLifeBg"
+            app:layout_constraintTop_toTopOf="@+id/organizeMyLifeBg"
+            app:layout_constraintVertical_bias="0.19" />
+
+        <View
+            android:id="@+id/guidelinePetBottom"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            app:layout_constraintBottom_toBottomOf="@+id/organizeMyLifeBg"
+            app:layout_constraintEnd_toEndOf="@+id/organizeMyLifeBg"
+            app:layout_constraintStart_toStartOf="@+id/organizeMyLifeBg"
+            app:layout_constraintTop_toTopOf="@+id/organizeMyLifeBg"
+            app:layout_constraintVertical_bias="0.49" />
+
+        <View
+            android:id="@+id/guidelineBottom"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/organizeMyLifeBg"
+            app:layout_constraintEnd_toEndOf="@+id/organizeMyLifeBg"
+            app:layout_constraintStart_toStartOf="@+id/organizeMyLifeBg"
+            app:layout_constraintTop_toTopOf="@+id/organizeMyLifeBg"
+            app:layout_constraintVertical_bias="1.0" />
+    </android.support.constraint.ConstraintLayout>
+</android.support.v7.widget.CardView>

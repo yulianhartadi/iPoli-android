@@ -35,6 +35,10 @@
             <include layout="@layout/view_challenge_build_skill" />
 
             <include layout="@layout/view_challenge_deep_work" />
+
+            <include layout="@layout/view_challenge_me_time" />
+
+            <include layout="@layout/view_challenge_organize_my_life" />
         </LinearLayout>
 
     </ScrollView>
