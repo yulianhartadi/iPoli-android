@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="4dp"
     android:layout_marginEnd="8dp"
     android:layout_marginStart="8dp"
     android:layout_marginTop="16dp"
@@ -80,7 +80,7 @@
             app:layout_constraintHorizontal_bias="0.4"
             app:layout_constraintStart_toStartOf="@+id/healthFitnessImage"
             app:layout_constraintTop_toBottomOf="@+id/guidelinePetTop"
-            app:srcCompat="@drawable/challenge_category_health_and_fitness_pet_13" />
+            app:srcCompat="@drawable/challenge_category_pet_13" />
 
         <ImageView
             android:id="@+id/healthFitnessImage"

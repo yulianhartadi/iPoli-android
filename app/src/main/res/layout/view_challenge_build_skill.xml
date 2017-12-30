@@ -4,12 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="4dp"
     android:layout_marginEnd="8dp"
     android:layout_marginStart="8dp"
-    android:layout_marginTop="8dp"
+    android:layout_marginTop="4dp"
     android:clickable="true"
     android:focusable="true"
+    android:foreground="?attr/selectableItemBackgroundBorderless"
     app:cardCornerRadius="6dp"
     app:cardElevation="6dp">
 
@@ -78,7 +79,7 @@
             app:layout_constraintEnd_toEndOf="@+id/buildSkillImage"
             app:layout_constraintStart_toStartOf="@+id/buildSkillImage"
             app:layout_constraintTop_toBottomOf="@+id/guidelinePetTop"
-            app:srcCompat="@drawable/challenge_category_build_skill_pet_13" />
+            app:srcCompat="@drawable/challenge_category_pet_13" />
 
         <ImageView
             android:id="@+id/buildSkillImage"

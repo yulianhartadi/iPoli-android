@@ -1061,6 +1061,8 @@
     <string name="challenge_category_me_time_description">Get your body moving &amp; stay healthy</string>
     <string name="challenge_category_organize_my_life_name">Organize my Life</string>
     <string name="challenge_category_organize_my_life_description">Get your body moving &amp; stay healthy</string>
+    <string name="challenge_coding_ninja_name">Coding Ninja</string>
+    <string name="challenge_coding_ninja_description">Learn the basics of Web development using JavaScript</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

@@ -11,6 +11,7 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import mypoli.android.AndroidJobReminderScheduler
 import mypoli.android.ReminderScheduler
+import mypoli.android.challenge.ChallengeListForCategoryPresenter
 import mypoli.android.challenge.ChallengeCategoryListPresenter
 import mypoli.android.challenge.PersonalizeChallengePresenter
 import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
@@ -261,6 +262,7 @@ interface PresenterModule {
     val currencyConverterPresenter: CurrencyConverterPresenter
     val gemStorePresenter: GemStorePresenter
     val challengeCategoryListPresenter: ChallengeCategoryListPresenter
+    val challengeListForCategoryPresenter: ChallengeListForCategoryPresenter
     val personalizeChallengePresenter: PersonalizeChallengePresenter
 }
 
@@ -307,6 +309,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val currencyConverterPresenter get() = CurrencyConverterPresenter(listenForPlayerChangesUseCase, convertCoinsToGemsUseCase, job)
     override val gemStorePresenter get() = GemStorePresenter(purchaseGemPackUseCase, listenForPlayerChangesUseCase, job)
     override val challengeCategoryListPresenter get() = ChallengeCategoryListPresenter(job)
+    override val challengeListForCategoryPresenter get() = ChallengeListForCategoryPresenter(job)
     override val personalizeChallengePresenter get() = PersonalizeChallengePresenter(job)
 }
 
