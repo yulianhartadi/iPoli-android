@@ -4,7 +4,7 @@ import mypoli.android.TestUtil
 import mypoli.android.player.Inventory
 import mypoli.android.player.Player
 import mypoli.android.player.Theme
-import mypoli.android.theme.usecase.BuyThemeUseCase
+import mypoli.android.store.theme.usecase.BuyThemeUseCase
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe

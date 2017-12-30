@@ -1,15 +1,10 @@
 package mypoli.android.player.usecase
 
-import mypoli.android.R.id.currentPet
-import mypoli.android.R.string.themes
 import mypoli.android.TestUtil
-import mypoli.android.pet.Pet
-import mypoli.android.pet.PetAvatar
 import mypoli.android.player.Inventory
-import mypoli.android.player.InventoryPet
 import mypoli.android.player.Player
 import mypoli.android.player.Theme
-import mypoli.android.theme.usecase.ChangeThemeUseCase
+import mypoli.android.store.theme.usecase.ChangeThemeUseCase
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.shouldThrow
 import org.jetbrains.spek.api.Spek

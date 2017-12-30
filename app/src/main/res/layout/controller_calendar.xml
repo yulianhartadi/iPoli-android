@@ -99,7 +99,7 @@
         android:focusable="true"
         android:visibility="gone" />
 
-    <FrameLayout
+    <com.bluelinelabs.conductor.ChangeHandlerFrameLayout
         android:id="@+id/addContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

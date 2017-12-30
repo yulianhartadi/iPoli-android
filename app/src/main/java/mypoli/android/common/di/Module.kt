@@ -11,6 +11,9 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import mypoli.android.AndroidJobReminderScheduler
 import mypoli.android.ReminderScheduler
+import mypoli.android.challenge.ChallengeCategoryListPresenter
+import mypoli.android.challenge.PersonalizeChallengePresenter
+import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
 import mypoli.android.common.navigation.Navigator
 import mypoli.android.common.text.CalendarFormatter
 import mypoli.android.common.view.ColorPickerPresenter
@@ -48,9 +51,10 @@ import mypoli.android.reminder.view.formatter.ReminderTimeFormatter
 import mypoli.android.reminder.view.formatter.TimeUnitFormatter
 import mypoli.android.reminder.view.picker.ReminderPickerDialogPresenter
 import mypoli.android.store.GemStorePresenter
-import mypoli.android.theme.ThemeStorePresenter
-import mypoli.android.theme.usecase.BuyThemeUseCase
-import mypoli.android.theme.usecase.ChangeThemeUseCase
+import mypoli.android.store.theme.ThemeStorePresenter
+import mypoli.android.store.theme.usecase.BuyThemeUseCase
+import mypoli.android.store.theme.usecase.ChangeThemeUseCase
+import mypoli.android.store.usecase.PurchaseGemPackUseCase
 import space.traversal.kapsule.HasModules
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
@@ -179,6 +183,8 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val buyPetItemUseCase get() = BuyPetItemUseCase(playerRepository)
     override val equipPetItemUseCase get() = EquipPetItemUseCase(playerRepository)
     override val takeOffPetItemUseCase get() = TakeOffPetItemUseCase(playerRepository)
+    override val purchaseGemPackUseCase get() = PurchaseGemPackUseCase(playerRepository)
+    override val scheduleChallengeUseCase: ScheduleChallengeUseCase get() = ScheduleChallengeUseCase(questRepository)
 }
 
 interface PopupUseCaseModule {
@@ -236,6 +242,8 @@ interface UseCaseModule {
     val buyPetItemUseCase: BuyPetItemUseCase
     val equipPetItemUseCase: EquipPetItemUseCase
     val takeOffPetItemUseCase: TakeOffPetItemUseCase
+    val purchaseGemPackUseCase: PurchaseGemPackUseCase
+    val scheduleChallengeUseCase: ScheduleChallengeUseCase
 }
 
 interface PresenterModule {
@@ -252,6 +260,8 @@ interface PresenterModule {
     val iconPickerPresenter: IconPickerDialogPresenter
     val currencyConverterPresenter: CurrencyConverterPresenter
     val gemStorePresenter: GemStorePresenter
+    val challengeCategoryListPresenter: ChallengeCategoryListPresenter
+    val personalizeChallengePresenter: PersonalizeChallengePresenter
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
@@ -281,6 +291,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val buyPetItemUseCase by required { buyPetItemUseCase }
     private val equipPetItemUseCase by required { equipPetItemUseCase }
     private val takeOffPetItemUseCase by required { takeOffPetItemUseCase }
+    private val purchaseGemPackUseCase by required { purchaseGemPackUseCase }
     private val job by required { job }
     override val homePresenter get() = HomePresenter(job)
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, undoRemoveQuestUseCase, completeQuestUseCase, undoCompleteQuestUseCase, job)
@@ -294,7 +305,9 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val colorPickerPresenter get() = ColorPickerPresenter(listenForPlayerChangesUseCase, buyColorPackUseCase, job)
     override val iconPickerPresenter get() = IconPickerDialogPresenter(listenForPlayerChangesUseCase, buyIconPackUseCase, job)
     override val currencyConverterPresenter get() = CurrencyConverterPresenter(listenForPlayerChangesUseCase, convertCoinsToGemsUseCase, job)
-    override val gemStorePresenter get() = GemStorePresenter(job)
+    override val gemStorePresenter get() = GemStorePresenter(purchaseGemPackUseCase, listenForPlayerChangesUseCase, job)
+    override val challengeCategoryListPresenter get() = ChallengeCategoryListPresenter(job)
+    override val personalizeChallengePresenter get() = PersonalizeChallengePresenter(job)
 }
 
 interface PopupPresenterModule {

@@ -6,6 +6,7 @@ import android.support.v7.widget.Toolbar
 import android.util.TypedValue
 import android.view.View
 import com.bluelinelabs.conductor.Controller
+import com.bluelinelabs.conductor.RouterTransaction
 import mypoli.android.MainActivity
 import mypoli.android.R
 
@@ -41,8 +42,8 @@ fun Controller.showBackButton() {
     (activity!! as MainActivity).showBackButton()
 }
 
-fun Controller.hideBackButton() {
-    (activity!! as MainActivity).hideBackButton()
+fun Controller.pushWithRootRouter(transaction: RouterTransaction) {
+    (activity!! as MainActivity).pushWithRootRouter(transaction)
 }
 
 fun Controller.attr(@AttrRes attributeRes: Int) =
@@ -59,6 +60,10 @@ var Controller.toolbarTitle: String
 
 val Controller.toolbar: Toolbar
     get() = activity!!.findViewById(R.id.toolbar)
+
+fun Controller.setToolbar(toolbar: Toolbar) {
+    (activity!! as MainActivity).setSupportActionBar(toolbar)
+}
 
 fun Controller.addToolbarView(@LayoutRes viewLayout: Int): View =
     activity!!.layoutInflater.inflate(viewLayout, toolbar, false).also {

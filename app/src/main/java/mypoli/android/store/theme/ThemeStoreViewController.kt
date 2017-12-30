@@ -1,4 +1,4 @@
-package mypoli.android.theme
+package mypoli.android.store.theme
 
 import android.content.Intent
 import android.content.res.ColorStateList
@@ -20,7 +20,7 @@ import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
 import mypoli.android.player.Theme
 import mypoli.android.quest.calendar.dayview.view.widget.CalendarDayView
-import mypoli.android.theme.ThemeStoreViewState.StateType.*
+import mypoli.android.store.theme.ThemeStoreViewState.StateType.*
 import space.traversal.kapsule.required
 
 /**
@@ -30,21 +30,21 @@ import space.traversal.kapsule.required
 class ThemeStoreViewController(args: Bundle? = null) :
     MviViewController<ThemeStoreViewState, ThemeStoreViewController, ThemeStorePresenter, ThemeStoreIntent>(args) {
 
-    private lateinit var inventoryToolbar: ViewGroup
-
     private val presenter by required { themeStorePresenter }
 
     override fun createPresenter() = presenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
-        setHasOptionsMenu(true)
 
+        setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_theme_store, container, false)
 
-        inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
-        inventoryToolbar.toolbarTitle.setText(R.string.themes)
+        setToolbar(view.toolbar)
 
-        inventoryToolbar.playerGems.setOnClickListener {
+//        inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
+        view.toolbarTitle.setText(R.string.themes)
+
+        view.playerGems.setOnClickListener {
             send(ShowCurrencyConverter)
         }
 
@@ -59,9 +59,9 @@ class ThemeStoreViewController(args: Bundle? = null) :
         send(LoadDataIntent)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        menu.findItem(R.id.actionThemes).isVisible = false
-        super.onPrepareOptionsMenu(menu)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_theme_store, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -80,7 +80,7 @@ class ThemeStoreViewController(args: Bundle? = null) :
             }
 
             PLAYER_CHANGED -> {
-                inventoryToolbar.playerGems.text = state.playerGems.toString()
+                view.playerGems.text = state.playerGems.toString()
                 (view.themePager.adapter as ThemePagerAdapter).updateAll(state.viewModels)
             }
 
@@ -109,11 +109,6 @@ class ThemeStoreViewController(args: Bundle? = null) :
                 CurrencyConverterDialogController().showDialog(router, "currency-converter")
             }
         }
-    }
-
-    override fun onDestroyView(view: View) {
-        removeToolbarView(inventoryToolbar)
-        super.onDestroyView(view)
     }
 
     inner class ThemePagerAdapter(private var viewModels: List<ThemeViewModel>) : PagerAdapter() {

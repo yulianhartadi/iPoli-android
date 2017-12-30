@@ -265,7 +265,8 @@ enum class PetAvatar(val gemPrice: Int, val feedingCategory: FeedingCategory) {
     CAT(4, FeedingCategory.CARNIVOROUS),
     MONKEY(5, FeedingCategory.OMNIVOROUS),
     DUCK(5, FeedingCategory.OMNIVOROUS),
-    ZEBRA(8, FeedingCategory.HERBIVOROUS);
+    ZEBRA(8, FeedingCategory.HERBIVOROUS),
+    DOG(0, FeedingCategory.OMNIVOROUS);
 
     enum class FeedingCategory { OMNIVOROUS, CARNIVOROUS, HERBIVOROUS }
 }
@@ -315,6 +316,24 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_11_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_11_item_sweater_red_snowflakes,
             PetItem.RED_DEER_SWEATER to R.drawable.pet_11_item_sweater_red_deer
+        )),
+    DOG(R.string.pet_dog, R.string.pet_dog_description, R.drawable.pet_13, R.drawable.pet_13_head, R.drawable.pet_13_dead,
+        mapOf(
+            SAD to R.drawable.pet_13_sad,
+            GOOD to R.drawable.pet_13_good,
+            HAPPY to R.drawable.pet_13_happy,
+            AWESOME to R.drawable.pet_13_awesome
+        ),
+        mapOf(
+            PetItem.GLASSES to R.drawable.pet_13_item_face_glasses,
+            PetItem.BEARD to R.drawable.pet_13_item_beard,
+            PetItem.MASK to R.drawable.pet_13_item_face_mask,
+            PetItem.RED_HAT to R.drawable.pet_13_item_head_had_red,
+            PetItem.HORNS to R.drawable.pet_13_item_head_christmas_horns,
+            PetItem.RED_WHITE_HAT to R.drawable.pet_13_item_head_had_red_white,
+            PetItem.RED_WHITE_SWEATER to R.drawable.pet_13_item_sweater_red_white,
+            PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_13_item_sweater_red_snowflakes,
+            PetItem.RED_DEER_SWEATER to R.drawable.pet_13_item_sweater_red_deer
         )),
     DONKEY(R.string.pet_donkey, R.string.pet_donkey_description, R.drawable.pet_2, R.drawable.pet_2_head, R.drawable.pet_2_dead,
         mapOf(

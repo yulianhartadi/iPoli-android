@@ -1,8 +1,11 @@
 package mypoli.android.common.persistence
 
 import com.couchbase.lite.*
+import com.couchbase.lite.internal.query.LiveQuery
+import com.couchbase.lite.internal.query.QueryChangeListenerToken
+import com.couchbase.lite.query.QueryChange
+import com.couchbase.lite.query.QueryChangeListener
 import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.channels.ReceiveChannel
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.datetime.DateUtils
@@ -87,20 +90,17 @@ abstract class BaseCouchbaseRepository<E, out T>(protected val database: Databas
 
     override fun listenForAll() = listenForChanges()
 
-    protected fun sendLiveResults(query: Query): ReceiveChannel<List<E>> {
-        val liveQuery = query.toLive()
-        val channel = Channel<List<E>>()
-        val changeListener = createChangeListener(liveQuery, channel) { changes ->
-            val result = toEntities(changes)
-            launch(coroutineContext) {
-                channel.send(result.toList())
+    protected fun sendLiveResults(query: Query) =
+        Channel<List<E>>().also {
+            addChangeListener(query, it) { changes ->
+                val result = toEntities(changes)
+                launch(coroutineContext) {
+                    it.send(result.toList())
+                }
             }
         }
-        runLiveQuery(liveQuery, changeListener)
-        return channel
-    }
 
-    protected fun toEntities(changes: LiveQueryChange): List<E> =
+    protected fun toEntities(changes: QueryChange): List<E> =
         toEntities(changes.rows.iterator())
 
     protected fun toEntities(iterator: MutableIterator<Result>): List<E> {
@@ -111,44 +111,39 @@ abstract class BaseCouchbaseRepository<E, out T>(protected val database: Databas
         return list
     }
 
-    private fun sendLiveResult(query: Query): ReceiveChannel<E?> {
-        val liveQuery = query.toLive()
-        val channel = Channel<E?>()
-        val changeListener = createChangeListener(liveQuery, channel) { changes ->
-            val result = toEntities(changes)
-            launch(coroutineContext) {
-                channel.send(result.firstOrNull())
+    private fun sendLiveResult(query: Query) =
+        Channel<E?>().also {
+            addChangeListener(query, it) { changes ->
+                val result = toEntities(changes)
+                launch(coroutineContext) {
+                    it.send(result.firstOrNull())
+                }
             }
         }
-        runLiveQuery(liveQuery, changeListener)
-        return channel
-    }
 
-    private fun <E> createChangeListener(
-        query: LiveQuery,
+    private fun <E> addChangeListener(
+        query: Query,
         channel: SendChannel<E>,
-        handler: (changes: LiveQueryChange) -> Unit
-    ): LiveQueryChangeListener {
-        var changeListener: LiveQueryChangeListener? = null
+        handler: (changes: QueryChange) -> Unit
+    ) {
+        val liveQuery = LiveQuery(query)
 
-        changeListener = LiveQueryChangeListener { changes ->
+        var listenerToken: QueryChangeListenerToken? = null
+
+        val changeListener = QueryChangeListener { changes ->
             if (channel.isClosedForSend) {
-                query.removeChangeListener(changeListener)
-                query.stop()
+                liveQuery.removeChangeListener(listenerToken)
+                liveQuery.stop()
             } else {
                 handler(changes)
             }
         }
-        return changeListener
-    }
 
-    private fun runLiveQuery(query: LiveQuery, changeListener: LiveQueryChangeListener) {
-        query.addChangeListener(changeListener)
-        query.run()
+        listenerToken = liveQuery.addChangeListener(changeListener)
     }
 
     private fun runQuery(select: From? = null, where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null) =
-        createQuery(select, where, limit, orderBy).run().iterator()
+        createQuery(select, where, limit, orderBy).execute().iterator()
 
     override fun find() =
         toEntities(
@@ -161,21 +156,21 @@ abstract class BaseCouchbaseRepository<E, out T>(protected val database: Databas
         Query.select(*select).from(DataSource.database(database))
 
     protected fun selectAll(): From =
-        select(SelectResult.all(), SelectResult.expression(Expression.meta().id))
+        select(SelectResult.all(), SelectResult.expression(Meta.id))
 
     override fun save(entity: E): E {
         val cbObject = toCouchbaseObject(entity)
 
         val doc = if (cbObject.id.isNotEmpty()) {
             cbObject.updatedAt = System.currentTimeMillis()
-            database.getDocument(cbObject.id)
+            database.getDocument(cbObject.id).toMutable()
         } else {
-            Document()
+            MutableDocument()
         }
 
         val cbMap = cbObject.map.toMutableMap()
         cbMap.remove("id")
-        doc.set(cbMap)
+        doc.setData(cbMap)
 
         cbMap.filterValues { it == null }.keys.forEach {
             doc.remove(it)
@@ -194,13 +189,13 @@ abstract class BaseCouchbaseRepository<E, out T>(protected val database: Databas
     }
 
     override fun remove(id: String) {
-        val doc = database.getDocument(id)
+        val doc = database.getDocument(id).toMutable()
         doc.setLong("removedAt", DateUtils.nowUTC().time)
         database.save(doc)
     }
 
     override fun undoRemove(id: String) {
-        val doc = database.getDocument(id)
+        val doc = database.getDocument(id).toMutable()
         doc.remove("removedAt")
         database.save(doc)
     }

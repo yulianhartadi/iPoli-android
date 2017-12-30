@@ -164,12 +164,15 @@
         android:id="@+id/basicPackContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:foreground="?android:selectableItemBackground"
         app:cardCornerRadius="4dp"
         app:cardElevation="4dp"
         app:layout_constraintBottom_toBottomOf="@+id/smartPackContainer"
         app:layout_constraintEnd_toStartOf="@+id/smartPackContainer"
         app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/smartPackContainer">
 
@@ -193,12 +196,12 @@
                 android:gravity="center"
                 android:paddingBottom="4dp"
                 android:paddingTop="4dp"
-                android:text="Basic"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 android:textColor="@color/md_white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Basic" />
 
             <ImageView
                 android:id="@+id/basicPackImage"
@@ -221,7 +224,6 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="9,99 USD"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/md_white"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -240,9 +242,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="56dp"
+        android:foreground="?android:selectableItemBackground"
         app:cardCornerRadius="4dp"
         app:cardElevation="6dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -271,13 +272,12 @@
                 android:gravity="center"
                 android:paddingBottom="4dp"
                 android:paddingTop="4dp"
-                android:text="Limited"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 android:textColor="@color/md_white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="Limited" />
+                tools:text="Smart" />
 
             <ImageView
                 android:id="@+id/smartPackImage"
@@ -299,7 +299,6 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="19,99 USD"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/md_white"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -318,7 +317,7 @@
                 android:drawablePadding="4dp"
                 android:drawableStart="@drawable/ic_gift_white_16dp"
                 android:gravity="center"
-                android:text="Gift"
+                android:text="@string/gift_hint"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/md_white"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -335,6 +334,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:foreground="?android:selectableItemBackground"
         app:cardCornerRadius="4dp"
         app:cardElevation="4dp"
         app:layout_constraintBottom_toBottomOf="@+id/smartPackContainer"
@@ -363,7 +364,6 @@
                 android:gravity="center"
                 android:paddingBottom="4dp"
                 android:paddingTop="4dp"
-                android:text="Platinum"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 android:textColor="@color/md_white"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -391,7 +391,6 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="49,99 USD"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="@color/md_white"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -414,6 +413,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rotationImage"
-        app:srcCompat="@drawable/pet_7" />
+        app:srcCompat="@drawable/smart_pack_gift" />
 
 </android.support.constraint.ConstraintLayout>

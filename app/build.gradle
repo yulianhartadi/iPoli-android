@@ -10,18 +10,19 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
     mavenCentral()
     maven { url 'https://maven.google.com' }
+    
 }
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.2'
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "mypoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 6
-        versionName "Pet Item Magic"
+        versionCode 7
+        versionName "Buy Some Gems"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -37,12 +38,14 @@ android {
     sourceSets {
         test.java.srcDirs += 'src/test/java'
     }
-}
 
-junitPlatform {
-    filters {
-        engines {
-            include 'spek'
+    testOptions {
+        junitPlatform {
+            filters {
+                engines {
+                    include 'spek'
+                }
+            }
         }
     }
 }
@@ -82,14 +85,15 @@ dependencies {
     implementation 'sun.bob:mcalendarview:1.1.0'
     implementation "space.traversal.kapsule:kapsule-core:0.3"
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.20'
-    implementation 'com.couchbase.lite:couchbase-lite-android:2.0.0-DB020'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.21'
+    implementation 'com.couchbase.lite:couchbase-lite-android:2.0.0-DB021'
     implementation 'com.evernote:android-job:1.2.1'
     implementation 'com.amplitude:android-sdk:2.16.0'
     implementation 'com.sdsmdg.harjot:croller:1.0.7'
+    implementation 'org.solovyev.android:checkout:1.2.1'
 
-    implementation 'com.github.bumptech.glide:glide:4.3.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.3.1'
+    implementation 'com.github.bumptech.glide:glide:4.4.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.4.0'
 
 //    debugImplementation "com.github.brianPlummer:tinydancer:0.1.1"
 //    implementation "com.github.brianPlummer:tinydancer-noop:0.1.1"
@@ -116,7 +120,7 @@ dependencies {
     testImplementation 'com.android.support.test:runner:1.0.1'
     testImplementation 'com.android.support.test:rules:1.0.1'
     testImplementation 'junit:junit:4.12'
-    testImplementation junit5()
+    testImplementation junit5.unitTests()
 
     testImplementation('org.jetbrains.spek:spek-api:1.1.5') {
         exclude group: "org.jetbrains.kotlin"
