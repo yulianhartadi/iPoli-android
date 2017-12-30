@@ -1051,6 +1051,8 @@
     <string name="pet_dog">Gentleman</string>
     <string name="pet_dog_description">Playing Fetch is for losers. I am a semi-professional human trainer &amp; tail chaser. One time, I almost got one…</string>
     <string name="challenge_stress_free_mind">Stress-Free Mind</string>
+    <string name="challenge_category_health_fitness_name">Health &amp; Fitness</string>
+    <string name="challenge_category_health_fitness_description">Get your body moving &amp; stay healthy</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

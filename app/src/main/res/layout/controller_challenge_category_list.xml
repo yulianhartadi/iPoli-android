@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <include layout="@layout/view_challenge_build_skill" />
+            <include layout="@layout/view_challenge_health_and_fitness" />
         </LinearLayout>
 
     </ScrollView>

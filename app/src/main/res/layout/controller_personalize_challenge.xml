@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
-                android:src="@drawable/challenge_category_build_skill"
+                android:src="@drawable/challenge_category_build_skill_bg"
                 app:layout_collapseMode="parallax" />
 
             <View
