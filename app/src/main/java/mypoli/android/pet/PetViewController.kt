@@ -60,6 +60,13 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 .sizeDp(24)
         )
 
+        view.fabItems.setImageDrawable(
+            IconicsDrawable(view.context)
+                .icon(Ionicons.Icon.ion_tshirt)
+                .colorRes(R.color.md_white)
+                .sizeDp(24)
+        )
+
         val initList: (RecyclerView) -> Unit = {
             it.layoutManager = LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
             it.post {
@@ -266,7 +273,12 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         val heightOffset = (view.fabItems.height + ViewUtils.dpToPx(16f, view.context)) * 2
         playHideListAnimation(view, view.itemList, view.fabItems, view.fabFood, heightOffset)
         playItemFabsAnimation(view, true)
-        view.fabItems.setImageResource(R.drawable.ic_sword_white_24dp)
+        view.fabFood.setImageDrawable(
+            IconicsDrawable(view.context)
+                .icon(Ionicons.Icon.ion_tshirt)
+                .colorRes(R.color.md_white)
+                .sizeDp(24)
+        )
         view.fabItems.sendOnClick(PetIntent.ShowItemList)
     }
 

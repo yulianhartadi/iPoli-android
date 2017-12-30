@@ -12,9 +12,10 @@ import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.controller_home.view.*
 import mypoli.android.Constants
 import mypoli.android.R
-import mypoli.android.challenge.PersonalizeChallengeViewController
+import mypoli.android.challenge.ChallengeCategoryListViewController
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.FeedbackDialogController
+import mypoli.android.quest.calendar.CalendarViewController
 import mypoli.android.store.theme.ThemeStoreViewController
 import org.json.JSONObject
 import space.traversal.kapsule.required
@@ -81,8 +82,9 @@ class HomeViewController(args: Bundle? = null) :
         if (!childRouter.hasRootController()) {
             childRouter.setRoot(
 //                RouterTransaction.with(PetViewController())
-//                RouterTransaction.with(CalendarViewController())
-                RouterTransaction.with(PersonalizeChallengeViewController())
+                RouterTransaction.with(CalendarViewController())
+//                RouterTransaction.with(ChallengeCategoryListViewController())
+//                RouterTransaction.with(PersonalizeChallengeViewController())
 //                RouterTransaction.with(ThemeStoreViewController())
                     .pushChangeHandler(handler)
                     .popChangeHandler(handler)
@@ -118,16 +120,32 @@ class HomeViewController(args: Bundle? = null) :
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.actionFeedback) {
-            showFeedbackDialog()
-            return true
+        when (item.itemId) {
+            R.id.actionFeedback -> {
+                showFeedbackDialog()
+                return true
+            }
+            R.id.actionThemes -> {
+                showThemes()
+                return true
+            }
+            R.id.actionChallenges -> {
+                showChallenges()
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
         }
 
-        if (item.itemId == R.id.actionThemes) {
-            showThemes()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
+    }
+
+    private fun showChallenges() {
+        val handler = FadeChangeHandler()
+        val childRouter = getChildRouter(view!!.controllerContainer, null)
+        childRouter.pushController(
+            RouterTransaction.with(ChallengeCategoryListViewController())
+                .pushChangeHandler(handler)
+                .popChangeHandler(handler)
+        )
     }
 
     private fun showThemes() {

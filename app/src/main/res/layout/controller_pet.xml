@@ -608,8 +608,7 @@
         android:layout_marginEnd="16dp"
         app:backgroundTint="?attr/colorPrimary"
         app:layout_constraintBottom_toTopOf="@+id/fabFood"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_sword_white_24dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabBodyArmorItems"

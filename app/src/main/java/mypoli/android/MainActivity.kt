@@ -14,6 +14,7 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import mypoli.android.challenge.data.Challenge
 import mypoli.android.challenge.data.Challenge.Category.*
+import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.di.ControllerModule
 import mypoli.android.common.view.playerTheme
@@ -42,6 +43,8 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
     private val playerRepository by required { playerRepository }
     private val petStatsChangeScheduler by required { lowerPetStatsScheduler }
 
+    private val scheduleChallengeUseCase by required { scheduleChallengeUseCase }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(playerTheme)
@@ -66,6 +69,10 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
 
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         inject(myPoliApp.controllerModule(this, router))
+
+//        scheduleChallengeUseCase.execute(ScheduleChallengeUseCase.Params(
+//            allChallenges().first()
+//        ))
 
         if (!playerRepository.hasPlayer()) {
             val player = Player(

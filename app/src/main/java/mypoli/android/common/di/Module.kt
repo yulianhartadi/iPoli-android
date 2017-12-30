@@ -13,6 +13,7 @@ import mypoli.android.AndroidJobReminderScheduler
 import mypoli.android.ReminderScheduler
 import mypoli.android.challenge.ChallengeCategoryListPresenter
 import mypoli.android.challenge.PersonalizeChallengePresenter
+import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
 import mypoli.android.common.navigation.Navigator
 import mypoli.android.common.text.CalendarFormatter
 import mypoli.android.common.view.ColorPickerPresenter
@@ -183,6 +184,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val equipPetItemUseCase get() = EquipPetItemUseCase(playerRepository)
     override val takeOffPetItemUseCase get() = TakeOffPetItemUseCase(playerRepository)
     override val purchaseGemPackUseCase get() = PurchaseGemPackUseCase(playerRepository)
+    override val scheduleChallengeUseCase get() = ScheduleChallengeUseCase(questRepository)
 }
 
 interface PopupUseCaseModule {
@@ -241,6 +243,7 @@ interface UseCaseModule {
     val equipPetItemUseCase: EquipPetItemUseCase
     val takeOffPetItemUseCase: TakeOffPetItemUseCase
     val purchaseGemPackUseCase: PurchaseGemPackUseCase
+    val scheduleChallengeUseCase: ScheduleChallengeUseCase
 }
 
 interface PresenterModule {
