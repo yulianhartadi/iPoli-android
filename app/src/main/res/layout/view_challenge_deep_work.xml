@@ -111,7 +111,7 @@
             app:layout_constraintEnd_toEndOf="@+id/deepWorkBg"
             app:layout_constraintStart_toStartOf="@+id/deepWorkBg"
             app:layout_constraintTop_toTopOf="@+id/deepWorkBg"
-            app:layout_constraintVertical_bias="0.45" />
+            app:layout_constraintVertical_bias="0.44" />
 
         <View
             android:id="@+id/guidelinePetBottom"
@@ -121,7 +121,7 @@
             app:layout_constraintEnd_toEndOf="@+id/deepWorkBg"
             app:layout_constraintStart_toStartOf="@+id/deepWorkBg"
             app:layout_constraintTop_toTopOf="@+id/deepWorkBg"
-            app:layout_constraintVertical_bias="0.81" />
+            app:layout_constraintVertical_bias="0.74" />
 
         <View
             android:id="@+id/guidelineBottom"
