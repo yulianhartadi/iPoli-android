@@ -13,5 +13,10 @@ sealed class PersonalizeChallengeIntent : Intent {
 }
 
 data class PersonalizeChallengeViewState(val type: StateType) : ViewState {
-    enum class StateType { DATA_LOADED }
+    enum class StateType {
+        LOADING,
+        DATA_LOADED,
+        CHALLENGE_ACCEPTED,
+        TOO_EXPENSIVE
+    }
 }

@@ -62,36 +62,10 @@ class CalendarViewController(args: Bundle? = null) :
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_calendar, container, false)
-        setHasOptionsMenu(true)
-
-        calendarToolbar = addToolbarView(R.layout.view_calendar_toolbar) as ViewGroup
-
-        initDayPicker(view, calendarToolbar)
 
         initAddQuest(view)
 
         return view
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.calendar_menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.actionPet) {
-            showPet()
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    private fun showPet() {
-        val handler = FadeChangeHandler()
-        router.pushController(
-            RouterTransaction.with(PetViewController())
-                .pushChangeHandler(handler)
-                .popChangeHandler(handler)
-        )
     }
 
     private fun initAddQuest(view: View) {
@@ -210,8 +184,12 @@ class CalendarViewController(args: Bundle? = null) :
     }
 
     override fun onAttach(view: View) {
-        hideBackButton()
+//        hideBackButton()
         super.onAttach(view)
+
+        calendarToolbar = addToolbarView(R.layout.view_calendar_toolbar) as ViewGroup
+
+        initDayPicker(view, calendarToolbar)
         send(CalendarIntent.LoadData(LocalDate.now()))
     }
 

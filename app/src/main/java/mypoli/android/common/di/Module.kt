@@ -184,7 +184,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val equipPetItemUseCase get() = EquipPetItemUseCase(playerRepository)
     override val takeOffPetItemUseCase get() = TakeOffPetItemUseCase(playerRepository)
     override val purchaseGemPackUseCase get() = PurchaseGemPackUseCase(playerRepository)
-    override val scheduleChallengeUseCase get() = ScheduleChallengeUseCase(questRepository)
+    override val scheduleChallengeUseCase: ScheduleChallengeUseCase get() = ScheduleChallengeUseCase(questRepository)
 }
 
 interface PopupUseCaseModule {

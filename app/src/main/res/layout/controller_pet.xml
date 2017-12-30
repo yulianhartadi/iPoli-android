@@ -1,723 +1,732 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootCoordinator"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/pet_background_02">
+    android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/pet"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="fitCenter"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.73"
-        app:srcCompat="@drawable/pet_3" />
+    <include layout="@layout/view_inventory_toolbar" />
 
-    <ImageView
-        android:id="@+id/petState"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:scaleType="fitCenter"
-        app:layout_constraintBottom_toBottomOf="@+id/pet"
-        app:layout_constraintEnd_toEndOf="@+id/pet"
-        app:layout_constraintStart_toStartOf="@+id/pet"
-        app:layout_constraintTop_toTopOf="@+id/pet" />
-
-    <ImageView
-        android:id="@+id/bodyArmor"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:scaleType="fitCenter"
-        app:layout_constraintBottom_toBottomOf="@+id/pet"
-        app:layout_constraintEnd_toEndOf="@+id/pet"
-        app:layout_constraintStart_toStartOf="@+id/pet"
-        app:layout_constraintTop_toTopOf="@+id/pet" />
-
-    <ImageView
-        android:id="@+id/mask"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:scaleType="fitCenter"
-        app:layout_constraintBottom_toBottomOf="@+id/pet"
-        app:layout_constraintEnd_toEndOf="@+id/pet"
-        app:layout_constraintStart_toStartOf="@+id/pet"
-        app:layout_constraintTop_toTopOf="@+id/pet" />
-
-    <ImageView
-        android:id="@+id/hat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="false"
-        android:scaleType="fitCenter"
-        app:layout_constraintBottom_toBottomOf="@+id/pet"
-        app:layout_constraintEnd_toEndOf="@+id/pet"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/pet" />
-
-    <android.support.v7.widget.CardView
-        android:id="@+id/cardContainer"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="6dp"
-        app:cardElevation="6dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:background="@drawable/pet_background_02"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/compareItemsContainer"
+        <ImageView
+            android:id="@+id/pet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.73"
+            app:srcCompat="@drawable/pet_3" />
+
+        <ImageView
+            android:id="@+id/petState"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="@+id/pet"
+            app:layout_constraintEnd_toEndOf="@+id/pet"
+            app:layout_constraintStart_toStartOf="@+id/pet"
+            app:layout_constraintTop_toTopOf="@+id/pet" />
+
+        <ImageView
+            android:id="@+id/bodyArmor"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="@+id/pet"
+            app:layout_constraintEnd_toEndOf="@+id/pet"
+            app:layout_constraintStart_toStartOf="@+id/pet"
+            app:layout_constraintTop_toTopOf="@+id/pet" />
+
+        <ImageView
+            android:id="@+id/mask"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="@+id/pet"
+            app:layout_constraintEnd_toEndOf="@+id/pet"
+            app:layout_constraintStart_toStartOf="@+id/pet"
+            app:layout_constraintTop_toTopOf="@+id/pet" />
+
+        <ImageView
+            android:id="@+id/hat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="false"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="@+id/pet"
+            app:layout_constraintEnd_toEndOf="@+id/pet"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/pet" />
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cardContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="visible">
+            app:cardCornerRadius="6dp"
+            app:cardElevation="6dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <View
-                android:id="@+id/separator"
-                android:layout_width="3dp"
-                android:layout_height="0dp"
-                android:background="?attr/colorPrimary"
-                android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.44"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/curItemImage"
-                android:layout_width="72dp"
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/compareItemsContainer"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
-                app:layout_constraintEnd_toStartOf="@+id/curItemCoinBonus"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/curItemName"
-                app:srcCompat="@drawable/pet_item_head_christmas_horns" />
+                android:visibility="visible">
 
-            <ImageView
-                android:id="@+id/newItemImage"
-                android:layout_width="72dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
-                app:layout_constraintEnd_toStartOf="@+id/newItemCoinBonus"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/separator"
-                app:layout_constraintStart_toStartOf="@+id/separator"
-                app:layout_constraintTop_toBottomOf="@+id/newItemName"
-                app:srcCompat="@drawable/pet_item_head_had_red" />
+                <View
+                    android:id="@+id/separator"
+                    android:layout_width="3dp"
+                    android:layout_height="0dp"
+                    android:background="?attr/colorPrimary"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.44"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/curItemCoinBonus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:drawablePadding="4dp"
-                android:drawableStart="@drawable/ic_life_coin_24dp"
-                android:gravity="center_vertical"
-                android:text="+5%"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                app:layout_constraintEnd_toStartOf="@+id/separator"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/curItemImage"
-                app:layout_constraintTop_toBottomOf="@+id/curItemName"
-                tools:text="+5%" />
+                <ImageView
+                    android:id="@+id/curItemImage"
+                    android:layout_width="72dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    app:layout_constraintEnd_toStartOf="@+id/curItemCoinBonus"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/curItemName"
+                    app:srcCompat="@drawable/pet_item_head_christmas_horns" />
 
+                <ImageView
+                    android:id="@+id/newItemImage"
+                    android:layout_width="72dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    app:layout_constraintEnd_toStartOf="@+id/newItemCoinBonus"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/separator"
+                    app:layout_constraintStart_toStartOf="@+id/separator"
+                    app:layout_constraintTop_toBottomOf="@+id/newItemName"
+                    app:srcCompat="@drawable/pet_item_head_had_red" />
 
-            <TextView
-                android:id="@+id/newItemCoinBonus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:drawablePadding="4dp"
-                android:drawableStart="@drawable/ic_life_coin_24dp"
-                android:gravity="center_vertical"
-                android:text="+5%"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                app:layout_constraintEnd_toStartOf="@+id/newCoinBonusDiff"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/newItemImage"
-                app:layout_constraintTop_toBottomOf="@+id/newItemName"
-                tools:text="+5%" />
-
-            <TextView
-                android:id="@+id/curItemXpBonus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginTop="8dp"
-                android:drawablePadding="4dp"
-                android:drawableStart="@drawable/ic_star_yellow_24dp"
-                android:gravity="center_vertical"
-                android:text="+7%"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                app:layout_constraintEnd_toStartOf="@+id/separator"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/curItemCoinBonus"
-                app:layout_constraintTop_toBottomOf="@+id/curItemCoinBonus"
-                tools:text="+7%" />
-
-            <TextView
-                android:id="@+id/newItemXpBonus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginTop="8dp"
-                android:drawablePadding="4dp"
-                android:drawableStart="@drawable/ic_star_yellow_24dp"
-                android:gravity="center_vertical"
-                android:text="-2%"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/newItemCoinBonus"
-                app:layout_constraintTop_toBottomOf="@+id/newItemCoinBonus"
-                tools:text="+7%" />
-
-            <TextView
-                android:id="@+id/curItemBountyBonus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginTop="8dp"
-                android:drawablePadding="4dp"
-                android:drawableStart="@drawable/ic_four_leaf_clover_24dp"
-                android:gravity="center_vertical"
-                android:text="+3%"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                app:layout_constraintEnd_toStartOf="@+id/separator"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/curItemCoinBonus"
-                app:layout_constraintTop_toBottomOf="@+id/curItemXpBonus"
-                tools:text="+3%" />
-
-            <TextView
-                android:id="@+id/newItemBountyBonus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginTop="8dp"
-                android:drawablePadding="4dp"
-                android:drawableStart="@drawable/ic_four_leaf_clover_24dp"
-                android:gravity="center_vertical"
-                android:text="3%"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/newItemCoinBonus"
-                app:layout_constraintTop_toBottomOf="@+id/newItemXpBonus"
-                tools:text="+3%" />
-
-            <Button
-                android:id="@+id/buyItem"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="Buy"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/separator"
-                app:layout_constraintTop_toBottomOf="@+id/newItemBountyBonus"
-                app:layout_constraintVertical_bias="0.0" />
-
-            <Button
-                android:id="@+id/takeOff"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="Take off"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/separator"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/curItemImage"
-                tools:text="Take off" />
-
-            <TextView
-                android:id="@+id/noItem"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:gravity="center"
-                android:text="No item equipped"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textColor="@color/md_dark_text_54"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/separator"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/newCoinBonusDiff"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:drawablePadding="2dp"
-                android:text="+1"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                app:layout_constraintBottom_toBottomOf="@+id/newItemCoinBonus"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/newItemCoinBonus"
-                app:layout_constraintTop_toTopOf="@+id/newItemCoinBonus"
-                tools:text="+1" />
-
-            <TextView
-                android:id="@+id/newXPBonusDiff"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawablePadding="2dp"
-                android:text="-2"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                app:layout_constraintBottom_toBottomOf="@+id/newItemXpBonus"
-                app:layout_constraintEnd_toEndOf="@+id/newCoinBonusDiff"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/newCoinBonusDiff"
-                app:layout_constraintTop_toTopOf="@+id/newItemXpBonus"
-                tools:text="-2" />
-
-            <TextView
-                android:id="@+id/newBountyBonusDiff"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawablePadding="2dp"
-                android:text="+0 ="
-                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-                app:layout_constraintBottom_toBottomOf="@+id/newItemBountyBonus"
-                app:layout_constraintEnd_toEndOf="@+id/newXPBonusDiff"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/newXPBonusDiff"
-                app:layout_constraintTop_toTopOf="@+id/newItemBountyBonus"
-                tools:text="+0 =" />
-
-            <android.support.constraint.Group
-                android:id="@+id/curItems"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="curItemBountyBonus,curItemImage,curItemXpBonus,curItemCoinBonus,takeOff,curItemName" />
-
-            <Button
-                android:id="@+id/equipItem"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Equip"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="@+id/buyItem"
-                app:layout_constraintEnd_toEndOf="@+id/buyItem"
-                app:layout_constraintStart_toStartOf="@+id/buyItem"
-                app:layout_constraintTop_toTopOf="@+id/buyItem"
-                tools:text="Equip" />
-
-            <TextView
-                android:id="@+id/curItemName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                app:layout_constraintEnd_toStartOf="@+id/separator"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Cool" />
-
-            <TextView
-                android:id="@+id/newItemName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/separator"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Cool" />
-
-        </android.support.constraint.ConstraintLayout>
-
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/reviveContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/reviveHint"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                app:layout_constraintEnd_toStartOf="@+id/reviveCost"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintHorizontal_chainStyle="packed"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView3" />
-
-            <TextView
-                android:id="@+id/reviveCost"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:drawablePadding="4dp"
-                android:drawableStart="@drawable/ic_gem_24dp"
-                android:gravity="center_vertical"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/reviveHint"
-                app:layout_constraintTop_toBottomOf="@+id/textView3"
-                tools:text="300" />
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="32dp"
-                android:text="Your pet has died!"
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/curItemCoinBonus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:drawablePadding="4dp"
+                    android:drawableStart="@drawable/ic_life_coin_24dp"
+                    android:gravity="center_vertical"
+                    android:text="+5%"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    app:layout_constraintEnd_toStartOf="@+id/separator"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/curItemImage"
+                    app:layout_constraintTop_toBottomOf="@+id/curItemName"
+                    tools:text="+5%" />
 
 
-            <Button
-                android:id="@+id/revive"
-                style="@style/Widget.AppCompat.Button.Colored"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:paddingEnd="32dp"
-                android:paddingStart="32dp"
-                android:text="Revive"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/reviveHint" />
+                <TextView
+                    android:id="@+id/newItemCoinBonus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:drawablePadding="4dp"
+                    android:drawableStart="@drawable/ic_life_coin_24dp"
+                    android:gravity="center_vertical"
+                    android:text="+5%"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    app:layout_constraintEnd_toStartOf="@+id/newCoinBonusDiff"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/newItemImage"
+                    app:layout_constraintTop_toBottomOf="@+id/newItemName"
+                    tools:text="+5%" />
 
-        </android.support.constraint.ConstraintLayout>
+                <TextView
+                    android:id="@+id/curItemXpBonus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="8dp"
+                    android:drawablePadding="4dp"
+                    android:drawableStart="@drawable/ic_star_yellow_24dp"
+                    android:gravity="center_vertical"
+                    android:text="+7%"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    app:layout_constraintEnd_toStartOf="@+id/separator"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/curItemCoinBonus"
+                    app:layout_constraintTop_toBottomOf="@+id/curItemCoinBonus"
+                    tools:text="+7%" />
 
-        <android.support.constraint.ConstraintLayout
-            android:id="@+id/statsContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone">
+                <TextView
+                    android:id="@+id/newItemXpBonus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="8dp"
+                    android:drawablePadding="4dp"
+                    android:drawableStart="@drawable/ic_star_yellow_24dp"
+                    android:gravity="center_vertical"
+                    android:text="-2%"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/newItemCoinBonus"
+                    app:layout_constraintTop_toBottomOf="@+id/newItemCoinBonus"
+                    tools:text="+7%" />
 
-            <ImageView
-                android:id="@+id/healthIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_heart_red_24dp" />
+                <TextView
+                    android:id="@+id/curItemBountyBonus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="8dp"
+                    android:drawablePadding="4dp"
+                    android:drawableStart="@drawable/ic_four_leaf_clover_24dp"
+                    android:gravity="center_vertical"
+                    android:text="+3%"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    app:layout_constraintEnd_toStartOf="@+id/separator"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/curItemCoinBonus"
+                    app:layout_constraintTop_toBottomOf="@+id/curItemXpBonus"
+                    tools:text="+3%" />
 
-            <ProgressBar
-                android:id="@+id/healthProgress"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="0dp"
-                android:layout_height="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:max="100"
-                android:progress="50"
-                android:progressDrawable="@drawable/pet_health_progress_bar"
-                app:layout_constraintBottom_toBottomOf="@+id/healthIcon"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/healthIcon"
-                app:layout_constraintTop_toTopOf="@+id/healthIcon" />
+                <TextView
+                    android:id="@+id/newItemBountyBonus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="8dp"
+                    android:drawablePadding="4dp"
+                    android:drawableStart="@drawable/ic_four_leaf_clover_24dp"
+                    android:gravity="center_vertical"
+                    android:text="3%"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/newItemCoinBonus"
+                    app:layout_constraintTop_toBottomOf="@+id/newItemXpBonus"
+                    tools:text="+3%" />
 
-            <ImageView
-                android:id="@+id/moodIcon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/healthIcon"
-                app:srcCompat="@drawable/ic_mood_yellow_24dp" />
+                <Button
+                    android:id="@+id/buyItem"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Buy"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/separator"
+                    app:layout_constraintTop_toBottomOf="@+id/newItemBountyBonus"
+                    app:layout_constraintVertical_bias="0.0" />
 
-            <ProgressBar
-                android:id="@+id/moodProgress"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="0dp"
-                android:layout_height="8dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginStart="16dp"
-                android:max="100"
-                android:progress="40"
-                android:progressDrawable="@drawable/pet_mood_progress_bar"
-                app:layout_constraintBottom_toBottomOf="@+id/moodIcon"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/moodIcon"
-                app:layout_constraintTop_toTopOf="@+id/moodIcon" />
+                <Button
+                    android:id="@+id/takeOff"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Take off"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/separator"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/curItemImage"
+                    tools:text="Take off" />
 
-            <TextView
-                android:id="@+id/healthPoints"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="4dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/healthProgress"
-                tools:text="50/100" />
+                <TextView
+                    android:id="@+id/noItem"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:text="No item equipped"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textColor="@color/md_dark_text_54"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/separator"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/moodPoints"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="4dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/moodProgress"
-                tools:text="40/100" />
+                <TextView
+                    android:id="@+id/newCoinBonusDiff"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:drawablePadding="2dp"
+                    android:text="+1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    app:layout_constraintBottom_toBottomOf="@+id/newItemCoinBonus"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/newItemCoinBonus"
+                    app:layout_constraintTop_toTopOf="@+id/newItemCoinBonus"
+                    tools:text="+1" />
 
-            <TextView
-                android:id="@+id/stateName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="@+id/moodPoints"
-                app:layout_constraintEnd_toEndOf="@+id/moodIcon"
-                app:layout_constraintStart_toStartOf="@+id/moodIcon"
-                app:layout_constraintTop_toTopOf="@+id/moodPoints"
-                tools:text="Happy" />
+                <TextView
+                    android:id="@+id/newXPBonusDiff"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="2dp"
+                    android:text="-2"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    app:layout_constraintBottom_toBottomOf="@+id/newItemXpBonus"
+                    app:layout_constraintEnd_toEndOf="@+id/newCoinBonusDiff"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/newCoinBonusDiff"
+                    app:layout_constraintTop_toTopOf="@+id/newItemXpBonus"
+                    tools:text="-2" />
 
-            <TextView
-                android:id="@+id/coinBonus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginTop="16dp"
-                android:drawablePadding="4dp"
-                android:drawableStart="@drawable/ic_life_coin_24dp"
-                android:gravity="center_vertical"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/guideline7"
-                app:layout_constraintStart_toStartOf="@+id/guideline7"
-                app:layout_constraintTop_toBottomOf="@+id/stateName"
-                tools:text="+5%" />
+                <TextView
+                    android:id="@+id/newBountyBonusDiff"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="2dp"
+                    android:text="+0 ="
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    app:layout_constraintBottom_toBottomOf="@+id/newItemBountyBonus"
+                    app:layout_constraintEnd_toEndOf="@+id/newXPBonusDiff"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/newXPBonusDiff"
+                    app:layout_constraintTop_toTopOf="@+id/newItemBountyBonus"
+                    tools:text="+0 =" />
+
+                <android.support.constraint.Group
+                    android:id="@+id/curItems"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="curItemBountyBonus,curItemImage,curItemXpBonus,curItemCoinBonus,takeOff,curItemName" />
+
+                <Button
+                    android:id="@+id/equipItem"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Equip"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="@+id/buyItem"
+                    app:layout_constraintEnd_toEndOf="@+id/buyItem"
+                    app:layout_constraintStart_toStartOf="@+id/buyItem"
+                    app:layout_constraintTop_toTopOf="@+id/buyItem"
+                    tools:text="Equip" />
+
+                <TextView
+                    android:id="@+id/curItemName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    app:layout_constraintEnd_toStartOf="@+id/separator"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Cool" />
+
+                <TextView
+                    android:id="@+id/newItemName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/separator"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Cool" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/reviveContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/reviveHint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    app:layout_constraintEnd_toStartOf="@+id/reviveCost"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+                <TextView
+                    android:id="@+id/reviveCost"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:drawablePadding="4dp"
+                    android:drawableStart="@drawable/ic_gem_24dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/reviveHint"
+                    app:layout_constraintTop_toBottomOf="@+id/textView3"
+                    tools:text="300" />
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="32dp"
+                    android:text="Your pet has died!"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
 
-            <TextView
-                android:id="@+id/xpBonus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawablePadding="4dp"
-                android:drawableStart="@drawable/ic_star_yellow_24dp"
-                android:gravity="center_vertical"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                app:layout_constraintBottom_toBottomOf="@+id/coinBonus"
-                app:layout_constraintEnd_toStartOf="@+id/guideline9"
-                app:layout_constraintStart_toStartOf="@+id/guideline9"
-                app:layout_constraintTop_toTopOf="@+id/coinBonus"
-                tools:text="+7%" />
+                <Button
+                    android:id="@+id/revive"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:paddingEnd="32dp"
+                    android:paddingStart="32dp"
+                    android:text="Revive"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/reviveHint" />
 
-            <TextView
-                android:id="@+id/unlockChanceBonus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawablePadding="4dp"
-                android:drawableStart="@drawable/ic_four_leaf_clover_24dp"
-                android:gravity="center_vertical"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                app:layout_constraintBottom_toBottomOf="@+id/coinBonus"
-                app:layout_constraintEnd_toStartOf="@+id/guideline8"
-                app:layout_constraintStart_toStartOf="@+id/guideline8"
-                app:layout_constraintTop_toTopOf="@+id/coinBonus"
-                tools:text="+3%" />
+            </android.support.constraint.ConstraintLayout>
 
-            <android.support.constraint.Guideline
-                android:id="@+id/guideline7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.2" />
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/statsContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
 
-            <android.support.constraint.Guideline
-                android:id="@+id/guideline8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.8" />
+                <ImageView
+                    android:id="@+id/healthIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_heart_red_24dp" />
 
-            <android.support.constraint.Guideline
-                android:id="@+id/guideline9"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.5" />
+                <ProgressBar
+                    android:id="@+id/healthProgress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:max="100"
+                    android:progress="50"
+                    android:progressDrawable="@drawable/pet_health_progress_bar"
+                    app:layout_constraintBottom_toBottomOf="@+id/healthIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/healthIcon"
+                    app:layout_constraintTop_toTopOf="@+id/healthIcon" />
 
-        </android.support.constraint.ConstraintLayout>
+                <ImageView
+                    android:id="@+id/moodIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/healthIcon"
+                    app:srcCompat="@drawable/ic_mood_yellow_24dp" />
 
-    </android.support.v7.widget.CardView>
+                <ProgressBar
+                    android:id="@+id/moodProgress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:max="100"
+                    android:progress="40"
+                    android:progressDrawable="@drawable/pet_mood_progress_bar"
+                    app:layout_constraintBottom_toBottomOf="@+id/moodIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/moodIcon"
+                    app:layout_constraintTop_toTopOf="@+id/moodIcon" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabFood"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_restaurant_white_24dp" />
+                <TextView
+                    android:id="@+id/healthPoints"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/healthProgress"
+                    tools:text="50/100" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabItems"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"
-        app:backgroundTint="?attr/colorPrimary"
-        app:layout_constraintBottom_toTopOf="@+id/fabFood"
-        app:layout_constraintEnd_toEndOf="parent" />
+                <TextView
+                    android:id="@+id/moodPoints"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/moodProgress"
+                    tools:text="40/100" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabBodyArmorItems"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:alpha="0"
-        android:clickable="true"
-        app:backgroundTint="?attr/colorPrimary"
-        app:fabSize="mini"
-        app:layout_constraintBottom_toBottomOf="@+id/pet"
-        app:layout_constraintEnd_toStartOf="@+id/pet"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/pet"
-        app:layout_constraintVertical_bias="0.85"
-        app:srcCompat="@drawable/ic_armor" />
+                <TextView
+                    android:id="@+id/stateName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="@+id/moodPoints"
+                    app:layout_constraintEnd_toEndOf="@+id/moodIcon"
+                    app:layout_constraintStart_toStartOf="@+id/moodIcon"
+                    app:layout_constraintTop_toTopOf="@+id/moodPoints"
+                    tools:text="Happy" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabMaskItems"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
-        android:alpha="0"
-        android:clickable="true"
-        app:backgroundTint="?attr/colorPrimary"
-        app:fabSize="mini"
-        app:layout_constraintBottom_toBottomOf="@+id/pet"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/pet"
-        app:layout_constraintTop_toTopOf="@+id/pet"
-        app:layout_constraintVertical_bias="0.4"
-        app:srcCompat="@drawable/ic_carnival_mask" />
+                <TextView
+                    android:id="@+id/coinBonus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginTop="16dp"
+                    android:drawablePadding="4dp"
+                    android:drawableStart="@drawable/ic_life_coin_24dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline7"
+                    app:layout_constraintStart_toStartOf="@+id/guideline7"
+                    app:layout_constraintTop_toBottomOf="@+id/stateName"
+                    tools:text="+5%" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabHatItems"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:alpha="0"
-        android:clickable="true"
-        app:backgroundTint="?attr/colorPrimary"
-        app:fabSize="mini"
-        app:layout_constraintBottom_toBottomOf="@+id/pet"
-        app:layout_constraintEnd_toStartOf="@+id/pet"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/pet"
-        app:layout_constraintVertical_bias="0.05"
-        app:srcCompat="@drawable/ic_helm" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/foodList"
-        android:layout_width="0dp"
-        android:layout_height="84dp"
-        android:alpha="0"
-        android:background="@color/md_white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.2"
-        app:layout_constraintStart_toStartOf="parent" />
+                <TextView
+                    android:id="@+id/xpBonus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="4dp"
+                    android:drawableStart="@drawable/ic_star_yellow_24dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    app:layout_constraintBottom_toBottomOf="@+id/coinBonus"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline9"
+                    app:layout_constraintStart_toStartOf="@+id/guideline9"
+                    app:layout_constraintTop_toTopOf="@+id/coinBonus"
+                    tools:text="+7%" />
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/itemList"
-        android:layout_width="0dp"
-        android:layout_height="84dp"
-        android:alpha="0"
-        android:background="@color/md_white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.2"
-        app:layout_constraintStart_toStartOf="parent" />
+                <TextView
+                    android:id="@+id/unlockChanceBonus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="4dp"
+                    android:drawableStart="@drawable/ic_four_leaf_clover_24dp"
+                    android:gravity="center_vertical"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    app:layout_constraintBottom_toBottomOf="@+id/coinBonus"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline8"
+                    app:layout_constraintStart_toStartOf="@+id/guideline8"
+                    app:layout_constraintTop_toTopOf="@+id/coinBonus"
+                    tools:text="+3%" />
 
-    <TextView
-        android:id="@+id/petResponse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:alpha="0"
-        android:textAllCaps="true"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        android:textColor="@color/md_blue_700"
-        app:layout_constraintBottom_toTopOf="@+id/petState"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardContainer"
-        tools:text="yummy" />
+                <android.support.constraint.Guideline
+                    android:id="@+id/guideline7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.2" />
 
-    <ImageView
-        android:id="@+id/selectedFood"
-        android:layout_width="92dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="0dp"
-        android:layout_marginTop="0dp"
-        android:alpha="0"
-        android:scaleType="fitCenter"
-        app:layout_constraintBottom_toBottomOf="@+id/pet"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/pet"
-        app:srcCompat="@drawable/food_fruit_1" />
+                <android.support.constraint.Guideline
+                    android:id="@+id/guideline8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.8" />
 
-</android.support.constraint.ConstraintLayout>
+                <android.support.constraint.Guideline
+                    android:id="@+id/guideline9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5" />
+
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabFood"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_restaurant_white_24dp" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabItems"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            app:backgroundTint="?attr/colorPrimary"
+            app:layout_constraintBottom_toTopOf="@+id/fabFood"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabBodyArmorItems"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:alpha="0"
+            android:clickable="true"
+            app:backgroundTint="?attr/colorPrimary"
+            app:fabSize="mini"
+            app:layout_constraintBottom_toBottomOf="@+id/pet"
+            app:layout_constraintEnd_toStartOf="@+id/pet"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/pet"
+            app:layout_constraintVertical_bias="0.85"
+            app:srcCompat="@drawable/ic_armor" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabMaskItems"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:alpha="0"
+            android:clickable="true"
+            app:backgroundTint="?attr/colorPrimary"
+            app:fabSize="mini"
+            app:layout_constraintBottom_toBottomOf="@+id/pet"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/pet"
+            app:layout_constraintTop_toTopOf="@+id/pet"
+            app:layout_constraintVertical_bias="0.4"
+            app:srcCompat="@drawable/ic_carnival_mask" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabHatItems"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:alpha="0"
+            android:clickable="true"
+            app:backgroundTint="?attr/colorPrimary"
+            app:fabSize="mini"
+            app:layout_constraintBottom_toBottomOf="@+id/pet"
+            app:layout_constraintEnd_toStartOf="@+id/pet"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/pet"
+            app:layout_constraintVertical_bias="0.05"
+            app:srcCompat="@drawable/ic_helm" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/foodList"
+            android:layout_width="0dp"
+            android:layout_height="84dp"
+            android:alpha="0"
+            android:background="@color/md_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.2"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/itemList"
+            android:layout_width="0dp"
+            android:layout_height="84dp"
+            android:alpha="0"
+            android:background="@color/md_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.2"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/petResponse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:alpha="0"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:textColor="@color/md_blue_700"
+            app:layout_constraintBottom_toTopOf="@+id/petState"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardContainer"
+            tools:text="yummy" />
+
+        <ImageView
+            android:id="@+id/selectedFood"
+            android:layout_width="92dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:layout_marginTop="0dp"
+            android:alpha="0"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="@+id/pet"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/pet"
+            app:srcCompat="@drawable/food_fruit_1" />
+
+    </android.support.constraint.ConstraintLayout>
+</android.support.design.widget.CoordinatorLayout>

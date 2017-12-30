@@ -1,30 +1,25 @@
 package mypoli.android
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.provider.Settings
-import android.support.design.widget.AppBarLayout
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import mypoli.android.challenge.ChallengeCategoryListViewController
 import mypoli.android.challenge.data.Challenge
-import mypoli.android.challenge.data.Challenge.Category.*
-import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
+import mypoli.android.challenge.data.Challenge.Category.HEALTH_AND_FITNESS
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.di.ControllerModule
 import mypoli.android.common.view.playerTheme
-import mypoli.android.home.HomeViewController
 import mypoli.android.player.AuthProvider
 import mypoli.android.player.Player
 import mypoli.android.player.persistence.model.ProviderType
 import mypoli.android.quest.Color
 import mypoli.android.quest.Icon
-import net.fortuna.ical4j.model.WeekDay
 import org.threeten.bp.DayOfWeek
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -50,8 +45,8 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         setTheme(playerTheme)
         setContentView(R.layout.activity_main)
 
-        setSupportActionBar(findViewById(R.id.toolbar))
-        findViewById<AppBarLayout>(R.id.appbar).outlineProvider = null
+//        setSupportActionBar(findViewById(R.id.toolbar))
+//        findViewById<AppBarLayout>(R.id.appbar).outlineProvider = null
 
         val amplitudeClient = Amplitude.getInstance().initialize(this, AnalyticsConstants.AMPLITUDE_KEY)
         amplitudeClient.enableForegroundTracking(application)
@@ -59,10 +54,10 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
             Amplitude.getInstance().setLogLevel(Log.VERBOSE)
             amplitudeClient.setOptOut(true)
 
-            if (!Settings.canDrawOverlays(this)) {
-                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + packageName))
-                startActivityForResult(intent, 0)
-            }
+//            if (!Settings.canDrawOverlays(this)) {
+//                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + packageName))
+//                startActivityForResult(intent, 0)
+//            }
         }
 
         incrementAppRun()
@@ -86,7 +81,9 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         }
 
         if (!router.hasRootController()) {
-            router.setRoot(RouterTransaction.with(HomeViewController()))
+//            router.setRoot(RouterTransaction.with(HomeViewController()))
+            router.setRoot(RouterTransaction.with(ChallengeCategoryListViewController()))
+//            router.setRoot(RouterTransaction.with(PersonalizeChallengeViewController()))
         }
     }
 
@@ -119,10 +116,8 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         actionBar.setDisplayShowHomeEnabled(true)
     }
 
-    fun hideBackButton() {
-        val actionBar = supportActionBar!!
-        actionBar.setDisplayHomeAsUpEnabled(false)
-        actionBar.setDisplayShowHomeEnabled(false)
+    fun pushWithRootRouter(transaction: RouterTransaction) {
+        router.pushController(transaction)
     }
 
     fun allChallenges() =

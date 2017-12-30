@@ -1,16 +1,22 @@
 package mypoli.android.challenge
 
 import android.os.Bundle
+import android.support.annotation.ColorRes
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import kotlinx.android.synthetic.main.controller_personalize_challenge.view.*
 import kotlinx.android.synthetic.main.item_challenge_quest.view.*
 import mypoli.android.R
 import mypoli.android.common.mvi.MviViewController
+import mypoli.android.common.view.attr
+import mypoli.android.common.view.colorRes
+import mypoli.android.common.view.setToolbar
 import space.traversal.kapsule.required
+
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -32,7 +38,35 @@ class PersonalizeChallengeViewController(args: Bundle? = null) :
                 ChallengeQuestViewModel("Rune like the wind Rune like the wind Rune like the wind Rune like the wind", false)
             )
         )
+        setToolbar(view.toolbar)
         return view
+    }
+
+    override fun onAttach(view: View) {
+        colorStatusBar(android.R.color.transparent)
+        super.onAttach(view)
+    }
+
+    private fun colorStatusBar(@ColorRes color: Int) {
+        val window = activity!!.window
+
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.statusBarColor = colorRes(color)
+    }
+
+    override fun onDetach(view: View) {
+        val window = activity!!.window
+
+// clear FLAG_TRANSLUCENT_STATUS flag:
+//        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+//
+//// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+//        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+
+// finally change the color
+        window.statusBarColor = attr(R.attr.colorPrimaryDark)
+        super.onDetach(view)
     }
 
     override fun render(state: PersonalizeChallengeViewState, view: View) {
