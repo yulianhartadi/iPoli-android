@@ -1,4 +1,4 @@
-package mypoli.android.theme.usecase
+package mypoli.android.store.theme.usecase
 
 import mypoli.android.common.UseCase
 import mypoli.android.player.Player

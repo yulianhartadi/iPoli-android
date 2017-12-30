@@ -1,11 +1,11 @@
-package mypoli.android.theme.usecase
+package mypoli.android.store.theme.usecase
 
 import mypoli.android.common.UseCase
 import mypoli.android.player.Player
 import mypoli.android.player.Theme
 import mypoli.android.player.persistence.PlayerRepository
-import mypoli.android.theme.usecase.BuyThemeUseCase.Result.ThemeBought
-import mypoli.android.theme.usecase.BuyThemeUseCase.Result.TooExpensive
+import mypoli.android.store.theme.usecase.BuyThemeUseCase.Result.ThemeBought
+import mypoli.android.store.theme.usecase.BuyThemeUseCase.Result.TooExpensive
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>

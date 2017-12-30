@@ -8,7 +8,7 @@ import mypoli.android.pet.PetItem
 import mypoli.android.quest.ColorPack
 import mypoli.android.quest.Entity
 import mypoli.android.quest.IconPack
-import mypoli.android.store.avatars.data.Avatar
+import mypoli.android.player.data.Avatar
 import org.threeten.bp.LocalDateTime
 
 data class Player(

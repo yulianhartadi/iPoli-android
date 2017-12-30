@@ -1,4 +1,4 @@
-package mypoli.android.theme
+package mypoli.android.store.theme
 
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState

@@ -1,4 +1,4 @@
-[![Build Status](https://img.shields.io/circleci/project/github/iPoli/iPoli-android/kotlin.svg?style=flat-square)](https://circleci.com/gh/iPoli/iPoli-android)
+[![Build Status](https://img.shields.io/circleci/project/github/iPoli/iPoli-android/master.svg?style=flat-square)](https://circleci.com/gh/iPoli/iPoli-android)
 [![Codacy Badge](https://img.shields.io/codacy/grade/5cad37c9a6e6415eb5fee3578bc6706d.svg?style=flat-square)](https://www.codacy.com/app/iPoli/iPoli-android?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=iPoli/iPoli-android&amp;utm_campaign=Badge_Grade)
 [![Releases](https://img.shields.io/github/release/iPoli/iPoli-android.svg?style=flat-square)](https://github.com/iPoli/iPoli-android/releases/latest)
 [![Discord](https://img.shields.io/discord/367715831913906176.svg?style=flat-square)](https://discord.gg/7AMKs28)

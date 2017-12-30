@@ -12,12 +12,16 @@ import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.controller_home.view.*
 import mypoli.android.Constants
 import mypoli.android.R
+import mypoli.android.challenge.ChallengeCategoryListViewController
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.FeedbackDialogController
+import mypoli.android.common.view.setToolbar
+import mypoli.android.pet.PetViewController
 import mypoli.android.quest.calendar.CalendarViewController
-import mypoli.android.theme.ThemeStoreViewController
+import mypoli.android.store.theme.ThemeStoreViewController
 import org.json.JSONObject
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -48,13 +52,17 @@ class HomeViewController(args: Bundle? = null) :
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         setHasOptionsMenu(true)
 
+        Timber.d("AAA HomeView create")
         val contentView = inflater.inflate(R.layout.controller_home, container, false)
+        setToolbar(contentView.toolbar)
 
         return contentView
     }
 
     override fun onAttach(view: View) {
+        Timber.d("AAA HomeView attach")
         super.onAttach(view)
+
 
 //        val actionBar = activity.supportActionBar
 //        actionBar?.setDisplayHomeAsUpEnabled(true)
@@ -82,6 +90,8 @@ class HomeViewController(args: Bundle? = null) :
             childRouter.setRoot(
 //                RouterTransaction.with(PetViewController())
                 RouterTransaction.with(CalendarViewController())
+//                RouterTransaction.with(ChallengeCategoryListViewController())
+//                RouterTransaction.with(PersonalizeChallengeViewController())
 //                RouterTransaction.with(ThemeStoreViewController())
                     .pushChangeHandler(handler)
                     .popChangeHandler(handler)
@@ -93,6 +103,7 @@ class HomeViewController(args: Bundle? = null) :
 
         send(LoadDataIntent)
 //        actionBarDrawerToggle.syncState()
+
 
     }
 
@@ -116,23 +127,51 @@ class HomeViewController(args: Bundle? = null) :
         inflater.inflate(R.menu.home_menu, menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.actionFeedback) {
-            showFeedbackDialog()
-            return true
+    override fun onOptionsItemSelected(item: MenuItem) =
+        when (item.itemId) {
+
+            R.id.actionPet -> {
+                showPet()
+                true
+            }
+
+            R.id.actionFeedback -> {
+                showFeedbackDialog()
+                true
+            }
+            R.id.actionThemes -> {
+                showThemes()
+                true
+            }
+            R.id.actionChallenges -> {
+                showChallenges()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
 
-        if (item.itemId == R.id.actionThemes) {
-            showThemes()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
+
+    private fun showPet() {
+        val handler = FadeChangeHandler()
+        router.pushController(
+            RouterTransaction.with(PetViewController())
+                .pushChangeHandler(handler)
+                .popChangeHandler(handler)
+        )
+    }
+
+    private fun showChallenges() {
+        val handler = FadeChangeHandler()
+        router.pushController(
+            RouterTransaction.with(ChallengeCategoryListViewController())
+                .pushChangeHandler(handler)
+                .popChangeHandler(handler)
+        )
     }
 
     private fun showThemes() {
         val handler = FadeChangeHandler()
-        val childRouter = getChildRouter(view!!.controllerContainer, null)
-        childRouter.pushController(
+        router.pushController(
             RouterTransaction.with(ThemeStoreViewController())
                 .pushChangeHandler(handler)
                 .popChangeHandler(handler)

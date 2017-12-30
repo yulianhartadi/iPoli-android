@@ -47,24 +47,30 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
 
     private fun stateReduceActor(view: V) = actor<I>(coroutineContext + CommonPool, Channel.CONFLATED) {
         var state = initialState
+
         launch(coroutineContext + UI) {
 
             renderInitialState(view)
 
             channel.consumeEach { intent ->
 
-                val oldState = state
-                state = reduceState(intent, state)
+                try {
+                    val oldState = state
+                    state = reduceState(intent, state)
 
-                val data = JSONObject()
-                data.put("previous_state", oldState)
-                data.put("intent", intent)
-                data.put("new_state", state)
-                Amplitude.getInstance().logEvent("change_state", data)
+                    val data = JSONObject()
+                    data.put("previous_state", oldState)
+                    data.put("intent", intent)
+                    data.put("new_state", state)
+                    Amplitude.getInstance().logEvent("change_state", data)
 
-                Timber.d("new state $state")
-                view.render(state)
+                    Timber.d("new state $state")
+                    view.render(state)
+                } catch (e: Throwable) {
+                    Timber.e(e)
+                }
             }
+
         }
     }
 

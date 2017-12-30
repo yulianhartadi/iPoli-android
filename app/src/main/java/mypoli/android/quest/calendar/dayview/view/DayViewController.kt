@@ -474,15 +474,15 @@ class DayViewController :
             }
 
             view.questSchedule.text = "${vm.startTime} - ${vm.endTime}"
-            view.questSchedule.setTextColor(colorRes(R.color.md_dark_text_54))
 
-            view.backgroundView.setBackgroundColor(colorRes(vm.backgroundColor.color200))
+            view.backgroundView.setBackgroundColor(colorRes(vm.backgroundColor.color600))
 
             if (vm.isCompleted) {
                 val span = SpannableString(vm.name)
                 span.setSpan(StrikethroughSpan(), 0, vm.name.length, 0)
                 view.questName.text = span
                 view.questName.setTextColor(colorRes(R.color.md_dark_text_54))
+                view.questSchedule.setTextColor(colorRes(R.color.md_dark_text_54))
 
                 view.checkBox.isChecked = true
                 (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(R.color.md_grey_700)
@@ -500,21 +500,22 @@ class DayViewController :
 
             } else {
 
-                view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color700)
+                view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color900)
+                view.questSchedule.setTextColor(colorRes(R.color.md_light_text_87))
 
                 view.questName.text = vm.name
-                view.questName.setTextColor(colorRes(vm.textColor))
+                view.questName.setTextColor(colorRes(R.color.md_white))
 
                 vm.icon?.let {
                     val icon = IconicsDrawable(context)
                         .icon(it.icon)
-                        .colorRes(vm.backgroundColor.color600)
+                        .colorRes(vm.backgroundColor.color200)
                         .sizeDp(24)
                     view.questIcon.visible = true
                     view.questIcon.setImageDrawable(icon)
                 }
 
-                (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color700)
+                (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color200)
                 view.completedBackgroundView.visibility = View.INVISIBLE
             }
 

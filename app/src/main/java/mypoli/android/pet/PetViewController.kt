@@ -47,8 +47,6 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
     override fun createPresenter() = presenter
 
-    private lateinit var inventoryToolbar: ViewGroup
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_pet, container, false)
         setHasOptionsMenu(true)
@@ -56,6 +54,13 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         view.fabFood.setImageDrawable(
             IconicsDrawable(view.context)
                 .icon(Ionicons.Icon.ion_pizza)
+                .colorRes(R.color.md_white)
+                .sizeDp(24)
+        )
+
+        view.fabItems.setImageDrawable(
+            IconicsDrawable(view.context)
+                .icon(Ionicons.Icon.ion_tshirt)
                 .colorRes(R.color.md_white)
                 .sizeDp(24)
         )
@@ -70,8 +75,12 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         initList(view.itemList)
         initList(view.foodList)
 
-        inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
-        inventoryToolbar.playerGems.setOnClickListener {
+//        inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
+
+
+        setToolbar(view.toolbar)
+
+        view.playerGems.setOnClickListener {
             send(PetIntent.ShowCurrencyConverter)
         }
 
@@ -134,7 +143,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                     }
                 }
 
-                inventoryToolbar.playerGems.text = state.playerGems.toString()
+                view.playerGems.text = state.playerGems.toString()
 
                 view.itemList.adapter = PetItemAdapter(state.itemViewModels)
                 view.foodList.adapter = PetFoodAdapter(state.foodViewModels)
@@ -173,7 +182,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
             PET_CHANGED -> {
 
-                inventoryToolbar.playerGems.text = state.playerGems.toString()
+                view.playerGems.text = state.playerGems.toString()
 
                 (view.foodList.adapter as PetFoodAdapter).updateAll(state.foodViewModels)
                 (view.itemList.adapter as PetItemAdapter).updateAll(state.itemViewModels)
@@ -189,7 +198,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                     .showDialog(router, "text-picker-tag")
 
             PET_RENAMED ->
-                renderPetName(state.petName)
+                renderPetName(view, state.petName)
 
             REVIVE_TOO_EXPENSIVE -> {
                 Toast.makeText(view.context, "Revive too expensive", Toast.LENGTH_SHORT).show()
@@ -266,7 +275,12 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         val heightOffset = (view.fabItems.height + ViewUtils.dpToPx(16f, view.context)) * 2
         playHideListAnimation(view, view.itemList, view.fabItems, view.fabFood, heightOffset)
         playItemFabsAnimation(view, true)
-        view.fabItems.setImageResource(R.drawable.ic_sword_white_24dp)
+        view.fabFood.setImageDrawable(
+            IconicsDrawable(view.context)
+                .icon(Ionicons.Icon.ion_tshirt)
+                .colorRes(R.color.md_white)
+                .sizeDp(24)
+        )
         view.fabItems.sendOnClick(PetIntent.ShowItemList)
     }
 
@@ -568,7 +582,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     }
 
     private fun renderPet(state: PetViewState, view: View) {
-        renderPetName(state.petName)
+        renderPetName(view, state.petName)
 
         val avatar = AndroidPetAvatar.valueOf(state.avatar!!.name)
 
@@ -635,8 +649,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         setItem(view.bodyArmor, state.newBodyArmorItemImage)
     }
 
-    private fun renderPetName(name: String) {
-        inventoryToolbar.toolbarTitle.text = name
+    private fun renderPetName(view: View, name: String) {
+        view.toolbarTitle.text = name
     }
 
     private fun playFeedPetAnimation(view: View, state: PetViewState) {
@@ -749,11 +763,6 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         )
         animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
         animator.start()
-    }
-
-    override fun onDestroyView(view: View) {
-        removeToolbarView(inventoryToolbar)
-        super.onDestroyView(view)
     }
 
     fun loadBitmapFromView(v: View): Bitmap {
