@@ -8,6 +8,8 @@ import mypoli.android.quest.Category
 import mypoli.android.quest.Quest
 import mypoli.android.quest.data.persistence.QuestRepository
 import org.threeten.bp.LocalDate
+import org.threeten.bp.temporal.TemporalAdjusters
+import java.util.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -25,6 +27,7 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) : U
 
         startDate = parameters.startDate
         endDate = startDate.plusDays((challenge.durationDays - 1).toLong())
+        val randomSeed = parameters.randomSeed
 
         val quests = challenge.quests.map { q ->
             when (q) {
@@ -45,17 +48,25 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) : U
                 }
 
                 is Challenge.Quest.OneTime -> {
-                    val scheduledDate = q.preferredDayOfWeek?.let {
-                        val scheduleDate = startDate.with(it)
-                        if (scheduleDate.isAfter(endDate)) {
-                            chooseRandomScheduledDate(q)
-                        } else {
-                            q.startAtDay?.let {
-                                findDateAfterStartDay(scheduleDate, it)
-                            } ?: scheduleDate
-                        }
 
-                    } ?: chooseRandomScheduledDate(q)
+                    val scheduledDate = if (q.startAtDay != null) {
+                        val startDay = startDate.plusDays((q.startAtDay - 1).toLong())
+                        if (startDay.isAfter(endDate)) {
+                            chooseRandomScheduledDate(randomSeed)
+                        } else {
+                            startDay
+                        }
+                    } else if (q.preferredDayOfWeek != null) {
+                        val preferredDate = startDate.with(TemporalAdjusters.nextOrSame(q.preferredDayOfWeek))
+                        if (preferredDate.isAfter(endDate)) {
+                            chooseRandomScheduledDate(randomSeed)
+                        } else {
+                            preferredDate
+                        }
+                    } else {
+                        chooseRandomScheduledDate(randomSeed)
+                    }
+
                     listOf(createFromOneTime(q, challenge, scheduledDate))
                 }
             }
@@ -64,28 +75,15 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) : U
         return quests.map { questRepository.save(it) }
     }
 
-    private fun findDateAfterStartDay(scheduleDate: LocalDate, startAtDay: Int) =
-        if (isAfterStartDay(scheduleDate, startAtDay)) {
-            scheduleDate
-        } else {
-            findDateToSchedule(scheduleDate, startAtDay)
-        }
+    private fun chooseRandomScheduledDate(randomSeed: Long?): LocalDate {
+        val dates = startDate.datesUntil(endDate)
 
-    private fun findDateToSchedule(scheduledDate: LocalDate, startAtDay: Int): LocalDate {
-        var d = scheduledDate.plusWeeks(1)
-        while (!d.isAfter(endDate)) {
-            if (isAfterStartDay(d, startAtDay)) {
-                return d
-            }
-            d = d.plusWeeks(1)
-        }
-        return endDate
+        val random = randomSeed?.let {
+            Random(it)
+        } ?: Random()
+
+        return dates[random.nextInt(dates.size)]
     }
-
-    /**
-     * @TODO implement this
-     */
-    private fun chooseRandomScheduledDate(quest: Challenge.Quest) = endDate
 
     private fun isAfterStartDay(date: LocalDate, startAtDay: Int): Boolean {
         val s = startDate.daysUntil(date) + 1
@@ -115,5 +113,9 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) : U
         )
 
 
-    data class Params(val challenge: Challenge, val startDate: LocalDate = LocalDate.now())
+    data class Params(
+        val challenge: Challenge,
+        val startDate: LocalDate = LocalDate.now(),
+        val randomSeed: Long? = null
+    )
 }
