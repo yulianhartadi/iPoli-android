@@ -10,9 +10,12 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import com.bluelinelabs.conductor.RouterTransaction
+import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.controller_challenge_list_for_category.view.*
 import kotlinx.android.synthetic.main.item_buy_challenge.view.*
 import kotlinx.android.synthetic.main.view_default_toolbar.view.*
+import mypoli.android.MainActivity
 import mypoli.android.R
 import mypoli.android.challenge.data.Challenge
 import mypoli.android.common.mvi.MviViewController
@@ -55,7 +58,8 @@ class ChallengeListForCategoryViewController :
                     R.color.md_blue_600,
                     R.drawable.challenge_category_build_skill_image,
                     5,
-                    false
+                    false,
+                    challenge = MainActivity.allChallenges(resources!!)[0]
                 )
             )
         )
@@ -81,13 +85,23 @@ class ChallengeListForCategoryViewController :
 
     }
 
+    private fun showChallenge(challenge: Challenge) {
+        val handler = FadeChangeHandler()
+        router.pushController(
+            RouterTransaction.with(PersonalizeChallengeViewController(challenge))
+                .pushChangeHandler(handler)
+                .popChangeHandler(handler)
+        )
+    }
+
     data class ChallengeViewModel(
         @StringRes val name: Int,
         @StringRes val description: Int,
         @ColorRes val backgroundColor: Int,
         @DrawableRes val image: Int,
         val gemPrice: Int,
-        val isBought: Boolean
+        val isBought: Boolean,
+        val challenge: Challenge
     )
 
     inner class ChallengeAdapter(private var viewModels: List<ChallengeViewModel> = listOf()) :
@@ -96,7 +110,9 @@ class ChallengeListForCategoryViewController :
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val vm = viewModels[position]
             val itemView = holder.itemView
-
+            itemView.setOnClickListener {
+                showChallenge(vm.challenge)
+            }
             itemView.challengeContainer.setCardBackgroundColor(colorRes(vm.backgroundColor))
             itemView.challengeName.setText(vm.name)
             itemView.challengeDescription.setText(vm.description)

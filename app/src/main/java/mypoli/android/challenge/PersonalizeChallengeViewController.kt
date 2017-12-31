@@ -11,6 +11,7 @@ import android.view.WindowManager
 import kotlinx.android.synthetic.main.controller_personalize_challenge.view.*
 import kotlinx.android.synthetic.main.item_challenge_quest.view.*
 import mypoli.android.R
+import mypoli.android.challenge.data.Challenge
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.attr
 import mypoli.android.common.view.colorRes
@@ -22,8 +23,16 @@ import space.traversal.kapsule.required
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 12/29/17.
  */
-class PersonalizeChallengeViewController(args: Bundle? = null) :
-    MviViewController<PersonalizeChallengeViewState, PersonalizeChallengeViewController, PersonalizeChallengePresenter, PersonalizeChallengeIntent>(args) {
+class PersonalizeChallengeViewController :
+    MviViewController<PersonalizeChallengeViewState, PersonalizeChallengeViewController, PersonalizeChallengePresenter, PersonalizeChallengeIntent> {
+
+    private lateinit var challenge: Challenge
+
+    constructor(args: Bundle? = null) : super(args)
+
+    constructor(challenge: Challenge) : super() {
+        this.challenge = challenge
+    }
 
     private val presenter by required { personalizeChallengePresenter }
 
@@ -32,12 +41,21 @@ class PersonalizeChallengeViewController(args: Bundle? = null) :
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_personalize_challenge, container, false)
         view.challengeQuestList.layoutManager = LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
-        view.challengeQuestList.adapter = ChallengeQuestAdapter(
-            listOf(
-                ChallengeQuestViewModel("Hello New World", true),
-                ChallengeQuestViewModel("Rune like the wind Rune like the wind Rune like the wind Rune like the wind", false)
-            )
-        )
+
+        val vms = challenge.quests.map {
+            when (it) {
+
+                is Challenge.Quest.OneTime -> {
+                    ChallengeQuestViewModel(it.text, it.selected)
+                }
+
+                is Challenge.Quest.Repeating -> {
+                    ChallengeQuestViewModel(it.text, it.selected)
+                }
+            }
+        }
+
+        view.challengeQuestList.adapter = ChallengeQuestAdapter(vms)
         setToolbar(view.toolbar)
         return view
     }
