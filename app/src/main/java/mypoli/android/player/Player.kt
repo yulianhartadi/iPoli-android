@@ -1,14 +1,15 @@
 package mypoli.android.player
 
 import mypoli.android.Constants
+import mypoli.android.challenge.data.Challenge
 import mypoli.android.pet.Food
 import mypoli.android.pet.Pet
 import mypoli.android.pet.PetAvatar
 import mypoli.android.pet.PetItem
+import mypoli.android.player.data.Avatar
 import mypoli.android.quest.ColorPack
 import mypoli.android.quest.Entity
 import mypoli.android.quest.IconPack
-import mypoli.android.player.data.Avatar
 import org.threeten.bp.LocalDateTime
 
 data class Player(
@@ -87,6 +88,9 @@ data class Player(
 
     fun hasColorPack(colorPack: ColorPack) =
         inventory.hasColorPack(colorPack)
+
+    fun hasChallenge(challenge: Challenge)
+        = inventory.hasChallenge(challenge)
 }
 
 data class InventoryPet(val name: String, val avatar: PetAvatar, val items: Set<PetItem> = setOf()) {
@@ -111,7 +115,8 @@ data class Inventory(
     val pets: Set<InventoryPet> = setOf(),
     val themes: Set<Theme> = setOf(),
     val colorPacks: Set<ColorPack> = setOf(),
-    val iconPacks: Set<IconPack> = setOf()
+    val iconPacks: Set<IconPack> = setOf(),
+    val challenges: Set<Challenge> = setOf()
 ) {
     fun addFood(food: Food, quantity: Int = 1): Inventory {
         val qty = this.food.let {
@@ -180,6 +185,15 @@ data class Inventory(
 
         return copy(
             pets = this.pets - currentPet + InventoryPet(currentPet.name, currentPet.avatar, currentPet.items + item)
+        )
+    }
+
+    fun hasChallenge(challengeType: Challenge) =
+        challenges.contains(challengeType)
+
+    fun addChallenge(challenge: Challenge): Inventory {
+        return copy(
+            challenges = this.challenges + challenge
         )
     }
 }

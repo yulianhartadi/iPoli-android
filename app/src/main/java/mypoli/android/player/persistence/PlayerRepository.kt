@@ -1,14 +1,15 @@
 package mypoli.android.player.persistence
 
 import com.couchbase.lite.*
+import mypoli.android.challenge.data.Challenge
 import mypoli.android.common.persistence.BaseCouchbaseRepository
 import mypoli.android.common.persistence.Repository
 import mypoli.android.pet.*
 import mypoli.android.player.*
+import mypoli.android.player.data.Avatar
 import mypoli.android.player.persistence.model.*
 import mypoli.android.quest.ColorPack
 import mypoli.android.quest.IconPack
-import mypoli.android.player.data.Avatar
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
@@ -82,7 +83,8 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             }.toSet(),
             themes = ci.themes.map { Theme.valueOf(it) }.toSet(),
             colorPacks = ci.colorPacks.map { ColorPack.valueOf(it) }.toSet(),
-            iconPacks = ci.iconPacks.map { IconPack.valueOf(it) }.toSet()
+            iconPacks = ci.iconPacks.map { IconPack.valueOf(it) }.toSet(),
+            challenges = ci.challenges.map { Challenge.valueOf(it) }.toSet()
         )
 
         return Player(
@@ -164,6 +166,7 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             it.themes = inventory.themes.map { it.name }
             it.colorPacks = inventory.colorPacks.map { it.name }
             it.iconPacks = inventory.iconPacks.map { it.name }
+            it.challenges = inventory.challenges.map { it.name }
         }
 
     private fun createCouchbaseInventoryPet(inventoryPet: InventoryPet) =

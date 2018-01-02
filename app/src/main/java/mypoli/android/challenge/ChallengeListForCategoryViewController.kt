@@ -4,24 +4,29 @@ import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.controller_challenge_list_for_category.view.*
 import kotlinx.android.synthetic.main.item_buy_challenge.view.*
-import kotlinx.android.synthetic.main.view_default_toolbar.view.*
-import mypoli.android.MainActivity
+import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import mypoli.android.R
+import mypoli.android.challenge.ChallengeListForCategoryViewState.StateType.CHALLENGE_TOO_EXPENSIVE
+import mypoli.android.challenge.ChallengeListForCategoryViewState.StateType.PLAYER_CHANGED
+import mypoli.android.challenge.data.AndroidChallenge
 import mypoli.android.challenge.data.Challenge
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.colorRes
 import mypoli.android.common.view.setToolbar
 import mypoli.android.common.view.showBackButton
+import mypoli.android.common.view.stringRes
 import space.traversal.kapsule.required
 
 /**
@@ -47,22 +52,12 @@ class ChallengeListForCategoryViewController :
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_challenge_list_for_category, container, false)
         setToolbar(view.toolbar)
-//        setToolbar(view.toolbar)
-//        toolbarTitle = "Challenges"
+
+        val androidChallengeCategory = AndroidChallenge.Category.valueOf(challengeCategory.name)
+
+        view.toolbarTitle.setText(androidChallengeCategory.title)
         view.challengeList.layoutManager = LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
-        view.challengeList.adapter = ChallengeAdapter(
-            listOf(
-                ChallengeViewModel(
-                    R.string.challenge_coding_ninja_name,
-                    R.string.challenge_coding_ninja_description,
-                    R.color.md_blue_600,
-                    R.drawable.challenge_category_build_skill_image,
-                    5,
-                    false,
-                    challenge = MainActivity.allChallenges(resources!!)[0]
-                )
-            )
-        )
+        view.challengeList.adapter = ChallengeAdapter()
 
         return view
     }
@@ -82,7 +77,19 @@ class ChallengeListForCategoryViewController :
     }
 
     override fun render(state: ChallengeListForCategoryViewState, view: View) {
+        when (state.type) {
+            PLAYER_CHANGED -> {
+                view.playerGems.text = "${state.playerGems}"
+                (view.challengeList.adapter as ChallengeAdapter).updateAll(state.viewModels)
+            }
 
+            CHALLENGE_TOO_EXPENSIVE -> {
+                Toast.makeText(view.context, stringRes(R.string.challenge_too_expensive), Toast.LENGTH_SHORT).show()
+            }
+
+            else -> {
+            }
+        }
     }
 
     private fun showChallenge(challenge: Challenge) {
@@ -110,14 +117,25 @@ class ChallengeListForCategoryViewController :
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val vm = viewModels[position]
             val itemView = holder.itemView
-            itemView.setOnClickListener {
-                showChallenge(vm.challenge)
+
+            val priceIndicator = itemView.challengePriceIndicator
+            if (!vm.isBought) {
+                priceIndicator.text = "${vm.gemPrice}"
+                priceIndicator.setCompoundDrawablesWithIntrinsicBounds(
+                    ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_gem_24dp), null, null, null)
+                itemView.sendOnClick(ChallengeListForCategoryIntent.BuyChallenge(vm.challenge))
+            } else {
+                itemView.setOnClickListener {
+                    showChallenge(vm.challenge)
+                }
+                priceIndicator.text = stringRes(R.string.unlocked).toUpperCase()
+                priceIndicator.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
             }
+
             itemView.challengeContainer.setCardBackgroundColor(colorRes(vm.backgroundColor))
             itemView.challengeName.setText(vm.name)
             itemView.challengeDescription.setText(vm.description)
             itemView.challengeImage.setImageResource(vm.image)
-            itemView.challengePrice.text = "${vm.gemPrice}"
         }
 
         override fun getItemCount() = viewModels.size

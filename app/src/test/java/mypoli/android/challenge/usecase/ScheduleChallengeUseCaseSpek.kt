@@ -20,7 +20,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
     describe("ScheduleChallengeUseCase") {
 
         val challenge = Challenge(
-            "", Challenge.Category.HEALTH_AND_FITNESS, listOf(), durationDays = 1
+            "", Challenge.Type.STRESS_FREE_MIND, Challenge.Category.HEALTH_AND_FITNESS, listOf(), durationDays = 1
         )
 
         fun executeUseCase(challenge: Challenge, startDate: LocalDate = LocalDate.now(), randomSeed: Long? = null) =
@@ -33,7 +33,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
             )
 
         it("should not accept Challenge without Quests") {
-            val exec = { executeUseCase(Challenge("", Challenge.Category.HEALTH_AND_FITNESS, listOf())) }
+            val exec = { executeUseCase(Challenge("", Challenge.Type.STRESS_FREE_MIND, Challenge.Category.HEALTH_AND_FITNESS, listOf())) }
             exec shouldThrow IllegalArgumentException::class
         }
 

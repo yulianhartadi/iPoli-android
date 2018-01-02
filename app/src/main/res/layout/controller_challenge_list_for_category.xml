@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/view_default_toolbar" />
+    <include layout="@layout/view_inventory_toolbar" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/challengeList"

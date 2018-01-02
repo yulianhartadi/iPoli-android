@@ -655,7 +655,7 @@
     <string name="pet_seal">Modern Tail</string>
     <string name="pet_donkey">Meaningful Look</string>
     <string name="pet_elephant">Jazzy Ears</string>
-    <string name="pet_beaver">Crazy teeth</string>
+    <string name="pet_beaver">Crazy Teeth</string>
     <string name="pet_chicken">Chicken Invader</string>
     <string name="pet_store_use_pet">Use it</string>
     <string name="pet_selected_message">Pet successfully changed</string>
@@ -1055,7 +1055,7 @@
     <string name="challenge_category_health_fitness_description">Get your body moving &amp; stay healthy</string>
     <string name="challenge_category_build_skill_name">Build a Skill</string>
     <string name="challenge_category_build_skill_description">Learn a new language, how to code or knit</string>
-    <string name="challenge_category_deep_work_name">Deep Work</string>
+    <string name="challenge_category_deep_work_name">Meaningful Work</string>
     <string name="challenge_category_deep_work_description">Stay in the flow longer &amp; get it done</string>
     <string name="challenge_category_me_time_name">Me Time</string>
     <string name="challenge_category_me_time_description">Have a great time with your family &amp; friends</string>
@@ -1063,6 +1063,13 @@
     <string name="challenge_category_organize_my_life_description">Keep your place clean &amp; stay on top of things</string>
     <string name="challenge_coding_ninja_name">Coding Ninja</string>
     <string name="challenge_coding_ninja_description">Learn the basics of Web development using JavaScript</string>
+    <string name="challenge_too_expensive">Challenge is too expensive</string>
+    <string name="unlocked">Unlocked</string>
+    <string name="challenge_stress_free_mind_description">Be mindful and stay in the flow longer</string>
+    <string name="challenge_weight_cutter">Weight Cutter</string>
+    <string name="challenge_weight_cutter_description">Start shredding some weight and feel great</string>
+    <string name="challenge_healthy_and_fit">Healthy &amp; Fit</string>
+    <string name="challenge_healthy_and_fit_description">Keep working out and live healthier life</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

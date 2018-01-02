@@ -23,15 +23,18 @@
         <ImageView
             android:id="@+id/challengeImage"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@+id/guideline2"
+            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/challenge_category_build_skill_image" />
 
         <TextView
@@ -49,15 +52,16 @@
         <ImageView
             android:id="@+id/imageView2"
             android:layout_width="0dp"
-            android:layout_height="3dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="16dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:background="@color/cardview_light_background"
+            android:adjustViewBounds="true"
             app:layout_constraintEnd_toStartOf="@+id/challengeImage"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/challengeName"
-            app:srcCompat="@drawable/ic_add_black_24dp" />
+            app:srcCompat="@drawable/challenge_divider" />
 
         <TextView
             android:id="@+id/challengeDescription"
@@ -65,7 +69,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="@color/md_light_text_87"
             app:layout_constraintEnd_toStartOf="@+id/guideline2"
@@ -74,7 +78,7 @@
             tools:text="Learn the basics of Web development using JavaScript" />
 
         <TextView
-            android:id="@+id/challengePrice"
+            android:id="@+id/challengePriceIndicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
