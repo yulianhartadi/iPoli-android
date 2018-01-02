@@ -9,9 +9,9 @@ import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import mypoli.android.challenge.ChallengeCategoryListViewController
 import mypoli.android.common.di.ControllerModule
 import mypoli.android.common.view.playerTheme
+import mypoli.android.home.HomeViewController
 import mypoli.android.player.AuthProvider
 import mypoli.android.player.Player
 import mypoli.android.player.persistence.model.ProviderType
@@ -76,8 +76,8 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         }
 
         if (!router.hasRootController()) {
-//            router.setRoot(RouterTransaction.with(HomeViewController()))
-            router.setRoot(RouterTransaction.with(ChallengeCategoryListViewController()))
+            router.setRoot(RouterTransaction.with(HomeViewController()))
+//            router.setRoot(RouterTransaction.with(ChallengeCategoryListViewController()))
 //            router.setRoot(RouterTransaction.with(PersonalizeChallengeViewController()))
         }
     }

@@ -8,14 +8,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.Toast
 import kotlinx.android.synthetic.main.controller_personalize_challenge.view.*
 import kotlinx.android.synthetic.main.item_challenge_quest.view.*
 import mypoli.android.R
+import mypoli.android.challenge.PersonalizeChallengeViewState.StateType.CHALLENGE_ACCEPTED
+import mypoli.android.challenge.data.AndroidChallenge
 import mypoli.android.challenge.data.Challenge
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.attr
 import mypoli.android.common.view.colorRes
 import mypoli.android.common.view.setToolbar
+import mypoli.android.common.view.stringRes
 import space.traversal.kapsule.required
 
 
@@ -41,10 +45,11 @@ class PersonalizeChallengeViewController :
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_personalize_challenge, container, false)
         view.challengeQuestList.layoutManager = LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
-
+        val androidChallenge = AndroidChallenge.valueOf(challenge.name)
+        view.challengeImage.setBackgroundResource(androidChallenge.backgroundImage)
+        view.collapsingToolbarContainer.title = stringRes(androidChallenge.title)
         val vms = challenge.quests.map {
             when (it) {
-
                 is Challenge.Quest.OneTime -> {
                     ChallengeQuestViewModel(it.text, it.selected)
                 }
@@ -57,6 +62,7 @@ class PersonalizeChallengeViewController :
 
         view.challengeQuestList.adapter = ChallengeQuestAdapter(vms)
         setToolbar(view.toolbar)
+        view.acceptChallenge.sendOnClick(PersonalizeChallengeIntent.AcceptChallenge(challenge))
         return view
     }
 
@@ -75,20 +81,15 @@ class PersonalizeChallengeViewController :
 
     override fun onDetach(view: View) {
         val window = activity!!.window
-
-// clear FLAG_TRANSLUCENT_STATUS flag:
-//        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-//
-//// add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-//        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-
-// finally change the color
         window.statusBarColor = attr(R.attr.colorPrimaryDark)
         super.onDetach(view)
     }
 
     override fun render(state: PersonalizeChallengeViewState, view: View) {
-
+        if (state.type == CHALLENGE_ACCEPTED) {
+            Toast.makeText(view.context, R.string.challenge_accepted, Toast.LENGTH_SHORT).show()
+            router.popCurrentController()
+        }
     }
 
     data class ChallengeQuestViewModel(val name: String, val isSelected: Boolean)
@@ -109,11 +110,6 @@ class PersonalizeChallengeViewController :
             ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_challenge_quest, parent, false))
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
-
-        fun updateAll(viewModels: List<ChallengeQuestViewModel>) {
-            this.viewModels = viewModels
-            notifyDataSetChanged()
-        }
 
     }
 

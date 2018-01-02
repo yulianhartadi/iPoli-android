@@ -1064,6 +1064,7 @@
     <string name="challenge_coding_ninja_name">Coding Ninja</string>
     <string name="challenge_coding_ninja_description">Learn the basics of Web development using JavaScript</string>
     <string name="challenge_too_expensive">Challenge is too expensive</string>
+    <string name="challenge_unlocked">Challenge unlocked</string>
     <string name="unlocked">Unlocked</string>
     <string name="challenge_stress_free_mind_description">Be mindful and stay in the flow longer</string>
     <string name="challenge_weight_cutter">Weight Cutter</string>

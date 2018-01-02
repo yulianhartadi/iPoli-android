@@ -25,9 +25,9 @@ enum class Challenge(
         5,
         listOf(
             Challenge.Quest.Repeating(
-                "Meditate every day for 10 min",
+                "Meditate every day for 20 min",
                 "Meditate",
-                duration = 10,
+                duration = 20,
                 weekDays = DayOfWeek.values().toList(),
                 startTime = Time.at(19, 0),
                 color = Color.GREEN,
@@ -66,7 +66,7 @@ enum class Challenge(
             Challenge.Quest.Repeating(
                 "Say 3 things that I am grateful for every morning",
                 "Say 3 things that I am grateful for",
-                duration = 10,
+                duration = 15,
                 weekDays = DayOfWeek.values().toList(),
                 startTime = Time.at(10, 0),
                 color = Color.RED,
@@ -110,9 +110,9 @@ enum class Challenge(
                 icon = Icon.FITNESS
             ),
             Challenge.Quest.Repeating(
-                "Measure my weight every morning",
-                "Measure my weight",
-                duration = 10,
+                "Measure & record my weight every morning",
+                "Measure & record my weight",
+                duration = 15,
                 weekDays = DayOfWeek.values().toList(),
                 startTime = Time.at(10, 0),
                 color = Color.GREEN,

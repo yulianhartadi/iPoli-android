@@ -12,9 +12,9 @@
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackgroundBorderless"
-    app:cardBackgroundColor="@color/md_teal_400"
     app:cardCornerRadius="6dp"
-    app:cardElevation="6dp">
+    app:cardElevation="6dp"
+    tools:cardBackgroundColor="@color/md_teal_400">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -35,7 +35,7 @@
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@+id/guideline2"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/challenge_category_build_skill_image" />
+            tools:src="@drawable/challenge_category_build_skill_image" />
 
         <TextView
             android:id="@+id/challengeName"
@@ -85,7 +85,6 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:drawablePadding="8dp"
-            android:drawableStart="@drawable/ic_gem_24dp"
             android:gravity="center_vertical"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textColor="@color/md_white"

@@ -1,5 +1,6 @@
 package mypoli.android.challenge
 
+import mypoli.android.challenge.data.Challenge
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
 
@@ -9,14 +10,12 @@ import mypoli.android.common.mvi.ViewState
  */
 
 sealed class PersonalizeChallengeIntent : Intent {
-
+    data class AcceptChallenge(val challenge: Challenge) : PersonalizeChallengeIntent()
 }
 
 data class PersonalizeChallengeViewState(val type: StateType) : ViewState {
     enum class StateType {
-        LOADING,
         DATA_LOADED,
-        CHALLENGE_ACCEPTED,
-        TOO_EXPENSIVE
+        CHALLENGE_ACCEPTED
     }
 }

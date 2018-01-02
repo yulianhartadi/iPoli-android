@@ -18,8 +18,7 @@ import kotlinx.android.synthetic.main.controller_challenge_list_for_category.vie
 import kotlinx.android.synthetic.main.item_buy_challenge.view.*
 import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import mypoli.android.R
-import mypoli.android.challenge.ChallengeListForCategoryViewState.StateType.CHALLENGE_TOO_EXPENSIVE
-import mypoli.android.challenge.ChallengeListForCategoryViewState.StateType.PLAYER_CHANGED
+import mypoli.android.challenge.ChallengeListForCategoryViewState.StateType.*
 import mypoli.android.challenge.data.AndroidChallenge
 import mypoli.android.challenge.data.Challenge
 import mypoli.android.common.mvi.MviViewController
@@ -85,6 +84,10 @@ class ChallengeListForCategoryViewController :
 
             CHALLENGE_TOO_EXPENSIVE -> {
                 Toast.makeText(view.context, stringRes(R.string.challenge_too_expensive), Toast.LENGTH_SHORT).show()
+            }
+
+            CHALLENGE_BOUGHT -> {
+                Toast.makeText(view.context, stringRes(R.string.challenge_unlocked), Toast.LENGTH_SHORT).show()
             }
 
             else -> {

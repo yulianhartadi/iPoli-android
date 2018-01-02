@@ -297,6 +297,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val equipPetItemUseCase by required { equipPetItemUseCase }
     private val takeOffPetItemUseCase by required { takeOffPetItemUseCase }
     private val purchaseGemPackUseCase by required { purchaseGemPackUseCase }
+    private val scheduleChallengeUseCase by required { scheduleChallengeUseCase }
     private val job by required { job }
     override val homePresenter get() = HomePresenter(job)
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, undoRemoveQuestUseCase, completeQuestUseCase, undoCompleteQuestUseCase, job)
@@ -313,7 +314,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val gemStorePresenter get() = GemStorePresenter(purchaseGemPackUseCase, listenForPlayerChangesUseCase, job)
     override val challengeCategoryListPresenter get() = ChallengeCategoryListPresenter(job)
     override val challengeListForCategoryPresenter get() = ChallengeListForCategoryPresenter(listenForPlayerChangesUseCase, buyChallengeUseCase, job)
-    override val personalizeChallengePresenter get() = PersonalizeChallengePresenter(job)
+    override val personalizeChallengePresenter get() = PersonalizeChallengePresenter(scheduleChallengeUseCase, job)
 }
 
 interface PopupPresenterModule {
