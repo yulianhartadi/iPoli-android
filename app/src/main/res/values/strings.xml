@@ -1081,6 +1081,12 @@
     <string name="challenge_focused_work_description">Stay in the flow longer and do your best work</string>
     <string name="challenge_job_interview">Interview Wiz</string>
     <string name="challenge_job_interview_description">Prepare yourself for your dream job</string>
+    <string name="challenge_friends_time">Friends Time</string>
+    <string name="challenge_friends_time_description">Have fun with friends</string>
+    <string name="challenge_enjoy_myself">Enjoy Myself</string>
+    <string name="challenge_enjoy_myself_description">Have fun and spend some quality time with yourself</string>
+    <string name="challenge_family_time">Family Time</string>
+    <string name="challenge_family_time_description">Spend some time with your loved ones</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

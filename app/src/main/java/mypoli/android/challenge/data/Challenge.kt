@@ -214,7 +214,10 @@ enum class Challenge(
     JOB_INTERVIEW(Category.DEEP_WORK, 5, listOf()),
     FRIENDS_TIME(Category.ME_TIME, 5, listOf()),
     ENJOY_MYSELF(Category.ME_TIME, 5, listOf()),
-    FAMILY_TIME(Category.ME_TIME, 5, listOf());
+    FAMILY_TIME(Category.ME_TIME, 5, listOf()),
+    KEEP_THINGS_TIDY(Category.ORGANIZE_MY_LIFE, 5, listOf()),
+    ORGANIZE_MY_DAY(Category.ORGANIZE_MY_LIFE, 5, listOf()),
+    STAY_ON_TOP_OF_THINGS(Category.ORGANIZE_MY_LIFE, 5, listOf());
 
     enum class Category {
         BUILD_SKILL,
@@ -320,7 +323,34 @@ enum class AndroidChallenge(
         R.drawable.challenge_job_interview,
         R.drawable.challenge_job_interview_background,
         Category.DEEP_WORK
+    ),
+    FRIENDS_TIME(
+        R.string.challenge_friends_time,
+        R.string.challenge_friends_time_description,
+        R.drawable.challenge_friends_time,
+        R.drawable.challenge_friends_time_background,
+        Category.ME_TIME
+    ),
+    ENJOY_MYSELF(
+        R.string.challenge_enjoy_myself,
+        R.string.challenge_enjoy_myself_description,
+        R.drawable.challenge_enjoy_myself,
+        R.drawable.challenge_enjoy_myself_background,
+        Category.ME_TIME
+    ),
+    FAMILY_TIME(
+        R.string.challenge_family_time,
+        R.string.challenge_family_time_description,
+        R.drawable.challenge_famil_time,
+        R.drawable.challenge_famil_time_background,
+        Category.ME_TIME
     );
+
+
+//    FAMILY_TIME(Category.ME_TIME, 5, listOf()),
+//    KEEP_THINGS_TIDY(Category.ORGANIZE_MY_LIFE, 5, listOf()),
+//    ORGANIZE_MY_DAY(Category.ORGANIZE_MY_LIFE, 5, listOf()),
+//    STAY_ON_TOP_OF_THINGS(Category.ORGANIZE_MY_LIFE, 5, listOf());
 
     enum class Category(@StringRes val title: Int, @ColorRes val color: Int) {
         BUILD_SKILL(R.string.challenge_category_build_skill_name, R.color.md_blue_500),
