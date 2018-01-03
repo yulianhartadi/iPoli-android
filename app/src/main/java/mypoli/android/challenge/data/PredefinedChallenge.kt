@@ -13,10 +13,10 @@ import org.threeten.bp.DayOfWeek
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 12/29/17.
  */
-enum class Challenge(
+enum class PredefinedChallenge(
     val category: Category,
     val gemPrice: Int,
-    val quests: List<Challenge.Quest>,
+    val quests: List<PredefinedChallenge.Quest>,
     val durationDays: Int = 30
 ) {
 
@@ -24,7 +24,7 @@ enum class Challenge(
         Category.HEALTH_AND_FITNESS,
         5,
         listOf(
-            Challenge.Quest.Repeating(
+            PredefinedChallenge.Quest.Repeating(
                 "Meditate every day for 20 min",
                 "Meditate",
                 duration = 20,
@@ -33,7 +33,7 @@ enum class Challenge(
                 color = Color.GREEN,
                 icon = Icon.SUN
             ),
-            Challenge.Quest.Repeating(
+            PredefinedChallenge.Quest.Repeating(
                 "Read a book for 30 min 3 times a week",
                 "Read a book",
                 duration = 30,
@@ -41,7 +41,7 @@ enum class Challenge(
                 color = Color.BLUE,
                 icon = Icon.BOOK
             ),
-            Challenge.Quest.OneTime(
+            PredefinedChallenge.Quest.OneTime(
                 "Share your troubles with a friend",
                 "Share your troubles with a friend",
                 preferredDayOfWeek = DayOfWeek.SATURDAY,
@@ -49,7 +49,7 @@ enum class Challenge(
                 color = Color.PURPLE,
                 icon = Icon.FRIENDS
             ),
-            Challenge.Quest.Repeating(
+            PredefinedChallenge.Quest.Repeating(
                 "Take a walk for 30 min 5 times a week",
                 "Take a walk",
                 duration = 30,
@@ -63,7 +63,7 @@ enum class Challenge(
                 color = Color.GREEN,
                 icon = Icon.TREE
             ),
-            Challenge.Quest.Repeating(
+            PredefinedChallenge.Quest.Repeating(
                 "Say 3 things that I am grateful for every morning",
                 "Say 3 things that I am grateful for",
                 duration = 15,
@@ -77,7 +77,7 @@ enum class Challenge(
         Category.HEALTH_AND_FITNESS,
         5,
         listOf(
-            Challenge.Quest.OneTime(
+            PredefinedChallenge.Quest.OneTime(
                 "Sign up for a gym club card",
                 "Sign up for a gym club card",
                 duration = 30,
@@ -85,7 +85,7 @@ enum class Challenge(
                 color = Color.GREEN,
                 icon = Icon.FITNESS
             ),
-            Challenge.Quest.Repeating(
+            PredefinedChallenge.Quest.Repeating(
                 "Run 2 times a week for 30 min",
                 "Go for a run",
                 duration = 30,
@@ -96,7 +96,7 @@ enum class Challenge(
                 color = Color.GREEN,
                 icon = Icon.RUN
             ),
-            Challenge.Quest.Repeating(
+            PredefinedChallenge.Quest.Repeating(
                 "Workout at the gym 3 times a week for 1h",
                 "Go for a run",
                 duration = 60,
@@ -109,7 +109,7 @@ enum class Challenge(
                 color = Color.GREEN,
                 icon = Icon.FITNESS
             ),
-            Challenge.Quest.Repeating(
+            PredefinedChallenge.Quest.Repeating(
                 "Measure & record my weight every morning",
                 "Measure & record my weight",
                 duration = 15,
@@ -118,7 +118,7 @@ enum class Challenge(
                 color = Color.GREEN,
                 icon = Icon.STAR
             ),
-            Challenge.Quest.Repeating(
+            PredefinedChallenge.Quest.Repeating(
                 "Prepare healthy dinner 6 times a week",
                 "Prepare healthy dinner",
                 duration = 45,
@@ -609,7 +609,7 @@ enum class Challenge(
     }
 }
 
-enum class AndroidChallenge(
+enum class AndroidPredefinedChallenge(
     @StringRes val title: Int,
     @StringRes val description: Int,
     @DrawableRes val smallImage: Int,

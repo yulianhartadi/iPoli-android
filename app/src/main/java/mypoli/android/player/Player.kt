@@ -1,7 +1,7 @@
 package mypoli.android.player
 
 import mypoli.android.Constants
-import mypoli.android.challenge.data.Challenge
+import mypoli.android.challenge.data.PredefinedChallenge
 import mypoli.android.pet.Food
 import mypoli.android.pet.Pet
 import mypoli.android.pet.PetAvatar
@@ -89,7 +89,7 @@ data class Player(
     fun hasColorPack(colorPack: ColorPack) =
         inventory.hasColorPack(colorPack)
 
-    fun hasChallenge(challenge: Challenge)
+    fun hasChallenge(challenge: PredefinedChallenge)
         = inventory.hasChallenge(challenge)
 }
 
@@ -116,7 +116,7 @@ data class Inventory(
     val themes: Set<Theme> = setOf(),
     val colorPacks: Set<ColorPack> = setOf(),
     val iconPacks: Set<IconPack> = setOf(),
-    val challenges: Set<Challenge> = setOf()
+    val challenges: Set<PredefinedChallenge> = setOf()
 ) {
     fun addFood(food: Food, quantity: Int = 1): Inventory {
         val qty = this.food.let {
@@ -188,10 +188,10 @@ data class Inventory(
         )
     }
 
-    fun hasChallenge(challengeType: Challenge) =
+    fun hasChallenge(challengeType: PredefinedChallenge) =
         challenges.contains(challengeType)
 
-    fun addChallenge(challenge: Challenge): Inventory {
+    fun addChallenge(challenge: PredefinedChallenge): Inventory {
         return copy(
             challenges = this.challenges + challenge
         )

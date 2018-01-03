@@ -1,6 +1,6 @@
 package mypoli.android.challenge.usecase
 
-import mypoli.android.challenge.data.Challenge
+import mypoli.android.challenge.data.PredefinedChallenge
 import mypoli.android.common.UseCase
 import mypoli.android.common.datetime.datesUntil
 import mypoli.android.common.datetime.daysUntil
@@ -31,7 +31,7 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) : U
 
         val quests = challenge.quests.map { q ->
             when (q) {
-                is Challenge.Quest.Repeating -> {
+                is PredefinedChallenge.Quest.Repeating -> {
 
                     startDate
                         .datesUntil(endDate)
@@ -47,7 +47,7 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) : U
                         }
                 }
 
-                is Challenge.Quest.OneTime -> {
+                is PredefinedChallenge.Quest.OneTime -> {
 
                     val scheduledDate = if (q.startAtDay != null) {
                         val startDay = startDate.plusDays((q.startAtDay - 1).toLong())
@@ -90,7 +90,7 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) : U
         return s + 1 >= startAtDay
     }
 
-    private fun createFromOneTime(it: Challenge.Quest.OneTime, challenge: Challenge, scheduledDate: LocalDate) =
+    private fun createFromOneTime(it: PredefinedChallenge.Quest.OneTime, challenge: PredefinedChallenge, scheduledDate: LocalDate) =
         Quest(
             name = it.name,
             color = it.color,
@@ -101,7 +101,7 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) : U
             scheduledDate = scheduledDate
         )
 
-    private fun createFromRepeating(it: Challenge.Quest.Repeating, challenge: Challenge, scheduledDate: LocalDate) =
+    private fun createFromRepeating(it: PredefinedChallenge.Quest.Repeating, challenge: PredefinedChallenge, scheduledDate: LocalDate) =
         Quest(
             name = it.name,
             color = it.color,
@@ -114,7 +114,7 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) : U
 
 
     data class Params(
-        val challenge: Challenge,
+        val challenge: PredefinedChallenge,
         val startDate: LocalDate = LocalDate.now(),
         val randomSeed: Long? = null
     )

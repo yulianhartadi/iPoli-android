@@ -14,8 +14,8 @@ import kotlinx.android.synthetic.main.item_challenge_quest.view.*
 import mypoli.android.R
 import mypoli.android.challenge.PersonalizeChallengeViewState.StateType.CHALLENGE_ACCEPTED
 import mypoli.android.challenge.PersonalizeChallengeViewState.StateType.DATA_LOADED
-import mypoli.android.challenge.data.AndroidChallenge
-import mypoli.android.challenge.data.Challenge
+import mypoli.android.challenge.data.AndroidPredefinedChallenge
+import mypoli.android.challenge.data.PredefinedChallenge
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.attr
 import mypoli.android.common.view.colorRes
@@ -31,11 +31,11 @@ import space.traversal.kapsule.required
 class PersonalizeChallengeViewController :
     MviViewController<PersonalizeChallengeViewState, PersonalizeChallengeViewController, PersonalizeChallengePresenter, PersonalizeChallengeIntent> {
 
-    private lateinit var challenge: Challenge
+    private lateinit var challenge: PredefinedChallenge
 
     constructor(args: Bundle? = null) : super(args)
 
-    constructor(challenge: Challenge) : super() {
+    constructor(challenge: PredefinedChallenge) : super() {
         this.challenge = challenge
     }
 
@@ -46,7 +46,7 @@ class PersonalizeChallengeViewController :
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_personalize_challenge, container, false)
         view.challengeQuestList.layoutManager = LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
-        val androidChallenge = AndroidChallenge.valueOf(challenge.name)
+        val androidChallenge = AndroidPredefinedChallenge.valueOf(challenge.name)
         view.challengeImage.setBackgroundResource(androidChallenge.backgroundImage)
         view.collapsingToolbarContainer.title = stringRes(androidChallenge.title)
 
@@ -95,7 +95,7 @@ class PersonalizeChallengeViewController :
     data class ChallengeQuestViewModel(
         val name: String,
         val isSelected: Boolean,
-        val quest: Challenge.Quest
+        val quest: PredefinedChallenge.Quest
     )
 
     inner class ChallengeQuestAdapter(private var viewModels: List<ChallengeQuestViewModel> = listOf()) :

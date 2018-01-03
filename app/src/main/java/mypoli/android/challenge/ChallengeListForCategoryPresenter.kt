@@ -3,8 +3,8 @@ package mypoli.android.challenge
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.challenge.ChallengeListForCategoryViewState.StateType.*
-import mypoli.android.challenge.data.AndroidChallenge
-import mypoli.android.challenge.data.Challenge
+import mypoli.android.challenge.data.AndroidPredefinedChallenge
+import mypoli.android.challenge.data.PredefinedChallenge
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
@@ -57,9 +57,9 @@ class ChallengeListForCategoryPresenter(private val listenForPlayerChangesUseCas
             }
         }
 
-    private fun createViewModels(challengeCategory: Challenge.Category, player: Player): List<ChallengeListForCategoryViewController.ChallengeViewModel> {
-        return Challenge.values().filter { it.category == challengeCategory }.map {
-            val andChallenge = AndroidChallenge.valueOf(it.name)
+    private fun createViewModels(challengeCategory: PredefinedChallenge.Category, player: Player): List<ChallengeListForCategoryViewController.ChallengeViewModel> {
+        return PredefinedChallenge.values().filter { it.category == challengeCategory }.map {
+            val andChallenge = AndroidPredefinedChallenge.valueOf(it.name)
             ChallengeListForCategoryViewController.ChallengeViewModel(
                 andChallenge.title,
                 andChallenge.description,

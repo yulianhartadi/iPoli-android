@@ -1,7 +1,7 @@
 package mypoli.android.challenge
 
 import mypoli.android.challenge.PersonalizeChallengeViewController.ChallengeQuestViewModel
-import mypoli.android.challenge.data.Challenge
+import mypoli.android.challenge.data.PredefinedChallenge
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
 
@@ -11,8 +11,8 @@ import mypoli.android.common.mvi.ViewState
  */
 
 sealed class PersonalizeChallengeIntent : Intent {
-    data class LoadData(val challenge: Challenge) : PersonalizeChallengeIntent()
-    data class AcceptChallenge(val challenge: Challenge) : PersonalizeChallengeIntent()
+    data class LoadData(val challenge: PredefinedChallenge) : PersonalizeChallengeIntent()
+    data class AcceptChallenge(val challenge: PredefinedChallenge) : PersonalizeChallengeIntent()
     data class ToggleSelected(val quest: ChallengeQuestViewModel) : PersonalizeChallengeIntent()
 }
 

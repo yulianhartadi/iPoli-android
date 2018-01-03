@@ -1,7 +1,7 @@
 package mypoli.android.challenge
 
 import mypoli.android.challenge.PersonalizeChallengeViewState.StateType.*
-import mypoli.android.challenge.data.Challenge
+import mypoli.android.challenge.data.PredefinedChallenge
 import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
@@ -22,11 +22,11 @@ class PersonalizeChallengePresenter(
 
                 val vms = intent.challenge.quests.map {
                     when (it) {
-                        is Challenge.Quest.OneTime -> {
+                        is PredefinedChallenge.Quest.OneTime -> {
                             PersonalizeChallengeViewController.ChallengeQuestViewModel(it.text, it.selected, it)
                         }
 
-                        is Challenge.Quest.Repeating -> {
+                        is PredefinedChallenge.Quest.Repeating -> {
                             PersonalizeChallengeViewController.ChallengeQuestViewModel(it.text, it.selected, it)
                         }
                     }

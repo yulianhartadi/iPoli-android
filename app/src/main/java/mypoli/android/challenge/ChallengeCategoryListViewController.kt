@@ -10,8 +10,8 @@ import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.controller_challenge_category_list.view.*
 import kotlinx.android.synthetic.main.view_default_toolbar.view.*
 import mypoli.android.R
-import mypoli.android.challenge.data.Challenge
-import mypoli.android.challenge.data.Challenge.Category.*
+import mypoli.android.challenge.data.PredefinedChallenge
+import mypoli.android.challenge.data.PredefinedChallenge.Category.*
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.setToolbar
 import mypoli.android.common.view.showBackButton
@@ -42,7 +42,7 @@ class ChallengeCategoryListViewController(args: Bundle? = null) :
         return view
     }
 
-    private fun showChallengeList(category: Challenge.Category) {
+    private fun showChallengeList(category: PredefinedChallenge.Category) {
         val handler = FadeChangeHandler()
         router.pushController(
             RouterTransaction

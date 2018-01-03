@@ -1,6 +1,6 @@
 package mypoli.android.challenge.usecase
 
-import mypoli.android.challenge.data.Challenge
+import mypoli.android.challenge.data.PredefinedChallenge
 import mypoli.android.common.UseCase
 import mypoli.android.player.Player
 import mypoli.android.player.persistence.PlayerRepository
@@ -29,7 +29,7 @@ class BuyChallengeUseCase(private val playerRepository: PlayerRepository) : UseC
         return Result.ChallengeBought(playerRepository.save(newPlayer))
     }
 
-    data class Params(val challenge: Challenge)
+    data class Params(val challenge: PredefinedChallenge)
 
     sealed class Result {
         data class ChallengeBought(val player: Player) : Result()

@@ -1,7 +1,7 @@
 package mypoli.android.player.persistence
 
 import com.couchbase.lite.*
-import mypoli.android.challenge.data.Challenge
+import mypoli.android.challenge.data.PredefinedChallenge
 import mypoli.android.common.persistence.BaseCouchbaseRepository
 import mypoli.android.common.persistence.Repository
 import mypoli.android.pet.*
@@ -84,7 +84,7 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             themes = ci.themes.map { Theme.valueOf(it) }.toSet(),
             colorPacks = ci.colorPacks.map { ColorPack.valueOf(it) }.toSet(),
             iconPacks = ci.iconPacks.map { IconPack.valueOf(it) }.toSet(),
-            challenges = ci.challenges.map { Challenge.valueOf(it) }.toSet()
+            challenges = ci.challenges.map { PredefinedChallenge.valueOf(it) }.toSet()
         )
 
         return Player(
