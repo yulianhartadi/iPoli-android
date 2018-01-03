@@ -341,16 +341,31 @@ enum class AndroidChallenge(
     FAMILY_TIME(
         R.string.challenge_family_time,
         R.string.challenge_family_time_description,
-        R.drawable.challenge_famil_time,
-        R.drawable.challenge_famil_time_background,
+        R.drawable.challenge_family_time,
+        R.drawable.challenge_family_time_background,
         Category.ME_TIME
+    ),
+    KEEP_THINGS_TIDY(
+        R.string.challenge_keep_things_tidy,
+        R.string.challenge_keep_things_tidy_description,
+        R.drawable.challenge_keep_things_tidy,
+        R.drawable.challenge_keep_things_tidy_background,
+        Category.ORGANIZE_MY_LIFE
+    ),
+    ORGANIZE_MY_DAY(
+        R.string.challenge_organize_my_day,
+        R.string.challenge_organize_my_day_description,
+        R.drawable.challenge_organize_my_day,
+        R.drawable.challenge_organize_my_day_background,
+        Category.ORGANIZE_MY_LIFE
+    ),
+    STAY_ON_TOP_OF_THINGS(
+        R.string.challenge_stay_on_top_of_things,
+        R.string.challenge_stay_on_top_of_things_description,
+        R.drawable.challenge_chores,
+        R.drawable.challenge_chores_background,
+        Category.ORGANIZE_MY_LIFE
     );
-
-
-//    FAMILY_TIME(Category.ME_TIME, 5, listOf()),
-//    KEEP_THINGS_TIDY(Category.ORGANIZE_MY_LIFE, 5, listOf()),
-//    ORGANIZE_MY_DAY(Category.ORGANIZE_MY_LIFE, 5, listOf()),
-//    STAY_ON_TOP_OF_THINGS(Category.ORGANIZE_MY_LIFE, 5, listOf());
 
     enum class Category(@StringRes val title: Int, @ColorRes val color: Int) {
         BUILD_SKILL(R.string.challenge_category_build_skill_name, R.color.md_blue_500),
