@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.controller_personalize_challenge.view.*
 import kotlinx.android.synthetic.main.item_challenge_quest.view.*
 import mypoli.android.R
 import mypoli.android.challenge.PersonalizeChallengeViewState.StateType.CHALLENGE_ACCEPTED
+import mypoli.android.challenge.PersonalizeChallengeViewState.StateType.DATA_LOADED
 import mypoli.android.challenge.data.AndroidChallenge
 import mypoli.android.challenge.data.Challenge
 import mypoli.android.common.mvi.MviViewController
@@ -48,25 +49,15 @@ class PersonalizeChallengeViewController :
         val androidChallenge = AndroidChallenge.valueOf(challenge.name)
         view.challengeImage.setBackgroundResource(androidChallenge.backgroundImage)
         view.collapsingToolbarContainer.title = stringRes(androidChallenge.title)
-        val vms = challenge.quests.map {
-            when (it) {
-                is Challenge.Quest.OneTime -> {
-                    ChallengeQuestViewModel(it.text, it.selected)
-                }
 
-                is Challenge.Quest.Repeating -> {
-                    ChallengeQuestViewModel(it.text, it.selected)
-                }
-            }
-        }
-
-        view.challengeQuestList.adapter = ChallengeQuestAdapter(vms)
+        view.challengeQuestList.adapter = ChallengeQuestAdapter()
         setToolbar(view.toolbar)
         view.acceptChallenge.sendOnClick(PersonalizeChallengeIntent.AcceptChallenge(challenge))
         return view
     }
 
     override fun onAttach(view: View) {
+        send(PersonalizeChallengeIntent.LoadData(challenge))
         colorStatusBar(android.R.color.transparent)
         super.onAttach(view)
     }
@@ -86,13 +77,26 @@ class PersonalizeChallengeViewController :
     }
 
     override fun render(state: PersonalizeChallengeViewState, view: View) {
-        if (state.type == CHALLENGE_ACCEPTED) {
-            Toast.makeText(view.context, R.string.challenge_accepted, Toast.LENGTH_SHORT).show()
-            router.popCurrentController()
+        when (state.type) {
+            DATA_LOADED -> {
+                (view.challengeQuestList.adapter as ChallengeQuestAdapter).updateAll(state.viewModels)
+            }
+
+            CHALLENGE_ACCEPTED -> {
+                Toast.makeText(view.context, R.string.challenge_accepted, Toast.LENGTH_SHORT).show()
+                router.popCurrentController()
+            }
+
+            else -> {
+            }
         }
     }
 
-    data class ChallengeQuestViewModel(val name: String, val isSelected: Boolean)
+    data class ChallengeQuestViewModel(
+        val name: String,
+        val isSelected: Boolean,
+        val quest: Challenge.Quest
+    )
 
     inner class ChallengeQuestAdapter(private var viewModels: List<ChallengeQuestViewModel> = listOf()) :
         RecyclerView.Adapter<ChallengeQuestAdapter.ViewHolder>() {
@@ -100,7 +104,15 @@ class PersonalizeChallengeViewController :
             val vm = viewModels[position]
             val itemView = holder.itemView
 
+            itemView.setOnClickListener {
+                send(PersonalizeChallengeIntent.ToggleSelected(vm))
+                itemView.challengeQuestCheckbox.isChecked = !itemView.challengeQuestCheckbox.isChecked
+            }
+
             itemView.challengeQuestCheckbox.isChecked = vm.isSelected
+            itemView.challengeQuestCheckbox.setOnCheckedChangeListener { _, _ ->
+                send(PersonalizeChallengeIntent.ToggleSelected(vm))
+            }
             itemView.challengeQuestName.text = vm.name
         }
 
@@ -110,6 +122,11 @@ class PersonalizeChallengeViewController :
             ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_challenge_quest, parent, false))
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
+
+        fun updateAll(viewModels: List<ChallengeQuestViewModel>) {
+            this.viewModels = viewModels
+            notifyDataSetChanged()
+        }
 
     }
 
