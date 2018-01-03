@@ -1087,6 +1087,12 @@
     <string name="challenge_enjoy_myself_description">Have fun and spend some quality time with yourself</string>
     <string name="challenge_family_time">Family Time</string>
     <string name="challenge_family_time_description">Spend some time with your loved ones</string>
+    <string name="challenge_keep_things_tidy">Keep Things Tidy</string>
+    <string name="challenge_keep_things_tidy_description">Keep your place in shape</string>
+    <string name="challenge_organize_my_day">Organize My Day</string>
+    <string name="challenge_organize_my_day_description">Plan meaningful and fun days</string>
+    <string name="challenge_stay_on_top_of_things">Stay on top of things</string>
+    <string name="challenge_stay_on_top_of_things_description" />
 
     <string-array name="player_titles">
         <item>Novice</item>
