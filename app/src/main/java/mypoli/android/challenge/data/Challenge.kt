@@ -453,9 +453,123 @@ enum class Challenge(
     ),
     FOCUSED_WORK(Category.DEEP_WORK, 5, listOf()),
     JOB_INTERVIEW(Category.DEEP_WORK, 5, listOf()),
-    FRIENDS_TIME(Category.ME_TIME, 5, listOf()),
+    FRIENDS_TIME(
+        Category.ME_TIME,
+        5,
+        listOf(
+            Quest.Repeating(
+                "Call a friend 2 times a week",
+                "Call a friend",
+                30,
+                null,
+                Color.PURPLE,
+                Icon.PHONE,
+                null,
+                listOf(
+                    DayOfWeek.WEDNESDAY,
+                    DayOfWeek.SATURDAY
+                )
+            ),
+            Quest.Repeating(
+                "Go out with friends 2 times a week",
+                "Go out with friends",
+                90,
+                null,
+                Color.PURPLE,
+                Icon.FRIENDS,
+                null,
+                listOf(
+                    DayOfWeek.TUESDAY,
+                    DayOfWeek.SATURDAY
+                )
+            ),
+            Quest.OneTime(
+                "Connect with a forgotten friend",
+                "Connect with a forgotten friend",
+                30,
+                null,
+                Color.PURPLE,
+                Icon.PHONE,
+                3
+            ),
+            Quest.OneTime(
+                "Plan a vacation with friends",
+                "Plan a vacation with friends",
+                120,
+                null,
+                Color.PURPLE,
+                Icon.FRIENDS,
+                null,
+                DayOfWeek.SUNDAY
+            )
+        )
+    ),
     ENJOY_MYSELF(Category.ME_TIME, 5, listOf()),
-    FAMILY_TIME(Category.ME_TIME, 5, listOf()),
+    FAMILY_TIME(
+        Category.ME_TIME,
+        5,
+        listOf(
+            Quest.Repeating(
+                "Call my parents every week",
+                "Call my parents",
+                20,
+                Time.atHours(20),
+                Color.PURPLE,
+                Icon.PHONE,
+                null,
+                listOf(
+                    DayOfWeek.SUNDAY
+                )
+            ),
+            Quest.OneTime(
+                "Visit my parents every month",
+                "Visit my parents",
+                120,
+                Time.atHours(10),
+                Color.PURPLE,
+                Icon.FRIENDS,
+                null,
+                DayOfWeek.SUNDAY
+            ),
+            Quest.Repeating(
+                "Have family dinner 3 times a week",
+                "Have family dinner",
+                45,
+                Time.atHours(20),
+                Color.PINK,
+                Icon.PIZZA,
+                null,
+                listOf(
+                    DayOfWeek.MONDAY,
+                    DayOfWeek.THURSDAY,
+                    DayOfWeek.SUNDAY
+                )
+            ),
+            Quest.Repeating(
+                "Play with my children every weekend",
+                "Play with my children",
+                60,
+                Time.atHours(11),
+                Color.PINK,
+                Icon.FOOTBALL,
+                null,
+                listOf(
+                    DayOfWeek.SATURDAY,
+                    DayOfWeek.SUNDAY
+                )
+            ),
+            Quest.OneTime(
+                "Plan family vacation",
+                "Plan family vacation",
+                90,
+                Time.atHours(10),
+                Color.PURPLE,
+                Icon.FRIENDS,
+                null,
+                DayOfWeek.SUNDAY
+            )
+        )
+    ),
     KEEP_THINGS_TIDY(Category.ORGANIZE_MY_LIFE, 5, listOf()),
     ORGANIZE_MY_DAY(Category.ORGANIZE_MY_LIFE, 5, listOf()),
     STAY_ON_TOP_OF_THINGS(Category.ORGANIZE_MY_LIFE, 5, listOf());
