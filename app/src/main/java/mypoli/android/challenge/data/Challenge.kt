@@ -280,118 +280,296 @@ enum class Challenge(
         )),
     CODING_NINJA(
         Category.BUILD_SKILL,
-        5, listOf(
-        Quest.OneTime(
-            "Sign up at freeCodeCamp",
-            "Sign up at freeCodeCamp",
-            20,
-            Time.atHours(11),
-            Color.BLUE,
-            Icon.STAR,
-            1
-        ),
-        Quest.Repeating(
-            "Read JavaScript For Cats 3 times a week",
-            "Read JavaScript For Cats",
-            30,
-            null,
-            Color.BLUE,
-            Icon.BOOK,
-            null,
-            listOf(
-                DayOfWeek.TUESDAY,
-                DayOfWeek.THURSDAY,
-                DayOfWeek.SATURDAY
+        5,
+        listOf(
+            Quest.OneTime(
+                "Sign up at freeCodeCamp",
+                "Sign up at freeCodeCamp",
+                20,
+                Time.atHours(11),
+                Color.BLUE,
+                Icon.STAR,
+                1
+            ),
+            Quest.Repeating(
+                "Read JavaScript For Cats 3 times a week",
+                "Read JavaScript For Cats",
+                30,
+                null,
+                Color.BLUE,
+                Icon.BOOK,
+                null,
+                listOf(
+                    DayOfWeek.TUESDAY,
+                    DayOfWeek.THURSDAY,
+                    DayOfWeek.SATURDAY
+                )
+            ),
+            Quest.Repeating(
+                "Conquer freeCodeCamp challenges 5 times a week",
+                "Conquer freeCodeCamp challenges",
+                45,
+                null,
+                Color.BLUE,
+                Icon.LIGHT_BULB,
+                null,
+                listOf(
+                    DayOfWeek.MONDAY,
+                    DayOfWeek.TUESDAY,
+                    DayOfWeek.WEDNESDAY,
+                    DayOfWeek.FRIDAY,
+                    DayOfWeek.SATURDAY
+                )
+            ),
+            Quest.Repeating(
+                "Watch CS50x Programming Course 2 times a week",
+                "Watch CS50x Programming Course",
+                60,
+                null,
+                Color.BLUE,
+                Icon.LIGHT_BULB,
+                null,
+                listOf(
+                    DayOfWeek.THURSDAY,
+                    DayOfWeek.SUNDAY
+                )
+            )
+        )
+    ),
+    FAMOUS_WRITER(
+        Category.BUILD_SKILL,
+        5,
+        listOf(
+            Quest.OneTime(
+                "Create blog at Medium",
+                "Create blog at Medium",
+                30,
+                Time.atHours(11),
+                Color.BLUE,
+                Icon.LIGHT_BULB,
+                1
+            ),
+            Quest.OneTime(
+                "Choose what I am going to write about",
+                "Choose what I am going to write about",
+                30,
+                Time.at(11, 30),
+                Color.BLUE,
+                Icon.LIGHT_BULB,
+                1
+            ),
+            Quest.OneTime(
+                "Pick 5 bloggers who inspire you and read most of their posts",
+                "Choose what I am going to write about",
+                120,
+                null,
+                Color.BLUE,
+                Icon.ACADEMIC,
+                2
+            ),
+            Quest.OneTime(
+                "Research & write my first blog post",
+                "Research & write my first blog post",
+                120,
+                null,
+                Color.BLUE,
+                Icon.LIGHT_BULB,
+                3
+            ),
+            Quest.Repeating(
+                "Write a blog post once every week",
+                "Write a blog post once",
+                90,
+                null,
+                Color.BLUE,
+                Icon.LIGHT_BULB,
+                4,
+                listOf(
+                    DayOfWeek.SATURDAY
+                )
+            )
+        )
+    ),
+    MASTER_COMMUNICATOR(
+        Category.DEEP_WORK,
+        5,
+        listOf(
+            Quest.OneTime(
+                "Research how to give great presentation",
+                "Research how to give great presentation",
+                60,
+                null,
+                Color.BLUE,
+                Icon.LIGHT_BULB,
+                1
+            ),
+            Quest.OneTime(
+                "Sign up at Canva",
+                "Sign up at Canva",
+                20,
+                null,
+                Color.BLUE,
+                Icon.STAR,
+                1
+            ),
+            Quest.OneTime(
+                "Create my presentation at Canva",
+                "Create my presentation at Canva",
+                120,
+                null,
+                Color.BLUE,
+                Icon.LIGHT_BULB,
+                2
+            ),
+            Quest.Repeating(
+                "Practice presenting alone every day",
+                "Practice presenting alone",
+                30,
+                null,
+                Color.BLUE,
+                Icon.STAR,
+                3
+            ),
+            Quest.OneTime(
+                "Practice presenting to a friend",
+                "Practice presenting to a friend",
+                60,
+                null,
+                Color.BLUE,
+                Icon.FRIENDS,
+                8
+            ),
+            Quest.OneTime(
+                "Upload my presentation to SlideShare",
+                "Upload my presentation to SlideShare",
+                60,
+                null,
+                Color.BLUE,
+                Icon.CLOUD,
+                10
             )
         ),
-        Quest.Repeating(
-            "Conquer freeCodeCamp challenges 5 times a week",
-            "Conquer freeCodeCamp challenges",
-            45,
-            null,
-            Color.BLUE,
-            Icon.LIGHT_BULB,
-            null,
-            listOf(
-                DayOfWeek.MONDAY,
-                DayOfWeek.TUESDAY,
-                DayOfWeek.WEDNESDAY,
-                DayOfWeek.FRIDAY,
-                DayOfWeek.SATURDAY
-            )
-        ),
-        Quest.Repeating(
-            "Watch CS50x Programming Course 2 times a week",
-            "Watch CS50x Programming Course",
-            60,
-            null,
-            Color.BLUE,
-            Icon.LIGHT_BULB,
-            null,
-            listOf(
-                DayOfWeek.THURSDAY,
+        10
+    ),
+    FOCUSED_WORK(Category.DEEP_WORK, 5, listOf()),
+    JOB_INTERVIEW(Category.DEEP_WORK, 5, listOf()),
+    FRIENDS_TIME(
+        Category.ME_TIME,
+        5,
+        listOf(
+            Quest.Repeating(
+                "Call a friend 2 times a week",
+                "Call a friend",
+                30,
+                null,
+                Color.PURPLE,
+                Icon.PHONE,
+                null,
+                listOf(
+                    DayOfWeek.WEDNESDAY,
+                    DayOfWeek.SATURDAY
+                )
+            ),
+            Quest.Repeating(
+                "Go out with friends 2 times a week",
+                "Go out with friends",
+                90,
+                null,
+                Color.PURPLE,
+                Icon.FRIENDS,
+                null,
+                listOf(
+                    DayOfWeek.TUESDAY,
+                    DayOfWeek.SATURDAY
+                )
+            ),
+            Quest.OneTime(
+                "Connect with a forgotten friend",
+                "Connect with a forgotten friend",
+                30,
+                null,
+                Color.PURPLE,
+                Icon.PHONE,
+                3
+            ),
+            Quest.OneTime(
+                "Plan a vacation with friends",
+                "Plan a vacation with friends",
+                120,
+                null,
+                Color.PURPLE,
+                Icon.FRIENDS,
+                null,
                 DayOfWeek.SUNDAY
             )
         )
-    )),
-    FAMOUS_WRITER(
-        Category.BUILD_SKILL,
-        5, listOf(
-        Quest.OneTime(
-            "Create blog at Medium",
-            "Create blog at Medium",
-            30,
-            Time.atHours(11),
-            Color.BLUE,
-            Icon.LIGHT_BULB,
-            1
-        ),
-        Quest.OneTime(
-            "Choose what I am going to write about",
-            "Choose what I am going to write about",
-            30,
-            Time.at(11, 30),
-            Color.BLUE,
-            Icon.LIGHT_BULB,
-            1
-        ),
-        Quest.OneTime(
-            "Pick 5 bloggers who inspire you and read most of their posts",
-            "Choose what I am going to write about",
-            120,
-            null,
-            Color.BLUE,
-            Icon.ACADEMIC,
-            2
-        ),
-        Quest.OneTime(
-            "Research & write my first blog post",
-            "Research & write my first blog post",
-            120,
-            null,
-            Color.BLUE,
-            Icon.LIGHT_BULB,
-            3
-        ),
-        Quest.Repeating(
-            "Write a blog post once every week",
-            "Write a blog post once",
-            90,
-            null,
-            Color.BLUE,
-            Icon.LIGHT_BULB,
-            4,
-            listOf(
-                DayOfWeek.SATURDAY
+    ),
+    ENJOY_MYSELF(Category.ME_TIME, 5, listOf()),
+    FAMILY_TIME(
+        Category.ME_TIME,
+        5,
+        listOf(
+            Quest.Repeating(
+                "Call my parents every week",
+                "Call my parents",
+                20,
+                Time.atHours(20),
+                Color.PURPLE,
+                Icon.PHONE,
+                null,
+                listOf(
+                    DayOfWeek.SUNDAY
+                )
+            ),
+            Quest.OneTime(
+                "Visit my parents every month",
+                "Visit my parents",
+                120,
+                Time.atHours(10),
+                Color.PURPLE,
+                Icon.FRIENDS,
+                null,
+                DayOfWeek.SUNDAY
+            ),
+            Quest.Repeating(
+                "Have family dinner 3 times a week",
+                "Have family dinner",
+                45,
+                Time.atHours(20),
+                Color.PINK,
+                Icon.PIZZA,
+                null,
+                listOf(
+                    DayOfWeek.MONDAY,
+                    DayOfWeek.THURSDAY,
+                    DayOfWeek.SUNDAY
+                )
+            ),
+            Quest.Repeating(
+                "Play with my children every weekend",
+                "Play with my children",
+                60,
+                Time.atHours(11),
+                Color.PINK,
+                Icon.FOOTBALL,
+                null,
+                listOf(
+                    DayOfWeek.SATURDAY,
+                    DayOfWeek.SUNDAY
+                )
+            ),
+            Quest.OneTime(
+                "Plan family vacation",
+                "Plan family vacation",
+                90,
+                Time.atHours(10),
+                Color.PURPLE,
+                Icon.FRIENDS,
+                null,
+                DayOfWeek.SUNDAY
             )
         )
-    )),
-    MASTER_COMMUNICATOR(Category.DEEP_WORK, 5, listOf()),
-    FOCUSED_WORK(Category.DEEP_WORK, 5, listOf()),
-    JOB_INTERVIEW(Category.DEEP_WORK, 5, listOf()),
-    FRIENDS_TIME(Category.ME_TIME, 5, listOf()),
-    ENJOY_MYSELF(Category.ME_TIME, 5, listOf()),
-    FAMILY_TIME(Category.ME_TIME, 5, listOf()),
+    ),
     KEEP_THINGS_TIDY(Category.ORGANIZE_MY_LIFE, 5, listOf()),
     ORGANIZE_MY_DAY(Category.ORGANIZE_MY_LIFE, 5, listOf()),
     STAY_ON_TOP_OF_THINGS(Category.ORGANIZE_MY_LIFE, 5, listOf());
