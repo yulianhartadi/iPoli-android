@@ -1061,7 +1061,7 @@
     <string name="challenge_category_me_time_description">Have a great time with your family &amp; friends</string>
     <string name="challenge_category_organize_my_life_name">Organize my Life</string>
     <string name="challenge_category_organize_my_life_description">Keep your place clean &amp; stay on top of things</string>
-    <string name="challenge_coding_ninja_name">Coding Ninja</string>
+    <string name="challenge_coding_ninja">Coding Ninja</string>
     <string name="challenge_coding_ninja_description">Learn the basics of Web development using JavaScript</string>
     <string name="challenge_too_expensive">Challenge is too expensive</string>
     <string name="challenge_unlocked">Challenge unlocked</string>
@@ -1071,6 +1071,16 @@
     <string name="challenge_weight_cutter_description">Start shredding some weight and feel great</string>
     <string name="challenge_healthy_and_fit">Healthy &amp; Fit</string>
     <string name="challenge_healthy_and_fit_description">Keep working out and live healthier life</string>
+    <string name="challenge_english_jedi">English Jedi</string>
+    <string name="challenge_english_jedi_description">Be more confident when writing and speaking in English</string>
+    <string name="challenge_famous_writer">Famous Writer</string>
+    <string name="challenge_famous_writer_description">Start a blog and learn how to express yourself in writing</string>
+    <string name="challenge_master_communicator">Master Communicator</string>
+    <string name="challenge_master_communicator_description">Learn to present your ideas and communicate effectively</string>
+    <string name="challenge_focused_work">Focused Work</string>
+    <string name="challenge_focused_work_description">Stay in the flow longer and do your best work</string>
+    <string name="challenge_job_interview">Interview Wiz</string>
+    <string name="challenge_job_interview_description">Prepare yourself for your dream job</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

@@ -204,13 +204,17 @@ enum class Challenge(
                     DayOfWeek.SATURDAY
                 )
             )
-
         )
     ),
     ENGLISH_JEDI(Category.BUILD_SKILL, 5, listOf()),
-    PROGRAMMING_NINJA(Category.BUILD_SKILL, 5, listOf()),
+    CODING_NINJA(Category.BUILD_SKILL, 5, listOf()),
     FAMOUS_WRITER(Category.BUILD_SKILL, 5, listOf()),
-    MASTER_COMMUNICATOR(Category.DEEP_WORK, 5, listOf());
+    MASTER_COMMUNICATOR(Category.DEEP_WORK, 5, listOf()),
+    FOCUSED_WORK(Category.DEEP_WORK, 5, listOf()),
+    JOB_INTERVIEW(Category.DEEP_WORK, 5, listOf()),
+    FRIENDS_TIME(Category.ME_TIME, 5, listOf()),
+    ENJOY_MYSELF(Category.ME_TIME, 5, listOf()),
+    FAMILY_TIME(Category.ME_TIME, 5, listOf());
 
     enum class Category {
         BUILD_SKILL,
@@ -274,6 +278,48 @@ enum class AndroidChallenge(
         R.drawable.challenge_healthy_and_fit,
         R.drawable.challenge_healthy_and_fit_background,
         Category.HEALTH_AND_FITNESS
+    ),
+    ENGLISH_JEDI(
+        R.string.challenge_english_jedi,
+        R.string.challenge_english_jedi_description,
+        R.drawable.challenge_english_jedi,
+        R.drawable.challenge_english_jedi_background,
+        Category.BUILD_SKILL
+    ),
+    CODING_NINJA(
+        R.string.challenge_coding_ninja,
+        R.string.challenge_coding_ninja_description,
+        R.drawable.challenge_coding_ninja,
+        R.drawable.challenge_coding_ninja_background,
+        Category.BUILD_SKILL
+    ),
+    FAMOUS_WRITER(
+        R.string.challenge_famous_writer,
+        R.string.challenge_famous_writer_description,
+        R.drawable.challenge_famous_writer,
+        R.drawable.challenge_famous_writer_background,
+        Category.BUILD_SKILL
+    ),
+    MASTER_COMMUNICATOR(
+        R.string.challenge_master_communicator,
+        R.string.challenge_master_communicator_description,
+        R.drawable.challenge_communication_master,
+        R.drawable.challenge_communication_master_background,
+        Category.DEEP_WORK
+    ),
+    FOCUSED_WORK(
+        R.string.challenge_focused_work,
+        R.string.challenge_focused_work_description,
+        R.drawable.challenge_focus_on_work,
+        R.drawable.challenge_focus_on_work_background,
+        Category.DEEP_WORK
+    ),
+    JOB_INTERVIEW(
+        R.string.challenge_job_interview,
+        R.string.challenge_job_interview_description,
+        R.drawable.challenge_job_interview,
+        R.drawable.challenge_job_interview_background,
+        Category.DEEP_WORK
     );
 
     enum class Category(@StringRes val title: Int, @ColorRes val color: Int) {
