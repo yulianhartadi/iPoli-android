@@ -334,7 +334,58 @@ enum class Challenge(
             )
         )
     )),
-    FAMOUS_WRITER(Category.BUILD_SKILL, 5, listOf()),
+    FAMOUS_WRITER(
+        Category.BUILD_SKILL,
+        5, listOf(
+        Quest.OneTime(
+            "Create blog at Medium",
+            "Create blog at Medium",
+            30,
+            Time.atHours(11),
+            Color.BLUE,
+            Icon.LIGHT_BULB,
+            1
+        ),
+        Quest.OneTime(
+            "Choose what I am going to write about",
+            "Choose what I am going to write about",
+            30,
+            Time.at(11, 30),
+            Color.BLUE,
+            Icon.LIGHT_BULB,
+            1
+        ),
+        Quest.OneTime(
+            "Pick 5 bloggers who inspire you and read most of their posts",
+            "Choose what I am going to write about",
+            120,
+            null,
+            Color.BLUE,
+            Icon.ACADEMIC,
+            2
+        ),
+        Quest.OneTime(
+            "Research & write my first blog post",
+            "Research & write my first blog post",
+            120,
+            null,
+            Color.BLUE,
+            Icon.LIGHT_BULB,
+            3
+        ),
+        Quest.Repeating(
+            "Write a blog post once every week",
+            "Write a blog post once",
+            90,
+            null,
+            Color.BLUE,
+            Icon.LIGHT_BULB,
+            4,
+            listOf(
+                DayOfWeek.SATURDAY
+            )
+        )
+    )),
     MASTER_COMMUNICATOR(Category.DEEP_WORK, 5, listOf()),
     FOCUSED_WORK(Category.DEEP_WORK, 5, listOf()),
     JOB_INTERVIEW(Category.DEEP_WORK, 5, listOf()),
