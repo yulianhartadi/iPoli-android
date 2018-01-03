@@ -206,9 +206,186 @@ enum class Challenge(
             )
         )
     ),
-    ENGLISH_JEDI(Category.BUILD_SKILL, 5, listOf()),
-    CODING_NINJA(Category.BUILD_SKILL, 5, listOf()),
-    FAMOUS_WRITER(Category.BUILD_SKILL, 5, listOf()),
+    ENGLISH_JEDI(
+        Category.BUILD_SKILL,
+        5,
+        listOf(
+            Quest.OneTime(
+                "Sign up at Duolingo",
+                "Sign up at Duolingo",
+                20,
+                Time.atHours(11),
+                Color.BLUE,
+                Icon.BOOK,
+                1
+            ),
+            Quest.OneTime(
+                "Sign up at a local English course",
+                "Sign up at a local English course",
+                30,
+                null,
+                Color.BLUE,
+                Icon.BOOK,
+                1
+            ),
+            Quest.OneTime(
+                "Subscribe to the Misterduncan YouTube channel",
+                "Subscribe to the Misterduncan YouTube channel",
+                30,
+                Time.at(11, 30),
+                Color.BLUE,
+                Icon.BOOK,
+                1
+            ),
+            Quest.Repeating(
+                "Learn using Duolingo for 20 min every day",
+                "Learn using Duolingo",
+                20,
+                null,
+                Color.BLUE,
+                Icon.ACADEMIC,
+                2
+            ),
+            Quest.Repeating(
+                "Watch e movie with English subtitles 5 times a week",
+                "Watch e movie with English subtitles",
+                60,
+                Time.atHours(20),
+                Color.PURPLE,
+                Icon.CAMERA,
+                null,
+                listOf(
+                    DayOfWeek.MONDAY,
+                    DayOfWeek.TUESDAY,
+                    DayOfWeek.THURSDAY,
+                    DayOfWeek.SATURDAY,
+                    DayOfWeek.SUNDAY
+                )
+            ),
+            Quest.Repeating(
+                "Read Alice in Wonderland 4 times a week",
+                "Read Alice in Wonderland",
+                20,
+                Time.atHours(21),
+                Color.BLUE,
+                Icon.BOOK,
+                null,
+                listOf(
+                    DayOfWeek.MONDAY,
+                    DayOfWeek.WEDNESDAY,
+                    DayOfWeek.FRIDAY,
+                    DayOfWeek.SATURDAY
+                )
+            )
+        )),
+    CODING_NINJA(
+        Category.BUILD_SKILL,
+        5, listOf(
+        Quest.OneTime(
+            "Sign up at freeCodeCamp",
+            "Sign up at freeCodeCamp",
+            20,
+            Time.atHours(11),
+            Color.BLUE,
+            Icon.STAR,
+            1
+        ),
+        Quest.Repeating(
+            "Read JavaScript For Cats 3 times a week",
+            "Read JavaScript For Cats",
+            30,
+            null,
+            Color.BLUE,
+            Icon.BOOK,
+            null,
+            listOf(
+                DayOfWeek.TUESDAY,
+                DayOfWeek.THURSDAY,
+                DayOfWeek.SATURDAY
+            )
+        ),
+        Quest.Repeating(
+            "Conquer freeCodeCamp challenges 5 times a week",
+            "Conquer freeCodeCamp challenges",
+            45,
+            null,
+            Color.BLUE,
+            Icon.LIGHT_BULB,
+            null,
+            listOf(
+                DayOfWeek.MONDAY,
+                DayOfWeek.TUESDAY,
+                DayOfWeek.WEDNESDAY,
+                DayOfWeek.FRIDAY,
+                DayOfWeek.SATURDAY
+            )
+        ),
+        Quest.Repeating(
+            "Watch CS50x Programming Course 2 times a week",
+            "Watch CS50x Programming Course",
+            60,
+            null,
+            Color.BLUE,
+            Icon.LIGHT_BULB,
+            null,
+            listOf(
+                DayOfWeek.THURSDAY,
+                DayOfWeek.SUNDAY
+            )
+        )
+    )),
+    FAMOUS_WRITER(
+        Category.BUILD_SKILL,
+        5, listOf(
+        Quest.OneTime(
+            "Create blog at Medium",
+            "Create blog at Medium",
+            30,
+            Time.atHours(11),
+            Color.BLUE,
+            Icon.LIGHT_BULB,
+            1
+        ),
+        Quest.OneTime(
+            "Choose what I am going to write about",
+            "Choose what I am going to write about",
+            30,
+            Time.at(11, 30),
+            Color.BLUE,
+            Icon.LIGHT_BULB,
+            1
+        ),
+        Quest.OneTime(
+            "Pick 5 bloggers who inspire you and read most of their posts",
+            "Choose what I am going to write about",
+            120,
+            null,
+            Color.BLUE,
+            Icon.ACADEMIC,
+            2
+        ),
+        Quest.OneTime(
+            "Research & write my first blog post",
+            "Research & write my first blog post",
+            120,
+            null,
+            Color.BLUE,
+            Icon.LIGHT_BULB,
+            3
+        ),
+        Quest.Repeating(
+            "Write a blog post once every week",
+            "Write a blog post once",
+            90,
+            null,
+            Color.BLUE,
+            Icon.LIGHT_BULB,
+            4,
+            listOf(
+                DayOfWeek.SATURDAY
+            )
+        )
+    )),
     MASTER_COMMUNICATOR(Category.DEEP_WORK, 5, listOf()),
     FOCUSED_WORK(Category.DEEP_WORK, 5, listOf()),
     JOB_INTERVIEW(Category.DEEP_WORK, 5, listOf()),
