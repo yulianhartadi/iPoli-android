@@ -23,7 +23,8 @@ open class RewardPlayerUseCase(
         val player = playerRepository.find()
         requireNotNull(player)
 
-        val newPet = player!!.pet.rewardFor(reward)
+        val pet = player!!.pet
+        val newPet = if (pet.isDead) pet else pet.rewardFor(reward)
 
         val inventory = player.inventory.let {
             val bounty = reward.bounty
