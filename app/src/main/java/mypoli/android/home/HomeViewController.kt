@@ -5,7 +5,6 @@ import android.content.Intent.ACTION_VIEW
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
@@ -16,6 +15,7 @@ import mypoli.android.challenge.ChallengeCategoryListViewController
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.FeedbackDialogController
 import mypoli.android.common.view.setToolbar
+import mypoli.android.common.view.showShortToast
 import mypoli.android.pet.PetViewController
 import mypoli.android.quest.calendar.CalendarViewController
 import mypoli.android.store.theme.ThemeStoreViewController
@@ -181,7 +181,7 @@ class HomeViewController(args: Bundle? = null) :
                 if (feedback.isNotEmpty()) {
                     Amplitude.getInstance().logEvent("feedback",
                         JSONObject().put("feedback", feedback))
-                    Toast.makeText(activity!!, "Thank you!", Toast.LENGTH_SHORT).show()
+                    showShortToast(R.string.feedback_response)
                 }
             }
 

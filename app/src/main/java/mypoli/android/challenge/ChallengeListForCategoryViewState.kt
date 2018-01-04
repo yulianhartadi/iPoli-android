@@ -1,5 +1,7 @@
 package mypoli.android.challenge
 
+import mypoli.android.challenge.ChallengeListForCategoryViewController.ChallengeViewModel
+import mypoli.android.challenge.data.Challenge
 import mypoli.android.challenge.data.PredefinedChallenge
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
@@ -11,15 +13,15 @@ import mypoli.android.player.Player
  */
 sealed class ChallengeListForCategoryIntent : Intent {
     data class ChangePlayerIntent(val player: Player) : ChallengeListForCategoryIntent()
-    data class LoadData(val challengeCategory: PredefinedChallenge.Category) : ChallengeListForCategoryIntent()
+    data class LoadData(val challengeCategory: Challenge.Category) : ChallengeListForCategoryIntent()
     data class BuyChallenge(val challenge: PredefinedChallenge) : ChallengeListForCategoryIntent()
 }
 
 data class ChallengeListForCategoryViewState(
     val type: StateType,
-    val challengeCategory: PredefinedChallenge.Category? = null,
+    val challengeCategory: Challenge.Category? = null,
     val playerGems: Int = 0,
-    val viewModels: List<ChallengeListForCategoryViewController.ChallengeViewModel> = listOf()
+    val viewModels: List<ChallengeViewModel> = listOf()
 ) : ViewState {
     enum class StateType {
         LOADING,
