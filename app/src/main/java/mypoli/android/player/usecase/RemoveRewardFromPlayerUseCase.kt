@@ -17,7 +17,8 @@ open class RemoveRewardFromPlayerUseCase(
     override fun execute(parameters: Reward): Player {
         val player = playerRepository.find()
         requireNotNull(player)
-        val newPet = player!!.pet.removeReward(parameters)
+        val pet = player!!.pet
+        val newPet = if (pet.isDead) pet else pet.removeReward(parameters)
         val newPlayer = player
             .removeExperience(parameters.experience)
             .removeCoins(parameters.coins)

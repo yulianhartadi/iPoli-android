@@ -63,7 +63,6 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
                     data.put("intent", intent)
                     data.put("new_state", state)
                     Amplitude.getInstance().logEvent("change_state", data)
-
                     Timber.d("new state $state")
                     view.render(state)
                 } catch (e: Throwable) {
@@ -83,13 +82,16 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
     }
 
     override fun onAttachView(view: V) {
-
         sendChannel = stateReduceActor(view)
         launch(coroutineContext + CommonPool) {
             intentChannel.consumeEach {
                 sendChannel.send(it)
             }
         }
+    }
+
+    override fun onDetachView() {
+        sendChannel.close()
     }
 
     abstract fun reduceState(intent: I, state: VS): VS
