@@ -104,12 +104,16 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
     }
 
     override fun onDetachView() {
-        sendChannel.close()
+        if (!sendChannel.isClosedForSend) {
+            sendChannel.close()
+        }
     }
 
     abstract fun reduceState(intent: I, state: VS): VS
 
     override fun onDestroy() {
-        sendChannel.close()
+        if (!sendChannel.isClosedForSend) {
+            sendChannel.close()
+        }
     }
 }
