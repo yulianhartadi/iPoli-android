@@ -742,7 +742,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
         animator.playSequentially(
             listAnim,
-            ObjectAnimator.ofFloat(moveFAB, "y", moveFAB.y, view.height - heightOffset),
+            ObjectAnimator.ofFloat(moveFAB, "y", moveFAB.y, view.contentContainer.height - heightOffset),
             ObjectAnimator.ofFloat(showFAB, "alpha", 0f, 1f)
         )
         animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
