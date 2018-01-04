@@ -14,8 +14,7 @@ import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import mypoli.android.BillingConstants
 import mypoli.android.R
 import mypoli.android.common.mvi.MviViewController
-import mypoli.android.common.view.addToolbarView
-import mypoli.android.common.view.removeToolbarView
+import mypoli.android.common.view.setToolbar
 import mypoli.android.common.view.showBackButton
 import mypoli.android.store.GemStoreViewState.StateType.*
 import mypoli.android.store.purchase.AndroidInAppPurchaseManager
@@ -35,16 +34,14 @@ class GemStoreViewController(args: Bundle? = null) : MviViewController<GemStoreV
 
     override fun createPresenter() = presenter
 
-    private lateinit var inventoryToolbar: ViewGroup
-
     private lateinit var checkout: UiCheckout
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_gem_store, container, false)
 
-        inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
-        inventoryToolbar.toolbarTitle.setText(R.string.gem_store)
+        setToolbar(view.toolbar)
+        view.toolbarTitle.setText(R.string.gem_store)
 
         val billing = Billing(activity!!, object : Billing.DefaultConfiguration() {
             override fun getPublicKey() =
@@ -81,16 +78,15 @@ class GemStoreViewController(args: Bundle? = null) : MviViewController<GemStoreV
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onDestroyView(view: View) {
-        removeToolbarView(inventoryToolbar)
+    override fun onDestroy() {
         checkout.stop()
-        super.onDestroyView(view)
+        super.onDestroy()
     }
 
     override fun render(state: GemStoreViewState, view: View) {
         when (state.type) {
             PLAYER_CHANGED -> {
-                inventoryToolbar.playerGems.text = state.playerGems.toString()
+                view.playerGems.text = state.playerGems.toString()
                 if (state.isGiftPurchased) {
                     showMostPopular(view)
                 }
@@ -139,8 +135,6 @@ class GemStoreViewController(args: Bundle? = null) : MviViewController<GemStoreV
     private fun showMostPopular(view: View) {
         view.giftContainer.visibility = View.GONE
         view.mostPopular.visibility = View.VISIBLE
-
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
