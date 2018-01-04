@@ -139,7 +139,7 @@ class ChallengeListForCategoryViewController :
             itemView.challengeContainer.setCardBackgroundColor(colorRes(vm.backgroundColor))
             itemView.challengeName.setText(vm.name)
             itemView.challengeDescription.setText(vm.description)
-            itemView.challengeImage.setImageResource(vm.image)
+            itemView.challengeBackgroundImage.setImageResource(vm.image)
         }
 
         override fun getItemCount() = viewModels.size

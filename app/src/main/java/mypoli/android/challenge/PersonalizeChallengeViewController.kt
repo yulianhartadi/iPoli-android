@@ -43,7 +43,8 @@ class PersonalizeChallengeViewController :
         val view = inflater.inflate(R.layout.controller_personalize_challenge, container, false)
         view.challengeQuestList.layoutManager = LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         val androidChallenge = AndroidPredefinedChallenge.valueOf(challenge.name)
-        view.challengeImage.setBackgroundResource(androidChallenge.backgroundImage)
+        view.challengeBackgroundImage.setBackgroundResource(androidChallenge.backgroundImage)
+        view.challengeImage.setBackgroundResource(androidChallenge.smallImage)
         view.collapsingToolbarContainer.title = stringRes(androidChallenge.title)
 
         view.challengeQuestList.adapter = ChallengeQuestAdapter()
