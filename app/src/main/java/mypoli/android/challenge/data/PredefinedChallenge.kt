@@ -4,6 +4,8 @@ import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
 import mypoli.android.R
+import mypoli.android.challenge.data.Challenge.Quest.OneTime
+import mypoli.android.challenge.data.Challenge.Quest.Repeating
 import mypoli.android.common.datetime.Time
 import mypoli.android.quest.Color
 import mypoli.android.quest.Icon
@@ -64,7 +66,7 @@ enum class PredefinedChallenge(
         Challenge.Category.HEALTH_AND_FITNESS,
         5,
         listOf(
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Meditate every day for 20 min",
                 "Meditate",
                 duration = 20,
@@ -73,7 +75,7 @@ enum class PredefinedChallenge(
                 color = Color.GREEN,
                 icon = Icon.SUN
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Read a book for 30 min 3 times a week",
                 "Read a book",
                 duration = 30,
@@ -81,7 +83,7 @@ enum class PredefinedChallenge(
                 color = Color.BLUE,
                 icon = Icon.BOOK
             ),
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Share your troubles with a friend",
                 "Share your troubles with a friend",
                 preferredDayOfWeek = DayOfWeek.SATURDAY,
@@ -89,7 +91,7 @@ enum class PredefinedChallenge(
                 color = Color.PURPLE,
                 icon = Icon.FRIENDS
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Take a walk for 30 min 5 times a week",
                 "Take a walk",
                 duration = 30,
@@ -103,7 +105,7 @@ enum class PredefinedChallenge(
                 color = Color.GREEN,
                 icon = Icon.TREE
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Say 3 things that I am grateful for every morning",
                 "Say 3 things that I am grateful for",
                 duration = 15,
@@ -117,7 +119,7 @@ enum class PredefinedChallenge(
         Challenge.Category.HEALTH_AND_FITNESS,
         5,
         listOf(
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Sign up for a gym club card",
                 "Sign up for a gym club card",
                 duration = 30,
@@ -125,7 +127,7 @@ enum class PredefinedChallenge(
                 color = Color.GREEN,
                 icon = Icon.FITNESS
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Run 2 times a week for 30 min",
                 "Go for a run",
                 duration = 30,
@@ -136,7 +138,7 @@ enum class PredefinedChallenge(
                 color = Color.GREEN,
                 icon = Icon.RUN
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Workout at the gym 3 times a week for 1h",
                 "Workout at the gym",
                 duration = 60,
@@ -149,7 +151,7 @@ enum class PredefinedChallenge(
                 color = Color.GREEN,
                 icon = Icon.FITNESS
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Measure & record my weight every morning",
                 "Measure & record my weight",
                 duration = 15,
@@ -158,7 +160,7 @@ enum class PredefinedChallenge(
                 color = Color.GREEN,
                 icon = Icon.STAR
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Prepare healthy dinner 6 times a week",
                 "Prepare healthy dinner",
                 duration = 45,
@@ -179,7 +181,7 @@ enum class PredefinedChallenge(
         Challenge.Category.HEALTH_AND_FITNESS,
         5,
         listOf(
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Drink 1 big bottle of water every day",
                 "Drink 1 big bottle of water",
                 20,
@@ -190,7 +192,7 @@ enum class PredefinedChallenge(
                 DayOfWeek.values().toList(),
                 true
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Eat healthy breakfast every day",
                 "Eat healthy breakfast",
                 30,
@@ -199,7 +201,7 @@ enum class PredefinedChallenge(
                 Icon.RESTAURANT,
                 null
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Workout 3 times a week",
                 "Workout",
                 60,
@@ -209,7 +211,7 @@ enum class PredefinedChallenge(
                 null,
                 listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.SATURDAY)
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Eat a fruit every day",
                 "Eat a fruit",
                 20,
@@ -218,7 +220,7 @@ enum class PredefinedChallenge(
                 Icon.TREE,
                 null
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Meditate 3 times a week",
                 "Meditate",
                 20,
@@ -228,7 +230,7 @@ enum class PredefinedChallenge(
                 null,
                 listOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.FRIDAY)
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Cook healthy dinner 5 times a week",
                 "Cook healthy dinner",
                 60,
@@ -250,7 +252,7 @@ enum class PredefinedChallenge(
         Challenge.Category.BUILD_SKILL,
         5,
         listOf(
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Sign up at Duolingo",
                 "Sign up at Duolingo",
                 20,
@@ -259,7 +261,7 @@ enum class PredefinedChallenge(
                 Icon.BOOK,
                 1
             ),
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Sign up at a local English course",
                 "Sign up at a local English course",
                 30,
@@ -268,7 +270,7 @@ enum class PredefinedChallenge(
                 Icon.BOOK,
                 1
             ),
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Subscribe to the Misterduncan YouTube channel",
                 "Subscribe to the Misterduncan YouTube channel",
                 30,
@@ -277,7 +279,7 @@ enum class PredefinedChallenge(
                 Icon.BOOK,
                 1
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Learn using Duolingo for 20 min every day",
                 "Learn using Duolingo",
                 20,
@@ -286,7 +288,7 @@ enum class PredefinedChallenge(
                 Icon.ACADEMIC,
                 2
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Watch e movie with English subtitles 5 times a week",
                 "Watch e movie with English subtitles",
                 60,
@@ -302,7 +304,7 @@ enum class PredefinedChallenge(
                     DayOfWeek.SUNDAY
                 )
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Read Alice in Wonderland 4 times a week",
                 "Read Alice in Wonderland",
                 20,
@@ -322,7 +324,7 @@ enum class PredefinedChallenge(
         Challenge.Category.BUILD_SKILL,
         5,
         listOf(
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Sign up at freeCodeCamp",
                 "Sign up at freeCodeCamp",
                 20,
@@ -331,7 +333,7 @@ enum class PredefinedChallenge(
                 Icon.STAR,
                 1
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Read JavaScript For Cats 3 times a week",
                 "Read JavaScript For Cats",
                 30,
@@ -345,7 +347,7 @@ enum class PredefinedChallenge(
                     DayOfWeek.SATURDAY
                 )
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Conquer freeCodeCamp challenges 5 times a week",
                 "Conquer freeCodeCamp challenges",
                 45,
@@ -361,7 +363,7 @@ enum class PredefinedChallenge(
                     DayOfWeek.SATURDAY
                 )
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Watch CS50x Programming Course 2 times a week",
                 "Watch CS50x Programming Course",
                 60,
@@ -380,7 +382,7 @@ enum class PredefinedChallenge(
         Challenge.Category.BUILD_SKILL,
         5,
         listOf(
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Create blog at Medium",
                 "Create blog at Medium",
                 30,
@@ -389,7 +391,7 @@ enum class PredefinedChallenge(
                 Icon.LIGHT_BULB,
                 1
             ),
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Choose what I am going to write about",
                 "Choose what I am going to write about",
                 30,
@@ -398,7 +400,7 @@ enum class PredefinedChallenge(
                 Icon.LIGHT_BULB,
                 1
             ),
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Pick 5 bloggers who inspire you and read most of their posts",
                 "Choose what I am going to write about",
                 120,
@@ -407,7 +409,7 @@ enum class PredefinedChallenge(
                 Icon.ACADEMIC,
                 2
             ),
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Research & write my first blog post",
                 "Research & write my first blog post",
                 120,
@@ -416,7 +418,7 @@ enum class PredefinedChallenge(
                 Icon.LIGHT_BULB,
                 3
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Write a blog post once every week",
                 "Write a blog post once",
                 90,
@@ -434,7 +436,7 @@ enum class PredefinedChallenge(
         Challenge.Category.DEEP_WORK,
         5,
         listOf(
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Research how to give great presentation",
                 "Research how to give great presentation",
                 60,
@@ -443,7 +445,7 @@ enum class PredefinedChallenge(
                 Icon.LIGHT_BULB,
                 1
             ),
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Sign up at Canva",
                 "Sign up at Canva",
                 20,
@@ -452,7 +454,7 @@ enum class PredefinedChallenge(
                 Icon.STAR,
                 1
             ),
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Create my presentation at Canva",
                 "Create my presentation at Canva",
                 120,
@@ -461,7 +463,7 @@ enum class PredefinedChallenge(
                 Icon.LIGHT_BULB,
                 2
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Practice presenting alone every day",
                 "Practice presenting alone",
                 30,
@@ -470,7 +472,7 @@ enum class PredefinedChallenge(
                 Icon.STAR,
                 3
             ),
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Practice presenting to a friend",
                 "Practice presenting to a friend",
                 60,
@@ -479,7 +481,7 @@ enum class PredefinedChallenge(
                 Icon.FRIENDS,
                 8
             ),
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Upload my presentation to SlideShare",
                 "Upload my presentation to SlideShare",
                 60,
@@ -492,12 +494,63 @@ enum class PredefinedChallenge(
         10
     ),
     FOCUSED_WORK(Challenge.Category.DEEP_WORK, 5, listOf()),
-    JOB_INTERVIEW(Challenge.Category.DEEP_WORK, 5, listOf()),
+    JOB_INTERVIEW(
+        Challenge.Category.DEEP_WORK,
+        5,
+        listOf(
+            OneTime(
+                "Compare the job requirements with your skill set",
+                "Compare the job requirements with your skill set",
+                60,
+                null,
+                Color.RED,
+                Icon.BRIEFCASE,
+                1
+            ),
+            Repeating(
+                "Research the organization & what it does for 30 min once a week",
+                "Research the organization & what it does",
+                30,
+                null,
+                Color.RED,
+                Icon.BRIEFCASE,
+                3,
+                listOf(DayOfWeek.MONDAY)
+            ),
+            OneTime(
+                "Plan what to wear for the Interview",
+                "Plan what to wear for the Interview",
+                60,
+                null,
+                Color.RED,
+                Icon.STAR,
+                startAtDay = 10
+            ),
+            OneTime(
+                "Read your CV and practice talking about previous experience for 1 hour",
+                "Read your CV and practice talking about previous experience",
+                60,
+                null,
+                Color.RED,
+                Icon.BRIEFCASE,
+                startAtDay = 11
+            ),
+            OneTime(
+                "Practice responding to possible questions for 30 minutes",
+                "Practice responding to possible questions",
+                30,
+                null,
+                Color.RED,
+                Icon.STAR,
+                startAtDay = 12
+            )
+        ),
+        durationDays = 14),
     FRIENDS_TIME(
         Challenge.Category.ME_TIME,
         5,
         listOf(
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Call a friend 2 times a week",
                 "Call a friend",
                 30,
@@ -510,7 +563,7 @@ enum class PredefinedChallenge(
                     DayOfWeek.SATURDAY
                 )
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Go out with friends 2 times a week",
                 "Go out with friends",
                 90,
@@ -523,7 +576,7 @@ enum class PredefinedChallenge(
                     DayOfWeek.SATURDAY
                 )
             ),
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Connect with a forgotten friend",
                 "Connect with a forgotten friend",
                 30,
@@ -532,7 +585,7 @@ enum class PredefinedChallenge(
                 Icon.PHONE,
                 3
             ),
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Plan a vacation with friends",
                 "Plan a vacation with friends",
                 120,
@@ -549,7 +602,7 @@ enum class PredefinedChallenge(
         Challenge.Category.ME_TIME,
         5,
         listOf(
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Call my parents every week",
                 "Call my parents",
                 20,
@@ -561,7 +614,7 @@ enum class PredefinedChallenge(
                     DayOfWeek.SUNDAY
                 )
             ),
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Visit my parents every month",
                 "Visit my parents",
                 120,
@@ -571,7 +624,7 @@ enum class PredefinedChallenge(
                 null,
                 DayOfWeek.SUNDAY
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Have family dinner 3 times a week",
                 "Have family dinner",
                 45,
@@ -585,7 +638,7 @@ enum class PredefinedChallenge(
                     DayOfWeek.SUNDAY
                 )
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Play with my children every weekend",
                 "Play with my children",
                 60,
@@ -598,7 +651,7 @@ enum class PredefinedChallenge(
                     DayOfWeek.SUNDAY
                 )
             ),
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Plan family vacation",
                 "Plan family vacation",
                 90,
@@ -613,8 +666,6 @@ enum class PredefinedChallenge(
     KEEP_THINGS_TIDY(Challenge.Category.ORGANIZE_MY_LIFE, 5, listOf()),
     ORGANIZE_MY_DAY(Challenge.Category.ORGANIZE_MY_LIFE, 5, listOf()),
     STAY_ON_TOP_OF_THINGS(Challenge.Category.ORGANIZE_MY_LIFE, 5, listOf());
-
-
 }
 
 enum class AndroidPredefinedChallenge(
@@ -729,7 +780,6 @@ enum class AndroidPredefinedChallenge(
         R.drawable.challenge_chores_background,
         Category.ORGANIZE_MY_LIFE
     );
-
 
     enum class Category(@StringRes val title: Int, @ColorRes val color: Int) {
         BUILD_SKILL(R.string.challenge_category_build_skill_name, R.color.md_blue_700),
