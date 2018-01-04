@@ -163,7 +163,7 @@ interface Constants {
         val PREDEFINED_CHALLENGE_INDEX = "predefined_challenge_index"
         val RANDOM_SEED = 42 // duh!
         val MAX_TIMES_A_DAY_COUNT = 8
-        val SCHEMA_VERSION = 2
+        val SCHEMA_VERSION = 3
 
         val MAX_PENALTY_COEFFICIENT = 0.5
         val NO_QUESTS_PENALTY_COEFFICIENT = 0.3

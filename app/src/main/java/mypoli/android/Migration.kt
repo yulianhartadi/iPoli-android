@@ -18,6 +18,11 @@ class Migration(private val database: Database) {
         val playerId = resultSet.next().getString("_id")
         var doc = database.getDocument(playerId).toMutable()
 
+//        doc.getDictionary("inventory").keys.forEach {
+//            Timber.d("AAA ${it} ${doc.getDictionary("inventory").getArray(it).count()}")
+//        }
+//        Timber.d("AAAA ${doc.getDictionary("inventory")}")
+
         if (!doc.contains("schemaVersion")) {
             doc.setInt("schemaVersion", 1)
             doc.setInt("gems", 0)
@@ -37,6 +42,14 @@ class Migration(private val database: Database) {
             equipment.setString("bodyArmor", null)
             pet.setDictionary("equipment", equipment)
             doc.setInt("schemaVersion", 2)
+            database.save(doc)
+            doc = database.getDocument(playerId).toMutable()
+        }
+
+        if (doc.getInt("schemaVersion") == 2) {
+            val inventory = doc.getDictionary("inventory")
+            inventory.setArray("challenges", MutableArray())
+            doc.setInt("schemaVersion", 3)
             database.save(doc)
         }
 

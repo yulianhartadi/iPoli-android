@@ -21,7 +21,6 @@ import mypoli.android.quest.calendar.CalendarViewController
 import mypoli.android.store.theme.ThemeStoreViewController
 import org.json.JSONObject
 import space.traversal.kapsule.required
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -52,7 +51,6 @@ class HomeViewController(args: Bundle? = null) :
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         setHasOptionsMenu(true)
 
-        Timber.d("AAA HomeView create")
         val contentView = inflater.inflate(R.layout.controller_home, container, false)
         setToolbar(contentView.toolbar)
 
@@ -60,7 +58,6 @@ class HomeViewController(args: Bundle? = null) :
     }
 
     override fun onAttach(view: View) {
-        Timber.d("AAA HomeView attach")
         super.onAttach(view)
 
 
