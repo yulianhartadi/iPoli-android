@@ -1,7 +1,9 @@
 package mypoli.android.common.mvi
 
 import android.support.annotation.MainThread
+import android.util.Log
 import com.amplitude.api.Amplitude
+import com.crashlytics.android.Crashlytics
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.Channel
@@ -53,24 +55,35 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
             renderInitialState(view)
 
             channel.consumeEach { intent ->
-
                 try {
                     val oldState = state
                     state = reduceState(intent, state)
 
-                    val data = JSONObject()
-                    data.put("previous_state", oldState)
-                    data.put("intent", intent)
-                    data.put("new_state", state)
-                    Amplitude.getInstance().logEvent("change_state", data)
-                    Timber.d("new state $state")
+                    longIntentChange(oldState, intent, state)
                     view.render(state)
                 } catch (e: Throwable) {
                     Timber.e(e, "From presenter ${this@BaseMviPresenter}")
+                    Crashlytics.logException(RuntimeException("From presenter ${this@BaseMviPresenter} for view $view", e))
+
+                    val data = JSONObject()
+                    data.put("message", e.message)
+                    data.put("stack_trace", Log.getStackTraceString(e))
+
+                    Amplitude.getInstance().logEvent("app_error", data)
                 }
             }
-
         }
+    }
+
+    private fun longIntentChange(oldState: VS, intent: I, state: VS) {
+        val data = JSONObject()
+        data.put("previous_state", oldState)
+        data.put("intent", intent)
+        data.put("new_state", state)
+        val eventType = "intent_${intent::class.java.name}"
+        Amplitude.getInstance().logEvent(eventType, data)
+
+        Timber.d("Intent $intent new state $state")
     }
 
     private fun renderInitialState(view: V) {
