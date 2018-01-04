@@ -84,8 +84,8 @@ enum class PredefinedChallenge(
                 icon = Icon.BOOK
             ),
             OneTime(
-                "Share your troubles with a friend",
-                "Share your troubles with a friend",
+                "Share my troubles with a friend",
+                "Share my troubles with a friend",
                 preferredDayOfWeek = DayOfWeek.SATURDAY,
                 duration = 60,
                 color = Color.PURPLE,
@@ -383,13 +383,13 @@ enum class PredefinedChallenge(
         0,
         listOf(
             OneTime(
-                "Create blog at Medium",
-                "Create blog at Medium",
+                "Create blog on Medium.com",
+                "Create blog on Medium.com",
                 30,
                 Time.atHours(11),
                 Color.BLUE,
                 Icon.LIGHT_BULB,
-                1
+                2
             ),
             OneTime(
                 "Choose what I am going to write about",
@@ -398,16 +398,16 @@ enum class PredefinedChallenge(
                 Time.at(11, 30),
                 Color.BLUE,
                 Icon.LIGHT_BULB,
-                1
+                2
             ),
             OneTime(
-                "Pick 5 bloggers who inspire you and read most of their posts",
-                "Choose what I am going to write about",
+                "Pick 5 bloggers who inspire me and read most of their posts",
+                "Pick 5 bloggers who inspire me and read most of their posts",
                 120,
                 null,
                 Color.BLUE,
                 Icon.ACADEMIC,
-                2
+                3
             ),
             OneTime(
                 "Research & write my first blog post",
@@ -416,7 +416,7 @@ enum class PredefinedChallenge(
                 null,
                 Color.BLUE,
                 Icon.LIGHT_BULB,
-                3
+                4
             ),
             Repeating(
                 "Write a blog post once every week",
@@ -425,7 +425,7 @@ enum class PredefinedChallenge(
                 null,
                 Color.BLUE,
                 Icon.LIGHT_BULB,
-                4,
+                7,
                 listOf(
                     DayOfWeek.SATURDAY
                 )
@@ -482,8 +482,8 @@ enum class PredefinedChallenge(
                 8
             ),
             OneTime(
-                "Upload my presentation to SlideShare",
-                "Upload my presentation to SlideShare",
+                "Upload my presentation to SlideShare.net",
+                "Upload my presentation to SlideShare.net",
                 60,
                 null,
                 Color.BLUE,
@@ -498,8 +498,8 @@ enum class PredefinedChallenge(
         5,
         listOf(
             OneTime(
-                "Prepare a special place for doing your work for 1 hour",
-                "Prepare a special place for doing your work",
+                "Prepare a special place for doing my work for 1 hour",
+                "Prepare a special place for doing my work",
                 60,
                 null,
                 Color.RED,
@@ -507,8 +507,8 @@ enum class PredefinedChallenge(
                 1
             ),
             OneTime(
-                "Decide on what you want to accomplish",
-                "Decide on what you want to accomplish",
+                "Decide on what I want to accomplish",
+                "Decide on what I want to accomplish",
                 30,
                 null,
                 Color.RED,
@@ -516,8 +516,8 @@ enum class PredefinedChallenge(
                 2
             ),
             Repeating(
-                "Focus on your work & do it every weekday",
-                "Focus on your work & do it",
+                "Focus on my work & do it every weekday",
+                "Focus on my work & do it",
                 180,
                 null,
                 Color.RED,
@@ -526,8 +526,8 @@ enum class PredefinedChallenge(
                 weekDays = listOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
             ),
             Repeating(
-                "Evaluate how well you did every Saturday for 30 min",
-                "Evaluate how well you did",
+                "Evaluate how well I did every Saturday for 30 min",
+                "Evaluate how well I did",
                 30,
                 null,
                 Color.RED,
@@ -541,8 +541,8 @@ enum class PredefinedChallenge(
         5,
         listOf(
             OneTime(
-                "Compare the job requirements with your skill set",
-                "Compare the job requirements with your skill set",
+                "Compare the job requirements with my skill set",
+                "Compare the job requirements with my skill set",
                 60,
                 null,
                 Color.RED,
@@ -569,8 +569,8 @@ enum class PredefinedChallenge(
                 startAtDay = 10
             ),
             OneTime(
-                "Read your CV and practice talking about previous experience for 1 hour",
-                "Read your CV and practice talking about previous experience",
+                "Read my CV and practice talking about previous experience for 1 hour",
+                "Read my CV and practice talking about previous experience",
                 60,
                 null,
                 Color.RED,
@@ -873,8 +873,8 @@ enum class PredefinedChallenge(
                 )
             ),
             Challenge.Quest.Repeating(
-                "Add new healthy snack in your work drawer 2 times a week",
-                "Add new healthy snack in your work drawer",
+                "Add new healthy snack in my work drawer 2 times a week",
+                "Add new healthy snack in my work drawer",
                 20,
                 null,
                 Color.TEAL,

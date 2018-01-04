@@ -34,15 +34,10 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
     private val playerRepository by required { playerRepository }
     private val petStatsChangeScheduler by required { lowerPetStatsScheduler }
 
-    private val scheduleChallengeUseCase by required { scheduleChallengeUseCase }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(playerTheme)
         setContentView(R.layout.activity_main)
-
-//        setSupportActionBar(findViewById(R.id.toolbar))
-//        findViewById<AppBarLayout>(R.id.appbar).outlineProvider = null
 
         val amplitudeClient = Amplitude.getInstance().initialize(this, AnalyticsConstants.AMPLITUDE_KEY)
         amplitudeClient.enableForegroundTracking(application)
@@ -61,10 +56,6 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         router.setPopsLastView(true)
         inject(myPoliApp.controllerModule(this, router))
-
-//        scheduleChallengeUseCase.execute(ScheduleChallengeUseCase.Params(
-//            allChallenges().first()
-//        ))
 
         if (!playerRepository.hasPlayer()) {
             val player = Player(
@@ -101,7 +92,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         if (!router.handleBack()) {
             super.onBackPressed()
         }
-        if(!router.hasRootController()) {
+        if (!router.hasRootController()) {
             finish()
         }
     }
