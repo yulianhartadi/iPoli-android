@@ -744,7 +744,64 @@ enum class PredefinedChallenge(
 
         )
     ),
-    ORGANIZE_MY_DAY(Challenge.Category.ORGANIZE_MY_LIFE, 5, listOf()),
+    ORGANIZE_MY_DAY(
+        Challenge.Category.ORGANIZE_MY_LIFE,
+        5,
+        listOf(
+            Challenge.Quest.Repeating(
+                "Plan my schedule for the day every morning",
+                "Plan my schedule for the day",
+                20,
+                Time.atHours(10),
+                Color.TEAL,
+                Icon.LIGHT_BULB,
+                null
+            ),
+            Challenge.Quest.Repeating(
+                "Check the weather forecast and choose my clothes for the next day",
+                "Check the weather forecast and choose my clothes for the next day",
+                20,
+                Time.atHours(22),
+                Color.PINK,
+                Icon.HOME,
+                null
+            ),
+            Challenge.Quest.Repeating(
+                "Review how productive my day was every evening",
+                "Review how productive my day was",
+                20,
+                Time.at(22, 30),
+                Color.TEAL,
+                Icon.STAR,
+                null
+            ),
+            Challenge.Quest.Repeating(
+                "Review how productive my week was",
+                "Review how productive my week was",
+                20,
+                Time.at(22, 30),
+                Color.TEAL,
+                Icon.STAR,
+                null,
+                listOf(
+                    DayOfWeek.SUNDAY
+                )
+            ),
+            Challenge.Quest.Repeating(
+                "Add new healthy snack in your work drawer 2 times a week",
+                "Add new healthy snack in your work drawer",
+                20,
+                null,
+                Color.TEAL,
+                Icon.RESTAURANT,
+                null,
+                listOf(
+                    DayOfWeek.MONDAY,
+                    DayOfWeek.THURSDAY
+                )
+            )
+        )
+    ),
     STAY_ON_TOP_OF_THINGS(Challenge.Category.ORGANIZE_MY_LIFE, 5, listOf());
 }
 
