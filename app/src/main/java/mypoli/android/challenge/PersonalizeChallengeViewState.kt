@@ -24,6 +24,7 @@ data class PersonalizeChallengeViewState(
         LOADING,
         DATA_LOADED,
         CHALLENGE_ACCEPTED,
-        TOGGLE_QUEST
+        NO_QUESTS_SELECTED,
+        TOGGLE_SELECTED_QUEST
     }
 }

@@ -8,19 +8,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Toast
 import kotlinx.android.synthetic.main.controller_personalize_challenge.view.*
 import kotlinx.android.synthetic.main.item_challenge_quest.view.*
 import mypoli.android.R
-import mypoli.android.challenge.PersonalizeChallengeViewState.StateType.CHALLENGE_ACCEPTED
-import mypoli.android.challenge.PersonalizeChallengeViewState.StateType.DATA_LOADED
+import mypoli.android.challenge.PersonalizeChallengeViewState.StateType.*
 import mypoli.android.challenge.data.AndroidPredefinedChallenge
+import mypoli.android.challenge.data.Challenge
 import mypoli.android.challenge.data.PredefinedChallenge
 import mypoli.android.common.mvi.MviViewController
-import mypoli.android.common.view.attr
-import mypoli.android.common.view.colorRes
-import mypoli.android.common.view.setToolbar
-import mypoli.android.common.view.stringRes
+import mypoli.android.common.view.*
 import space.traversal.kapsule.required
 
 
@@ -83,8 +79,12 @@ class PersonalizeChallengeViewController :
             }
 
             CHALLENGE_ACCEPTED -> {
-                Toast.makeText(view.context, R.string.challenge_accepted, Toast.LENGTH_SHORT).show()
+                showShortToast(R.string.challenge_accepted)
                 router.popCurrentController()
+            }
+
+            NO_QUESTS_SELECTED -> {
+                showShortToast(R.string.no_quest_selected)
             }
 
             else -> {
@@ -95,7 +95,7 @@ class PersonalizeChallengeViewController :
     data class ChallengeQuestViewModel(
         val name: String,
         val isSelected: Boolean,
-        val quest: PredefinedChallenge.Quest
+        val quest: Challenge.Quest
     )
 
     inner class ChallengeQuestAdapter(private var viewModels: List<ChallengeQuestViewModel> = listOf()) :

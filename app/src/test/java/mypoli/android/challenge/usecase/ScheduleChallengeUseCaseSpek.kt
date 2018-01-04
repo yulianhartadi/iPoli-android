@@ -1,7 +1,7 @@
 package mypoli.android.challenge.usecase
 
 import mypoli.android.TestUtil
-import mypoli.android.challenge.data.PredefinedChallenge
+import mypoli.android.challenge.data.Challenge
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should equal`
 import org.amshove.kluent.shouldThrow
@@ -19,11 +19,11 @@ class ScheduleChallengeUseCaseSpek : Spek({
 
     describe("ScheduleChallengeUseCase") {
 
-        val challenge = PredefinedChallenge(
-            "", PredefinedChallenge.Type.STRESS_FREE_MIND, PredefinedChallenge.Category.HEALTH_AND_FITNESS, listOf(), durationDays = 1
+        val challenge = Challenge(
+            Challenge.Category.HEALTH_AND_FITNESS, listOf(), durationDays = 1
         )
 
-        fun executeUseCase(challenge: PredefinedChallenge, startDate: LocalDate = LocalDate.now(), randomSeed: Long? = null) =
+        fun executeUseCase(challenge: Challenge, startDate: LocalDate = LocalDate.now(), randomSeed: Long? = null) =
             ScheduleChallengeUseCase(TestUtil.questRepoMock()).execute(
                 ScheduleChallengeUseCase.Params(
                     challenge,
@@ -33,7 +33,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
             )
 
         it("should not accept Challenge without Quests") {
-            val exec = { executeUseCase(PredefinedChallenge("", PredefinedChallenge.Type.STRESS_FREE_MIND, PredefinedChallenge.Category.HEALTH_AND_FITNESS, listOf())) }
+            val exec = { executeUseCase(Challenge(Challenge.Category.HEALTH_AND_FITNESS, listOf())) }
             exec shouldThrow IllegalArgumentException::class
         }
 
@@ -44,7 +44,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                 val quests = executeUseCase(challenge.copy(
                     durationDays = 1,
                     quests = listOf(
-                        PredefinedChallenge.Quest.Repeating(
+                        Challenge.Quest.Repeating(
                             "", "", 1, weekDays = DayOfWeek.values().toList()
                         )
                     )
@@ -59,7 +59,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                 val quests = executeUseCase(challenge.copy(
                     durationDays = 7,
                     quests = listOf(
-                        PredefinedChallenge.Quest.Repeating(
+                        Challenge.Quest.Repeating(
                             "", "", 1, weekDays = DayOfWeek.values().toList()
                         )
                     )
@@ -77,7 +77,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                 val quests = executeUseCase(challenge.copy(
                     durationDays = 7,
                     quests = listOf(
-                        PredefinedChallenge.Quest.Repeating(
+                        Challenge.Quest.Repeating(
                             "",
                             "",
                             1,
@@ -97,7 +97,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                 val quests = executeUseCase(challenge.copy(
                     durationDays = 7,
                     quests = listOf(
-                        PredefinedChallenge.Quest.Repeating(
+                        Challenge.Quest.Repeating(
                             "",
                             "",
                             1,
@@ -119,7 +119,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                 val quests = executeUseCase(challenge.copy(
                     durationDays = 7,
                     quests = listOf(
-                        PredefinedChallenge.Quest.OneTime(
+                        Challenge.Quest.OneTime(
                             "", "", 1, preferredDayOfWeek = DayOfWeek.SATURDAY
                         )
                     )
@@ -134,7 +134,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                 val quests = executeUseCase(challenge.copy(
                     durationDays = 1,
                     quests = listOf(
-                        PredefinedChallenge.Quest.OneTime(
+                        Challenge.Quest.OneTime(
                             "", "", 1, preferredDayOfWeek = DayOfWeek.SATURDAY
                         )
                     )
@@ -150,7 +150,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                 val quests = executeUseCase(challenge.copy(
                     durationDays = 14,
                     quests = listOf(
-                        PredefinedChallenge.Quest.OneTime(
+                        Challenge.Quest.OneTime(
                             "",
                             "",
                             1,
@@ -172,7 +172,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                 val quests = executeUseCase(challenge.copy(
                     durationDays = 5,
                     quests = listOf(
-                        PredefinedChallenge.Quest.OneTime(
+                        Challenge.Quest.OneTime(
                             "",
                             "",
                             1,
@@ -194,7 +194,7 @@ class ScheduleChallengeUseCaseSpek : Spek({
                 val quests = executeUseCase(challenge.copy(
                     durationDays = 10,
                     quests = listOf(
-                        PredefinedChallenge.Quest.OneTime(
+                        Challenge.Quest.OneTime(
                             "",
                             "",
                             1,

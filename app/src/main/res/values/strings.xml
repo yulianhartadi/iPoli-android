@@ -1093,6 +1093,8 @@
     <string name="challenge_organize_my_day_description">Plan meaningful and fun days</string>
     <string name="challenge_stay_on_top_of_things">Stay on top of things</string>
     <string name="challenge_stay_on_top_of_things_description" />
+    <string name="no_quest_selected">Select some quests first</string>
+    <string name="feedback_response">Thank you!</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

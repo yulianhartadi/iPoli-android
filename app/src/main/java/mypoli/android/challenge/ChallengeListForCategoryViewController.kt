@@ -20,6 +20,7 @@ import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import mypoli.android.R
 import mypoli.android.challenge.ChallengeListForCategoryViewState.StateType.*
 import mypoli.android.challenge.data.AndroidPredefinedChallenge
+import mypoli.android.challenge.data.Challenge
 import mypoli.android.challenge.data.PredefinedChallenge
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.colorRes
@@ -37,9 +38,9 @@ class ChallengeListForCategoryViewController :
 
     private val presenter by required { challengeListForCategoryPresenter }
 
-    private lateinit var challengeCategory: PredefinedChallenge.Category
+    private lateinit var challengeCategory: Challenge.Category
 
-    constructor(challengeCategory: PredefinedChallenge.Category) : this() {
+    constructor(challengeCategory: Challenge.Category) : this() {
         this.challengeCategory = challengeCategory
     }
 

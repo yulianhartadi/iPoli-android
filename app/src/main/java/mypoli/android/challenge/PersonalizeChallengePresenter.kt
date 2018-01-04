@@ -1,7 +1,7 @@
 package mypoli.android.challenge
 
 import mypoli.android.challenge.PersonalizeChallengeViewState.StateType.*
-import mypoli.android.challenge.data.PredefinedChallenge
+import mypoli.android.challenge.data.Challenge
 import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
@@ -22,11 +22,11 @@ class PersonalizeChallengePresenter(
 
                 val vms = intent.challenge.quests.map {
                     when (it) {
-                        is PredefinedChallenge.Quest.OneTime -> {
+                        is Challenge.Quest.OneTime -> {
                             PersonalizeChallengeViewController.ChallengeQuestViewModel(it.text, it.selected, it)
                         }
 
-                        is PredefinedChallenge.Quest.Repeating -> {
+                        is Challenge.Quest.Repeating -> {
                             PersonalizeChallengeViewController.ChallengeQuestViewModel(it.text, it.selected, it)
                         }
                     }
@@ -40,7 +40,7 @@ class PersonalizeChallengePresenter(
 
             is PersonalizeChallengeIntent.ToggleSelected -> {
                 state.copy(
-                    type = TOGGLE_QUEST,
+                    type = TOGGLE_SELECTED_QUEST,
                     viewModels = state.viewModels.map {
                         if (it == intent.quest) {
                             it.copy(isSelected = !it.isSelected)
@@ -52,10 +52,21 @@ class PersonalizeChallengePresenter(
             }
 
             is PersonalizeChallengeIntent.AcceptChallenge -> {
-                scheduleChallengeUseCase.execute(ScheduleChallengeUseCase.Params(intent.challenge))
-                state.copy(
-                    type = CHALLENGE_ACCEPTED
-                )
+                val predefinedChallenge = intent.challenge
+
+                val quests = state.viewModels.filter { it.isSelected }.map { it.quest }
+
+                if (quests.isEmpty()) {
+                    state.copy(
+                        type = NO_QUESTS_SELECTED
+                    )
+                } else {
+                    val challenge = Challenge(predefinedChallenge.category, quests, predefinedChallenge.durationDays)
+                    scheduleChallengeUseCase.execute(ScheduleChallengeUseCase.Params(challenge))
+                    state.copy(
+                        type = CHALLENGE_ACCEPTED
+                    )
+                }
             }
         }
     }
