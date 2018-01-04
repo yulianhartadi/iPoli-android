@@ -844,7 +844,74 @@ enum class PredefinedChallenge(
             )
         )
     ),
-    STAY_ON_TOP_OF_THINGS(Challenge.Category.ORGANIZE_MY_LIFE, 5, listOf());
+    STAY_ON_TOP_OF_THINGS(
+        Challenge.Category.ORGANIZE_MY_LIFE,
+        5,
+        listOf(
+            Challenge.Quest.Repeating(
+                "Shop for food and household cleaning products every week",
+                "Shop for food and household cleaning products",
+                90,
+                null,
+                Color.TEAL,
+                Icon.SHOPPING_CART,
+                null,
+                listOf(
+                    DayOfWeek.SATURDAY
+                )
+            ),
+            Challenge.Quest.OneTime(
+                "Pay the bills and review my savings and investments every month",
+                "Pay the bills",
+                30,
+                null,
+                Color.TEAL,
+                Icon.MONEY,
+                15
+            ),
+            Challenge.Quest.Repeating(
+                "Prepare dinner 3 times a week",
+                "Prepare dinner",
+                90,
+                null,
+                Color.TEAL,
+                Icon.RESTAURANT,
+                null,
+                listOf(
+                    DayOfWeek.TUESDAY,
+                    DayOfWeek.THURSDAY,
+                    DayOfWeek.SATURDAY
+                )
+            ),
+            Challenge.Quest.Repeating(
+                "Walk the dog every day",
+                "Walk the dog",
+                30,
+                null,
+                Color.TEAL,
+                Icon.PAW,
+                null,
+                selected = false
+            ),
+            Challenge.Quest.Repeating(
+                "Prepare school lunch for the kids every morning",
+                "Prepare school lunch for the kids",
+                30,
+                Time.atHours(8),
+                Color.TEAL,
+                Icon.PIZZA,
+                null,
+                listOf(
+                    DayOfWeek.MONDAY,
+                    DayOfWeek.TUESDAY,
+                    DayOfWeek.WEDNESDAY,
+                    DayOfWeek.THURSDAY,
+                    DayOfWeek.FRIDAY
+                ),
+                selected = false
+            )
+        )
+    );
 }
 
 enum class AndroidPredefinedChallenge(
