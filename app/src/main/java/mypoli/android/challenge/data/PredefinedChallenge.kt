@@ -64,7 +64,7 @@ enum class PredefinedChallenge(
 
     STRESS_FREE_MIND(
         Challenge.Category.HEALTH_AND_FITNESS,
-        5,
+        0,
         listOf(
             Repeating(
                 "Meditate every day for 20 min",
@@ -380,7 +380,7 @@ enum class PredefinedChallenge(
     ),
     FAMOUS_WRITER(
         Challenge.Category.BUILD_SKILL,
-        5,
+        0,
         listOf(
             OneTime(
                 "Create blog at Medium",
@@ -434,7 +434,7 @@ enum class PredefinedChallenge(
     ),
     MASTER_COMMUNICATOR(
         Challenge.Category.DEEP_WORK,
-        5,
+        0,
         listOf(
             OneTime(
                 "Research how to give great presentation",
@@ -642,7 +642,7 @@ enum class PredefinedChallenge(
     ENJOY_MYSELF(Challenge.Category.ME_TIME, 5, listOf()),
     FAMILY_TIME(
         Challenge.Category.ME_TIME,
-        5,
+        0,
         listOf(
             Repeating(
                 "Call my parents every week",
