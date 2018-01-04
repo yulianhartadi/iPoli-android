@@ -1095,6 +1095,7 @@
     <string name="challenge_stay_on_top_of_things_description">Keep the bills paid and your fridge full with healthy food</string>
     <string name="no_quest_selected">Select some quests first</string>
     <string name="feedback_response">Thank you!</string>
+    <string name="date">Date</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

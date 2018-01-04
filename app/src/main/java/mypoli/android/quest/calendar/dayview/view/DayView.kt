@@ -15,7 +15,9 @@ import org.threeten.bp.LocalDate
  * on 10/4/17.
  */
 
-sealed class DayViewIntent : Intent
+sealed class DayViewIntent : Intent {
+    data class DatePicked(val year: Int, val month: Int, val day: Int) : DayViewIntent()
+}
 
 data class LoadDataIntent(val currentDate: LocalDate) : DayViewIntent()
 //data class StartEditQuestIntent(val questViewModel: DayViewController.QuestViewModel) : DayViewIntent()
@@ -49,12 +51,13 @@ data class ChangeEditViewNameIntent(val name: String) : DayViewIntent()
 
 data class DayViewState(
     val type: StateType,
-    val scheduledDate: LocalDate = LocalDate.now(),
+    val currentDate: LocalDate = LocalDate.now(),
     val scheduledQuests: List<DayViewController.QuestViewModel> = listOf(),
     val unscheduledQuests: List<DayViewController.UnscheduledQuestViewModel> = listOf(),
     val removedEventId: String = "",
     val editId: String = "",
     val name: String = "",
+    val scheduledDate: LocalDate? = null,
     val startTime: Time? = null,
     val endTime: Time? = null,
     val duration: Int? = null,
@@ -81,6 +84,7 @@ data class DayViewState(
         UNDO_QUEST_COMPLETED,
         EDIT_VIEW_DRAGGED,
         EDIT_VIEW_NAME_CHANGED,
-        REMINDER_PICKED
+        REMINDER_PICKED,
+        DATE_PICKED
     }
 }

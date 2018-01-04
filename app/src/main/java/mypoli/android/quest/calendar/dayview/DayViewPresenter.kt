@@ -1,5 +1,7 @@
 package mypoli.android.quest.calendar.dayview
 
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
@@ -13,8 +15,6 @@ import mypoli.android.quest.calendar.dayview.view.*
 import mypoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
 import mypoli.android.quest.usecase.*
 import mypoli.android.reminder.view.picker.ReminderViewModel
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
@@ -55,7 +55,7 @@ class DayViewPresenter(
                     type = SCHEDULE_LOADED,
                     scheduledQuests = createScheduledViewModels(schedule),
                     unscheduledQuests = createUnscheduledViewModels(schedule),
-                    scheduledDate = schedule.date
+                    currentDate = schedule.date
                 )
             }
 
@@ -107,10 +107,11 @@ class DayViewPresenter(
                     Icon.valueOf(it.name)
                 }
 
+                val scheduledDate = state.scheduledDate ?: state.currentDate
                 val reminder = if (state.reminder != null) {
-                    createQuestReminder(state.reminder, state.scheduledDate, state.startTime!!.toMinuteOfDay())
+                    createQuestReminder(state.reminder, scheduledDate, state.startTime!!.toMinuteOfDay())
                 } else {
-                    createDefaultReminder(state.scheduledDate, state.startTime!!.toMinuteOfDay())
+                    createDefaultReminder(scheduledDate, state.startTime!!.toMinuteOfDay())
                 }
 
                 val questParams = SaveQuestUseCase.Parameters(
@@ -118,7 +119,7 @@ class DayViewPresenter(
                     color = color,
                     icon = icon,
                     category = Category("WELLNESS", Color.GREEN),
-                    scheduledDate = state.scheduledDate,
+                    scheduledDate = scheduledDate,
                     startTime = state.startTime,
                     duration = state.duration!!,
                     reminder = reminder
@@ -134,16 +135,17 @@ class DayViewPresenter(
                     Icon.valueOf(it.name)
                 }
 
+                val scheduledDate = state.scheduledDate ?: state.currentDate
                 val questParams = SaveQuestUseCase.Parameters(
                     id = state.editId,
                     name = state.name,
                     color = color,
                     icon = icon,
                     category = Category("WELLNESS", Color.GREEN),
-                    scheduledDate = state.scheduledDate,
+                    scheduledDate = scheduledDate,
                     startTime = state.startTime,
                     duration = state.duration!!,
-                    reminder = createQuestReminder(state.reminder, state.scheduledDate, state.startTime!!.toMinuteOfDay())
+                    reminder = createQuestReminder(state.reminder, scheduledDate, state.startTime!!.toMinuteOfDay())
                 )
                 val result = saveQuestUseCase.execute(questParams)
                 savedQuestViewState(result, state)
@@ -162,10 +164,10 @@ class DayViewPresenter(
                     color = color,
                     icon = icon,
                     category = Category("WELLNESS", Color.GREEN),
-                    scheduledDate = state.scheduledDate,
+                    scheduledDate = state.scheduledDate ?: state.currentDate,
                     startTime = state.startTime,
                     duration = state.duration!!,
-//                    reminder = createQuestReminder(state.reminder, state.scheduledDate, state.startTime!!.toMinuteOfDay())
+//                    reminder = createQuestReminder(state.reminder, state.currentDate, state.startTime!!.toMinuteOfDay())
                     reminder = null
                 )
                 val result = saveQuestUseCase.execute(questParams)
@@ -181,7 +183,7 @@ class DayViewPresenter(
 //                    name = "",
 //                    color = color,
 //                    category = Category("WELLNESS", Color.GREEN),
-//                    scheduledDate = state.scheduledDate,
+//                    currentDate = state.currentDate,
 //                    startTime = null,
 //                    duration = event.duration
 //                )
@@ -209,6 +211,13 @@ class DayViewPresenter(
                 val eventId = intent.eventId
                 undoRemovedQuestUseCase.execute(eventId)
                 state.copy(type = DayViewState.StateType.UNDO_REMOVED_EVENT, removedEventId = "")
+            }
+
+            is DayViewIntent.DatePicked -> {
+                state.copy(
+                    type = DATE_PICKED,
+                    scheduledDate = LocalDate.of(intent.year, intent.month, intent.day)
+                )
             }
 
             is ReminderPickedIntent -> {
@@ -284,7 +293,7 @@ class DayViewPresenter(
     private fun savedQuestViewState(result: Result, state: DayViewState) =
         when (result) {
             is Result.Invalid -> state.copy(type = EVENT_VALIDATION_ERROR)
-            else -> state.copy(type = EVENT_UPDATED, reminder = null)
+            else -> state.copy(type = EVENT_UPDATED, reminder = null, scheduledDate = null)
         }
 
     private fun createUnscheduledViewModels(schedule: Schedule): List<DayViewController.UnscheduledQuestViewModel> =

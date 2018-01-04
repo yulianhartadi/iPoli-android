@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/chooseDate"
+        android:icon="@drawable/ic_event_white_24dp"
+        android:title="@string/date"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/chooseReminder"
         android:icon="@drawable/ic_reminder_white_24dp"
         android:title="@string/reminder"

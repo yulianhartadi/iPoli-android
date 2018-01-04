@@ -3,6 +3,7 @@ package mypoli.android.quest.calendar.dayview.view
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
+import android.app.DatePickerDialog
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -59,6 +60,8 @@ class DayViewController :
     private var iconPickedListener: () -> Unit = {}
 
     private var reminderPickedListener: () -> Unit = {}
+
+    private var datePickedListener: () -> Unit = {}
 
     constructor(currentDate: LocalDate) : this() {
         this.currentDate = currentDate
@@ -132,6 +135,7 @@ class DayViewController :
                 colorPickListener = { showColorPicker(state.color) }
                 iconPickedListener = { showIconPicker(state.icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
+                datePickedListener = { showDatePicker(state.scheduledDate ?: state.currentDate) }
 
                 startActionMode()
                 (parentController as CalendarViewController).onStartEdit()
@@ -146,6 +150,7 @@ class DayViewController :
                 colorPickListener = { showColorPicker(state.color) }
                 iconPickedListener = { showIconPicker(state.icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
+                datePickedListener = { showDatePicker(state.scheduledDate ?: state.currentDate) }
 
                 startActionMode()
                 (parentController as CalendarViewController).onStartEdit()
@@ -160,6 +165,7 @@ class DayViewController :
                 colorPickListener = { showColorPicker(state.color) }
                 iconPickedListener = { showIconPicker(state.icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
+                datePickedListener = { showDatePicker(state.scheduledDate ?: state.currentDate) }
 
                 startActionMode()
                 (parentController as CalendarViewController).onStartEdit()
@@ -228,6 +234,7 @@ class DayViewController :
                 colorPickListener = { showColorPicker(state.color) }
                 iconPickedListener = { showIconPicker(state.icon) }
                 reminderPickedListener = { showReminderPicker(state.reminder) }
+                datePickedListener = { showDatePicker(state.scheduledDate ?: state.currentDate) }
                 startActionMode()
             }
 
@@ -249,6 +256,10 @@ class DayViewController :
 
             REMINDER_PICKED -> {
                 reminderPickedListener = { showReminderPicker(state.reminder) }
+            }
+
+            DATE_PICKED -> {
+                datePickedListener = { showDatePicker(state.scheduledDate ?: state.currentDate) }
             }
         }
     }
@@ -315,17 +326,6 @@ class DayViewController :
             }
 
         })
-
-//        dragView.reminder.setOnClickListener {
-//            ReminderPickerDialogController(object : ReminderPickerDialogController.ReminderPickedListener {
-//                override fun onReminderPicked(reminder: ReminderViewModel?) {
-//                    calendarDayView.requestFocus()
-//                    ViewUtils.hideKeyboard(calendarDayView)
-//                    send(ReminderPickedIntent(reminder))
-//                }
-//            }, reminder)
-//                .showDialog(router, "pick_reminder_tag")
-//        }
     }
 
     override fun onDragViewClick(dragView: View) {
@@ -374,21 +374,11 @@ class DayViewController :
         parentController?.view?.startActionMode(object : ActionMode.Callback {
             override fun onActionItemClicked(am: ActionMode, item: MenuItem): Boolean {
                 when (item.itemId) {
-                    R.id.chooseReminder -> {
-                        reminderPickedListener()
-                    }
-
-                    R.id.chooseIcon -> {
-                        iconPickedListener()
-                    }
-
-                    R.id.chooseColor -> {
-                        colorPickListener()
-                    }
-
-                    R.id.removeEvent -> {
-                        calendarDayView.onRemoveEvent()
-                    }
+                    R.id.chooseDate -> datePickedListener()
+                    R.id.chooseReminder -> reminderPickedListener()
+                    R.id.chooseIcon -> iconPickedListener()
+                    R.id.chooseColor -> colorPickListener()
+                    R.id.removeEvent -> calendarDayView.onRemoveEvent()
                 }
                 return true
             }
@@ -400,7 +390,8 @@ class DayViewController :
             }
 
             override fun onPrepareActionMode(p0: ActionMode?, menu: Menu?): Boolean {
-                menu!!.findItem(R.id.chooseReminder).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                menu!!.findItem(R.id.chooseDate).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                menu.findItem(R.id.chooseReminder).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menu.findItem(R.id.chooseIcon).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menu.findItem(R.id.chooseColor).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
                 menu.findItem(R.id.removeEvent).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
@@ -414,6 +405,13 @@ class DayViewController :
                 actionMode = null
             }
         })
+    }
+
+    private fun showDatePicker(selectedDate: LocalDate) {
+        DatePickerDialog(view!!.context, R.style.Theme_myPoli_AlertDialog,
+            DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                send(DayViewIntent.DatePicked(year, month + 1, dayOfMonth))
+            }, selectedDate.year, selectedDate.month.value - 1, selectedDate.dayOfMonth).show()
     }
 
     private fun showReminderPicker(selectedReminder: ReminderViewModel?) {
