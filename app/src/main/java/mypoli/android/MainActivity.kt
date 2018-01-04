@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         incrementAppRun()
 
         router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
+        router.setPopsLastView(true)
         inject(myPoliApp.controllerModule(this, router))
 
 //        scheduleChallengeUseCase.execute(ScheduleChallengeUseCase.Params(
@@ -100,6 +101,9 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
     override fun onBackPressed() {
         if (!router.handleBack()) {
             super.onBackPressed()
+        }
+        if(!router.hasRootController()) {
+            finish()
         }
     }
 
