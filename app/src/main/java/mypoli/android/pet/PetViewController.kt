@@ -275,7 +275,7 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         val heightOffset = (view.fabItems.height + ViewUtils.dpToPx(16f, view.context)) * 2
         playHideListAnimation(view, view.itemList, view.fabItems, view.fabFood, heightOffset)
         playItemFabsAnimation(view, true)
-        view.fabFood.setImageDrawable(
+        view.fabItems.setImageDrawable(
             IconicsDrawable(view.context)
                 .icon(Ionicons.Icon.ion_tshirt)
                 .colorRes(R.color.md_white)
