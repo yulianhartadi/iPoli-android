@@ -124,9 +124,16 @@ class ChallengeListForCategoryViewController :
 
             val priceIndicator = itemView.challengePriceIndicator
             if (!vm.isBought) {
-                priceIndicator.text = "${vm.gemPrice}"
-                priceIndicator.setCompoundDrawablesWithIntrinsicBounds(
-                    ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_gem_24dp), null, null, null)
+
+                if (vm.gemPrice == 0) {
+                    priceIndicator.text = stringRes(R.string.free).toUpperCase()
+                    priceIndicator.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
+                } else {
+                    priceIndicator.text = "${vm.gemPrice}"
+                    priceIndicator.setCompoundDrawablesWithIntrinsicBounds(
+                        ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_gem_24dp), null, null, null)
+                }
+
                 itemView.sendOnClick(ChallengeListForCategoryIntent.BuyChallenge(vm.challenge))
             } else {
                 itemView.setOnClickListener {
