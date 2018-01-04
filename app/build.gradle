@@ -21,8 +21,8 @@ android {
         applicationId "mypoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 10
-        versionName "Conquer Epic Challenges"
+        versionCode 11
+        versionName "Conquer Amazing Challenges"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
