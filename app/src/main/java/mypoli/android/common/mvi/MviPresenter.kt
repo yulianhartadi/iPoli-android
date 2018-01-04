@@ -67,7 +67,7 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
                     Timber.d("new state $state")
                     view.render(state)
                 } catch (e: Throwable) {
-                    Timber.e(e)
+                    Timber.e(e, "From presenter ${this@BaseMviPresenter}")
                 }
             }
 

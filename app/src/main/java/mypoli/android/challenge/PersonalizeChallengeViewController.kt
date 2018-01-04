@@ -4,10 +4,7 @@ import android.os.Bundle
 import android.support.annotation.ColorRes
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import kotlinx.android.synthetic.main.controller_personalize_challenge.view.*
 import kotlinx.android.synthetic.main.item_challenge_quest.view.*
 import mypoli.android.R
@@ -40,10 +37,12 @@ class PersonalizeChallengeViewController :
     override fun createPresenter() = presenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
+        setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_personalize_challenge, container, false)
         view.challengeQuestList.layoutManager = LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         val androidChallenge = AndroidPredefinedChallenge.valueOf(challenge.name)
-        view.challengeImage.setBackgroundResource(androidChallenge.backgroundImage)
+        view.challengeBackgroundImage.setBackgroundResource(androidChallenge.backgroundImage)
+        view.challengeImage.setBackgroundResource(androidChallenge.smallImage)
         view.collapsingToolbarContainer.title = stringRes(androidChallenge.title)
 
         view.challengeQuestList.adapter = ChallengeQuestAdapter()
@@ -52,10 +51,19 @@ class PersonalizeChallengeViewController :
         return view
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            router.popCurrentController()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onAttach(view: View) {
-        send(PersonalizeChallengeIntent.LoadData(challenge))
+        showBackButton()
         colorStatusBar(android.R.color.transparent)
         super.onAttach(view)
+        send(PersonalizeChallengeIntent.LoadData(challenge))
     }
 
     private fun colorStatusBar(@ColorRes color: Int) {
