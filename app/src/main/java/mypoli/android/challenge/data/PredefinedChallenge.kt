@@ -590,7 +590,7 @@ enum class PredefinedChallenge(
         durationDays = 14),
     FRIENDS_BLAST(
         Challenge.Category.ME_TIME,
-        5,
+        4,
         listOf(
             Repeating(
                 "Call a friend 2 times a week",
@@ -641,7 +641,7 @@ enum class PredefinedChallenge(
     ),
     JUST_HAVE_FUN(
         Challenge.Category.ME_TIME,
-        5,
+        4,
         listOf(
             Repeating(
                 "Play my favorite game 3 times a week for 1 hour",
@@ -751,7 +751,7 @@ enum class PredefinedChallenge(
     ),
     KEEP_THINGS_TIDY(
         Challenge.Category.ORGANIZE_MY_LIFE,
-        5,
+        3,
         listOf(
             Repeating(
                 "Use the vacuum cleaner every weekend",
@@ -831,7 +831,7 @@ enum class PredefinedChallenge(
     ),
     ORGANIZE_MY_DAY(
         Challenge.Category.ORGANIZE_MY_LIFE,
-        5,
+        3,
         listOf(
             Challenge.Quest.Repeating(
                 "Plan my schedule for the day every morning",
@@ -889,7 +889,7 @@ enum class PredefinedChallenge(
     ),
     STAY_ON_TOP_OF_THINGS(
         Challenge.Category.ORGANIZE_MY_LIFE,
-        5,
+        3,
         listOf(
             Challenge.Quest.Repeating(
                 "Shop for food and household cleaning products every week",
