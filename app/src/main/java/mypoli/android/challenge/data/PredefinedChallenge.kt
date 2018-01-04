@@ -138,7 +138,7 @@ enum class PredefinedChallenge(
             ),
             Challenge.Quest.Repeating(
                 "Workout at the gym 3 times a week for 1h",
-                "Go for a run",
+                "Workout at the gym",
                 duration = 60,
                 startAtDay = 2,
                 weekDays = listOf(
