@@ -21,8 +21,8 @@ android {
         applicationId "mypoli.android"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 7
-        versionName "Buy Some Gems"
+        versionCode 8
+        versionName "Conquer Challenges"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
