@@ -446,8 +446,8 @@ enum class PredefinedChallenge(
                 1
             ),
             OneTime(
-                "Sign up at Canva",
-                "Sign up at Canva",
+                "Sign up at Canva.com",
+                "Sign up at Canva.com",
                 20,
                 null,
                 Color.BLUE,
@@ -455,8 +455,8 @@ enum class PredefinedChallenge(
                 1
             ),
             OneTime(
-                "Create my presentation at Canva",
-                "Create my presentation at Canva",
+                "Create my presentation at Canva.com",
+                "Create my presentation at Canva.com",
                 120,
                 null,
                 Color.BLUE,
