@@ -610,7 +610,87 @@ enum class PredefinedChallenge(
             )
         )
     ),
-    KEEP_THINGS_TIDY(Challenge.Category.ORGANIZE_MY_LIFE, 5, listOf()),
+    KEEP_THINGS_TIDY(
+        Challenge.Category.ORGANIZE_MY_LIFE,
+        5,
+        listOf(
+            Challenge.Quest.Repeating(
+                "Use the vacuum cleaner every weekend",
+                "Use the vacuum cleaner",
+                60,
+                Time.atHours(11),
+                Color.BROWN,
+                Icon.HOME,
+                null,
+                listOf(
+                    DayOfWeek.SATURDAY
+                )
+            ),
+            Challenge.Quest.Repeating(
+                "Do the laundry twice a week",
+                "Do the laundry",
+                30,
+                Time.atHours(11),
+                Color.BROWN,
+                Icon.HOME,
+                null,
+                listOf(
+                    DayOfWeek.WEDNESDAY,
+                    DayOfWeek.SATURDAY
+                )
+            ),
+            Challenge.Quest.Repeating(
+                "Do the dishes every day",
+                "Do the dishes",
+                20,
+                Time.atHours(21),
+                Color.BROWN,
+                Icon.HOME,
+                null
+            ),
+            Challenge.Quest.Repeating(
+                "Clean after the pet 3 times a week",
+                "Clean after the pet",
+                20,
+                Time.at(21, 30),
+                Color.BROWN,
+                Icon.PAW,
+                null,
+                listOf(
+                    DayOfWeek.TUESDAY,
+                    DayOfWeek.THURSDAY,
+                    DayOfWeek.SATURDAY
+                ),
+                false
+            ),
+            Challenge.Quest.Repeating(
+                "Clean the bathroom once a week",
+                "Clean the bathroom",
+                40,
+                null,
+                Color.BROWN,
+                Icon.HOME,
+                null,
+                listOf(
+                    DayOfWeek.SATURDAY
+                )
+            ),
+            Challenge.Quest.Repeating(
+                "Tidy all rooms twice a week",
+                "Tidy all rooms",
+                20,
+                null,
+                Color.BROWN,
+                Icon.HOME,
+                null,
+                listOf(
+                    DayOfWeek.TUESDAY,
+                    DayOfWeek.FRIDAY
+                )
+            )
+
+        )
+    ),
     ORGANIZE_MY_DAY(Challenge.Category.ORGANIZE_MY_LIFE, 5, listOf()),
     STAY_ON_TOP_OF_THINGS(Challenge.Category.ORGANIZE_MY_LIFE, 5, listOf());
 
