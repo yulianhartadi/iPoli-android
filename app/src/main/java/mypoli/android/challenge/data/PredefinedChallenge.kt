@@ -639,7 +639,51 @@ enum class PredefinedChallenge(
             )
         )
     ),
-    ENJOY_MYSELF(Challenge.Category.ME_TIME, 5, listOf()),
+    ENJOY_MYSELF(
+        Challenge.Category.ME_TIME,
+        5,
+        listOf(
+            Repeating(
+                "Play my favorite game 3 times a week for 1 hour",
+                "Play my favorite game",
+                60,
+                Time.atHours(20),
+                Color.PURPLE,
+                Icon.GAME_CONTROLLER,
+                null,
+                listOf(DayOfWeek.MONDAY, DayOfWeek.THURSDAY, DayOfWeek.SUNDAY)
+            ),
+            Repeating(
+                "Enjoy my hobby once a week for 2 hours",
+                "Enjoy my hobby",
+                120,
+                Time.atHours(10),
+                Color.PURPLE,
+                Icon.WRENCH,
+                null,
+                listOf(DayOfWeek.SUNDAY)
+            ),
+            Repeating(
+                "Watch my favorite TV series for 45 minutes twice a week",
+                "Watch my favorite TV series",
+                45,
+                null,
+                Color.PURPLE,
+                Icon.STAR,
+                null,
+                listOf(DayOfWeek.TUESDAY, DayOfWeek.THURSDAY)
+            ),
+            OneTime(
+                "Talk with a friend about starting a hobby together",
+                "Talk with a friend about starting a hobby together",
+                30,
+                null,
+                Color.PURPLE,
+                Icon.STAR,
+                startAtDay = 7,
+                preferredDayOfWeek = DayOfWeek.SATURDAY
+            )
+        )),
     FAMILY_TIME(
         Challenge.Category.ME_TIME,
         0,
@@ -783,7 +827,6 @@ enum class PredefinedChallenge(
                     DayOfWeek.FRIDAY
                 )
             )
-
         )
     ),
     ORGANIZE_MY_DAY(
@@ -1022,8 +1065,8 @@ enum class AndroidPredefinedChallenge(
     STAY_ON_TOP_OF_THINGS(
         R.string.challenge_stay_on_top_of_things,
         R.string.challenge_stay_on_top_of_things_description,
-        R.drawable.challenge_chores,
-        R.drawable.challenge_chores_background,
+        R.drawable.challenge_stay_on_top_of_things,
+        R.drawable.challenge_stay_on_top_of_things_background,
         Category.ORGANIZE_MY_LIFE
     );
 
