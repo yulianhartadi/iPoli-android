@@ -1,5 +1,7 @@
 package mypoli.android.challenge
 
+import mypoli.android.challenge.PersonalizeChallengeViewController.ChallengeQuestViewModel
+import mypoli.android.challenge.data.PredefinedChallenge
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
 
@@ -9,14 +11,20 @@ import mypoli.android.common.mvi.ViewState
  */
 
 sealed class PersonalizeChallengeIntent : Intent {
-
+    data class LoadData(val challenge: PredefinedChallenge) : PersonalizeChallengeIntent()
+    data class AcceptChallenge(val challenge: PredefinedChallenge) : PersonalizeChallengeIntent()
+    data class ToggleSelected(val quest: ChallengeQuestViewModel) : PersonalizeChallengeIntent()
 }
 
-data class PersonalizeChallengeViewState(val type: StateType) : ViewState {
+data class PersonalizeChallengeViewState(
+    val type: StateType,
+    val viewModels: List<ChallengeQuestViewModel> = listOf()
+) : ViewState {
     enum class StateType {
         LOADING,
         DATA_LOADED,
         CHALLENGE_ACCEPTED,
-        TOO_EXPENSIVE
+        NO_QUESTS_SELECTED,
+        TOGGLE_SELECTED_QUEST
     }
 }

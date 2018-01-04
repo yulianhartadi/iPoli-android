@@ -7,7 +7,7 @@
     android:layout_marginBottom="4dp"
     android:layout_marginEnd="8dp"
     android:layout_marginStart="8dp"
-    android:layout_marginTop="16dp"
+    android:layout_marginTop="4dp"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackgroundBorderless"
@@ -19,56 +19,56 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/healthFitnessBg"
+            android:id="@+id/buildSkillBg"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/challenge_category_health_and_fitness_bg" />
+            app:srcCompat="@drawable/challenge_category_build_skill_bg" />
 
         <TextView
-            android:id="@+id/healthFitnessDesc"
+            android:id="@+id/buildSkillDesc"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="16dp"
-            android:text="@string/challenge_category_health_fitness_description"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="8dp"
+            android:text="@string/challenge_category_build_skill_description"
+            android:textAlignment="viewEnd"
             android:textAppearance="@style/TextAppearance.AppCompat.Caption"
             android:textColor="@color/md_light_text_54"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline10"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline10" />
 
         <android.support.constraint.Guideline
             android:id="@+id/guideline10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.44" />
+            app:layout_constraintGuide_percent="0.56" />
 
         <TextView
-            android:id="@+id/healthFitnessName"
-            android:layout_width="wrap_content"
+            android:id="@+id/buildSkillName"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="16dp"
-            android:text="@string/challenge_category_health_fitness_name"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="8dp"
+            android:text="@string/challenge_category_build_skill_name"
+            android:textAlignment="viewEnd"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:textColor="@color/md_light_text_87"
-            app:layout_constraintBottom_toTopOf="@+id/healthFitnessDesc"
-            app:layout_constraintEnd_toStartOf="@+id/guideline10"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintBottom_toTopOf="@+id/buildSkillDesc"
+            app:layout_constraintEnd_toEndOf="@+id/buildSkillBg"
+            app:layout_constraintStart_toStartOf="@+id/guideline10" />
 
         <ImageView
-            android:id="@+id/healthFitnessPet"
+            android:id="@+id/buildSkillPet"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginEnd="8dp"
@@ -76,66 +76,67 @@
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             app:layout_constraintBottom_toTopOf="@+id/guidelinePetBottom"
-            app:layout_constraintEnd_toEndOf="@+id/healthFitnessImage"
-            app:layout_constraintHorizontal_bias="0.4"
-            app:layout_constraintStart_toStartOf="@+id/healthFitnessImage"
+            app:layout_constraintEnd_toEndOf="@+id/buildSkillImage"
+            app:layout_constraintStart_toStartOf="@+id/buildSkillImage"
             app:layout_constraintTop_toBottomOf="@+id/guidelinePetTop"
             app:srcCompat="@drawable/challenge_category_pet_13" />
 
         <ImageView
-            android:id="@+id/healthFitnessImage"
+            android:id="@+id/buildSkillImage"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="32dp"
             android:adjustViewBounds="true"
             android:scaleType="fitXY"
             app:layout_constraintBottom_toTopOf="@+id/guidelineBottom"
-            app:layout_constraintEnd_toEndOf="@id/healthFitnessBg"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@id/healthFitnessBg"
+            app:layout_constraintEnd_toEndOf="@id/buildSkillBg"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/buildSkillBg"
             app:layout_constraintTop_toBottomOf="@+id/guidelineTop"
-            app:srcCompat="@drawable/challenge_category_health_and_fitness_image" />
+            app:srcCompat="@drawable/challenge_category_build_skill_image" />
 
         <View
             android:id="@+id/guidelineTop"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            app:layout_constraintBottom_toBottomOf="@+id/healthFitnessBg"
-            app:layout_constraintEnd_toEndOf="@+id/healthFitnessBg"
-            app:layout_constraintStart_toStartOf="@+id/healthFitnessBg"
-            app:layout_constraintTop_toTopOf="@+id/healthFitnessBg"
-            app:layout_constraintVertical_bias="0.19999999" />
+            app:layout_constraintBottom_toBottomOf="@+id/buildSkillBg"
+            app:layout_constraintEnd_toEndOf="@+id/buildSkillBg"
+            app:layout_constraintStart_toStartOf="@+id/buildSkillBg"
+            app:layout_constraintTop_toTopOf="@+id/buildSkillBg"
+            app:layout_constraintVertical_bias="0.50" />
 
         <View
             android:id="@+id/guidelinePetTop"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            app:layout_constraintBottom_toBottomOf="@+id/healthFitnessBg"
-            app:layout_constraintEnd_toEndOf="@+id/healthFitnessBg"
-            app:layout_constraintStart_toStartOf="@+id/healthFitnessBg"
-            app:layout_constraintTop_toTopOf="@+id/healthFitnessBg" />
+            app:layout_constraintBottom_toBottomOf="@+id/buildSkillBg"
+            app:layout_constraintEnd_toEndOf="@+id/buildSkillBg"
+            app:layout_constraintStart_toStartOf="@+id/buildSkillBg"
+            app:layout_constraintTop_toTopOf="@+id/buildSkillBg"
+            app:layout_constraintVertical_bias="0.19" />
 
         <View
             android:id="@+id/guidelinePetBottom"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            app:layout_constraintBottom_toBottomOf="@+id/healthFitnessBg"
-            app:layout_constraintEnd_toEndOf="@+id/healthFitnessBg"
-            app:layout_constraintStart_toStartOf="@+id/healthFitnessBg"
-            app:layout_constraintTop_toTopOf="@+id/healthFitnessBg"
-            app:layout_constraintVertical_bias="0.9" />
+            app:layout_constraintBottom_toBottomOf="@+id/buildSkillBg"
+            app:layout_constraintEnd_toEndOf="@+id/buildSkillBg"
+            app:layout_constraintStart_toStartOf="@+id/buildSkillBg"
+            app:layout_constraintTop_toTopOf="@+id/buildSkillBg"
+            app:layout_constraintVertical_bias="0.75" />
 
         <View
             android:id="@+id/guidelineBottom"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/healthFitnessBg"
-            app:layout_constraintEnd_toEndOf="@+id/healthFitnessBg"
-            app:layout_constraintStart_toStartOf="@+id/healthFitnessBg"
-            app:layout_constraintTop_toTopOf="@+id/healthFitnessBg"
+            app:layout_constraintBottom_toBottomOf="@+id/buildSkillBg"
+            app:layout_constraintEnd_toEndOf="@+id/buildSkillBg"
+            app:layout_constraintStart_toStartOf="@+id/buildSkillBg"
+            app:layout_constraintTop_toTopOf="@+id/buildSkillBg"
             app:layout_constraintVertical_bias="1.0" />
+
 
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>

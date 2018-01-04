@@ -12,7 +12,9 @@ import kotlinx.coroutines.experimental.Job
 import mypoli.android.AndroidJobReminderScheduler
 import mypoli.android.ReminderScheduler
 import mypoli.android.challenge.ChallengeCategoryListPresenter
+import mypoli.android.challenge.ChallengeListForCategoryPresenter
 import mypoli.android.challenge.PersonalizeChallengePresenter
+import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
 import mypoli.android.common.navigation.Navigator
 import mypoli.android.common.text.CalendarFormatter
@@ -185,6 +187,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val takeOffPetItemUseCase get() = TakeOffPetItemUseCase(playerRepository)
     override val purchaseGemPackUseCase get() = PurchaseGemPackUseCase(playerRepository)
     override val scheduleChallengeUseCase: ScheduleChallengeUseCase get() = ScheduleChallengeUseCase(questRepository)
+    override val buyChallengeUseCase get() = BuyChallengeUseCase(playerRepository)
 }
 
 interface PopupUseCaseModule {
@@ -244,6 +247,7 @@ interface UseCaseModule {
     val takeOffPetItemUseCase: TakeOffPetItemUseCase
     val purchaseGemPackUseCase: PurchaseGemPackUseCase
     val scheduleChallengeUseCase: ScheduleChallengeUseCase
+    val buyChallengeUseCase: BuyChallengeUseCase
 }
 
 interface PresenterModule {
@@ -261,6 +265,7 @@ interface PresenterModule {
     val currencyConverterPresenter: CurrencyConverterPresenter
     val gemStorePresenter: GemStorePresenter
     val challengeCategoryListPresenter: ChallengeCategoryListPresenter
+    val challengeListForCategoryPresenter: ChallengeListForCategoryPresenter
     val personalizeChallengePresenter: PersonalizeChallengePresenter
 }
 
@@ -272,6 +277,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val completeQuestUseCase by required { completeQuestUseCase }
     private val undoCompleteQuestUseCase by required { undoCompletedQuestUseCase }
     private val listenForPlayerChangesUseCase by required { listenForPlayerChangesUseCase }
+    private val buyChallengeUseCase by required { buyChallengeUseCase }
     private val revivePetUseCase by required { revivePetUseCase }
     private val feedPetUseCase by required { feedPetUseCase }
     private val buyPetUseCase by required { buyPetUseCase }
@@ -280,7 +286,6 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val renamePetUseCase by required { renamePetUseCase }
     private val changeThemeUseCase by required { changeThemeUseCase }
     private val buyThemeUseCase by required { buyThemeUseCase }
-    private val navigator by required { navigator }
     private val reminderTimeFormatter by required { reminderTimeFormatter }
     private val timeUnitFormatter by required { timeUnitFormatter }
     private val calendarFormatter by required { calendarFormatter }
@@ -292,6 +297,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val equipPetItemUseCase by required { equipPetItemUseCase }
     private val takeOffPetItemUseCase by required { takeOffPetItemUseCase }
     private val purchaseGemPackUseCase by required { purchaseGemPackUseCase }
+    private val scheduleChallengeUseCase by required { scheduleChallengeUseCase }
     private val job by required { job }
     override val homePresenter get() = HomePresenter(job)
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, undoRemoveQuestUseCase, completeQuestUseCase, undoCompleteQuestUseCase, job)
@@ -307,7 +313,8 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val currencyConverterPresenter get() = CurrencyConverterPresenter(listenForPlayerChangesUseCase, convertCoinsToGemsUseCase, job)
     override val gemStorePresenter get() = GemStorePresenter(purchaseGemPackUseCase, listenForPlayerChangesUseCase, job)
     override val challengeCategoryListPresenter get() = ChallengeCategoryListPresenter(job)
-    override val personalizeChallengePresenter get() = PersonalizeChallengePresenter(job)
+    override val challengeListForCategoryPresenter get() = ChallengeListForCategoryPresenter(listenForPlayerChangesUseCase, buyChallengeUseCase, job)
+    override val personalizeChallengePresenter get() = PersonalizeChallengePresenter(scheduleChallengeUseCase, job)
 }
 
 interface PopupPresenterModule {
