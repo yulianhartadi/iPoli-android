@@ -23,10 +23,7 @@ import mypoli.android.challenge.data.AndroidPredefinedChallenge
 import mypoli.android.challenge.data.Challenge
 import mypoli.android.challenge.data.PredefinedChallenge
 import mypoli.android.common.mvi.MviViewController
-import mypoli.android.common.view.colorRes
-import mypoli.android.common.view.setToolbar
-import mypoli.android.common.view.showBackButton
-import mypoli.android.common.view.stringRes
+import mypoli.android.common.view.*
 import space.traversal.kapsule.required
 
 /**
@@ -59,7 +56,15 @@ class ChallengeListForCategoryViewController :
         view.challengeList.layoutManager = LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         view.challengeList.adapter = ChallengeAdapter()
 
+        view.playerGems.setOnClickListener {
+            showCurrencyConverter()
+        }
+
         return view
+    }
+
+    private fun showCurrencyConverter() {
+        CurrencyConverterDialogController().showDialog(router, "currency-converter")
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -84,6 +89,7 @@ class ChallengeListForCategoryViewController :
             }
 
             CHALLENGE_TOO_EXPENSIVE -> {
+                showCurrencyConverter()
                 Toast.makeText(view.context, stringRes(R.string.challenge_too_expensive), Toast.LENGTH_SHORT).show()
             }
 
