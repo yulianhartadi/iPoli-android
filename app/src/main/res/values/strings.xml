@@ -249,7 +249,7 @@
     <string name="quest_started">Quest started</string>
     <string name="quest_stopped">Quest stopped</string>
     <string name="reward_earned">%s earned! Enjoy!</string>
-    <string name="store">Store</string>
+    <string name="pet_store">Pets</string>
     <string name="no_internet_to_buy_coins">If you want some coins, you should enable your internet!</string>
     <string name="something_went_wrong">Something went wrong, please try again later!</string>
     <string name="work_days_picker_title">Which days do you work?</string>

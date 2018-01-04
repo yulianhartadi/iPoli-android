@@ -41,12 +41,9 @@ class ThemeStoreViewController(args: Bundle? = null) :
 
         setToolbar(view.toolbar)
 
-//        inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
         view.toolbarTitle.setText(R.string.themes)
 
-        view.playerGems.setOnClickListener {
-            send(ShowCurrencyConverter)
-        }
+        view.playerGems.sendOnClick(ShowCurrencyConverter)
 
         view.themePager.clipToPadding = false
         view.themePager.pageMargin = ViewUtils.dpToPx(16f, view.context).toInt()

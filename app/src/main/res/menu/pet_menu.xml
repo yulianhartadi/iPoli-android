@@ -4,7 +4,7 @@
     <item
         android:id="@+id/actionStore"
         android:icon="@drawable/ic_shopping_cart_white_24dp"
-        android:title="@string/store"
+        android:title="@string/pet_store"
         app:showAsAction="always" />
 
     <item

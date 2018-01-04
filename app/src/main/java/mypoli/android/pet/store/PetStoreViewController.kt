@@ -33,15 +33,14 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
 
     override fun createPresenter() = presenter
 
-    private lateinit var inventoryToolbar: ViewGroup
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_pet_store, container, false)
 
-        inventoryToolbar = addToolbarView(R.layout.view_inventory_toolbar) as ViewGroup
-        inventoryToolbar.toolbarTitle.setText(R.string.store)
-        inventoryToolbar.playerGems.sendOnClick(ShowCurrencyConverter)
+        setToolbar(view.toolbar)
+
+        view.toolbarTitle.setText(R.string.pet_store)
+        view.playerGems.sendOnClick(ShowCurrencyConverter)
 
         view.petPager.clipToPadding = false
         view.petPager.pageMargin = ViewUtils.dpToPx(16f, view.context).toInt()
@@ -69,7 +68,7 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
             }
 
             PLAYER_CHANGED -> {
-                inventoryToolbar.playerGems.text = state.playerGems.toString()
+                view.playerGems.text = state.playerGems.toString()
                 (view.petPager.adapter as PetPagerAdapter).updateAll(state.petViewModels)
             }
 
@@ -86,11 +85,6 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
                 showGemStore()
             }
         }
-    }
-
-    override fun onDestroyView(view: View) {
-        removeToolbarView(inventoryToolbar)
-        super.onDestroyView(view)
     }
 
     private fun showGemStore() {
