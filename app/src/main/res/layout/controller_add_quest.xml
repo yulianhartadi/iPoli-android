@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
-    android:clickable="true"
-    android:focusable="true"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/colorPrimary">
+    android:background="?attr/colorPrimary"
+    android:clickable="true"
+    android:focusable="true">
 
     <mypoli.android.common.view.EditTextBackEvent
         android:id="@+id/questName"
@@ -16,86 +15,99 @@
         android:layout_marginBottom="8dp"
         android:backgroundTint="@android:color/transparent"
         android:hint="e.g. Go for a run"
-        android:textColor="@color/md_white"
-        android:textColorHint="@color/md_light_text_54"
         android:imeOptions="actionDone"
         android:inputType="textCapSentences"
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
+        android:textColor="@color/md_white"
+        android:textColorHint="@color/md_light_text_54"
         app:layout_constraintBottom_toTopOf="@+id/scheduleDate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/scheduleDate"
-        android:layout_width="24dp"
+        android:layout_width="40dp"
         android:layout_height="24dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="16dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
         android:src="@drawable/ic_event_white_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_goneMarginStart="8dp" />
 
     <ImageView
         android:id="@+id/startTime"
-        android:layout_width="24dp"
+        android:layout_width="40dp"
         android:layout_height="24dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="16dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
         android:src="@drawable/ic_clock_white_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/scheduleDate" />
 
-
     <ImageView
         android:id="@+id/duration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="16dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/startTime" />
 
     <ImageView
         android:id="@+id/color"
-        android:layout_width="24dp"
+        android:layout_width="40dp"
         android:layout_height="24dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="16dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
         android:src="@drawable/ic_color_palette_white_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/duration" />
 
     <ImageView
         android:id="@+id/reminder"
-        android:layout_width="24dp"
+        android:layout_width="40dp"
         android:layout_height="24dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="16dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
         android:src="@drawable/ic_reminder_white_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/done"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/icon" />
 
-
     <ImageView
         android:id="@+id/done"
-        android:layout_width="24dp"
+        android:layout_width="40dp"
         android:layout_height="24dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="8dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
         android:src="@drawable/ic_done_white_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="16dp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:paddingEnd="8dp"
+        android:paddingStart="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/color"
         app:srcCompat="@drawable/ic_icon_white_24dp" />
