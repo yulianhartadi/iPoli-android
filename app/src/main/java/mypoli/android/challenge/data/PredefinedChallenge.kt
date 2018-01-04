@@ -735,7 +735,7 @@ enum class AndroidPredefinedChallenge(
         BUILD_SKILL(R.string.challenge_category_build_skill_name, R.color.md_blue_700),
         ME_TIME(R.string.challenge_category_me_time_name, R.color.md_purple_600),
         DEEP_WORK(R.string.challenge_category_deep_work_name, R.color.md_red_600),
-        ORGANIZE_MY_LIFE(R.string.challenge_category_organize_my_life_name, R.color.md_teal_600),
+        ORGANIZE_MY_LIFE(R.string.challenge_category_organize_my_life_name, R.color.md_teal_500),
         HEALTH_AND_FITNESS(R.string.challenge_category_health_fitness_name, R.color.md_green_600)
     }
 
