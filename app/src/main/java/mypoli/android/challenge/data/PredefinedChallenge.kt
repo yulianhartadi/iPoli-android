@@ -588,7 +588,7 @@ enum class PredefinedChallenge(
             )
         ),
         durationDays = 14),
-    FRIENDS_TIME(
+    FRIENDS_BLAST(
         Challenge.Category.ME_TIME,
         5,
         listOf(
@@ -639,7 +639,7 @@ enum class PredefinedChallenge(
             )
         )
     ),
-    ENJOY_MYSELF(
+    JUST_HAVE_FUN(
         Challenge.Category.ME_TIME,
         5,
         listOf(
@@ -1027,18 +1027,18 @@ enum class AndroidPredefinedChallenge(
         R.drawable.challenge_job_interview_background,
         Category.DEEP_WORK
     ),
-    FRIENDS_TIME(
-        R.string.challenge_friends_time,
-        R.string.challenge_friends_time_description,
-        R.drawable.challenge_friends_time,
-        R.drawable.challenge_friends_time_background,
+    FRIENDS_BLAST(
+        R.string.challenge_friends_blast,
+        R.string.challenge_friends_blast_description,
+        R.drawable.challenge_friends_blast,
+        R.drawable.challenge_friends_blast_background,
         Category.ME_TIME
     ),
-    ENJOY_MYSELF(
-        R.string.challenge_enjoy_myself,
-        R.string.challenge_enjoy_myself_description,
-        R.drawable.challenge_enjoy_myself,
-        R.drawable.challenge_enjoy_myself_background,
+    JUST_HAVE_FUN(
+        R.string.challenge_just_have_fun,
+        R.string.challenge_just_have_fun_description,
+        R.drawable.challenge_just_have_fun,
+        R.drawable.challenge_just_have_fun_background,
         Category.ME_TIME
     ),
     FAMILY_TIME(
