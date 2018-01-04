@@ -833,7 +833,7 @@ enum class PredefinedChallenge(
         Challenge.Category.ORGANIZE_MY_LIFE,
         3,
         listOf(
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Plan my schedule for the day every morning",
                 "Plan my schedule for the day",
                 20,
@@ -842,7 +842,7 @@ enum class PredefinedChallenge(
                 Icon.LIGHT_BULB,
                 null
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Check the weather forecast and choose my clothes for the next day",
                 "Check the weather forecast and choose my clothes for the next day",
                 20,
@@ -851,7 +851,7 @@ enum class PredefinedChallenge(
                 Icon.HOME,
                 null
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Review how productive my day was every evening",
                 "Review how productive my day was",
                 20,
@@ -860,7 +860,7 @@ enum class PredefinedChallenge(
                 Icon.STAR,
                 null
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Review how productive my week was",
                 "Review how productive my week was",
                 20,
@@ -872,7 +872,7 @@ enum class PredefinedChallenge(
                     DayOfWeek.SUNDAY
                 )
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Add new healthy snack in my work drawer 2 times a week",
                 "Add new healthy snack in my work drawer",
                 20,
@@ -891,7 +891,7 @@ enum class PredefinedChallenge(
         Challenge.Category.ORGANIZE_MY_LIFE,
         3,
         listOf(
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Shop for food and household cleaning products every week",
                 "Shop for food and household cleaning products",
                 90,
@@ -903,7 +903,7 @@ enum class PredefinedChallenge(
                     DayOfWeek.SATURDAY
                 )
             ),
-            Challenge.Quest.OneTime(
+            OneTime(
                 "Pay the bills and review my savings and investments every month",
                 "Pay the bills",
                 30,
@@ -912,7 +912,7 @@ enum class PredefinedChallenge(
                 Icon.MONEY,
                 15
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Prepare dinner 3 times a week",
                 "Prepare dinner",
                 90,
@@ -926,7 +926,7 @@ enum class PredefinedChallenge(
                     DayOfWeek.SATURDAY
                 )
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Walk the dog every day",
                 "Walk the dog",
                 30,
@@ -936,7 +936,7 @@ enum class PredefinedChallenge(
                 null,
                 selected = false
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Prepare school lunch for the kids every morning",
                 "Prepare school lunch for the kids",
                 30,
@@ -1077,5 +1077,4 @@ enum class AndroidPredefinedChallenge(
         ORGANIZE_MY_LIFE(R.string.challenge_category_organize_my_life_name, R.color.md_teal_500),
         HEALTH_AND_FITNESS(R.string.challenge_category_health_fitness_name, R.color.md_green_600)
     }
-
 }
