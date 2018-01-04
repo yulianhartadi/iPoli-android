@@ -493,7 +493,49 @@ enum class PredefinedChallenge(
         ),
         10
     ),
-    FOCUSED_WORK(Challenge.Category.DEEP_WORK, 5, listOf()),
+    FOCUSED_WORK(
+        Challenge.Category.DEEP_WORK,
+        5,
+        listOf(
+            OneTime(
+                "Prepare a special place for doing your work for 1 hour",
+                "Prepare a special place for doing your work",
+                60,
+                null,
+                Color.RED,
+                Icon.LIGHT_BULB,
+                1
+            ),
+            OneTime(
+                "Decide on what you want to accomplish",
+                "Decide on what you want to accomplish",
+                30,
+                null,
+                Color.RED,
+                Icon.STAR,
+                2
+            ),
+            Repeating(
+                "Focus on your work & do it every weekday",
+                "Focus on your work & do it",
+                180,
+                null,
+                Color.RED,
+                Icon.HEART,
+                startAtDay = 3,
+                weekDays = listOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
+            ),
+            Repeating(
+                "Evaluate how well you did every Saturday for 30 min",
+                "Evaluate how well you did",
+                30,
+                null,
+                Color.RED,
+                Icon.LIGHT_BULB,
+                startAtDay = 6,
+                weekDays = listOf(DayOfWeek.SATURDAY)
+            )
+        )),
     JOB_INTERVIEW(
         Challenge.Category.DEEP_WORK,
         5,
@@ -667,7 +709,7 @@ enum class PredefinedChallenge(
         Challenge.Category.ORGANIZE_MY_LIFE,
         5,
         listOf(
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Use the vacuum cleaner every weekend",
                 "Use the vacuum cleaner",
                 60,
@@ -679,7 +721,7 @@ enum class PredefinedChallenge(
                     DayOfWeek.SATURDAY
                 )
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Do the laundry twice a week",
                 "Do the laundry",
                 30,
@@ -692,7 +734,7 @@ enum class PredefinedChallenge(
                     DayOfWeek.SATURDAY
                 )
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Do the dishes every day",
                 "Do the dishes",
                 20,
@@ -701,7 +743,7 @@ enum class PredefinedChallenge(
                 Icon.HOME,
                 null
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Clean after the pet 3 times a week",
                 "Clean after the pet",
                 20,
@@ -716,7 +758,7 @@ enum class PredefinedChallenge(
                 ),
                 false
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Clean the bathroom once a week",
                 "Clean the bathroom",
                 40,
@@ -728,7 +770,7 @@ enum class PredefinedChallenge(
                     DayOfWeek.SATURDAY
                 )
             ),
-            Challenge.Quest.Repeating(
+            Repeating(
                 "Tidy all rooms twice a week",
                 "Tidy all rooms",
                 20,
