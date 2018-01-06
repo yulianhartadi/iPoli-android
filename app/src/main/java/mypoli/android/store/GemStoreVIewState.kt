@@ -35,6 +35,4 @@ data class GemStoreViewState(
         PURCHASE_FAILED,
         PURCHASING
     }
-
-
 }

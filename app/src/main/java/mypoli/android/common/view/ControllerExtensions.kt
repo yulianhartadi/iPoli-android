@@ -79,3 +79,11 @@ fun Controller.removeToolbarView(view: View) {
 fun Controller.showShortToast(@StringRes text: Int) {
     Toast.makeText(activity!!, text, Toast.LENGTH_SHORT).show()
 }
+
+fun Controller.enterFullScreen() {
+    (activity as MainActivity).enterFullScreen()
+}
+
+fun Controller.exitFullScreen() {
+    (activity as MainActivity).exitFullScreen()
+}

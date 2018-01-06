@@ -57,6 +57,7 @@ import mypoli.android.store.theme.ThemeStorePresenter
 import mypoli.android.store.theme.usecase.BuyThemeUseCase
 import mypoli.android.store.theme.usecase.ChangeThemeUseCase
 import mypoli.android.store.usecase.PurchaseGemPackUseCase
+import mypoli.android.timer.TimerPresenter
 import space.traversal.kapsule.HasModules
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
@@ -267,6 +268,7 @@ interface PresenterModule {
     val challengeCategoryListPresenter: ChallengeCategoryListPresenter
     val challengeListForCategoryPresenter: ChallengeListForCategoryPresenter
     val personalizeChallengePresenter: PersonalizeChallengePresenter
+    val timerPresenter: TimerPresenter
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
@@ -315,6 +317,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val challengeCategoryListPresenter get() = ChallengeCategoryListPresenter(job)
     override val challengeListForCategoryPresenter get() = ChallengeListForCategoryPresenter(listenForPlayerChangesUseCase, buyChallengeUseCase, job)
     override val personalizeChallengePresenter get() = PersonalizeChallengePresenter(scheduleChallengeUseCase, job)
+    override val timerPresenter get() = TimerPresenter(job)
 }
 
 interface PopupPresenterModule {

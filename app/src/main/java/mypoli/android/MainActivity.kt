@@ -7,6 +7,7 @@ import android.preference.PreferenceManager
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.View
 import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
@@ -109,5 +110,24 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
 
     fun pushWithRootRouter(transaction: RouterTransaction) {
         router.pushController(transaction)
+    }
+
+    fun enterFullScreen() {
+        window.decorView.systemUiVisibility = (
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                or View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                or View.SYSTEM_UI_FLAG_IMMERSIVE
+            )
+    }
+
+    fun exitFullScreen() {
+        window.decorView.systemUiVisibility = (
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            )
     }
 }

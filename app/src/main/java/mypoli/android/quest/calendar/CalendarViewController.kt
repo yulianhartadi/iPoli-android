@@ -242,7 +242,7 @@ class CalendarViewController(args: Bundle? = null) :
             XP_AND_COINS_CHANGED -> {
                 levelProgress.visible = true
                 val animator = ObjectAnimator.ofInt(levelProgress, "progress", levelProgress.progress, state.progress)
-                animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
+                animator.duration = shortAnimTime
                 animator.start()
                 calendarToolbar.playerGems.text = state.coins.toString()
             }
