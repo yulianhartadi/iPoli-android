@@ -959,6 +959,7 @@
     <string name="trial_membership_message">Enable all Power-ups for %d days - FREE</string>
     <string name="membership_benefit_free_trial">%d days FREE trial</string>
     <string name="membership_benefit_cancellation">Cancel at any time</string>
+    <string name="buy">Buy</string>
 
     <string-array name="player_titles">
         <item>Novice</item>
