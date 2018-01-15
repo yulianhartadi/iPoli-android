@@ -6,8 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v7.app.NotificationCompat;
 
 import com.squareup.otto.Bus;
 
@@ -37,7 +37,7 @@ public class ShowQuestCompleteNotificationReceiver extends BroadcastReceiver {
 
     private NotificationCompat.Builder createNotificationBuilder(Context context, Quest q) {
         Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
-        return (NotificationCompat.Builder) new NotificationCompat.Builder(context)
+        return new NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(q.getName())
                 .setContentText("Quest done! Ready for a break?")
                 .setContentIntent(getPendingIntent(context, q.getId()))
@@ -53,7 +53,8 @@ public class ShowQuestCompleteNotificationReceiver extends BroadcastReceiver {
     }
 
     private PendingIntent getPendingIntent(Context context, String questId) {
-        Intent intent = new Intent(CompleteQuestReceiver.ACTION_COMPLETE_QUEST);
+        Intent intent = new Intent(context, CompleteQuestReceiver.class);
+        intent.setAction(CompleteQuestReceiver.ACTION_COMPLETE_QUEST);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         return IntentUtils.getBroadcastPendingIntent(context, intent);
     }

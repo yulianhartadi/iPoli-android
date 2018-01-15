@@ -180,7 +180,7 @@ public class PowerUpsJobService extends JobService {
 
     private void showNotification(String title, String text) {
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setContentIntent(createMainActivityIntent())

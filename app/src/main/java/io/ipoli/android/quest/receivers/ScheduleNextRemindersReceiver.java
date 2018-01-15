@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
 
 import javax.inject.Inject;
 
@@ -27,11 +28,12 @@ public class ScheduleNextRemindersReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
         App.getAppComponent(context).inject(this);
         PendingResult result = goAsync();
         questPersistenceService.findNextReminderTime(nextReminderTime -> {
-            Intent i = new Intent(RemindStartQuestReceiver.ACTION_REMIND_START_QUEST);
+            Intent i = new Intent(context, RemindStartQuestReceiver.class);
+            i.setAction(RemindStartQuestReceiver.ACTION_REMIND_START_QUEST);
+
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
             alarmManager.cancel(IntentUtils.getBroadcastPendingIntent(context, i));
             if (nextReminderTime == null) {

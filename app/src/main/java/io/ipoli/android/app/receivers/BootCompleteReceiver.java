@@ -26,7 +26,13 @@ public class BootCompleteReceiver extends BroadcastReceiver {
         if (playerPersistenceService.get() == null) {
             return;
         }
-        context.sendBroadcast(new Intent(ScheduleNextRemindersReceiver.ACTION_SCHEDULE_REMINDERS));
-        context.sendBroadcast(new Intent(ScheduleDailyChallengeReminderReceiver.ACTION_SCHEDULE_DAILY_CHALLENGE_REMINDER));
+        Intent nextReminderIntent = new Intent(context, ScheduleNextRemindersReceiver.class);
+        nextReminderIntent.setAction(ScheduleNextRemindersReceiver.ACTION_SCHEDULE_REMINDERS);
+        context.sendBroadcast(nextReminderIntent);
+
+
+        Intent dailyChallengeIntent = new Intent(context, ScheduleDailyChallengeReminderReceiver.class);
+        dailyChallengeIntent.setAction(ScheduleDailyChallengeReminderReceiver.ACTION_SCHEDULE_DAILY_CHALLENGE_REMINDER);
+        context.sendBroadcast(dailyChallengeIntent);
     }
 }

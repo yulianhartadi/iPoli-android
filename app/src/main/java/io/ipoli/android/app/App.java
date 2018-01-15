@@ -1,19 +1,23 @@
 package io.ipoli.android.app;
 
 import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.NotificationCompat;
 import android.widget.Toast;
 
 import com.amplitude.api.Amplitude;
@@ -85,6 +89,7 @@ import io.ipoli.android.app.events.UndoCompletedQuestEvent;
 import io.ipoli.android.app.events.VersionUpdatedEvent;
 import io.ipoli.android.app.modules.AppModule;
 import io.ipoli.android.app.rate.events.RateDialogFeedbackSentEvent;
+import io.ipoli.android.app.receivers.AndroidCalendarEventChangedReceiver;
 import io.ipoli.android.app.receivers.DateChangedReceiver;
 import io.ipoli.android.app.services.AnalyticsService;
 import io.ipoli.android.app.settings.events.DailyChallengeStartTimeChangedEvent;
@@ -270,7 +275,7 @@ public class App extends MultiDexApplication {
 
         Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), pet.getCurrentAvatar().headPicture);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, PetActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setContentIntent(contentIntent)
@@ -371,6 +376,8 @@ public class App extends MultiDexApplication {
         getAppComponent(this).inject(this);
 
         registerServices();
+        initNotificationChannel();
+
         playerId = localStorage.readString(Constants.KEY_PLAYER_ID);
 
         if (getPlayer() != null) {
@@ -394,15 +401,22 @@ public class App extends MultiDexApplication {
         initAppStart();
     }
 
+    private void initNotificationChannel() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(Constants.NOTIFICATION_CHANNEL_ID, Constants.NOTIFICATION_CHANNEL_NAME, importance);
+            channel.setDescription("Notifications for reminders");
+            channel.enableLights(true);
+            channel.enableVibration(true);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
     private boolean shouldMigratePlayer() {
         Player player = getPlayer();
-        if (player == null) {
-            return false;
-        }
-        if (player.getSchemaVersion() != Constants.SCHEMA_VERSION) {
-            return true;
-        }
-        return false;
+        return player != null && player.getSchemaVersion() != Constants.SCHEMA_VERSION;
     }
 
     @Subscribe
@@ -458,7 +472,7 @@ public class App extends MultiDexApplication {
         Intent addIntent = new Intent(this, QuickAddActivity.class);
         addIntent.putExtra(Constants.QUICK_ADD_ADDITIONAL_TEXT, " " + getString(R.string.today).toLowerCase());
 
-        NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(title)
                 .setContentText(text)
                 .setContentIntent(contentIntent)
@@ -485,19 +499,22 @@ public class App extends MultiDexApplication {
     }
 
     private PendingIntent getStartPendingIntent(String questId) {
-        Intent intent = new Intent(StartQuestReceiver.ACTION_START_QUEST);
+        Intent intent = new Intent(this, StartQuestReceiver.class);
+        intent.setAction(StartQuestReceiver.ACTION_START_QUEST);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         return IntentUtils.getBroadcastPendingIntent(this, intent);
     }
 
     private PendingIntent getStopPendingIntent(String questId) {
-        Intent intent = new Intent(StopQuestReceiver.ACTION_STOP_QUEST);
+        Intent intent = new Intent(this, StopQuestReceiver.class);
+        intent.setAction(StopQuestReceiver.ACTION_STOP_QUEST);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         return IntentUtils.getBroadcastPendingIntent(this, intent);
     }
 
     private PendingIntent getDonePendingIntent(String questId) {
-        Intent intent = new Intent(CompleteQuestReceiver.ACTION_COMPLETE_QUEST);
+        Intent intent = new Intent(this, CompleteQuestReceiver.class);
+        intent.setAction(CompleteQuestReceiver.ACTION_COMPLETE_QUEST);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         return IntentUtils.getBroadcastPendingIntent(this, intent);
     }
@@ -625,7 +642,9 @@ public class App extends MultiDexApplication {
     }
 
     private void scheduleDailyChallenge() {
-        sendBroadcast(new Intent(ScheduleDailyChallengeReminderReceiver.ACTION_SCHEDULE_DAILY_CHALLENGE_REMINDER));
+        Intent intent = new Intent(this, ScheduleDailyChallengeReminderReceiver.class);
+        intent.setAction(ScheduleDailyChallengeReminderReceiver.ACTION_SCHEDULE_DAILY_CHALLENGE_REMINDER);
+        sendBroadcast(intent);
     }
 
     @Subscribe
@@ -1021,7 +1040,9 @@ public class App extends MultiDexApplication {
     }
 
     private void scheduleNextReminder() {
-        sendBroadcast(new Intent(ScheduleNextRemindersReceiver.ACTION_SCHEDULE_REMINDERS));
+        Intent intent = new Intent(this, ScheduleNextRemindersReceiver.class);
+        intent.setAction(ScheduleNextRemindersReceiver.ACTION_SCHEDULE_REMINDERS);
+        sendBroadcast(intent);
     }
 
     @Subscribe
@@ -1070,7 +1091,8 @@ public class App extends MultiDexApplication {
     }
 
     private void scheduleDateChanged() {
-        Intent i = new Intent(DateChangedReceiver.ACTION_DATE_CHANGED);
+        Intent i = new Intent(this, DateChangedReceiver.class);
+        i.setAction(DateChangedReceiver.ACTION_DATE_CHANGED);
         PendingIntent pendingIntent = IntentUtils.getBroadcastPendingIntent(this, i);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         alarmManager.cancel(pendingIntent);

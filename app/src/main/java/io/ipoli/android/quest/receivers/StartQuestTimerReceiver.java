@@ -6,8 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v7.app.NotificationCompat;
 
 import com.squareup.otto.Bus;
 
@@ -67,8 +67,8 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
         NotificationCompat.Builder builder = getNotificationBuilder(q, elapsedMinutes);
         builder.setContentText("Are you focused?");
         builder.setContentIntent(getContentIntent(q.getId()));
-        builder.addAction(R.drawable.ic_clear_black_24dp, "Cancel", getCancelPendingIntent(q.getId()));
-        builder.addAction(R.drawable.ic_done_24dp, "Done", getDonePendingIntent(q.getId()));
+        builder.addAction(R.drawable.ic_clear_black_24dp, context.getString(R.string.cancel), getCancelPendingIntent(q.getId()));
+        builder.addAction(R.drawable.ic_done_24dp, context.getString(R.string.done), getDonePendingIntent(q.getId()));
         if (duration > 0) {
             builder.setContentText("For " + DurationFormatter.format(context, duration));
         }
@@ -79,7 +79,7 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
 
     private NotificationCompat.Builder getNotificationBuilder(Quest q, int elapsedMinutes) {
         Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
-        return (NotificationCompat.Builder) new NotificationCompat.Builder(context)
+        return new NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(q.getName())
                 .setContentInfo(elapsedMinutes + " m")
                 .setSmallIcon(R.drawable.ic_notification_small)
@@ -100,13 +100,15 @@ public class StartQuestTimerReceiver extends BroadcastReceiver {
     }
 
     private PendingIntent getCancelPendingIntent(String questId) {
-        Intent intent = new Intent(StopQuestReceiver.ACTION_STOP_QUEST);
+        Intent intent = new Intent(context, StopQuestReceiver.class);
+        intent.setAction(StopQuestReceiver.ACTION_STOP_QUEST);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         return IntentUtils.getBroadcastPendingIntent(context, intent);
     }
 
     private PendingIntent getDonePendingIntent(String questId) {
-        Intent intent = new Intent(CompleteQuestReceiver.ACTION_COMPLETE_QUEST);
+        Intent intent = new Intent(context, CompleteQuestReceiver.class);
+        intent.setAction(CompleteQuestReceiver.ACTION_COMPLETE_QUEST);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         return IntentUtils.getBroadcastPendingIntent(context, intent);
     }

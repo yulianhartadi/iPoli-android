@@ -185,4 +185,7 @@ public interface Constants {
 
     String KEY_ACHIEVEMENT_ACTION = "achievement_action";
     String KEY_ACHIEVEMENT_ACTION_CLASS = "achievement_action_class";
+
+    String NOTIFICATION_CHANNEL_ID = "iPoli";
+    String NOTIFICATION_CHANNEL_NAME = "iPoli";
 }

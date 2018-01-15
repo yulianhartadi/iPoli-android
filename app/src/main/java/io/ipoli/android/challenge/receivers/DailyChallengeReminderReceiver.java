@@ -6,9 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v7.app.NotificationCompat;
-
 import org.threeten.bp.LocalDate;
 
 import java.util.Date;
@@ -63,7 +62,7 @@ public class DailyChallengeReminderReceiver extends BroadcastReceiver {
         Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
 
         String text = context.getString(R.string.daily_challenge_notification_text);
-        NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(context)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(context.getString(R.string.daily_challenge_notification_title))
                 .setContentText(text)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(text))

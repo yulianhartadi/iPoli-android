@@ -25,7 +25,7 @@ import io.ipoli.android.reminder.data.Reminder;
 public class QuestNotificationScheduler {
 
     public static void scheduleUpdateTimer(String questId, Context context) {
-        Intent intent = getQuestTimerIntent(questId);
+        Intent intent = getQuestTimerIntent(questId, context);
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarm.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(),
                 TimeUnit.MINUTES.toMillis(1), IntentUtils.getBroadcastPendingIntent(context, intent));
@@ -37,15 +37,16 @@ public class QuestNotificationScheduler {
     }
 
     @NonNull
-    private static Intent getQuestTimerIntent(String questId) {
-        Intent intent = new Intent(StartQuestTimerReceiver.ACTION_SHOW_QUEST_TIMER);
+    private static Intent getQuestTimerIntent(String questId, Context context) {
+        Intent intent = new Intent(context, StartQuestTimerReceiver.class);
+        intent.setAction(StartQuestTimerReceiver.ACTION_SHOW_QUEST_TIMER);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         return intent;
     }
 
     private static void cancelUpdateTimerIntent(String questId, Context context) {
         AlarmManager alarm = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarm.cancel(IntentUtils.getBroadcastPendingIntent(context, getQuestTimerIntent(questId)));
+        alarm.cancel(IntentUtils.getBroadcastPendingIntent(context, getQuestTimerIntent(questId, context)));
     }
 
     private static void dismissTimerNotification(Context context) {
@@ -72,7 +73,8 @@ public class QuestNotificationScheduler {
     }
 
     private static PendingIntent getShowDonePendingIntent(String questId, Context context) {
-        Intent intent = new Intent(ShowQuestCompleteNotificationReceiver.ACTION_SHOW_DONE_QUEST_NOTIFICATION);
+        Intent intent = new Intent(context, ShowQuestCompleteNotificationReceiver.class);
+        intent.setAction(ShowQuestCompleteNotificationReceiver.ACTION_SHOW_DONE_QUEST_NOTIFICATION);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         return IntentUtils.getBroadcastPendingIntent(context, intent);
     }

@@ -1,14 +1,19 @@
 package io.ipoli.android.quest.receivers;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.util.Pair;
-import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 
 import com.squareup.otto.Bus;
 
@@ -51,13 +56,14 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
             for (QuestReminder qr : questReminders) {
                 showNotification(context, qr);
             }
-            context.sendBroadcast(new Intent(ScheduleNextRemindersReceiver.ACTION_SCHEDULE_REMINDERS));
+            Intent nextReminderIntent = new Intent(context, ScheduleNextRemindersReceiver.class);
+            nextReminderIntent.setAction(ScheduleNextRemindersReceiver.ACTION_SCHEDULE_REMINDERS);
+            context.sendBroadcast(nextReminderIntent);
             result.finish();
         });
     }
 
     private void showNotification(Context context, QuestReminder questReminder) {
-
         Intent remindStartQuestIntent = new Intent(context, QuestActivity.class);
         remindStartQuestIntent.setAction(ACTION_REMIND_START_QUEST);
         remindStartQuestIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questReminder.getQuestId());
@@ -70,7 +76,7 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
         PendingIntent startQuestPI = getStartPendingIntent(questReminder.getQuestId(), context);
         PendingIntent snoozeQuestPI = getSnoozePendingIntent(questReminder.getQuestId(), context);
 
-        NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(context)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID)
                 .setContentTitle(name)
                 .setContentText(getContentText(context, questReminder))
                 .setContentIntent(pendingNotificationIntent)
@@ -108,13 +114,15 @@ public class RemindStartQuestReceiver extends BroadcastReceiver {
 
 
     private PendingIntent getStartPendingIntent(String questId, Context context) {
-        Intent intent = new Intent(StartQuestReceiver.ACTION_START_QUEST);
+        Intent intent = new Intent(context, StartQuestReceiver.class);
+        intent.setAction(StartQuestReceiver.ACTION_START_QUEST);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         return IntentUtils.getBroadcastPendingIntent(context, intent);
     }
 
     private PendingIntent getSnoozePendingIntent(String questId, Context context) {
-        Intent intent = new Intent(SnoozeQuestReceiver.ACTION_SNOOZE_QUEST);
+        Intent intent = new Intent(context, SnoozeQuestReceiver.class);
+        intent.setAction(SnoozeQuestReceiver.ACTION_SNOOZE_QUEST);
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId);
         return IntentUtils.getBroadcastPendingIntent(context, intent, new Random().nextInt());
     }
