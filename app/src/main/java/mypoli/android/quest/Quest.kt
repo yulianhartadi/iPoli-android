@@ -104,6 +104,8 @@ data class Quest(
     val scheduledDate: LocalDate,
     val duration: Int,
     val reminder: Reminder? = null,
+    val actualStart: Time? = null,
+    val pomodoroTimeRanges: List<TimeRange> = listOf(),
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val completedAtDate: LocalDate? = null,
     val completedAtTime: Time? = null,
@@ -123,3 +125,13 @@ data class Quest(
     val isScheduled = startTime != null
 }
 
+data class TimeRange(
+    val type: Type,
+    val duration: Int,
+    val start: Time? = null,
+    val end: Time? = null
+) {
+    enum class Type {
+        WORK, BREAK
+    }
+}
