@@ -104,7 +104,7 @@ data class Quest(
     val scheduledDate: LocalDate,
     val duration: Int,
     val reminder: Reminder? = null,
-    val actualStart: Time? = null,
+    val actualStart: LocalDateTime? = null,
     val pomodoroTimeRanges: List<TimeRange> = listOf(),
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val completedAtDate: LocalDate? = null,
