@@ -58,10 +58,10 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
 
         view.questName.text = "Do the Laundry"
 
-        for(i in 0..3) {
+        for (i in 0..3) {
             view.timerProgressContainer.addView(createProgress(inflater, view, R.drawable.timer_progress_item_complete))
         }
-        for(i in 0..5) {
+        for (i in 0..5) {
             view.timerProgressContainer.addView(createProgress(inflater, view, R.drawable.timer_progress_item_incomplete))
         }
 

@@ -190,6 +190,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val scheduleChallengeUseCase: ScheduleChallengeUseCase get() = ScheduleChallengeUseCase(questRepository)
     override val buyChallengeUseCase get() = BuyChallengeUseCase(playerRepository)
     override val splitDurationForPomodoroTimerUseCase get() = SplitDurationForPomodoroTimerUseCase()
+    override val listenForQuestChangeUseCase get() = ListenForQuestChangeUseCase(questRepository)
 }
 
 interface PopupUseCaseModule {
@@ -230,6 +231,7 @@ interface UseCaseModule {
     val completeQuestUseCase: CompleteQuestUseCase
     val undoCompletedQuestUseCase: UndoCompletedQuestUseCase
     val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase
+    val listenForQuestChangeUseCase: ListenForQuestChangeUseCase
     val rewardPlayerUseCase: RewardPlayerUseCase
     val removeRewardFromPlayerUseCase: RemoveRewardFromPlayerUseCase
     val feedPetUseCase: FeedPetUseCase
@@ -303,6 +305,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val purchaseGemPackUseCase by required { purchaseGemPackUseCase }
     private val scheduleChallengeUseCase by required { scheduleChallengeUseCase }
     private val splitDurationForPomodoroTimerUseCase by required { splitDurationForPomodoroTimerUseCase }
+    private val listenForQuestChangeUseCase by required { listenForQuestChangeUseCase }
     private val job by required { job }
     override val homePresenter get() = HomePresenter(job)
     override val dayViewPresenter get() = DayViewPresenter(loadScheduleForDateUseCase, saveQuestUseCase, removeQuestUseCase, undoRemoveQuestUseCase, completeQuestUseCase, undoCompleteQuestUseCase, job)
@@ -320,7 +323,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val challengeCategoryListPresenter get() = ChallengeCategoryListPresenter(job)
     override val challengeListForCategoryPresenter get() = ChallengeListForCategoryPresenter(listenForPlayerChangesUseCase, buyChallengeUseCase, job)
     override val personalizeChallengePresenter get() = PersonalizeChallengePresenter(scheduleChallengeUseCase, job)
-    override val timerPresenter get() = TimerPresenter(splitDurationForPomodoroTimerUseCase, job)
+    override val timerPresenter get() = TimerPresenter(splitDurationForPomodoroTimerUseCase, listenForQuestChangeUseCase, job)
 }
 
 interface PopupPresenterModule {
