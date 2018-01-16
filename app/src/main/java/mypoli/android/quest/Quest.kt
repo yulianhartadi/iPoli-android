@@ -128,10 +128,17 @@ data class Quest(
 data class TimeRange(
     val type: Type,
     val duration: Int,
-    val start: Time? = null,
-    val end: Time? = null
+    val start: LocalDateTime? = null,
+    val end: LocalDateTime? = null
 ) {
     enum class Type {
         WORK, BREAK
+    }
+
+    fun actualDuration(): Long? {
+        if (start == null || end == null) {
+            return null
+        }
+        return end.toMillis() - start.toMillis()
     }
 }

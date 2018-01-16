@@ -180,7 +180,16 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
                 val cr = CouchbaseReminder(it)
                 Reminder(cr.message, Time.of(cr.minute), DateUtils.fromMillis(cr.date))
             },
-            actualStart = cq.actualStart?.toLocalDateTime()
+            actualStart = cq.actualStart?.toLocalDateTime(),
+            pomodoroTimeRanges = cq.pomodoroTimeRanges.map {
+                val ctr = CouchbaseTimeRange(it)
+                TimeRange(
+                    TimeRange.Type.valueOf(ctr.type),
+                    ctr.duration,
+                    ctr.start?.toLocalDateTime(),
+                    ctr.end?.toLocalDateTime()
+                )
+            }
         )
     }
 
@@ -228,9 +237,8 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         val cTimeRange = CouchbaseTimeRange()
         cTimeRange.type = timeRange.type.name
         cTimeRange.duration = timeRange.duration
-        cTimeRange.start = timeRange.start?.let {
-            it.toMinuteOfDay().toLong()
-        }
+        cTimeRange.start = timeRange.start?.toMillis()
+        cTimeRange.end = timeRange.end?.toMillis()
         return cTimeRange
     }
 

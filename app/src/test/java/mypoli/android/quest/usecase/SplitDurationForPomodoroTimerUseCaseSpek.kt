@@ -10,6 +10,7 @@ import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
 import org.threeten.bp.LocalDate
+import org.threeten.bp.LocalDateTime
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -114,8 +115,8 @@ class SplitDurationForPomodoroTimerUseCaseSpek : Spek({
         it("should not add work or breaks") {
             val quest = simpleQuest.copy(
                 pomodoroTimeRanges = listOf(
-                    TimeRange(TimeRange.Type.WORK, 1.pomodoros(), Time.now(), Time.now()),
-                    TimeRange(TimeRange.Type.BREAK, 1.shortBreaks(), Time.now(), Time.now())
+                    TimeRange(TimeRange.Type.WORK, 1.pomodoros(), LocalDateTime.now(), LocalDateTime.now()),
+                    TimeRange(TimeRange.Type.BREAK, 1.shortBreaks(), LocalDateTime.now(), LocalDateTime.now())
                 ),
                 duration = 1.pomodoros() + 1.shortBreaks()
             )
@@ -130,8 +131,8 @@ class SplitDurationForPomodoroTimerUseCaseSpek : Spek({
         it("should add completed pomodoros when not enough duration") {
             val quest = simpleQuest.copy(
                 pomodoroTimeRanges = listOf(
-                    TimeRange(TimeRange.Type.WORK, 1.pomodoros(), Time.now(), Time.now()),
-                    TimeRange(TimeRange.Type.BREAK, 1.shortBreaks(), Time.now(), Time.now())
+                    TimeRange(TimeRange.Type.WORK, 1.pomodoros(), LocalDateTime.now(), LocalDateTime.now()),
+                    TimeRange(TimeRange.Type.BREAK, 1.shortBreaks(), LocalDateTime.now(), LocalDateTime.now())
                 ),
                 duration = 1.shortBreaks()
             )
@@ -157,14 +158,11 @@ private fun TimeRange.`should be break with duration`(duration: Int) {
     duration.`should be equal to`(duration)
 }
 
-private fun Int.pomodoros(): Int {
-    return this * Constants.DEFAULT_POMODORO_WORK_DURATION
-}
+private fun Int.pomodoros() =
+    this * Constants.DEFAULT_POMODORO_WORK_DURATION
 
-private fun Int.shortBreaks(): Int {
-    return this * Constants.DEFAULT_POMODORO_BREAK_DURATION
-}
+private fun Int.shortBreaks() =
+    this * Constants.DEFAULT_POMODORO_BREAK_DURATION
 
-private fun Int.longBreaks(): Int {
-    return this * Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION
-}
+private fun Int.longBreaks() =
+    this * Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION
