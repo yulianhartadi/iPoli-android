@@ -14,12 +14,12 @@ import org.threeten.bp.LocalDate
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 1/16/18.
  */
-class SplitQuestToPomodorosUseCaseSpek : Spek({
+class SplitDurationForPomodoroTimerUseCaseSpek : Spek({
 
-    describe("SplitQuestToPomodorosUseCase") {
+    describe("SplitDurationForPomodoroTimerUseCase") {
 
         fun executeUseCase(quest: Quest) =
-            SplitQuestToPomodorosUseCase().execute(SplitQuestToPomodorosUseCase.Params(quest))
+            SplitDurationForPomodoroTimerUseCase().execute(SplitDurationForPomodoroTimerUseCase.Params(quest))
 
         val simpleQuest = Quest(
             name = "",
@@ -36,10 +36,10 @@ class SplitQuestToPomodorosUseCaseSpek : Spek({
                 duration = 30
             )
             val result = executeUseCase(quest)
-            val ranges = (result as SplitQuestToPomodorosUseCase.Result.DurationSplit).timeRanges
+            val ranges = (result as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges
             ranges.size.`should be equal to`(2)
-            ranges[0].type.`should be`(TimeRange.Type.WORK)
-            ranges[1].type.`should be`(TimeRange.Type.BREAK)
+            ranges.first().type.`should be`(TimeRange.Type.WORK)
+            ranges.last().`should be short break`()
         }
 
         it("should not be split") {
@@ -48,7 +48,7 @@ class SplitQuestToPomodorosUseCaseSpek : Spek({
                 duration = 10
             )
             val result = executeUseCase(quest)
-            result.`should be`(SplitQuestToPomodorosUseCase.Result.DurationNotSplit)
+            result.`should be`(SplitDurationForPomodoroTimerUseCase.Result.DurationNotSplit)
         }
 
         it("should be split into 2 work and 1 break ranges with 1 work shorter") {
@@ -57,11 +57,11 @@ class SplitQuestToPomodorosUseCaseSpek : Spek({
                 duration = 40
             )
             val result = executeUseCase(quest)
-            val ranges = (result as SplitQuestToPomodorosUseCase.Result.DurationSplit).timeRanges
+            val ranges = (result as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges
             ranges.size.`should be equal to`(3)
-            val shorterWork = ranges[2]
+            val shorterWork = ranges.last()
             shorterWork.type.`should be`(TimeRange.Type.WORK)
-            shorterWork.duration.`should be equal to`(quest.duration - Constants.DEFAULT_POMODORO_BREAK_DURATION - Constants.DEFAULT_POMODORO_WORK_DURATION)
+            shorterWork.duration.`should be equal to`(quest.duration - 1.shortBreaks() - 1.pomodoros())
         }
 
         it("should be split into 2 work and 2 break ranges") {
@@ -70,9 +70,9 @@ class SplitQuestToPomodorosUseCaseSpek : Spek({
                 duration = 60
             )
             val result = executeUseCase(quest)
-            val ranges = (result as SplitQuestToPomodorosUseCase.Result.DurationSplit).timeRanges
+            val ranges = (result as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges
             ranges.size.`should be equal to`(4)
-            ranges[3].type.`should be`(TimeRange.Type.BREAK)
+            ranges.last().`should be short break`()
         }
 
         it("should be split into 4 work and 4 break ranges with 1 long break") {
@@ -81,10 +81,9 @@ class SplitQuestToPomodorosUseCaseSpek : Spek({
                 duration = 2 * 60 + 10
             )
             val result = executeUseCase(quest)
-            val ranges = (result as SplitQuestToPomodorosUseCase.Result.DurationSplit).timeRanges
+            val ranges = (result as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges
             ranges.size.`should be equal to`(8)
-            ranges[7].type.`should be`(TimeRange.Type.BREAK)
-            ranges[7].duration.`should be equal to`(Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION)
+            ranges.last().`should be long break`()
         }
 
         it("should be split into 4 work and 4 break ranges with 1 long incomplete break") {
@@ -93,25 +92,47 @@ class SplitQuestToPomodorosUseCaseSpek : Spek({
                 duration = 2 * 60
             )
             val result = executeUseCase(quest)
-            val ranges = (result as SplitQuestToPomodorosUseCase.Result.DurationSplit).timeRanges
+            val ranges = (result as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges
             ranges.size.`should be equal to`(8)
-            ranges[7].type.`should be`(TimeRange.Type.BREAK)
-            ranges[7].duration.`should be equal to`(quest.duration - (Constants.DEFAULT_POMODORO_WORK_DURATION * 4 + Constants.DEFAULT_POMODORO_BREAK_DURATION * 3))
+            ranges.last().type.`should be`(TimeRange.Type.BREAK)
+            ranges.last().duration.`should be equal to`(quest.duration - (4.pomodoros() + 3.shortBreaks()))
         }
 
         it("should be split into 8 work and 8 break ranges with 2 long breaks") {
             val quest = simpleQuest.copy(
                 pomodoroTimeRanges = listOf(),
-                duration = 8 * Constants.DEFAULT_POMODORO_WORK_DURATION + 6 * Constants.DEFAULT_POMODORO_BREAK_DURATION + 2 * Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION
+                duration = 8.pomodoros() + 6.shortBreaks() + 2.longBreaks()
             )
             val result = executeUseCase(quest)
-            val ranges = (result as SplitQuestToPomodorosUseCase.Result.DurationSplit).timeRanges
+            val ranges = (result as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges
             ranges.size.`should be equal to`(16)
-            ranges[7].type.`should be`(TimeRange.Type.BREAK)
-            ranges[7].duration.`should be equal to`(Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION)
-            ranges.last().type.`should be`(TimeRange.Type.BREAK)
-            ranges.last().duration.`should be equal to`(Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION)
+            ranges[7].`should be long break`()
+            ranges.last().`should be long break`()
         }
-
     }
 })
+
+private fun TimeRange.`should be short break`() {
+    `should be break with duration`(Constants.DEFAULT_POMODORO_BREAK_DURATION)
+}
+
+private fun TimeRange.`should be long break`() {
+    `should be break with duration`(Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION)
+}
+
+private fun TimeRange.`should be break with duration`(duration: Int) {
+    type.`should be`(TimeRange.Type.BREAK)
+    duration.`should be equal to`(duration)
+}
+
+private fun Int.pomodoros(): Int {
+    return this * Constants.DEFAULT_POMODORO_WORK_DURATION
+}
+
+private fun Int.shortBreaks(): Int {
+    return this * Constants.DEFAULT_POMODORO_BREAK_DURATION
+}
+
+private fun Int.longBreaks(): Int {
+    return this * Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION
+}

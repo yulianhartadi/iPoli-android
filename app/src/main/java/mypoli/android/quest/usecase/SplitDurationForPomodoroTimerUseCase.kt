@@ -9,7 +9,7 @@ import mypoli.android.quest.TimeRange
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 1/16/18.
  */
-class SplitQuestToPomodorosUseCase : UseCase<SplitQuestToPomodorosUseCase.Params, SplitQuestToPomodorosUseCase.Result> {
+class SplitDurationForPomodoroTimerUseCase : UseCase<SplitDurationForPomodoroTimerUseCase.Params, SplitDurationForPomodoroTimerUseCase.Result> {
 
     override fun execute(parameters: Params): Result {
         val quest = parameters.quest
