@@ -16,25 +16,25 @@ class SplitDurationForPomodoroTimerUseCase : UseCase<SplitDurationForPomodoroTim
         val duration = quest.duration
         val pomodoroDuration = Constants.DEFAULT_POMODORO_WORK_DURATION + Constants.DEFAULT_POMODORO_BREAK_DURATION
 
-        if (duration < pomodoroDuration) {
+        if (quest.pomodoroTimeRanges.isEmpty() && duration < pomodoroDuration) {
             return Result.DurationNotSplit
         }
 
-        val ranges = mutableListOf<TimeRange>()
-        var minutes = 0
-        while (minutes < duration) {
-            val range = if (ranges.isEmpty() || ranges[ranges.size - 1].type == TimeRange.Type.BREAK) {
-                val workDuration = Math.min(Constants.DEFAULT_POMODORO_WORK_DURATION, duration - minutes)
+        val ranges = quest.pomodoroTimeRanges.toMutableList()
+        var scheduledDuration = ranges.sumBy { it.duration }
+        while (scheduledDuration < duration) {
+            val range = if (ranges.isEmpty() || ranges.last().type == TimeRange.Type.BREAK) {
+                val workDuration = Math.min(Constants.DEFAULT_POMODORO_WORK_DURATION, duration - scheduledDuration)
                 TimeRange(TimeRange.Type.WORK, workDuration)
             } else {
-                val breakDuration = if((ranges.size + 1) % 8 == 0) {
-                    Math.min(Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION, duration - minutes)
+                val breakDuration = if ((ranges.size + 1) % 8 == 0) {
+                    Math.min(Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION, duration - scheduledDuration)
                 } else {
                     Constants.DEFAULT_POMODORO_BREAK_DURATION
                 }
                 TimeRange(TimeRange.Type.BREAK, breakDuration)
             }
-            minutes += range.duration
+            scheduledDuration += range.duration
             ranges.add(range)
         }
 

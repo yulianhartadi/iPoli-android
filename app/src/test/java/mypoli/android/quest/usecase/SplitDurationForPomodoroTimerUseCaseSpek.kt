@@ -5,6 +5,7 @@ import mypoli.android.common.datetime.Time
 import mypoli.android.quest.*
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be`
+import org.amshove.kluent.shouldNotBeNull
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -108,6 +109,37 @@ class SplitDurationForPomodoroTimerUseCaseSpek : Spek({
             ranges.size.`should be equal to`(16)
             ranges[7].`should be long break`()
             ranges.last().`should be long break`()
+        }
+
+        it("should not add work or breaks") {
+            val quest = simpleQuest.copy(
+                pomodoroTimeRanges = listOf(
+                    TimeRange(TimeRange.Type.WORK, 1.pomodoros(), Time.now(), Time.now()),
+                    TimeRange(TimeRange.Type.BREAK, 1.shortBreaks(), Time.now(), Time.now())
+                ),
+                duration = 1.pomodoros() + 1.shortBreaks()
+            )
+
+            val result = executeUseCase(quest)
+            val ranges = (result as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges
+            ranges.size.`should be equal to`(2)
+            ranges.first().end.shouldNotBeNull()
+            ranges.last().start.shouldNotBeNull()
+        }
+
+        it("should add completed pomodoros when not enough duration") {
+            val quest = simpleQuest.copy(
+                pomodoroTimeRanges = listOf(
+                    TimeRange(TimeRange.Type.WORK, 1.pomodoros(), Time.now(), Time.now()),
+                    TimeRange(TimeRange.Type.BREAK, 1.shortBreaks(), Time.now(), Time.now())
+                ),
+                duration = 1.shortBreaks()
+            )
+            val result = executeUseCase(quest)
+            val ranges = (result as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges
+            ranges.size.`should be equal to`(2)
+            ranges.first().end.shouldNotBeNull()
+            ranges.last().start.shouldNotBeNull()
         }
     }
 })
