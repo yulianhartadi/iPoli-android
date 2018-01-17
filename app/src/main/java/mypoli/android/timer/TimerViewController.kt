@@ -106,6 +106,8 @@ class TimerViewController :
                 renderStartStopButton(view.startStop, false)
                 view.startStop.sendOnClick(TimerIntent.Stop)
 
+                playBlinkIndicatorAnimation(view.timerProgressContainer.getChildAt(state.currentProgressIndicator))
+
                 view.setOnClickListener {
                     playShowNotImportantViewsAnimation(view)
                 }
@@ -118,6 +120,11 @@ class TimerViewController :
                     it.animate().cancel()
                     it.alpha = 1f
                 }
+                val indicator =
+                    view.timerProgressContainer.getChildAt(state.currentProgressIndicator)
+                indicator.animate().cancel()
+                indicator.alpha = 1f
+
                 renderStartStopButton(view.startStop, true)
                 view.startStop.sendOnClick(TimerIntent.Start)
                 view.setOnClickListener(null)
@@ -128,6 +135,17 @@ class TimerViewController :
             }
 
         }
+    }
+
+    private fun playBlinkIndicatorAnimation(view: View, reverse: Boolean = false) {
+        view
+            .animate()
+            .alpha(if (reverse) 1f else 0f)
+            .setDuration(mediumAnimTime)
+            .withEndAction {
+                playBlinkIndicatorAnimation(view, !reverse)
+            }
+            .start()
     }
 
     private fun renderStartStopButton(button: ImageView, start: Boolean) {

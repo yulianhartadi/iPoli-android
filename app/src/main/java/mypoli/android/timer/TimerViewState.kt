@@ -28,7 +28,8 @@ data class TimerViewState(
     val questName: String = "",
     val timerProgress: Int = 0,
     val maxTimerProgress: Int = 0,
-    val pomodoroProgress: List<PomodoroProgress> = listOf()
+    val pomodoroProgress: List<PomodoroProgress> = listOf(),
+    val currentProgressIndicator: Int = 0
 ) : ViewState {
 
     enum class StateType {

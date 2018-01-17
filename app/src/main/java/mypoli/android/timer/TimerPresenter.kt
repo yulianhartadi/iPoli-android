@@ -69,7 +69,9 @@ class TimerPresenter(
                             showTimerTypeSwitch = true,
                             pomodoroProgress = pomodoroProgress,
                             timerLabel = TimerFormatter.format(Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asMilliseconds.longValue),
-                            remainingTime = Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asSeconds
+                            remainingTime = Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asSeconds,
+//                            currentProgressIndicator = findCurrentProgressIndicator(result.timeRanges)
+                            currentProgressIndicator = 0
                         )
                     }
                 }
@@ -99,6 +101,9 @@ class TimerPresenter(
                 )
             }
         }
+
+    private fun findCurrentProgressIndicator(timeRanges: List<TimeRange>) =
+        timeRanges.indexOfFirst { it.start != null && it.end == null }
 
     private fun createPomodoroProgress(timeRange: TimeRange): PomodoroProgress {
         return when (timeRange.type) {
