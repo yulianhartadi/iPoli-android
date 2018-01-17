@@ -1,5 +1,6 @@
 package mypoli.android.common.view
 
+import android.support.constraint.Group
 import android.view.View
 
 /**
@@ -16,3 +17,8 @@ fun View.setScale(scale: Float) {
     scaleX = scale
     scaleY = scale
 }
+
+fun Group.views() =
+    referencedIds.map { id ->
+        rootView.findViewById<View>(id)
+    }

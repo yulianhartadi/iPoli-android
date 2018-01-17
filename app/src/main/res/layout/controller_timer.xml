@@ -104,6 +104,6 @@
         android:id="@+id/notImportantGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="timerLabel,startStop,horizontalScrollView" />
+        app:constraint_referenced_ids="timerLabel,horizontalScrollView" />
 
 </android.support.constraint.ConstraintLayout>
