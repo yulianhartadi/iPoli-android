@@ -12,8 +12,12 @@ import com.jakewharton.threetenabp.AndroidThreeTen
 import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
 import io.fabric.sdk.android.Fabric
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.di.*
 import mypoli.android.common.job.myPoliJobCreator
+import mypoli.android.player.Player
+import mypoli.android.player.persistence.PlayerRepository
 import space.traversal.kapsule.transitive
 import timber.log.Timber
 
@@ -95,25 +99,74 @@ class myPoliApp : Application() {
         })
 
 
-//        val repo = CouchbaseQuestRepository(Database("iPoli", DatabaseConfiguration(this)), UI)
-//        val q = Quest(
-//            name = "Welcome",
-//            color = Color.GREEN,
-//            category = Category("Wellness", Color.GREEN),
-//            plannedSchedule = QuestSchedule(LocalDate.now(), duration = 60, time = Time.at(15, 0)),
-//            reminder = Reminder(Random().nextInt().toString(), "Welcome message", Time.at(20, 0), LocalDate.now())
-//        )
-//
-//        repo.save(q)
-//
-//
-//
-//        val quests = repo.findNextQuestsToRemind(System.currentTimeMillis())
-//        quests.forEach {
-//            Timber.d("AAAA $it")
-//        }
-//        Timber.d("AAAAA $quests")
+        val stateStore =
+            AppStateStore(AppState(), LoadPlayerMiddleWare(simpleModule(this).playerRepository))
+        stateStore.dispatch(PlayerAction.Load)
+    }
+}
 
-//        TinyDancer.create().show(this)
+interface Action
+
+sealed class PlayerAction : Action {
+    object Load : PlayerAction()
+    data class Changed(val player: Player) : PlayerAction()
+}
+
+data class AppState(val player: Player? = null)
+
+class LoadPlayerMiddleWare(private val playerRepository: PlayerRepository) {
+
+    suspend fun apply(store: AppStateStore, action: PlayerAction.Load) {
+        playerRepository.listen().consumeEach {
+            store.dispatch(PlayerAction.Changed(it!!))
+        }
+    }
+}
+
+object PlayerActionReducer {
+    fun reduce(oldState: AppState, action: PlayerAction) =
+        when (action) {
+            is PlayerAction.Load -> {
+                oldState
+            }
+            is PlayerAction.Changed -> {
+                oldState.copy(player = action.player)
+            }
+        }
+}
+
+class AppStateStore(initialState: AppState, loadPlayerMiddleWare: LoadPlayerMiddleWare) {
+
+    var state = initialState
+
+    val reducers = mapOf(
+        PlayerAction::class to PlayerActionReducer
+    )
+
+    val middleWare = mapOf(
+        PlayerAction.Load::class to loadPlayerMiddleWare
+    )
+
+    inline fun <reified A : Action> dispatch(action: A) {
+        for (actionClass in reducers.keys) {
+//            if (actionClass is A) {
+            val state = reducers[actionClass]!!.reduce(state, action as PlayerAction)
+            onStateChanged(state)
+//            }
+        }
+
+        for (actionClass in middleWare.keys) {
+//            Timber.d("AAA action class $actionClass")
+//            Timber.d("AAA A ${A::class}")
+//            if (actionClass::class == A::class) {
+            launch {
+                middleWare[actionClass]?.apply(this@AppStateStore, action as PlayerAction.Load)
+            }
+//            }
+        }
+    }
+
+    fun onStateChanged(newState: AppState) {
+        Timber.d("AAA new state $newState")
     }
 }
