@@ -1,5 +1,9 @@
 package mypoli.android.timer
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
@@ -47,8 +51,6 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
             .sizeDp(22)
 
         view.startStop.setImageDrawable(icon)
-
-//        startTimer(view)
 
         return view
     }
@@ -99,12 +101,52 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
                 }
 
                 handler.postDelayed(updateTimer, 1000)
+
+                view.setOnClickListener {
+                    playShowNotImportantViewsAnimation(view)
+                    playHideNotImportantViewsAnimation(view)
+                }
+                playHideNotImportantViewsAnimation(view)
             }
 
             TimerViewState.StateType.RUNNING -> {
                 view.timerProgress.progress = state.timerProgress
             }
+
         }
+    }
+
+    private fun playShowNotImportantViewsAnimation(view: View) {
+        listOf<View>(
+            view.timerLabel,
+            view.horizontalScrollView,
+            view.startStop)
+            .forEach {
+                it.animate().alpha(1f).setDuration(longAnimTime).start()
+                it.visibility = View.VISIBLE
+            }
+    }
+
+    private fun playHideNotImportantViewsAnimation(view: View) {
+        val notImportantViews = listOf<View>(
+            view.timerLabel,
+            view.horizontalScrollView,
+            view.startStop)
+
+        val anims = notImportantViews.map {
+            ObjectAnimator.ofFloat(it, "alpha", 1f, 0f)
+        }
+
+        val set = AnimatorSet()
+        set.playTogether(anims)
+        set.duration = longAnimTime
+        set.startDelay = 3000
+        set.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                notImportantViews.forEach { it.visibility = View.GONE }
+            }
+        })
+        set.start()
     }
 
     private fun renderTimerProgress(state: TimerViewState, view: View) {
