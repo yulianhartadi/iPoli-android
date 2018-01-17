@@ -84,7 +84,25 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
 
         when (state.type) {
             TimerViewState.StateType.SHOW_POMODORO -> {
+                view.startStop.sendOnClick(TimerIntent.Start)
                 renderTimerProgress(state, view)
+            }
+
+            TimerViewState.StateType.TIMER_STARTED -> {
+                view.timerProgress.max = state.maxTimerProgress
+                view.timerProgress.secondaryProgress = state.maxTimerProgress
+                view.timerProgress.progress = state.timerProgress
+                handler = Handler(Looper.getMainLooper())
+                updateTimer = {
+                    send(TimerIntent.Tick)
+                    handler.postDelayed(updateTimer, 1000)
+                }
+
+                handler.postDelayed(updateTimer, 1000)
+            }
+
+            TimerViewState.StateType.RUNNING -> {
+                view.timerProgress.progress = state.timerProgress
             }
         }
     }

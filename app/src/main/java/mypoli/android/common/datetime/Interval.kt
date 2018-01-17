@@ -81,6 +81,10 @@ class Interval<out T : TimeUnit>(value: Number, private val timeUnitFactory: () 
     override fun hashCode() = asMilliseconds.value.hashCode()
 }
 
+class Week : TimeUnit {
+    override val inMillis get() = DAYS.toMillis(7)
+}
+
 class Day : TimeUnit {
     override val inMillis = DAYS.toMillis(1)
 }
@@ -100,6 +104,9 @@ class Second : TimeUnit {
 class Millisecond : TimeUnit {
     override val inMillis get() = 1L
 }
+
+val Number.weeks: Interval<Week>
+    get() = Interval(this)
 
 val Number.days: Interval<Day>
     get() = Interval(this)

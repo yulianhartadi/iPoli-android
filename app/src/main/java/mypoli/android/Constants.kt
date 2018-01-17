@@ -1,6 +1,7 @@
 package mypoli.android
 
 import mypoli.android.common.datetime.Time
+import mypoli.android.common.datetime.minutes
 import mypoli.android.player.Theme
 import org.threeten.bp.DayOfWeek
 import java.util.*

@@ -4,6 +4,7 @@ import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.Constants
 import mypoli.android.common.datetime.minutes
+import mypoli.android.common.datetime.seconds
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.quest.TimeRange
@@ -52,7 +53,8 @@ class TimerPresenter(
                             questName = quest.name,
                             timerType = TimerViewState.TimerType.COUNTDOWN,
                             showTimerTypeSwitch = false,
-                            timerLabel = TimerFormatter.format(quest.duration.minutes.asMilliseconds.longValue)
+                            timerLabel = TimerFormatter.format(quest.duration.minutes.asMilliseconds.longValue),
+                            remainingTime = quest.duration.minutes.asSeconds
                         )
                     }
 
@@ -65,18 +67,35 @@ class TimerPresenter(
                             timerType = TimerViewState.TimerType.POMODORO,
                             showTimerTypeSwitch = true,
                             pomodoroProgress = pomodoroProgress,
-                            timerLabel = TimerFormatter.format(Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asMilliseconds.longValue)
+                            timerLabel = TimerFormatter.format(Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asMilliseconds.longValue),
+                            remainingTime = Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asSeconds
                         )
                     }
                 }
             }
 
             is TimerIntent.Start -> {
-                state
+                state.copy(
+                    type = TIMER_STARTED,
+                    timerProgress = 0,
+                    maxTimerProgress = state.remainingTime!!.asSeconds.longValue.toInt()
+                )
             }
 
             is TimerIntent.Stop -> {
-                state
+                state.copy(
+                    type = TIMER_STOPPED
+                )
+            }
+
+            is TimerIntent.Tick -> {
+                val remainingTime = state.remainingTime!! - 1.seconds
+                state.copy(
+                    type = RUNNING,
+                    timerProgress = state.timerProgress + 1,
+                    timerLabel = TimerFormatter.format(remainingTime.asMilliseconds.longValue),
+                    remainingTime = remainingTime
+                )
             }
         }
 
