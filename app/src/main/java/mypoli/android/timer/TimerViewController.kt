@@ -1,9 +1,5 @@
 package mypoli.android.timer
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
@@ -20,7 +16,6 @@ import mypoli.android.R
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
 import space.traversal.kapsule.required
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -112,21 +107,20 @@ class TimerViewController :
                 view.startStop.sendOnClick(TimerIntent.Stop)
 
                 view.setOnClickListener {
-                    Timber.d("AAAA click")
                     playShowNotImportantViewsAnimation(view)
-//                    playHideNotImportantViewsAnimation(view)
                 }
                 playHideNotImportantViewsAnimation(view)
             }
 
             TimerViewState.StateType.TIMER_STOPPED -> {
-                //stop hide animation
-                view.notImportantGroup.views().forEach {
-                    it.clearAnimation()
-                }
                 handler.removeCallbacksAndMessages(null)
+                view.notImportantGroup.views().forEach {
+                    it.animate().cancel()
+                    it.alpha = 1f
+                }
                 renderStartStopButton(view.startStop, true)
                 view.startStop.sendOnClick(TimerIntent.Start)
+                view.setOnClickListener(null)
             }
 
             TimerViewState.StateType.RUNNING -> {
@@ -147,45 +141,27 @@ class TimerViewController :
 
     private fun playShowNotImportantViewsAnimation(view: View) {
         view.notImportantGroup.views().forEach {
-            Timber.d("AAAA animate")
-            it.animate().alpha(1f).setDuration(longAnimTime).start()
-            it.visibility = View.VISIBLE
+            it
+                .animate()
+                .alpha(1f)
+                .setDuration(longAnimTime)
+                .setStartDelay(0)
+                .withEndAction {
+                    playHideNotImportantViewsAnimation(view)
+                }
+                .start()
         }
     }
 
     private fun playHideNotImportantViewsAnimation(view: View) {
-//        view.notImportantGroup.views().forEach {
-//            val v = it
-////            it.animate().alpha(0f).setDuration(longAnimTime).setStartDelay(3000)
-////                .withEndAction({
-////                    v.animate().rotationBy(180f).start()
-////                    Timber.d("AAAA gone $v")
-////                    v.post {
-//                        v.visible = false
-////                    }
-////                })
-////                .start()
-//
-//        }
-        val views = view.notImportantGroup.views()
-        val anims = views.map {
-            ObjectAnimator.ofFloat(it, "alpha", 1f, 0f)
+        view.notImportantGroup.views().forEach {
+            it
+                .animate()
+                .alpha(0f)
+                .setDuration(longAnimTime)
+                .setStartDelay(3000)
+                .start()
         }
-
-        val set = AnimatorSet()
-        set.playTogether(anims)
-        set.duration = longAnimTime
-        set.startDelay = 3000
-        set.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
-                views.forEach { it.visibility = View.GONE }
-            }
-
-            override fun onAnimationCancel(animation: Animator?) {
-                views.forEach { it.visibility = View.VISIBLE }
-            }
-        })
-        set.start()
     }
 
     private fun renderTimerProgress(state: TimerViewState, view: View) {
