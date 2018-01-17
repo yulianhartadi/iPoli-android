@@ -20,9 +20,13 @@ class ReminderPickerDialogPresenter(
     private val findPetUseCase: FindPetUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<ReminderPickerViewState>, ReminderPickerViewState, ReminderPickerIntent>(
-    ReminderPickerViewState(type = LOADING), coroutineContext) {
+    ReminderPickerViewState(type = LOADING), coroutineContext
+) {
 
-    override fun reduceState(intent: ReminderPickerIntent, state: ReminderPickerViewState): ReminderPickerViewState {
+    override fun reduceState(
+        intent: ReminderPickerIntent,
+        state: ReminderPickerViewState
+    ): ReminderPickerViewState {
         return when (intent) {
 
             is LoadReminderDataIntent -> {
@@ -44,7 +48,8 @@ class ReminderPickerDialogPresenter(
                         type = FINISHED,
                         viewModel = ReminderViewModel(
                             state.message,
-                            calculateMinutesFromStart(state))
+                            calculateMinutesFromStart(state)
+                        )
                     )
                 }
             }
@@ -85,7 +90,10 @@ class ReminderPickerDialogPresenter(
         )
     }
 
-    private fun loadExistingReminderData(reminder: ReminderViewModel, state: ReminderPickerViewState): ReminderPickerViewState {
+    private fun loadExistingReminderData(
+        reminder: ReminderViewModel,
+        state: ReminderPickerViewState
+    ): ReminderPickerViewState {
 
         if (reminder.minutesFromStart == 0L) {
             return state.copy(

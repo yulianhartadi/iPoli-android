@@ -13,8 +13,8 @@ sealed class ThemeStoreIntent : Intent
 
 object LoadDataIntent : ThemeStoreIntent()
 data class ChangePlayerIntent(val player: Player) : ThemeStoreIntent()
-data class BuyThemeIntent(val theme : Theme) : ThemeStoreIntent()
-data class ChangeThemeIntent(val theme : Theme) : ThemeStoreIntent()
+data class BuyThemeIntent(val theme: Theme) : ThemeStoreIntent()
+data class ChangeThemeIntent(val theme: Theme) : ThemeStoreIntent()
 object ShowCurrencyConverter : ThemeStoreIntent()
 
 data class ThemeStoreViewState(

@@ -4,7 +4,11 @@ import android.animation.Animator
 import android.animation.TimeInterpolator
 import android.widget.TextView
 
-class TypewriterTextAnimator private constructor(private val textView: TextView, private val text: String, private val typeSpeed: Int = DEFAULT_TYPE_SPEED) : Animator() {
+class TypewriterTextAnimator private constructor(
+    private val textView: TextView,
+    private val text: String,
+    private val typeSpeed: Int = DEFAULT_TYPE_SPEED
+) : Animator() {
 
     private var isRunning = false
     private var textIndex = 0
@@ -16,7 +20,11 @@ class TypewriterTextAnimator private constructor(private val textView: TextView,
 
         private const val DEFAULT_TYPE_SPEED = 40
 
-        fun of(textView: TextView, text: String, typeSpeed: Int = DEFAULT_TYPE_SPEED): TypewriterTextAnimator {
+        fun of(
+            textView: TextView,
+            text: String,
+            typeSpeed: Int = DEFAULT_TYPE_SPEED
+        ): TypewriterTextAnimator {
             return TypewriterTextAnimator(textView, text, typeSpeed)
         }
     }

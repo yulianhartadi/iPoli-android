@@ -38,15 +38,20 @@ data class ColorPickedIntent(val color: AndroidColor) : DayViewIntent()
 data class CompleteQuestIntent(val questId: String) : DayViewIntent()
 data class UndoCompleteQuestIntent(val questId: String) : DayViewIntent()
 data class AddNewScheduledQuestIntent(val startTime: Time, val duration: Int) : DayViewIntent()
-data class StartEditScheduledQuestIntent(val questViewModel: DayViewController.QuestViewModel) : DayViewIntent()
-data class StartEditUnscheduledQuestIntent(val questViewModel: DayViewController.UnscheduledQuestViewModel) : DayViewIntent()
+data class StartEditScheduledQuestIntent(val questViewModel: DayViewController.QuestViewModel) :
+    DayViewIntent()
+
+data class StartEditUnscheduledQuestIntent(val questViewModel: DayViewController.UnscheduledQuestViewModel) :
+    DayViewIntent()
 
 
 object EditQuestIntent : DayViewIntent()
 object AddQuestIntent : DayViewIntent()
 object EditUnscheduledQuestIntent : DayViewIntent()
 data class DragMoveViewIntent(val startTime: Time?, val endTime: Time?) : DayViewIntent()
-data class DragResizeViewIntent(val startTime: Time?, val endTime: Time?, val duration: Int) : DayViewIntent()
+data class DragResizeViewIntent(val startTime: Time?, val endTime: Time?, val duration: Int) :
+    DayViewIntent()
+
 data class ChangeEditViewNameIntent(val name: String) : DayViewIntent()
 
 data class DayViewState(

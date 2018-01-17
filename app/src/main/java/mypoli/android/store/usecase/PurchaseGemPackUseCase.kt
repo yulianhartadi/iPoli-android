@@ -13,7 +13,8 @@ import mypoli.android.store.purchase.GemPackType
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 12/28/17.
  */
-class PurchaseGemPackUseCase(private val playerRepository: PlayerRepository) : UseCase<PurchaseGemPackUseCase.Params, PurchaseGemPackUseCase.Result> {
+class PurchaseGemPackUseCase(private val playerRepository: PlayerRepository) :
+    UseCase<PurchaseGemPackUseCase.Params, PurchaseGemPackUseCase.Result> {
 
     override fun execute(parameters: Params): Result {
         val player = playerRepository.find()

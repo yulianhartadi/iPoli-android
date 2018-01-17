@@ -9,12 +9,14 @@ import mypoli.android.quest.TimeRange
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 1/16/18.
  */
-class SplitDurationForPomodoroTimerUseCase : UseCase<SplitDurationForPomodoroTimerUseCase.Params, SplitDurationForPomodoroTimerUseCase.Result> {
+class SplitDurationForPomodoroTimerUseCase :
+    UseCase<SplitDurationForPomodoroTimerUseCase.Params, SplitDurationForPomodoroTimerUseCase.Result> {
 
     override fun execute(parameters: Params): Result {
         val quest = parameters.quest
         val duration = quest.duration
-        val pomodoroDuration = Constants.DEFAULT_POMODORO_WORK_DURATION + Constants.DEFAULT_POMODORO_BREAK_DURATION
+        val pomodoroDuration =
+            Constants.DEFAULT_POMODORO_WORK_DURATION + Constants.DEFAULT_POMODORO_BREAK_DURATION
 
         if (quest.pomodoroTimeRanges.isEmpty() && duration < pomodoroDuration) {
             return Result.DurationNotSplit
@@ -24,11 +26,15 @@ class SplitDurationForPomodoroTimerUseCase : UseCase<SplitDurationForPomodoroTim
         var scheduledDuration = ranges.sumBy { it.duration }
         while (scheduledDuration < duration) {
             val range = if (ranges.isEmpty() || ranges.last().type == TimeRange.Type.BREAK) {
-                val workDuration = Math.min(Constants.DEFAULT_POMODORO_WORK_DURATION, duration - scheduledDuration)
+                val workDuration =
+                    Math.min(Constants.DEFAULT_POMODORO_WORK_DURATION, duration - scheduledDuration)
                 TimeRange(TimeRange.Type.WORK, workDuration)
             } else {
                 val breakDuration = if ((ranges.size + 1) % 8 == 0) {
-                    Math.min(Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION, duration - scheduledDuration)
+                    Math.min(
+                        Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION,
+                        duration - scheduledDuration
+                    )
                 } else {
                     Constants.DEFAULT_POMODORO_BREAK_DURATION
                 }

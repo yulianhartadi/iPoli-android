@@ -1,5 +1,6 @@
 package mypoli.android.quest.usecase
 
+import mypoli.android.ReminderScheduler
 import mypoli.android.common.UseCase
 import mypoli.android.common.Validator.Companion.validate
 import mypoli.android.common.datetime.DateUtils
@@ -8,7 +9,6 @@ import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.quest.usecase.Result.*
 import mypoli.android.quest.usecase.Result.ValidationError.EMPTY_NAME
-import mypoli.android.ReminderScheduler
 import org.threeten.bp.LocalDate
 
 /**
@@ -30,15 +30,17 @@ class SaveQuestUseCase(
     private val reminderScheduler: ReminderScheduler
 ) : UseCase<SaveQuestUseCase.Parameters, Result> {
 
-    data class Parameters(val id: String = "",
-                          val name: String,
-                          val color: Color,
-                          val icon: Icon? = null,
-                          val category: Category,
-                          val startTime: Time? = null,
-                          val scheduledDate: LocalDate,
-                          val duration: Int,
-                          val reminder: Reminder? = null)
+    data class Parameters(
+        val id: String = "",
+        val name: String,
+        val color: Color,
+        val icon: Icon? = null,
+        val category: Category,
+        val startTime: Time? = null,
+        val scheduledDate: LocalDate,
+        val duration: Int,
+        val reminder: Reminder? = null
+    )
 
     override fun execute(parameters: Parameters): Result {
         val errors = validate(parameters).check<ValidationError> {

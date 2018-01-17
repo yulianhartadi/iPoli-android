@@ -27,9 +27,11 @@ class ChangePetUseCaseSpek : Spek({
 
         it("should require pet in inventory") {
             val player = TestUtil.player().copy(
-                inventory = Inventory(pets = setOf(
-                    InventoryPet("", PetAvatar.CHICKEN)
-                ))
+                inventory = Inventory(
+                    pets = setOf(
+                        InventoryPet("", PetAvatar.CHICKEN)
+                    )
+                )
             )
             val exec = { executeUseCase(player, PetAvatar.ELEPHANT) }
             exec shouldThrow IllegalArgumentException::class

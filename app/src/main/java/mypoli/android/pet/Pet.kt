@@ -137,7 +137,11 @@ data class Pet(
         )
     }
 
-    private fun removeMoodPoints(oldHealthPoints: Int, newHealthPoints: Int, rewardMoodPoints: Int): Int {
+    private fun removeMoodPoints(
+        oldHealthPoints: Int,
+        newHealthPoints: Int,
+        rewardMoodPoints: Int
+    ): Int {
         if (newHealthPoints == 0) {
             return 0
         }
@@ -146,7 +150,8 @@ data class Pet(
             return Math.max(Math.min(moodPoints - rewardMoodPoints, GOOD_MIN_MOOD_POINTS - 1), 0)
         }
 
-        val notHealthyAnymore = oldHealthPoints >= HEALTHY_CUTOFF && newHealthPoints < HEALTHY_CUTOFF
+        val notHealthyAnymore =
+            oldHealthPoints >= HEALTHY_CUTOFF && newHealthPoints < HEALTHY_CUTOFF
         val reduceMultiplier = if (notHealthyAnymore) 2 else 1
         return Math.max(moodPoints - rewardMoodPoints * reduceMultiplier, 0)
     }
@@ -240,7 +245,8 @@ enum class PetItem(
 
 enum class AndroidPetItem(
     @StringRes val itemName: Int,
-    @DrawableRes val image: Int) {
+    @DrawableRes val image: Int
+) {
 
     GLASSES(R.string.pet_item_glasses, R.drawable.pet_item_face_glasses),
     BEARD(R.string.pet_item_beard, R.drawable.pet_item_face_beard),
@@ -248,8 +254,14 @@ enum class AndroidPetItem(
     RED_HAT(R.string.pet_item_red_hat, R.drawable.pet_item_head_had_red),
     HORNS(R.string.pet_item_horns, R.drawable.pet_item_head_christmas_horns),
     RED_WHITE_HAT(R.string.pet_item_red_white_hat, R.drawable.pet_item_head_had_red_white),
-    RED_WHITE_SWEATER(R.string.pet_item_red_white_sweater, R.drawable.pet_item_body_sweater_red_white),
-    RED_SNOWFLAKES_SWEATER(R.string.pet_item_snowflakes_sweater, R.drawable.pet_item_body_sweater_red_snowflakes),
+    RED_WHITE_SWEATER(
+        R.string.pet_item_red_white_sweater,
+        R.drawable.pet_item_body_sweater_red_white
+    ),
+    RED_SNOWFLAKES_SWEATER(
+        R.string.pet_item_snowflakes_sweater,
+        R.drawable.pet_item_body_sweater_red_snowflakes
+    ),
     RED_DEER_SWEATER(R.string.pet_item_red_deer_sweater, R.drawable.pet_item_body_sweater_red_deer)
 }
 
@@ -281,7 +293,12 @@ enum class AndroidPetAvatar(
     val items: Map<PetItem, Int>
 ) {
 
-    SEAL(R.string.pet_seal, R.string.pet_seal_description, R.drawable.pet_1, R.drawable.pet_1_head, R.drawable.pet_1_dead,
+    SEAL(
+        R.string.pet_seal,
+        R.string.pet_seal_description,
+        R.drawable.pet_1,
+        R.drawable.pet_1_head,
+        R.drawable.pet_1_dead,
         mapOf(
             SAD to R.drawable.pet_1_sad,
             GOOD to R.drawable.pet_1_good,
@@ -298,8 +315,14 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_1_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_1_item_sweater_red_snowflakes,
             PetItem.RED_DEER_SWEATER to R.drawable.pet_1_item_sweater_red_deer
-        )),
-    PIG(R.string.pet_pig, R.string.pet_pig_description, R.drawable.pet_11, R.drawable.pet_11_head, R.drawable.pet_11_dead,
+        )
+    ),
+    PIG(
+        R.string.pet_pig,
+        R.string.pet_pig_description,
+        R.drawable.pet_11,
+        R.drawable.pet_11_head,
+        R.drawable.pet_11_dead,
         mapOf(
             SAD to R.drawable.pet_11_sad,
             GOOD to R.drawable.pet_11_good,
@@ -316,8 +339,14 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_11_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_11_item_sweater_red_snowflakes,
             PetItem.RED_DEER_SWEATER to R.drawable.pet_11_item_sweater_red_deer
-        )),
-    DOG(R.string.pet_dog, R.string.pet_dog_description, R.drawable.pet_13, R.drawable.pet_13_head, R.drawable.pet_13_dead,
+        )
+    ),
+    DOG(
+        R.string.pet_dog,
+        R.string.pet_dog_description,
+        R.drawable.pet_13,
+        R.drawable.pet_13_head,
+        R.drawable.pet_13_dead,
         mapOf(
             SAD to R.drawable.pet_13_sad,
             GOOD to R.drawable.pet_13_good,
@@ -334,8 +363,14 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_13_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_13_item_sweater_red_snowflakes,
             PetItem.RED_DEER_SWEATER to R.drawable.pet_13_item_sweater_red_deer
-        )),
-    DONKEY(R.string.pet_donkey, R.string.pet_donkey_description, R.drawable.pet_2, R.drawable.pet_2_head, R.drawable.pet_2_dead,
+        )
+    ),
+    DONKEY(
+        R.string.pet_donkey,
+        R.string.pet_donkey_description,
+        R.drawable.pet_2,
+        R.drawable.pet_2_head,
+        R.drawable.pet_2_dead,
         mapOf(
             SAD to R.drawable.pet_2_sad,
             GOOD to R.drawable.pet_2_good,
@@ -352,8 +387,14 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_2_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_2_item_sweater_red_snowflakes,
             PetItem.RED_DEER_SWEATER to R.drawable.pet_2_item_sweater_red_deer
-        )),
-    ELEPHANT(R.string.pet_elephant, R.string.pet_elephant_description, R.drawable.pet_3, R.drawable.pet_3_head, R.drawable.pet_3_dead,
+        )
+    ),
+    ELEPHANT(
+        R.string.pet_elephant,
+        R.string.pet_elephant_description,
+        R.drawable.pet_3,
+        R.drawable.pet_3_head,
+        R.drawable.pet_3_dead,
         mapOf(
             SAD to R.drawable.pet_3_sad,
             GOOD to R.drawable.pet_3_good,
@@ -370,8 +411,14 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_3_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_3_item_sweater_red_snowflakes,
             PetItem.RED_DEER_SWEATER to R.drawable.pet_3_item_sweater_red_deer
-        )),
-    BEAVER(R.string.pet_beaver, R.string.pet_beaver_description, R.drawable.pet_4, R.drawable.pet_4_head, R.drawable.pet_4_dead,
+        )
+    ),
+    BEAVER(
+        R.string.pet_beaver,
+        R.string.pet_beaver_description,
+        R.drawable.pet_4,
+        R.drawable.pet_4_head,
+        R.drawable.pet_4_dead,
         mapOf(
             SAD to R.drawable.pet_4_sad,
             GOOD to R.drawable.pet_4_good,
@@ -388,8 +435,14 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_4_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_4_item_sweater_red_snowflakes,
             PetItem.RED_DEER_SWEATER to R.drawable.pet_4_item_sweater_red_deer
-        )),
-    CHICKEN(R.string.pet_chicken, R.string.pet_chicken_description, R.drawable.pet_5, R.drawable.pet_5_head, R.drawable.pet_5_dead,
+        )
+    ),
+    CHICKEN(
+        R.string.pet_chicken,
+        R.string.pet_chicken_description,
+        R.drawable.pet_5,
+        R.drawable.pet_5_head,
+        R.drawable.pet_5_dead,
         mapOf(
             SAD to R.drawable.pet_5_sad,
             GOOD to R.drawable.pet_5_good,
@@ -406,8 +459,14 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_5_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_5_item_sweater_red_snowflakes,
             PetItem.RED_DEER_SWEATER to R.drawable.pet_5_item_sweater_red_deer
-        )),
-    BEAR(R.string.pet_bear, R.string.pet_bear_description, R.drawable.pet_6, R.drawable.pet_6_head, R.drawable.pet_6_dead,
+        )
+    ),
+    BEAR(
+        R.string.pet_bear,
+        R.string.pet_bear_description,
+        R.drawable.pet_6,
+        R.drawable.pet_6_head,
+        R.drawable.pet_6_dead,
         mapOf(
             SAD to R.drawable.pet_6_sad,
             GOOD to R.drawable.pet_6_good,
@@ -424,8 +483,14 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_6_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_6_item_sweater_red_snowflakes,
             PetItem.RED_DEER_SWEATER to R.drawable.pet_6_item_sweater_red_deer
-        )),
-    LION(R.string.pet_lion, R.string.pet_lion_description, R.drawable.pet_7, R.drawable.pet_7_head, R.drawable.pet_7_dead,
+        )
+    ),
+    LION(
+        R.string.pet_lion,
+        R.string.pet_lion_description,
+        R.drawable.pet_7,
+        R.drawable.pet_7_head,
+        R.drawable.pet_7_dead,
         mapOf(
             SAD to R.drawable.pet_7_sad,
             GOOD to R.drawable.pet_7_good,
@@ -442,8 +507,14 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_7_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_7_item_sweater_red_snowflakes,
             PetItem.RED_DEER_SWEATER to R.drawable.pet_7_item_sweater_red_deer
-        )),
-    CAT(R.string.pet_cat, R.string.pet_cat_description, R.drawable.pet_8, R.drawable.pet_8_head, R.drawable.pet_8_dead,
+        )
+    ),
+    CAT(
+        R.string.pet_cat,
+        R.string.pet_cat_description,
+        R.drawable.pet_8,
+        R.drawable.pet_8_head,
+        R.drawable.pet_8_dead,
         mapOf(
             SAD to R.drawable.pet_8_sad,
             GOOD to R.drawable.pet_8_good,
@@ -460,8 +531,14 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_8_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_8_item_sweater_red_snowflakes,
             PetItem.RED_DEER_SWEATER to R.drawable.pet_8_item_sweater_red_deer
-        )),
-    MONKEY(R.string.pet_monkey, R.string.pet_monkey_description, R.drawable.pet_9, R.drawable.pet_9_head, R.drawable.pet_9_dead,
+        )
+    ),
+    MONKEY(
+        R.string.pet_monkey,
+        R.string.pet_monkey_description,
+        R.drawable.pet_9,
+        R.drawable.pet_9_head,
+        R.drawable.pet_9_dead,
         mapOf(
             SAD to R.drawable.pet_9_sad,
             GOOD to R.drawable.pet_9_good,
@@ -478,8 +555,14 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_9_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_9_item_sweater_red_snowflakes,
             PetItem.RED_DEER_SWEATER to R.drawable.pet_9_item_sweater_red_deer
-        )),
-    DUCK(R.string.pet_duck, R.string.pet_duck_description, R.drawable.pet_10, R.drawable.pet_10_head, R.drawable.pet_10_dead,
+        )
+    ),
+    DUCK(
+        R.string.pet_duck,
+        R.string.pet_duck_description,
+        R.drawable.pet_10,
+        R.drawable.pet_10_head,
+        R.drawable.pet_10_dead,
         mapOf(
             SAD to R.drawable.pet_10_sad,
             GOOD to R.drawable.pet_10_good,
@@ -496,8 +579,14 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_10_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_10_item_sweater_red_snowflakes,
             PetItem.RED_DEER_SWEATER to R.drawable.pet_10_item_sweater_red_deer
-        )),
-    ZEBRA(R.string.pet_zebra, R.string.pet_zebra_description, R.drawable.pet_12, R.drawable.pet_12_head, R.drawable.pet_12_dead,
+        )
+    ),
+    ZEBRA(
+        R.string.pet_zebra,
+        R.string.pet_zebra_description,
+        R.drawable.pet_12,
+        R.drawable.pet_12_head,
+        R.drawable.pet_12_dead,
         mapOf(
             SAD to R.drawable.pet_12_sad,
             GOOD to R.drawable.pet_12_good,
@@ -514,5 +603,6 @@ enum class AndroidPetAvatar(
             PetItem.RED_WHITE_SWEATER to R.drawable.pet_12_item_sweater_red_white,
             PetItem.RED_SNOWFLAKES_SWEATER to R.drawable.pet_12_item_sweater_red_snowflakes,
             PetItem.RED_DEER_SWEATER to R.drawable.pet_12_item_sweater_red_deer
-        ))
+        )
+    )
 }

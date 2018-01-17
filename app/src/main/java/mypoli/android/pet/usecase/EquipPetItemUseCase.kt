@@ -9,7 +9,8 @@ import mypoli.android.player.persistence.PlayerRepository
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 12/13/17.
  */
-class EquipPetItemUseCase(private val playerRepository: PlayerRepository) : UseCase<EquipPetItemUseCase.Params, Player> {
+class EquipPetItemUseCase(private val playerRepository: PlayerRepository) :
+    UseCase<EquipPetItemUseCase.Params, Player> {
 
     override fun execute(parameters: Params): Player {
         val item = parameters.item

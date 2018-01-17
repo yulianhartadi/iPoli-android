@@ -24,7 +24,8 @@ interface PlayerRepository : Repository<Player> {
     fun findSchemaVersion(): Int?
 }
 
-class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineContext) : BaseCouchbaseRepository<Player, CouchbasePlayer>(database, coroutineContext), PlayerRepository {
+class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineContext) :
+    BaseCouchbaseRepository<Player, CouchbasePlayer>(database, coroutineContext), PlayerRepository {
 
     override fun findSchemaVersion(): Int? {
         val resultSet = Query.select(SelectResult.expression(Expression.property("schemaVersion")))
@@ -98,7 +99,10 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             avatar = Avatar.fromCode(cp.avatarCode)!!,
             currentTheme = Theme.valueOf(cp.currentTheme),
             inventory = inventory,
-            createdAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(cp.createdAt), ZoneId.systemDefault()),
+            createdAt = LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(cp.createdAt),
+                ZoneId.systemDefault()
+            ),
             pet = pet
         )
     }
@@ -120,7 +124,8 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             it.experience = entity.experience
             it.authProvider = createCouchbaseAuthProvider(entity.authProvider).map
             it.avatarCode = entity.avatar.code
-            it.createdAt = entity.createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            it.createdAt =
+                entity.createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
             it.currentTheme = entity.currentTheme.name
             it.pet = createCouchbasePet(entity.pet).map
             it.inventory = createCouchbaseInventory(entity.inventory).map

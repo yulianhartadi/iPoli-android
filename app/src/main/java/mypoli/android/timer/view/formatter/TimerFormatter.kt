@@ -11,7 +11,8 @@ object TimerFormatter {
     fun format(timerMillis: Long): String {
         val hours = TimeUnit.MILLISECONDS.toHours(timerMillis).toInt()
         val minutes = TimeUnit.MILLISECONDS.toMinutes(timerMillis).toInt() - hours * 60
-        val seconds = TimeUnit.MILLISECONDS.toSeconds(timerMillis).toInt() - hours * 3600 - minutes * 60
+        val seconds =
+            TimeUnit.MILLISECONDS.toSeconds(timerMillis).toInt() - hours * 3600 - minutes * 60
 
         var text = String.format("%02d:%02d", minutes, seconds)
         if (hours > 0) {

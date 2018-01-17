@@ -43,7 +43,8 @@ sealed class LevelUpIntent : Intent {
 
 class LevelUpPresenter(
     private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
-    coroutineContext: CoroutineContext) : BaseMviPresenter<ViewStateRenderer<LevelUpViewState>, LevelUpViewState, LevelUpIntent>(
+    coroutineContext: CoroutineContext
+) : BaseMviPresenter<ViewStateRenderer<LevelUpViewState>, LevelUpViewState, LevelUpIntent>(
     LevelUpViewState(),
     coroutineContext
 ) {
@@ -70,7 +71,8 @@ class LevelUpPresenter(
 
 }
 
-class LevelUpPopup(private val newLevel: Int) : MviPopup<LevelUpViewState, LevelUpPopup, LevelUpPresenter, LevelUpIntent>() {
+class LevelUpPopup(private val newLevel: Int) :
+    MviPopup<LevelUpViewState, LevelUpPopup, LevelUpPresenter, LevelUpIntent>() {
 
     private val presenter by required { levelUpPresenter }
 
@@ -108,8 +110,10 @@ class LevelUpPopup(private val newLevel: Int) : MviPopup<LevelUpViewState, Level
 
         val typewriterTitleAnim = TypewriterTextAnimator.of(title, "You reached new level")
         val animSet = AnimatorSet()
-        animSet.playSequentially(typewriterTitleAnim, levelBadgeAnimation(contentView, level),
-            claimRewardAnimation(contentView))
+        animSet.playSequentially(
+            typewriterTitleAnim, levelBadgeAnimation(contentView, level),
+            claimRewardAnimation(contentView)
+        )
         animSet.start()
 
         val rewardUrl = Constants.LEVEL_UP_REWARDS[(level - 2) % Constants.LEVEL_UP_REWARDS.size]

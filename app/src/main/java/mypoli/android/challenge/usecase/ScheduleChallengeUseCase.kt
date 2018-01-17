@@ -15,7 +15,8 @@ import java.util.*
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 12/29/17.
  */
-class ScheduleChallengeUseCase(private val questRepository: QuestRepository) : UseCase<ScheduleChallengeUseCase.Params, List<Quest>> {
+class ScheduleChallengeUseCase(private val questRepository: QuestRepository) :
+    UseCase<ScheduleChallengeUseCase.Params, List<Quest>> {
 
     private lateinit var startDate: LocalDate
     private lateinit var endDate: LocalDate
@@ -57,7 +58,8 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) : U
                             startDay
                         }
                     } else if (q.preferredDayOfWeek != null) {
-                        val preferredDate = startDate.with(TemporalAdjusters.nextOrSame(q.preferredDayOfWeek))
+                        val preferredDate =
+                            startDate.with(TemporalAdjusters.nextOrSame(q.preferredDayOfWeek))
                         if (preferredDate.isAfter(endDate)) {
                             chooseRandomScheduledDate(randomSeed)
                         } else {
@@ -90,7 +92,11 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) : U
         return s + 1 >= startAtDay
     }
 
-    private fun createFromOneTime(it: Challenge.Quest.OneTime, challenge: Challenge, scheduledDate: LocalDate) =
+    private fun createFromOneTime(
+        it: Challenge.Quest.OneTime,
+        challenge: Challenge,
+        scheduledDate: LocalDate
+    ) =
         Quest(
             name = it.name,
             color = it.color,
@@ -101,7 +107,11 @@ class ScheduleChallengeUseCase(private val questRepository: QuestRepository) : U
             scheduledDate = scheduledDate
         )
 
-    private fun createFromRepeating(it: Challenge.Quest.Repeating, challenge: Challenge, scheduledDate: LocalDate) =
+    private fun createFromRepeating(
+        it: Challenge.Quest.Repeating,
+        challenge: Challenge,
+        scheduledDate: LocalDate
+    ) =
         Quest(
             name = it.name,
             color = it.color,

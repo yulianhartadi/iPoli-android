@@ -26,7 +26,8 @@ import timber.log.Timber
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 6.01.18.
  */
-class TimerViewController : MviViewController<TimerViewState, TimerViewController, TimerPresenter, TimerIntent> {
+class TimerViewController :
+    MviViewController<TimerViewState, TimerViewController, TimerPresenter, TimerIntent> {
 
     private lateinit var questId: String
 
@@ -44,7 +45,11 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
 
     private lateinit var updateTimer: () -> Unit
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
         val view = inflater.inflate(R.layout.controller_timer, container, false)
 
         renderStartStopButton(view.startStop, true)
@@ -63,7 +68,11 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
     }
 
     private fun createProgressView(view: View) =
-        LayoutInflater.from(view.context).inflate(R.layout.item_timer_progress, view.timerProgressContainer, false)
+        LayoutInflater.from(view.context).inflate(
+            R.layout.item_timer_progress,
+            view.timerProgressContainer,
+            false
+        )
 
     override fun onAttach(view: View) {
         super.onAttach(view)
@@ -187,7 +196,10 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
 
     private fun addProgressIndicator(view: View, progress: PomodoroProgress) {
         val progressView = createProgressView(view)
-        val progressDrawable = resources!!.getDrawable(R.drawable.timer_progress_item, view.context.theme) as GradientDrawable
+        val progressDrawable = resources!!.getDrawable(
+            R.drawable.timer_progress_item,
+            view.context.theme
+        ) as GradientDrawable
 
         when (progress) {
             PomodoroProgress.INCOMPLETE_WORK -> {

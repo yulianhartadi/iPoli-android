@@ -3,6 +3,7 @@ package mypoli.android.quest.usecase
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import mypoli.android.ReminderScheduler
 import mypoli.android.common.datetime.Time
 import mypoli.android.player.usecase.RemoveRewardFromPlayerUseCase
 import mypoli.android.quest.Category
@@ -10,7 +11,6 @@ import mypoli.android.quest.Color
 import mypoli.android.quest.Quest
 import mypoli.android.quest.Reminder
 import mypoli.android.quest.data.persistence.QuestRepository
-import mypoli.android.ReminderScheduler
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -41,7 +41,7 @@ class UndoCompleteQuestUseCaseSpek : Spek({
         var questRepo = mock<QuestRepository>()
 
         var reminderScheduler = mock<ReminderScheduler>()
-        
+
         val removeRewardFromPlayerUseCase = mock<RemoveRewardFromPlayerUseCase>()
 
         var useCase = UndoCompletedQuestUseCase(

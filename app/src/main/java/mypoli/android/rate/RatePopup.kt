@@ -55,7 +55,8 @@ data class RateViewState(
 
 class RatePresenter(
     private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
-    coroutineContext: CoroutineContext) :
+    coroutineContext: CoroutineContext
+) :
     BaseMviPresenter<ViewStateRenderer<RateViewState>, RateViewState, RateIntent>(
         RateViewState(LOADING),
         coroutineContext
@@ -173,7 +174,8 @@ class RatePopup :
                     logEvent("rate_positive", "answer", "yes")
                     saveDoNotShowAgainPref(view.context)
                     val uri = Uri.parse("market://details?id=" + view.context.packageName)
-                    val linkToMarket = android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
+                    val linkToMarket =
+                        android.content.Intent(android.content.Intent.ACTION_VIEW, uri)
                     view.context.startActivity(linkToMarket)
                     hide()
                 }
@@ -187,8 +189,10 @@ class RatePopup :
     }
 
     private fun logEvent(name: String, paramName: String, paramValue: String) {
-        Amplitude.getInstance().logEvent(name,
-            JSONObject().put(paramName, paramValue))
+        Amplitude.getInstance().logEvent(
+            name,
+            JSONObject().put(paramName, paramValue)
+        )
     }
 
     private fun changeTitle(view: View, @StringRes title: Int) {

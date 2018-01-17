@@ -13,9 +13,10 @@ class Navigator(private val router: Router?) {
 
     fun showHome() {
         val handler = FadeChangeHandler()
-        router?.pushController(RouterTransaction.with(HomeViewController())
-            .pushChangeHandler(handler)
-            .popChangeHandler(handler)
+        router?.pushController(
+            RouterTransaction.with(HomeViewController())
+                .pushChangeHandler(handler)
+                .popChangeHandler(handler)
         )
     }
 }

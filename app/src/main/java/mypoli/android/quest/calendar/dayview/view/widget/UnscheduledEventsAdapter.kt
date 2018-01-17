@@ -18,13 +18,20 @@ interface UnscheduledEvent {
     val duration: Int
 }
 
-abstract class UnscheduledEventsAdapter<E : UnscheduledEvent>(@LayoutRes private val unscheduledEventLayout: Int,
-                                                              private val items: MutableList<E>,
-                                                              private val calendarDayView: CalendarDayView)
-    : RecyclerView.Adapter<UnscheduledEventsAdapter.ViewHolder>() {
+abstract class UnscheduledEventsAdapter<E : UnscheduledEvent>(
+    @LayoutRes private val unscheduledEventLayout: Int,
+    private val items: MutableList<E>,
+    private val calendarDayView: CalendarDayView
+) : RecyclerView.Adapter<UnscheduledEventsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        ViewHolder(LayoutInflater.from(parent.context).inflate(unscheduledEventLayout, parent, false))
+        ViewHolder(
+            LayoutInflater.from(parent.context).inflate(
+                unscheduledEventLayout,
+                parent,
+                false
+            )
+        )
 
     override fun getItemCount() = items.size
 

@@ -4,15 +4,15 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.reset
+import mypoli.android.ReminderScheduler
 import mypoli.android.TestUtil
 import mypoli.android.common.SimpleReward
 import mypoli.android.common.datetime.Time
 import mypoli.android.pet.Food
 import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.player.usecase.RewardPlayerUseCase
-import mypoli.android.quest.data.persistence.QuestRepository
-import mypoli.android.ReminderScheduler
 import mypoli.android.quest.*
+import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.rate.RatePopupScheduler
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
@@ -132,9 +132,11 @@ class CompleteQuestUseCaseSpek : Spek({
 
         it("should not change bounty") {
             val noChangeUseCase = CompleteQuestUseCase(
-                createQuestRepository(quest.copy(
-                    bounty = Quest.Bounty.None
-                )),
+                createQuestRepository(
+                    quest.copy(
+                        bounty = Quest.Bounty.None
+                    )
+                ),
                 playerRepo,
                 reminderScheduler,
                 questCompleteScheduler,
@@ -154,11 +156,13 @@ class CompleteQuestUseCaseSpek : Spek({
             val xp = 10
             val coins = 20
             val noNewBountyUseCase = CompleteQuestUseCase(
-                createQuestRepository(quest.copy(
-                    experience = xp,
-                    coins = coins,
-                    bounty = Quest.Bounty.Food(Food.BANANA)
-                )),
+                createQuestRepository(
+                    quest.copy(
+                        experience = xp,
+                        coins = coins,
+                        bounty = Quest.Bounty.Food(Food.BANANA)
+                    )
+                ),
                 playerRepo,
                 reminderScheduler,
                 questCompleteScheduler,

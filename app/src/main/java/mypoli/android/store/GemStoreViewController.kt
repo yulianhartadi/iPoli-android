@@ -28,7 +28,10 @@ import space.traversal.kapsule.required
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 27.12.17.
  */
-class GemStoreViewController(args: Bundle? = null) : MviViewController<GemStoreViewState, GemStoreViewController, GemStorePresenter, GemStoreIntent>(args) {
+class GemStoreViewController(args: Bundle? = null) :
+    MviViewController<GemStoreViewState, GemStoreViewController, GemStorePresenter, GemStoreIntent>(
+        args
+    ) {
 
     private val presenter by required { gemStorePresenter }
 
@@ -36,7 +39,11 @@ class GemStoreViewController(args: Bundle? = null) : MviViewController<GemStoreV
 
     private lateinit var checkout: UiCheckout
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_gem_store, container, false)
 
@@ -59,7 +66,8 @@ class GemStoreViewController(args: Bundle? = null) : MviViewController<GemStoreV
                 .icon(GoogleMaterial.Icon.gmd_favorite)
                 .colorRes(R.color.md_white)
                 .sizeDp(24),
-            null, null, null)
+            null, null, null
+        )
 
         return view
     }

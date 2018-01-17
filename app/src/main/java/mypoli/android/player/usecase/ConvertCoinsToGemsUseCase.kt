@@ -8,7 +8,8 @@ import mypoli.android.player.persistence.PlayerRepository
 /**
  * Created by vini on 12/21/17.
  */
-class ConvertCoinsToGemsUseCase(private val playerRepository: PlayerRepository) : UseCase<ConvertCoinsToGemsUseCase.Params, ConvertCoinsToGemsUseCase.Result> {
+class ConvertCoinsToGemsUseCase(private val playerRepository: PlayerRepository) :
+    UseCase<ConvertCoinsToGemsUseCase.Params, ConvertCoinsToGemsUseCase.Result> {
 
     override fun execute(parameters: Params): Result {
         val gems = parameters.gems

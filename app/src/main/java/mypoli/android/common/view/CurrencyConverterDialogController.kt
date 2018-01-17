@@ -81,7 +81,8 @@ data class CurrencyConverterViewState(
 class CurrencyConverterPresenter(
     private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
     private val convertCoinsToGemsUseCase: ConvertCoinsToGemsUseCase,
-    coroutineContext: CoroutineContext) :
+    coroutineContext: CoroutineContext
+) :
     BaseMviPresenter<ViewStateRenderer<CurrencyConverterViewState>, CurrencyConverterViewState, CurrencyConverterIntent>(
         CurrencyConverterViewState(LOADING),
         coroutineContext
@@ -140,7 +141,8 @@ class CurrencyConverterPresenter(
             }
 
             is Convert -> {
-                val result = convertCoinsToGemsUseCase.execute(ConvertCoinsToGemsUseCase.Params(intent.gems))
+                val result =
+                    convertCoinsToGemsUseCase.execute(ConvertCoinsToGemsUseCase.Params(intent.gems))
                 val type = when (result) {
                     is ConvertCoinsToGemsUseCase.Result.TooExpensive -> GEMS_TOO_EXPENSIVE
                     is ConvertCoinsToGemsUseCase.Result.GemsConverted -> GEMS_CONVERTED
@@ -191,7 +193,11 @@ class CurrencyConverterDialogController :
         return view
     }
 
-    override fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog =
+    override fun onCreateDialog(
+        dialogBuilder: AlertDialog.Builder,
+        contentView: View,
+        savedViewState: Bundle?
+    ): AlertDialog =
         dialogBuilder
             .setNegativeButton(R.string.done, null)
             .create()
@@ -205,7 +211,8 @@ class CurrencyConverterDialogController :
         when (state.type) {
             DATA_CHANGED -> {
                 changeIcon(AndroidPetAvatar.valueOf(state.petAvatar!!.name).headImage)
-                dialog.findViewById<TextView>(R.id.headerCoins)!!.text = state.playerCoins.toString()
+                dialog.findViewById<TextView>(R.id.headerCoins)!!.text =
+                    state.playerCoins.toString()
                 dialog.findViewById<TextView>(R.id.headerGems)!!.text = state.playerGems.toString()
                 view.coins.text = state.convertCoins.toString()
                 view.gems.text = state.convertGems.toString()
@@ -215,7 +222,11 @@ class CurrencyConverterDialogController :
                 view.seekBar.progress = 0
 
                 view.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                    override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                    override fun onProgressChanged(
+                        seekBar: SeekBar,
+                        progress: Int,
+                        fromUser: Boolean
+                    ) {
                         if (fromUser) {
                             send(ChangeConvertDeal(progress))
                         }
@@ -267,7 +278,11 @@ class CurrencyConverterDialogController :
             }
 
             GEMS_TOO_EXPENSIVE -> {
-                Toast.makeText(view.context, stringRes(R.string.iconvert_gems_not_enough_coins), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    view.context,
+                    stringRes(R.string.iconvert_gems_not_enough_coins),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -339,7 +354,11 @@ class CurrencyConverterDialogController :
         val originalX = view.gem.x
         val originalY = view.gem.y
 
-        val x = ObjectAnimator.ofFloat(view.gem, "x", view.width.toFloat() - 2 * dialog.findViewById<TextView>(R.id.headerGems)!!.width)
+        val x = ObjectAnimator.ofFloat(
+            view.gem,
+            "x",
+            view.width.toFloat() - 2 * dialog.findViewById<TextView>(R.id.headerGems)!!.width
+        )
         val y = ObjectAnimator.ofFloat(view.gem, "y", 0f)
         val alpha = ObjectAnimator.ofFloat(view.gem, "alpha", 1f, 0f)
 

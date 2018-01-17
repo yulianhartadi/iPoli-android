@@ -41,13 +41,18 @@ import space.traversal.kapsule.required
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 11/24/17.
  */
-class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, PetViewController, PetPresenter, PetIntent>(args) {
+class PetViewController(args: Bundle? = null) :
+    MviViewController<PetViewState, PetViewController, PetPresenter, PetIntent>(args) {
 
     private val presenter by required { petPresenter }
 
     override fun createPresenter() = presenter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
         val view = inflater.inflate(R.layout.controller_pet, container, false)
         setHasOptionsMenu(true)
 
@@ -66,7 +71,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         )
 
         val initList: (RecyclerView) -> Unit = {
-            it.layoutManager = LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
+            it.layoutManager =
+                LinearLayoutManager(activity!!, LinearLayoutManager.HORIZONTAL, false)
             it.post {
                 it.x = view.width.toFloat()
             }
@@ -177,7 +183,11 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
             FOOD_TOO_EXPENSIVE -> {
                 CurrencyConverterDialogController().showDialog(router, "currency-converter")
-                Toast.makeText(view.context, stringRes(R.string.food_too_expensive), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    view.context,
+                    stringRes(R.string.food_too_expensive),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             PET_CHANGED -> {
@@ -192,9 +202,14 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             }
 
             RENAME_PET ->
-                TextPickerDialogController({ text ->
-                    send(RenamePetIntent(text))
-                }, stringRes(R.string.dialog_rename_pet_title), state.petName, hint = stringRes(R.string.dialog_rename_pet_hint))
+                TextPickerDialogController(
+                    { text ->
+                        send(RenamePetIntent(text))
+                    },
+                    stringRes(R.string.dialog_rename_pet_title),
+                    state.petName,
+                    hint = stringRes(R.string.dialog_rename_pet_hint)
+                )
                     .showDialog(router, "text-picker-tag")
 
             PET_RENAMED ->
@@ -251,7 +266,11 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
             ITEM_TOO_EXPENSIVE -> {
                 CurrencyConverterDialogController().showDialog(router, "currency-converter")
-                Toast.makeText(view.context, stringRes(R.string.pet_item_too_expensive), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    view.context,
+                    stringRes(R.string.pet_item_too_expensive),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -310,7 +329,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         val slideUpAnim = ObjectAnimator.ofFloat(view.cardContainer, "y", 0f, -containerHeight)
         slideUpAnim.duration = shortAnimTime
 
-        val slideDownAnim = ObjectAnimator.ofFloat(view.cardContainer, "y", -showViewHeight.toFloat(), 0f)
+        val slideDownAnim =
+            ObjectAnimator.ofFloat(view.cardContainer, "y", -showViewHeight.toFloat(), 0f)
         slideDownAnim.duration = shortAnimTime
 
         slideDownAnim.addListener(object : AnimatorListenerAdapter() {
@@ -330,14 +350,18 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     private fun renderItemCategoryFabs(view: View, state: PetViewState) {
         view.fabHatItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
         view.fabMaskItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
-        view.fabBodyArmorItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorPrimary))
+        view.fabBodyArmorItems.backgroundTintList =
+            ColorStateList.valueOf(attr(R.attr.colorPrimary))
 
         val itemsType = state.comparedItemsType!!
 
         when (itemsType) {
-            PetItemType.HAT -> view.fabHatItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorAccent))
-            PetItemType.MASK -> view.fabMaskItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorAccent))
-            PetItemType.BODY_ARMOR -> view.fabBodyArmorItems.backgroundTintList = ColorStateList.valueOf(attr(R.attr.colorAccent))
+            PetItemType.HAT -> view.fabHatItems.backgroundTintList =
+                ColorStateList.valueOf(attr(R.attr.colorAccent))
+            PetItemType.MASK -> view.fabMaskItems.backgroundTintList =
+                ColorStateList.valueOf(attr(R.attr.colorAccent))
+            PetItemType.BODY_ARMOR -> view.fabBodyArmorItems.backgroundTintList =
+                ColorStateList.valueOf(attr(R.attr.colorAccent))
         }
     }
 
@@ -417,11 +441,19 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         state.itemComparison?.let {
             renderItemChangeResult(it.coinBonusDiff, it.coinBonusChange, view.newCoinBonusDiff)
             renderItemChangeResult(it.xpBonusDiff, it.xpBonusChange, view.newXPBonusDiff)
-            renderItemChangeResult(it.bountyBonusDiff, it.bountyBonusChange, view.newBountyBonusDiff)
+            renderItemChangeResult(
+                it.bountyBonusDiff,
+                it.bountyBonusChange,
+                view.newBountyBonusDiff
+            )
         }
     }
 
-    private fun renderItemBonus(bonus: Int, changeType: ItemComparisonViewModel.Change, bonusView: TextView) {
+    private fun renderItemBonus(
+        bonus: Int,
+        changeType: ItemComparisonViewModel.Change,
+        bonusView: TextView
+    ) {
         when (changeType) {
             ItemComparisonViewModel.Change.POSITIVE -> {
                 bonusView.text = "+$bonus%"
@@ -435,7 +467,11 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         }
     }
 
-    private fun renderItemChangeResult(change: Int, changeType: ItemComparisonViewModel.Change, changeView: TextView) {
+    private fun renderItemChangeResult(
+        change: Int,
+        changeType: ItemComparisonViewModel.Change,
+        changeView: TextView
+    ) {
 
         when (changeType) {
             ItemComparisonViewModel.Change.POSITIVE -> {
@@ -448,7 +484,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                         .icon(Ionicons.Icon.ion_arrow_up_b)
                         .colorRes(R.color.md_green_500)
                         .sizeDp(12),
-                    null)
+                    null
+                )
             }
             ItemComparisonViewModel.Change.NEGATIVE -> {
                 changeView.text = change.toString()
@@ -460,7 +497,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                         .icon(Ionicons.Icon.ion_arrow_down_b)
                         .colorRes(R.color.md_red_500)
                         .sizeDp(12),
-                    null)
+                    null
+                )
             }
             ItemComparisonViewModel.Change.NO_CHANGE -> {
                 changeView.text = "$change="
@@ -469,7 +507,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                     null,
                     null,
                     null,
-                    null)
+                    null
+                )
             }
         }
     }
@@ -487,7 +526,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         val anims = listOf<FloatingActionButton>(
             view.fabBodyArmorItems,
             view.fabMaskItems,
-            view.fabHatItems)
+            view.fabHatItems
+        )
             .map { createPopupAnimator(it, reverse) }
 
         val anim = AnimatorSet()
@@ -547,7 +587,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             lp.verticalBias = PET_BOTTOM_BORDER_PERCENT
             petView.layoutParams = lp
 
-            val hatDrawable = view.context.resources.getDrawable(R.drawable.pet_3_item_head_christmas_horns, null)
+            val hatDrawable =
+                view.context.resources.getDrawable(R.drawable.pet_3_item_head_christmas_horns, null)
             val originalHatHeight = hatDrawable.intrinsicHeight
             val newHatHeight = originalHatHeight * scale
 
@@ -568,10 +609,18 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
             view.petState,
             view.bodyArmor,
             view.mask,
-            view.hat)
+            view.hat
+        )
             .map {
-                ObjectAnimator.ofFloat(it, "y",
-                    it.y, it.y - ViewUtils.dpToPx(30f, view.context), it.y, it.y - ViewUtils.dpToPx(24f, view.context), it.y)
+                ObjectAnimator.ofFloat(
+                    it,
+                    "y",
+                    it.y,
+                    it.y - ViewUtils.dpToPx(30f, view.context),
+                    it.y,
+                    it.y - ViewUtils.dpToPx(24f, view.context),
+                    it.y
+                )
             }
 
         val set = AnimatorSet()
@@ -656,8 +705,10 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
     private fun playFeedPetAnimation(view: View, state: PetViewState) {
         val selectedFood = view.selectedFood
         val duration = 300L
-        val slideAnim = ObjectAnimator.ofFloat(selectedFood, "x", 0f,
-            (view.width / 2 - selectedFood.width).toFloat())
+        val slideAnim = ObjectAnimator.ofFloat(
+            selectedFood, "x", 0f,
+            (view.width / 2 - selectedFood.width).toFloat()
+        )
         val fadeAnim = ObjectAnimator.ofFloat(selectedFood, "alpha", 1f, 0f)
         fadeAnim.startDelay = duration / 2
 
@@ -732,7 +783,13 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         return anim
     }
 
-    private fun playHideListAnimation(view: View, listView: View, moveFAB: FloatingActionButton, showFAB: FloatingActionButton, heightOffset: Float) {
+    private fun playHideListAnimation(
+        view: View,
+        listView: View,
+        moveFAB: FloatingActionButton,
+        showFAB: FloatingActionButton,
+        heightOffset: Float
+    ) {
         val listAnim = AnimatorSet()
         listAnim.playTogether(
             ObjectAnimator.ofFloat(listView, "alpha", 1f, 0f),
@@ -742,7 +799,12 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
 
         animator.playSequentially(
             listAnim,
-            ObjectAnimator.ofFloat(moveFAB, "y", moveFAB.y, view.contentContainer.height - heightOffset),
+            ObjectAnimator.ofFloat(
+                moveFAB,
+                "y",
+                moveFAB.y,
+                view.contentContainer.height - heightOffset
+            ),
             ObjectAnimator.ofFloat(showFAB, "alpha", 0f, 1f)
         )
         animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
@@ -758,7 +820,12 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         val animator = AnimatorSet()
         animator.playSequentially(
             ObjectAnimator.ofFloat(hideView, "alpha", 1f, 0f),
-            ObjectAnimator.ofFloat(moveView, "y", moveView.y, view.itemList.y - moveView.height - ViewUtils.dpToPx(8f, view.context)),
+            ObjectAnimator.ofFloat(
+                moveView,
+                "y",
+                moveView.y,
+                view.itemList.y - moveView.height - ViewUtils.dpToPx(8f, view.context)
+            ),
             listAnim
         )
         animator.duration = intRes(android.R.integer.config_shortAnimTime).toLong()
@@ -773,9 +840,14 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         return b
     }
 
-    data class PetFoodViewModel(@DrawableRes val image: Int, val price: Food.Price, val food: Food, val quantity: Int = 0)
+    data class PetFoodViewModel(
+        @DrawableRes val image: Int, val price: Food.Price,
+        val food: Food,
+        val quantity: Int = 0
+    )
 
-    inner class PetFoodAdapter(private var foodItems: List<PetFoodViewModel>) : RecyclerView.Adapter<ViewHolder>() {
+    inner class PetFoodAdapter(private var foodItems: List<PetFoodViewModel>) :
+        RecyclerView.Adapter<ViewHolder>() {
         override fun getItemCount() = foodItems.size
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -790,7 +862,8 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 foodPrice.text = "= x${vm.price.quantity}"
                 foodPrice.setCompoundDrawablesWithIntrinsicBounds(
                     ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_gem_16dp),
-                    null, null, null)
+                    null, null, null
+                )
             }
             holder.itemView.setOnClickListener {
                 send(FeedIntent(vm.food))
@@ -803,7 +876,13 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_pet_food, parent, false))
+            ViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_pet_food,
+                    parent,
+                    false
+                )
+            )
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
@@ -817,10 +896,17 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
         val isEquipped: Boolean = false
     )
 
-    inner class PetItemAdapter(private var petItems: List<PetItemViewModel>) : RecyclerView.Adapter<ViewHolder>() {
+    inner class PetItemAdapter(private var petItems: List<PetItemViewModel>) :
+        RecyclerView.Adapter<ViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_pet_item, parent, false))
+            ViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_pet_item,
+                    parent,
+                    false
+                )
+            )
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val vm = petItems[position]
@@ -851,7 +937,10 @@ class PetViewController(args: Bundle? = null) : MviViewController<PetViewState, 
                 }
                 else -> {
                     price.setCompoundDrawablesWithIntrinsicBounds(
-                        ContextCompat.getDrawable(price.context, R.drawable.ic_gem_16dp), null, null, null
+                        ContextCompat.getDrawable(price.context, R.drawable.ic_gem_16dp),
+                        null,
+                        null,
+                        null
                     )
                     price.text = vm.gemPrice.toString()
                 }

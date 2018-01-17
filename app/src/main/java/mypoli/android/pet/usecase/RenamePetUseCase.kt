@@ -8,7 +8,8 @@ import mypoli.android.player.persistence.PlayerRepository
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 12/13/17.
  */
-class RenamePetUseCase(private val playerRepository: PlayerRepository) : UseCase<RenamePetUseCase.Params, RenamePetUseCase.Result> {
+class RenamePetUseCase(private val playerRepository: PlayerRepository) :
+    UseCase<RenamePetUseCase.Params, RenamePetUseCase.Result> {
 
     data class Params(val name: String)
 

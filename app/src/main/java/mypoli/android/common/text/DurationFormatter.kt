@@ -1,8 +1,8 @@
 package mypoli.android.common.text
 
 import android.content.Context
-import mypoli.android.R
 import mypoli.android.Constants
+import mypoli.android.R
 import java.util.concurrent.TimeUnit
 
 
@@ -36,7 +36,10 @@ object DurationFormatter {
             return formatEmptyDuration(context)
         }
         if (duration <= Constants.QUEST_MIN_DURATION) {
-            return String.format(context.getString(R.string.duration_minutes_or_less), Constants.QUEST_MIN_DURATION)
+            return String.format(
+                context.getString(R.string.duration_minutes_or_less),
+                Constants.QUEST_MIN_DURATION
+            )
         }
         val hours = TimeUnit.MINUTES.toHours(duration.toLong()).toInt()
         val mins = duration - hours * 60

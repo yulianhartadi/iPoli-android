@@ -16,14 +16,19 @@ import org.threeten.bp.ZoneId
 import kotlin.coroutines.experimental.CoroutineContext
 
 interface QuestRepository : Repository<Quest> {
-    fun listenForScheduledBetween(startDate: LocalDate, endDate: LocalDate): ReceiveChannel<List<Quest>>
+    fun listenForScheduledBetween(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): ReceiveChannel<List<Quest>>
+
     fun listenForDate(date: LocalDate): ReceiveChannel<List<Quest>>
     fun findNextQuestsToRemind(afterTime: Long = DateUtils.nowUTC().time): List<Quest>
     fun findQuestsToRemind(time: Long): List<Quest>
     fun findCompletedForDate(date: LocalDate): List<Quest>
 }
 
-data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) : CouchbasePersistedModel {
+data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
+    CouchbasePersistedModel {
     override var type: String by map
     override var id: String by map
     var name: String by map
@@ -72,7 +77,8 @@ data class CouchbaseTimeRange(val map: MutableMap<String, Any?> = mutableMapOf()
     var end: Long? by map
 }
 
-class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineContext) : BaseCouchbaseRepository<Quest, CouchbaseQuest>(database, coroutineContext), QuestRepository {
+class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineContext) :
+    BaseCouchbaseRepository<Quest, CouchbaseQuest>(database, coroutineContext), QuestRepository {
 
     override val modelType = CouchbaseQuest.TYPE
 
@@ -84,8 +90,10 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
 
     override fun listenForDate(date: LocalDate) =
         listenForChanges(
-            where = property("scheduledDate"
-            ).equalTo(date.startOfDayUTC()))
+            where = property(
+                "scheduledDate"
+            ).equalTo(date.startOfDayUTC())
+        )
 
     override fun findNextQuestsToRemind(afterTime: Long): List<Quest> {
 

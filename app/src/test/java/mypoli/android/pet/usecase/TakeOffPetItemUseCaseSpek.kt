@@ -21,7 +21,11 @@ class TakeOffPetItemUseCaseSpek : Spek({
     describe("TakeOffPetItemUseCase") {
 
         fun executeUseCase(player: Player, petItem: PetItem) =
-            TakeOffPetItemUseCase(TestUtil.playerRepoMock(player)).execute(TakeOffPetItemUseCase.Params(petItem))
+            TakeOffPetItemUseCase(TestUtil.playerRepoMock(player)).execute(
+                TakeOffPetItemUseCase.Params(
+                    petItem
+                )
+            )
 
         it("should require equipped item") {
 

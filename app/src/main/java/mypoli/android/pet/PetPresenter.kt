@@ -195,7 +195,12 @@ class PetPresenter(
                         if (itemType == type) petCompareItemImage else equippedImage?.image
                     }
 
-                val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(state.equippedItem?.item, intent.newItem))
+                val cmpRes = comparePetItemsUseCase.execute(
+                    ComparePetItemsUseCase.Params(
+                        state.equippedItem?.item,
+                        intent.newItem
+                    )
+                )
 
                 state.copy(
                     type = COMPARE_ITEMS,
@@ -211,7 +216,10 @@ class PetPresenter(
                     ),
                     newHatItemImage = newItemImage(PetItemType.HAT, state.equippedHatItem),
                     newMaskItemImage = newItemImage(PetItemType.MASK, state.equippedMaskItem),
-                    newBodyArmorItemImage = newItemImage(PetItemType.BODY_ARMOR, state.equippedBodyArmorItem)
+                    newBodyArmorItemImage = newItemImage(
+                        PetItemType.BODY_ARMOR,
+                        state.equippedBodyArmorItem
+                    )
                 )
             }
 
@@ -261,9 +269,14 @@ class PetPresenter(
         selectedItem: PetItem = PetItem.values().first { it.type == itemType }
     ): PetViewState {
 
-        val equippedPetItems = listOfNotNull(state.equippedHatItem?.item, state.equippedMaskItem?.item, state.equippedBodyArmorItem?.item).toSet()
+        val equippedPetItems = listOfNotNull(
+            state.equippedHatItem?.item,
+            state.equippedMaskItem?.item,
+            state.equippedBodyArmorItem?.item
+        ).toSet()
 
-        val vms = createPetItemViewModels(itemType, selectedItem, state.boughtItems, equippedPetItems)
+        val vms =
+            createPetItemViewModels(itemType, selectedItem, state.boughtItems, equippedPetItems)
 
         val equipped = when (itemType) {
             PetItemType.HAT -> {
@@ -311,7 +324,12 @@ class PetPresenter(
             isEquipped = equippedPetItems.contains(selectedItem)
         )
 
-        val cmpRes = comparePetItemsUseCase.execute(ComparePetItemsUseCase.Params(equippedItem?.item, selectedItem))
+        val cmpRes = comparePetItemsUseCase.execute(
+            ComparePetItemsUseCase.Params(
+                equippedItem?.item,
+                selectedItem
+            )
+        )
 
         val petItems = AndroidPetAvatar.valueOf(state.avatar!!.name).items
         val petCompareItemImage = petItems[newItem.item]
@@ -338,7 +356,10 @@ class PetPresenter(
             ),
             newHatItemImage = newItemImage(PetItemType.HAT, state.equippedHatItem),
             newMaskItemImage = newItemImage(PetItemType.MASK, state.equippedMaskItem),
-            newBodyArmorItemImage = newItemImage(PetItemType.BODY_ARMOR, state.equippedBodyArmorItem)
+            newBodyArmorItemImage = newItemImage(
+                PetItemType.BODY_ARMOR,
+                state.equippedBodyArmorItem
+            )
         )
     }
 
@@ -349,7 +370,12 @@ class PetPresenter(
             else -> NO_CHANGE
         }
 
-    private fun createPetItemViewModels(petItemType: PetItemType, selectedItem: PetItem, boughtItems: Set<PetItem>, equippedPetItems: Set<PetItem>) =
+    private fun createPetItemViewModels(
+        petItemType: PetItemType,
+        selectedItem: PetItem,
+        boughtItems: Set<PetItem>,
+        equippedPetItems: Set<PetItem>
+    ) =
         PetItem.values()
             .filter { it.type == petItemType }
             .map {

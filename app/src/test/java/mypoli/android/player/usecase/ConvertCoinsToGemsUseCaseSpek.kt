@@ -18,7 +18,9 @@ class ConvertCoinsToGemsUseCaseSpek : Spek({
     describe("ConvertCoinsToGemsUseCaseSpek") {
 
         fun executeUseCase(player: Player, gems: Int) =
-            ConvertCoinsToGemsUseCase(TestUtil.playerRepoMock(player)).execute(ConvertCoinsToGemsUseCase.Params(gems))
+            ConvertCoinsToGemsUseCase(TestUtil.playerRepoMock(player)).execute(
+                ConvertCoinsToGemsUseCase.Params(gems)
+            )
 
         it("should not convert gems with insufficient coins") {
             val player = TestUtil.player().copy(

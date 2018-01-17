@@ -11,6 +11,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.ImageView
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
+import kotlinx.android.synthetic.main.controller_add_quest.view.*
 import mypoli.android.Constants
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
@@ -22,7 +23,6 @@ import mypoli.android.quest.Icon
 import mypoli.android.quest.calendar.addquest.StateType.*
 import mypoli.android.reminder.view.picker.ReminderPickerDialogController
 import mypoli.android.reminder.view.picker.ReminderViewModel
-import kotlinx.android.synthetic.main.controller_add_quest.view.*
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
 
@@ -31,7 +31,9 @@ import space.traversal.kapsule.required
  * on 11/2/17.
  */
 class AddQuestViewController(args: Bundle? = null) :
-    MviViewController<AddQuestViewState, AddQuestViewController, AddQuestPresenter, AddQuestIntent>(args) {
+    MviViewController<AddQuestViewState, AddQuestViewController, AddQuestPresenter, AddQuestIntent>(
+        args
+    ) {
 
     private val presenter by required { addQuestPresenter }
 
@@ -46,7 +48,11 @@ class AddQuestViewController(args: Bundle? = null) :
 
     override fun createPresenter() = presenter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
         val view = inflater.inflate(R.layout.controller_add_quest, container, false)
 
         view.questName.setOnEditTextImeBackListener(object : EditTextImeBackListener {
@@ -64,10 +70,12 @@ class AddQuestViewController(args: Bundle? = null) :
             true
         }
 
-        view.duration.setImageDrawable(IconicsDrawable(view.context)
-            .icon(GoogleMaterial.Icon.gmd_hourglass_empty)
-            .colorRes(R.color.md_white)
-            .sizeDp(22))
+        view.duration.setImageDrawable(
+            IconicsDrawable(view.context)
+                .icon(GoogleMaterial.Icon.gmd_hourglass_empty)
+                .colorRes(R.color.md_white)
+                .sizeDp(22)
+        )
 
         view.scheduleDate.sendOnClick(AddQuestIntent.PickDate)
 
@@ -107,7 +115,8 @@ class AddQuestViewController(args: Bundle? = null) :
                 DatePickerDialog(view.context, R.style.Theme_myPoli_AlertDialog,
                     DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                         send(AddQuestIntent.DatePicked(year, month + 1, dayOfMonth))
-                    }, date.year, date.month.value - 1, date.dayOfMonth).show()
+                    }, date.year, date.month.value - 1, date.dayOfMonth
+                ).show()
             }
 
             PICK_TIME -> {
@@ -115,15 +124,20 @@ class AddQuestViewController(args: Bundle? = null) :
                 val dialog = TimePickerDialog(view.context,
                     TimePickerDialog.OnTimeSetListener { _, hour, minute ->
                         send(AddQuestIntent.TimePicked(Time.at(hour, minute)))
-                    }, startTime.hours, startTime.getMinutes(), false)
-                dialog.setButton(Dialog.BUTTON_NEUTRAL, view.context.getString(R.string.do_not_know), { _, _ ->
-                    send(AddQuestIntent.TimePicked(null))
-                })
+                    }, startTime.hours, startTime.getMinutes(), false
+                )
+                dialog.setButton(
+                    Dialog.BUTTON_NEUTRAL,
+                    view.context.getString(R.string.do_not_know),
+                    { _, _ ->
+                        send(AddQuestIntent.TimePicked(null))
+                    })
                 dialog.show()
             }
 
             PICK_DURATION ->
-                DurationPickerDialogController(object : DurationPickerDialogController.DurationPickedListener {
+                DurationPickerDialogController(object :
+                    DurationPickerDialogController.DurationPickedListener {
                     override fun onDurationPicked(minutes: Int) {
                         send(AddQuestIntent.DurationPicked(minutes))
                     }
@@ -131,20 +145,28 @@ class AddQuestViewController(args: Bundle? = null) :
                 }, state.duration).showDialog(router, "pick_duration_tag")
 
             PICK_COLOR ->
-                ColorPickerDialogController(object : ColorPickerDialogController.ColorPickedListener {
+                ColorPickerDialogController(object :
+                    ColorPickerDialogController.ColorPickedListener {
                     override fun onColorPicked(color: AndroidColor) {
                         send(AddQuestIntent.ColorPicked(Color.valueOf(color.name)))
                     }
 
-                }, state.color?.let { AndroidColor.valueOf(it.name) }).showDialog(router, "pick_color_tag")
+                }, state.color?.let { AndroidColor.valueOf(it.name) }).showDialog(
+                    router,
+                    "pick_color_tag"
+                )
 
             PICK_ICON ->
                 IconPickerDialogController({ icon ->
                     send(AddQuestIntent.IconPicked(icon?.let { Icon.valueOf(it.name) }))
-                }, state.icon?.let { AndroidIcon.valueOf(it.name) }).showDialog(router, "pick_icon_tag")
+                }, state.icon?.let { AndroidIcon.valueOf(it.name) }).showDialog(
+                    router,
+                    "pick_icon_tag"
+                )
 
             PICK_REMINDER ->
-                ReminderPickerDialogController(object : ReminderPickerDialogController.ReminderPickedListener {
+                ReminderPickerDialogController(object :
+                    ReminderPickerDialogController.ReminderPickedListener {
                     override fun onReminderPicked(reminder: ReminderViewModel?) {
                         send(AddQuestIntent.ReminderPicked(reminder))
                     }
@@ -170,7 +192,8 @@ class AddQuestViewController(args: Bundle? = null) :
             view.duration,
             view.color,
             view.icon,
-            view.reminder)
+            view.reminder
+        )
             .forEach { resetColor(it) }
     }
 

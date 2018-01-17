@@ -11,7 +11,8 @@ import mypoli.android.player.persistence.PlayerRepository
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 12/6/17.
  */
-class BuyPetUseCase(private val playerRepository: PlayerRepository) : UseCase<PetAvatar, BuyPetUseCase.Result> {
+class BuyPetUseCase(private val playerRepository: PlayerRepository) :
+    UseCase<PetAvatar, BuyPetUseCase.Result> {
     override fun execute(parameters: PetAvatar): Result {
         val avatar = parameters
         val player = playerRepository.find()

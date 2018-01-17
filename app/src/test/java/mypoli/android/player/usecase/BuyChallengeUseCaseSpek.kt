@@ -19,7 +19,11 @@ class BuyChallengeUseCaseSpek : Spek({
     describe("BuyChallengeUseCase") {
 
         fun executeUseCase(player: Player, challenge: PredefinedChallenge) =
-            BuyChallengeUseCase(TestUtil.playerRepoMock(player)).execute(BuyChallengeUseCase.Params(challenge))
+            BuyChallengeUseCase(TestUtil.playerRepoMock(player)).execute(
+                BuyChallengeUseCase.Params(
+                    challenge
+                )
+            )
 
 
         it("should require not bought challenge") {

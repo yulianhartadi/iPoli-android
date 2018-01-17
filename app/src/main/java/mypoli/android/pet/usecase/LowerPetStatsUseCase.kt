@@ -30,8 +30,12 @@ class LowerPetStatsUseCase(
 
         if (parameters == Constants.CHANGE_PET_STATS_MORNING_TIME) {
 
-            val healthPenalty = MORNING_HEALTH_POINTS_PENALTIES[Random(randomSeed).nextInt(MORNING_HEALTH_POINTS_PENALTIES.size)]
-            val moodPenalty = MORNING_MOOD_POINTS_PENALTIES[Random(randomSeed).nextInt(MORNING_MOOD_POINTS_PENALTIES.size)]
+            val healthPenalty = MORNING_HEALTH_POINTS_PENALTIES[Random(randomSeed).nextInt(
+                MORNING_HEALTH_POINTS_PENALTIES.size
+            )]
+            val moodPenalty = MORNING_MOOD_POINTS_PENALTIES[Random(randomSeed).nextInt(
+                MORNING_MOOD_POINTS_PENALTIES.size
+            )]
 
             return savePlayer(healthPenalty, moodPenalty)
         }
@@ -70,9 +74,11 @@ class LowerPetStatsUseCase(
     }
 
     private fun savePlayer(healthPenalty: Int, moodPenalty: Int) =
-        playerRepository.save(player.copy(
-            pet = player.pet.removeHealthAndMoodPoints(healthPenalty, moodPenalty)
-        )).pet
+        playerRepository.save(
+            player.copy(
+                pet = player.pet.removeHealthAndMoodPoints(healthPenalty, moodPenalty)
+            )
+        ).pet
 
 
     companion object {
@@ -98,9 +104,10 @@ class LowerPetStatsUseCase(
                 val qEnd = it.endTime!! - 1
                 qEnd >= start && qStart <= end
             }.map {
-                val startMinute = Math.max(start.toMinuteOfDay(), it.startTime!!.toMinuteOfDay())
-                val endMinute = Math.min(end.toMinuteOfDay(), it.endTime!!.toMinuteOfDay())
-                endMinute - startMinute
-            }.fold(0, { acc, dur -> acc + dur })
+                    val startMinute =
+                        Math.max(start.toMinuteOfDay(), it.startTime!!.toMinuteOfDay())
+                    val endMinute = Math.min(end.toMinuteOfDay(), it.endTime!!.toMinuteOfDay())
+                    endMinute - startMinute
+                }.fold(0, { acc, dur -> acc + dur })
     }
 }

@@ -11,6 +11,8 @@ import com.evernote.android.job.Job
 import com.evernote.android.job.JobManager
 import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.di.ControllerModule
 import mypoli.android.common.di.SimpleModule
@@ -18,8 +20,6 @@ import mypoli.android.common.view.asThemedWrapper
 import mypoli.android.quest.Quest
 import mypoli.android.reminder.view.ReminderNotificationPopup
 import mypoli.android.reminder.view.ReminderNotificationViewModel
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
 import org.threeten.bp.temporal.ChronoUnit
 import space.traversal.kapsule.Injects
@@ -34,7 +34,8 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
 
     override fun onRunJob(params: Job.Params): Job.Result {
 
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val id = "myPoli"
         val channelName = "myPoli"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -62,7 +63,8 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
             quests.forEach {
 
                 val reminder = it.reminder!!
-                val message = reminder.message.let { if (it.isEmpty()) "Ready for a quest?" else it }
+                val message =
+                    reminder.message.let { if (it.isEmpty()) "Ready for a quest?" else it }
 
                 val startTimeMessage = startTimeMessage(it)
 
@@ -100,7 +102,11 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
         return Job.Result.SUCCESS
     }
 
-    private fun showNotification(questName: String, message: String, notificationManager: NotificationManager): Int {
+    private fun showNotification(
+        questName: String,
+        message: String,
+        notificationManager: NotificationManager
+    ): Int {
         val notification = createNotification(questName, message)
         val notificationId = Random().nextInt()
         notificationManager.notify(notificationId, notification)

@@ -34,7 +34,10 @@ interface InAppPurchaseManager {
     fun purchase(gemPack: GemPackType, purchaseListener: PurchaseListener)
 }
 
-class AndroidInAppPurchaseManager(private val checkout: UiCheckout, private val resources: Resources) : InAppPurchaseManager {
+class AndroidInAppPurchaseManager(
+    private val checkout: UiCheckout,
+    private val resources: Resources
+) : InAppPurchaseManager {
 
     companion object {
 
@@ -93,7 +96,10 @@ class AndroidInAppPurchaseManager(private val checkout: UiCheckout, private val 
         }
     }
 
-    override fun purchase(gemPack: GemPackType, purchaseListener: InAppPurchaseManager.PurchaseListener) {
+    override fun purchase(
+        gemPack: GemPackType,
+        purchaseListener: InAppPurchaseManager.PurchaseListener
+    ) {
         val payload = UUID.randomUUID().toString()
 
         checkout.whenReady(object : Checkout.EmptyListener() {
@@ -102,23 +108,25 @@ class AndroidInAppPurchaseManager(private val checkout: UiCheckout, private val 
                     ProductTypes.IN_APP,
                     GEM_PACK_TYPE_TO_SKU[gemPack]!!,
                     payload,
-                    checkout.createOneShotPurchaseFlow(PURCHASE_REQUEST_CODE, object : RequestListener<Purchase> {
-                        override fun onSuccess(purchase: Purchase) {
-                            requests.consume(purchase.token, object : RequestListener<Any> {
-                                override fun onError(response: Int, e: Exception) {
-                                    purchaseListener.onError()
-                                }
+                    checkout.createOneShotPurchaseFlow(
+                        PURCHASE_REQUEST_CODE,
+                        object : RequestListener<Purchase> {
+                            override fun onSuccess(purchase: Purchase) {
+                                requests.consume(purchase.token, object : RequestListener<Any> {
+                                    override fun onError(response: Int, e: Exception) {
+                                        purchaseListener.onError()
+                                    }
 
-                                override fun onSuccess(result: Any) {
-                                    purchaseListener.onPurchased()
-                                }
-                            })
-                        }
+                                    override fun onSuccess(result: Any) {
+                                        purchaseListener.onPurchased()
+                                    }
+                                })
+                            }
 
-                        override fun onError(response: Int, e: Exception) {
-                            purchaseListener.onError()
-                        }
-                    })
+                            override fun onError(response: Int, e: Exception) {
+                                purchaseListener.onError()
+                            }
+                        })
                 )
             }
         })

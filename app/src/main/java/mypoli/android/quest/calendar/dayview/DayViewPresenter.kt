@@ -35,7 +35,8 @@ class DayViewPresenter(
     private val undoCompletedQuestUseCase: UndoCompletedQuestUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<DayViewState>, DayViewState, DayViewIntent>(
-    DayViewState(type = DayViewState.StateType.LOADING), coroutineContext) {
+    DayViewState(type = DayViewState.StateType.LOADING), coroutineContext
+) {
 
     override fun reduceState(intent: DayViewIntent, state: DayViewState) =
         when (intent) {
@@ -109,7 +110,11 @@ class DayViewPresenter(
 
                 val scheduledDate = state.scheduledDate ?: state.currentDate
                 val reminder = if (state.reminder != null) {
-                    createQuestReminder(state.reminder, scheduledDate, state.startTime!!.toMinuteOfDay())
+                    createQuestReminder(
+                        state.reminder,
+                        scheduledDate,
+                        state.startTime!!.toMinuteOfDay()
+                    )
                 } else {
                     createDefaultReminder(scheduledDate, state.startTime!!.toMinuteOfDay())
                 }
@@ -145,7 +150,11 @@ class DayViewPresenter(
                     scheduledDate = scheduledDate,
                     startTime = state.startTime,
                     duration = state.duration!!,
-                    reminder = createQuestReminder(state.reminder, scheduledDate, state.startTime!!.toMinuteOfDay())
+                    reminder = createQuestReminder(
+                        state.reminder,
+                        scheduledDate,
+                        state.startTime!!.toMinuteOfDay()
+                    )
                 )
                 val result = saveQuestUseCase.execute(questParams)
                 savedQuestViewState(result, state)
@@ -281,13 +290,22 @@ class DayViewPresenter(
     private fun createDefaultReminder(scheduledDate: LocalDate, startMinute: Int) =
         Reminder("", Time.of(startMinute), scheduledDate)
 
-    private fun createQuestReminder(reminder: ReminderViewModel?, scheduledDate: LocalDate, eventStartMinute: Int) =
+    private fun createQuestReminder(
+        reminder: ReminderViewModel?,
+        scheduledDate: LocalDate,
+        eventStartMinute: Int
+    ) =
         reminder?.let {
             val time = Time.of(eventStartMinute)
-            val questDateTime = LocalDateTime.of(scheduledDate, LocalTime.of(time.hours, time.getMinutes()))
+            val questDateTime =
+                LocalDateTime.of(scheduledDate, LocalTime.of(time.hours, time.getMinutes()))
             val reminderDateTime = questDateTime.minusMinutes(it.minutesFromStart)
             val toLocalTime = reminderDateTime.toLocalTime()
-            Reminder(it.message, Time.at(toLocalTime.hour, toLocalTime.minute), reminderDateTime.toLocalDate())
+            Reminder(
+                it.message,
+                Time.at(toLocalTime.hour, toLocalTime.minute),
+                reminderDateTime.toLocalDate()
+            )
         }
 
     private fun savedQuestViewState(result: Result, state: DayViewState) =

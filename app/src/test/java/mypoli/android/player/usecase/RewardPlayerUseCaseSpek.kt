@@ -30,7 +30,9 @@ class RewardPlayerUseCaseSpek : Spek({
         val pet = player.pet
 
         fun executeUseCase(player: Player, reward: Reward): Player {
-            return RewardPlayerUseCase(TestUtil.playerRepoMock(player), levelUpScheduler).execute(reward)
+            return RewardPlayerUseCase(TestUtil.playerRepoMock(player), levelUpScheduler).execute(
+                reward
+            )
         }
 
         val reward = SimpleReward(10, 10, Quest.Bounty.None)
@@ -42,7 +44,8 @@ class RewardPlayerUseCaseSpek : Spek({
         it("should give experience and coins") {
             val xp = 10
             val coins = 5
-            val newPlayer = executeUseCase(player,
+            val newPlayer = executeUseCase(
+                player,
                 reward.copy(experience = xp, coins = coins)
             )
             newPlayer.coins.`should be`(player.coins + coins)
@@ -50,9 +53,11 @@ class RewardPlayerUseCaseSpek : Spek({
         }
 
         it("should gain new level") {
-            val xp = (ExperienceForLevelGenerator.forLevel(player.level + 1) - player.experience + 1).toInt()
+            val xp =
+                (ExperienceForLevelGenerator.forLevel(player.level + 1) - player.experience + 1).toInt()
             val coins = 0
-            val newPlayer = executeUseCase(player,
+            val newPlayer = executeUseCase(
+                player,
                 reward.copy(experience = xp, coins = coins)
             )
             newPlayer.level.`should be`(player.level + 1)
@@ -77,12 +82,14 @@ class RewardPlayerUseCaseSpek : Spek({
             val p = player.copy(
                 inventory = Inventory()
             )
-            val newPlayer = executeUseCase(p,
+            val newPlayer = executeUseCase(
+                p,
                 reward.copy(
                     experience = 10,
                     coins = 5,
                     bounty = Quest.Bounty.None
-                ))
+                )
+            )
             newPlayer.inventory.food.`should be`(p.inventory.food)
         }
 
@@ -90,12 +97,14 @@ class RewardPlayerUseCaseSpek : Spek({
             val p = player.copy(
                 inventory = Inventory()
             )
-            val newPlayer = executeUseCase(p,
+            val newPlayer = executeUseCase(
+                p,
                 reward.copy(
                     experience = 10,
                     coins = 5,
                     bounty = Quest.Bounty.Food(Food.BANANA)
-                ))
+                )
+            )
             newPlayer.inventory.`should equal`(
                 Inventory(
                     food = mapOf(Food.BANANA to 1)

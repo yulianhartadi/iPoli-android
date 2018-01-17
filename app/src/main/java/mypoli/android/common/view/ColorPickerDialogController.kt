@@ -70,7 +70,8 @@ data class ColorPickerViewState(
 class ColorPickerPresenter(
     private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
     private val buyColorPackUseCase: BuyColorPackUseCase,
-    coroutineContext: CoroutineContext) :
+    coroutineContext: CoroutineContext
+) :
     BaseMviPresenter<ViewStateRenderer<ColorPickerViewState>, ColorPickerViewState, ColorPickerIntent>(
         ColorPickerViewState(ColorPickerViewState.Type.LOADING),
         coroutineContext
@@ -110,7 +111,8 @@ class ColorPickerPresenter(
             }
 
             is ColorPickerIntent.BuyColorPack -> {
-                val result = buyColorPackUseCase.execute(BuyColorPackUseCase.Params(intent.colorPack))
+                val result =
+                    buyColorPackUseCase.execute(BuyColorPackUseCase.Params(intent.colorPack))
                 val type = when (result) {
                     is BuyColorPackUseCase.Result.ColorPackBought -> ColorPickerViewState.Type.SHOW_COLORS
                     is BuyColorPackUseCase.Result.TooExpensive -> ColorPickerViewState.Type.COLOR_PACK_TOO_EXPENSIVE
@@ -121,10 +123,17 @@ class ColorPickerPresenter(
             }
         }
 
-    private fun createViewModels(state: ColorPickerViewState, colorPacks: Set<ColorPack>): List<ColorPickerDialogController.ColorViewModel> {
+    private fun createViewModels(
+        state: ColorPickerViewState,
+        colorPacks: Set<ColorPack>
+    ): List<ColorPickerDialogController.ColorViewModel> {
         return Color.values().map {
             val isSelected = if (state.selectedColor == null) false else state.selectedColor == it
-            ColorPickerDialogController.ColorViewModel(it, isSelected, !colorPacks.contains(it.pack))
+            ColorPickerDialogController.ColorViewModel(
+                it,
+                isSelected,
+                !colorPacks.contains(it.pack)
+            )
         }
     }
 }
@@ -160,7 +169,11 @@ class ColorPickerDialogController :
         return contentView
     }
 
-    override fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog =
+    override fun onCreateDialog(
+        dialogBuilder: AlertDialog.Builder,
+        contentView: View,
+        savedViewState: Bundle?
+    ): AlertDialog =
         dialogBuilder
             .setNegativeButton(R.string.cancel, null)
             .setNeutralButton(R.string.back, null)
@@ -234,7 +247,11 @@ class ColorPickerDialogController :
 
             COLOR_PACK_TOO_EXPENSIVE -> {
                 CurrencyConverterDialogController().showDialog(router, "currency-converter")
-                Toast.makeText(view.context, stringRes(R.string.color_pack_not_enough_coins), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    view.context,
+                    stringRes(R.string.color_pack_not_enough_coins),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -249,7 +266,8 @@ class ColorPickerDialogController :
 
     data class ColorViewModel(val color: Color, val isSelected: Boolean, val isLocked: Boolean)
 
-    inner class ColorAdapter(private var colors: List<ColorViewModel>) : RecyclerView.Adapter<ColorAdapter.ViewHolder>() {
+    inner class ColorAdapter(private var colors: List<ColorViewModel>) :
+        RecyclerView.Adapter<ColorAdapter.ViewHolder>() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val vm = colors[position]
             val iv = holder.itemView as ImageView
@@ -277,7 +295,13 @@ class ColorPickerDialogController :
         override fun getItemCount() = colors.size
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_color_picker, parent, false))
+            ViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_color_picker,
+                    parent,
+                    false
+                )
+            )
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
 

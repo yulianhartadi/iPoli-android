@@ -12,7 +12,10 @@ import mypoli.android.common.datetime.DateUtils
 import mypoli.android.quest.Entity
 import kotlin.coroutines.experimental.CoroutineContext
 
-abstract class BaseCouchbaseRepository<E, out T>(protected val database: Database, private val coroutineContext: CoroutineContext) : Repository<E> where E : Entity, T : CouchbasePersistedModel {
+abstract class BaseCouchbaseRepository<E, out T>(
+    protected val database: Database,
+    private val coroutineContext: CoroutineContext
+) : Repository<E> where E : Entity, T : CouchbasePersistedModel {
     protected abstract val modelType: String
 
     override fun findById(id: String): E? {
@@ -31,10 +34,20 @@ abstract class BaseCouchbaseRepository<E, out T>(protected val database: Databas
             limit = 1
         )
 
-    protected fun listenForChange(select: From? = null, where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null) =
+    protected fun listenForChange(
+        select: From? = null,
+        where: Expression? = null,
+        limit: Int? = null,
+        orderBy: Ordering? = null
+    ) =
         sendLiveResult(createQuery(select, where, limit, orderBy))
 
-    protected fun listenForChanges(select: From? = null, where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null) =
+    protected fun listenForChanges(
+        select: From? = null,
+        where: Expression? = null,
+        limit: Int? = null,
+        orderBy: Ordering? = null
+    ) =
         sendLiveResults(createQuery(select, where, limit, orderBy))
 
     data class GroupClause(val groupBy: Expression, val having: Expression)
@@ -142,7 +155,12 @@ abstract class BaseCouchbaseRepository<E, out T>(protected val database: Databas
         listenerToken = liveQuery.addChangeListener(changeListener)
     }
 
-    private fun runQuery(select: From? = null, where: Expression? = null, limit: Int? = null, orderBy: Ordering? = null) =
+    private fun runQuery(
+        select: From? = null,
+        where: Expression? = null,
+        limit: Int? = null,
+        orderBy: Ordering? = null
+    ) =
         createQuery(select, where, limit, orderBy).execute().iterator()
 
     override fun find() =

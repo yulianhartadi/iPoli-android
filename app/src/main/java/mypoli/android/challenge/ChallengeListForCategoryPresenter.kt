@@ -17,12 +17,19 @@ import kotlin.coroutines.experimental.CoroutineContext
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 12/30/17.
  */
-class ChallengeListForCategoryPresenter(private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase, private val buyChallengeUseCase: BuyChallengeUseCase, coroutineContext: CoroutineContext) :
+class ChallengeListForCategoryPresenter(
+    private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
+    private val buyChallengeUseCase: BuyChallengeUseCase,
+    coroutineContext: CoroutineContext
+) :
     BaseMviPresenter<ViewStateRenderer<ChallengeListForCategoryViewState>, ChallengeListForCategoryViewState, ChallengeListForCategoryIntent>(
         ChallengeListForCategoryViewState(type = LOADING),
         coroutineContext
     ) {
-    override fun reduceState(intent: ChallengeListForCategoryIntent, state: ChallengeListForCategoryViewState) =
+    override fun reduceState(
+        intent: ChallengeListForCategoryIntent,
+        state: ChallengeListForCategoryViewState
+    ) =
         when (intent) {
 
             is ChallengeListForCategoryIntent.LoadData -> {
@@ -46,7 +53,8 @@ class ChallengeListForCategoryPresenter(private val listenForPlayerChangesUseCas
             }
 
             is ChallengeListForCategoryIntent.BuyChallenge -> {
-                val result = buyChallengeUseCase.execute(BuyChallengeUseCase.Params(intent.challenge))
+                val result =
+                    buyChallengeUseCase.execute(BuyChallengeUseCase.Params(intent.challenge))
                 when (result) {
                     is BuyChallengeUseCase.Result.TooExpensive -> state.copy(
                         type = CHALLENGE_TOO_EXPENSIVE
@@ -58,7 +66,10 @@ class ChallengeListForCategoryPresenter(private val listenForPlayerChangesUseCas
             }
         }
 
-    private fun createViewModels(challengeCategory: Challenge.Category, player: Player): List<ChallengeListForCategoryViewController.ChallengeViewModel> {
+    private fun createViewModels(
+        challengeCategory: Challenge.Category,
+        player: Player
+    ): List<ChallengeListForCategoryViewController.ChallengeViewModel> {
         return PredefinedChallenge.values().filter { it.category == challengeCategory }.map {
             val andChallenge = AndroidPredefinedChallenge.valueOf(it.name)
             ChallengeListForCategoryViewController.ChallengeViewModel(

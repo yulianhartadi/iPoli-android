@@ -32,7 +32,12 @@ object DateFormatter {
     }
 
     @JvmOverloads
-    fun formatWithoutYear(context: Context, date: LocalDate?, emptyValue: String = DEFAULT_EMPTY_VALUE, currentDate: LocalDate? = null): String {
+    fun formatWithoutYear(
+        context: Context,
+        date: LocalDate?,
+        emptyValue: String = DEFAULT_EMPTY_VALUE,
+        currentDate: LocalDate? = null
+    ): String {
         if (date == null) {
             return emptyValue
         }

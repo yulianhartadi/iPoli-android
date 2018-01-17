@@ -16,7 +16,11 @@ val LocalDate.isTomorrow get() = LocalDate.now().plusDays(1).isEqual(this)
 
 val LocalDate.isYesterday get() = LocalDate.now().minusDays(1).isEqual(this)
 
-val LocalDate.dayOfWeekText: String get() = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
+val LocalDate.dayOfWeekText: String
+    get() = dayOfWeek.getDisplayName(
+        TextStyle.FULL,
+        Locale.getDefault()
+    )
 
 fun LocalDate.startOfDayUTC() = toStartOfDayUTC().time
 
@@ -46,4 +50,5 @@ fun LocalDateTime.toMillis(zoneId: ZoneId) = atZone(zoneId).toInstant().toEpochM
 
 fun LocalDateTime.toMillis() = atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
-fun Long.toLocalDateTime(): LocalDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())
+fun Long.toLocalDateTime(): LocalDateTime =
+    LocalDateTime.ofInstant(Instant.ofEpochMilli(this), ZoneId.systemDefault())

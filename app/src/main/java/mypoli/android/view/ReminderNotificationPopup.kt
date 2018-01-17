@@ -11,11 +11,11 @@ import android.util.DisplayMetrics
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnticipateInterpolator
+import kotlinx.android.synthetic.main.view_reminder.view.*
 import mypoli.android.R
 import mypoli.android.common.view.MviPopup
 import mypoli.android.pet.AndroidPetAvatar
 import mypoli.android.pet.Pet
-import kotlinx.android.synthetic.main.view_reminder.view.*
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -30,7 +30,10 @@ data class ReminderNotificationViewModel(
     val pet: Pet
 )
 
-class ReminderNotificationPopup(private val viewModel: ReminderNotificationViewModel, private val listener: OnClickListener) {
+class ReminderNotificationPopup(
+    private val viewModel: ReminderNotificationViewModel,
+    private val listener: OnClickListener
+) {
 
     interface OnClickListener {
         fun onDismiss()
@@ -42,7 +45,8 @@ class ReminderNotificationPopup(private val viewModel: ReminderNotificationViewM
     private lateinit var windowManager: WindowManager
 
     fun show(context: Context) {
-        overlayView = LayoutInflater.from(context).inflate(R.layout.view_reminder, null) as ViewGroup
+        overlayView =
+            LayoutInflater.from(context).inflate(R.layout.view_reminder, null) as ViewGroup
         windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         addViewToWindowManager(overlayView)
 
@@ -92,10 +96,10 @@ class ReminderNotificationPopup(private val viewModel: ReminderNotificationViewM
     }
 
     private fun addViewToWindowManager(view: ViewGroup) {
-        val focusable = WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED.
-            or(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN).
-            or(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL).
-            or(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+        val focusable =
+            WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED.or(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
+                .or(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL)
+                .or(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
 
         val metrics = DisplayMetrics()
         windowManager.defaultDisplay.getRealMetrics(metrics)
@@ -105,7 +109,8 @@ class ReminderNotificationPopup(private val viewModel: ReminderNotificationViewM
             WindowManager.LayoutParams.MATCH_PARENT,
             MviPopup.WindowOverlayCompat.TYPE_SYSTEM_ERROR,
             focusable,
-            PixelFormat.TRANSLUCENT)
+            PixelFormat.TRANSLUCENT
+        )
 
         windowManager.addView(view, layoutParams)
     }
@@ -149,11 +154,14 @@ class ReminderNotificationPopup(private val viewModel: ReminderNotificationViewM
         val duration = view.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
         backgroundAnim.duration = duration
 
-        val views = listOf<View>(view.dismiss, view.snooze, view.done,
+        val views = listOf<View>(
+            view.dismiss, view.snooze, view.done,
             view.dismissHint, view.snoozeHint, view.doneHint,
-            view.name, view.message, view.startTimeMessage)
-        val animators = views.map { ObjectAnimator.ofFloat(it, "alpha", 0f, 1f).setDuration(duration * 4 / 5) }
-            .toMutableList() as MutableList<Animator>
+            view.name, view.message, view.startTimeMessage
+        )
+        val animators =
+            views.map { ObjectAnimator.ofFloat(it, "alpha", 0f, 1f).setDuration(duration * 4 / 5) }
+                .toMutableList() as MutableList<Animator>
         animators.add(backgroundAnim)
 
         val set = AnimatorSet()
@@ -185,10 +193,14 @@ class ReminderNotificationPopup(private val viewModel: ReminderNotificationViewM
             }
         })
 
-        val views = listOf<View>(view.dismiss, view.snooze, view.done,
+        val views = listOf<View>(
+            view.dismiss, view.snooze, view.done,
             view.dismissHint, view.snoozeHint, view.doneHint,
-            view.name, view.message, view.startTimeMessage)
-        val animators = views.map { ObjectAnimator.ofFloat(it, "alpha", 1f, 0f).setDuration((duration / 1.5).toLong()) }
+            view.name, view.message, view.startTimeMessage
+        )
+        val animators = views.map {
+            ObjectAnimator.ofFloat(it, "alpha", 1f, 0f).setDuration((duration / 1.5).toLong())
+        }
             .toMutableList() as MutableList<Animator>
         animators.add(backgroundAnim)
 
@@ -209,7 +221,8 @@ class ReminderNotificationPopup(private val viewModel: ReminderNotificationViewM
 
     private fun createShowPetAnimator(view: View): ObjectAnimator {
         val animator = ObjectAnimator.ofFloat(view, "y", view.y + view.height, view.y)
-        animator.duration = view.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong()
+        animator.duration =
+            view.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong()
         animator.interpolator = AccelerateDecelerateInterpolator()
         animator.addListener(object : AnimatorListenerAdapter() {
 
@@ -223,7 +236,8 @@ class ReminderNotificationPopup(private val viewModel: ReminderNotificationViewM
 
     private fun createHidePetAnimator(view: View): ObjectAnimator {
         val animator = ObjectAnimator.ofFloat(view, "y", view.y, view.y + view.height)
-        animator.duration = view.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong()
+        animator.duration =
+            view.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong()
         animator.interpolator = AccelerateDecelerateInterpolator()
         animator.addListener(object : AnimatorListenerAdapter() {
 

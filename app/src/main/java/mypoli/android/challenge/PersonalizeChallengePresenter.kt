@@ -13,9 +13,14 @@ import kotlin.coroutines.experimental.CoroutineContext
  */
 class PersonalizeChallengePresenter(
     private val scheduleChallengeUseCase: ScheduleChallengeUseCase,
-    coroutineContext: CoroutineContext) : BaseMviPresenter<ViewStateRenderer<PersonalizeChallengeViewState>, PersonalizeChallengeViewState, PersonalizeChallengeIntent>(
-    PersonalizeChallengeViewState(LOADING), coroutineContext) {
-    override fun reduceState(intent: PersonalizeChallengeIntent, state: PersonalizeChallengeViewState): PersonalizeChallengeViewState {
+    coroutineContext: CoroutineContext
+) : BaseMviPresenter<ViewStateRenderer<PersonalizeChallengeViewState>, PersonalizeChallengeViewState, PersonalizeChallengeIntent>(
+    PersonalizeChallengeViewState(LOADING), coroutineContext
+) {
+    override fun reduceState(
+        intent: PersonalizeChallengeIntent,
+        state: PersonalizeChallengeViewState
+    ): PersonalizeChallengeViewState {
         return when (intent) {
 
             is PersonalizeChallengeIntent.LoadData -> {
@@ -23,11 +28,19 @@ class PersonalizeChallengePresenter(
                 val vms = intent.challenge.quests.map {
                     when (it) {
                         is Challenge.Quest.OneTime -> {
-                            PersonalizeChallengeViewController.ChallengeQuestViewModel(it.text, it.selected, it)
+                            PersonalizeChallengeViewController.ChallengeQuestViewModel(
+                                it.text,
+                                it.selected,
+                                it
+                            )
                         }
 
                         is Challenge.Quest.Repeating -> {
-                            PersonalizeChallengeViewController.ChallengeQuestViewModel(it.text, it.selected, it)
+                            PersonalizeChallengeViewController.ChallengeQuestViewModel(
+                                it.text,
+                                it.selected,
+                                it
+                            )
                         }
                     }
                 }
@@ -61,7 +74,11 @@ class PersonalizeChallengePresenter(
                         type = NO_QUESTS_SELECTED
                     )
                 } else {
-                    val challenge = Challenge(predefinedChallenge.category, quests, predefinedChallenge.durationDays)
+                    val challenge = Challenge(
+                        predefinedChallenge.category,
+                        quests,
+                        predefinedChallenge.durationDays
+                    )
                     scheduleChallengeUseCase.execute(ScheduleChallengeUseCase.Params(challenge))
                     state.copy(
                         type = CHALLENGE_ACCEPTED

@@ -3,13 +3,13 @@ package mypoli.android.quest
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.Reward
 import mypoli.android.common.di.ControllerModule
 import mypoli.android.common.view.asThemedWrapper
 import mypoli.android.pet.Food
 import mypoli.android.quest.view.QuestCompletePopup
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Injects
 
 /**

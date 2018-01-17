@@ -17,7 +17,11 @@ class BuyIconPackUseCaseSpek : Spek({
 
     describe("BuyIconPackUseCase") {
         fun executeUseCase(player: Player, iconPack: IconPack) =
-            BuyIconPackUseCase(TestUtil.playerRepoMock(player)).execute(BuyIconPackUseCase.Params(iconPack))
+            BuyIconPackUseCase(TestUtil.playerRepoMock(player)).execute(
+                BuyIconPackUseCase.Params(
+                    iconPack
+                )
+            )
 
         it("should require not bought icon pack") {
 

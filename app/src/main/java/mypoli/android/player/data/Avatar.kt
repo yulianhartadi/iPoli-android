@@ -9,10 +9,12 @@ import mypoli.android.R
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 8/21/17.
  */
-enum class Avatar(val code: Int,
-                  val price: Int,
-                  @param:StringRes val avatarName: Int,
-                  @param:DrawableRes val picture: Int) {
+enum class Avatar(
+    val code: Int,
+    val price: Int,
+    @param:StringRes val avatarName: Int,
+    @param:DrawableRes val picture: Int
+) {
 
     IPOLI_CLASSIC(1, 0, R.string.avatar_name_ipoli_classic, R.drawable.avatar_12),
     IPOLI_YELLOW_GLASSES(2, 0, R.string.avatar_name_ipoli_yellow_glasses, R.drawable.avatar_11),

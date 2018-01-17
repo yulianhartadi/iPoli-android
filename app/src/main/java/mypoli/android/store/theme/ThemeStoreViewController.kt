@@ -28,13 +28,19 @@ import space.traversal.kapsule.required
  * on 12/12/17.
  */
 class ThemeStoreViewController(args: Bundle? = null) :
-    MviViewController<ThemeStoreViewState, ThemeStoreViewController, ThemeStorePresenter, ThemeStoreIntent>(args) {
+    MviViewController<ThemeStoreViewState, ThemeStoreViewController, ThemeStorePresenter, ThemeStoreIntent>(
+        args
+    ) {
 
     private val presenter by required { themeStorePresenter }
 
     override fun createPresenter() = presenter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
 
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_theme_store, container, false)
@@ -117,13 +123,19 @@ class ThemeStoreViewController(args: Bundle? = null) :
 
             val theme = AndroidTheme.valueOf(vm.theme.name)
 
-            val attrs = intArrayOf(R.attr.colorPrimary, R.attr.colorPrimaryDark, R.attr.colorAccent).sortedArray()
+            val attrs = intArrayOf(
+                R.attr.colorPrimary,
+                R.attr.colorPrimaryDark,
+                R.attr.colorAccent
+            ).sortedArray()
             val a = activity!!.theme.obtainStyledAttributes(
                 theme.style,
-                attrs)
+                attrs
+            )
 
             val primaryColor = a.getResourceId(a.getIndex(attrs.indexOf(R.attr.colorPrimary)), 0)
-            val primaryDarkColor = a.getResourceId(a.getIndex(attrs.indexOf(R.attr.colorPrimaryDark)), 0)
+            val primaryDarkColor =
+                a.getResourceId(a.getIndex(attrs.indexOf(R.attr.colorPrimaryDark)), 0)
             val accentColor = a.getColor(a.getIndex(attrs.indexOf(R.attr.colorAccent)), 0)
 
             a.recycle()
@@ -177,7 +189,8 @@ class ThemeStoreViewController(args: Bundle? = null) :
             })
 
             view.themeCalendar.timeLine.setBackgroundColor(accentColor)
-            view.themeCalendar.timeLineIndicator.backgroundTintList = ColorStateList.valueOf(accentColor)
+            view.themeCalendar.timeLineIndicator.backgroundTintList =
+                ColorStateList.valueOf(accentColor)
 
             view.themeCalendar.scrollToNow()
 

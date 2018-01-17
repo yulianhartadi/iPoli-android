@@ -21,7 +21,11 @@ class BuyPetItemUseCaseSpek : Spek({
     describe("BuyPetItemUseCase") {
 
         fun executeUseCase(player: Player, petItem: PetItem) =
-            BuyPetItemUseCase(TestUtil.playerRepoMock(player)).execute(BuyPetItemUseCase.Params(petItem))
+            BuyPetItemUseCase(TestUtil.playerRepoMock(player)).execute(
+                BuyPetItemUseCase.Params(
+                    petItem
+                )
+            )
 
         it("should require not bought pet item") {
 
@@ -70,7 +74,8 @@ class BuyPetItemUseCaseSpek : Spek({
             result.`should be instance of`(BuyPetItemUseCase.Result.ItemBought::class)
             val newPlayer = (result as BuyPetItemUseCase.Result.ItemBought).player
             newPlayer.gems.`should be equal to`(player.gems - PetItem.RED_HAT.gemPrice)
-            newPlayer.inventory.getPet(PetAvatar.ELEPHANT).hasItem(PetItem.RED_HAT).`should be true`()
+            newPlayer.inventory.getPet(PetAvatar.ELEPHANT).hasItem(PetItem.RED_HAT)
+                .`should be true`()
         }
     }
 

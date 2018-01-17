@@ -89,15 +89,19 @@ data class Player(
     fun hasColorPack(colorPack: ColorPack) =
         inventory.hasColorPack(colorPack)
 
-    fun hasChallenge(challenge: PredefinedChallenge)
-        = inventory.hasChallenge(challenge)
+    fun hasChallenge(challenge: PredefinedChallenge) = inventory.hasChallenge(challenge)
 }
 
-data class InventoryPet(val name: String, val avatar: PetAvatar, val items: Set<PetItem> = setOf()) {
+data class InventoryPet(
+    val name: String,
+    val avatar: PetAvatar,
+    val items: Set<PetItem> = setOf()
+) {
     companion object {
         fun createFromPet(pet: Pet): InventoryPet {
             val equipment = pet.equipment
-            return InventoryPet(pet.name, pet.avatar,
+            return InventoryPet(
+                pet.name, pet.avatar,
                 listOfNotNull(
                     equipment.hat,
                     equipment.mask,
@@ -153,8 +157,7 @@ data class Inventory(
 
     fun hasTheme(theme: Theme) = themes.contains(theme)
 
-    fun addTheme(theme: Theme)
-        = copy(themes = this.themes + theme)
+    fun addTheme(theme: Theme) = copy(themes = this.themes + theme)
 
     fun changePetName(name: String, petAvatar: PetAvatar): Inventory {
 
@@ -184,7 +187,11 @@ data class Inventory(
         val currentPet = getPet(petAvatar)
 
         return copy(
-            pets = this.pets - currentPet + InventoryPet(currentPet.name, currentPet.avatar, currentPet.items + item)
+            pets = this.pets - currentPet + InventoryPet(
+                currentPet.name,
+                currentPet.avatar,
+                currentPet.items + item
+            )
         )
     }
 

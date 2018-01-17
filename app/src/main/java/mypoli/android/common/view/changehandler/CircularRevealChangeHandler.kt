@@ -25,7 +25,11 @@ class CircularRevealChangeHandler : AnimatorChangeHandler {
      * @param duration The duration of the animation
      * @param removesFromViewOnPush If true, the view being replaced will be removed from the view hierarchy on pushes
      */
-    constructor(fromView: View, containerView: View, duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION) : super(duration) {
+    constructor(
+        fromView: View,
+        containerView: View,
+        duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION
+    ) : super(duration) {
 
         val fromLocation = IntArray(2)
         fromView.getLocationInWindow(fromLocation)
@@ -57,12 +61,22 @@ class CircularRevealChangeHandler : AnimatorChangeHandler {
      * @param duration The duration of the animation
      * @param removesFromViewOnPush If true, the view being replaced will be removed from the view hierarchy on pushes
      */
-    constructor(cx: Int, cy: Int, duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION) : super(duration) {
+    constructor(
+        cx: Int,
+        cy: Int,
+        duration: Long = AnimatorChangeHandler.DEFAULT_ANIMATION_DURATION
+    ) : super(duration) {
         this.cx = cx
         this.cy = cy
     }
 
-    override fun getAnimator(container: ViewGroup, from: View?, to: View?, isPush: Boolean, toAddedToContainer: Boolean): Animator {
+    override fun getAnimator(
+        container: ViewGroup,
+        from: View?,
+        to: View?,
+        isPush: Boolean,
+        toAddedToContainer: Boolean
+    ): Animator {
         val radius = Math.hypot(cx.toDouble(), cy.toDouble()).toFloat()
         return if (isPush && to != null) {
             ViewAnimationUtils.createCircularReveal(to, cx, cy, 0f, radius)

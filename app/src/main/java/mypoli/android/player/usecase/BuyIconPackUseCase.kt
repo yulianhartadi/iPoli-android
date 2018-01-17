@@ -9,7 +9,8 @@ import mypoli.android.quest.IconPack
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 15.12.17.
  */
-class BuyIconPackUseCase(private val playerRepository: PlayerRepository) : UseCase<BuyIconPackUseCase.Params, BuyIconPackUseCase.Result> {
+class BuyIconPackUseCase(private val playerRepository: PlayerRepository) :
+    UseCase<BuyIconPackUseCase.Params, BuyIconPackUseCase.Result> {
 
     override fun execute(parameters: Params): Result {
 

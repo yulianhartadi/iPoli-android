@@ -9,7 +9,8 @@ import mypoli.android.player.persistence.PlayerRepository
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 1/2/18.
  */
-class BuyChallengeUseCase(private val playerRepository: PlayerRepository) : UseCase<BuyChallengeUseCase.Params, BuyChallengeUseCase.Result> {
+class BuyChallengeUseCase(private val playerRepository: PlayerRepository) :
+    UseCase<BuyChallengeUseCase.Params, BuyChallengeUseCase.Result> {
 
     override fun execute(parameters: Params): Result {
         val player = playerRepository.find()

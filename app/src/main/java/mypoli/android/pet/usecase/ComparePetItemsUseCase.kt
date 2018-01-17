@@ -7,7 +7,8 @@ import mypoli.android.pet.PetItem
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 23.12.17.
  */
-class ComparePetItemsUseCase : UseCase<ComparePetItemsUseCase.Params, ComparePetItemsUseCase.Result> {
+class ComparePetItemsUseCase :
+    UseCase<ComparePetItemsUseCase.Params, ComparePetItemsUseCase.Result> {
     override fun execute(parameters: Params): Result {
 
         val (currentItem, newItem) = parameters

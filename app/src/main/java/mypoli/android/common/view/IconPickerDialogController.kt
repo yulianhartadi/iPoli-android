@@ -68,7 +68,8 @@ data class IconPickerViewState(
 class IconPickerDialogPresenter(
     private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
     private val buyIconPackUseCase: BuyIconPackUseCase,
-    coroutineContext: CoroutineContext) :
+    coroutineContext: CoroutineContext
+) :
     BaseMviPresenter<ViewStateRenderer<IconPickerViewState>, IconPickerViewState, IconPickerIntent>(
         IconPickerViewState(LOADING),
         coroutineContext
@@ -120,7 +121,10 @@ class IconPickerDialogPresenter(
             }
         }
 
-    private fun createViewModels(state: IconPickerViewState, iconPacks: Set<IconPack>): List<IconPickerDialogController.IconViewModel> {
+    private fun createViewModels(
+        state: IconPickerViewState,
+        iconPacks: Set<IconPack>
+    ): List<IconPickerDialogController.IconViewModel> {
         return Icon.values().map {
             val isSelected = if (state.selectedIcon == null) false else state.selectedIcon == it
             IconPickerDialogController.IconViewModel(it, isSelected, !iconPacks.contains(it.pack))
@@ -155,7 +159,11 @@ class IconPickerDialogController :
         return contentView
     }
 
-    override fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog =
+    override fun onCreateDialog(
+        dialogBuilder: AlertDialog.Builder,
+        contentView: View,
+        savedViewState: Bundle?
+    ): AlertDialog =
         dialogBuilder
             .setNegativeButton(R.string.cancel, null)
             .setNeutralButton(R.string.no_icon, { _, _ ->
@@ -216,7 +224,11 @@ class IconPickerDialogController :
 
             ICON_PACK_TOO_EXPENSIVE -> {
                 CurrencyConverterDialogController().showDialog(router, "currency-converter")
-                Toast.makeText(view.context, stringRes(R.string.icon_pack_not_enough_coins), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    view.context,
+                    stringRes(R.string.icon_pack_not_enough_coins),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -237,7 +249,8 @@ class IconPickerDialogController :
 
     data class IconViewModel(val icon: Icon, val isSelected: Boolean, val isLocked: Boolean)
 
-    inner class IconAdapter(private var icons: List<IconViewModel>) : RecyclerView.Adapter<IconAdapter.ViewHolder>() {
+    inner class IconAdapter(private var icons: List<IconViewModel>) :
+        RecyclerView.Adapter<IconAdapter.ViewHolder>() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val vm = icons[holder.adapterPosition]
             val view = holder.itemView
@@ -280,7 +293,13 @@ class IconPickerDialogController :
         override fun getItemCount() = icons.size
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_icon_picker, parent, false))
+            ViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_icon_picker,
+                    parent,
+                    false
+                )
+            )
 
         fun updateAll(viewModels: List<IconViewModel>) {
             this.icons = viewModels

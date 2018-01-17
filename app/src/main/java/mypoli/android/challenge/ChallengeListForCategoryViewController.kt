@@ -45,15 +45,22 @@ class ChallengeListForCategoryViewController :
 
     override fun createPresenter() = presenter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
         setHasOptionsMenu(true)
-        val view = inflater.inflate(R.layout.controller_challenge_list_for_category, container, false)
+        val view =
+            inflater.inflate(R.layout.controller_challenge_list_for_category, container, false)
         setToolbar(view.toolbar)
 
-        val androidChallengeCategory = AndroidPredefinedChallenge.Category.valueOf(challengeCategory.name)
+        val androidChallengeCategory =
+            AndroidPredefinedChallenge.Category.valueOf(challengeCategory.name)
 
         view.toolbarTitle.setText(androidChallengeCategory.title)
-        view.challengeList.layoutManager = LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
+        view.challengeList.layoutManager =
+            LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         view.challengeList.adapter = ChallengeAdapter()
 
         view.playerGems.setOnClickListener {
@@ -90,11 +97,19 @@ class ChallengeListForCategoryViewController :
 
             CHALLENGE_TOO_EXPENSIVE -> {
                 showCurrencyConverter()
-                Toast.makeText(view.context, stringRes(R.string.challenge_too_expensive), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    view.context,
+                    stringRes(R.string.challenge_too_expensive),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             CHALLENGE_BOUGHT -> {
-                Toast.makeText(view.context, stringRes(R.string.challenge_unlocked), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    view.context,
+                    stringRes(R.string.challenge_unlocked),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             else -> {
@@ -137,7 +152,11 @@ class ChallengeListForCategoryViewController :
                 } else {
                     priceIndicator.text = "${vm.gemPrice}"
                     priceIndicator.setCompoundDrawablesWithIntrinsicBounds(
-                        ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_gem_24dp), null, null, null)
+                        ContextCompat.getDrawable(holder.itemView.context, R.drawable.ic_gem_24dp),
+                        null,
+                        null,
+                        null
+                    )
                 }
 
                 itemView.sendOnClick(ChallengeListForCategoryIntent.BuyChallenge(vm.challenge))
@@ -158,7 +177,13 @@ class ChallengeListForCategoryViewController :
         override fun getItemCount() = viewModels.size
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_buy_challenge, parent, false))
+            ViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_buy_challenge,
+                    parent,
+                    false
+                )
+            )
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
 

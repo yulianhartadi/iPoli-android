@@ -67,7 +67,10 @@ class FeedPetUseCase(private val playerRepository: PlayerRepository) : UseCase<P
         )
     }
 
-    private fun foodRewardFor(foodCategory: Food.Category, feedingCategory: PetAvatar.FeedingCategory) =
+    private fun foodRewardFor(
+        foodCategory: Food.Category,
+        feedingCategory: PetAvatar.FeedingCategory
+    ) =
         if (isNotHealthy(foodCategory)) {
             when (foodCategory) {
                 Food.Category.JUNK -> JunkFood
@@ -95,7 +98,10 @@ class FeedPetUseCase(private val playerRepository: PlayerRepository) : UseCase<P
     companion object {
         val DISLIKED_FOOD = mapOf(
             PetAvatar.FeedingCategory.HERBIVOROUS to listOf(Food.Category.MEAT),
-            PetAvatar.FeedingCategory.CARNIVOROUS to listOf(Food.Category.VEGETABLE, Food.Category.FRUIT)
+            PetAvatar.FeedingCategory.CARNIVOROUS to listOf(
+                Food.Category.VEGETABLE,
+                Food.Category.FRUIT
+            )
         )
     }
 

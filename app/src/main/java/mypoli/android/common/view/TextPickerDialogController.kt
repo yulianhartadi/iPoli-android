@@ -5,13 +5,13 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
+import kotlinx.android.synthetic.main.dialog_text_picker.view.*
+import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import mypoli.android.R
 import mypoli.android.pet.AndroidPetAvatar
 import mypoli.android.pet.LoadPetIntent
 import mypoli.android.pet.PetDialogPresenter
 import mypoli.android.pet.PetDialogViewState
-import kotlinx.android.synthetic.main.dialog_text_picker.view.*
-import kotlinx.android.synthetic.main.view_dialog_header.view.*
 import space.traversal.kapsule.required
 
 /**
@@ -31,7 +31,12 @@ class TextPickerDialogController :
     private var text: String = ""
     private var hint: String = ""
 
-    constructor(listener: (String) -> Unit, title: String, text: String = "", hint: String = "") : this() {
+    constructor(
+        listener: (String) -> Unit,
+        title: String,
+        text: String = "",
+        hint: String = ""
+    ) : this() {
         this.listener = listener
         this.title = title
         this.text = text
@@ -55,7 +60,11 @@ class TextPickerDialogController :
         return contentView
     }
 
-    override fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog =
+    override fun onCreateDialog(
+        dialogBuilder: AlertDialog.Builder,
+        contentView: View,
+        savedViewState: Bundle?
+    ): AlertDialog =
         dialogBuilder
             .setPositiveButton(R.string.dialog_ok, null)
             .setNegativeButton(R.string.cancel, null)

@@ -11,7 +11,11 @@ import mypoli.android.common.datetime.Time
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 9/2/17.
  */
-abstract class ScheduledEventsAdapter<T : CalendarEvent>(context: Context, protected val resource: Int, val events: MutableList<T>) :
+abstract class ScheduledEventsAdapter<T : CalendarEvent>(
+    context: Context,
+    protected val resource: Int,
+    val events: MutableList<T>
+) :
     ArrayAdapter<T>(context, resource, events) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {

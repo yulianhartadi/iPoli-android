@@ -33,9 +33,10 @@ class TimerPresenter(
         when (intent) {
             is TimerIntent.LoadData -> {
                 launch {
-                    listenForQuestChangeUseCase.execute(ListenForQuestChangeUseCase.Params(intent.questId)).consumeEach {
-                        sendChannel.send(TimerIntent.QuestChanged(it))
-                    }
+                    listenForQuestChangeUseCase.execute(ListenForQuestChangeUseCase.Params(intent.questId))
+                        .consumeEach {
+                            sendChannel.send(TimerIntent.QuestChanged(it))
+                        }
                 }
                 state.copy(
                     type = LOADING

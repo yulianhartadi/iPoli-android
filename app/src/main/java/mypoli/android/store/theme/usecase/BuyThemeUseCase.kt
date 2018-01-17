@@ -11,7 +11,8 @@ import mypoli.android.store.theme.usecase.BuyThemeUseCase.Result.TooExpensive
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 12/12/17.
  */
-class BuyThemeUseCase(private val playerRepository: PlayerRepository) : UseCase<Theme, BuyThemeUseCase.Result> {
+class BuyThemeUseCase(private val playerRepository: PlayerRepository) :
+    UseCase<Theme, BuyThemeUseCase.Result> {
     override fun execute(parameters: Theme): Result {
         val theme = parameters
         val player = playerRepository.find()

@@ -1,7 +1,7 @@
 package mypoli.android.common.persistence
 
-import mypoli.android.quest.Entity
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
+import mypoli.android.quest.Entity
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>

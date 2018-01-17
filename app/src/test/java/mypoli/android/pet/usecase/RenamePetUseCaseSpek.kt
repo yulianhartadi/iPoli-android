@@ -25,9 +25,11 @@ class RenamePetUseCaseSpek : Spek({
                     name = "Flopsy",
                     avatar = PetAvatar.CHICKEN
                 ),
-                inventory = Inventory(pets = setOf(
-                    InventoryPet("", PetAvatar.CHICKEN)
-                ))
+                inventory = Inventory(
+                    pets = setOf(
+                        InventoryPet("", PetAvatar.CHICKEN)
+                    )
+                )
             )
         }
 
@@ -40,9 +42,11 @@ class RenamePetUseCaseSpek : Spek({
 
         it("should require pet in inventory") {
             val newPlayer = player.copy(
-                inventory = Inventory(pets = setOf(
-                    InventoryPet("", PetAvatar.ELEPHANT)
-                ))
+                inventory = Inventory(
+                    pets = setOf(
+                        InventoryPet("", PetAvatar.ELEPHANT)
+                    )
+                )
             )
             val exec = { executeUseCase(newPlayer, "Ivan") }
             exec shouldThrow IllegalArgumentException::class

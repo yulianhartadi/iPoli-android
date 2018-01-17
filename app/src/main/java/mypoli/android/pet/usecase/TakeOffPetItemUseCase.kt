@@ -9,7 +9,8 @@ import mypoli.android.player.persistence.PlayerRepository
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 12/26/17.
  */
-class TakeOffPetItemUseCase(private val playerRepository: PlayerRepository) : UseCase<TakeOffPetItemUseCase.Params, Player> {
+class TakeOffPetItemUseCase(private val playerRepository: PlayerRepository) :
+    UseCase<TakeOffPetItemUseCase.Params, Player> {
     override fun execute(parameters: Params): Player {
         val player = playerRepository.find()
         requireNotNull(player)

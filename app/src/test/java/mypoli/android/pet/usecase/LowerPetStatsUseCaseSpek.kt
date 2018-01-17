@@ -49,12 +49,15 @@ class LowerPetStatsUseCaseSpek : Spek({
             fun executeUseCase(questRepository: QuestRepository, time: Time) =
                 LowerPetStatsUseCase(questRepository, playerRepo, randomSeed = 42).execute(time)
 
-            val eveningInterval = Constants.CHANGE_PET_STATS_AFTERNOON_TIME.minutesTo(Constants.CHANGE_PET_STATS_EVENING_TIME)
+            val eveningInterval =
+                Constants.CHANGE_PET_STATS_AFTERNOON_TIME.minutesTo(Constants.CHANGE_PET_STATS_EVENING_TIME)
 
             it("should remove fixed HP & MP in the morning") {
                 val newPet = executeUseCase(mock(), Constants.CHANGE_PET_STATS_MORNING_TIME)
-                val expectedHealthPoints = pet.healthPoints - LowerPetStatsUseCase.MORNING_HEALTH_POINTS_PENALTIES[0]
-                val expectedMoodPoints = pet.moodPoints - LowerPetStatsUseCase.MORNING_MOOD_POINTS_PENALTIES[0]
+                val expectedHealthPoints =
+                    pet.healthPoints - LowerPetStatsUseCase.MORNING_HEALTH_POINTS_PENALTIES[0]
+                val expectedMoodPoints =
+                    pet.moodPoints - LowerPetStatsUseCase.MORNING_MOOD_POINTS_PENALTIES[0]
                 expectedHealthPoints.`should be equal to`(newPet.healthPoints)
                 expectedMoodPoints.`should be equal to`(newPet.moodPoints)
             }

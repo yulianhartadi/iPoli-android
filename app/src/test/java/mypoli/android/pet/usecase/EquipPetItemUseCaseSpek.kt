@@ -23,7 +23,11 @@ class EquipPetItemUseCaseSpek : Spek({
     describe("EquipPetItemUseCase") {
 
         fun executeUseCase(player: Player, petItem: PetItem) =
-            EquipPetItemUseCase(TestUtil.playerRepoMock(player)).execute(EquipPetItemUseCase.Params(petItem))
+            EquipPetItemUseCase(TestUtil.playerRepoMock(player)).execute(
+                EquipPetItemUseCase.Params(
+                    petItem
+                )
+            )
 
         it("should have item in pet inventory") {
             val player = TestUtil.player().copy(

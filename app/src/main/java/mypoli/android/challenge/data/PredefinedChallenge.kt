@@ -16,9 +16,11 @@ import org.threeten.bp.DayOfWeek
  * on 12/29/17.
  */
 
-data class Challenge(val category: Category,
-                     val quests: List<Quest>,
-                     val durationDays: Int = 30) {
+data class Challenge(
+    val category: Category,
+    val quests: List<Quest>,
+    val durationDays: Int = 30
+) {
 
     enum class Category {
         BUILD_SKILL,
@@ -114,7 +116,8 @@ enum class PredefinedChallenge(
                 color = Color.RED,
                 icon = Icon.LIGHT_BULB
             )
-        )),
+        )
+    ),
     WEIGHT_CUTTER(
         Challenge.Category.HEALTH_AND_FITNESS,
         5,
@@ -176,7 +179,8 @@ enum class PredefinedChallenge(
                 color = Color.ORANGE,
                 icon = Icon.RESTAURANT
             )
-        )),
+        )
+    ),
     HEALTHY_FIT(
         Challenge.Category.HEALTH_AND_FITNESS,
         5,
@@ -319,7 +323,8 @@ enum class PredefinedChallenge(
                     DayOfWeek.SATURDAY
                 )
             )
-        )),
+        )
+    ),
     CODING_NINJA(
         Challenge.Category.BUILD_SKILL,
         5,
@@ -523,7 +528,13 @@ enum class PredefinedChallenge(
                 Color.RED,
                 Icon.HEART,
                 startAtDay = 3,
-                weekDays = listOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY)
+                weekDays = listOf(
+                    DayOfWeek.MONDAY,
+                    DayOfWeek.TUESDAY,
+                    DayOfWeek.WEDNESDAY,
+                    DayOfWeek.THURSDAY,
+                    DayOfWeek.FRIDAY
+                )
             ),
             Repeating(
                 "Evaluate how well I did every Saturday for 30 min",
@@ -535,7 +546,8 @@ enum class PredefinedChallenge(
                 startAtDay = 6,
                 weekDays = listOf(DayOfWeek.SATURDAY)
             )
-        )),
+        )
+    ),
     JOB_INTERVIEW(
         Challenge.Category.DEEP_WORK,
         5,
@@ -587,7 +599,8 @@ enum class PredefinedChallenge(
                 startAtDay = 12
             )
         ),
-        durationDays = 14),
+        durationDays = 14
+    ),
     FRIENDS_BLAST(
         Challenge.Category.ME_TIME,
         4,
@@ -683,7 +696,8 @@ enum class PredefinedChallenge(
                 startAtDay = 7,
                 preferredDayOfWeek = DayOfWeek.SATURDAY
             )
-        )),
+        )
+    ),
     FAMILY_TIME(
         Challenge.Category.ME_TIME,
         0,

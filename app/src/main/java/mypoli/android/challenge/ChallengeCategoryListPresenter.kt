@@ -14,6 +14,9 @@ class ChallengeCategoryListPresenter(coroutineContext: CoroutineContext) :
         coroutineContext
     ) {
 
-    override fun reduceState(intent: ChallengeCategoryListIntent, state: ChallengeCategoryListViewState) =
+    override fun reduceState(
+        intent: ChallengeCategoryListIntent,
+        state: ChallengeCategoryListViewState
+    ) =
         state
 }

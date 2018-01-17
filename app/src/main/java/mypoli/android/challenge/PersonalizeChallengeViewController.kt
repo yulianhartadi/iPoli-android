@@ -36,10 +36,15 @@ class PersonalizeChallengeViewController :
 
     override fun createPresenter() = presenter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_personalize_challenge, container, false)
-        view.challengeQuestList.layoutManager = LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
+        view.challengeQuestList.layoutManager =
+            LinearLayoutManager(container.context, LinearLayoutManager.VERTICAL, false)
         val androidChallenge = AndroidPredefinedChallenge.valueOf(challenge.name)
         view.challengeBackgroundImage.setBackgroundResource(androidChallenge.backgroundImage)
         view.challengeImage.setBackgroundResource(androidChallenge.smallImage)
@@ -114,7 +119,8 @@ class PersonalizeChallengeViewController :
 
             itemView.setOnClickListener {
                 send(PersonalizeChallengeIntent.ToggleSelected(vm))
-                itemView.challengeQuestCheckbox.isChecked = !itemView.challengeQuestCheckbox.isChecked
+                itemView.challengeQuestCheckbox.isChecked =
+                    !itemView.challengeQuestCheckbox.isChecked
             }
 
             itemView.challengeQuestCheckbox.isChecked = vm.isSelected
@@ -127,7 +133,13 @@ class PersonalizeChallengeViewController :
         override fun getItemCount() = viewModels.size
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_challenge_quest, parent, false))
+            ViewHolder(
+                LayoutInflater.from(parent.context).inflate(
+                    R.layout.item_challenge_quest,
+                    parent,
+                    false
+                )
+            )
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
 

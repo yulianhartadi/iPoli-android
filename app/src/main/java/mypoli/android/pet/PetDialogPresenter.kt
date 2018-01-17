@@ -24,7 +24,10 @@ data class PetDialogViewState(
 
 object LoadPetIntent : Intent
 
-class PetDialogPresenter(private val findPetUseCase: FindPetUseCase, coroutineContext: CoroutineContext) : BaseMviPresenter<ViewStateRenderer<PetDialogViewState>, PetDialogViewState, LoadPetIntent>(
+class PetDialogPresenter(
+    private val findPetUseCase: FindPetUseCase,
+    coroutineContext: CoroutineContext
+) : BaseMviPresenter<ViewStateRenderer<PetDialogViewState>, PetDialogViewState, LoadPetIntent>(
     PetDialogViewState(PetDialogViewState.Type.LOADING),
     coroutineContext
 ) {

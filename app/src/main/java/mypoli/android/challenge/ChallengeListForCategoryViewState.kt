@@ -13,7 +13,9 @@ import mypoli.android.player.Player
  */
 sealed class ChallengeListForCategoryIntent : Intent {
     data class ChangePlayerIntent(val player: Player) : ChallengeListForCategoryIntent()
-    data class LoadData(val challengeCategory: Challenge.Category) : ChallengeListForCategoryIntent()
+    data class LoadData(val challengeCategory: Challenge.Category) :
+        ChallengeListForCategoryIntent()
+
     data class BuyChallenge(val challenge: PredefinedChallenge) : ChallengeListForCategoryIntent()
 }
 

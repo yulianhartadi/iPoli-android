@@ -1,11 +1,11 @@
 package mypoli.android.quest.usecase
 
+import mypoli.android.ReminderScheduler
 import mypoli.android.common.SimpleReward
 import mypoli.android.common.UseCase
 import mypoli.android.player.usecase.RemoveRewardFromPlayerUseCase
 import mypoli.android.quest.Quest
 import mypoli.android.quest.data.persistence.QuestRepository
-import mypoli.android.ReminderScheduler
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>

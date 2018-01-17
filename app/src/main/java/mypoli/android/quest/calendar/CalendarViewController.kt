@@ -9,25 +9,25 @@ import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
-import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
+import kotlinx.android.synthetic.main.controller_calendar.view.*
+import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
 import mypoli.android.common.view.changehandler.CircularRevealChangeHandler
-import mypoli.android.pet.PetViewController
 import mypoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import mypoli.android.quest.calendar.CalendarViewState.StateType.*
 import mypoli.android.quest.calendar.addquest.AddQuestViewController
 import mypoli.android.quest.calendar.dayview.view.DayViewController
-import kotlinx.android.synthetic.main.controller_calendar.view.*
-import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
 import sun.bob.mcalendarview.CellConfig
@@ -37,7 +37,9 @@ import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
 
 class CalendarViewController(args: Bundle? = null) :
-    MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>(args) {
+    MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>(
+        args
+    ) {
 
     companion object {
         const val MAX_VISIBLE_DAYS = 100
@@ -60,7 +62,11 @@ class CalendarViewController(args: Bundle? = null) :
         override fun getCount() = 0
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
         val view = inflater.inflate(R.layout.controller_calendar, container, false)
 
         initAddQuest(view)
@@ -93,7 +99,11 @@ class CalendarViewController(args: Bundle? = null) :
 
                 animateShowAddContainer()
 
-                val handler = CircularRevealChangeHandler(addContainer, addContainer, duration = shortAnimTime)
+                val handler = CircularRevealChangeHandler(
+                    addContainer,
+                    addContainer,
+                    duration = shortAnimTime
+                )
                 val childRouter = addContainerRouter(view!!)
                 val addQuestViewController = AddQuestViewController({
                     childRouter.popCurrentController()
@@ -156,7 +166,11 @@ class CalendarViewController(args: Bundle? = null) :
         revealAnim.start()
     }
 
-    private fun createFabAnimator(fab: FloatingActionButton, x: Float, reverse: Boolean = false): AnimatorSet {
+    private fun createFabAnimator(
+        fab: FloatingActionButton,
+        x: Float,
+        reverse: Boolean = false
+    ): AnimatorSet {
         val duration = view!!.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
         val fabTranslation = ObjectAnimator.ofFloat(fab, "x", x)
 
@@ -199,7 +213,13 @@ class CalendarViewController(args: Bundle? = null) :
         view.datePicker.setMarkedStyle(MarkStyle.BACKGROUND, attr(R.attr.colorAccent))
 
         val currentDate = LocalDate.now()
-        view.datePicker.markDate(DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth))
+        view.datePicker.markDate(
+            DateData(
+                currentDate.year,
+                currentDate.monthValue,
+                currentDate.dayOfMonth
+            )
+        )
 
         calendarToolbar.sendOnClick(CalendarIntent.ExpandToolbar)
 
@@ -241,7 +261,12 @@ class CalendarViewController(args: Bundle? = null) :
 
             XP_AND_COINS_CHANGED -> {
                 levelProgress.visible = true
-                val animator = ObjectAnimator.ofInt(levelProgress, "progress", levelProgress.progress, state.progress)
+                val animator = ObjectAnimator.ofInt(
+                    levelProgress,
+                    "progress",
+                    levelProgress.progress,
+                    state.progress
+                )
                 animator.duration = shortAnimTime
                 animator.start()
                 calendarToolbar.playerGems.text = state.coins.toString()
@@ -250,7 +275,8 @@ class CalendarViewController(args: Bundle? = null) :
             LEVEL_CHANGED -> {
                 levelProgress.max = state.maxProgress
                 levelProgress.progress = state.progress
-                calendarToolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
+                calendarToolbar.playerLevel.text =
+                    resources!!.getString(R.string.player_level, state.level)
             }
 
             DATE_PICKER_CHANGED -> renderDatePicker(state.datePickerState, view, state.currentDate)
@@ -264,7 +290,8 @@ class CalendarViewController(args: Bundle? = null) :
                 levelProgress.visible = true
                 levelProgress.max = state.maxProgress
                 levelProgress.progress = state.progress
-                calendarToolbar.playerLevel.text = resources!!.getString(R.string.player_level, state.level)
+                calendarToolbar.playerLevel.text =
+                    resources!!.getString(R.string.player_level, state.level)
                 calendarToolbar.playerGems.text = state.coins.toString()
             }
 
@@ -281,7 +308,11 @@ class CalendarViewController(args: Bundle? = null) :
         }
     }
 
-    private fun renderDatePicker(datePickerState: CalendarViewState.DatePickerState, view: View, currentDate: LocalDate) {
+    private fun renderDatePicker(
+        datePickerState: CalendarViewState.DatePickerState,
+        view: View,
+        currentDate: LocalDate
+    ) {
         when (datePickerState) {
             SHOW_MONTH -> showMonthDatePicker(view)
             SHOW_WEEK -> showWeekDatePicker(view, currentDate)
@@ -294,7 +325,8 @@ class CalendarViewController(args: Bundle? = null) :
         val layoutParams = view.pager.layoutParams as ViewGroup.MarginLayoutParams
         CellConfig.Month2WeekPos = CellConfig.middlePosition
         CellConfig.ifMonth = false
-        CellConfig.weekAnchorPointDate = DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
+        CellConfig.weekAnchorPointDate =
+            DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
         view.datePicker.shrink()
         layoutParams.topMargin = ViewUtils.dpToPx(-14f, view.context).toInt()
         view.pager.layoutParams = layoutParams
@@ -319,13 +351,20 @@ class CalendarViewController(args: Bundle? = null) :
 
         CellConfig.Month2WeekPos = CellConfig.middlePosition
         CellConfig.ifMonth = false
-        CellConfig.weekAnchorPointDate = DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
+        CellConfig.weekAnchorPointDate =
+            DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth)
         view.datePicker.shrink()
     }
 
     private fun markSelectedDate(view: View, currentDate: LocalDate) {
         view.datePicker.markedDates.removeAdd()
-        view.datePicker.markDate(DateData(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth))
+        view.datePicker.markDate(
+            DateData(
+                currentDate.year,
+                currentDate.monthValue,
+                currentDate.dayOfMonth
+            )
+        )
     }
 
     private fun removeDayViewPagerAdapter(view: View) {
@@ -355,7 +394,8 @@ class CalendarViewController(args: Bundle? = null) :
         super.onDestroyView(view)
     }
 
-    class DayViewPagerAdapter(var date: LocalDate, var pagerPosition: Int, controller: Controller) : RouterPagerAdapter(controller) {
+    class DayViewPagerAdapter(var date: LocalDate, var pagerPosition: Int, controller: Controller) :
+        RouterPagerAdapter(controller) {
         override fun configureRouter(router: Router, position: Int) {
             if (!router.hasRootController()) {
                 val plusDays = position - pagerPosition

@@ -47,33 +47,39 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
 
     protected lateinit var sendChannel: SendChannel<I>
 
-    private fun stateReduceActor(view: V) = actor<I>(coroutineContext + CommonPool, Channel.CONFLATED) {
-        var state = initialState
+    private fun stateReduceActor(view: V) =
+        actor<I>(coroutineContext + CommonPool, Channel.CONFLATED) {
+            var state = initialState
 
-        launch(coroutineContext + UI) {
+            launch(coroutineContext + UI) {
 
-            renderInitialState(view)
+                renderInitialState(view)
 
-            channel.consumeEach { intent ->
-                try {
-                    val oldState = state
-                    state = reduceState(intent, state)
+                channel.consumeEach { intent ->
+                    try {
+                        val oldState = state
+                        state = reduceState(intent, state)
 
-                    longIntentChange(oldState, intent, state)
-                    view.render(state)
-                } catch (e: Throwable) {
-                    Timber.e(e, "From presenter ${this@BaseMviPresenter}")
-                    Crashlytics.logException(RuntimeException("From presenter ${this@BaseMviPresenter} for view $view", e))
+                        longIntentChange(oldState, intent, state)
+                        view.render(state)
+                    } catch (e: Throwable) {
+                        Timber.e(e, "From presenter ${this@BaseMviPresenter}")
+                        Crashlytics.logException(
+                            RuntimeException(
+                                "From presenter ${this@BaseMviPresenter} for view $view",
+                                e
+                            )
+                        )
 
-                    val data = JSONObject()
-                    data.put("message", e.message)
-                    data.put("stack_trace", Log.getStackTraceString(e))
+                        val data = JSONObject()
+                        data.put("message", e.message)
+                        data.put("stack_trace", Log.getStackTraceString(e))
 
-                    Amplitude.getInstance().logEvent("app_error", data)
+                        Amplitude.getInstance().logEvent("app_error", data)
+                    }
                 }
             }
         }
-    }
 
     private fun longIntentChange(oldState: VS, intent: I, state: VS) {
         val data = JSONObject()

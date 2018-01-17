@@ -22,7 +22,10 @@ object NextScheduledDateFormatter {
             nextText = when {
                 DateUtils.isTodayUTC(nextDate) -> context.getString(R.string.today)
                 DateUtils.isTomorrowUTC(nextDate) -> context.getString(R.string.tomorrow)
-                else -> SimpleDateFormat("dd MMM", Locale.getDefault()).format(DateUtils.toStartOfDay(nextDate))
+                else -> SimpleDateFormat(
+                    "dd MMM",
+                    Locale.getDefault()
+                ).format(DateUtils.toStartOfDay(nextDate))
             }
         }
 
@@ -33,7 +36,10 @@ object NextScheduledDateFormatter {
                 val endTime = Time.plusMinutes(startTime, duration)
                 nextText += startTime.toString() + " - " + endTime
             }
-            duration > 0 -> nextText += String.format(context.getString(R.string.repeating_quest_for_time), DurationFormatter.formatReadable(context, duration))
+            duration > 0 -> nextText += String.format(
+                context.getString(R.string.repeating_quest_for_time),
+                DurationFormatter.formatReadable(context, duration)
+            )
             startTime != null -> nextText += startTime
         }
         return String.format(context.getString(R.string.repeating_quest_next), nextText)

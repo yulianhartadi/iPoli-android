@@ -71,7 +71,12 @@ class FeedPetUseCaseSpek : Spek({
                 val result = executeUseCase(player, Food.APPLE)
                 result.`should be instance of`(Result.PetFed::class)
                 val newPlayer = (result as Result.PetFed).player
-                newPlayer.inventory.`should equal`(player.inventory.addFood(Food.APPLE, Food.APPLE.price.quantity - 1))
+                newPlayer.inventory.`should equal`(
+                    player.inventory.addFood(
+                        Food.APPLE,
+                        Food.APPLE.price.quantity - 1
+                    )
+                )
             }
         }
 

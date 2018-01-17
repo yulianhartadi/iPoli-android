@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
-import mypoli.android.R
 import kotlinx.android.synthetic.main.dialog_feedback.view.*
 import kotlinx.android.synthetic.main.view_dialog_header.view.*
+import mypoli.android.R
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -28,7 +28,11 @@ class FeedbackDialogController : BaseDialogController {
 
     constructor(args: Bundle? = null) : super(args)
 
-    override fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog =
+    override fun onCreateDialog(
+        dialogBuilder: AlertDialog.Builder,
+        contentView: View,
+        savedViewState: Bundle?
+    ): AlertDialog =
         dialogBuilder
             .setPositiveButton("Send", { _, _ ->
                 val feedback = contentView.feedback.text.toString()

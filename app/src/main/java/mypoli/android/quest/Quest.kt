@@ -21,7 +21,10 @@ data class Reminder(
     val remindDate: LocalDate
 ) {
     fun toMillis() =
-        LocalDateTime.of(remindDate, LocalTime.of(remindTime.hours, remindTime.getMinutes())).toMillis()
+        LocalDateTime.of(
+            remindDate,
+            LocalTime.of(remindTime.hours, remindTime.getMinutes())
+        ).toMillis()
 
 }
 

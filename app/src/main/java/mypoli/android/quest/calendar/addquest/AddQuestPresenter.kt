@@ -110,13 +110,22 @@ class AddQuestPresenter(
             }
         }
 
-    private fun createReminderFromViewModel(reminder: ReminderViewModel?, scheduledDate: LocalDate, startMinute: Int): Reminder? {
+    private fun createReminderFromViewModel(
+        reminder: ReminderViewModel?,
+        scheduledDate: LocalDate,
+        startMinute: Int
+    ): Reminder? {
         return reminder?.let {
             val time = Time.of(startMinute)
-            val questDateTime = LocalDateTime.of(scheduledDate, LocalTime.of(time.hours, time.getMinutes()))
+            val questDateTime =
+                LocalDateTime.of(scheduledDate, LocalTime.of(time.hours, time.getMinutes()))
             val reminderDateTime = questDateTime.minusMinutes(it.minutesFromStart)
             val toLocalTime = reminderDateTime.toLocalTime()
-            Reminder(it.message, Time.at(toLocalTime.hour, toLocalTime.minute), reminderDateTime.toLocalDate())
+            Reminder(
+                it.message,
+                Time.at(toLocalTime.hour, toLocalTime.minute),
+                reminderDateTime.toLocalDate()
+            )
         }
     }
 

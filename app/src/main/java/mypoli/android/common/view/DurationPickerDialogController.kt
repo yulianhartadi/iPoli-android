@@ -60,11 +60,14 @@ class DurationPickerDialogController :
         headerView.dialogHeaderTitle.setText(R.string.quest_duration_question)
     }
 
-    override fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog =
-        dialogBuilder.
-            setPositiveButton(R.string.dialog_ok, { _, _ ->
-                listener!!.onDurationPicked(currentMinutes)
-            })
+    override fun onCreateDialog(
+        dialogBuilder: AlertDialog.Builder,
+        contentView: View,
+        savedViewState: Bundle?
+    ): AlertDialog =
+        dialogBuilder.setPositiveButton(R.string.dialog_ok, { _, _ ->
+            listener!!.onDurationPicked(currentMinutes)
+        })
             .setNegativeButton(R.string.cancel, null)
             .create()
 

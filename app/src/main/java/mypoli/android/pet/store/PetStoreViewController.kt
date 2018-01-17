@@ -28,12 +28,19 @@ import space.traversal.kapsule.required
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 12/4/17.
  */
-class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreViewState, PetStoreViewController, PetStorePresenter, PetStoreIntent>(args) {
+class PetStoreViewController(args: Bundle? = null) :
+    MviViewController<PetStoreViewState, PetStoreViewController, PetStorePresenter, PetStoreIntent>(
+        args
+    ) {
     private val presenter by required { petStorePresenter }
 
     override fun createPresenter() = presenter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_pet_store, container, false)
 
@@ -96,7 +103,12 @@ class PetStoreViewController(args: Bundle? = null) : MviViewController<PetStoreV
         )
     }
 
-    data class PetViewModel(val avatar: AndroidPetAvatar, val isBought: Boolean = false, val isCurrent: Boolean = false, val isLocked: Boolean = false)
+    data class PetViewModel(
+        val avatar: AndroidPetAvatar,
+        val isBought: Boolean = false,
+        val isCurrent: Boolean = false,
+        val isLocked: Boolean = false
+    )
 
     inner class PetPagerAdapter(private var viewModels: List<PetViewModel>) : PagerAdapter() {
 

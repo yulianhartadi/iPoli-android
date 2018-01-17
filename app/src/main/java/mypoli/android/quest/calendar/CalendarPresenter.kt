@@ -1,5 +1,7 @@
 package mypoli.android.quest.calendar
 
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.common.text.CalendarFormatter
@@ -7,8 +9,6 @@ import mypoli.android.player.ExperienceForLevelGenerator
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
 import mypoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import mypoli.android.quest.calendar.CalendarViewState.StateType.*
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import kotlin.coroutines.experimental.CoroutineContext
@@ -60,7 +60,10 @@ class CalendarPresenter(
             }
             is CalendarIntent.ExpandToolbarWeek -> {
                 when (state.datePickerState) {
-                    SHOW_WEEK -> state.copy(type = DATE_PICKER_CHANGED, datePickerState = SHOW_MONTH)
+                    SHOW_WEEK -> state.copy(
+                        type = DATE_PICKER_CHANGED,
+                        datePickerState = SHOW_MONTH
+                    )
                     else -> state.copy(type = DATE_PICKER_CHANGED, datePickerState = SHOW_WEEK)
                 }
             }
@@ -77,7 +80,8 @@ class CalendarPresenter(
                 )
             }
             is CalendarIntent.SwipeChangeDate -> {
-                val newDate = state.currentDate.plusDays((intent.position - state.adapterPosition).toLong())
+                val newDate =
+                    state.currentDate.plusDays((intent.position - state.adapterPosition).toLong())
                 val (dayText, dateText) = formatDayAndDate(newDate)
                 state.copy(
                     type = SWIPE_DATE_CHANGED,

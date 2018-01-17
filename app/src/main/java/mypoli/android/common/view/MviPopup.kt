@@ -14,6 +14,8 @@ import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.view.*
 import android.widget.RelativeLayout
+import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.experimental.launch
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.di.SimpleModule
@@ -22,8 +24,6 @@ import mypoli.android.common.mvi.MviPresenter
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.myPoliApp
-import kotlinx.coroutines.experimental.channels.SendChannel
-import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 
@@ -34,7 +34,11 @@ class PopupBackgroundLayout : RelativeLayout {
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(context, attrs, defStyle)
+    constructor(context: Context, attrs: AttributeSet, defStyle: Int) : super(
+        context,
+        attrs,
+        defStyle
+    )
 
     override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
         if (event?.keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_DOWN) {
@@ -50,7 +54,8 @@ class PopupBackgroundLayout : RelativeLayout {
 }
 
 abstract class MviPopup<VS : ViewState, in V : ViewStateRenderer<VS>, out P : MviPresenter<V, VS, I>, in I : Intent>
-(private val isAutoHide: Boolean = false, private val position: Position = Position.CENTER) : ViewStateRenderer<VS>, Injects<SimpleModule> {
+    (private val isAutoHide: Boolean = false, private val position: Position = Position.CENTER) :
+    ViewStateRenderer<VS>, Injects<SimpleModule> {
 
     enum class Position {
         CENTER, TOP, BOTTOM
@@ -80,14 +85,23 @@ abstract class MviPopup<VS : ViewState, in V : ViewStateRenderer<VS>, out P : Mv
         contentView.visibility = View.INVISIBLE
 
         overlayView = PopupBackgroundLayout(context)
-        overlayView.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        overlayView.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
         overlayView.setBackgroundResource(R.color.md_dark_text_12)
 
-        val contentLp = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
+        val contentLp = RelativeLayout.LayoutParams(
+            RelativeLayout.LayoutParams.MATCH_PARENT,
+            RelativeLayout.LayoutParams.WRAP_CONTENT
+        )
         contentLp.marginStart = ViewUtils.dpToPx(32f, context).toInt()
         contentLp.marginEnd = ViewUtils.dpToPx(32f, context).toInt()
         when (position) {
-            Position.CENTER -> contentLp.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
+            Position.CENTER -> contentLp.addRule(
+                RelativeLayout.CENTER_IN_PARENT,
+                RelativeLayout.TRUE
+            )
             Position.TOP -> {
                 contentLp.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE)
                 contentLp.topMargin = ViewUtils.dpToPx(24f, context).toInt()
@@ -119,10 +133,18 @@ abstract class MviPopup<VS : ViewState, in V : ViewStateRenderer<VS>, out P : Mv
     }
 
     protected open fun playEnterAnimation(contentView: View) {
-        val transAnim = ObjectAnimator.ofFloat(contentView, "y", getScreenHeight(contentView.context).toFloat(), contentView.y)
+        val transAnim = ObjectAnimator.ofFloat(
+            contentView,
+            "y",
+            getScreenHeight(contentView.context).toFloat(),
+            contentView.y
+        )
         val fadeAnim = ObjectAnimator.ofFloat(contentView, "alpha", 0f, 1f)
-        transAnim.duration = contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
-        fadeAnim.duration = contentView.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong()
+        transAnim.duration =
+            contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime)
+                .toLong()
+        fadeAnim.duration =
+            contentView.context.resources.getInteger(android.R.integer.config_longAnimTime).toLong()
         val animSet = AnimatorSet()
         animSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator) {
@@ -142,10 +164,19 @@ abstract class MviPopup<VS : ViewState, in V : ViewStateRenderer<VS>, out P : Mv
     }
 
     protected open fun playExitAnimation(contentView: View) {
-        val transAnim = ObjectAnimator.ofFloat(contentView, "y", contentView.y, getScreenHeight(contentView.context).toFloat())
+        val transAnim = ObjectAnimator.ofFloat(
+            contentView,
+            "y",
+            contentView.y,
+            getScreenHeight(contentView.context).toFloat()
+        )
         val fadeAnim = ObjectAnimator.ofFloat(contentView, "alpha", 1f, 0f)
-        transAnim.duration = contentView.context.resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
-        fadeAnim.duration = contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+        transAnim.duration =
+            contentView.context.resources.getInteger(android.R.integer.config_shortAnimTime)
+                .toLong()
+        fadeAnim.duration =
+            contentView.context.resources.getInteger(android.R.integer.config_mediumAnimTime)
+                .toLong()
         val animSet = AnimatorSet()
         animSet.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
@@ -163,9 +194,9 @@ abstract class MviPopup<VS : ViewState, in V : ViewStateRenderer<VS>, out P : Mv
     }
 
     private fun addViewToWindowManager(view: ViewGroup) {
-        val focusable = WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED.
-            or(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN).
-            or(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL)
+        val focusable =
+            WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED.or(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
+                .or(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL)
 
         val metrics = DisplayMetrics()
         windowManager.defaultDisplay.getRealMetrics(metrics)
@@ -175,7 +206,8 @@ abstract class MviPopup<VS : ViewState, in V : ViewStateRenderer<VS>, out P : Mv
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowOverlayCompat.TYPE_SYSTEM_ERROR,
             focusable,
-            PixelFormat.TRANSLUCENT)
+            PixelFormat.TRANSLUCENT
+        )
 
         windowManager.addView(view, layoutParams)
     }
@@ -218,6 +250,7 @@ abstract class MviPopup<VS : ViewState, in V : ViewStateRenderer<VS>, out P : Mv
         private val ANDROID_OREO = 26
         private val TYPE_APPLICATION_OVERLAY = 2038
 
-        val TYPE_SYSTEM_ERROR = if (Build.VERSION.SDK_INT < ANDROID_OREO) WindowManager.LayoutParams.TYPE_SYSTEM_ERROR else TYPE_APPLICATION_OVERLAY
+        val TYPE_SYSTEM_ERROR =
+            if (Build.VERSION.SDK_INT < ANDROID_OREO) WindowManager.LayoutParams.TYPE_SYSTEM_ERROR else TYPE_APPLICATION_OVERLAY
     }
 }

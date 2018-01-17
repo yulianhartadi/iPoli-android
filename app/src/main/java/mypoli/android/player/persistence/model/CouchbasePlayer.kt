@@ -7,7 +7,8 @@ import mypoli.android.common.persistence.CouchbasePersistedModel
  * on 12/1/17.
  */
 
-data class CouchbasePlayer(override val map: MutableMap<String, Any?> = mutableMapOf()) : CouchbasePersistedModel {
+data class CouchbasePlayer(override val map: MutableMap<String, Any?> = mutableMapOf()) :
+    CouchbasePersistedModel {
     override var type: String by map
     override var id: String by map
     var schemaVersion: Int by map

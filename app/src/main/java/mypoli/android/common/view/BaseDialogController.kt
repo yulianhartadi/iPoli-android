@@ -43,7 +43,11 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
      */
     protected constructor(args: Bundle?) : super(args)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
         val headerView = createHeaderView(inflater)
         onHeaderViewCreated(headerView)
         val contentView = onCreateContentView(inflater, savedViewState)
@@ -72,9 +76,16 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
 
     }
 
-    protected abstract fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View
+    protected abstract fun onCreateContentView(
+        inflater: LayoutInflater,
+        savedViewState: Bundle?
+    ): View
 
-    protected abstract fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog
+    protected abstract fun onCreateDialog(
+        dialogBuilder: AlertDialog.Builder,
+        contentView: View,
+        savedViewState: Bundle?
+    ): AlertDialog
 
     override fun onSaveViewState(view: View, outState: Bundle) {
         super.onSaveViewState(view, outState)
@@ -105,10 +116,12 @@ abstract class BaseDialogController : RestoreViewOnCreateController {
      */
     fun showDialog(router: Router, tag: String?) {
         dismissed = false
-        router.pushController(RouterTransaction.with(this)
-            .pushChangeHandler(SimpleSwapChangeHandler(false))
-            .popChangeHandler(SimpleSwapChangeHandler(false))
-            .tag(tag))
+        router.pushController(
+            RouterTransaction.with(this)
+                .pushChangeHandler(SimpleSwapChangeHandler(false))
+                .popChangeHandler(SimpleSwapChangeHandler(false))
+                .tag(tag)
+        )
     }
 
     /**
@@ -136,7 +149,11 @@ abstract class MviDialogController<VS : ViewState, in V : ViewStateRenderer<VS>,
     private lateinit var contentView: View
     private var dismissed: Boolean = false
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
 
         val headerView = createHeaderView(inflater)
         onHeaderViewCreated(headerView)
@@ -167,9 +184,16 @@ abstract class MviDialogController<VS : ViewState, in V : ViewStateRenderer<VS>,
 
     }
 
-    protected abstract fun onCreateContentView(inflater: LayoutInflater, savedViewState: Bundle?): View
+    protected abstract fun onCreateContentView(
+        inflater: LayoutInflater,
+        savedViewState: Bundle?
+    ): View
 
-    protected abstract fun onCreateDialog(dialogBuilder: AlertDialog.Builder, contentView: View, savedViewState: Bundle?): AlertDialog
+    protected abstract fun onCreateDialog(
+        dialogBuilder: AlertDialog.Builder,
+        contentView: View,
+        savedViewState: Bundle?
+    ): AlertDialog
 
     protected open fun onDialogCreated(dialog: AlertDialog, contentView: View) {
 
@@ -204,10 +228,12 @@ abstract class MviDialogController<VS : ViewState, in V : ViewStateRenderer<VS>,
      */
     fun showDialog(router: Router, tag: String?) {
         dismissed = false
-        router.pushController(RouterTransaction.with(this)
-            .pushChangeHandler(SimpleSwapChangeHandler(false))
-            .popChangeHandler(SimpleSwapChangeHandler(false))
-            .tag(tag))
+        router.pushController(
+            RouterTransaction.with(this)
+                .pushChangeHandler(SimpleSwapChangeHandler(false))
+                .popChangeHandler(SimpleSwapChangeHandler(false))
+                .tag(tag)
+        )
     }
 
     /**

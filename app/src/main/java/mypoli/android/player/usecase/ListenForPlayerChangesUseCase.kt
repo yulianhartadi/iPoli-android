@@ -1,9 +1,9 @@
 package mypoli.android.player.usecase
 
+import kotlinx.coroutines.experimental.channels.map
 import mypoli.android.common.StreamingUseCase
 import mypoli.android.player.Player
 import mypoli.android.player.persistence.PlayerRepository
-import kotlinx.coroutines.experimental.channels.map
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>

@@ -22,8 +22,8 @@ interface ViewState
 interface Intent
 
 abstract class MviViewController<in VS : ViewState, in V : ViewStateRenderer<VS>, out P : MviPresenter<V, VS, I>, in I : Intent>
-protected constructor(args: Bundle? = null)
-    : RestoreViewOnCreateController(args), ViewStateRenderer<VS>, Injects<ControllerModule> {
+protected constructor(args: Bundle? = null) : RestoreViewOnCreateController(args),
+    ViewStateRenderer<VS>, Injects<ControllerModule> {
 
     private lateinit var intentChannel: SendChannel<I>
 

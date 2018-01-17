@@ -35,7 +35,8 @@ class ComparePetItemsUseCaseSpek : Spek({
             val expectedResult = ComparePetItemsUseCase.Result(
                 newItem.experienceBonus,
                 newItem.coinBonus,
-                newItem.bountyBonus)
+                newItem.bountyBonus
+            )
             result.`should equal`(expectedResult)
         }
 
@@ -45,7 +46,8 @@ class ComparePetItemsUseCaseSpek : Spek({
             val expectedResult = ComparePetItemsUseCase.Result(
                 newItem.experienceBonus - currentItem.experienceBonus,
                 newItem.coinBonus - currentItem.coinBonus,
-                newItem.bountyBonus - currentItem.bountyBonus)
+                newItem.bountyBonus - currentItem.bountyBonus
+            )
             result.`should equal`(expectedResult)
         }
     }

@@ -61,23 +61,26 @@ class GemStorePresenter(
             }
 
             is GemStoreIntent.BuyGemPack -> {
-                purchaseManager.purchase(intent.gemPack.type, object : InAppPurchaseManager.PurchaseListener {
+                purchaseManager.purchase(
+                    intent.gemPack.type,
+                    object : InAppPurchaseManager.PurchaseListener {
 
-                    override fun onPurchased() {
-                        val result = purchaseGemPackUseCase.execute(PurchaseGemPackUseCase.Params(intent.gemPack))
-                        launch {
-                            sendChannel.send(
-                                GemStoreIntent.GemPackPurchased(result.hasUnlockedPet)
-                            )
+                        override fun onPurchased() {
+                            val result =
+                                purchaseGemPackUseCase.execute(PurchaseGemPackUseCase.Params(intent.gemPack))
+                            launch {
+                                sendChannel.send(
+                                    GemStoreIntent.GemPackPurchased(result.hasUnlockedPet)
+                                )
+                            }
                         }
-                    }
 
-                    override fun onError() {
-                        launch {
-                            sendChannel.send(GemStoreIntent.PurchaseFailed)
+                        override fun onError() {
+                            launch {
+                                sendChannel.send(GemStoreIntent.PurchaseFailed)
+                            }
                         }
-                    }
-                })
+                    })
                 state.copy(
                     type = PURCHASING
                 )

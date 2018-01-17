@@ -2,6 +2,9 @@ package mypoli.android.common.view
 
 import android.view.LayoutInflater
 import android.view.View
+import kotlinx.android.synthetic.main.popup_pet_message.view.*
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import mypoli.android.R
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.Intent
@@ -11,9 +14,6 @@ import mypoli.android.pet.AndroidPetAvatar
 import mypoli.android.pet.PetAvatar
 import mypoli.android.player.Player
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
-import kotlinx.android.synthetic.main.popup_pet_message.view.*
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.experimental.CoroutineContext
@@ -30,7 +30,8 @@ sealed class PetMessageIntent : Intent {
 
 class PetMessagePresenter(
     private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
-    coroutineContext: CoroutineContext) : BaseMviPresenter<ViewStateRenderer<PetMessageViewState>, PetMessageViewState, PetMessageIntent>(
+    coroutineContext: CoroutineContext
+) : BaseMviPresenter<ViewStateRenderer<PetMessageViewState>, PetMessageViewState, PetMessageIntent>(
     PetMessageViewState(),
     coroutineContext
 ) {
@@ -60,7 +61,10 @@ class PetMessagePresenter(
 class PetMessagePopup(
     private val message: String,
     private val undoListener: () -> Unit
-) : MviPopup<PetMessageViewState, PetMessagePopup, PetMessagePresenter, PetMessageIntent>(position = MviPopup.Position.BOTTOM, isAutoHide = true) {
+) : MviPopup<PetMessageViewState, PetMessagePopup, PetMessagePresenter, PetMessageIntent>(
+    position = MviPopup.Position.BOTTOM,
+    isAutoHide = true
+) {
 
     private val presenter by required { petMessagePresenter }
 

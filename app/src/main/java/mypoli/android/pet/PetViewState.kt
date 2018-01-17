@@ -17,9 +17,9 @@ sealed class PetIntent : Intent {
     object ShowHeadItemList : PetIntent()
     object ShowFaceItemList : PetIntent()
     object ShowBodyItemList : PetIntent()
-    data class BuyItem(val item : PetItem) : PetIntent()
-    data class EquipItem(val item : PetItem) : PetIntent()
-    data class TakeItemOff(val item : PetItem) : PetIntent()
+    data class BuyItem(val item: PetItem) : PetIntent()
+    data class EquipItem(val item: PetItem) : PetIntent()
+    data class TakeItemOff(val item: PetItem) : PetIntent()
 }
 
 object LoadDataIntent : PetIntent()

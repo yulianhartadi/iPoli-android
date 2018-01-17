@@ -76,10 +76,12 @@ class myPoliApp : Application() {
                 }
             }).start()
 
-            Fabric.with(Fabric.Builder(this)
-                .kits(Crashlytics())
-                .debuggable(BuildConfig.DEBUG)
-                .build())
+            Fabric.with(
+                Fabric.Builder(this)
+                    .kits(Crashlytics())
+                    .debuggable(BuildConfig.DEBUG)
+                    .build()
+            )
 
             refWatcher = LeakCanary.install(this)
         }

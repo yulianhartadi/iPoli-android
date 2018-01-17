@@ -9,6 +9,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
+import kotlinx.android.synthetic.main.popup_quest_complete.view.*
+import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.launch
 import mypoli.android.R
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.Intent
@@ -22,9 +25,6 @@ import mypoli.android.pet.Food
 import mypoli.android.pet.PetAvatar
 import mypoli.android.player.Player
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
-import kotlinx.android.synthetic.main.popup_quest_complete.view.*
-import kotlinx.coroutines.experimental.channels.consumeEach
-import kotlinx.coroutines.experimental.launch
 import space.traversal.kapsule.required
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -40,11 +40,13 @@ sealed class QuestCompleteIntent : Intent {
     data class ChangePlayer(val player: Player) : QuestCompleteIntent()
 }
 
-class QuestCompletePresenter(private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
-                             coroutineContext: CoroutineContext)
-    : BaseMviPresenter<ViewStateRenderer<QuestCompleteViewState>, QuestCompleteViewState, QuestCompleteIntent>(
+class QuestCompletePresenter(
+    private val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase,
+    coroutineContext: CoroutineContext
+) : BaseMviPresenter<ViewStateRenderer<QuestCompleteViewState>, QuestCompleteViewState, QuestCompleteIntent>(
     QuestCompleteViewState(),
-    coroutineContext) {
+    coroutineContext
+) {
     override fun reduceState(intent: QuestCompleteIntent, state: QuestCompleteViewState) =
         when (intent) {
             is QuestCompleteIntent.LoadData -> {
@@ -73,7 +75,9 @@ class QuestCompletePopup(
     private val earnedXP: Int,
     private val earnedCoins: Int,
     private val bounty: Food? = null
-) : MviPopup<QuestCompleteViewState, ViewStateRenderer<QuestCompleteViewState>, QuestCompletePresenter, QuestCompleteIntent>(isAutoHide = true) {
+) : MviPopup<QuestCompleteViewState, ViewStateRenderer<QuestCompleteViewState>, QuestCompletePresenter, QuestCompleteIntent>(
+    isAutoHide = true
+) {
 
     private val presenter by required { questCompletePresenter }
 
@@ -158,7 +162,8 @@ class QuestCompletePopup(
                     }
 
                     override fun onAnimationEnd(animation: Animator?) {
-                        val fadeAnim = ObjectAnimator.ofFloat(contentView.bountyQuantity, "alpha", 0f, 1f)
+                        val fadeAnim =
+                            ObjectAnimator.ofFloat(contentView.bountyQuantity, "alpha", 0f, 1f)
                         fadeAnim.addListener(object : AnimatorListenerAdapter() {
                             override fun onAnimationEnd(animation: Animator?) {
                                 autoHideAfter(700)

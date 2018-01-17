@@ -50,12 +50,14 @@ class Interval<out T : TimeUnit>(value: Number, private val timeUnitFactory: () 
     }
 
     operator fun plus(other: Interval<TimeUnit>): Interval<T> {
-        val newValue = value + other.value * other.timeUnitFactory().conversionRate(timeUnitFactory())
+        val newValue =
+            value + other.value * other.timeUnitFactory().conversionRate(timeUnitFactory())
         return Interval(newValue) { timeUnitFactory() }
     }
 
     operator fun minus(other: Interval<TimeUnit>): Interval<T> {
-        val newValue = value - other.value * other.timeUnitFactory().conversionRate(timeUnitFactory())
+        val newValue =
+            value - other.value * other.timeUnitFactory().conversionRate(timeUnitFactory())
         return Interval(newValue) { timeUnitFactory() }
     }
 

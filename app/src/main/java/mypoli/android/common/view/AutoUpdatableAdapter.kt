@@ -8,7 +8,11 @@ import android.support.v7.widget.RecyclerView
  * on 8/27/17.
  */
 interface AutoUpdatableAdapter {
-    fun <T> RecyclerView.Adapter<*>.autoNotify(oldList: MutableList<T>, newList: MutableList<T>, compare: (T, T) -> Boolean) {
+    fun <T> RecyclerView.Adapter<*>.autoNotify(
+        oldList: MutableList<T>,
+        newList: MutableList<T>,
+        compare: (T, T) -> Boolean
+    ) {
         val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
 
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =

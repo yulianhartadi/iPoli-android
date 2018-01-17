@@ -1,7 +1,6 @@
 package mypoli.android
 
 import mypoli.android.common.datetime.Time
-import mypoli.android.common.datetime.minutes
 import mypoli.android.player.Theme
 import org.threeten.bp.DayOfWeek
 import java.util.*
@@ -100,13 +99,15 @@ interface Constants {
         val DEFAULT_PLAYER_SLEEP_END_MINUTE = 8 * 60
         val DEFAULT_PLAYER_COMPLETE_DAILY_QUESTS_MINUTE = 0
 
-        val DEFAULT_PLAYER_WORK_DAYS: Set<Int> = HashSet<Int>(Arrays.asList(
-            DayOfWeek.MONDAY.getValue(),
-            DayOfWeek.TUESDAY.getValue(),
-            DayOfWeek.WEDNESDAY.getValue(),
-            DayOfWeek.THURSDAY.getValue(),
-            DayOfWeek.FRIDAY.getValue()
-        ))
+        val DEFAULT_PLAYER_WORK_DAYS: Set<Int> = HashSet<Int>(
+            Arrays.asList(
+                DayOfWeek.MONDAY.getValue(),
+                DayOfWeek.TUESDAY.getValue(),
+                DayOfWeek.WEDNESDAY.getValue(),
+                DayOfWeek.THURSDAY.getValue(),
+                DayOfWeek.FRIDAY.getValue()
+            )
+        )
 
         val CHANGE_PET_STATS_MORNING_TIME = Time.atHours(9)
         val CHANGE_PET_STATS_AFTERNOON_TIME = Time.atHours(14)
@@ -134,13 +135,15 @@ interface Constants {
         val MIN_FLEXIBLE_TIMES_A_MONTH_COUNT = 1
         val MAX_FLEXIBLE_TIMES_A_MONTH_COUNT = 15
 
-        val DEFAULT_DAILY_CHALLENGE_DAYS: Set<Int> = HashSet<Int>(Arrays.asList(
-            DayOfWeek.MONDAY.getValue(),
-            DayOfWeek.TUESDAY.getValue(),
-            DayOfWeek.WEDNESDAY.getValue(),
-            DayOfWeek.THURSDAY.getValue(),
-            DayOfWeek.FRIDAY.getValue()
-        ))
+        val DEFAULT_DAILY_CHALLENGE_DAYS: Set<Int> = HashSet<Int>(
+            Arrays.asList(
+                DayOfWeek.MONDAY.getValue(),
+                DayOfWeek.TUESDAY.getValue(),
+                DayOfWeek.WEDNESDAY.getValue(),
+                DayOfWeek.THURSDAY.getValue(),
+                DayOfWeek.FRIDAY.getValue()
+            )
+        )
 
         val DAILY_CHALLENGE_QUEST_COUNT = 3
         val DEFAULT_CHALLENGE_DEADLINE_DAY_DURATION = 30

@@ -40,21 +40,26 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         setTheme(playerTheme)
         setContentView(R.layout.activity_main)
 
-        val amplitudeClient = Amplitude.getInstance().initialize(this, AnalyticsConstants.AMPLITUDE_KEY)
+        val amplitudeClient =
+            Amplitude.getInstance().initialize(this, AnalyticsConstants.AMPLITUDE_KEY)
         amplitudeClient.enableForegroundTracking(application)
         if (BuildConfig.DEBUG) {
             Amplitude.getInstance().setLogLevel(Log.VERBOSE)
             amplitudeClient.setOptOut(true)
 
             if (!Settings.canDrawOverlays(this)) {
-                val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + packageName))
+                val intent = Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:" + packageName)
+                )
                 startActivityForResult(intent, 0)
             }
         }
 
         incrementAppRun()
 
-        router = Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
+        router =
+            Conductor.attachRouter(this, findViewById(R.id.controllerContainer), savedInstanceState)
         router.setPopsLastView(true)
         inject(myPoliApp.controllerModule(this, router))
 

@@ -48,7 +48,11 @@ class HomeViewController(args: Bundle? = null) :
 //        return false
 //    }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup,
+        savedViewState: Bundle?
+    ): View {
         setHasOptionsMenu(true)
 
         val contentView = inflater.inflate(R.layout.controller_home, container, false)
@@ -182,8 +186,10 @@ class HomeViewController(args: Bundle? = null) :
         FeedbackDialogController(object : FeedbackDialogController.FeedbackListener {
             override fun onSendFeedback(feedback: String) {
                 if (feedback.isNotEmpty()) {
-                    Amplitude.getInstance().logEvent("feedback",
-                        JSONObject().put("feedback", feedback))
+                    Amplitude.getInstance().logEvent(
+                        "feedback",
+                        JSONObject().put("feedback", feedback)
+                    )
                     showShortToast(R.string.feedback_response)
                 }
             }

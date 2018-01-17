@@ -9,7 +9,8 @@ import mypoli.android.quest.ColorPack
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 16.12.17.
  */
-class BuyColorPackUseCase(private val playerRepository: PlayerRepository) : UseCase<BuyColorPackUseCase.Params, BuyColorPackUseCase.Result> {
+class BuyColorPackUseCase(private val playerRepository: PlayerRepository) :
+    UseCase<BuyColorPackUseCase.Params, BuyColorPackUseCase.Result> {
 
     override fun execute(parameters: BuyColorPackUseCase.Params): BuyColorPackUseCase.Result {
 
