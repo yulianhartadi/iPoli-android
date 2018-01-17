@@ -11,6 +11,7 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import kotlinx.android.synthetic.main.controller_timer.view.*
@@ -45,12 +46,7 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_timer, container, false)
 
-        val icon = IconicsDrawable(view.context)
-            .icon(Ionicons.Icon.ion_play)
-            .color(attr(R.attr.colorAccent))
-            .sizeDp(22)
-
-        view.startStop.setImageDrawable(icon)
+        renderStartStopButton(view.startStop, true)
 
         return view
     }
@@ -102,11 +98,21 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
 
                 handler.postDelayed(updateTimer, 1000)
 
+                renderStartStopButton(view.startStop, false)
+                view.startStop.sendOnClick(TimerIntent.Stop)
+
                 view.setOnClickListener {
                     playShowNotImportantViewsAnimation(view)
-                    playHideNotImportantViewsAnimation(view)
+//                    playHideNotImportantViewsAnimation(view)
                 }
                 playHideNotImportantViewsAnimation(view)
+            }
+
+            TimerViewState.StateType.TIMER_STOPPED -> {
+                //stop hide animation
+                handler.removeCallbacksAndMessages(null)
+                renderStartStopButton(view.startStop, true)
+                view.startStop.sendOnClick(TimerIntent.Start)
             }
 
             TimerViewState.StateType.RUNNING -> {
@@ -114,6 +120,15 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
             }
 
         }
+    }
+
+    private fun renderStartStopButton(button: ImageView, start: Boolean) {
+        val icon = IconicsDrawable(button.context)
+            .icon(if (start) Ionicons.Icon.ion_play else Ionicons.Icon.ion_stop)
+            .color(attr(R.attr.colorAccent))
+            .sizeDp(22)
+
+        button.setImageDrawable(icon)
     }
 
     private fun playShowNotImportantViewsAnimation(view: View) {

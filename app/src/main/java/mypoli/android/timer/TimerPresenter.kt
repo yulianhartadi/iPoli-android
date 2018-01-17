@@ -14,6 +14,7 @@ import mypoli.android.quest.usecase.SplitDurationForPomodoroTimerUseCase.Result.
 import mypoli.android.quest.usecase.SplitDurationForPomodoroTimerUseCase.Result.DurationSplit
 import mypoli.android.timer.TimerViewState.StateType.*
 import mypoli.android.timer.view.formatter.TimerFormatter
+import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -83,12 +84,14 @@ class TimerPresenter(
             }
 
             is TimerIntent.Stop -> {
+                Timber.d("AAAA stop intent")
                 state.copy(
                     type = TIMER_STOPPED
                 )
             }
 
             is TimerIntent.Tick -> {
+                Timber.d("AAAA tick intent")
                 val remainingTime = state.remainingTime!! - 1.seconds
                 state.copy(
                     type = RUNNING,

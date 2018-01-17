@@ -37,8 +37,7 @@ data class TimerViewState(
         SHOW_COUNTDOWN,
         TIMER_STARTED,
         TIMER_STOPPED,
-        RUNNING,
-        STOPPED
+        RUNNING
     }
 
     enum class TimerType {
