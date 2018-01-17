@@ -3,6 +3,7 @@ package mypoli.android.timer
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.Constants
+import mypoli.android.common.datetime.minutes
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.quest.TimeRange
@@ -51,7 +52,7 @@ class TimerPresenter(
                             questName = quest.name,
                             timerType = TimerViewState.TimerType.COUNTDOWN,
                             showTimerTypeSwitch = false,
-                            timerLabel = TimerFormatter.format((quest.duration * 60 * 1000).toLong())
+                            timerLabel = TimerFormatter.format(quest.duration.minutes.asMilliseconds.longValue)
                         )
                     }
 
@@ -64,7 +65,7 @@ class TimerPresenter(
                             timerType = TimerViewState.TimerType.POMODORO,
                             showTimerTypeSwitch = true,
                             pomodoroProgress = pomodoroProgress,
-                            timerLabel = TimerFormatter.format((Constants.DEFAULT_POMODORO_WORK_DURATION * 60 * 1000).toLong())
+                            timerLabel = TimerFormatter.format(Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asMilliseconds.longValue)
                         )
                     }
                 }
