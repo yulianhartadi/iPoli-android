@@ -17,6 +17,7 @@ import android.text.TextWatcher
 import android.text.style.StrikethroughSpan
 import android.util.TypedValue
 import android.view.*
+import com.bluelinelabs.conductor.RouterTransaction
 import com.mikepenz.iconics.IconicsDrawable
 import kotlinx.android.synthetic.main.calendar_hour_cell.view.*
 import kotlinx.android.synthetic.main.controller_day_view.view.*
@@ -40,6 +41,7 @@ import mypoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
 import mypoli.android.quest.calendar.dayview.view.widget.*
 import mypoli.android.reminder.view.picker.ReminderPickerDialogController
 import mypoli.android.reminder.view.picker.ReminderViewModel
+import mypoli.android.timer.TimerViewController
 import org.threeten.bp.LocalDate
 import space.traversal.kapsule.required
 
@@ -495,7 +497,7 @@ class DayViewController :
                     view.questIcon.setImageDrawable(icon)
                 }
 
-
+                view.setOnClickListener(null)
             } else {
 
                 view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color900)
@@ -515,6 +517,10 @@ class DayViewController :
 
                 (view.checkBox as TintableCompoundButton).supportButtonTintList = tintList(vm.backgroundColor.color200)
                 view.completedBackgroundView.visibility = View.INVISIBLE
+
+                view.setOnClickListener {
+                    showQuest(vm.id)
+                }
             }
 
             view.checkBox.setOnCheckedChangeListener { cb, checked ->
@@ -627,21 +633,7 @@ class DayViewController :
 
             (itemView.unscheduledDone as TintableCompoundButton).supportButtonTintList = tintList(event.backgroundColor.color500, itemView.context)
 
-            if (!event.isCompleted) {
-                itemView.unscheduledQuestName.text = event.name
-                itemView.unscheduledQuestName.setTextColor(ContextCompat.getColor(itemView.context, event.textColor))
-
-
-                event.icon?.let {
-                    val icon = IconicsDrawable(itemView.context)
-                        .icon(it.icon)
-                        .colorRes(it.color)
-                        .sizeDp(24)
-                    itemView.unscheduledQuestIcon.visible = true
-                    itemView.unscheduledQuestIcon.setImageDrawable(icon)
-                }
-
-            } else {
+            if (event.isCompleted) {
                 val span = SpannableString(event.name)
                 span.setSpan(StrikethroughSpan(), 0, event.name.length, 0)
                 itemView.unscheduledQuestName.text = span
@@ -654,6 +646,25 @@ class DayViewController :
                         .sizeDp(24)
                     itemView.unscheduledQuestIcon.visible = true
                     itemView.unscheduledQuestIcon.setImageDrawable(icon)
+                }
+
+                itemView.setOnClickListener(null)
+
+            } else {
+                itemView.unscheduledQuestName.text = event.name
+                itemView.unscheduledQuestName.setTextColor(ContextCompat.getColor(itemView.context, event.textColor))
+
+                event.icon?.let {
+                    val icon = IconicsDrawable(itemView.context)
+                        .icon(it.icon)
+                        .colorRes(it.color)
+                        .sizeDp(24)
+                    itemView.unscheduledQuestIcon.visible = true
+                    itemView.unscheduledQuestIcon.setImageDrawable(icon)
+                }
+
+                itemView.setOnClickListener {
+                    showQuest(event.id)
                 }
 
             }
@@ -669,5 +680,9 @@ class DayViewController :
         }
 
         private fun tintList(@ColorRes color: Int, context: Context) = ContextCompat.getColorStateList(context, color)
+    }
+
+    private fun showQuest(questId: String) {
+        pushWithRootRouter(RouterTransaction.with(TimerViewController(questId)))
     }
 }

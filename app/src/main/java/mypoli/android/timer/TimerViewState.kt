@@ -20,12 +20,14 @@ data class TimerViewState(
     val type: StateType,
     val showTimerTypeSwitch: Boolean = false,
     val timerType: TimerType = TimerType.COUNTDOWN,
-    val maxProgress: Int = 0,
-    val currentProgress: Int = 0
+    val questName: String = "",
+    val pomodoroProgress: List<PomodoroProgress> = listOf()
 ) : ViewState {
 
     enum class StateType {
         LOADING,
+        SHOW_POMODORO,
+        SHOW_COUNTDOWN,
         RUNNING,
         STOPPED
     }

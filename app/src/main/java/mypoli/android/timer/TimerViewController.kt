@@ -1,5 +1,6 @@
 package mypoli.android.timer
 
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -12,9 +13,7 @@ import kotlinx.android.synthetic.main.controller_timer.view.*
 import kotlinx.android.synthetic.main.item_timer_progress.view.*
 import mypoli.android.R
 import mypoli.android.common.mvi.MviViewController
-import mypoli.android.common.view.attr
-import mypoli.android.common.view.enterFullScreen
-import mypoli.android.common.view.exitFullScreen
+import mypoli.android.common.view.*
 import space.traversal.kapsule.required
 
 /**
@@ -42,11 +41,6 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_timer, container, false)
 
-        handler = Handler(Looper.getMainLooper())
-        updateTimer = {
-            view.timerProgress.progress = view.timerProgress.progress + 1
-            handler.postDelayed(updateTimer, 1000)
-        }
 
         val icon = IconicsDrawable(view.context)
             .icon(Ionicons.Icon.ion_play)
@@ -54,16 +48,8 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
             .sizeDp(22)
 
         view.startStop.setImageDrawable(icon)
-        handler.postDelayed(updateTimer, 1000)
 
-        view.questName.text = "Do the Laundry"
-
-        for (i in 0..3) {
-            view.timerProgressContainer.addView(createProgress(inflater, view, R.drawable.timer_progress_item_complete))
-        }
-        for (i in 0..5) {
-            view.timerProgressContainer.addView(createProgress(inflater, view, R.drawable.timer_progress_item_incomplete))
-        }
+//        startTimer(view)
 
 
 //        view.timerProgressContainer.addView(createProgress(inflater, view))
@@ -72,15 +58,23 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
         return view
     }
 
-    private fun createProgress(inflater: LayoutInflater, view: View, progressDrawable: Int): View {
-        val progress = inflater.inflate(R.layout.item_timer_progress, view.timerProgressContainer, false)
-        progress.timerItemProgress.setBackgroundResource(progressDrawable)
-        return progress
+    private fun startTimer(view: View) {
+        handler = Handler(Looper.getMainLooper())
+        updateTimer = {
+            view.timerProgress.progress = view.timerProgress.progress + 1
+            handler.postDelayed(updateTimer, 1000)
+        }
+
+        handler.postDelayed(updateTimer, 1000)
     }
+
+    private fun createProgressView(view: View) =
+        LayoutInflater.from(view.context).inflate(R.layout.item_timer_progress, view.timerProgressContainer, false)
 
     override fun onAttach(view: View) {
         super.onAttach(view)
         enterFullScreen()
+        send(TimerIntent.LoadData(questId))
     }
 
     override fun onDetach(view: View) {
@@ -90,5 +84,60 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
 
     override fun render(state: TimerViewState, view: View) {
 
+        view.questName.text = state.questName
+
+        when (state.type) {
+            TimerViewState.StateType.SHOW_POMODORO -> {
+                state.pomodoroProgress.forEach {
+                    addProgressIndicator(view, it)
+                }
+            }
+        }
     }
+
+    private fun addProgressIndicator(view: View, progress: PomodoroProgress) {
+        val progressView = createProgressView(view)
+        val progressDrawable = resources!!.getDrawable(R.drawable.timer_progress_item, view.context.theme) as GradientDrawable
+
+        when (progress) {
+            PomodoroProgress.INCOMPLETE_WORK -> {
+                progressDrawable.setColor(colorRes(R.color.md_grey_300))
+            }
+
+            PomodoroProgress.COMPLETE_WORK -> {
+                progressDrawable.setColor(attr(R.attr.colorAccent))
+            }
+
+            PomodoroProgress.INCOMPLETE_SHORT_BREAK -> {
+                progressDrawable.setColor(colorRes(R.color.md_grey_300))
+                progressView.setScale(0.5f)
+            }
+
+            PomodoroProgress.COMPLETE_SHORT_BREAK -> {
+                progressDrawable.setColor(attr(R.attr.colorAccent))
+                progressView.setScale(0.5f)
+            }
+
+            PomodoroProgress.INCOMPLETE_LONG_BREAK -> {
+                progressDrawable.setColor(colorRes(R.color.md_grey_300))
+                progressView.setScale(0.75f)
+            }
+
+            PomodoroProgress.COMPLETE_LONG_BREAK -> {
+                progressDrawable.setColor(attr(R.attr.colorAccent))
+                progressView.setScale(0.75f)
+            }
+        }
+        progressView.timerItemProgress.background = progressDrawable
+        view.timerProgressContainer.addView(progressView)
+    }
+}
+
+enum class PomodoroProgress() {
+    INCOMPLETE_SHORT_BREAK,
+    COMPLETE_SHORT_BREAK,
+    INCOMPLETE_LONG_BREAK,
+    COMPLETE_LONG_BREAK,
+    INCOMPLETE_WORK,
+    COMPLETE_WORK
 }

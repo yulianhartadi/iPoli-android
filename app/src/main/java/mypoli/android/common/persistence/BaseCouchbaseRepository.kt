@@ -23,7 +23,7 @@ abstract class BaseCouchbaseRepository<E, out T>(protected val database: Databas
 
     override fun listenById(id: String) =
         listenForChange(
-            where = Expression.property("id").equalTo(id)
+            where = Meta.id.equalTo(id)
         )
 
     override fun listen() =

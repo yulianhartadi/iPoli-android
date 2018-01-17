@@ -11,3 +11,8 @@ var View.visible: Boolean
     set(value) {
         visibility = if (value) View.VISIBLE else View.INVISIBLE
     }
+
+fun View.setScale(scale: Float) {
+    scaleX = scale
+    scaleY = scale
+}
