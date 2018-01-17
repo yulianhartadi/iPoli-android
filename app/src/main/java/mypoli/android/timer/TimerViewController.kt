@@ -134,8 +134,7 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
     private fun playShowNotImportantViewsAnimation(view: View) {
         listOf<View>(
             view.timerLabel,
-            view.horizontalScrollView,
-            view.startStop)
+            view.horizontalScrollView)
             .forEach {
                 it.animate().alpha(1f).setDuration(longAnimTime).start()
                 it.visibility = View.VISIBLE
@@ -145,8 +144,7 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
     private fun playHideNotImportantViewsAnimation(view: View) {
         val notImportantViews = listOf<View>(
             view.timerLabel,
-            view.horizontalScrollView,
-            view.startStop)
+            view.horizontalScrollView)
 
         val anims = notImportantViews.map {
             ObjectAnimator.ofFloat(it, "alpha", 1f, 0f)
