@@ -19,6 +19,7 @@ sealed class TimerIntent : Intent {
 data class TimerViewState(
     val type: StateType,
     val showTimerTypeSwitch: Boolean = false,
+    val timerLabel: String = "",
     val timerType: TimerType = TimerType.COUNTDOWN,
     val questName: String = "",
     val pomodoroProgress: List<PomodoroProgress> = listOf()

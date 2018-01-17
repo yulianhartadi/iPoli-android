@@ -41,7 +41,6 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedViewState: Bundle?): View {
         val view = inflater.inflate(R.layout.controller_timer, container, false)
 
-
         val icon = IconicsDrawable(view.context)
             .icon(Ionicons.Icon.ion_play)
             .color(attr(R.attr.colorAccent))
@@ -50,10 +49,6 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
         view.startStop.setImageDrawable(icon)
 
 //        startTimer(view)
-
-
-//        view.timerProgressContainer.addView(createProgress(inflater, view))
-//        view.timerProgressContainer.addView(createProgress(inflater, view))
 
         return view
     }
@@ -85,13 +80,18 @@ class TimerViewController : MviViewController<TimerViewState, TimerViewControlle
     override fun render(state: TimerViewState, view: View) {
 
         view.questName.text = state.questName
+        view.timerLabel.text = state.timerLabel
 
         when (state.type) {
             TimerViewState.StateType.SHOW_POMODORO -> {
-                state.pomodoroProgress.forEach {
-                    addProgressIndicator(view, it)
-                }
+                renderTimerProgress(state, view)
             }
+        }
+    }
+
+    private fun renderTimerProgress(state: TimerViewState, view: View) {
+        state.pomodoroProgress.forEach {
+            addProgressIndicator(view, it)
         }
     }
 
