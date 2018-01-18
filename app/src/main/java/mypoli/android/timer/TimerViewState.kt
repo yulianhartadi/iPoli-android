@@ -21,6 +21,7 @@ sealed class TimerIntent : Intent {
 
 data class TimerViewState(
     val type: StateType,
+    val questId: String = "",
     val showTimerTypeSwitch: Boolean = false,
     val timerLabel: String = "",
     val remainingTime: Interval<Second>? = null,

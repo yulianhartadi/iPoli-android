@@ -9,6 +9,7 @@ import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.quest.TimeRange
 import mypoli.android.quest.usecase.ListenForQuestChangeUseCase
+import mypoli.android.quest.usecase.SaveQuestActualDurationUseCase
 import mypoli.android.quest.usecase.SplitDurationForPomodoroTimerUseCase
 import mypoli.android.quest.usecase.SplitDurationForPomodoroTimerUseCase.Result.DurationNotSplit
 import mypoli.android.quest.usecase.SplitDurationForPomodoroTimerUseCase.Result.DurationSplit
@@ -23,6 +24,7 @@ import kotlin.coroutines.experimental.CoroutineContext
 class TimerPresenter(
     private val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase,
     private val listenForQuestChangeUseCase: ListenForQuestChangeUseCase,
+    private val saveQuestActualDurationUseCase: SaveQuestActualDurationUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<TimerViewState>, TimerViewState, TimerIntent>(
     TimerViewState(LOADING),
@@ -39,7 +41,8 @@ class TimerPresenter(
                         }
                 }
                 state.copy(
-                    type = LOADING
+                    type = LOADING,
+                    questId = intent.questId
                 )
             }
 
@@ -79,6 +82,7 @@ class TimerPresenter(
             }
 
             is TimerIntent.Start -> {
+
                 state.copy(
                     type = TIMER_STARTED,
                     timerProgress = 0,
