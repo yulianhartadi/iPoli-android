@@ -18,7 +18,7 @@ import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
-import mypoli.android.common.di.SimpleModule
+import mypoli.android.common.di.Module
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.MviPresenter
 import mypoli.android.common.mvi.ViewState
@@ -55,7 +55,7 @@ class PopupBackgroundLayout : RelativeLayout {
 
 abstract class MviPopup<VS : ViewState, in V : ViewStateRenderer<VS>, out P : MviPresenter<V, VS, I>, in I : Intent>
     (private val isAutoHide: Boolean = false, private val position: Position = Position.CENTER) :
-    ViewStateRenderer<VS>, Injects<SimpleModule> {
+    ViewStateRenderer<VS>, Injects<Module> {
 
     enum class Position {
         CENTER, TOP, BOTTOM
@@ -76,7 +76,7 @@ abstract class MviPopup<VS : ViewState, in V : ViewStateRenderer<VS>, out P : Mv
     abstract fun createView(inflater: LayoutInflater): View
 
     fun show(context: Context) {
-        inject(myPoliApp.simpleModule(context))
+        inject(myPoliApp.module(context))
 
         presenter = createPresenter()
         intentChannel = presenter.intentChannel()

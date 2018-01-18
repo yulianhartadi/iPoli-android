@@ -11,7 +11,7 @@ import com.bluelinelabs.conductor.RouterTransaction
 import mypoli.android.AppState
 import mypoli.android.R
 import mypoli.android.StateChangeSubscriber
-import mypoli.android.common.di.ControllerModule
+import mypoli.android.common.di.Module
 import mypoli.android.myPoliApp
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
@@ -23,13 +23,13 @@ import timber.log.Timber
  * on 1/18/18.
  */
 abstract class ReduxViewController protected constructor(args: Bundle? = null) :
-    RestoreViewOnCreateController(args), Injects<ControllerModule>,
+    RestoreViewOnCreateController(args), Injects<Module>,
     StateChangeSubscriber<AppState> {
 
     val stateStore by required { stateStore }
 
     override fun onContextAvailable(context: Context) {
-        inject(myPoliApp.controllerModule(context, router))
+        inject(myPoliApp.module(context))
     }
 
     init {

@@ -3,7 +3,6 @@ package mypoli.android
 import android.app.Application
 import android.content.Context
 import android.util.Log
-import com.bluelinelabs.conductor.Router
 import com.crashlytics.android.Crashlytics
 import com.evernote.android.job.JobManager
 import com.github.moduth.blockcanary.BlockCanary
@@ -34,28 +33,19 @@ import timber.log.Timber
 
 class myPoliApp : Application() {
 
+    private lateinit var module: Module
+
     companion object {
         lateinit var refWatcher: RefWatcher
 
-        fun controllerModule(context: Context, router: Router?) = ControllerModule(
-            androidModule = MainAndroidModule(context),
-            navigationModule = AndroidNavigationModule(router),
-            repositoryModule = CouchbaseRepositoryModule(),
-            useCaseModule = MainUseCaseModule(),
-            presenterModule = AndroidPresenterModule(),
-            stateStoreModule = AndroidStateStoreModule()
-        ).transitive()
-
-        fun simpleModule(context: Context) = SimpleModule(
-            androidModule = MainAndroidModule(context),
-            repositoryModule = CouchbaseJobRepositoryModule(),
-            useCaseModule = AndroidPopupUseCaseModule(),
-            presenterModule = AndroidPopupPresenterModule()
-        ).transitive()
+        fun module(context: Context) =
+            (context.applicationContext as myPoliApp).module
     }
 
     override fun onCreate() {
         super.onCreate()
+
+
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
             // You should not init your app in this process.
@@ -103,6 +93,15 @@ class myPoliApp : Application() {
             Log.println(Log.ERROR, thread.name, Log.getStackTraceString(exception))
             currentUncaughtExceptionHandler.uncaughtException(thread, exception)
         })
+
+
+        module = Module(
+            androidModule = MainAndroidModule(this),
+            repositoryModule = CouchbaseRepositoryModule(),
+            useCaseModule = MainUseCaseModule(),
+            presenterModule = AndroidPresenterModule(),
+            stateStoreModule = AndroidStateStoreModule()
+        ).transitive()
     }
 }
 

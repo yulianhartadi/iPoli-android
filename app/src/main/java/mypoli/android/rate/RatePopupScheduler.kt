@@ -6,7 +6,7 @@ import com.evernote.android.job.JobRequest
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.Constants
-import mypoli.android.common.di.ControllerModule
+import mypoli.android.common.di.Module
 import mypoli.android.common.view.asThemedWrapper
 import space.traversal.kapsule.Injects
 import java.util.*
@@ -15,7 +15,7 @@ import java.util.*
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 11/15/17.
  */
-class RatePopupJob : Job(), Injects<ControllerModule> {
+class RatePopupJob : Job(), Injects<Module> {
 
     override fun onRunJob(params: Params): Result {
         val pm = PreferenceManager.getDefaultSharedPreferences(context)
