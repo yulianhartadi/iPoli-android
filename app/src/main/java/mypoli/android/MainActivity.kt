@@ -22,6 +22,7 @@ import mypoli.android.player.persistence.model.ProviderType
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
+import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -83,7 +84,8 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
 //            router.setRoot(RouterTransaction.with(PersonalizeChallengeViewController()))
         }
 
-//        stateStore.dispatch(PlayerAction.Load)
+        Timber.d("AAA store $stateStore")
+        stateStore.dispatch(PlayerAction.Load)
     }
 
     private fun migrateIfNeeded() {

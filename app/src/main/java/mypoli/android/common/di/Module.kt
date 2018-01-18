@@ -122,18 +122,15 @@ interface StateStoreModule {
 
 class AndroidStateStoreModule : StateStoreModule, Injects<ControllerModule> {
 
-    private val playerRepository by required { playerRepository }
-
-    override val stateStore: AppStateStore<AppState>
-        get() = AppStateStore<AppState>(
-            AppState(
-                calendarState = CalendarState()
-            ),
+    override val stateStore by required {
+        AppStateStore<AppState>(
+            AppReducer.defaultState(),
             AppReducer,
             listOf(
                 LoadPlayerMiddleWare(playerRepository)
             )
         )
+    }
 }
 
 class AndroidNavigationModule(private val router: Router?) : NavigationModule {

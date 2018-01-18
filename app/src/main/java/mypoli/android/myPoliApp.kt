@@ -19,8 +19,10 @@ import mypoli.android.common.di.*
 import mypoli.android.common.job.myPoliJobCreator
 import mypoli.android.player.Player
 import mypoli.android.player.persistence.PlayerRepository
+import mypoli.android.quest.calendar.CalendarPresenter
 import mypoli.android.quest.calendar.CalendarViewState
 import org.threeten.bp.LocalDate
+import org.threeten.bp.format.DateTimeFormatter
 import space.traversal.kapsule.transitive
 import timber.log.Timber
 
@@ -125,12 +127,12 @@ data class AppState(
 ) : State
 
 data class CalendarState(
-    val currentDate: LocalDate = LocalDate.now(),
-    val datePickerState: CalendarViewState.DatePickerState = CalendarViewState.DatePickerState.INVISIBLE,
-    val monthText: String = "",
-    val dayText: String = "",
-    val dateText: String = "",
-    val adapterPosition: Int = -1
+    val currentDate: LocalDate,
+    val datePickerState: CalendarViewState.DatePickerState,
+    val monthText: String,
+    val dayText: String,
+    val dateText: String,
+    val adapterPosition: Int
 ) : PartialState
 
 class LoadPlayerMiddleWare(private val playerRepository: PlayerRepository) : MiddleWare<AppState> {
@@ -155,13 +157,23 @@ interface MiddleWare<in S : State> {
 
 interface Reducer<S : State> {
     fun reduce(oldState: S, action: Action): S
+
+    fun defaultState(): S
 }
 
 interface PartialReducer<in S : State, P : PartialState, in A : Action> {
     fun reduce(globalState: S, partialState: P, action: A): P
+
+    fun defaultState(): P
 }
 
 object AppReducer : Reducer<AppState> {
+    override fun defaultState(): AppState {
+        return AppState(
+            calendarState = CalendarReducer.defaultState()
+        )
+    }
+
     override fun reduce(oldState: AppState, action: Action): AppState {
 
         val player = if (action is PlayerAction.Changed) {
@@ -189,6 +201,8 @@ object AppReducer : Reducer<AppState> {
 
 object CalendarReducer : PartialReducer<AppState, CalendarState, CalendarAction> {
 
+    private val monthFormatter = DateTimeFormatter.ofPattern("MMMM")
+
     override fun reduce(
         globalState: AppState,
         partialState: CalendarState,
@@ -201,6 +215,18 @@ object CalendarReducer : PartialReducer<AppState, CalendarState, CalendarAction>
                 )
             }
         }
+
+    override fun defaultState(): CalendarState {
+        val today = LocalDate.now()
+        return CalendarState(
+            currentDate = today,
+            datePickerState = CalendarViewState.DatePickerState.INVISIBLE,
+            adapterPosition = CalendarPresenter.MID_POSITION,
+            monthText = monthFormatter.format(today),
+            dateText = "",
+            dayText = ""
+        )
+    }
 }
 
 interface StateChangeSubscriber<in S : State> {
