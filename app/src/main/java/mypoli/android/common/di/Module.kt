@@ -19,7 +19,6 @@ import mypoli.android.common.view.ColorPickerPresenter
 import mypoli.android.common.view.CurrencyConverterPresenter
 import mypoli.android.common.view.IconPickerDialogPresenter
 import mypoli.android.common.view.PetMessagePresenter
-import mypoli.android.home.HomePresenter
 import mypoli.android.pet.AndroidJobLowerPetStatsScheduler
 import mypoli.android.pet.LowerPetStatsScheduler
 import mypoli.android.pet.PetDialogPresenter
@@ -261,7 +260,6 @@ interface UseCaseModule {
 }
 
 interface PresenterModule {
-    val homePresenter: HomePresenter
     val calendarPresenter: CalendarPresenter
     val dayViewPresenter: DayViewPresenter
     val reminderPickerPresenter: ReminderPickerDialogPresenter
@@ -317,7 +315,6 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
     private val splitDurationForPomodoroTimerUseCase by required { splitDurationForPomodoroTimerUseCase }
     private val listenForQuestChangeUseCase by required { listenForQuestChangeUseCase }
     private val job by required { job }
-    override val homePresenter get() = HomePresenter(job)
     override val dayViewPresenter
         get() = DayViewPresenter(
             loadScheduleForDateUseCase,

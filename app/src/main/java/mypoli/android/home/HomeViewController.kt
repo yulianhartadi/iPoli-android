@@ -6,13 +6,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import com.amplitude.api.Amplitude
+import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.controller_home.view.*
 import mypoli.android.Constants
 import mypoli.android.R
 import mypoli.android.challenge.ChallengeCategoryListViewController
-import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.FeedbackDialogController
 import mypoli.android.common.view.setToolbar
 import mypoli.android.common.view.showShortToast
@@ -20,33 +20,13 @@ import mypoli.android.pet.PetViewController
 import mypoli.android.quest.calendar.CalendarViewController
 import mypoli.android.store.theme.ThemeStoreViewController
 import org.json.JSONObject
-import space.traversal.kapsule.required
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 8/19/17.
  */
 class HomeViewController(args: Bundle? = null) :
-    MviViewController<HomeViewState, HomeViewController, HomePresenter, HomeIntent>(args) {
-
-    private val presenter by required { homePresenter }
-
-    override fun createPresenter() = presenter
-
-    override fun render(state: HomeViewState, view: View) {
-
-        when (state.type) {
-
-        }
-    }
-
-//    private var navigationItemSelected: MenuItem? = null
-
-//    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-//        navigationItemSelected = item
-//        view?.drawerLayout?.closeDrawer(GravityCompat.START)
-//        return false
-//    }
+    RestoreViewOnCreateController(args) {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,27 +44,6 @@ class HomeViewController(args: Bundle? = null) :
     override fun onAttach(view: View) {
         super.onAttach(view)
 
-
-//        val actionBar = activity.supportActionBar
-//        actionBar?.setDisplayHomeAsUpEnabled(true)
-
-//        view.navigationView.setNavigationItemSelectedListener(this)
-
-//        val actionBarDrawerToggle = object : ActionBarDrawerToggle(activity, view.drawerLayout, view.toolbar, R.string.drawer_open, R.string.drawer_close) {
-
-//            override fun onDrawerOpened(drawerView: View) {
-//                navigationItemSelected = null
-//            }
-//
-//            override fun onDrawerClosed(drawerView: View) {
-//                if (navigationItemSelected == null) {
-//                    return
-//                }
-//                onItemSelectedFromDrawer()
-//            }
-//        }
-//
-//        view.drawerLayout.addDrawerListener(actionBarDrawerToggle)
         val handler = FadeChangeHandler()
         val childRouter = getChildRouter(view.controllerContainer, null)
         if (!childRouter.hasRootController()) {
@@ -99,32 +58,8 @@ class HomeViewController(args: Bundle? = null) :
                     .popChangeHandler(handler)
             )
         }
-//        RatePopup().show(view.context)
-
-//        DurationPickerDialogController().showDialog(childRouter, "hello")
-
-        send(LoadDataIntent)
-
-//        router.pushController(RouterTransaction.with(TimerViewController()))
-//        actionBarDrawerToggle.syncState()
-
 
     }
-
-//    private fun onItemSelectedFromDrawer() {
-//        when (navigationItemSelected?.itemId) {
-//            R.id.store -> Navigator(router).showStore()
-//        }
-
-//    }
-
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        if (item.itemId == android.R.id.home) {
-//            view?.drawerLayout?.openDrawer(GravityCompat.START)
-//            return true
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
