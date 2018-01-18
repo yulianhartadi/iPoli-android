@@ -13,6 +13,7 @@ import com.mikepenz.ionicons_typeface_library.Ionicons
 import kotlinx.android.synthetic.main.controller_timer.view.*
 import kotlinx.android.synthetic.main.item_timer_progress.view.*
 import mypoli.android.R
+import mypoli.android.common.ViewUtils
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
 import space.traversal.kapsule.required
@@ -225,6 +226,12 @@ class TimerViewController :
             }
         }
         progressView.timerItemProgress.background = progressDrawable
+
+        if (view.timerProgressContainer.childCount > 0) {
+            val lp = progressView.layoutParams as ViewGroup.MarginLayoutParams
+            lp.marginStart = ViewUtils.dpToPx(4f, view.context).toInt()
+        }
+
         view.timerProgressContainer.addView(progressView)
     }
 }
