@@ -13,6 +13,7 @@ import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import mypoli.android.common.di.ControllerModule
+import mypoli.android.common.redux.TestViewController
 import mypoli.android.common.view.playerTheme
 import mypoli.android.home.HomeViewController
 import mypoli.android.player.AuthProvider
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
 
     private val playerRepository by required { playerRepository }
     private val petStatsChangeScheduler by required { lowerPetStatsScheduler }
+    private val stateStore by required { stateStore }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,10 +77,13 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         }
 
         if (!router.hasRootController()) {
-            router.setRoot(RouterTransaction.with(HomeViewController()))
+//            router.setRoot(RouterTransaction.with(HomeViewController()))
+            router.setRoot(RouterTransaction.with(TestViewController()))
 //            router.setRoot(RouterTransaction.with(ChallengeCategoryListViewController()))
 //            router.setRoot(RouterTransaction.with(PersonalizeChallengeViewController()))
         }
+
+//        stateStore.dispatch(PlayerAction.Load)
     }
 
     private fun migrateIfNeeded() {

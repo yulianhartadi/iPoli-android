@@ -12,12 +12,15 @@ import com.jakewharton.threetenabp.AndroidThreeTen
 import com.squareup.leakcanary.LeakCanary
 import com.squareup.leakcanary.RefWatcher
 import io.fabric.sdk.android.Fabric
+import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.di.*
 import mypoli.android.common.job.myPoliJobCreator
 import mypoli.android.player.Player
 import mypoli.android.player.persistence.PlayerRepository
+import mypoli.android.quest.calendar.CalendarViewState
+import org.threeten.bp.LocalDate
 import space.traversal.kapsule.transitive
 import timber.log.Timber
 
@@ -37,7 +40,8 @@ class myPoliApp : Application() {
             navigationModule = AndroidNavigationModule(router),
             repositoryModule = CouchbaseRepositoryModule(),
             useCaseModule = MainUseCaseModule(),
-            presenterModule = AndroidPresenterModule()
+            presenterModule = AndroidPresenterModule(),
+            stateStoreModule = AndroidStateStoreModule()
         ).transitive()
 
         fun simpleModule(context: Context) = SimpleModule(
@@ -97,11 +101,6 @@ class myPoliApp : Application() {
             Log.println(Log.ERROR, thread.name, Log.getStackTraceString(exception))
             currentUncaughtExceptionHandler.uncaughtException(thread, exception)
         })
-
-
-        val stateStore =
-            AppStateStore(AppState(), LoadPlayerMiddleWare(simpleModule(this).playerRepository))
-        stateStore.dispatch(PlayerAction.Load)
     }
 }
 
@@ -112,61 +111,130 @@ sealed class PlayerAction : Action {
     data class Changed(val player: Player) : PlayerAction()
 }
 
-data class AppState(val player: Player? = null)
+sealed class CalendarAction : Action {
+    object ExpandToolbar : CalendarAction()
+}
 
-class LoadPlayerMiddleWare(private val playerRepository: PlayerRepository) {
+interface State
 
-    suspend fun apply(store: AppStateStore, action: PlayerAction.Load) {
-        playerRepository.listen().consumeEach {
-            store.dispatch(PlayerAction.Changed(it!!))
+interface PartialState
+
+data class AppState(
+    val player: Player? = null,
+    val calendarState: CalendarState
+) : State
+
+data class CalendarState(
+    val currentDate: LocalDate = LocalDate.now(),
+    val datePickerState: CalendarViewState.DatePickerState = CalendarViewState.DatePickerState.INVISIBLE,
+    val monthText: String = "",
+    val dayText: String = "",
+    val dateText: String = "",
+    val adapterPosition: Int = -1
+) : PartialState
+
+class LoadPlayerMiddleWare(private val playerRepository: PlayerRepository) : MiddleWare<AppState> {
+    override fun execute(store: AppStateStore<AppState>, action: Action) {
+        if (action != PlayerAction.Load) {
+            return
+        }
+        launch {
+            playerRepository.listen().consumeEach {
+                launch(UI) {
+                    store.dispatch(PlayerAction.Changed(it!!))
+                }
+
+            }
         }
     }
 }
 
-object PlayerActionReducer {
-    fun reduce(oldState: AppState, action: PlayerAction) =
+interface MiddleWare<in S : State> {
+    fun execute(store: AppStateStore<S>, action: Action)
+}
+
+interface Reducer<S : State> {
+    fun reduce(oldState: S, action: Action): S
+}
+
+interface PartialReducer<in S : State, P : PartialState, in A : Action> {
+    fun reduce(globalState: S, partialState: P, action: A): P
+}
+
+object AppReducer : Reducer<AppState> {
+    override fun reduce(oldState: AppState, action: Action): AppState {
+
+        val player = if (action is PlayerAction.Changed) {
+            action.player
+        } else {
+            oldState.player
+        }
+
+        val calendarState = if (action is CalendarAction) {
+            CalendarReducer.reduce(
+                oldState,
+                oldState.calendarState,
+                action
+            )
+        } else {
+            oldState.calendarState
+        }
+
+        return oldState.copy(
+            player = player,
+            calendarState = calendarState
+        )
+    }
+}
+
+object CalendarReducer : PartialReducer<AppState, CalendarState, CalendarAction> {
+
+    override fun reduce(
+        globalState: AppState,
+        partialState: CalendarState,
+        action: CalendarAction
+    ) =
         when (action) {
-            is PlayerAction.Load -> {
-                oldState
-            }
-            is PlayerAction.Changed -> {
-                oldState.copy(player = action.player)
+            is CalendarAction.ExpandToolbar -> {
+                partialState.copy(
+                    datePickerState = CalendarViewState.DatePickerState.SHOW_WEEK
+                )
             }
         }
 }
 
-class AppStateStore(initialState: AppState, loadPlayerMiddleWare: LoadPlayerMiddleWare) {
+interface StateChangeSubscriber<in S : State> {
+    fun onStateChanged(newState: S)
+}
 
-    var state = initialState
+class AppStateStore<out S : State>(
+    initialState: S,
+    private val reducer: Reducer<S>,
+    private val middleWares: List<MiddleWare<S>> = listOf()
+) {
+    private var stateChangeSubscribers: List<StateChangeSubscriber<S>> = listOf()
 
-    val reducers = mapOf(
-        PlayerAction::class to PlayerActionReducer
-    )
+    private var state = initialState
 
-    val middleWare = mapOf(
-        PlayerAction.Load::class to loadPlayerMiddleWare
-    )
-
-    inline fun <reified A : Action> dispatch(action: A) {
-        for (actionClass in reducers.keys) {
-//            if (actionClass is A) {
-            val state = reducers[actionClass]!!.reduce(state, action as PlayerAction)
-            onStateChanged(state)
-//            }
+    fun dispatch(action: Action) {
+        middleWares.forEach {
+            it.execute(this, action)
         }
-
-        for (actionClass in middleWare.keys) {
-//            Timber.d("AAA action class $actionClass")
-//            Timber.d("AAA A ${A::class}")
-//            if (actionClass::class == A::class) {
-            launch {
-                middleWare[actionClass]?.apply(this@AppStateStore, action as PlayerAction.Load)
+        val newState = reducer.reduce(state, action)
+        if (newState != state) {
+            state = newState
+            stateChangeSubscribers.forEach {
+                it.onStateChanged(state)
             }
-//            }
         }
     }
 
-    fun onStateChanged(newState: AppState) {
-        Timber.d("AAA new state $newState")
+    fun subscribe(subscriber: StateChangeSubscriber<S>) {
+        stateChangeSubscribers += subscriber
+        subscriber.onStateChanged(state)
+    }
+
+    fun unsubscribe(subscriber: StateChangeSubscriber<S>) {
+        stateChangeSubscribers -= subscriber
     }
 }

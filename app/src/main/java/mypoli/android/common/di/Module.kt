@@ -9,8 +9,7 @@ import com.couchbase.lite.Database
 import com.couchbase.lite.DatabaseConfiguration
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
-import mypoli.android.AndroidJobReminderScheduler
-import mypoli.android.ReminderScheduler
+import mypoli.android.*
 import mypoli.android.challenge.ChallengeCategoryListPresenter
 import mypoli.android.challenge.ChallengeListForCategoryPresenter
 import mypoli.android.challenge.PersonalizeChallengePresenter
@@ -115,6 +114,26 @@ interface AndroidModule {
 
 interface NavigationModule {
     val navigator: Navigator
+}
+
+interface StateStoreModule {
+    val stateStore: AppStateStore<AppState>
+}
+
+class AndroidStateStoreModule : StateStoreModule, Injects<ControllerModule> {
+
+    private val playerRepository by required { playerRepository }
+
+    override val stateStore: AppStateStore<AppState>
+        get() = AppStateStore<AppState>(
+            AppState(
+                calendarState = CalendarState()
+            ),
+            AppReducer,
+            listOf(
+                LoadPlayerMiddleWare(playerRepository)
+            )
+        )
 }
 
 class AndroidNavigationModule(private val router: Router?) : NavigationModule {
@@ -467,16 +486,25 @@ class ControllerModule(
     navigationModule: NavigationModule,
     repositoryModule: RepositoryModule,
     useCaseModule: UseCaseModule,
-    presenterModule: PresenterModule
+    presenterModule: PresenterModule,
+    stateStoreModule: StateStoreModule
 ) :
     AndroidModule by androidModule,
     NavigationModule by navigationModule,
     RepositoryModule by repositoryModule,
     UseCaseModule by useCaseModule,
     PresenterModule by presenterModule,
+    StateStoreModule by stateStoreModule,
     HasModules {
     override val modules =
-        setOf(androidModule, navigationModule, repositoryModule, useCaseModule, presenterModule)
+        setOf(
+            androidModule,
+            navigationModule,
+            repositoryModule,
+            useCaseModule,
+            presenterModule,
+            stateStoreModule
+        )
 }
 
 class SimpleModule(
