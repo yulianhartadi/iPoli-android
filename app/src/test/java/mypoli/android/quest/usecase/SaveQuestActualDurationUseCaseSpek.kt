@@ -144,12 +144,3 @@ class SaveQuestActualDurationUseCaseSpek : Spek({
 
     }
 })
-
-private fun Int.pomodoros() =
-    this * Constants.DEFAULT_POMODORO_WORK_DURATION
-
-private fun Int.shortBreaks() =
-    this * Constants.DEFAULT_POMODORO_BREAK_DURATION
-
-private fun Int.longBreaks() =
-    this * Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION

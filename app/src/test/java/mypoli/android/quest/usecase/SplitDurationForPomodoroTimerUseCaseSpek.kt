@@ -190,12 +190,3 @@ private fun TimeRange.`should be break with duration`(duration: Int) {
     type.`should be`(TimeRange.Type.BREAK)
     duration.`should be equal to`(duration)
 }
-
-private fun Int.pomodoros() =
-    this * Constants.DEFAULT_POMODORO_WORK_DURATION
-
-private fun Int.shortBreaks() =
-    this * Constants.DEFAULT_POMODORO_BREAK_DURATION
-
-private fun Int.longBreaks() =
-    this * Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION

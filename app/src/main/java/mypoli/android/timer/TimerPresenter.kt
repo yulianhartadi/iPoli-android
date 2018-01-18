@@ -8,6 +8,7 @@ import mypoli.android.common.datetime.seconds
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.quest.TimeRange
+import mypoli.android.quest.usecase.CancelQuestTimerUseCase
 import mypoli.android.quest.usecase.ListenForQuestChangeUseCase
 import mypoli.android.quest.usecase.SaveQuestActualDurationUseCase
 import mypoli.android.quest.usecase.SplitDurationForPomodoroTimerUseCase
@@ -25,6 +26,7 @@ class TimerPresenter(
     private val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase,
     private val listenForQuestChangeUseCase: ListenForQuestChangeUseCase,
     private val saveQuestActualDurationUseCase: SaveQuestActualDurationUseCase,
+    private val cancelQuestTimerUseCase: CancelQuestTimerUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<TimerViewState>, TimerViewState, TimerIntent>(
     TimerViewState(LOADING),
