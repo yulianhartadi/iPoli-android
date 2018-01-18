@@ -48,7 +48,7 @@ class TimerViewController :
     ): View {
         val view = inflater.inflate(R.layout.controller_timer, container, false)
 
-        renderStartStopButton(view.startStop, true)
+        renderTimerButton(view.startStop, TimerButton.START)
 
         return view
     }
@@ -88,8 +88,13 @@ class TimerViewController :
 
         when (state.type) {
             TimerViewState.StateType.SHOW_POMODORO -> {
+                view.timerType.visible = state.showTimerTypeSwitch
                 view.startStop.sendOnClick(TimerIntent.Start)
                 renderTimerProgress(state, view)
+            }
+
+            TimerViewState.StateType.SHOW_COUNTDOWN -> {
+                view.timerType.visible = state.showTimerTypeSwitch
             }
 
             TimerViewState.StateType.TIMER_STARTED -> {
@@ -104,7 +109,7 @@ class TimerViewController :
 
                 handler.postDelayed(updateTimer, 1000)
 
-                renderStartStopButton(view.startStop, false)
+                renderTimerButton(view.startStop, TimerButton.STOP)
                 view.startStop.sendOnClick(TimerIntent.Stop)
 
                 playBlinkIndicatorAnimation(view.timerProgressContainer.getChildAt(state.currentProgressIndicator))
@@ -126,13 +131,17 @@ class TimerViewController :
                 indicator.animate().cancel()
                 indicator.alpha = 1f
 
-                renderStartStopButton(view.startStop, true)
+                renderTimerButton(view.startStop, TimerButton.START)
                 view.startStop.sendOnClick(TimerIntent.Start)
                 view.setOnClickListener(null)
             }
 
             TimerViewState.StateType.RUNNING -> {
                 view.timerProgress.progress = state.timerProgress
+                if(state.showCompletePomodoroButton) {
+                    renderTimerButton(view.startStop, TimerButton.DONE)
+                    view.startStop.sendOnClick(TimerIntent.CompletePomodoro)
+                }
             }
 
         }
@@ -149,9 +158,15 @@ class TimerViewController :
             .start()
     }
 
-    private fun renderStartStopButton(button: ImageView, start: Boolean) {
+    private fun renderTimerButton(button: ImageView, type: TimerButton) {
+        val iconImage = when(type) {
+            TimerButton.START -> Ionicons.Icon.ion_play
+            TimerButton.STOP -> Ionicons.Icon.ion_stop
+            TimerButton.DONE -> Ionicons.Icon.ion_android_done
+        }
+
         val icon = IconicsDrawable(button.context)
-            .icon(if (start) Ionicons.Icon.ion_play else Ionicons.Icon.ion_stop)
+            .icon(iconImage)
             .color(attr(R.attr.colorAccent))
             .sizeDp(22)
 
@@ -234,9 +249,13 @@ class TimerViewController :
 
         view.timerProgressContainer.addView(progressView)
     }
+
+    enum class TimerButton {
+        START, STOP, DONE
+    }
 }
 
-enum class PomodoroProgress() {
+enum class PomodoroProgress {
     INCOMPLETE_SHORT_BREAK,
     COMPLETE_SHORT_BREAK,
     INCOMPLETE_LONG_BREAK,
@@ -244,3 +263,4 @@ enum class PomodoroProgress() {
     INCOMPLETE_WORK,
     COMPLETE_WORK
 }
+

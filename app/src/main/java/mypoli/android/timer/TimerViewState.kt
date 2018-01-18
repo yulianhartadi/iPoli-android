@@ -17,6 +17,7 @@ sealed class TimerIntent : Intent {
     object Start : TimerIntent()
     object Stop : TimerIntent()
     object Tick : TimerIntent()
+    object CompletePomodoro : TimerIntent()
 }
 
 data class TimerViewState(
@@ -30,7 +31,8 @@ data class TimerViewState(
     val timerProgress: Int = 0,
     val maxTimerProgress: Int = 0,
     val pomodoroProgress: List<PomodoroProgress> = listOf(),
-    val currentProgressIndicator: Int = 0
+    val currentProgressIndicator: Int = 0,
+    val showCompletePomodoroButton: Boolean = false
 ) : ViewState {
 
     enum class StateType {
