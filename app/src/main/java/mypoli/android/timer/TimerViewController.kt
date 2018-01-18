@@ -97,27 +97,12 @@ class TimerViewController :
                 view.timerType.visible = state.showTimerTypeSwitch
             }
 
+            TimerViewState.StateType.RESUMED -> {
+                startTimer(view, state)
+            }
+
             TimerViewState.StateType.TIMER_STARTED -> {
-                view.timerProgress.max = state.maxTimerProgress
-                view.timerProgress.secondaryProgress = state.maxTimerProgress
-                view.timerProgress.progress = state.timerProgress
-                handler = Handler(Looper.getMainLooper())
-                updateTimer = {
-                    send(TimerIntent.Tick)
-                    handler.postDelayed(updateTimer, 1000)
-                }
-
-                handler.postDelayed(updateTimer, 1000)
-
-                renderTimerButton(view.startStop, TimerButton.STOP)
-                view.startStop.sendOnClick(TimerIntent.Stop)
-
-                playBlinkIndicatorAnimation(view.timerProgressContainer.getChildAt(state.currentProgressIndicator))
-
-                view.setOnClickListener {
-                    playShowNotImportantViewsAnimation(view)
-                }
-                playHideNotImportantViewsAnimation(view)
+                startTimer(view, state)
             }
 
             TimerViewState.StateType.TIMER_STOPPED -> {
@@ -145,6 +130,31 @@ class TimerViewController :
             }
 
         }
+    }
+
+    private fun startTimer(view: View, state: TimerViewState) {
+        view.timerProgress.max = state.maxTimerProgress
+        view.timerProgress.secondaryProgress = state.maxTimerProgress
+        view.timerProgress.progress = state.timerProgress
+        handler = Handler(Looper.getMainLooper())
+        updateTimer = {
+            send(TimerIntent.Tick)
+            handler.postDelayed(updateTimer, 1000)
+        }
+
+        handler.postDelayed(updateTimer, 1000)
+
+        renderTimerButton(view.startStop, TimerButton.STOP)
+        view.startStop.sendOnClick(TimerIntent.Stop)
+
+        if (state.timerType == TimerViewState.TimerType.POMODORO) {
+            playBlinkIndicatorAnimation(view.timerProgressContainer.getChildAt(state.currentProgressIndicator))
+        }
+
+        view.setOnClickListener {
+            playShowNotImportantViewsAnimation(view)
+        }
+        playHideNotImportantViewsAnimation(view)
     }
 
     private fun playBlinkIndicatorAnimation(view: View, reverse: Boolean = false) {
@@ -199,6 +209,7 @@ class TimerViewController :
     }
 
     private fun renderTimerProgress(state: TimerViewState, view: View) {
+        view.timerProgressContainer.removeAllViews()
         state.pomodoroProgress.forEach {
             addProgressIndicator(view, it)
         }

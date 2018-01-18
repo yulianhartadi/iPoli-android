@@ -37,6 +37,7 @@ data class TimerViewState(
 
     enum class StateType {
         LOADING,
+        RESUMED,
         SHOW_POMODORO,
         SHOW_COUNTDOWN,
         TIMER_STARTED,
