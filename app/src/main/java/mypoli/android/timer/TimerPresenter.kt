@@ -69,7 +69,8 @@ class TimerPresenter(
                             showTimerTypeSwitch = true,
                             pomodoroProgress = pomodoroProgress,
                             timerLabel = TimerFormatter.format(Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asMilliseconds.longValue),
-                            remainingTime = Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asSeconds,
+//                            remainingTime = Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asSeconds,
+                            remainingTime = 5.seconds,
 //                            currentProgressIndicator = findCurrentProgressIndicator(result.timeRanges)
                             currentProgressIndicator = 0
                         )
@@ -93,10 +94,16 @@ class TimerPresenter(
 
             is TimerIntent.Tick -> {
                 val remainingTime = state.remainingTime!! - 1.seconds
+                val label = if (remainingTime >= 0.seconds) {
+                    TimerFormatter.format(remainingTime.asMilliseconds.longValue)
+                } else {
+                    "+" + TimerFormatter.format(Math.abs(remainingTime.asMilliseconds.longValue))
+                }
+
                 state.copy(
                     type = RUNNING,
                     timerProgress = state.timerProgress + 1,
-                    timerLabel = TimerFormatter.format(remainingTime.asMilliseconds.longValue),
+                    timerLabel = label,
                     remainingTime = remainingTime
                 )
             }
