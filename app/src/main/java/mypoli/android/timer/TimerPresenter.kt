@@ -243,12 +243,10 @@ class TimerPresenter(
                 showTimerTypeSwitch = false,
                 pomodoroProgress = timeRanges.map { createPomodoroProgress(it) },
                 timerLabel = TimerFormatter.format(duration.minutes.asMilliseconds.longValue),
-                //                            remainingTime = duration.minutes.asSeconds,
-                remainingTime = 15.seconds,
+                remainingTime = duration.minutes.asSeconds,
                 currentProgressIndicator = currentProgressIndicator,
                 timerProgress = 0,
-//                maxTimerProgress = duration.minutes.asSeconds.asSeconds.intValue
-                maxTimerProgress = 15.seconds.longValue.toInt()
+                maxTimerProgress = duration.minutes.asSeconds.intValue
             )
         }
     }

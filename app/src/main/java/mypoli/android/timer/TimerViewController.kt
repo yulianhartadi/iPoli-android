@@ -49,12 +49,27 @@ class TimerViewController :
         val view = inflater.inflate(R.layout.controller_timer, container, false)
 
         renderTimerButton(view.startStop, TimerButton.START)
+
         val icon = IconicsDrawable(view.context)
             .icon(Ionicons.Icon.ion_android_done)
             .color(attr(R.attr.colorAccent))
             .sizeDp(22)
 
         view.complete.setImageDrawable(icon)
+
+        val minusIcon = IconicsDrawable(view.context)
+            .icon(Ionicons.Icon.ion_minus)
+            .color(attr(R.attr.colorAccent))
+            .sizeDp(22)
+
+        view.removePomodoro.setImageDrawable(minusIcon)
+
+        val addIcon = IconicsDrawable(view.context)
+            .icon(Ionicons.Icon.ion_plus)
+            .color(attr(R.attr.colorAccent))
+            .sizeDp(22)
+
+        view.addPomodoro.setImageDrawable(addIcon)
 
         return view
     }
@@ -86,7 +101,8 @@ class TimerViewController :
             TimerViewState.StateType.SHOW_POMODORO -> {
                 renderTimerProgress(view, state)
                 renderTypeSwitch(view, state)
-                view.timerProgressContainer.visible = true
+                ViewUtils.showViews(view.timerProgressContainer, view.removePomodoro, view.addPomodoro)
+
                 renderTimerIndicatorsProgress(view, state)
                 view.startStop.sendOnClick(TimerIntent.Start)
                 view.complete.visibility = View.GONE
@@ -96,7 +112,7 @@ class TimerViewController :
                 renderTimerProgress(view, state)
                 renderTypeSwitch(view, state)
                 view.startStop.sendOnClick(TimerIntent.Start)
-                view.timerProgressContainer.visible = false
+                ViewUtils.hideViews(view.timerProgressContainer, view.removePomodoro, view.addPomodoro)
             }
 
             TimerViewState.StateType.RESUMED -> {
