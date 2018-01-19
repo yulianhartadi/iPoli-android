@@ -21,6 +21,8 @@ sealed class TimerIntent : Intent {
     object ShowCountDownTimer : TimerIntent()
     object ShowPomodoroTimer : TimerIntent()
     object CompleteQuest : TimerIntent()
+    object AddPomodoro : TimerIntent()
+    object RemovePomodoro : TimerIntent()
 }
 
 data class TimerViewState(
@@ -45,7 +47,9 @@ data class TimerViewState(
         SHOW_COUNTDOWN,
         TIMER_STARTED,
         TIMER_STOPPED,
-        RUNNING
+        RUNNING,
+        POMODORO_ADDED,
+        POMODORO_REMOVED
     }
 
     enum class TimerType {

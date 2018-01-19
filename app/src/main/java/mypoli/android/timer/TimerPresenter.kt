@@ -127,6 +127,20 @@ class TimerPresenter(
                     type = TIMER_STOPPED
                 )
             }
+
+            is TimerIntent.AddPomodoro -> {
+                addPomodoroUseCase.execute(AddPomodoroUseCase.Params(state.quest!!.id))
+                state.copy(
+                    type = POMODORO_ADDED
+                )
+            }
+
+            is TimerIntent.RemovePomodoro -> {
+                removePomodoroUseCase.execute(RemovePomodoroUseCase.Params(state.quest!!.id))
+                state.copy(
+                    type = POMODORO_REMOVED
+                )
+            }
         }
 
     private fun createQuestChangedState(

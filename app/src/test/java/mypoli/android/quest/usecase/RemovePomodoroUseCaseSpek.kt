@@ -161,5 +161,15 @@ class RemovePomodoroUseCaseSpek : Spek({
             result.duration.`should be equal to`(duration)
         }
 
+        it("should remove pomodoro from not started quest") {
+            val result = executeUseCase(
+                simpleQuest.copy(
+                    duration = 3.pomodoros() + 3.shortBreaks(),
+                    pomodoroTimeRanges = listOf()
+                )
+            )
+            result.duration.`should be equal to`(2.pomodoros() + 2.shortBreaks())
+        }
+
     }
 })

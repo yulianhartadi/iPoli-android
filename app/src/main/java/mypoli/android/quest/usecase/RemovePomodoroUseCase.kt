@@ -37,7 +37,7 @@ class RemovePomodoroUseCase(
 
         val newDuration = Math.max(quest.duration - pomodoroDuration, MIN_QUEST_POMODORO_DURATION)
 
-        if (newDuration < quest.actualDuration) {
+        if (quest.pomodoroTimeRanges.isNotEmpty() && newDuration < quest.actualDuration) {
             return quest
         }
 
