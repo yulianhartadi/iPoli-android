@@ -29,6 +29,8 @@ class Interval<out T : TimeUnit>(value: Number, private val timeUnitFactory: () 
 
     val longValue = value.toLong()
 
+    val intValue = longValue.toInt()
+
     val asDays: Interval<Day>
         get() = convert()
 

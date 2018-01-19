@@ -166,12 +166,10 @@ class TimerPresenter(
             showTimerTypeSwitch = true,
             pomodoroProgress = timeRanges.map { createPomodoroProgress(it) },
             timerLabel = TimerFormatter.format(Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asMilliseconds.longValue),
-            //                            remainingTime = duration.minutes.asSeconds,
-            remainingTime = 15.seconds,
+            remainingTime = Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asSeconds,
             currentProgressIndicator = 0,
             timerProgress = 0,
-            //                    maxTimerProgress = state.remainingTime!!.asSeconds.longValue.toInt()
-            maxTimerProgress = 15.seconds.longValue.toInt()
+            maxTimerProgress = Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asSeconds.intValue
         )
     }
 
@@ -187,8 +185,7 @@ class TimerPresenter(
             timerLabel = TimerFormatter.format(quest.duration.minutes.asMilliseconds.longValue),
             remainingTime = quest.duration.minutes.asSeconds,
             timerProgress = 0,
-            //                    maxTimerProgress = state.remainingTime!!.asSeconds.longValue.toInt()
-            maxTimerProgress = 15.seconds.longValue.toInt()
+            maxTimerProgress = quest.duration.minutes.asSeconds.intValue
         )
     }
 
@@ -206,8 +203,9 @@ class TimerPresenter(
                 showTimerTypeSwitch = false,
                 pomodoroProgress = questPomodoroTimeRanges.map { createPomodoroProgress(it) },
                 timerLabel = TimerFormatter.format(0),
-                //                            remainingTime = duration.minutes.asSeconds,
-                remainingTime = 15.seconds
+                remainingTime = 0.seconds,
+                timerProgress = 0,
+                maxTimerProgress = 0
             )
         } else {
 
@@ -249,7 +247,7 @@ class TimerPresenter(
                 remainingTime = 15.seconds,
                 currentProgressIndicator = currentProgressIndicator,
                 timerProgress = 0,
-                //                    maxTimerProgress = state.remainingTime!!.asSeconds.longValue.toInt()
+//                maxTimerProgress = duration.minutes.asSeconds.asSeconds.intValue
                 maxTimerProgress = 15.seconds.longValue.toInt()
             )
         }
@@ -266,18 +264,23 @@ class TimerPresenter(
                 timerType = TimerViewState.TimerType.COUNTDOWN,
                 showTimerTypeSwitch = false,
                 timerLabel = TimerFormatter.format(0),
-                remainingTime = 0.seconds
+                remainingTime = 0.seconds,
+                timerProgress = quest.actualDuration,
+                maxTimerProgress = quest.actualDuration
             )
         } else {
+            val passed = LocalDateTime.now().toMillis() - quest.actualStart!!.toMillis()
             val remainingTime =
-                quest.duration.minutes - (LocalDateTime.now().toMillis() - quest.actualStart!!.toMillis()).milliseconds
+                quest.duration.minutes - passed.milliseconds
             return state.copy(
                 type = RESUMED,
                 questName = quest.name,
                 timerType = TimerViewState.TimerType.COUNTDOWN,
                 showTimerTypeSwitch = false,
                 timerLabel = TimerFormatter.format(remainingTime.asMilliseconds.longValue),
-                remainingTime = remainingTime.asSeconds
+                remainingTime = remainingTime.asSeconds,
+                timerProgress = passed.milliseconds.asSeconds.intValue,
+                maxTimerProgress = quest.duration.minutes.asSeconds.intValue
             )
         }
     }
