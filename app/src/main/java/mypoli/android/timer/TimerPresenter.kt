@@ -9,6 +9,7 @@ import mypoli.android.common.datetime.seconds
 import mypoli.android.common.datetime.toMillis
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
+import mypoli.android.quest.Quest
 import mypoli.android.quest.TimeRange
 import mypoli.android.quest.usecase.CancelQuestTimerUseCase
 import mypoli.android.quest.usecase.ListenForQuestChangeUseCase
@@ -19,7 +20,6 @@ import mypoli.android.quest.usecase.SplitDurationForPomodoroTimerUseCase.Result.
 import mypoli.android.timer.TimerViewState.StateType.*
 import mypoli.android.timer.view.formatter.TimerFormatter
 import org.threeten.bp.LocalDateTime
-import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -53,7 +53,7 @@ class TimerPresenter(
             }
 
             is TimerIntent.QuestChanged -> {
-                test(intent, state)
+                createQuestChangedState(intent.quest, state)
             }
 
             is TimerIntent.Start -> {
@@ -63,7 +63,6 @@ class TimerPresenter(
                         isPomodoro = state.timerType == TimerViewState.TimerType.POMODORO
                     )
                 )
-                Timber.d("AAA quest ${quest.pomodoroTimeRanges}")
 
                 val currentProgressIndicator =
                     if (state.timerType == TimerViewState.TimerType.POMODORO)
@@ -116,111 +115,90 @@ class TimerPresenter(
             }
         }
 
-    private fun test(
-        intent: TimerIntent.QuestChanged,
+    private fun createQuestChangedState(
+        quest: Quest,
         state: TimerViewState
     ): TimerViewState {
 
-        val quest = intent.quest
-        val parameters = SplitDurationForPomodoroTimerUseCase.Params(quest)
-        val questPomodoroTimeRanges = quest.pomodoroTimeRanges
-        val showTimerTypeSwitch =
-            quest.actualStart == null && questPomodoroTimeRanges.isEmpty()
-
         if (quest.actualStart != null) {
-            if (quest.isCompleted) {
-                return state.copy(
-                    type = SHOW_COUNTDOWN,
-                    questName = quest.name,
-                    timerType = TimerViewState.TimerType.COUNTDOWN,
-                    showTimerTypeSwitch = showTimerTypeSwitch,
-                    timerLabel = TimerFormatter.format(0),
-                    remainingTime = 0.seconds
-                )
-            } else {
-                val remainingTime =
-                    quest.duration.minutes - (LocalDateTime.now().toMillis() - quest.actualStart.toMillis()).milliseconds
-                return state.copy(
-                    type = RESUMED,
-                    questName = quest.name,
-                    timerType = TimerViewState.TimerType.COUNTDOWN,
-                    showTimerTypeSwitch = showTimerTypeSwitch,
-                    timerLabel = TimerFormatter.format(remainingTime.asMilliseconds.longValue),
-                    remainingTime = remainingTime.asSeconds
-                )
-            }
+            return createStateForRunningOrCompletedCountdownTimer(quest, state)
         }
 
-        if (questPomodoroTimeRanges.isNotEmpty()) {
-            if (quest.isCompleted) {
-                return state.copy(
-                    type = SHOW_POMODORO,
-                    questName = quest.name,
-                    timerType = TimerViewState.TimerType.POMODORO,
-                    showTimerTypeSwitch = showTimerTypeSwitch,
-                    pomodoroProgress = questPomodoroTimeRanges.map { createPomodoroProgress(it) },
-                    timerLabel = TimerFormatter.format(0),
-                    //                            remainingTime = duration.minutes.asSeconds,
-                    remainingTime = 15.seconds
-                )
-            } else {
-
-                val result = splitDurationForPomodoroTimerUseCase.execute(parameters)
-                val timeRanges = if (result == DurationNotSplit) {
-                    questPomodoroTimeRanges
-                } else {
-                    (result as DurationSplit).timeRanges
-                }
-
-                val pomodoroProgress = timeRanges.map { createPomodoroProgress(it) }
-
-                val currentProgressIndicator =
-                    findCurrentProgressIndicator(timeRanges)
-
-
-                val duration =
-                    if (questPomodoroTimeRanges.isEmpty()) Constants.DEFAULT_POMODORO_WORK_DURATION
-                    else {
-                        if (currentProgressIndicator >= 0) {
-                            questPomodoroTimeRanges.last().duration
-                        } else {
-                            timeRanges[questPomodoroTimeRanges.size].duration
-                        }
-                    }
-
-
-                val type =
-                    if (questPomodoroTimeRanges.isNotEmpty() && questPomodoroTimeRanges.last().end == null) RESUMED
-                    else SHOW_POMODORO
-
-                return state.copy(
-                    type = type,
-                    questName = quest.name,
-                    timerType = TimerViewState.TimerType.POMODORO,
-                    showTimerTypeSwitch = showTimerTypeSwitch,
-                    pomodoroProgress = pomodoroProgress,
-                    timerLabel = TimerFormatter.format(duration.minutes.asMilliseconds.longValue),
-                    //                            remainingTime = duration.minutes.asSeconds,
-                    remainingTime = 15.seconds,
-                    currentProgressIndicator = currentProgressIndicator,
-                    timerProgress = 0,
-//                    maxTimerProgress = state.remainingTime!!.asSeconds.longValue.toInt()
-                    maxTimerProgress = 15.seconds.longValue.toInt()
-                )
-            }
+        if (quest.pomodoroTimeRanges.isNotEmpty()) {
+            return createStateForRunningOrCompletedPomodoroTimer(quest, state)
         }
 
-        return if (quest.duration < Constants.DEFAULT_POMODORO_WORK_DURATION * 2 + Constants.DEFAULT_POMODORO_BREAK_DURATION * 2) {
-            state.copy(
-                type = SHOW_COUNTDOWN,
+        return if (quest.duration < MIN_POMODORO_TIMER_DURATION) {
+            createStateForInitialCountDownTimer(state, quest)
+        } else {
+            createStateForInitialPomodoroTimer(state, quest)
+        }
+    }
+
+    private fun createStateForInitialPomodoroTimer(
+        state: TimerViewState,
+        quest: Quest
+    ): TimerViewState {
+        val result = splitDurationForPomodoroTimerUseCase.execute(
+            SplitDurationForPomodoroTimerUseCase.Params(quest)
+        )
+        val timeRanges = if (result == DurationNotSplit) {
+            quest.pomodoroTimeRanges
+        } else {
+            (result as DurationSplit).timeRanges
+        }
+
+        val pomodoroProgress = timeRanges.map { createPomodoroProgress(it) }
+
+        return state.copy(
+            type = SHOW_POMODORO,
+            questName = quest.name,
+            timerType = TimerViewState.TimerType.POMODORO,
+            showTimerTypeSwitch = true,
+            pomodoroProgress = pomodoroProgress,
+            timerLabel = TimerFormatter.format(Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asMilliseconds.longValue),
+            //                            remainingTime = duration.minutes.asSeconds,
+            remainingTime = 15.seconds,
+            currentProgressIndicator = 0
+        )
+    }
+
+    private fun createStateForInitialCountDownTimer(
+        state: TimerViewState,
+        quest: Quest
+    ): TimerViewState {
+        return state.copy(
+            type = SHOW_COUNTDOWN,
+            questName = quest.name,
+            timerType = TimerViewState.TimerType.COUNTDOWN,
+            showTimerTypeSwitch = true,
+            timerLabel = TimerFormatter.format(quest.duration.minutes.asMilliseconds.longValue),
+            remainingTime = quest.duration.minutes.asSeconds
+        )
+    }
+
+    private fun createStateForRunningOrCompletedPomodoroTimer(
+        quest: Quest,
+        state: TimerViewState
+    ): TimerViewState {
+        val questPomodoroTimeRanges = quest.pomodoroTimeRanges
+
+        if (quest.isCompleted) {
+            return state.copy(
+                type = SHOW_POMODORO,
                 questName = quest.name,
-                timerType = TimerViewState.TimerType.COUNTDOWN,
-                showTimerTypeSwitch = showTimerTypeSwitch,
-                timerLabel = TimerFormatter.format(quest.duration.minutes.asMilliseconds.longValue),
-                remainingTime = quest.duration.minutes.asSeconds
+                timerType = TimerViewState.TimerType.POMODORO,
+                showTimerTypeSwitch = false,
+                pomodoroProgress = questPomodoroTimeRanges.map { createPomodoroProgress(it) },
+                timerLabel = TimerFormatter.format(0),
+                //                            remainingTime = duration.minutes.asSeconds,
+                remainingTime = 15.seconds
             )
         } else {
-            val result = splitDurationForPomodoroTimerUseCase.execute(parameters)
+
+            val result = splitDurationForPomodoroTimerUseCase.execute(
+                SplitDurationForPomodoroTimerUseCase.Params(quest)
+            )
             val timeRanges = if (result == DurationNotSplit) {
                 questPomodoroTimeRanges
             } else {
@@ -229,16 +207,65 @@ class TimerPresenter(
 
             val pomodoroProgress = timeRanges.map { createPomodoroProgress(it) }
 
-            state.copy(
-                type = SHOW_POMODORO,
+            val currentProgressIndicator =
+                findCurrentProgressIndicator(timeRanges)
+
+
+            val duration =
+                if (questPomodoroTimeRanges.isEmpty()) Constants.DEFAULT_POMODORO_WORK_DURATION
+                else {
+                    if (currentProgressIndicator >= 0) {
+                        questPomodoroTimeRanges.last().duration
+                    } else {
+                        timeRanges[questPomodoroTimeRanges.size].duration
+                    }
+                }
+
+
+            val type =
+                if (questPomodoroTimeRanges.isNotEmpty() && questPomodoroTimeRanges.last().end == null) RESUMED
+                else SHOW_POMODORO
+
+            return state.copy(
+                type = type,
                 questName = quest.name,
                 timerType = TimerViewState.TimerType.POMODORO,
-                showTimerTypeSwitch = showTimerTypeSwitch,
+                showTimerTypeSwitch = false,
                 pomodoroProgress = pomodoroProgress,
-                timerLabel = TimerFormatter.format(Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asMilliseconds.longValue),
+                timerLabel = TimerFormatter.format(duration.minutes.asMilliseconds.longValue),
                 //                            remainingTime = duration.minutes.asSeconds,
                 remainingTime = 15.seconds,
-                currentProgressIndicator = 0
+                currentProgressIndicator = currentProgressIndicator,
+                timerProgress = 0,
+                //                    maxTimerProgress = state.remainingTime!!.asSeconds.longValue.toInt()
+                maxTimerProgress = 15.seconds.longValue.toInt()
+            )
+        }
+    }
+
+    private fun createStateForRunningOrCompletedCountdownTimer(
+        quest: Quest,
+        state: TimerViewState
+    ): TimerViewState {
+        if (quest.isCompleted) {
+            return state.copy(
+                type = SHOW_COUNTDOWN,
+                questName = quest.name,
+                timerType = TimerViewState.TimerType.COUNTDOWN,
+                showTimerTypeSwitch = false,
+                timerLabel = TimerFormatter.format(0),
+                remainingTime = 0.seconds
+            )
+        } else {
+            val remainingTime =
+                quest.duration.minutes - (LocalDateTime.now().toMillis() - quest.actualStart!!.toMillis()).milliseconds
+            return state.copy(
+                type = RESUMED,
+                questName = quest.name,
+                timerType = TimerViewState.TimerType.COUNTDOWN,
+                showTimerTypeSwitch = false,
+                timerLabel = TimerFormatter.format(remainingTime.asMilliseconds.longValue),
+                remainingTime = remainingTime.asSeconds
             )
         }
     }
@@ -274,4 +301,8 @@ class TimerPresenter(
         }
     }
 
+    companion object {
+        const val MIN_POMODORO_TIMER_DURATION =
+            Constants.DEFAULT_POMODORO_WORK_DURATION * 2 + Constants.DEFAULT_POMODORO_BREAK_DURATION * 2
+    }
 }
