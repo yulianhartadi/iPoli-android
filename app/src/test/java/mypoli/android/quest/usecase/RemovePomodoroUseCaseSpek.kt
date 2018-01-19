@@ -18,8 +18,8 @@ import org.threeten.bp.LocalDateTime
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 1/19/18.
  */
-class AddPomodoroUseCaseSpek : Spek({
-    describe("AddPomodoroUseCase") {
+class RemovePomodoroUseCaseSpek : Spek({
+    describe("RemovePomodoroUseCase") {
         fun executeUseCase(
             quest: Quest
         ): Quest {
@@ -29,8 +29,8 @@ class AddPomodoroUseCaseSpek : Spek({
                     invocation.getArgument(0)
                 }
             }
-            return AddPomodoroUseCase(questRepoMock, SplitDurationForPomodoroTimerUseCase())
-                .execute(AddPomodoroUseCase.Params(quest.id))
+            return RemovePomodoroUseCase(questRepoMock)
+                .execute(RemovePomodoroUseCase.Params(quest.id))
         }
 
         val simpleQuest = Quest(
@@ -42,51 +42,16 @@ class AddPomodoroUseCaseSpek : Spek({
             reminder = Reminder("", Time.now(), LocalDate.now())
         )
 
-        it("should add duration of 1 pomodoro with short break") {
+        it("should not remove the last pomodoro") {
             val result = executeUseCase(
                 simpleQuest.copy(
                     duration = 1.pomodoros() + 1.shortBreaks()
                 )
             )
-            result.duration.`should be equal to`(2.pomodoros() + 2.shortBreaks())
+            result.duration.`should be equal to`(1.pomodoros() + 1.shortBreaks())
         }
 
-        it("should add pomodoro duration to actual duration") {
-            val now = LocalDateTime.now()
-            val result = executeUseCase(
-                simpleQuest.copy(
-                    duration = 10,
-                    pomodoroTimeRanges = listOf(
-                        TimeRange(
-                            TimeRange.Type.WORK,
-                            1.pomodoros(),
-                            now,
-                            now.plusMinutes(1.pomodoros().toLong())
-                        ),
-                        TimeRange(
-                            TimeRange.Type.BREAK,
-                            1.shortBreaks(),
-                            now,
-                            now.plusMinutes(1.shortBreaks().toLong())
-                        )
-                    )
-                )
-            )
-            result.duration.`should be equal to`(2.pomodoros() + 2.shortBreaks())
-        }
-
-        it("should add pomodoro duration to short duration quest") {
-            val now = LocalDateTime.now()
-            val result = executeUseCase(
-                simpleQuest.copy(
-                    duration = 10,
-                    pomodoroTimeRanges = listOf()
-                )
-            )
-            result.duration.`should be equal to`(1.pomodoros() + 1.shortBreaks() + 10)
-        }
-
-        it("should add pomodoro duration with long break") {
+        it("should remove pomodoro duration with short break") {
             val now = LocalDateTime.now()
             val timeRanges = mutableListOf<TimeRange>()
 
@@ -114,11 +79,47 @@ class AddPomodoroUseCaseSpek : Spek({
 
             val result = executeUseCase(
                 simpleQuest.copy(
-                    duration = 3.pomodoros() + 3.shortBreaks(),
+                    duration = 2.pomodoros() + 2.shortBreaks(),
                     pomodoroTimeRanges = timeRanges
                 )
             )
-            result.duration.`should be equal to`(4.pomodoros() + 3.shortBreaks() + 1.longBreaks())
+            result.duration.`should be equal to`(1.pomodoros() + 1.shortBreaks())
         }
+
+        it("should remove pomodoro duration with long break") {
+            val now = LocalDateTime.now()
+            val timeRanges = mutableListOf<TimeRange>()
+
+            for (i: Int in 1..8) {
+                if (i % 2 == 1) {
+                    timeRanges.add(
+                        TimeRange(
+                            TimeRange.Type.WORK,
+                            1.pomodoros(),
+                            now,
+                            now.plusMinutes(1.pomodoros().toLong())
+                        )
+                    )
+                } else {
+                    timeRanges.add(
+                        TimeRange(
+                            TimeRange.Type.BREAK,
+                            1.shortBreaks(),
+                            now,
+                            now.plusMinutes(1.shortBreaks().toLong())
+                        )
+                    )
+                }
+            }
+
+            val result = executeUseCase(
+                simpleQuest.copy(
+                    duration = 4.pomodoros() + 3.shortBreaks() + 1.longBreaks(),
+                    pomodoroTimeRanges = timeRanges
+                )
+            )
+            result.duration.`should be equal to`(1.pomodoros() + 1.shortBreaks())
+        }
+
     }
 })

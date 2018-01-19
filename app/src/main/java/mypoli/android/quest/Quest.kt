@@ -137,9 +137,9 @@ data class Quest(
                         completedAtDate,
                         LocalTime.of(completedAtTime!!.hours, completedAtTime.getMinutes())
                     )
-                    (completedDateTime.toMillis() - actualStart.toMillis()).milliseconds.asMinutes.longValue.toInt()
+                    (completedDateTime.toMillis() - actualStart.toMillis()).milliseconds.asMinutes.intValue
                 } else {
-                    (LocalDateTime.now().toMillis() - actualStart.toMillis()).milliseconds.asMinutes.longValue.toInt()
+                    (LocalDateTime.now().toMillis() - actualStart.toMillis()).milliseconds.asMinutes.intValue
                 }
             }
 

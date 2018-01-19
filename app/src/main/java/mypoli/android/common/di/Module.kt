@@ -216,7 +216,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val listenForQuestChangeUseCase get() = ListenForQuestChangeUseCase(questRepository)
     override val saveQuestActualDurationUseCase get() = SaveQuestActualDurationUseCase(questRepository, splitDurationForPomodoroTimerUseCase)
     override val cancelQuestTimerUseCase get() = CancelQuestTimerUseCase(questRepository)
-    override val addPomodoroUseCase get() = AddPomodoroUseCase(questRepository)
+    override val addPomodoroUseCase get() = AddPomodoroUseCase(questRepository, splitDurationForPomodoroTimerUseCase)
 }
 
 interface PopupUseCaseModule {
