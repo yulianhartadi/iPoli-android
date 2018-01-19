@@ -18,11 +18,13 @@ sealed class TimerIntent : Intent {
     object Stop : TimerIntent()
     object Tick : TimerIntent()
     object CompletePomodoro : TimerIntent()
+    object ShowCountDownTimer : TimerIntent()
+    object ShowPomodoroTimer : TimerIntent()
 }
 
 data class TimerViewState(
     val type: StateType,
-    val questId: String = "",
+    val quest: Quest? = null,
     val showTimerTypeSwitch: Boolean = false,
     val timerLabel: String = "",
     val remainingTime: Interval<Second>? = null,

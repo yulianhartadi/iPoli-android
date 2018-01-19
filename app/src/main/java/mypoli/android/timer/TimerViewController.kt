@@ -80,13 +80,16 @@ class TimerViewController :
             TimerViewState.StateType.SHOW_POMODORO -> {
                 renderTimerProgress(view, state)
                 renderTypeSwitch(view, state)
+                view.timerProgressContainer.visible = true
                 renderTimerIndicatorsProgress(view, state)
                 view.startStop.sendOnClick(TimerIntent.Start)
             }
 
             TimerViewState.StateType.SHOW_COUNTDOWN -> {
+                renderTimerProgress(view, state)
                 renderTypeSwitch(view, state)
                 view.startStop.sendOnClick(TimerIntent.Start)
+                view.timerProgressContainer.visible = false
             }
 
             TimerViewState.StateType.RESUMED -> {
@@ -126,6 +129,10 @@ class TimerViewController :
     private fun renderTypeSwitch(view: View, state: TimerViewState) {
         view.timerType.visible = state.showTimerTypeSwitch
         view.timerType.isChecked = state.timerType == TimerViewState.TimerType.POMODORO
+        view.timerType.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) send(TimerIntent.ShowPomodoroTimer)
+            else send(TimerIntent.ShowCountDownTimer)
+        }
     }
 
     private fun startTimer(view: View, state: TimerViewState) {

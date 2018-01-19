@@ -47,19 +47,18 @@ class TimerPresenter(
                         }
                 }
                 state.copy(
-                    type = LOADING,
-                    questId = intent.questId
+                    type = LOADING
                 )
             }
 
             is TimerIntent.QuestChanged -> {
-                createQuestChangedState(intent.quest, state)
+                createQuestChangedState(state.copy(quest = intent.quest))
             }
 
             is TimerIntent.Start -> {
                 val quest = saveQuestActualDurationUseCase.execute(
                     SaveQuestActualDurationUseCase.Params(
-                        questId = state.questId,
+                        questId = state.quest!!.id,
                         isPomodoro = state.timerType == TimerViewState.TimerType.POMODORO
                     )
                 )
@@ -78,7 +77,7 @@ class TimerPresenter(
             }
 
             is TimerIntent.Stop -> {
-                cancelQuestTimerUseCase.execute(CancelQuestTimerUseCase.Params(state.questId))
+                cancelQuestTimerUseCase.execute(CancelQuestTimerUseCase.Params(state.quest!!.id))
                 state.copy(
                     type = TIMER_STOPPED
                 )
@@ -105,7 +104,7 @@ class TimerPresenter(
             is TimerIntent.CompletePomodoro -> {
                 saveQuestActualDurationUseCase.execute(
                     SaveQuestActualDurationUseCase.Params(
-                        questId = state.questId,
+                        questId = state.quest!!.id,
                         isPomodoro = true
                     )
                 )
@@ -113,14 +112,21 @@ class TimerPresenter(
                     type = TIMER_STOPPED
                 )
             }
+
+            is TimerIntent.ShowPomodoroTimer -> {
+                createStateForInitialPomodoroTimer(state, state.quest!!)
+            }
+
+            is TimerIntent.ShowCountDownTimer -> {
+                createStateForInitialCountDownTimer(state, state.quest!!)
+            }
         }
 
     private fun createQuestChangedState(
-        quest: Quest,
         state: TimerViewState
     ): TimerViewState {
-
-        if (quest.actualStart != null) {
+        val quest = state.quest
+        if (quest!!.actualStart != null) {
             return createStateForRunningOrCompletedCountdownTimer(quest, state)
         }
 
@@ -159,7 +165,10 @@ class TimerPresenter(
             timerLabel = TimerFormatter.format(Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asMilliseconds.longValue),
             //                            remainingTime = duration.minutes.asSeconds,
             remainingTime = 15.seconds,
-            currentProgressIndicator = 0
+            currentProgressIndicator = 0,
+            timerProgress = 0,
+            //                    maxTimerProgress = state.remainingTime!!.asSeconds.longValue.toInt()
+            maxTimerProgress = 15.seconds.longValue.toInt()
         )
     }
 
@@ -173,7 +182,10 @@ class TimerPresenter(
             timerType = TimerViewState.TimerType.COUNTDOWN,
             showTimerTypeSwitch = true,
             timerLabel = TimerFormatter.format(quest.duration.minutes.asMilliseconds.longValue),
-            remainingTime = quest.duration.minutes.asSeconds
+            remainingTime = quest.duration.minutes.asSeconds,
+            timerProgress = 0,
+            //                    maxTimerProgress = state.remainingTime!!.asSeconds.longValue.toInt()
+            maxTimerProgress = 15.seconds.longValue.toInt()
         )
     }
 
