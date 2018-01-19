@@ -2,6 +2,7 @@ package mypoli.android.quest
 
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.datetime.milliseconds
+import mypoli.android.common.datetime.minutes
 import mypoli.android.common.datetime.toMillis
 import mypoli.android.common.sumByLong
 import org.threeten.bp.LocalDate
@@ -163,9 +164,9 @@ data class TimeRange(
     }
 
     fun actualDuration(): Long {
-        if (start == null || end == null) {
-            return duration.toLong()
+        if (start != null && end != null) {
+            return end.toMillis() - start.toMillis()
         }
-        return end.toMillis() - start.toMillis()
+        return duration.minutes.asMilliseconds.longValue
     }
 }

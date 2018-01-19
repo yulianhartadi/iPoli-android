@@ -29,7 +29,7 @@ class RemovePomodoroUseCaseSpek : Spek({
                     invocation.getArgument(0)
                 }
             }
-            return RemovePomodoroUseCase(questRepoMock)
+            return RemovePomodoroUseCase(questRepoMock, SplitDurationForPomodoroTimerUseCase())
                 .execute(RemovePomodoroUseCase.Params(quest.id))
         }
 
@@ -51,11 +51,20 @@ class RemovePomodoroUseCaseSpek : Spek({
             result.duration.`should be equal to`(1.pomodoros() + 1.shortBreaks())
         }
 
+        it("should not change quest with short duration") {
+            val result = executeUseCase(
+                simpleQuest.copy(
+                    duration = 10
+                )
+            )
+            result.duration.`should be equal to`(10)
+        }
+
         it("should remove pomodoro duration with short break") {
             val now = LocalDateTime.now()
             val timeRanges = mutableListOf<TimeRange>()
 
-            for (i: Int in 1..4) {
+            for (i: Int in 1..2) {
                 if (i % 2 == 1) {
                     timeRanges.add(
                         TimeRange(
@@ -90,7 +99,7 @@ class RemovePomodoroUseCaseSpek : Spek({
             val now = LocalDateTime.now()
             val timeRanges = mutableListOf<TimeRange>()
 
-            for (i: Int in 1..8) {
+            for (i: Int in 1..4) {
                 if (i % 2 == 1) {
                     timeRanges.add(
                         TimeRange(
@@ -118,7 +127,38 @@ class RemovePomodoroUseCaseSpek : Spek({
                     pomodoroTimeRanges = timeRanges
                 )
             )
-            result.duration.`should be equal to`(1.pomodoros() + 1.shortBreaks())
+            result.duration.`should be equal to`(3.pomodoros() + 3.shortBreaks())
+        }
+
+        it("should not remove started pomodoro") {
+            val now = LocalDateTime.now()
+
+            val duration = 2.pomodoros() + 15 + 3.shortBreaks()
+            val result = executeUseCase(
+                simpleQuest.copy(
+                    duration = duration,
+                    pomodoroTimeRanges = listOf(
+                        TimeRange(
+                            TimeRange.Type.WORK,
+                            1.pomodoros(),
+                            now,
+                            now.plusMinutes(1.pomodoros().toLong())
+                        ),
+                        TimeRange(
+                            TimeRange.Type.BREAK,
+                            1.shortBreaks(),
+                            now,
+                            now.plusMinutes(1.shortBreaks().toLong())
+                        ),
+                        TimeRange(
+                            TimeRange.Type.WORK,
+                            1.pomodoros(),
+                            now
+                        )
+                    )
+                )
+            )
+            result.duration.`should be equal to`(duration)
         }
 
     }

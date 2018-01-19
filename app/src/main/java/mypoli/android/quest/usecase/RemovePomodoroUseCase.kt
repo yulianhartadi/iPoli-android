@@ -9,25 +9,43 @@ import mypoli.android.quest.data.persistence.QuestRepository
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 1/19/18.
  */
-class RemovePomodoroUseCase(private val questRepository: QuestRepository) :
+class RemovePomodoroUseCase(
+    private val questRepository: QuestRepository,
+    private val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase
+) :
     UseCase<RemovePomodoroUseCase.Params, Quest> {
 
     override fun execute(parameters: Params): Quest {
         val quest = questRepository.findById(parameters.questId)
         requireNotNull(quest)
 
-        val questDuration = Math.max(quest!!.duration, quest.actualDuration)
-        val pomodoroDuration = if ((quest.pomodoroTimeRanges.size + 1) % 8 == 0) {
+        val splitResult = splitDurationForPomodoroTimerUseCase.execute(
+            SplitDurationForPomodoroTimerUseCase.Params(quest!!)
+        )
+
+        if (splitResult == SplitDurationForPomodoroTimerUseCase.Result.DurationNotSplit) {
+            return quest
+        }
+
+        val timeRanges =
+            (splitResult as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges
+        val pomodoroDuration = if (timeRanges.size % 8 == 0) {
             Constants.DEFAULT_POMODORO_WORK_DURATION + Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION
         } else {
             Constants.DEFAULT_POMODORO_WORK_DURATION + Constants.DEFAULT_POMODORO_BREAK_DURATION
         }
 
-        val newQuest = quest.copy(
-            duration = Math.max(questDuration - pomodoroDuration, MIN_QUEST_POMODORO_DURATION)
-        )
+        val newDuration = Math.max(quest.duration - pomodoroDuration, MIN_QUEST_POMODORO_DURATION)
 
-        return questRepository.save(newQuest)
+        if (newDuration < quest.actualDuration) {
+            return quest
+        }
+
+        return questRepository.save(
+            quest.copy(
+                duration = newDuration
+            )
+        )
     }
 
     companion object {
