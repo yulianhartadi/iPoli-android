@@ -19,9 +19,11 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
+import mypoli.android.AppState
+import mypoli.android.CalendarAction
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
-import mypoli.android.common.mvi.MviViewController
+import mypoli.android.common.redux.ReduxViewController
 import mypoli.android.common.view.*
 import mypoli.android.common.view.changehandler.CircularRevealChangeHandler
 import mypoli.android.quest.calendar.CalendarViewState.DatePickerState.*
@@ -29,7 +31,6 @@ import mypoli.android.quest.calendar.CalendarViewState.StateType.*
 import mypoli.android.quest.calendar.addquest.AddQuestViewController
 import mypoli.android.quest.calendar.dayview.view.DayViewController
 import org.threeten.bp.LocalDate
-import space.traversal.kapsule.required
 import sun.bob.mcalendarview.CellConfig
 import sun.bob.mcalendarview.MarkStyle
 import sun.bob.mcalendarview.listeners.OnDateClickListener
@@ -37,15 +38,14 @@ import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
 
 class CalendarViewController(args: Bundle? = null) :
-    MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>(
-        args
-    ) {
+    ReduxViewController<CalendarAction>(args) {
+//    MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>(
+//        args
+//    ) {
 
     companion object {
         const val MAX_VISIBLE_DAYS = 100
     }
-
-    private val presenter by required { calendarPresenter }
 
     private lateinit var calendarToolbar: ViewGroup
 
@@ -204,7 +204,7 @@ class CalendarViewController(args: Bundle? = null) :
         calendarToolbar = addToolbarView(R.layout.view_calendar_toolbar) as ViewGroup
 
         initDayPicker(view, calendarToolbar)
-        send(CalendarIntent.LoadData(LocalDate.now()))
+//        send(CalendarIntent.LoadData(LocalDate.now()))
     }
 
     private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
@@ -242,17 +242,18 @@ class CalendarViewController(args: Bundle? = null) :
         })
     }
 
-    override fun createPresenter() = presenter
+    override fun render(state: AppState, view: View) {
 
-    override fun render(state: CalendarViewState, view: View) {
+        val calendarState = state.calendarState
+
         val levelProgress = view.levelProgress
 
-        calendarToolbar.day.text = state.dayText
-        calendarToolbar.date.text = state.dateText
-        view.currentMonth.text = state.monthText
+        calendarToolbar.day.text = calendarState.dayText
+        calendarToolbar.date.text = calendarState.dateText
+        view.currentMonth.text = calendarState.monthText
 
         view.addQuest.setOnClickListener {
-            openAddContainer(state.currentDate)
+            openAddContainer(calendarState.currentDate)
         }
 
         when (state.type) {
