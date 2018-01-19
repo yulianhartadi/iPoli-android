@@ -131,6 +131,7 @@ data class Quest(
 
     val actualDuration: Int
         get() {
+
             if (actualStart != null) {
                 return if (isCompleted) {
                     val completedDateTime = LocalDateTime.of(
