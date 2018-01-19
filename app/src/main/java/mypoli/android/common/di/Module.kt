@@ -216,6 +216,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val listenForQuestChangeUseCase get() = ListenForQuestChangeUseCase(questRepository)
     override val saveQuestActualDurationUseCase get() = SaveQuestActualDurationUseCase(questRepository, splitDurationForPomodoroTimerUseCase)
     override val cancelQuestTimerUseCase get() = CancelQuestTimerUseCase(questRepository)
+    override val addPomodoroUseCase get() = AddPomodoroUseCase(questRepository)
 }
 
 interface PopupUseCaseModule {
@@ -295,6 +296,7 @@ interface UseCaseModule {
     val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase
     val saveQuestActualDurationUseCase: SaveQuestActualDurationUseCase
     val cancelQuestTimerUseCase : CancelQuestTimerUseCase
+    val addPomodoroUseCase : AddPomodoroUseCase
 }
 
 interface PresenterModule {
@@ -350,6 +352,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val listenForQuestChangeUseCase by required { listenForQuestChangeUseCase }
     private val saveQuestActualDurationUseCase by required { saveQuestActualDurationUseCase }
     private val cancelQuestTimerUseCase by required { cancelQuestTimerUseCase }
+    private val addPomodoroUseCase by required { addPomodoroUseCase }
     private val job by required { job }
     override val homePresenter get() = HomePresenter(job)
     override val dayViewPresenter
@@ -446,6 +449,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
             saveQuestActualDurationUseCase,
             cancelQuestTimerUseCase,
             completeQuestUseCase,
+            addPomodoroUseCase,
             job
         )
 }

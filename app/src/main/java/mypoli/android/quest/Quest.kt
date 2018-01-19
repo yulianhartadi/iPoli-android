@@ -3,6 +3,7 @@ package mypoli.android.quest
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.datetime.milliseconds
 import mypoli.android.common.datetime.toMillis
+import mypoli.android.common.sumByLong
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
@@ -128,21 +129,25 @@ data class Quest(
         get() = startTime?.let { Time.of(it.toMinuteOfDay() + duration) }
     val isScheduled = startTime != null
 
-    val actualDuration : Int
+    val actualDuration: Int
         get() {
-            if(actualStart != null) {
-                return if(isCompleted) {
-                    val completedDateTime = LocalDateTime.of(completedAtDate, LocalTime.of(completedAtTime!!.hours, completedAtTime.getMinutes()))
+            if (actualStart != null) {
+                return if (isCompleted) {
+                    val completedDateTime = LocalDateTime.of(
+                        completedAtDate,
+                        LocalTime.of(completedAtTime!!.hours, completedAtTime.getMinutes())
+                    )
                     (completedDateTime.toMillis() - actualStart.toMillis()).milliseconds.asMinutes.longValue.toInt()
                 } else {
                     (LocalDateTime.now().toMillis() - actualStart.toMillis()).milliseconds.asMinutes.longValue.toInt()
                 }
             }
 
-            if(pomodoroTimeRanges.isNotEmpty()) {
-                return pomodoroTimeRanges.sumBy { it.actualDuration().toInt() }
+            if (pomodoroTimeRanges.isNotEmpty()) {
+                return pomodoroTimeRanges.sumByLong { it.actualDuration() }
+                    .milliseconds.asMinutes.intValue
             }
-            return  duration
+            return duration
         }
 }
 

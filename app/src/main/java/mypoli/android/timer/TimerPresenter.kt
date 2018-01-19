@@ -29,6 +29,7 @@ class TimerPresenter(
     private val saveQuestActualDurationUseCase: SaveQuestActualDurationUseCase,
     private val cancelQuestTimerUseCase: CancelQuestTimerUseCase,
     private val completeQuestUseCase: CompleteQuestUseCase,
+    private val addPomodoroUseCase: AddPomodoroUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<TimerViewState>, TimerViewState, TimerIntent>(
     TimerViewState(LOADING),
