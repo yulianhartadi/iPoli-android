@@ -53,16 +53,6 @@ class TimerViewController :
         return view
     }
 
-    private fun startTimer(view: View) {
-        handler = Handler(Looper.getMainLooper())
-        updateTimer = {
-            view.timerProgress.progress = view.timerProgress.progress + 1
-            handler.postDelayed(updateTimer, 1000)
-        }
-
-        handler.postDelayed(updateTimer, 1000)
-    }
-
     private fun createProgressView(view: View) =
         LayoutInflater.from(view.context).inflate(
             R.layout.item_timer_progress,
@@ -88,13 +78,15 @@ class TimerViewController :
 
         when (state.type) {
             TimerViewState.StateType.SHOW_POMODORO -> {
-                view.timerType.visible = state.showTimerTypeSwitch
+                renderTimerProgress(view, state)
+                renderTypeSwitch(view, state)
+                renderTimerIndicatorsProgress(view, state)
                 view.startStop.sendOnClick(TimerIntent.Start)
-                renderTimerProgress(state, view)
             }
 
             TimerViewState.StateType.SHOW_COUNTDOWN -> {
-                view.timerType.visible = state.showTimerTypeSwitch
+                renderTypeSwitch(view, state)
+                view.startStop.sendOnClick(TimerIntent.Start)
             }
 
             TimerViewState.StateType.RESUMED -> {
@@ -102,7 +94,6 @@ class TimerViewController :
             }
 
             TimerViewState.StateType.TIMER_STARTED -> {
-                startTimer(view, state)
             }
 
             TimerViewState.StateType.TIMER_STOPPED -> {
@@ -123,7 +114,7 @@ class TimerViewController :
 
             TimerViewState.StateType.RUNNING -> {
                 view.timerProgress.progress = state.timerProgress
-                if(state.showCompletePomodoroButton) {
+                if (state.showCompletePomodoroButton) {
                     renderTimerButton(view.startStop, TimerButton.DONE)
                     view.startStop.sendOnClick(TimerIntent.CompletePomodoro)
                 }
@@ -132,10 +123,17 @@ class TimerViewController :
         }
     }
 
+    private fun renderTypeSwitch(view: View, state: TimerViewState) {
+        view.timerType.visible = state.showTimerTypeSwitch
+        view.timerType.isChecked = state.timerType == TimerViewState.TimerType.POMODORO
+    }
+
     private fun startTimer(view: View, state: TimerViewState) {
-        view.timerProgress.max = state.maxTimerProgress
-        view.timerProgress.secondaryProgress = state.maxTimerProgress
-        view.timerProgress.progress = state.timerProgress
+
+        renderTimerProgress(view, state)
+        renderTypeSwitch(view, state)
+        renderTimerIndicatorsProgress(view, state)
+
         handler = Handler(Looper.getMainLooper())
         updateTimer = {
             send(TimerIntent.Tick)
@@ -157,6 +155,15 @@ class TimerViewController :
         playHideNotImportantViewsAnimation(view)
     }
 
+    private fun renderTimerProgress(
+        view: View,
+        state: TimerViewState
+    ) {
+        view.timerProgress.max = state.maxTimerProgress
+        view.timerProgress.secondaryProgress = state.maxTimerProgress
+        view.timerProgress.progress = state.timerProgress
+    }
+
     private fun playBlinkIndicatorAnimation(view: View, reverse: Boolean = false) {
         view
             .animate()
@@ -169,7 +176,7 @@ class TimerViewController :
     }
 
     private fun renderTimerButton(button: ImageView, type: TimerButton) {
-        val iconImage = when(type) {
+        val iconImage = when (type) {
             TimerButton.START -> Ionicons.Icon.ion_play
             TimerButton.STOP -> Ionicons.Icon.ion_stop
             TimerButton.DONE -> Ionicons.Icon.ion_android_done
@@ -208,7 +215,7 @@ class TimerViewController :
         }
     }
 
-    private fun renderTimerProgress(state: TimerViewState, view: View) {
+    private fun renderTimerIndicatorsProgress(view: View, state: TimerViewState) {
         view.timerProgressContainer.removeAllViews()
         state.pomodoroProgress.forEach {
             addProgressIndicator(view, it)
