@@ -11,10 +11,7 @@ import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.quest.Quest
 import mypoli.android.quest.TimeRange
-import mypoli.android.quest.usecase.CancelQuestTimerUseCase
-import mypoli.android.quest.usecase.ListenForQuestChangeUseCase
-import mypoli.android.quest.usecase.SaveQuestActualDurationUseCase
-import mypoli.android.quest.usecase.SplitDurationForPomodoroTimerUseCase
+import mypoli.android.quest.usecase.*
 import mypoli.android.quest.usecase.SplitDurationForPomodoroTimerUseCase.Result.DurationNotSplit
 import mypoli.android.quest.usecase.SplitDurationForPomodoroTimerUseCase.Result.DurationSplit
 import mypoli.android.timer.TimerViewState.StateType.*
@@ -31,6 +28,7 @@ class TimerPresenter(
     private val listenForQuestChangeUseCase: ListenForQuestChangeUseCase,
     private val saveQuestActualDurationUseCase: SaveQuestActualDurationUseCase,
     private val cancelQuestTimerUseCase: CancelQuestTimerUseCase,
+    private val completeQuestUseCase: CompleteQuestUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<TimerViewState>, TimerViewState, TimerIntent>(
     TimerViewState(LOADING),
@@ -119,6 +117,13 @@ class TimerPresenter(
 
             is TimerIntent.ShowCountDownTimer -> {
                 createStateForInitialCountDownTimer(state, state.quest!!)
+            }
+
+            is TimerIntent.CompleteQuest -> {
+                completeQuestUseCase.execute(state.quest!!.id)
+                state.copy(
+                    type = TIMER_STOPPED
+                )
             }
         }
 

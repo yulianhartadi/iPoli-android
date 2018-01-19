@@ -49,6 +49,12 @@ class TimerViewController :
         val view = inflater.inflate(R.layout.controller_timer, container, false)
 
         renderTimerButton(view.startStop, TimerButton.START)
+        val icon = IconicsDrawable(view.context)
+            .icon(Ionicons.Icon.ion_android_done)
+            .color(attr(R.attr.colorAccent))
+            .sizeDp(22)
+
+        view.complete.setImageDrawable(icon)
 
         return view
     }
@@ -83,6 +89,7 @@ class TimerViewController :
                 view.timerProgressContainer.visible = true
                 renderTimerIndicatorsProgress(view, state)
                 view.startStop.sendOnClick(TimerIntent.Start)
+                view.complete.visibility = View.GONE
             }
 
             TimerViewState.StateType.SHOW_COUNTDOWN -> {
@@ -154,6 +161,9 @@ class TimerViewController :
 
         if (state.timerType == TimerViewState.TimerType.POMODORO) {
             playBlinkIndicatorAnimation(view.timerProgressContainer.getChildAt(state.currentProgressIndicator))
+        } else {
+            view.complete.visibility = View.VISIBLE
+            view.complete.sendOnClick(TimerIntent.CompleteQuest)
         }
 
         view.setOnClickListener {

@@ -20,6 +20,7 @@ sealed class TimerIntent : Intent {
     object CompletePomodoro : TimerIntent()
     object ShowCountDownTimer : TimerIntent()
     object ShowPomodoroTimer : TimerIntent()
+    object CompleteQuest : TimerIntent()
 }
 
 data class TimerViewState(

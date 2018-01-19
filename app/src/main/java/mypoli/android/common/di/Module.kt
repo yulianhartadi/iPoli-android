@@ -445,6 +445,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
             listenForQuestChangeUseCase,
             saveQuestActualDurationUseCase,
             cancelQuestTimerUseCase,
+            completeQuestUseCase,
             job
         )
 }
