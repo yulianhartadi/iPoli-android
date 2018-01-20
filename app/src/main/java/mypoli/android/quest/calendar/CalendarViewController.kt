@@ -19,22 +19,19 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
-import mypoli.android.AppState
-import mypoli.android.CalendarAction
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
+import mypoli.android.common.redux.AppState
+import mypoli.android.common.redux.CalendarAction
 import mypoli.android.common.redux.ReduxViewController
 import mypoli.android.common.view.*
 import mypoli.android.common.view.changehandler.CircularRevealChangeHandler
 import mypoli.android.quest.calendar.CalendarViewState.DatePickerState.*
-import mypoli.android.quest.calendar.CalendarViewState.StateType.*
 import mypoli.android.quest.calendar.addquest.AddQuestViewController
 import mypoli.android.quest.calendar.dayview.view.DayViewController
 import org.threeten.bp.LocalDate
 import sun.bob.mcalendarview.CellConfig
 import sun.bob.mcalendarview.MarkStyle
-import sun.bob.mcalendarview.listeners.OnDateClickListener
-import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
 
 class CalendarViewController(args: Bundle? = null) :
@@ -53,7 +50,7 @@ class CalendarViewController(args: Bundle? = null) :
 
     private val pageChangeListener = object : ViewPager.SimpleOnPageChangeListener() {
         override fun onPageSelected(position: Int) {
-            send(CalendarIntent.SwipeChangeDate(position))
+//            send(CalendarIntent.SwipeChangeDate(position))
         }
     }
 
@@ -221,25 +218,25 @@ class CalendarViewController(args: Bundle? = null) :
             )
         )
 
-        calendarToolbar.sendOnClick(CalendarIntent.ExpandToolbar)
-
-        view.expander.sendOnClick(CalendarIntent.ExpandToolbarWeek)
-
-        view.datePicker.setOnDateClickListener(object : OnDateClickListener() {
-            override fun onDateClick(v: View, date: DateData) {
-                send(CalendarIntent.CalendarChangeDate(date.year, date.month, date.day))
-            }
-        })
-
-        view.datePicker.setOnMonthScrollListener(object : OnMonthScrollListener() {
-            override fun onMonthChange(year: Int, month: Int) {
-                send(CalendarIntent.ChangeMonth(year, month))
-            }
-
-            override fun onMonthScroll(positionOffset: Float) {
-            }
-
-        })
+//        calendarToolbar.sendOnClick(CalendarIntent.ExpandToolbar)
+//
+//        view.expander.sendOnClick(CalendarIntent.ExpandToolbarWeek)
+//
+//        view.datePicker.setOnDateClickListener(object : OnDateClickListener() {
+//            override fun onDateClick(v: View, date: DateData) {
+//                send(CalendarIntent.CalendarChangeDate(date.year, date.month, date.day))
+//            }
+//        })
+//
+//        view.datePicker.setOnMonthScrollListener(object : OnMonthScrollListener() {
+//            override fun onMonthChange(year: Int, month: Int) {
+//                send(CalendarIntent.ChangeMonth(year, month))
+//            }
+//
+//            override fun onMonthScroll(positionOffset: Float) {
+//            }
+//
+//        })
     }
 
     override fun render(state: AppState, view: View) {
@@ -256,57 +253,57 @@ class CalendarViewController(args: Bundle? = null) :
             openAddContainer(calendarState.currentDate)
         }
 
-        when (state.type) {
-
-            LOADING -> levelProgress.visible = false
-
-            XP_AND_COINS_CHANGED -> {
-                levelProgress.visible = true
-                val animator = ObjectAnimator.ofInt(
-                    levelProgress,
-                    "progress",
-                    levelProgress.progress,
-                    state.progress
-                )
-                animator.duration = shortAnimTime
-                animator.start()
-                calendarToolbar.playerGems.text = state.coins.toString()
-            }
-
-            LEVEL_CHANGED -> {
-                levelProgress.max = state.maxProgress
-                levelProgress.progress = state.progress
-                calendarToolbar.playerLevel.text =
-                    resources!!.getString(R.string.player_level, state.level)
-            }
-
-            DATE_PICKER_CHANGED -> renderDatePicker(state.datePickerState, view, state.currentDate)
-
-            DATA_LOADED -> {
-                removeDayViewPagerAdapter(view)
-                createDayViewPagerAdapter(state, view)
-            }
-
-            PLAYER_LOADED -> {
-                levelProgress.visible = true
-                levelProgress.max = state.maxProgress
-                levelProgress.progress = state.progress
-                calendarToolbar.playerLevel.text =
-                    resources!!.getString(R.string.player_level, state.level)
-                calendarToolbar.playerGems.text = state.coins.toString()
-            }
-
-            CALENDAR_DATE_CHANGED -> {
-                markSelectedDate(view, state.currentDate)
-                removeDayViewPagerAdapter(view)
-                createDayViewPagerAdapter(state, view)
-            }
-
-            SWIPE_DATE_CHANGED -> {
-                markSelectedDate(view, state.currentDate)
-                updateDayViewPagerAdapter(state)
-            }
-        }
+//        when (state.type) {
+//
+//            LOADING -> levelProgress.visible = false
+//
+//            XP_AND_COINS_CHANGED -> {
+//                levelProgress.visible = true
+//                val animator = ObjectAnimator.ofInt(
+//                    levelProgress,
+//                    "progress",
+//                    levelProgress.progress,
+//                    state.progress
+//                )
+//                animator.duration = shortAnimTime
+//                animator.start()
+//                calendarToolbar.playerGems.text = state.coins.toString()
+//            }
+//
+//            LEVEL_CHANGED -> {
+//                levelProgress.max = state.maxProgress
+//                levelProgress.progress = state.progress
+//                calendarToolbar.playerLevel.text =
+//                    resources!!.getString(R.string.player_level, state.level)
+//            }
+//
+//            DATE_PICKER_CHANGED -> renderDatePicker(state.datePickerState, view, state.currentDate)
+//
+//            DATA_LOADED -> {
+//                removeDayViewPagerAdapter(view)
+//                createDayViewPagerAdapter(state, view)
+//            }
+//
+//            PLAYER_LOADED -> {
+//                levelProgress.visible = true
+//                levelProgress.max = state.maxProgress
+//                levelProgress.progress = state.progress
+//                calendarToolbar.playerLevel.text =
+//                    resources!!.getString(R.string.player_level, state.level)
+//                calendarToolbar.playerGems.text = state.coins.toString()
+//            }
+//
+//            CALENDAR_DATE_CHANGED -> {
+//                markSelectedDate(view, state.currentDate)
+//                removeDayViewPagerAdapter(view)
+//                createDayViewPagerAdapter(state, view)
+//            }
+//
+//            SWIPE_DATE_CHANGED -> {
+//                markSelectedDate(view, state.currentDate)
+//                updateDayViewPagerAdapter(state)
+//            }
+//        }
     }
 
     private fun renderDatePicker(

@@ -5,9 +5,6 @@ import android.os.Bundle
 import android.view.View
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
-import mypoli.android.Action
-import mypoli.android.AppState
-import mypoli.android.StateChangeSubscriber
 import mypoli.android.common.di.Module
 import mypoli.android.myPoliApp
 import space.traversal.kapsule.Injects

@@ -8,12 +8,16 @@ import com.couchbase.lite.Database
 import com.couchbase.lite.DatabaseConfiguration
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
-import mypoli.android.*
+import mypoli.android.AndroidJobReminderScheduler
+import mypoli.android.ReminderScheduler
 import mypoli.android.challenge.ChallengeCategoryListPresenter
 import mypoli.android.challenge.ChallengeListForCategoryPresenter
 import mypoli.android.challenge.PersonalizeChallengePresenter
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
+import mypoli.android.common.redux.AppReducer
+import mypoli.android.common.redux.AppState
+import mypoli.android.common.redux.AppStateStore
 import mypoli.android.common.text.CalendarFormatter
 import mypoli.android.common.view.ColorPickerPresenter
 import mypoli.android.common.view.CurrencyConverterPresenter
@@ -113,7 +117,7 @@ class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
             AppReducer.defaultState(),
             AppReducer,
             listOf(
-                LoadPlayerMiddleWare(playerRepository)
+//                LoadPlayerMiddleWare(playerRepository)
             )
         )
     }

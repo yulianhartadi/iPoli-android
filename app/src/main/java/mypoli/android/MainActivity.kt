@@ -13,7 +13,7 @@ import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import mypoli.android.common.di.Module
-import mypoli.android.common.redux.TestViewController
+import mypoli.android.common.redux.PlayerAction
 import mypoli.android.common.view.playerTheme
 import mypoli.android.player.AuthProvider
 import mypoli.android.player.Player
@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
 
         if (!router.hasRootController()) {
 //            router.setRoot(RouterTransaction.with(HomeViewController()))
-            router.setRoot(RouterTransaction.with(TestViewController()))
+//            router.setRoot(RouterTransaction.with(TestViewController()))
 //            router.setRoot(RouterTransaction.with(ChallengeCategoryListViewController()))
 //            router.setRoot(RouterTransaction.with(PersonalizeChallengeViewController()))
         }
