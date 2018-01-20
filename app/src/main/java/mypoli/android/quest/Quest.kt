@@ -1,10 +1,8 @@
 package mypoli.android.quest
 
-import mypoli.android.common.datetime.Time
-import mypoli.android.common.datetime.milliseconds
-import mypoli.android.common.datetime.minutes
-import mypoli.android.common.datetime.toMillis
+import mypoli.android.common.datetime.*
 import mypoli.android.common.sumByLong
+import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
@@ -16,6 +14,8 @@ import org.threeten.bp.LocalTime
 
 interface Entity {
     val id: String
+    val createdAt: Instant
+    val updatedAt: Instant
 }
 
 data class Reminder(
@@ -110,11 +110,13 @@ data class Quest(
     val scheduledDate: LocalDate,
     val duration: Int,
     val reminder: Reminder? = null,
-    val actualStart: LocalDateTime? = null,
+    val actualStart: Instant? = null,
     val pomodoroTimeRanges: List<TimeRange> = listOf(),
-    val createdAt: LocalDateTime = LocalDateTime.now(),
+    override val createdAt: Instant = Instant.now(),
+    override val updatedAt: Instant = Instant.now(),
     val completedAtDate: LocalDate? = null,
     val completedAtTime: Time? = null,
+    val completedAt: Instant? = null,
     val experience: Int? = null,
     val coins: Int? = null,
     val bounty: Bounty? = null
@@ -135,14 +137,10 @@ data class Quest(
 
             if (actualStart != null) {
                 return if (isCompleted) {
-                    val completedDateTime = LocalDateTime.of(
-                        completedAtDate,
-                        LocalTime.of(completedAtTime!!.hours, completedAtTime.getMinutes())
-                    )
-                    (completedDateTime.toMillis() - actualStart.toMillis()).milliseconds.asMinutes.intValue
+                    completedAt!! - actualStart
                 } else {
-                    (LocalDateTime.now().toMillis() - actualStart.toMillis()).milliseconds.asMinutes.intValue
-                }
+                    Instant.now() - actualStart
+                }.milliseconds.asMinutes.intValue
             }
 
             if (pomodoroTimeRanges.isNotEmpty()) {
@@ -156,8 +154,8 @@ data class Quest(
 data class TimeRange(
     val type: Type,
     val duration: Int,
-    val start: LocalDateTime? = null,
-    val end: LocalDateTime? = null
+    val start: Instant? = null,
+    val end: Instant? = null
 ) {
     enum class Type {
         WORK, BREAK
@@ -165,7 +163,7 @@ data class TimeRange(
 
     fun actualDuration(): Long {
         if (start != null && end != null) {
-            return end.toMillis() - start.toMillis()
+            return (end - start).toEpochMilli()
         }
         return duration.minutes.asMilliseconds.longValue
     }

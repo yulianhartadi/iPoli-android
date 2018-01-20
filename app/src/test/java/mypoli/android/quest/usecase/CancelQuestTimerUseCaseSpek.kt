@@ -12,8 +12,8 @@ import org.amshove.kluent.`should be null`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
+import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -48,7 +48,7 @@ class CancelQuestTimerUseCaseSpek : Spek({
         it("should cancel count down") {
             val result = executeUseCase(
                 simpleQuest.copy(
-                    actualStart = LocalDateTime.now()
+                    actualStart = Instant.now()
                 )
             )
             result.actualStart.`should be null`()
@@ -61,7 +61,7 @@ class CancelQuestTimerUseCaseSpek : Spek({
                         TimeRange(
                             TimeRange.Type.WORK,
                             1.pomodoros(),
-                            start = LocalDateTime.now(),
+                            start = Instant.now(),
                             end = null
                         )
                     )

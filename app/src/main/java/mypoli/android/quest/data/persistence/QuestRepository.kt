@@ -4,7 +4,10 @@ import com.couchbase.lite.*
 import com.couchbase.lite.Expression.property
 import com.couchbase.lite.Function
 import kotlinx.coroutines.experimental.channels.ReceiveChannel
-import mypoli.android.common.datetime.*
+import mypoli.android.common.datetime.DateUtils
+import mypoli.android.common.datetime.Time
+import mypoli.android.common.datetime.instant
+import mypoli.android.common.datetime.startOfDayUTC
 import mypoli.android.common.persistence.BaseCouchbaseRepository
 import mypoli.android.common.persistence.CouchbasePersistedModel
 import mypoli.android.common.persistence.Repository
@@ -188,14 +191,14 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
                 val cr = CouchbaseReminder(it)
                 Reminder(cr.message, Time.of(cr.minute), DateUtils.fromMillis(cr.date))
             },
-            actualStart = cq.actualStart?.toLocalDateTime(),
+            actualStart = cq.actualStart?.instant,
             pomodoroTimeRanges = cq.pomodoroTimeRanges.map {
                 val ctr = CouchbaseTimeRange(it)
                 TimeRange(
                     TimeRange.Type.valueOf(ctr.type),
                     ctr.duration,
-                    ctr.start?.toLocalDateTime(),
-                    ctr.end?.toLocalDateTime()
+                    ctr.start?.instant,
+                    ctr.end?.instant
                 )
             }
         )
@@ -234,7 +237,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         q.startMinute = entity.startTime?.toMinuteOfDay()?.toLong()
         q.completedAtDate = entity.completedAtDate?.startOfDayUTC()
         q.completedAtMinute = entity.completedAtTime?.toMinuteOfDay()?.toLong()
-        q.actualStart = entity.actualStart?.toMillis()
+        q.actualStart = entity.actualStart?.toEpochMilli()
         q.pomodoroTimeRanges = entity.pomodoroTimeRanges.map {
             createCouchbaseTimeRange(it).map
         }
@@ -245,8 +248,8 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         val cTimeRange = CouchbaseTimeRange()
         cTimeRange.type = timeRange.type.name
         cTimeRange.duration = timeRange.duration
-        cTimeRange.start = timeRange.start?.toMillis()
-        cTimeRange.end = timeRange.end?.toMillis()
+        cTimeRange.start = timeRange.start?.toEpochMilli()
+        cTimeRange.end = timeRange.end?.toEpochMilli()
         return cTimeRange
     }
 

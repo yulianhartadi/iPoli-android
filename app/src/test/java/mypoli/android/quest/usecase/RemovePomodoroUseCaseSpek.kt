@@ -5,14 +5,15 @@ import com.nhaarman.mockito_kotlin.doAnswer
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import mypoli.android.common.datetime.Time
+import mypoli.android.common.datetime.plusMinutes
 import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.QuestRepository
 import org.amshove.kluent.`should be equal to`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
+import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -61,7 +62,7 @@ class RemovePomodoroUseCaseSpek : Spek({
         }
 
         it("should remove pomodoro duration with short break") {
-            val now = LocalDateTime.now()
+            val now = Instant.now()
             val timeRanges = mutableListOf<TimeRange>()
 
             for (i: Int in 1..2) {
@@ -96,7 +97,7 @@ class RemovePomodoroUseCaseSpek : Spek({
         }
 
         it("should remove pomodoro duration with long break") {
-            val now = LocalDateTime.now()
+            val now = Instant.now()
             val timeRanges = mutableListOf<TimeRange>()
 
             for (i: Int in 1..4) {
@@ -131,7 +132,7 @@ class RemovePomodoroUseCaseSpek : Spek({
         }
 
         it("should not remove started pomodoro") {
-            val now = LocalDateTime.now()
+            val now = Instant.now()
 
             val duration = 2.pomodoros() + 15 + 3.shortBreaks()
             val result = executeUseCase(

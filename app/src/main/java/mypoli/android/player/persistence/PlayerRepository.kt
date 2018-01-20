@@ -11,8 +11,6 @@ import mypoli.android.player.persistence.model.*
 import mypoli.android.quest.ColorPack
 import mypoli.android.quest.IconPack
 import org.threeten.bp.Instant
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.ZoneId
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -99,10 +97,8 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             avatar = Avatar.fromCode(cp.avatarCode)!!,
             currentTheme = Theme.valueOf(cp.currentTheme),
             inventory = inventory,
-            createdAt = LocalDateTime.ofInstant(
-                Instant.ofEpochMilli(cp.createdAt),
-                ZoneId.systemDefault()
-            ),
+            createdAt = Instant.ofEpochMilli(cp.createdAt),
+            updatedAt = Instant.ofEpochMilli(cp.updatedAt),
             pet = pet
         )
     }
@@ -124,8 +120,8 @@ class CouchbasePlayerRepository(database: Database, coroutineContext: CoroutineC
             it.experience = entity.experience
             it.authProvider = createCouchbaseAuthProvider(entity.authProvider).map
             it.avatarCode = entity.avatar.code
-            it.createdAt =
-                entity.createdAt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            it.createdAt = entity.createdAt.toEpochMilli()
+            it.updatedAt = entity.updatedAt.toEpochMilli()
             it.currentTheme = entity.currentTheme.name
             it.pet = createCouchbasePet(entity.pet).map
             it.inventory = createCouchbaseInventory(entity.inventory).map

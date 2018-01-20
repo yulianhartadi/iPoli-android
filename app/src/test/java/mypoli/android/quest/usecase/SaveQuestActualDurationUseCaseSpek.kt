@@ -15,8 +15,8 @@ import org.amshove.kluent.`should not be null`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
+import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -29,7 +29,7 @@ class SaveQuestActualDurationUseCaseSpek : Spek({
         fun executeUseCase(
             quest: Quest,
             isPomodoro: Boolean,
-            time: LocalDateTime = LocalDateTime.now()
+            time: Instant = Instant.now()
         ): Quest {
             val questRepoMock = mock<QuestRepository> {
                 on { findById(any()) } doReturn quest
@@ -54,7 +54,7 @@ class SaveQuestActualDurationUseCaseSpek : Spek({
         )
 
         it("should save actual start") {
-            val time = LocalDateTime.now()
+            val time = Instant.now()
             val result = executeUseCase(simpleQuest, false, time)
             result.actualStart.`should be`(time)
         }
@@ -68,7 +68,7 @@ class SaveQuestActualDurationUseCaseSpek : Spek({
         }
 
         it("should end the last time range") {
-            val now = LocalDateTime.now()
+            val now = Instant.now()
             val quest = simpleQuest.copy(
                 duration = 1.pomodoros() + 1.shortBreaks(),
                 pomodoroTimeRanges = listOf(
@@ -92,7 +92,7 @@ class SaveQuestActualDurationUseCaseSpek : Spek({
         }
 
         it("should end the last time range with smaller duration") {
-            val now = LocalDateTime.now()
+            val now = Instant.now()
             val quest = simpleQuest.copy(
                 duration = 10,
                 pomodoroTimeRanges = listOf(
@@ -116,7 +116,7 @@ class SaveQuestActualDurationUseCaseSpek : Spek({
         }
 
         it("should end the last and add new time range") {
-            val now = LocalDateTime.now()
+            val now = Instant.now()
             val quest = simpleQuest.copy(
                 duration = 2.pomodoros() + 1.shortBreaks(),
                 pomodoroTimeRanges = listOf(

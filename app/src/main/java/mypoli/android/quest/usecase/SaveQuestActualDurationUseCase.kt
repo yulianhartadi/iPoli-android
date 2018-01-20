@@ -5,7 +5,7 @@ import mypoli.android.common.UseCase
 import mypoli.android.quest.Quest
 import mypoli.android.quest.TimeRange
 import mypoli.android.quest.data.persistence.QuestRepository
-import org.threeten.bp.LocalDateTime
+import org.threeten.bp.Instant
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -85,7 +85,7 @@ class SaveQuestActualDurationUseCase(
 
     private fun endLastTimeRange(
         quest: Quest,
-        time: LocalDateTime
+        time: Instant
     ): Quest {
         val lastTimeRange = quest.pomodoroTimeRanges.last().copy(
             end = time
@@ -98,6 +98,6 @@ class SaveQuestActualDurationUseCase(
     data class Params(
         val questId: String,
         val isPomodoro: Boolean,
-        val time: LocalDateTime = LocalDateTime.now()
+        val time: Instant = Instant.now()
     )
 }

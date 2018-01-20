@@ -4,9 +4,9 @@ import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.Constants
 import mypoli.android.common.datetime.milliseconds
+import mypoli.android.common.datetime.minus
 import mypoli.android.common.datetime.minutes
 import mypoli.android.common.datetime.seconds
-import mypoli.android.common.datetime.toMillis
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.quest.Quest
@@ -16,7 +16,7 @@ import mypoli.android.quest.usecase.SplitDurationForPomodoroTimerUseCase.Result.
 import mypoli.android.quest.usecase.SplitDurationForPomodoroTimerUseCase.Result.DurationSplit
 import mypoli.android.timer.TimerViewState.StateType.*
 import mypoli.android.timer.view.formatter.TimerFormatter
-import org.threeten.bp.LocalDateTime
+import org.threeten.bp.Instant
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -283,7 +283,7 @@ class TimerPresenter(
                 maxTimerProgress = quest.actualDuration
             )
         } else {
-            val passed = LocalDateTime.now().toMillis() - quest.actualStart!!.toMillis()
+            val passed = Instant.now() - quest.actualStart!!
             val remainingTime =
                 quest.duration.minutes - passed.milliseconds
             return state.copy(

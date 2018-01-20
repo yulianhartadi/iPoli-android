@@ -9,8 +9,8 @@ import org.amshove.kluent.shouldNotBeNull
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
+import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -129,14 +129,14 @@ class SplitDurationForPomodoroTimerUseCaseSpek : Spek({
                     TimeRange(
                         TimeRange.Type.WORK,
                         1.pomodoros(),
-                        LocalDateTime.now(),
-                        LocalDateTime.now()
+                        Instant.now(),
+                        Instant.now()
                     ),
                     TimeRange(
                         TimeRange.Type.BREAK,
                         1.shortBreaks(),
-                        LocalDateTime.now(),
-                        LocalDateTime.now()
+                        Instant.now(),
+                        Instant.now()
                     )
                 ),
                 duration = 1.pomodoros() + 1.shortBreaks()
@@ -156,14 +156,14 @@ class SplitDurationForPomodoroTimerUseCaseSpek : Spek({
                     TimeRange(
                         TimeRange.Type.WORK,
                         1.pomodoros(),
-                        LocalDateTime.now(),
-                        LocalDateTime.now()
+                        Instant.now(),
+                        Instant.now()
                     ),
                     TimeRange(
                         TimeRange.Type.BREAK,
                         1.shortBreaks(),
-                        LocalDateTime.now(),
-                        LocalDateTime.now()
+                        Instant.now(),
+                        Instant.now()
                     )
                 ),
                 duration = 1.shortBreaks()
