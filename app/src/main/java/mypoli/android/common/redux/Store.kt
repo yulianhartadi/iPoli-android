@@ -13,6 +13,10 @@ import org.threeten.bp.format.DateTimeFormatter
 
 interface Action
 
+interface AsyncAction : Action {
+    suspend fun execute(dispatcher: Dispatcher)
+}
+
 sealed class PlayerAction : Action {
     object Load : PlayerAction()
     data class Changed(val player: Player) : PlayerAction()

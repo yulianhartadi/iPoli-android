@@ -1,5 +1,6 @@
 package mypoli.android.common.redux
 
+import kotlinx.coroutines.experimental.runBlocking
 import mypoli.android.common.redux.MiddleWare.Result.Continue
 import mypoli.android.common.redux.MiddleWare.Result.Stop
 import org.amshove.kluent.`should be equal to`
@@ -7,6 +8,7 @@ import org.amshove.kluent.`should be`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
+import kotlin.coroutines.experimental.EmptyCoroutineContext
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -23,39 +25,45 @@ object MiddlewareSpek : Spek({
 
     class TestAction : Action
 
+    var executeCount = 0
+
+    beforeEachTest {
+        executeCount = 0
+    }
+
+    fun executeMiddleware(middleWare: MiddleWare<TestState>, action: Action = TestAction()) =
+        middleWare.execute(TestState(), TestDispatcher(), action)
+
+    class CountExecutionsMiddleware : SimpleMiddleware<TestState>() {
+
+        override fun onExecute(
+            state: TestState,
+            dispatcher: Dispatcher,
+            action: Action
+        ) {
+            executeCount++
+        }
+    }
+
+    class StopMiddleware : MiddleWare<TestState> {
+        override fun execute(
+            state: TestState,
+            dispatcher: Dispatcher,
+            action: Action
+        ) = Stop
+    }
+
     describe("CompositeMiddleware") {
-        var executeCount = 0
-
-        beforeEachTest {
-            executeCount = 0
-        }
-
-        fun executeMiddleware(middleWare: MiddleWare<TestState>) =
-            middleWare.execute(TestState(), TestDispatcher(), TestAction())
-
-        class TestMiddleware : SimpleMiddleware<TestState>() {
-
-            override fun onExecute(
-                state: TestState,
-                dispatcher: Dispatcher,
-                action: Action
-            ) {
-                executeCount++
-            }
-        }
-
-        class StopMiddleware : MiddleWare<TestState> {
-            override fun execute(
-                state: TestState,
-                dispatcher: Dispatcher,
-                action: Action
-            ) = Stop
-        }
 
         it("should call all middleware") {
 
-            val cMiddleware = CompositeMiddleware(listOf(TestMiddleware(), TestMiddleware()))
-            val result = executeMiddleware(cMiddleware)
+            val m = CompositeMiddleware(
+                listOf(
+                    CountExecutionsMiddleware(),
+                    CountExecutionsMiddleware()
+                )
+            )
+            val result = executeMiddleware(m)
             executeCount.`should be equal to`(2)
             result.`should be`(Continue)
         }
@@ -64,7 +72,7 @@ object MiddlewareSpek : Spek({
 
             val m = CompositeMiddleware(
                 listOf(
-                    TestMiddleware(),
+                    CountExecutionsMiddleware(),
                     StopMiddleware()
                 )
             )
@@ -75,11 +83,10 @@ object MiddlewareSpek : Spek({
 
         it("should stop at first middleware") {
 
-
             val m = CompositeMiddleware(
                 listOf(
                     StopMiddleware(),
-                    TestMiddleware()
+                    CountExecutionsMiddleware()
                 )
             )
             val result = executeMiddleware(m)
@@ -88,6 +95,44 @@ object MiddlewareSpek : Spek({
         }
     }
 
+    describe("AsyncActionHandlerMiddleware") {
+
+
+        var asyncExecutes = 0
+
+        class TestAsyncAction : AsyncAction {
+            override suspend fun execute(dispatcher: Dispatcher) {
+                asyncExecutes++
+            }
+        }
+
+        beforeEachTest {
+            asyncExecutes = 0
+        }
+
+        it("should execute async action") {
+
+            runBlocking {
+                executeMiddleware(
+                    AsyncActionHandlerMiddleware<TestState>(coroutineContext),
+                    TestAsyncAction()
+                )
+            }
+            asyncExecutes.`should be equal to`(1)
+        }
+
+        it("should stop at this middleware") {
+            val m = CompositeMiddleware(
+                listOf(
+                    AsyncActionHandlerMiddleware<TestState>(EmptyCoroutineContext),
+                    CountExecutionsMiddleware()
+                )
+            )
+            val result = executeMiddleware(m, action = TestAsyncAction())
+            executeCount.`should be equal to`(0)
+            result.`should be`(Stop)
+        }
+    }
 
 })
 
