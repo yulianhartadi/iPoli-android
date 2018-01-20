@@ -1,6 +1,8 @@
 package mypoli.android.common.redux
 
 import kotlinx.coroutines.experimental.launch
+import mypoli.android.common.redux.MiddleWare.Result.Continue
+import mypoli.android.common.redux.MiddleWare.Result.Stop
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -20,7 +22,7 @@ abstract class SimpleMiddleware<in S : State> : MiddleWare<S> {
 
     override fun execute(state: S, dispatcher: Dispatcher, action: Action): MiddleWare.Result {
         onExecute(state, dispatcher, action)
-        return MiddleWare.Result.Continue
+        return Continue
     }
 
     abstract fun onExecute(state: S, dispatcher: Dispatcher, action: Action)
@@ -32,19 +34,18 @@ class CompositeMiddleware<in S : State>(private val middleware: List<MiddleWare<
     override fun execute(state: S, dispatcher: Dispatcher, action: Action): MiddleWare.Result {
 
         for (m in middleware) {
-            if (m.execute(state, dispatcher, action) == MiddleWare.Result.Stop) {
-                return MiddleWare.Result.Stop
+            if (m.execute(state, dispatcher, action) == Stop) {
+                return Stop
             }
         }
 
-        return MiddleWare.Result.Continue
+        return Continue
     }
 }
 
 class AsyncActionHandlerMiddleware<in S : State>(
     private val coroutineContext: CoroutineContext
-) :
-    MiddleWare<S> {
+) : MiddleWare<S> {
 
     override fun execute(state: S, dispatcher: Dispatcher, action: Action): MiddleWare.Result {
         if (action is AsyncAction) {
@@ -52,9 +53,23 @@ class AsyncActionHandlerMiddleware<in S : State>(
                 action.execute(dispatcher)
             }
 
-            return MiddleWare.Result.Stop
+            return Stop
         }
-        return MiddleWare.Result.Continue
+        return Continue
 
     }
+}
+
+abstract class AsyncMiddleware<in S : State>(
+    private val coroutineContext: CoroutineContext
+) : MiddleWare<S> {
+
+    override fun execute(state: S, dispatcher: Dispatcher, action: Action): MiddleWare.Result {
+        launch(coroutineContext) {
+            onExecute(state, action)
+        }
+        return Continue
+    }
+
+    abstract suspend fun onExecute(state: State, action: Action)
 }
