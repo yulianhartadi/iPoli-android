@@ -1,4 +1,4 @@
-package mypoli.android.quest.usecase
+package mypoli.android.timer.usecase
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doAnswer
@@ -7,6 +7,8 @@ import com.nhaarman.mockito_kotlin.mock
 import mypoli.android.common.datetime.Time
 import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.quest.usecase.CancelTimerUseCase
+import mypoli.android.timer.pomodoros
 import org.amshove.kluent.`should be empty`
 import org.amshove.kluent.`should be null`
 import org.jetbrains.spek.api.Spek
@@ -19,9 +21,9 @@ import org.threeten.bp.LocalDate
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 1/18/18.
  */
-class CancelQuestTimerUseCaseSpek : Spek({
+class CancelTimerUseCaseSpek : Spek({
 
-    describe("CancelQuestTimerUseCase") {
+    describe("CancelTimerUseCase") {
 
         fun executeUseCase(
             quest: Quest
@@ -32,8 +34,8 @@ class CancelQuestTimerUseCaseSpek : Spek({
                     invocation.getArgument(0)
                 }
             }
-            return CancelQuestTimerUseCase(questRepoMock)
-                .execute(CancelQuestTimerUseCase.Params(quest.id))
+            return CancelTimerUseCase(questRepoMock)
+                .execute(CancelTimerUseCase.Params(quest.id))
         }
 
         val simpleQuest = Quest(

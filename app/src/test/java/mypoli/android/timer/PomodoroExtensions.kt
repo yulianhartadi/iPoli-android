@@ -1,4 +1,4 @@
-package mypoli.android.quest
+package mypoli.android.timer
 
 import mypoli.android.Constants
 

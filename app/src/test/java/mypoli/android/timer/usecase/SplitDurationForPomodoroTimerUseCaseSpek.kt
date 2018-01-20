@@ -1,8 +1,12 @@
-package mypoli.android.quest.usecase
+package mypoli.android.timer.usecase
 
 import mypoli.android.Constants
 import mypoli.android.common.datetime.Time
 import mypoli.android.quest.*
+import mypoli.android.quest.usecase.SplitDurationForPomodoroTimerUseCase
+import mypoli.android.timer.longBreaks
+import mypoli.android.timer.pomodoros
+import mypoli.android.timer.shortBreaks
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.shouldNotBeNull

@@ -8,6 +8,8 @@ import mypoli.android.Constants
 import mypoli.android.common.datetime.Time
 import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.timer.pomodoros
+import mypoli.android.timer.shortBreaks
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be null`
 import org.amshove.kluent.`should be`
@@ -53,10 +55,11 @@ class SaveQuestActualDurationUseCaseSpek : Spek({
             reminder = Reminder("", Time.now(), LocalDate.now())
         )
 
+        val now = Instant.now()
+
         it("should save actual start") {
-            val time = Instant.now()
-            val result = executeUseCase(simpleQuest, false, time)
-            result.actualStart.`should be`(time)
+            val result = executeUseCase(simpleQuest, false, now)
+            result.actualStart.`should be`(now)
         }
 
         it("should add the first time range") {
@@ -68,7 +71,6 @@ class SaveQuestActualDurationUseCaseSpek : Spek({
         }
 
         it("should end the last time range") {
-            val now = Instant.now()
             val quest = simpleQuest.copy(
                 duration = 1.pomodoros() + 1.shortBreaks(),
                 pomodoroTimeRanges = listOf(
@@ -92,7 +94,6 @@ class SaveQuestActualDurationUseCaseSpek : Spek({
         }
 
         it("should end the last time range with smaller duration") {
-            val now = Instant.now()
             val quest = simpleQuest.copy(
                 duration = 10,
                 pomodoroTimeRanges = listOf(
@@ -116,7 +117,6 @@ class SaveQuestActualDurationUseCaseSpek : Spek({
         }
 
         it("should end the last and add new time range") {
-            val now = Instant.now()
             val quest = simpleQuest.copy(
                 duration = 2.pomodoros() + 1.shortBreaks(),
                 pomodoroTimeRanges = listOf(

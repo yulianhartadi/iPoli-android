@@ -27,7 +27,7 @@ class TimerPresenter(
     private val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase,
     private val listenForQuestChangeUseCase: ListenForQuestChangeUseCase,
     private val saveQuestActualDurationUseCase: SaveQuestActualDurationUseCase,
-    private val cancelQuestTimerUseCase: CancelQuestTimerUseCase,
+    private val cancelTimerUseCase: CancelTimerUseCase,
     private val completeQuestUseCase: CompleteQuestUseCase,
     private val addPomodoroUseCase: AddPomodoroUseCase,
     private val removePomodoroUseCase: RemovePomodoroUseCase,
@@ -77,7 +77,7 @@ class TimerPresenter(
             }
 
             is TimerIntent.Stop -> {
-                cancelQuestTimerUseCase.execute(CancelQuestTimerUseCase.Params(state.quest!!.id))
+                cancelTimerUseCase.execute(CancelTimerUseCase.Params(state.quest!!.id))
                 state.copy(
                     type = TIMER_STOPPED
                 )

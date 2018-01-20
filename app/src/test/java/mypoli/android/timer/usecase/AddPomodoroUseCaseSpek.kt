@@ -1,4 +1,4 @@
-package mypoli.android.quest.usecase
+package mypoli.android.timer.usecase
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doAnswer
@@ -8,6 +8,11 @@ import mypoli.android.common.datetime.Time
 import mypoli.android.common.datetime.plusMinutes
 import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.quest.usecase.AddPomodoroUseCase
+import mypoli.android.quest.usecase.SplitDurationForPomodoroTimerUseCase
+import mypoli.android.timer.longBreaks
+import mypoli.android.timer.pomodoros
+import mypoli.android.timer.shortBreaks
 import org.amshove.kluent.`should be equal to`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -20,7 +25,9 @@ import org.threeten.bp.LocalDate
  * on 1/19/18.
  */
 class AddPomodoroUseCaseSpek : Spek({
+
     describe("AddPomodoroUseCase") {
+
         fun executeUseCase(
             quest: Quest
         ): Quest {
@@ -30,7 +37,10 @@ class AddPomodoroUseCaseSpek : Spek({
                     invocation.getArgument(0)
                 }
             }
-            return AddPomodoroUseCase(questRepoMock, SplitDurationForPomodoroTimerUseCase())
+            return AddPomodoroUseCase(
+                questRepoMock,
+                SplitDurationForPomodoroTimerUseCase()
+            )
                 .execute(AddPomodoroUseCase.Params(quest.id))
         }
 
@@ -43,6 +53,8 @@ class AddPomodoroUseCaseSpek : Spek({
             reminder = Reminder("", Time.now(), LocalDate.now())
         )
 
+        val now = Instant.now()
+
         it("should add duration of 1 pomodoro with short break") {
             val result = executeUseCase(
                 simpleQuest.copy(
@@ -53,7 +65,6 @@ class AddPomodoroUseCaseSpek : Spek({
         }
 
         it("should add pomodoro duration to actual duration") {
-            val now = Instant.now()
             val result = executeUseCase(
                 simpleQuest.copy(
                     duration = 10,
@@ -87,7 +98,6 @@ class AddPomodoroUseCaseSpek : Spek({
         }
 
         it("should add pomodoro duration with long break") {
-            val now = Instant.now()
             val timeRanges = mutableListOf<TimeRange>()
 
             for (i: Int in 1..4) {

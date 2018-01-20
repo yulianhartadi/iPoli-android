@@ -215,7 +215,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val splitDurationForPomodoroTimerUseCase get() = SplitDurationForPomodoroTimerUseCase()
     override val listenForQuestChangeUseCase get() = ListenForQuestChangeUseCase(questRepository)
     override val saveQuestActualDurationUseCase get() = SaveQuestActualDurationUseCase(questRepository, splitDurationForPomodoroTimerUseCase)
-    override val cancelQuestTimerUseCase get() = CancelQuestTimerUseCase(questRepository)
+    override val cancelTimerUseCase get() = CancelTimerUseCase(questRepository)
     override val addPomodoroUseCase get() = AddPomodoroUseCase(questRepository, splitDurationForPomodoroTimerUseCase)
     override val removePomodoroUseCase get() = RemovePomodoroUseCase(questRepository, splitDurationForPomodoroTimerUseCase)
 }
@@ -296,7 +296,7 @@ interface UseCaseModule {
     val buyChallengeUseCase: BuyChallengeUseCase
     val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase
     val saveQuestActualDurationUseCase: SaveQuestActualDurationUseCase
-    val cancelQuestTimerUseCase : CancelQuestTimerUseCase
+    val cancelTimerUseCase: CancelTimerUseCase
     val addPomodoroUseCase : AddPomodoroUseCase
     val removePomodoroUseCase : RemovePomodoroUseCase
 }
@@ -353,7 +353,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val splitDurationForPomodoroTimerUseCase by required { splitDurationForPomodoroTimerUseCase }
     private val listenForQuestChangeUseCase by required { listenForQuestChangeUseCase }
     private val saveQuestActualDurationUseCase by required { saveQuestActualDurationUseCase }
-    private val cancelQuestTimerUseCase by required { cancelQuestTimerUseCase }
+    private val cancelQuestTimerUseCase by required { cancelTimerUseCase }
     private val addPomodoroUseCase by required { addPomodoroUseCase }
     private val removePomodoroUseCase by required { removePomodoroUseCase }
     private val job by required { job }

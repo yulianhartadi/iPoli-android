@@ -1,4 +1,4 @@
-package mypoli.android.quest.usecase
+package mypoli.android.timer.usecase
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doAnswer
@@ -8,6 +8,11 @@ import mypoli.android.common.datetime.Time
 import mypoli.android.common.datetime.plusMinutes
 import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.quest.usecase.RemovePomodoroUseCase
+import mypoli.android.quest.usecase.SplitDurationForPomodoroTimerUseCase
+import mypoli.android.timer.longBreaks
+import mypoli.android.timer.pomodoros
+import mypoli.android.timer.shortBreaks
 import org.amshove.kluent.`should be equal to`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -20,7 +25,9 @@ import org.threeten.bp.LocalDate
  * on 1/19/18.
  */
 class RemovePomodoroUseCaseSpek : Spek({
+
     describe("RemovePomodoroUseCase") {
+
         fun executeUseCase(
             quest: Quest
         ): Quest {
@@ -30,7 +37,10 @@ class RemovePomodoroUseCaseSpek : Spek({
                     invocation.getArgument(0)
                 }
             }
-            return RemovePomodoroUseCase(questRepoMock, SplitDurationForPomodoroTimerUseCase())
+            return RemovePomodoroUseCase(
+                questRepoMock,
+                SplitDurationForPomodoroTimerUseCase()
+            )
                 .execute(RemovePomodoroUseCase.Params(quest.id))
         }
 
@@ -42,6 +52,8 @@ class RemovePomodoroUseCaseSpek : Spek({
             duration = 30,
             reminder = Reminder("", Time.now(), LocalDate.now())
         )
+
+        val now = Instant.now()
 
         it("should not remove the last pomodoro") {
             val result = executeUseCase(
@@ -62,7 +74,6 @@ class RemovePomodoroUseCaseSpek : Spek({
         }
 
         it("should remove pomodoro duration with short break") {
-            val now = Instant.now()
             val timeRanges = mutableListOf<TimeRange>()
 
             for (i: Int in 1..2) {
@@ -97,7 +108,6 @@ class RemovePomodoroUseCaseSpek : Spek({
         }
 
         it("should remove pomodoro duration with long break") {
-            val now = Instant.now()
             val timeRanges = mutableListOf<TimeRange>()
 
             for (i: Int in 1..4) {
@@ -132,7 +142,6 @@ class RemovePomodoroUseCaseSpek : Spek({
         }
 
         it("should not remove started pomodoro") {
-            val now = Instant.now()
 
             val duration = 2.pomodoros() + 15 + 3.shortBreaks()
             val result = executeUseCase(
