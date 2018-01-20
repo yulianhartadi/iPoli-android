@@ -113,13 +113,7 @@ interface StateStoreModule {
 class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
 
     override val stateStore by required {
-        AppStateStore<AppState>(
-            AppReducer.defaultState(),
-            AppReducer,
-            listOf(
-//                LoadPlayerMiddleWare(playerRepository)
-            )
-        )
+        AppStateStore<AppState>(AppReducer)
     }
 }
 
