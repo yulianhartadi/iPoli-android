@@ -167,10 +167,6 @@ interface Reducer<S : State, in A : Action> {
 //    }
 //}
 
-interface StateChangeSubscriber<in S : State> {
-    fun onStateChanged(newState: S)
-}
-
 interface Dispatcher {
     fun dispatch(action: Action)
 }
@@ -180,7 +176,47 @@ class StateStore<out S : State>(
     middleware: List<MiddleWare<S>> = listOf()
 ) : Dispatcher {
 
-    private var stateChangeSubscribers: List<StateChangeSubscriber<S>> = listOf()
+    interface StateChangeSubscriber<in S, T> {
+
+        interface StateTransformer<in S, out T> {
+            fun transform(state: S): T
+        }
+
+        val transformer: StateTransformer<S, T>
+
+        fun changeIfNew(oldState: S, newState: S) {
+            if (transformer.transform(oldState) == transformer.transform(newState)) {
+                return
+            }
+            onStateChanged(transformer.transform(newState))
+        }
+
+        fun onStateChanged(newState: T)
+    }
+
+    interface SimpleStateChangeSubscriber<S> : StateChangeSubscriber<S, S> {
+        override val transformer
+            get() = object : StateChangeSubscriber.StateTransformer<S, S> {
+                override fun transform(state: S) = state
+            }
+    }
+
+//    interface TransformStateChangeSubscriber<in S, T> : StateChangeSubscriber<S> {
+//
+//        interface StateTransformer<in S, out T> {
+//            fun transform(state: S): T
+//        }
+//
+//        val transformer: StateTransformer<S, T>
+//
+//        override fun onNewState(newState: S) {
+//            onStateChanged(transformer.transform(newState))
+//        }
+//
+//        fun onStateChanged(newState: T)
+//    }
+
+    private var stateChangeSubscribers: List<StateChangeSubscriber<S, *>> = listOf()
     private var state = reducer.defaultState()
     private val middleWare = CompositeMiddleware<S>(middleware)
 
@@ -201,16 +237,16 @@ class StateStore<out S : State>(
 
     private fun notifyStateChanged(oldState: S, newState: S) {
         stateChangeSubscribers.forEach {
-            it.onStateChanged(newState)
+            it.changeIfNew(oldState, newState)
         }
     }
 
-    fun subscribe(subscriber: StateChangeSubscriber<S>) {
+    fun <T> subscribe(subscriber: StateChangeSubscriber<S, T>) {
         stateChangeSubscribers += subscriber
-        subscriber.onStateChanged(state)
+        subscriber.onStateChanged(subscriber.transformer.transform(state))
     }
 
-    fun unsubscribe(subscriber: StateChangeSubscriber<S>) {
+    fun <T> unsubscribe(subscriber: StateChangeSubscriber<S, T>) {
         stateChangeSubscribers -= subscriber
     }
 }
