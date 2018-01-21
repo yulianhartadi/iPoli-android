@@ -17,7 +17,7 @@ import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
 import mypoli.android.common.redux.AppReducer
 import mypoli.android.common.redux.AppState
-import mypoli.android.common.redux.AppStateStore
+import mypoli.android.common.redux.StateStore
 import mypoli.android.common.text.CalendarFormatter
 import mypoli.android.common.view.ColorPickerPresenter
 import mypoli.android.common.view.CurrencyConverterPresenter
@@ -107,13 +107,13 @@ interface AndroidModule {
 }
 
 interface StateStoreModule {
-    val stateStore: AppStateStore<AppState>
+    val stateStore: StateStore<AppState>
 }
 
 class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
 
     override val stateStore by required {
-        AppStateStore<AppState>(AppReducer)
+        StateStore<AppState>(AppReducer)
     }
 }
 

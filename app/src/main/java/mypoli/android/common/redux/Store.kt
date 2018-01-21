@@ -77,7 +77,7 @@ data class CalendarState(
 ) : State
 
 //class LoadPlayerMiddleWare(private val playerRepository: PlayerRepository) : MiddleWare<AppState> {
-//    override fun execute(store: AppStateStore<AppState>, action: Action) {
+//    override fun execute(store: StateStore<AppState>, action: Action) {
 //        if (action != PlayerAction.Load) {
 //            return
 //        }
@@ -175,7 +175,7 @@ interface Dispatcher {
     fun dispatch(action: Action)
 }
 
-class AppStateStore<out S : State>(
+class StateStore<out S : State>(
     private val reducer: Reducer<S, Action>,
     middleware: List<MiddleWare<S>> = listOf()
 ) : Dispatcher {

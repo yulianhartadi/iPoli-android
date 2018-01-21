@@ -97,7 +97,6 @@ object MiddlewareSpek : Spek({
 
     describe("AsyncActionHandlerMiddleware") {
 
-
         var asyncExecutes = 0
 
         class TestAsyncAction : AsyncAction {
