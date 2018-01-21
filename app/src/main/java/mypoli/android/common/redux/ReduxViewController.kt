@@ -15,9 +15,9 @@ import space.traversal.kapsule.required
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 1/18/18.
  */
-abstract class ReduxViewController<in A : Action> protected constructor(args: Bundle? = null) :
+abstract class ReduxViewController<in A : Action, VS> protected constructor(args: Bundle? = null) :
     RestoreViewOnCreateController(args), Injects<Module>,
-    StateChangeSubscriber<AppState> {
+    StateStore.StateChangeSubscriber<AppState, VS> {
 
     private val stateStore by required { stateStore }
 
@@ -44,9 +44,9 @@ abstract class ReduxViewController<in A : Action> protected constructor(args: Bu
         stateStore.dispatch(action)
     }
 
-    override fun onStateChanged(newState: AppState) {
+    override fun onStateChanged(newState: VS) {
         render(newState, view!!)
     }
 
-    abstract fun render(state: AppState, view: View)
+    abstract fun render(state: VS, view: View)
 }

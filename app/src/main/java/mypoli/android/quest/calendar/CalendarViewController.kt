@@ -24,6 +24,7 @@ import mypoli.android.common.ViewUtils
 import mypoli.android.common.redux.AppState
 import mypoli.android.common.redux.CalendarAction
 import mypoli.android.common.redux.ReduxViewController
+import mypoli.android.common.redux.StateStore
 import mypoli.android.common.view.*
 import mypoli.android.common.view.changehandler.CircularRevealChangeHandler
 import mypoli.android.quest.calendar.CalendarViewState.DatePickerState.*
@@ -35,7 +36,7 @@ import sun.bob.mcalendarview.MarkStyle
 import sun.bob.mcalendarview.vo.DateData
 
 class CalendarViewController(args: Bundle? = null) :
-    ReduxViewController<CalendarAction>(args) {
+    ReduxViewController<CalendarAction, CalendarViewState>(args) {
 //    MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>(
 //        args
 //    ) {
@@ -43,6 +44,18 @@ class CalendarViewController(args: Bundle? = null) :
     companion object {
         const val MAX_VISIBLE_DAYS = 100
     }
+
+    override val transformer: StateStore.StateChangeSubscriber.StateTransformer<AppState, CalendarViewState>
+        get() = object : StateStore.StateChangeSubscriber.StateTransformer<AppState, CalendarViewState> {
+            override fun transform(state: AppState): CalendarViewState {
+                return CalendarViewState(
+                    currentDate = LocalDate.now(),
+                    datePickerState = INVISIBLE,
+                    adapterPosition = 0
+                )
+            }
+
+        }
 
     private lateinit var calendarToolbar: ViewGroup
 
@@ -239,19 +252,19 @@ class CalendarViewController(args: Bundle? = null) :
 //        })
     }
 
-    override fun render(state: AppState, view: View) {
+    override fun render(state: CalendarViewState, view: View) {
 
-        val calendarState = state.calendarState
-
-        val levelProgress = view.levelProgress
-
-        calendarToolbar.day.text = calendarState.dayText
-        calendarToolbar.date.text = calendarState.dateText
-        view.currentMonth.text = calendarState.monthText
-
-        view.addQuest.setOnClickListener {
-            openAddContainer(calendarState.currentDate)
-        }
+//        val calendarState = state.calendarState
+//
+//        val levelProgress = view.levelProgress
+//
+//        calendarToolbar.day.text = calendarState.dayText
+//        calendarToolbar.date.text = calendarState.dateText
+//        view.currentMonth.text = calendarState.monthText
+//
+//        view.addQuest.setOnClickListener {
+//            openAddContainer(calendarState.currentDate)
+//        }
 
 //        when (state.type) {
 //

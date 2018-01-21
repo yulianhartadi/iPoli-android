@@ -53,5 +53,40 @@ object StateStoreSpek : Spek({
 
             executeCount.`should be equal to`(0)
         }
+
+        it("should call subscriber") {
+
+            var stateChangeCount = 0
+
+            val subscriber = object : StateStore.SimpleStateChangeSubscriber<TestState> {
+                override fun onStateChanged(newState: TestState) {
+                    stateChangeCount++
+                }
+            }
+
+            val store = StateStore<TestState>(testReducer)
+            store.subscribe(subscriber)
+            store.dispatch(TestAction())
+
+            stateChangeCount.`should be equal to`(1)
+        }
+
+        it("should not call subscriber when state has not changed") {
+            var stateChangeCount = 0
+
+            val subscriber = object : StateStore.SimpleStateChangeSubscriber<TestState> {
+                override fun onStateChanged(newState: TestState) {
+                    stateChangeCount++
+                }
+            }
+
+            val store = StateStore<TestState>(testReducer)
+            store.subscribe(subscriber)
+
+            store.dispatch(TestAction())
+            store.dispatch(TestAction())
+
+            stateChangeCount.`should be equal to`(1)
+        }
     }
 })

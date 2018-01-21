@@ -53,12 +53,12 @@ object CalendarReducer : Reducer<CalendarState, CalendarAction> {
 object AppReducer : Reducer<AppState, Action> {
 
     override fun reduce(state: AppState, action: Action) =
-        state.copy(
-            calendarState = if (action is CalendarAction)
-                CalendarReducer.reduce(state.calendarState, action)
-            else
-                state.calendarState
-        )
+        when (action) {
+            is CalendarAction -> state.copy(
+                calendarState = CalendarReducer.reduce(state.calendarState, action)
+            )
+            else -> state
+        }
 
     override fun defaultState() =
         AppState(
@@ -77,7 +77,7 @@ data class CalendarState(
 ) : State
 
 //class LoadPlayerMiddleWare(private val playerRepository: PlayerRepository) : MiddleWare<AppState> {
-//    override fun execute(store: StateStore<AppState>, action: Action) {
+//    override fun execute(store: Store<AppState>, action: Action) {
 //        if (action != PlayerAction.Load) {
 //            return
 //        }
