@@ -26,14 +26,13 @@ sealed class CalendarAction : Action {
 
 interface State
 
-interface PartialState
-
 data class AppState(
     val player: Player? = null,
     val calendarState: CalendarState
 ) : State
 
 object CalendarReducer : Reducer<CalendarState, CalendarAction> {
+
     override fun reduce(state: CalendarState, action: CalendarAction): CalendarState {
         return state
     }
@@ -64,7 +63,6 @@ object AppReducer : Reducer<AppState, Action> {
         AppState(
             calendarState = CalendarReducer.defaultState()
         )
-
 }
 
 data class CalendarState(
@@ -76,96 +74,12 @@ data class CalendarState(
     val adapterPosition: Int
 ) : State
 
-//class LoadPlayerMiddleWare(private val playerRepository: PlayerRepository) : MiddleWare<AppState> {
-//    override fun execute(store: Store<AppState>, action: Action) {
-//        if (action != PlayerAction.Load) {
-//            return
-//        }
-//        launch {
-//            playerRepository.listen().consumeEach {
-//                launch(UI) {
-//                    store.dispatch(PlayerAction.Changed(it!!))
-//                }
-//
-//            }
-//        }
-//    }
-//}
-
 interface Reducer<S : State, in A : Action> {
 
     fun reduce(state: S, action: A): S
 
     fun defaultState(): S
 }
-
-//interface PartialReducer<in S : State, P : PartialState, in A : Action> {
-//    fun reduce(globalState: S, partialState: P, action: A): P
-//
-//    fun defaultState(): P
-//}
-//
-//object AppReducer : Reducer<AppState> {
-//    override fun defaultState(): AppState {
-//        return AppState(
-//            calendarState = CalendarReducer.defaultState()
-//        )
-//    }
-//
-//    override fun reduce(oldState: AppState, action: Action): AppState {
-//
-//        val player = if (action is PlayerAction.Changed) {
-//            action.player
-//        } else {
-//            oldState.player
-//        }
-//
-//        val calendarState = if (action is CalendarAction) {
-//            CalendarReducer.reduce(
-//                oldState,
-//                oldState.calendarState,
-//                action
-//            )
-//        } else {
-//            oldState.calendarState
-//        }
-//
-//        return oldState.copy(
-//            player = player,
-//            calendarState = calendarState
-//        )
-//    }
-//}
-//
-//object CalendarReducer : PartialReducer<AppState, CalendarState, CalendarAction> {
-//
-//    private val monthFormatter = DateTimeFormatter.ofPattern("MMMM")
-//
-//    override fun reduce(
-//        globalState: AppState,
-//        partialState: CalendarState,
-//        action: CalendarAction
-//    ) =
-//        when (action) {
-//            is CalendarAction.ExpandToolbar -> {
-//                partialState.copy(
-//                    datePickerState = CalendarViewState.DatePickerState.SHOW_WEEK
-//                )
-//            }
-//        }
-//
-//    override fun defaultState(): CalendarState {
-//        val today = LocalDate.now()
-//        return CalendarState(
-//            currentDate = today,
-//            datePickerState = CalendarViewState.DatePickerState.INVISIBLE,
-//            adapterPosition = CalendarPresenter.MID_POSITION,
-//            monthText = monthFormatter.format(today),
-//            dateText = "",
-//            dayText = ""
-//        )
-//    }
-//}
 
 interface Dispatcher {
     fun dispatch(action: Action)
@@ -185,10 +99,11 @@ class StateStore<out S : State>(
         val transformer: StateTransformer<S, T>
 
         fun changeIfNew(oldState: S, newState: S) {
-            if (transformer.transform(oldState) == transformer.transform(newState)) {
-                return
+            val old = transformer.transform(oldState)
+            val new = transformer.transform(newState)
+            if (old != new) {
+                onStateChanged(new)
             }
-            onStateChanged(transformer.transform(newState))
         }
 
         fun onStateChanged(newState: T)
@@ -200,21 +115,6 @@ class StateStore<out S : State>(
                 override fun transform(state: S) = state
             }
     }
-
-//    interface TransformStateChangeSubscriber<in S, T> : StateChangeSubscriber<S> {
-//
-//        interface StateTransformer<in S, out T> {
-//            fun transform(state: S): T
-//        }
-//
-//        val transformer: StateTransformer<S, T>
-//
-//        override fun onNewState(newState: S) {
-//            onStateChanged(transformer.transform(newState))
-//        }
-//
-//        fun onStateChanged(newState: T)
-//    }
 
     private var stateChangeSubscribers: List<StateChangeSubscriber<S, *>> = listOf()
     private var state = reducer.defaultState()
