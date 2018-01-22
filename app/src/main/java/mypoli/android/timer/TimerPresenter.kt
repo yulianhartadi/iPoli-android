@@ -29,7 +29,7 @@ class TimerPresenter(
     private val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase,
     private val listenForQuestChangeUseCase: ListenForQuestChangeUseCase,
     private val addTimerToQuestUseCase: AddTimerToQuestUseCase,
-    private val saveQuestActualDurationUseCase: SaveQuestActualDurationUseCase,
+    private val completeTimeRangeUseCase: CompleteTimeRangeUseCase,
     private val cancelTimerUseCase: CancelTimerUseCase,
     private val completeQuestUseCase: CompleteQuestUseCase,
     private val addPomodoroUseCase: AddPomodoroUseCase,
@@ -59,12 +59,20 @@ class TimerPresenter(
             }
 
             is TimerIntent.Start -> {
-                val quest = saveQuestActualDurationUseCase.execute(
-                    SaveQuestActualDurationUseCase.Params(
-                        questId = state.quest!!.id,
-                        isPomodoro = state.timerType == TimerViewState.TimerType.POMODORO
+                val quest = if (state.quest!!.isStarted) {
+                    completeTimeRangeUseCase.execute(
+                        CompleteTimeRangeUseCase.Params(
+                            questId = state.quest.id
+                        )
                     )
-                )
+                } else {
+                    addTimerToQuestUseCase.execute(
+                        AddTimerToQuestUseCase.Params(
+                            questId = state.quest.id,
+                            isPomodoro = state.timerType == TimerViewState.TimerType.POMODOROx
+                        )
+                    )
+                }
 
                 val currentProgressIndicator =
                     if (state.timerType == TimerViewState.TimerType.POMODORO)
@@ -105,10 +113,9 @@ class TimerPresenter(
             }
 
             is TimerIntent.CompletePomodoro -> {
-                saveQuestActualDurationUseCase.execute(
-                    SaveQuestActualDurationUseCase.Params(
-                        questId = state.quest!!.id,
-                        isPomodoro = true
+                completeTimeRangeUseCase.execute(
+                    CompleteTimeRangeUseCase.Params(
+                        questId = state.quest!!.id
                     )
                 )
                 state.copy(

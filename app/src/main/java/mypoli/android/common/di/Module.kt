@@ -222,8 +222,8 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val buyChallengeUseCase get() = BuyChallengeUseCase(playerRepository)
     override val splitDurationForPomodoroTimerUseCase get() = SplitDurationForPomodoroTimerUseCase()
     override val listenForQuestChangeUseCase get() = ListenForQuestChangeUseCase(questRepository)
-    override val saveQuestActualDurationUseCase
-        get() = SaveQuestActualDurationUseCase(
+    override val completeTimeRangeUseCase
+        get() = CompleteTimeRangeUseCase(
             questRepository,
             splitDurationForPomodoroTimerUseCase,
             timerCompleteScheduler
@@ -258,7 +258,7 @@ interface PopupUseCaseModule {
     val lowerPetStatsUseCase: LowerPetStatsUseCase
     val findPetUseCase: FindPetUseCase
     val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase
-    val saveQuestActualDurationUseCase: SaveQuestActualDurationUseCase
+    val completeTimeRangeUseCase: CompleteTimeRangeUseCase
     val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase
 }
 
@@ -297,8 +297,8 @@ class AndroidPopupUseCaseModule : PopupUseCaseModule, Injects<SimpleModule> {
 
     override val splitDurationForPomodoroTimerUseCase get() = SplitDurationForPomodoroTimerUseCase()
 
-    override val saveQuestActualDurationUseCase
-        get() = SaveQuestActualDurationUseCase(
+    override val completeTimeRangeUseCase
+        get() = CompleteTimeRangeUseCase(
             questRepository,
             splitDurationForPomodoroTimerUseCase,
             timerCompleteScheduler
@@ -337,7 +337,7 @@ interface UseCaseModule {
     val scheduleChallengeUseCase: ScheduleChallengeUseCase
     val buyChallengeUseCase: BuyChallengeUseCase
     val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase
-    val saveQuestActualDurationUseCase: SaveQuestActualDurationUseCase
+    val completeTimeRangeUseCase: CompleteTimeRangeUseCase
     val cancelTimerUseCase: CancelTimerUseCase
     val addPomodoroUseCase: AddPomodoroUseCase
     val removePomodoroUseCase: RemovePomodoroUseCase
@@ -395,7 +395,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val scheduleChallengeUseCase by required { scheduleChallengeUseCase }
     private val splitDurationForPomodoroTimerUseCase by required { splitDurationForPomodoroTimerUseCase }
     private val listenForQuestChangeUseCase by required { listenForQuestChangeUseCase }
-    private val saveQuestActualDurationUseCase by required { saveQuestActualDurationUseCase }
+    private val saveQuestActualDurationUseCase by required { completeTimeRangeUseCase }
     private val cancelQuestTimerUseCase by required { cancelTimerUseCase }
     private val addPomodoroUseCase by required { addPomodoroUseCase }
     private val removePomodoroUseCase by required { removePomodoroUseCase }

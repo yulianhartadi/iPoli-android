@@ -12,8 +12,8 @@ import mypoli.android.timer.pomodoros
 import mypoli.android.timer.shortBreaks
 import org.amshove.kluent.`should be equal to`
 import org.amshove.kluent.`should be null`
-import org.amshove.kluent.`should be`
 import org.amshove.kluent.`should not be null`
+import org.amshove.kluent.shouldThrow
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -24,13 +24,12 @@ import org.threeten.bp.LocalDate
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 1/18/18.
  */
-class SaveQuestActualDurationUseCaseSpek : Spek({
+class CompleteTimeRangeUseCaseSpek : Spek({
 
-    describe("SaveQuestActualDurationUseCase") {
+    describe("CompleteTimeRangeUseCase") {
 
         fun executeUseCase(
             quest: Quest,
-            isPomodoro: Boolean,
             time: Instant = Instant.now()
         ): Quest {
             val questRepoMock = mock<QuestRepository> {
@@ -39,12 +38,12 @@ class SaveQuestActualDurationUseCaseSpek : Spek({
                     invocation.getArgument(0)
                 }
             }
-            return SaveQuestActualDurationUseCase(
+            return CompleteTimeRangeUseCase(
                 questRepoMock,
                 SplitDurationForPomodoroTimerUseCase(),
                 mock()
             )
-                .execute(SaveQuestActualDurationUseCase.Params(quest.id, isPomodoro, time))
+                .execute(CompleteTimeRangeUseCase.Params(quest.id, time))
         }
 
         val simpleQuest = Quest(
@@ -58,17 +57,16 @@ class SaveQuestActualDurationUseCaseSpek : Spek({
 
         val now = Instant.now()
 
-        it("should save actual start") {
-            val result = executeUseCase(simpleQuest, false, now)
-            result.actualStart.`should be`(now)
-        }
-
-        it("should add the first time range") {
-            val result = executeUseCase(simpleQuest, true)
-            result.pomodoroTimeRanges.size `should be equal to` (1)
-            val range = result.pomodoroTimeRanges.first()
-            range.start.`should not be null`()
-            range.end.`should be null`()
+        it("should require starter pomodoro timer") {
+            val exec = {
+                executeUseCase(
+                    simpleQuest.copy(
+                        pomodoroTimeRanges = listOf()
+                    ),
+                    now
+                )
+            }
+            exec shouldThrow IllegalArgumentException::class
         }
 
         it("should end the last time range") {
@@ -89,7 +87,7 @@ class SaveQuestActualDurationUseCaseSpek : Spek({
                     )
                 )
             )
-            val result = executeUseCase(quest, true)
+            val result = executeUseCase(quest)
             result.pomodoroTimeRanges.size `should be equal to` (2)
             result.pomodoroTimeRanges.last().end.`should not be null`()
         }
@@ -112,7 +110,7 @@ class SaveQuestActualDurationUseCaseSpek : Spek({
                     )
                 )
             )
-            val result = executeUseCase(quest, true)
+            val result = executeUseCase(quest)
             result.pomodoroTimeRanges.size `should be equal to` (2)
             result.pomodoroTimeRanges.last().end.`should not be null`()
         }
@@ -135,7 +133,7 @@ class SaveQuestActualDurationUseCaseSpek : Spek({
                     )
                 )
             )
-            val result = executeUseCase(quest, true)
+            val result = executeUseCase(quest)
             result.pomodoroTimeRanges.size `should be equal to` (3)
             result.pomodoroTimeRanges[1].end.`should not be null`()
             val range = result.pomodoroTimeRanges.last()

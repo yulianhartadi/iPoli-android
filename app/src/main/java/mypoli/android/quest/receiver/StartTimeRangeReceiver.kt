@@ -16,13 +16,13 @@ import space.traversal.kapsule.required
  */
 class StartTimeRangeReceiver : BroadcastReceiver(), Injects<SimpleModule> {
 
-    private val saveQuestActualDurationUseCase by required { saveQuestActualDurationUseCase }
+    private val saveQuestActualDurationUseCase by required { completeTimeRangeUseCase }
 
     override fun onReceive(context: Context, intent: Intent) {
         inject(myPoliApp.simpleModule(context))
         val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
-//        saveQuestActualDurationUseCase.execute(
-//            SaveQuestActualDurationUseCase.Params(
+//        completeTimeRangeUseCase.execute(
+//            CompleteTimeRangeUseCase.Params(
 //                questId
 //            )
 //        )

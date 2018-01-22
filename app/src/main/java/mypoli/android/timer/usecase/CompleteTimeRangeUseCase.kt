@@ -13,42 +13,19 @@ import org.threeten.bp.Instant
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 1/18/18.
  */
-class SaveQuestActualDurationUseCase(
+class CompleteTimeRangeUseCase(
     private val questRepository: QuestRepository,
     private val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase,
     private val timerCompleteScheduler: TimerCompleteScheduler
 ) :
-    UseCase<SaveQuestActualDurationUseCase.Params, Quest> {
+    UseCase<CompleteTimeRangeUseCase.Params, Quest> {
 
     override fun execute(parameters: Params): Quest {
         val quest = questRepository.findById(parameters.questId)
         requireNotNull(quest)
+        require(quest!!.pomodoroTimeRanges.isNotEmpty())
 
         val time = parameters.time
-        if (!parameters.isPomodoro) {
-            timerCompleteScheduler.schedule(
-                questId = quest!!.id,
-                after = quest.duration.minutes
-            )
-            return questRepository.save(quest.copy(actualStart = time))
-        }
-
-        if (quest!!.pomodoroTimeRanges.isEmpty()) {
-            timerCompleteScheduler.schedule(
-                questId = quest.id,
-                after = Constants.DEFAULT_POMODORO_WORK_DURATION.minutes
-            )
-            val newQuest = quest.copy(
-                pomodoroTimeRanges = quest.pomodoroTimeRanges.toMutableList() +
-                    TimeRange(
-                        type = TimeRange.Type.WORK,
-                        duration = Constants.DEFAULT_POMODORO_WORK_DURATION,
-                        start = time
-                    )
-            )
-            return questRepository.save(newQuest)
-        }
-
 
         val splitResult = splitDurationForPomodoroTimerUseCase
             .execute(SplitDurationForPomodoroTimerUseCase.Params(quest))
@@ -112,7 +89,6 @@ class SaveQuestActualDurationUseCase(
 
     data class Params(
         val questId: String,
-        val isPomodoro: Boolean,
         val time: Instant = Instant.now()
     )
 }
