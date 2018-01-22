@@ -165,6 +165,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     private val levelUpScheduler by required { levelUpScheduler }
     private val levelDownScheduler by required { levelDownScheduler }
     private val rateDialogScheduler by required { ratePopupScheduler }
+    private val timerCompleteScheduler by required { timerCompleteScheduler }
     override val loadScheduleForDateUseCase
         get() = LoadScheduleForDateUseCase(questRepository)
     override val saveQuestUseCase get() = SaveQuestUseCase(questRepository, reminderScheduler)
@@ -223,7 +224,8 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val saveQuestActualDurationUseCase
         get() = SaveQuestActualDurationUseCase(
             questRepository,
-            splitDurationForPomodoroTimerUseCase
+            splitDurationForPomodoroTimerUseCase,
+            timerCompleteScheduler
         )
     override val cancelTimerUseCase get() = CancelTimerUseCase(questRepository)
     override val addPomodoroUseCase

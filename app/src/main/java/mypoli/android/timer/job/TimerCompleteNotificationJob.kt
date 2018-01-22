@@ -17,6 +17,7 @@ import mypoli.android.common.di.ControllerModule
 import mypoli.android.common.di.SimpleModule
 import mypoli.android.myPoliApp
 import mypoli.android.pet.AndroidPetAvatar
+import mypoli.android.quest.TimeRange
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.Kapsule
 import java.util.*
@@ -43,14 +44,40 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
         val quest = questRepository.findById(questId)
         val pet = findPetUseCase.execute(Unit)
 
-        val message = ""
+        val (name, message) = if (quest!!.actualStart != null) {
+            Pair(
+                "Quest complete",
+                "${quest.name} is all done!"
+            )
+        } else {
+            val timeRange = quest.pomodoroTimeRanges.last()
+            if (timeRange.type == TimeRange.Type.WORK) {
+                Pair(
+                    "Pomodoro complete",
+                    "Your pomodoro is added to ${quest.name}. Ready for a break?"
+                )
+            } else {
+                if (quest.hasCompletedAllTimeRanges()) {
+                    Pair(
+                        "Break complete",
+                        "${quest.name} is all done!"
+                    )
+                } else {
+                    Pair(
+                        "Break complete",
+                        "Ready to work on ${quest.name}?"
+                    )
+                }
+            }
+        }
+
 
         val petAvatar = AndroidPetAvatar.valueOf(pet.avatar.name)
 
         val notification = NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification_small)
             .setLargeIcon(BitmapFactory.decodeResource(context.resources, petAvatar.headImage))
-            .setContentTitle(quest!!.name)
+            .setContentTitle(name)
             .setContentText(message)
             .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -81,7 +108,8 @@ class AndroidJobTimerCompleteScheduler : TimerCompleteScheduler {
         bundle.putString("questId", questId)
         JobRequest.Builder(TimerCompleteNotificationJob.TAG)
             .setExtras(bundle)
-            .setExact(after.asMilliseconds.longValue)
+//            .setExact(after.asMilliseconds.longValue)
+            .setExact(1000)
             .build()
             .schedule()
     }

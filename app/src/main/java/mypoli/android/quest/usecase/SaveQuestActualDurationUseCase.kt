@@ -90,6 +90,10 @@ class SaveQuestActualDurationUseCase(
                 )
         )
 
+        timerCompleteScheduler.schedule(
+            questId = quest.id,
+            after = newRangeDuration.minutes
+        )
 
         return questRepository.save(newQuest)
     }

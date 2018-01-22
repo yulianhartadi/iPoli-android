@@ -149,6 +149,8 @@ data class Quest(
             }
             return duration
         }
+
+    fun hasCompletedAllTimeRanges() = pomodoroTimeRanges.sumBy { it.duration } >= duration
 }
 
 data class TimeRange(
