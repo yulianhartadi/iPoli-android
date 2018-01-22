@@ -9,8 +9,6 @@ import com.couchbase.lite.Database
 import com.couchbase.lite.DatabaseConfiguration
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
-import mypoli.android.AndroidJobReminderScheduler
-import mypoli.android.ReminderScheduler
 import mypoli.android.challenge.ChallengeCategoryListPresenter
 import mypoli.android.challenge.ChallengeListForCategoryPresenter
 import mypoli.android.challenge.PersonalizeChallengePresenter
@@ -37,13 +35,15 @@ import mypoli.android.player.persistence.CouchbasePlayerRepository
 import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.player.usecase.*
 import mypoli.android.player.view.LevelUpPresenter
-import mypoli.android.quest.AndroidJobQuestCompleteScheduler
-import mypoli.android.quest.QuestCompleteScheduler
 import mypoli.android.quest.calendar.CalendarPresenter
 import mypoli.android.quest.calendar.addquest.AddQuestPresenter
 import mypoli.android.quest.calendar.dayview.DayViewPresenter
 import mypoli.android.quest.data.persistence.CouchbaseQuestRepository
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.quest.job.AndroidJobQuestCompleteScheduler
+import mypoli.android.quest.job.AndroidJobReminderScheduler
+import mypoli.android.quest.job.QuestCompleteScheduler
+import mypoli.android.quest.job.ReminderScheduler
 import mypoli.android.quest.usecase.*
 import mypoli.android.quest.view.QuestCompletePresenter
 import mypoli.android.rate.AndroidRatePopupScheduler
@@ -58,6 +58,8 @@ import mypoli.android.store.theme.usecase.BuyThemeUseCase
 import mypoli.android.store.theme.usecase.ChangeThemeUseCase
 import mypoli.android.store.usecase.PurchaseGemPackUseCase
 import mypoli.android.timer.TimerPresenter
+import mypoli.android.timer.job.AndroidJobTimerCompleteScheduler
+import mypoli.android.timer.job.TimerCompleteScheduler
 import space.traversal.kapsule.HasModules
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
@@ -100,6 +102,8 @@ interface AndroidModule {
 
     val reminderScheduler: ReminderScheduler
 
+    val timerCompleteScheduler: TimerCompleteScheduler
+
     val questCompleteScheduler: QuestCompleteScheduler
 
     val levelUpScheduler: LevelUpScheduler
@@ -134,6 +138,8 @@ class MainAndroidModule(private val context: Context) : AndroidModule {
     override val calendarFormatter get() = CalendarFormatter(context)
 
     override val reminderScheduler get() = AndroidJobReminderScheduler()
+
+    override val timerCompleteScheduler get() = AndroidJobTimerCompleteScheduler()
 
     override val questCompleteScheduler get() = AndroidJobQuestCompleteScheduler()
 
@@ -214,10 +220,22 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val buyChallengeUseCase get() = BuyChallengeUseCase(playerRepository)
     override val splitDurationForPomodoroTimerUseCase get() = SplitDurationForPomodoroTimerUseCase()
     override val listenForQuestChangeUseCase get() = ListenForQuestChangeUseCase(questRepository)
-    override val saveQuestActualDurationUseCase get() = SaveQuestActualDurationUseCase(questRepository, splitDurationForPomodoroTimerUseCase)
+    override val saveQuestActualDurationUseCase
+        get() = SaveQuestActualDurationUseCase(
+            questRepository,
+            splitDurationForPomodoroTimerUseCase
+        )
     override val cancelTimerUseCase get() = CancelTimerUseCase(questRepository)
-    override val addPomodoroUseCase get() = AddPomodoroUseCase(questRepository, splitDurationForPomodoroTimerUseCase)
-    override val removePomodoroUseCase get() = RemovePomodoroUseCase(questRepository, splitDurationForPomodoroTimerUseCase)
+    override val addPomodoroUseCase
+        get() = AddPomodoroUseCase(
+            questRepository,
+            splitDurationForPomodoroTimerUseCase
+        )
+    override val removePomodoroUseCase
+        get() = RemovePomodoroUseCase(
+            questRepository,
+            splitDurationForPomodoroTimerUseCase
+        )
 }
 
 interface PopupUseCaseModule {
@@ -297,8 +315,8 @@ interface UseCaseModule {
     val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase
     val saveQuestActualDurationUseCase: SaveQuestActualDurationUseCase
     val cancelTimerUseCase: CancelTimerUseCase
-    val addPomodoroUseCase : AddPomodoroUseCase
-    val removePomodoroUseCase : RemovePomodoroUseCase
+    val addPomodoroUseCase: AddPomodoroUseCase
+    val removePomodoroUseCase: RemovePomodoroUseCase
 }
 
 interface PresenterModule {

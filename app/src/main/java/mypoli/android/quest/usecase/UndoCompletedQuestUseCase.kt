@@ -1,6 +1,6 @@
 package mypoli.android.quest.usecase
 
-import mypoli.android.ReminderScheduler
+import mypoli.android.quest.job.ReminderScheduler
 import mypoli.android.common.SimpleReward
 import mypoli.android.common.UseCase
 import mypoli.android.player.usecase.RemoveRewardFromPlayerUseCase

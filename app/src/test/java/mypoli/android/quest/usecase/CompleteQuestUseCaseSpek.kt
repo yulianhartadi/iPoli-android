@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.reset
-import mypoli.android.ReminderScheduler
+import mypoli.android.quest.job.ReminderScheduler
 import mypoli.android.TestUtil
 import mypoli.android.common.SimpleReward
 import mypoli.android.common.datetime.Time
@@ -13,6 +13,7 @@ import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.player.usecase.RewardPlayerUseCase
 import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.quest.job.QuestCompleteScheduler
 import mypoli.android.rate.RatePopupScheduler
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek

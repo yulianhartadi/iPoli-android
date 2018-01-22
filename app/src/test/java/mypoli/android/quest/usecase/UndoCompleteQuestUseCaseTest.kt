@@ -3,7 +3,7 @@ package mypoli.android.quest.usecase
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import mypoli.android.ReminderScheduler
+import mypoli.android.quest.job.ReminderScheduler
 import mypoli.android.common.datetime.Time
 import mypoli.android.player.usecase.RemoveRewardFromPlayerUseCase
 import mypoli.android.quest.Category

@@ -2,9 +2,11 @@ package mypoli.android.quest.usecase
 
 import mypoli.android.Constants
 import mypoli.android.common.UseCase
+import mypoli.android.common.datetime.minutes
 import mypoli.android.quest.Quest
 import mypoli.android.quest.TimeRange
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.timer.job.TimerCompleteScheduler
 import org.threeten.bp.Instant
 
 /**
@@ -13,7 +15,8 @@ import org.threeten.bp.Instant
  */
 class SaveQuestActualDurationUseCase(
     private val questRepository: QuestRepository,
-    private val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase
+    private val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase,
+    private val timerCompleteScheduler: TimerCompleteScheduler
 ) :
     UseCase<SaveQuestActualDurationUseCase.Params, Quest> {
 
@@ -23,10 +26,18 @@ class SaveQuestActualDurationUseCase(
 
         val time = parameters.time
         if (!parameters.isPomodoro) {
-            return questRepository.save(quest!!.copy(actualStart = time))
+            timerCompleteScheduler.schedule(
+                questId = quest!!.id,
+                after = quest.duration.minutes
+            )
+            return questRepository.save(quest.copy(actualStart = time))
         }
 
         if (quest!!.pomodoroTimeRanges.isEmpty()) {
+            timerCompleteScheduler.schedule(
+                questId = quest.id,
+                after = Constants.DEFAULT_POMODORO_WORK_DURATION.minutes
+            )
             val newQuest = quest.copy(
                 pomodoroTimeRanges = quest.pomodoroTimeRanges.toMutableList() +
                     TimeRange(

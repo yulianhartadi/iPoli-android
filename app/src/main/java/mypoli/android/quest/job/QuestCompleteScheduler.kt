@@ -1,4 +1,4 @@
-package mypoli.android.quest
+package mypoli.android.quest.job
 
 import com.evernote.android.job.Job
 import com.evernote.android.job.JobRequest
@@ -9,6 +9,7 @@ import mypoli.android.common.Reward
 import mypoli.android.common.di.ControllerModule
 import mypoli.android.common.view.asThemedWrapper
 import mypoli.android.pet.Food
+import mypoli.android.quest.Quest
 import mypoli.android.quest.view.QuestCompletePopup
 import space.traversal.kapsule.Injects
 

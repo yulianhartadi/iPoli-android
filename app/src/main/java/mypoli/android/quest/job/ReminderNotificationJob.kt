@@ -1,4 +1,4 @@
-package mypoli.android
+package mypoli.android.quest.job
 
 import android.annotation.SuppressLint
 import android.app.NotificationManager
@@ -11,10 +11,13 @@ import com.evernote.android.job.JobRequest
 import com.evernote.android.job.util.support.PersistableBundleCompat
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import mypoli.android.Constants
+import mypoli.android.R
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.di.ControllerModule
 import mypoli.android.common.di.SimpleModule
 import mypoli.android.common.view.asThemedWrapper
+import mypoli.android.myPoliApp
 import mypoli.android.quest.Quest
 import mypoli.android.reminder.view.ReminderNotificationPopup
 import mypoli.android.reminder.view.ReminderNotificationViewModel
@@ -102,7 +105,10 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
     }
 
     private fun createNotification(title: String, message: String) =
-        NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID)
+        NotificationCompat.Builder(
+            context,
+            Constants.NOTIFICATION_CHANNEL_ID
+        )
             .setSmallIcon(R.drawable.ic_notification_small)
             .setContentTitle(title)
             .setContentText(message)
