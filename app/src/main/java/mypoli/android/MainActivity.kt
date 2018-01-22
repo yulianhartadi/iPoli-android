@@ -18,6 +18,7 @@ import mypoli.android.home.HomeViewController
 import mypoli.android.player.AuthProvider
 import mypoli.android.player.Player
 import mypoli.android.player.persistence.model.ProviderType
+import mypoli.android.timer.TimerViewController
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -74,11 +75,17 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
             migrateIfNeeded()
         }
 
-        if (!router.hasRootController()) {
+
+        val startIntent = intent
+        if (startIntent != null && startIntent.action == ACTION_SHOW_TIMER) {
+            val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
+            router.setRoot(RouterTransaction.with(TimerViewController(questId)))
+        } else if (!router.hasRootController()) {
             router.setRoot(RouterTransaction.with(HomeViewController()))
 //            router.setRoot(RouterTransaction.with(ChallengeCategoryListViewController()))
 //            router.setRoot(RouterTransaction.with(PersonalizeChallengeViewController()))
         }
+
     }
 
     private fun migrateIfNeeded() {

@@ -88,6 +88,7 @@ class TimerViewController :
     }
 
     override fun onDetach(view: View) {
+        cancelAnimations(view)
         exitFullScreen()
         super.onDetach(view)
     }
@@ -126,7 +127,7 @@ class TimerViewController :
 
             TimerViewState.StateType.TIMER_STOPPED -> {
                 handler.removeCallbacksAndMessages(null)
-                cancelAnimations(view, state)
+                cancelAnimations(view)
 
                 renderTimerButton(view.startStop, TimerButton.START)
                 view.startStop.sendOnClick(TimerIntent.Start)
@@ -144,7 +145,7 @@ class TimerViewController :
         }
     }
 
-    private fun cancelAnimations(view: View, state: TimerViewState) {
+    private fun cancelAnimations(view: View) {
         view.notImportantGroup.views().forEach {
             it.animate().cancel()
             it.alpha = 1f
@@ -156,10 +157,12 @@ class TimerViewController :
         view.complete.animate().cancel()
         view.complete.y = originalTimerButtonsY(view)
 
-        val indicator =
-            view.timerProgressContainer.getChildAt(state.currentProgressIndicator)
-        indicator.animate().cancel()
-        indicator.alpha = 1f
+        val childCount = view.timerProgressContainer.childCount
+        for (i in 0 until childCount) {
+            val child = view.timerProgressContainer.getChildAt(i)
+            child.animate().cancel()
+            child.alpha = 1f
+        }
     }
 
     private fun originalTimerButtonsY(view: View) =

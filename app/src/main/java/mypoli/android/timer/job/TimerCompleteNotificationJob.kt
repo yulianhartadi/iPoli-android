@@ -89,15 +89,15 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
 
         val contentIntent = Intent(context, MainActivity::class.java)
         contentIntent.action = MainActivity.ACTION_SHOW_TIMER
+        contentIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId)
 
-        PendingIntent.getActivity(
+        val contentPI = PendingIntent.getActivity(
             context,
             Random().nextInt(),
             contentIntent,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
-        notificationBuilder.setContentIntent()
-
+        notificationBuilder.setContentIntent(contentPI)
 
         val notification = notificationBuilder
             .setContentTitle(name)
