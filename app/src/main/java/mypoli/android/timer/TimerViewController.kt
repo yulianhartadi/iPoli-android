@@ -101,7 +101,7 @@ class TimerViewController :
             TimerViewState.StateType.SHOW_POMODORO -> {
                 renderTimerProgress(view, state)
                 renderTypeSwitch(view, state)
-                view.pomodoroIndicatorsGroup.visibility = View.VISIBLE
+                view.pomodoroIndicatorsGroup.visible = true
                 renderTimerIndicatorsProgress(view, state)
 
                 view.addPomodoro.sendOnClick(TimerIntent.AddPomodoro)
@@ -114,7 +114,7 @@ class TimerViewController :
                 renderTimerProgress(view, state)
                 renderTypeSwitch(view, state)
                 view.startStop.sendOnClick(TimerIntent.Start)
-                view.pomodoroIndicatorsGroup.visibility = View.GONE
+                view.pomodoroIndicatorsGroup.visible = false
             }
 
             TimerViewState.StateType.RESUMED -> {
@@ -130,6 +130,8 @@ class TimerViewController :
                     it.animate().cancel()
                     it.alpha = 1f
                 }
+                //cancel buttons animations
+
                 val indicator =
                     view.timerProgressContainer.getChildAt(state.currentProgressIndicator)
                 indicator.animate().cancel()
@@ -178,9 +180,11 @@ class TimerViewController :
         view.startStop.sendOnClick(TimerIntent.Stop)
 
         if (state.timerType == TimerViewState.TimerType.POMODORO) {
+            view.pomodoroIndicatorsGroup.visible = true
             playBlinkIndicatorAnimation(view.timerProgressContainer.getChildAt(state.currentProgressIndicator))
         } else {
             view.complete.visibility = View.VISIBLE
+            view.pomodoroIndicatorsGroup.visible = false
             view.complete.sendOnClick(TimerIntent.CompleteQuest)
         }
 
@@ -226,17 +230,27 @@ class TimerViewController :
     }
 
     private fun playShowNotImportantViewsAnimation(view: View) {
-        view.notImportantGroup.views().forEach {
-            it
-                .animate()
-                .alpha(1f)
-                .setDuration(longAnimTime)
-                .setStartDelay(0)
-                .withEndAction {
-                    playHideNotImportantViewsAnimation(view)
+        val labelBottom = view.timerLabel.y + view.timerLabel.height
+        view.startStop
+            .animate()
+            .y(labelBottom + ViewUtils.dpToPx(32f, view.context))
+            .setDuration(shortAnimTime)
+            .withEndAction {
+                view.notImportantGroup.views().forEach {
+                    it
+                        .animate()
+                        .alpha(1f)
+                        .setDuration(longAnimTime)
+                        .setStartDelay(0)
+                        .withEndAction {
+                            playHideNotImportantViewsAnimation(view)
+                        }
+                        .start()
                 }
-                .start()
-        }
+            }
+            .start()
+
+
     }
 
     private fun playHideNotImportantViewsAnimation(view: View) {
@@ -246,8 +260,17 @@ class TimerViewController :
                 .alpha(0f)
                 .setDuration(longAnimTime)
                 .setStartDelay(3000)
+                .withEndAction {
+                    val centerY = view.timerProgress.y + view.timerProgress.height / 2
+                    view.startStop
+                        .animate()
+                        .y(centerY - view.startStop.height / 2)
+                        .setDuration(shortAnimTime)
+                        .start()
+                }
                 .start()
         }
+
     }
 
     private fun renderTimerIndicatorsProgress(view: View, state: TimerViewState) {
