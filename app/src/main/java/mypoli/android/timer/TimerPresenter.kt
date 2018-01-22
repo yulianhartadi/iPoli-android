@@ -11,10 +11,12 @@ import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.quest.Quest
 import mypoli.android.quest.TimeRange
-import mypoli.android.quest.usecase.*
-import mypoli.android.quest.usecase.SplitDurationForPomodoroTimerUseCase.Result.DurationNotSplit
-import mypoli.android.quest.usecase.SplitDurationForPomodoroTimerUseCase.Result.DurationSplit
+import mypoli.android.quest.usecase.CompleteQuestUseCase
+import mypoli.android.quest.usecase.ListenForQuestChangeUseCase
 import mypoli.android.timer.TimerViewState.StateType.*
+import mypoli.android.timer.usecase.*
+import mypoli.android.timer.usecase.SplitDurationForPomodoroTimerUseCase.Result.DurationNotSplit
+import mypoli.android.timer.usecase.SplitDurationForPomodoroTimerUseCase.Result.DurationSplit
 import mypoli.android.timer.view.formatter.TimerFormatter
 import org.threeten.bp.Instant
 import kotlin.coroutines.experimental.CoroutineContext
@@ -26,6 +28,7 @@ import kotlin.coroutines.experimental.CoroutineContext
 class TimerPresenter(
     private val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase,
     private val listenForQuestChangeUseCase: ListenForQuestChangeUseCase,
+    private val addTimerToQuestUseCase: AddTimerToQuestUseCase,
     private val saveQuestActualDurationUseCase: SaveQuestActualDurationUseCase,
     private val cancelTimerUseCase: CancelTimerUseCase,
     private val completeQuestUseCase: CompleteQuestUseCase,

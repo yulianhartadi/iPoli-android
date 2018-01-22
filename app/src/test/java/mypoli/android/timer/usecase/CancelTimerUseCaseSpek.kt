@@ -7,7 +7,6 @@ import com.nhaarman.mockito_kotlin.mock
 import mypoli.android.common.datetime.Time
 import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.QuestRepository
-import mypoli.android.quest.usecase.CancelTimerUseCase
 import mypoli.android.timer.pomodoros
 import org.amshove.kluent.`should be empty`
 import org.amshove.kluent.`should be null`

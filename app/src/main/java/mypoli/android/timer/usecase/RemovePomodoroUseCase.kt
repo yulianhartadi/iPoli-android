@@ -1,4 +1,4 @@
-package mypoli.android.quest.usecase
+package mypoli.android.timer.usecase
 
 import mypoli.android.Constants
 import mypoli.android.common.UseCase
@@ -35,7 +35,9 @@ class RemovePomodoroUseCase(
             Constants.DEFAULT_POMODORO_WORK_DURATION + Constants.DEFAULT_POMODORO_BREAK_DURATION
         }
 
-        val newDuration = Math.max(quest.duration - pomodoroDuration, MIN_QUEST_POMODORO_DURATION)
+        val newDuration = Math.max(quest.duration - pomodoroDuration,
+            MIN_QUEST_POMODORO_DURATION
+        )
 
         if (quest.pomodoroTimeRanges.isNotEmpty() && newDuration < quest.actualDuration) {
             return quest

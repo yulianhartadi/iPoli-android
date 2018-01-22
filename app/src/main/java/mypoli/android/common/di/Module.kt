@@ -60,6 +60,7 @@ import mypoli.android.store.usecase.PurchaseGemPackUseCase
 import mypoli.android.timer.TimerPresenter
 import mypoli.android.timer.job.AndroidJobTimerCompleteScheduler
 import mypoli.android.timer.job.TimerCompleteScheduler
+import mypoli.android.timer.usecase.*
 import space.traversal.kapsule.HasModules
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.required
@@ -227,7 +228,10 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
             splitDurationForPomodoroTimerUseCase,
             timerCompleteScheduler
         )
-    override val cancelTimerUseCase get() = CancelTimerUseCase(questRepository)
+    override val cancelTimerUseCase
+        get() = CancelTimerUseCase(
+            questRepository
+        )
     override val addPomodoroUseCase
         get() = AddPomodoroUseCase(
             questRepository,
@@ -237,6 +241,11 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
         get() = RemovePomodoroUseCase(
             questRepository,
             splitDurationForPomodoroTimerUseCase
+        )
+    override val addTimerToQuestUseCase: AddTimerToQuestUseCase
+        get() = AddTimerToQuestUseCase(
+            questRepository,
+            timerCompleteScheduler
         )
 }
 
@@ -332,6 +341,7 @@ interface UseCaseModule {
     val cancelTimerUseCase: CancelTimerUseCase
     val addPomodoroUseCase: AddPomodoroUseCase
     val removePomodoroUseCase: RemovePomodoroUseCase
+    val addTimerToQuestUseCase: AddTimerToQuestUseCase
 }
 
 interface PresenterModule {
@@ -389,6 +399,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val cancelQuestTimerUseCase by required { cancelTimerUseCase }
     private val addPomodoroUseCase by required { addPomodoroUseCase }
     private val removePomodoroUseCase by required { removePomodoroUseCase }
+    private val addTimerToQuestUseCase by required { addTimerToQuestUseCase }
     private val job by required { job }
     override val homePresenter get() = HomePresenter(job)
     override val dayViewPresenter
@@ -482,6 +493,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
         get() = TimerPresenter(
             splitDurationForPomodoroTimerUseCase,
             listenForQuestChangeUseCase,
+            addTimerToQuestUseCase,
             saveQuestActualDurationUseCase,
             cancelQuestTimerUseCase,
             completeQuestUseCase,

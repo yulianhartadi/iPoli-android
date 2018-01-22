@@ -1,4 +1,4 @@
-package mypoli.android.quest.usecase
+package mypoli.android.timer.usecase
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doAnswer

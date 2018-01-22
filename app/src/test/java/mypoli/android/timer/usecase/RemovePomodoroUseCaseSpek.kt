@@ -8,8 +8,6 @@ import mypoli.android.common.datetime.Time
 import mypoli.android.common.datetime.plusMinutes
 import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.QuestRepository
-import mypoli.android.quest.usecase.RemovePomodoroUseCase
-import mypoli.android.quest.usecase.SplitDurationForPomodoroTimerUseCase
 import mypoli.android.timer.longBreaks
 import mypoli.android.timer.pomodoros
 import mypoli.android.timer.shortBreaks

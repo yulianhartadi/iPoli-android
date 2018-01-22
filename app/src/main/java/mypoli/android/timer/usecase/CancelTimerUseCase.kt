@@ -1,4 +1,4 @@
-package mypoli.android.quest.usecase
+package mypoli.android.timer.usecase
 
 import mypoli.android.common.UseCase
 import mypoli.android.quest.Quest

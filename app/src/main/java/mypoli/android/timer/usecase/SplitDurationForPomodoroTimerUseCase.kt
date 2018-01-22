@@ -1,4 +1,4 @@
-package mypoli.android.quest.usecase
+package mypoli.android.timer.usecase
 
 import mypoli.android.Constants
 import mypoli.android.common.UseCase
@@ -44,7 +44,9 @@ class SplitDurationForPomodoroTimerUseCase :
             ranges.add(range)
         }
 
-        return Result.DurationSplit(ranges)
+        return Result.DurationSplit(
+            ranges
+        )
     }
 
     data class Params(val quest: Quest)
