@@ -106,9 +106,7 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setAutoCancel(true)
             .build()
-
-        val notificationId = Random().nextInt()
-        notificationManager.notify(notificationId, notification)
+        notificationManager.notify(Constants.QUEST_TIMER_NOTIFICATION_ID, notification)
 
         return Job.Result.SUCCESS
     }
@@ -129,11 +127,11 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
         )
     }
 
-    fun getBroadcastPendingIntent(
+    private fun getBroadcastPendingIntent(
         context: Context,
         intent: Intent,
         requestCode: Int
-    ) =
+    ): PendingIntent =
         PendingIntent.getBroadcast(
             context,
             requestCode,

@@ -75,7 +75,6 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
             migrateIfNeeded()
         }
 
-
         val startIntent = intent
         if (startIntent != null && startIntent.action == ACTION_SHOW_TIMER) {
             val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
