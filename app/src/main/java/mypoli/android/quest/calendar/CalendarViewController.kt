@@ -21,10 +21,8 @@ import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
-import mypoli.android.common.redux.AppState
 import mypoli.android.common.redux.CalendarAction
-import mypoli.android.common.redux.ReduxViewController
-import mypoli.android.common.redux.StateStore
+import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
 import mypoli.android.common.view.changehandler.CircularRevealChangeHandler
 import mypoli.android.quest.calendar.CalendarViewState.DatePickerState.*
@@ -36,26 +34,13 @@ import sun.bob.mcalendarview.MarkStyle
 import sun.bob.mcalendarview.vo.DateData
 
 class CalendarViewController(args: Bundle? = null) :
-    ReduxViewController<CalendarAction, CalendarViewState>(args) {
-//    MviViewController<CalendarViewState, CalendarViewController, CalendarPresenter, CalendarIntent>(
-//        args
-//    ) {
+    ReduxViewController<CalendarAction, CalendarViewState, CalendarReduxPresenter>(args) {
+
+    override val presenter get() = CalendarReduxPresenter()
 
     companion object {
         const val MAX_VISIBLE_DAYS = 100
     }
-
-    override val transformer: StateStore.StateChangeSubscriber.StateTransformer<AppState, CalendarViewState>
-        get() = object : StateStore.StateChangeSubscriber.StateTransformer<AppState, CalendarViewState> {
-            override fun transform(state: AppState): CalendarViewState {
-                return CalendarViewState(
-                    currentDate = LocalDate.now(),
-                    datePickerState = INVISIBLE,
-                    adapterPosition = 0
-                )
-            }
-
-        }
 
     private lateinit var calendarToolbar: ViewGroup
 
