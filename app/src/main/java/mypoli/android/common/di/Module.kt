@@ -498,7 +498,6 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
             addTimerToQuestUseCase,
             saveQuestActualDurationUseCase,
             cancelQuestTimerUseCase,
-            completeQuestUseCase,
             addPomodoroUseCase,
             removePomodoroUseCase,
             job

@@ -11,8 +11,6 @@ import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.quest.Quest
 import mypoli.android.quest.TimeRange
-import mypoli.android.quest.usecase.CompleteQuestUseCase
-import mypoli.android.quest.usecase.CompleteQuestUseCase.Params.WithQuestId
 import mypoli.android.quest.usecase.ListenForQuestChangeUseCase
 import mypoli.android.timer.TimerViewState.StateType.*
 import mypoli.android.timer.usecase.*
@@ -32,7 +30,6 @@ class TimerPresenter(
     private val addTimerToQuestUseCase: AddTimerToQuestUseCase,
     private val completeTimeRangeUseCase: CompleteTimeRangeUseCase,
     private val cancelTimerUseCase: CancelTimerUseCase,
-    private val completeQuestUseCase: CompleteQuestUseCase,
     private val addPomodoroUseCase: AddPomodoroUseCase,
     private val removePomodoroUseCase: RemovePomodoroUseCase,
     coroutineContext: CoroutineContext
@@ -59,7 +56,7 @@ class TimerPresenter(
                 createQuestChangedState(state.copy(quest = intent.quest))
             }
 
-            is TimerIntent.Start -> {
+            TimerIntent.Start -> {
                 val quest = if (state.quest!!.isStarted) {
                     completeTimeRangeUseCase.execute(
                         CompleteTimeRangeUseCase.Params(
@@ -88,20 +85,20 @@ class TimerPresenter(
                 )
             }
 
-            is TimerIntent.Stop -> {
+            TimerIntent.Stop -> {
                 cancelTimerUseCase.execute(CancelTimerUseCase.Params(state.quest!!.id))
                 state.copy(
                     type = TIMER_STOPPED
                 )
             }
 
-            is TimerIntent.Tick -> {
+            TimerIntent.Tick -> {
                 val remainingTime = state.remainingTime!! - 1.seconds
                 val isOverdue = remainingTime < 0.seconds
                 val label = if (!isOverdue) {
-                    TimerFormatter.format(remainingTime.asMilliseconds.longValue)
+                    TimerFormatter.format(remainingTime.millisValue)
                 } else {
-                    "+" + TimerFormatter.format(Math.abs(remainingTime.asMilliseconds.longValue))
+                    "+" + TimerFormatter.format(Math.abs(remainingTime.millisValue))
                 }
 
                 state.copy(
@@ -113,7 +110,7 @@ class TimerPresenter(
                 )
             }
 
-            is TimerIntent.CompletePomodoro -> {
+            TimerIntent.CompletePomodoro -> {
                 completeTimeRangeUseCase.execute(
                     CompleteTimeRangeUseCase.Params(
                         questId = state.quest!!.id
@@ -124,29 +121,29 @@ class TimerPresenter(
                 )
             }
 
-            is TimerIntent.ShowPomodoroTimer -> {
+            TimerIntent.ShowPomodoroTimer -> {
                 createStateForInitialPomodoroTimer(state, state.quest!!)
             }
 
-            is TimerIntent.ShowCountDownTimer -> {
+            TimerIntent.ShowCountDownTimer -> {
                 createStateForInitialCountDownTimer(state, state.quest!!)
             }
 
-            is TimerIntent.CompleteQuest -> {
-                completeQuestUseCase.execute(WithQuestId(state.quest!!.id))
+            TimerIntent.CompleteQuest -> {
+                completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(state.quest!!.id))
                 state.copy(
                     type = TIMER_STOPPED
                 )
             }
 
-            is TimerIntent.AddPomodoro -> {
+            TimerIntent.AddPomodoro -> {
                 addPomodoroUseCase.execute(AddPomodoroUseCase.Params(state.quest!!.id))
                 state.copy(
                     type = POMODORO_ADDED
                 )
             }
 
-            is TimerIntent.RemovePomodoro -> {
+            TimerIntent.RemovePomodoro -> {
                 removePomodoroUseCase.execute(RemovePomodoroUseCase.Params(state.quest!!.id))
                 state.copy(
                     type = POMODORO_REMOVED
@@ -192,7 +189,7 @@ class TimerPresenter(
             timerType = TimerViewState.TimerType.POMODORO,
             showTimerTypeSwitch = true,
             pomodoroProgress = timeRanges.map { createPomodoroProgress(it) },
-            timerLabel = TimerFormatter.format(Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asMilliseconds.longValue),
+            timerLabel = TimerFormatter.format(Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.millisValue),
             remainingTime = Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asSeconds,
             currentProgressIndicator = 0,
             timerProgress = 0,
@@ -209,7 +206,7 @@ class TimerPresenter(
             questName = quest.name,
             timerType = TimerViewState.TimerType.COUNTDOWN,
             showTimerTypeSwitch = true,
-            timerLabel = TimerFormatter.format(quest.duration.minutes.asMilliseconds.longValue),
+            timerLabel = TimerFormatter.format(quest.duration.minutes.millisValue),
             remainingTime = quest.duration.minutes.asSeconds,
             timerProgress = 0,
             maxTimerProgress = quest.duration.minutes.asSeconds.intValue
@@ -268,7 +265,7 @@ class TimerPresenter(
                 timerType = TimerViewState.TimerType.POMODORO,
                 showTimerTypeSwitch = false,
                 pomodoroProgress = timeRanges.map { createPomodoroProgress(it) },
-                timerLabel = TimerFormatter.format(remainingTime.asMilliseconds.longValue),
+                timerLabel = TimerFormatter.format(remainingTime.millisValue),
                 remainingTime = remainingTime.asSeconds,
                 currentProgressIndicator = currentProgressIndicator,
                 timerProgress = passed.milliseconds.asSeconds.intValue,
@@ -301,7 +298,7 @@ class TimerPresenter(
                 questName = quest.name,
                 timerType = TimerViewState.TimerType.COUNTDOWN,
                 showTimerTypeSwitch = false,
-                timerLabel = TimerFormatter.format(remainingTime.asMilliseconds.longValue),
+                timerLabel = TimerFormatter.format(remainingTime.millisValue),
                 remainingTime = remainingTime.asSeconds,
                 timerProgress = passed.milliseconds.asSeconds.intValue,
                 maxTimerProgress = quest.duration.minutes.asSeconds.intValue

@@ -6,6 +6,7 @@ import android.content.Intent
 import mypoli.android.Constants
 import mypoli.android.common.di.SimpleModule
 import mypoli.android.myPoliApp
+import mypoli.android.timer.usecase.CompleteTimeRangeUseCase.Params
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -14,18 +15,14 @@ import space.traversal.kapsule.required
  * Created by Venelin Valkov <venelin@ipoli.io>
  * on 01/22/2018.
  */
-class StartTimeRangeReceiver : BroadcastReceiver(), Injects<SimpleModule> {
+class CompleteTimeRangeReceiver : BroadcastReceiver(), Injects<SimpleModule> {
 
-    private val saveQuestActualDurationUseCase by required { completeTimeRangeUseCase }
+    private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
 
     override fun onReceive(context: Context, intent: Intent) {
         inject(myPoliApp.simpleModule(context))
         val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
-//        completeTimeRangeUseCase.execute(
-//            CompleteTimeRangeUseCase.Params(
-//                questId
-//            )
-//        )
+        completeTimeRangeUseCase.execute(Params(questId))
     }
 
 }

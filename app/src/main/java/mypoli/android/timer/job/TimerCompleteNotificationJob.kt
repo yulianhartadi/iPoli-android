@@ -14,7 +14,7 @@ import com.evernote.android.job.util.support.PersistableBundleCompat
 import mypoli.android.Constants
 import mypoli.android.MainActivity
 import mypoli.android.R
-import mypoli.android.common.datetime.Interval
+import mypoli.android.common.datetime.Duration
 import mypoli.android.common.datetime.Minute
 import mypoli.android.common.di.ControllerModule
 import mypoli.android.common.di.SimpleModule
@@ -22,6 +22,7 @@ import mypoli.android.myPoliApp
 import mypoli.android.pet.AndroidPetAvatar
 import mypoli.android.quest.TimeRange
 import mypoli.android.quest.receiver.CompleteQuestReceiver
+import mypoli.android.quest.receiver.CompleteTimeRangeReceiver
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.Kapsule
 import java.util.*
@@ -67,6 +68,7 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
         } else {
             val timeRange = quest.pomodoroTimeRanges.last()
             if (timeRange.type == TimeRange.Type.WORK) {
+                addStartBreakAction(questId, notificationBuilder)
                 Pair(
                     "Pomodoro complete",
                     "Your pomodoro is added to ${quest.name}. Ready for a break?"
@@ -79,6 +81,7 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
                         "${quest.name} is all done!"
                     )
                 } else {
+                    addStartWorkAction(questId, notificationBuilder)
                     Pair(
                         "Break complete",
                         "Ready to work on ${quest.name}?"
@@ -87,17 +90,7 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
             }
         }
 
-        val contentIntent = Intent(context, MainActivity::class.java)
-        contentIntent.action = MainActivity.ACTION_SHOW_TIMER
-        contentIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId)
-
-        val contentPI = PendingIntent.getActivity(
-            context,
-            Random().nextInt(),
-            contentIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        notificationBuilder.setContentIntent(contentPI)
+        notificationBuilder.setContentIntent(createContentIntent(questId))
 
         val notification = notificationBuilder
             .setContentTitle(name)
@@ -109,6 +102,51 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
         notificationManager.notify(Constants.QUEST_TIMER_NOTIFICATION_ID, notification)
 
         return Job.Result.SUCCESS
+    }
+
+    private fun addStartWorkAction(
+        questId: String,
+        notificationBuilder: NotificationCompat.Builder
+    ) {
+        val intent = Intent(context, CompleteTimeRangeReceiver::class.java)
+        intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId)
+
+        val pi = getBroadcastPendingIntent(context, intent, Random().nextInt())
+
+        notificationBuilder.addAction(
+            R.drawable.ic_target_black_24dp,
+            "Do it",
+            pi
+        )
+    }
+
+    private fun addStartBreakAction(
+        questId: String,
+        notificationBuilder: NotificationCompat.Builder
+    ) {
+        val intent = Intent(context, CompleteTimeRangeReceiver::class.java)
+        intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId)
+
+        val pi = getBroadcastPendingIntent(context, intent, Random().nextInt())
+
+        notificationBuilder.addAction(
+            R.drawable.ic_flower_black_24dp,
+            "Take Break",
+            pi
+        )
+    }
+
+    private fun createContentIntent(questId: String?): PendingIntent {
+        val contentIntent = Intent(context, MainActivity::class.java)
+        contentIntent.action = MainActivity.ACTION_SHOW_TIMER
+        contentIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId)
+
+        return PendingIntent.getActivity(
+            context,
+            Random().nextInt(),
+            contentIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
     }
 
     private fun addMarkDoneAction(
@@ -140,25 +178,24 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
         )
 
     companion object {
-        val TAG = "job_timer_complete_notification_tag"
+        const val TAG = "job_timer_complete_notification_tag"
     }
 }
 
 interface TimerCompleteScheduler {
-    fun schedule(questId: String, after: Interval<Minute>)
+    fun schedule(questId: String, after: Duration<Minute>)
 }
 
 class AndroidJobTimerCompleteScheduler : TimerCompleteScheduler {
 
-    override fun schedule(questId: String, after: Interval<Minute>) {
+    override fun schedule(questId: String, after: Duration<Minute>) {
         JobManager.instance().cancelAllForTag(TimerCompleteNotificationJob.TAG)
 
         val bundle = PersistableBundleCompat()
         bundle.putString("questId", questId)
         JobRequest.Builder(TimerCompleteNotificationJob.TAG)
             .setExtras(bundle)
-//            .setExact(after.asMilliseconds.longValue)
-            .setExact(1000)
+            .setExact(after.millisValue)
             .build()
             .schedule()
     }

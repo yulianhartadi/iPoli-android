@@ -170,6 +170,6 @@ data class TimeRange(
         if (start != null && end != null) {
             return (end - start).toEpochMilli()
         }
-        return duration.minutes.asMilliseconds.longValue
+        return duration.minutes.millisValue
     }
 }

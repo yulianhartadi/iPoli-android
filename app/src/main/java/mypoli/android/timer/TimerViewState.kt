@@ -1,6 +1,6 @@
 package mypoli.android.timer
 
-import mypoli.android.common.datetime.Interval
+import mypoli.android.common.datetime.Duration
 import mypoli.android.common.datetime.Second
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
@@ -30,7 +30,7 @@ data class TimerViewState(
     val quest: Quest? = null,
     val showTimerTypeSwitch: Boolean = false,
     val timerLabel: String = "",
-    val remainingTime: Interval<Second>? = null,
+    val remainingTime: Duration<Second>? = null,
     val timerType: TimerType = TimerType.COUNTDOWN,
     val questName: String = "",
     val timerProgress: Int = 0,

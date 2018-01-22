@@ -17,10 +17,10 @@ interface TimeUnit {
     }
 }
 
-class Interval<out T : TimeUnit>(value: Number, private val timeUnitFactory: () -> T) {
+class Duration<out T : TimeUnit>(value: Number, private val timeUnitFactory: () -> T) {
 
     companion object {
-        inline operator fun <reified K : TimeUnit> invoke(value: Number) = Interval(value) {
+        inline operator fun <reified K : TimeUnit> invoke(value: Number) = Duration(value) {
             K::class.java.newInstance()
         }
     }
@@ -31,54 +31,56 @@ class Interval<out T : TimeUnit>(value: Number, private val timeUnitFactory: () 
 
     val intValue = longValue.toInt()
 
-    val asDays: Interval<Day>
+    val millisValue = asMilliseconds.longValue
+
+    val asDays: Duration<Day>
         get() = convert()
 
-    val asHours: Interval<Hour>
+    val asHours: Duration<Hour>
         get() = convert()
 
-    val asMinutes: Interval<Minute>
+    val asMinutes: Duration<Minute>
         get() = convert()
 
-    val asSeconds: Interval<Second>
+    val asSeconds: Duration<Second>
         get() = convert()
 
-    val asMilliseconds: Interval<Millisecond>
+    val asMilliseconds: Duration<Millisecond>
         get() = convert()
 
-    private inline fun <reified OtherUnit : TimeUnit> convert(): Interval<OtherUnit> {
+    private inline fun <reified OtherUnit : TimeUnit> convert(): Duration<OtherUnit> {
         val otherInstance = OtherUnit::class.java.newInstance()
-        return Interval(value * timeUnitFactory().conversionRate(otherInstance))
+        return Duration(value * timeUnitFactory().conversionRate(otherInstance))
     }
 
-    operator fun plus(other: Interval<TimeUnit>): Interval<T> {
+    operator fun plus(other: Duration<TimeUnit>): Duration<T> {
         val newValue =
             value + other.value * other.timeUnitFactory().conversionRate(timeUnitFactory())
-        return Interval(newValue) { timeUnitFactory() }
+        return Duration(newValue) { timeUnitFactory() }
     }
 
-    operator fun minus(other: Interval<TimeUnit>): Interval<T> {
+    operator fun minus(other: Duration<TimeUnit>): Duration<T> {
         val newValue =
             value - other.value * other.timeUnitFactory().conversionRate(timeUnitFactory())
-        return Interval(newValue) { timeUnitFactory() }
+        return Duration(newValue) { timeUnitFactory() }
     }
 
-    operator fun times(other: Number) = Interval(value * other.toDouble()) { timeUnitFactory() }
+    operator fun times(other: Number) = Duration(value * other.toDouble()) { timeUnitFactory() }
 
-    operator fun div(other: Number) = Interval(value / other.toDouble()) { timeUnitFactory() }
+    operator fun div(other: Number) = Duration(value / other.toDouble()) { timeUnitFactory() }
 
-    operator fun inc() = Interval(value + 1, { timeUnitFactory() })
+    operator fun inc() = Duration(value + 1, { timeUnitFactory() })
 
-    operator fun dec() = Interval(value - 1, { timeUnitFactory() })
+    operator fun dec() = Duration(value - 1, { timeUnitFactory() })
 
-    operator fun compareTo(other: Interval<TimeUnit>) =
+    operator fun compareTo(other: Duration<TimeUnit>) =
         asMilliseconds.value.compareTo(other.asMilliseconds.value)
 
-    operator fun contains(other: Interval<TimeUnit>) =
+    operator fun contains(other: Duration<TimeUnit>) =
         asMilliseconds.value >= other.asMilliseconds.value
 
     override operator fun equals(other: Any?): Boolean {
-        if (other == null || other !is Interval<TimeUnit>) return false
+        if (other == null || other !is Duration<TimeUnit>) return false
         return compareTo(other) == 0
     }
 
@@ -109,20 +111,20 @@ class Millisecond : TimeUnit {
     override val inMillis get() = 1L
 }
 
-val Number.weeks: Interval<Week>
-    get() = Interval(this)
+val Number.weeks: Duration<Week>
+    get() = Duration(this)
 
-val Number.days: Interval<Day>
-    get() = Interval(this)
+val Number.days: Duration<Day>
+    get() = Duration(this)
 
-val Number.hours: Interval<Hour>
-    get() = Interval(this)
+val Number.hours: Duration<Hour>
+    get() = Duration(this)
 
-val Number.minutes: Interval<Minute>
-    get() = Interval(this)
+val Number.minutes: Duration<Minute>
+    get() = Duration(this)
 
-val Number.seconds: Interval<Second>
-    get() = Interval(this)
+val Number.seconds: Duration<Second>
+    get() = Duration(this)
 
-val Number.milliseconds: Interval<Millisecond>
-    get() = Interval(this)
+val Number.milliseconds: Duration<Millisecond>
+    get() = Duration(this)

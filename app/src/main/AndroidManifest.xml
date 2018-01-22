@@ -36,7 +36,7 @@
             android:exported="false" />
 
         <receiver
-            android:name=".quest.receiver.StartTimeRangeReceiver"
+            android:name=".quest.receiver.CompleteTimeRangeReceiver"
             android:exported="false" />
 
         <meta-data
