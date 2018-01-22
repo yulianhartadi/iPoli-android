@@ -44,7 +44,7 @@ class CalendarPresenter(
                 val date = intent.currentDate
                 val (dayText, dateText) = formatDayAndDate(date)
                 state.copy(
-                    type = DATA_LOADED,
+                    type = INITIAL,
                     adapterPosition = MID_POSITION,
                     currentDate = intent.currentDate,
                     dayText = dayText,

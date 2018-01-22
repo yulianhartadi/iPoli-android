@@ -13,7 +13,6 @@ import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import mypoli.android.common.di.Module
-import mypoli.android.common.redux.PlayerAction
 import mypoli.android.common.view.playerTheme
 import mypoli.android.home.HomeViewController
 import mypoli.android.player.AuthProvider
@@ -22,7 +21,6 @@ import mypoli.android.player.persistence.model.ProviderType
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
-import timber.log.Timber
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
@@ -83,9 +81,6 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
 //            router.setRoot(RouterTransaction.with(ChallengeCategoryListViewController()))
 //            router.setRoot(RouterTransaction.with(PersonalizeChallengeViewController()))
         }
-
-        Timber.d("AAA store $stateStore")
-        stateStore.dispatch(PlayerAction.Load)
     }
 
     private fun migrateIfNeeded() {

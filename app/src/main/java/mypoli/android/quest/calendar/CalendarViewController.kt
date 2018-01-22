@@ -21,7 +21,6 @@ import kotlinx.android.synthetic.main.controller_calendar.view.*
 import kotlinx.android.synthetic.main.view_calendar_toolbar.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
-import mypoli.android.common.redux.CalendarAction
 import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
 import mypoli.android.common.view.changehandler.CircularRevealChangeHandler
@@ -32,7 +31,10 @@ import mypoli.android.quest.calendar.dayview.view.DayViewController
 import org.threeten.bp.LocalDate
 import sun.bob.mcalendarview.CellConfig
 import sun.bob.mcalendarview.MarkStyle
+import sun.bob.mcalendarview.listeners.OnDateClickListener
+import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
+import timber.log.Timber
 
 class CalendarViewController(args: Bundle? = null) :
     ReduxViewController<CalendarAction, CalendarViewState, CalendarReduxPresenter>(args) {
@@ -49,7 +51,7 @@ class CalendarViewController(args: Bundle? = null) :
 
     private val pageChangeListener = object : ViewPager.SimpleOnPageChangeListener() {
         override fun onPageSelected(position: Int) {
-//            send(CalendarIntent.SwipeChangeDate(position))
+            dispatch(CalendarAction.SwipeChangeDate(position))
         }
     }
 
@@ -197,14 +199,6 @@ class CalendarViewController(args: Bundle? = null) :
         }
     }
 
-    override fun onAttach(view: View) {
-//        hideBackButton()
-
-
-        super.onAttach(view)
-//        send(CalendarIntent.LoadData(LocalDate.now()))
-    }
-
     private fun initDayPicker(view: View, calendarToolbar: ViewGroup) {
         view.datePickerContainer.visibility = View.GONE
 
@@ -219,28 +213,28 @@ class CalendarViewController(args: Bundle? = null) :
             )
         )
 
-//        calendarToolbar.sendOnClick(CalendarIntent.ExpandToolbar)
-//
-//        view.expander.sendOnClick(CalendarIntent.ExpandToolbarWeek)
-//
-//        view.datePicker.setOnDateClickListener(object : OnDateClickListener() {
-//            override fun onDateClick(v: View, date: DateData) {
-//                send(CalendarIntent.CalendarChangeDate(date.year, date.month, date.day))
-//            }
-//        })
-//
-//        view.datePicker.setOnMonthScrollListener(object : OnMonthScrollListener() {
-//            override fun onMonthChange(year: Int, month: Int) {
-//                send(CalendarIntent.ChangeMonth(year, month))
-//            }
-//
-//            override fun onMonthScroll(positionOffset: Float) {
-//            }
-//
-//        })
+        calendarToolbar.dispatchOnClick(CalendarAction.ExpandToolbar)
+        view.expander.dispatchOnClick(CalendarAction.ExpandWeekToolbar)
+
+        view.datePicker.setOnDateClickListener(object : OnDateClickListener() {
+            override fun onDateClick(v: View, date: DateData) {
+                dispatch(CalendarAction.CalendarChangeDate(date.year, date.month, date.day))
+            }
+        })
+
+        view.datePicker.setOnMonthScrollListener(object : OnMonthScrollListener() {
+            override fun onMonthChange(year: Int, month: Int) {
+                dispatch(CalendarAction.ChangeMonth(year, month))
+            }
+
+            override fun onMonthScroll(positionOffset: Float) {
+            }
+
+        })
     }
 
     override fun render(state: CalendarViewState, view: View) {
+
         val levelProgress = view.levelProgress
 
         calendarToolbar.day.text = state.dayText
@@ -277,7 +271,7 @@ class CalendarViewController(args: Bundle? = null) :
 
             DATE_PICKER_CHANGED -> renderDatePicker(state.datePickerState, view, state.currentDate)
 
-            DATA_LOADED -> {
+            INITIAL -> {
                 removeDayViewPagerAdapter(view)
                 createDayViewPagerAdapter(state, view)
             }
@@ -384,10 +378,12 @@ class CalendarViewController(args: Bundle? = null) :
         if (!activity!!.isChangingConfigurations) {
             view.pager.adapter = null
         }
-
-        removeToolbarView(calendarToolbar)
-
         super.onDestroyView(view)
+    }
+
+    override fun onDestroy() {
+        removeToolbarView(calendarToolbar)
+        super.onDestroy()
     }
 
     class DayViewPagerAdapter(var date: LocalDate, var pagerPosition: Int, controller: Controller) :

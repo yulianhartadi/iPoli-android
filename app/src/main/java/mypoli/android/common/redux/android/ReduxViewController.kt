@@ -62,4 +62,15 @@ abstract class ReduxViewController<in A : Action, VS : ViewState, out P : Androi
     }
 
     abstract fun render(state: VS, view: View)
+
+    fun View.dispatchOnClick(intent: A) {
+        dispatchOnClickAndExec(intent, {})
+    }
+
+    fun View.dispatchOnClickAndExec(intent: A, block: () -> Unit) {
+        setOnClickListener {
+            dispatch(intent)
+            block()
+        }
+    }
 }

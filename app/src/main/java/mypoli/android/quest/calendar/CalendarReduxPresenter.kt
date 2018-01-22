@@ -4,7 +4,6 @@ import android.content.Context
 import mypoli.android.common.redux.AppState
 import mypoli.android.common.redux.android.AndroidStatePresenter
 import mypoli.android.common.text.CalendarFormatter
-import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 
 /**
@@ -25,18 +24,14 @@ class CalendarReduxPresenter : AndroidStatePresenter<AppState, CalendarViewState
         val monthFormatter = DateTimeFormatter.ofPattern("MMMM")
 
         return CalendarViewState(
-            type = CalendarViewState.StateType.DATA_LOADED,
-            currentDate = LocalDate.now(),
-            datePickerState = CalendarViewState.DatePickerState.INVISIBLE,
-            adapterPosition = MID_POSITION,
+            type = CalendarViewState.StateType.valueOf(calendarState.type.name),
+            currentDate = calendarState.currentDate,
+            datePickerState = calendarState.datePickerState,
+            adapterPosition = calendarState.adapterPosition,
             dateText = dateText,
             dayText = dayText,
-            monthText = monthFormatter.format(calendarState.currentDate)
+            monthText = monthFormatter.format(calendarState.currentMonth)
         )
-    }
-
-    companion object {
-        const val MID_POSITION = 49
     }
 
 }

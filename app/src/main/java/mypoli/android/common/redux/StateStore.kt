@@ -1,9 +1,9 @@
 package mypoli.android.common.redux
 
 import mypoli.android.common.redux.MiddleWare.Result.Continue
-import mypoli.android.player.Player
-import mypoli.android.quest.calendar.CalendarViewState
-import org.threeten.bp.LocalDate
+import mypoli.android.quest.calendar.CalendarAction
+import mypoli.android.quest.calendar.CalendarReducer
+import mypoli.android.quest.calendar.CalendarState
 
 /**
  * Created by Venelin Valkov <venelin@ipoli.io>
@@ -16,39 +16,12 @@ interface AsyncAction : Action {
     suspend fun execute(dispatcher: Dispatcher)
 }
 
-sealed class PlayerAction : Action {
-    object Load : PlayerAction()
-    data class Changed(val player: Player) : PlayerAction()
-}
-
-sealed class CalendarAction : Action {
-    object ExpandToolbar : CalendarAction()
-}
-
 interface State
 
 data class AppState(
-    val player: Player? = null,
     val calendarState: CalendarState
 ) : State
 
-object CalendarReducer : Reducer<CalendarState, CalendarAction> {
-
-    override fun reduce(state: CalendarState, action: CalendarAction): CalendarState {
-        return state
-    }
-
-    override fun defaultState() =
-        CalendarState(
-            LocalDate.now(),
-            CalendarViewState.DatePickerState.INVISIBLE,
-            "",
-            "",
-            "",
-            -1
-        )
-
-}
 
 object AppReducer : Reducer<AppState, Action> {
 
@@ -65,15 +38,6 @@ object AppReducer : Reducer<AppState, Action> {
             calendarState = CalendarReducer.defaultState()
         )
 }
-
-data class CalendarState(
-    val currentDate: LocalDate,
-    val datePickerState: CalendarViewState.DatePickerState,
-    val monthText: String,
-    val dayText: String,
-    val dateText: String,
-    val adapterPosition: Int
-) : State
 
 interface Reducer<S : State, in A : Action> {
 
