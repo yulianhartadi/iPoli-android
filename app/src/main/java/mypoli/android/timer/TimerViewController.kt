@@ -153,6 +153,9 @@ class TimerViewController :
         view.startStop.animate().cancel()
         view.startStop.y = originalTimerButtonsY(view)
 
+        view.complete.animate().cancel()
+        view.complete.y = originalTimerButtonsY(view)
+
         val indicator =
             view.timerProgressContainer.getChildAt(state.currentProgressIndicator)
         indicator.animate().cancel()
@@ -258,7 +261,11 @@ class TimerViewController :
             }
             .start()
 
-
+        view.complete
+            .animate()
+            .y(originalTimerButtonsY(view))
+            .setDuration(shortAnimTime)
+            .start()
     }
 
     private fun playHideNotImportantViewsAnimation(view: View) {
@@ -270,9 +277,16 @@ class TimerViewController :
                 .setStartDelay(3000)
                 .withEndAction {
                     val centerY = view.timerProgress.y + view.timerProgress.height / 2
+                    val y = centerY - view.startStop.height / 2
                     view.startStop
                         .animate()
-                        .y(centerY - view.startStop.height / 2)
+                        .y(y)
+                        .setDuration(shortAnimTime)
+                        .start()
+
+                    view.complete
+                        .animate()
+                        .y(y)
                         .setDuration(shortAnimTime)
                         .start()
                 }

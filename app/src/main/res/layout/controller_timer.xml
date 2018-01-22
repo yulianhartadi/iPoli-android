@@ -56,19 +56,24 @@
         android:foreground="@drawable/timer_button"
         app:layout_constraintBottom_toBottomOf="@+id/timerProgress"
         app:layout_constraintEnd_toEndOf="@+id/timerProgress"
+        app:layout_constraintEnd_toStartOf="@+id/complete"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/timerProgress"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/timerLabel" />
 
     <ImageButton
         android:id="@+id/complete"
         android:layout_width="64dp"
         android:layout_height="64dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="16dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:foreground="@drawable/timer_button"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/startStop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/startStop"
         app:layout_constraintTop_toTopOf="@+id/startStop" />
 
@@ -89,10 +94,10 @@
         app:layout_constraintTop_toBottomOf="@+id/timerProgress">
 
         <LinearLayout
-            android:layout_gravity="center_vertical"
             android:id="@+id/timerProgressContainer"
             android:layout_width="wrap_content"
             android:layout_height="82dp"
+            android:layout_gravity="center_vertical"
             android:layout_marginBottom="16dp"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
