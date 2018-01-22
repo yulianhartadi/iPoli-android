@@ -19,6 +19,7 @@ import mypoli.android.common.di.SimpleModule
 import mypoli.android.common.view.asThemedWrapper
 import mypoli.android.myPoliApp
 import mypoli.android.quest.Quest
+import mypoli.android.quest.usecase.CompleteQuestUseCase.Params.WithQuestId
 import mypoli.android.reminder.view.ReminderNotificationPopup
 import mypoli.android.reminder.view.ReminderNotificationViewModel
 import org.threeten.bp.LocalDate
@@ -83,7 +84,7 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
 
                         override fun onDone() {
                             notificationManager.cancel(notificationId)
-                            completeQuestUseCase.execute(it.id)
+                            completeQuestUseCase.execute(WithQuestId(it.id))
                             Toast.makeText(c, "Quest completed", Toast.LENGTH_SHORT).show()
                         }
                     }).show(c)

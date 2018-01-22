@@ -8,12 +8,10 @@ import mypoli.android.Constants
 import mypoli.android.common.datetime.Time
 import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.quest.usecase.CompleteQuestUseCase
 import mypoli.android.timer.pomodoros
 import mypoli.android.timer.shortBreaks
-import org.amshove.kluent.`should be equal to`
-import org.amshove.kluent.`should be null`
-import org.amshove.kluent.`should not be null`
-import org.amshove.kluent.shouldThrow
+import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -30,7 +28,12 @@ class CompleteTimeRangeUseCaseSpek : Spek({
 
         fun executeUseCase(
             quest: Quest,
-            time: Instant = Instant.now()
+            time: Instant = Instant.now(),
+            completeQuestUseCase: CompleteQuestUseCase = mock() {
+                on { execute(any()) } doAnswer { invocation ->
+                    (invocation.getArgument(0) as CompleteQuestUseCase.Params.WithQuest).quest
+                }
+            }
         ): Quest {
             val questRepoMock = mock<QuestRepository> {
                 on { findById(any()) } doReturn quest
@@ -38,12 +41,13 @@ class CompleteTimeRangeUseCaseSpek : Spek({
                     invocation.getArgument(0)
                 }
             }
+
             return CompleteTimeRangeUseCase(
                 questRepoMock,
                 SplitDurationForPomodoroTimerUseCase(),
+                completeQuestUseCase,
                 mock()
-            )
-                .execute(CompleteTimeRangeUseCase.Params(quest.id, time))
+            ).execute(CompleteTimeRangeUseCase.Params(quest.id, time))
         }
 
         val simpleQuest = Quest(
@@ -56,18 +60,6 @@ class CompleteTimeRangeUseCaseSpek : Spek({
         )
 
         val now = Instant.now()
-
-        it("should require starter pomodoro timer") {
-            val exec = {
-                executeUseCase(
-                    simpleQuest.copy(
-                        pomodoroTimeRanges = listOf()
-                    ),
-                    now
-                )
-            }
-            exec shouldThrow IllegalArgumentException::class
-        }
 
         it("should end the last time range") {
             val quest = simpleQuest.copy(
@@ -139,6 +131,56 @@ class CompleteTimeRangeUseCaseSpek : Spek({
             val range = result.pomodoroTimeRanges.last()
             range.start.`should not be null`()
             range.end.`should be null`()
+        }
+
+        it("should complete quest with countdown timer") {
+
+            val completeQuestUseCaseMock = mock<CompleteQuestUseCase>()
+
+            executeUseCase(
+                simpleQuest.copy(
+                    actualStart = now
+                ),
+                completeQuestUseCase = completeQuestUseCaseMock
+            )
+
+            Verify on completeQuestUseCaseMock that completeQuestUseCaseMock.execute(any()) was called
+        }
+
+        it("should complete quest when pomodoros are complete") {
+
+            val completeQuestUseCaseMock = mock<CompleteQuestUseCase>()
+
+            executeUseCase(
+                simpleQuest.copy(
+                    duration = 1.pomodoros() + 1.shortBreaks(),
+                    pomodoroTimeRanges = listOf(
+                        TimeRange(TimeRange.Type.WORK, 1.pomodoros(), now, now),
+                        TimeRange(TimeRange.Type.BREAK, 1.shortBreaks(), now, null)
+                    )
+                ),
+                completeQuestUseCase = completeQuestUseCaseMock
+            )
+
+            Verify on completeQuestUseCaseMock that completeQuestUseCaseMock.execute(any()) was called
+        }
+
+        it("should complete quest with short duration when pomodoros are complete") {
+
+            val completeQuestUseCaseMock = mock<CompleteQuestUseCase>()
+
+            executeUseCase(
+                simpleQuest.copy(
+                    duration = 1.pomodoros(),
+                    pomodoroTimeRanges = listOf(
+                        TimeRange(TimeRange.Type.WORK, 1.pomodoros(), now, now),
+                        TimeRange(TimeRange.Type.BREAK, 1.shortBreaks(), now, null)
+                    )
+                ),
+                completeQuestUseCase = completeQuestUseCaseMock
+            )
+
+            Verify on completeQuestUseCaseMock that completeQuestUseCaseMock.execute(any()) was called
         }
 
     }

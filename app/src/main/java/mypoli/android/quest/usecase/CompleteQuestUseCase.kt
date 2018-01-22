@@ -19,7 +19,7 @@ import java.util.*
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 10/27/17.
  */
-class CompleteQuestUseCase(
+open class CompleteQuestUseCase(
     private val questRepository: QuestRepository,
     private val playerRepository: PlayerRepository,
     private val reminderScheduler: ReminderScheduler,
@@ -27,14 +27,21 @@ class CompleteQuestUseCase(
     private val ratePopupScheduler: RatePopupScheduler,
     private val rewardPlayerUseCase: RewardPlayerUseCase,
     private val randomSeed: Long? = null
-) : UseCase<String, Quest> {
-    override fun execute(parameters: String): Quest {
+) : UseCase<CompleteQuestUseCase.Params, Quest> {
+    override fun execute(parameters: Params): Quest {
 
-        require(parameters.isNotEmpty(), { "questId cannot be empty" })
+        val quest = when (parameters) {
+            is Params.WithQuest -> parameters.quest
+            is Params.WithQuestId -> {
+                val questId = parameters.questId
+                require(questId.isNotEmpty(), { "questId cannot be empty" })
+                questRepository.findById(questId)!!
+            }
+        }
 
         val pet = playerRepository.find()!!.pet
 
-        val quest = questRepository.findById(parameters)!!
+
         val experience = quest.experience ?: experience(pet.experienceBonus)
         val coins = quest.coins ?: coins(pet.coinBonus)
         val bounty = quest.bounty ?: bounty(pet.bountyBonus)
@@ -101,5 +108,10 @@ class CompleteQuestUseCase(
         val random = Random()
         randomSeed?.let { random.setSeed(it) }
         return random
+    }
+
+    sealed class Params {
+        data class WithQuest(val quest: Quest) : Params()
+        data class WithQuestId(val questId: String) : Params()
     }
 }

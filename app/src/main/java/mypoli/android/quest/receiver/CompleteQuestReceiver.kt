@@ -6,6 +6,7 @@ import android.content.Intent
 import mypoli.android.Constants
 import mypoli.android.common.di.SimpleModule
 import mypoli.android.myPoliApp
+import mypoli.android.quest.usecase.CompleteQuestUseCase.Params.WithQuestId
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.inject
 import space.traversal.kapsule.required
@@ -21,7 +22,7 @@ class CompleteQuestReceiver : BroadcastReceiver(), Injects<SimpleModule> {
     override fun onReceive(context: Context, intent: Intent) {
         inject(myPoliApp.simpleModule(context))
         val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
-        completeQuestUseCase.execute(questId)
+        completeQuestUseCase.execute(WithQuestId(questId))
     }
 
 }

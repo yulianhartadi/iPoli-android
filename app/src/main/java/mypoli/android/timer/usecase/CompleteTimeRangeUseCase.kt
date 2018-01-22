@@ -6,6 +6,8 @@ import mypoli.android.common.datetime.minutes
 import mypoli.android.quest.Quest
 import mypoli.android.quest.TimeRange
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.quest.usecase.CompleteQuestUseCase
+import mypoli.android.quest.usecase.CompleteQuestUseCase.Params.WithQuest
 import mypoli.android.timer.job.TimerCompleteScheduler
 import org.threeten.bp.Instant
 
@@ -16,6 +18,7 @@ import org.threeten.bp.Instant
 class CompleteTimeRangeUseCase(
     private val questRepository: QuestRepository,
     private val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase,
+    private val completeQuestUseCase: CompleteQuestUseCase,
     private val timerCompleteScheduler: TimerCompleteScheduler
 ) :
     UseCase<CompleteTimeRangeUseCase.Params, Quest> {
@@ -23,7 +26,10 @@ class CompleteTimeRangeUseCase(
     override fun execute(parameters: Params): Quest {
         val quest = questRepository.findById(parameters.questId)
         requireNotNull(quest)
-        require(quest!!.pomodoroTimeRanges.isNotEmpty())
+
+        if (quest!!.actualStart != null) {
+            return completeQuestUseCase.execute(WithQuest(quest))
+        }
 
         val time = parameters.time
 
@@ -31,14 +37,16 @@ class CompleteTimeRangeUseCase(
             .execute(SplitDurationForPomodoroTimerUseCase.Params(quest))
 
         if (splitResult == SplitDurationForPomodoroTimerUseCase.Result.DurationNotSplit) {
-            return questRepository.save(endLastTimeRange(quest, time))
+            val newQuest = questRepository.save(endLastTimeRange(quest, time))
+            return completeQuestUseCase.execute(WithQuest(newQuest))
         }
 
         val timeRanges =
             (splitResult as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges
 
         if (timeRanges.size <= quest.pomodoroTimeRanges.size) {
-            return questRepository.save(endLastTimeRange(quest, time))
+            val newQuest = questRepository.save(endLastTimeRange(quest, time))
+            return completeQuestUseCase.execute(WithQuest(newQuest))
         }
 
         val questWithEndedLastRange = endLastTimeRange(quest, time)

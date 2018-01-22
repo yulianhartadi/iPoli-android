@@ -12,6 +12,7 @@ import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.quest.Quest
 import mypoli.android.quest.TimeRange
 import mypoli.android.quest.usecase.CompleteQuestUseCase
+import mypoli.android.quest.usecase.CompleteQuestUseCase.Params.WithQuestId
 import mypoli.android.quest.usecase.ListenForQuestChangeUseCase
 import mypoli.android.timer.TimerViewState.StateType.*
 import mypoli.android.timer.usecase.*
@@ -132,7 +133,7 @@ class TimerPresenter(
             }
 
             is TimerIntent.CompleteQuest -> {
-                completeQuestUseCase.execute(state.quest!!.id)
+                completeQuestUseCase.execute(WithQuestId(state.quest!!.id))
                 state.copy(
                     type = TIMER_STOPPED
                 )

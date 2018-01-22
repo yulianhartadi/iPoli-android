@@ -226,6 +226,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
         get() = CompleteTimeRangeUseCase(
             questRepository,
             splitDurationForPomodoroTimerUseCase,
+            completeQuestUseCase,
             timerCompleteScheduler
         )
     override val cancelTimerUseCase
@@ -301,6 +302,7 @@ class AndroidPopupUseCaseModule : PopupUseCaseModule, Injects<SimpleModule> {
         get() = CompleteTimeRangeUseCase(
             questRepository,
             splitDurationForPomodoroTimerUseCase,
+            completeQuestUseCase,
             timerCompleteScheduler
         )
 }

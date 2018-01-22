@@ -253,7 +253,7 @@ class DayViewPresenter(
             }
 
             is CompleteQuestIntent -> {
-                completeQuestUseCase.execute(intent.questId)
+                completeQuestUseCase.execute(CompleteQuestUseCase.Params.WithQuestId(intent.questId))
                 state.copy(type = QUEST_COMPLETED)
             }
 
