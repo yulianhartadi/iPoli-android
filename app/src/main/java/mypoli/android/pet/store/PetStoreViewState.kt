@@ -15,7 +15,6 @@ sealed class PetStoreIntent : Intent {
     data class BuyPet(val pet: PetAvatar) : PetStoreIntent()
     data class UnlockPet(val pet: PetAvatar) : PetStoreIntent()
     data class ChangePet(val pet: PetAvatar) : PetStoreIntent()
-    object ShowCurrencyConverter : PetStoreIntent()
 }
 
 data class PetStoreViewState(
@@ -30,7 +29,6 @@ data class PetStoreViewState(
         PET_TOO_EXPENSIVE,
         PET_BOUGHT,
         PET_CHANGED,
-        SHOW_CURRENCY_CONVERTER,
         SHOW_GEM_STORE
     }
 }

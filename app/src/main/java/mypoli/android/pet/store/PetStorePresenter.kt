@@ -67,12 +67,6 @@ class PetStorePresenter(
                 )
             }
 
-            is ShowCurrencyConverter -> {
-                state.copy(
-                    type = SHOW_CURRENCY_CONVERTER
-                )
-            }
-
             is UnlockPet -> {
                 state.copy(
                     type = SHOW_GEM_STORE

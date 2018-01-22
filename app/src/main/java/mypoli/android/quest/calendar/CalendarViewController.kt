@@ -34,16 +34,11 @@ import sun.bob.mcalendarview.MarkStyle
 import sun.bob.mcalendarview.listeners.OnDateClickListener
 import sun.bob.mcalendarview.listeners.OnMonthScrollListener
 import sun.bob.mcalendarview.vo.DateData
-import timber.log.Timber
 
 class CalendarViewController(args: Bundle? = null) :
     ReduxViewController<CalendarAction, CalendarViewState, CalendarReduxPresenter>(args) {
 
     override val presenter get() = CalendarReduxPresenter()
-
-    companion object {
-        const val MAX_VISIBLE_DAYS = 100
-    }
 
     private lateinit var calendarToolbar: ViewGroup
 
@@ -400,6 +395,10 @@ class CalendarViewController(args: Bundle? = null) :
         override fun getItemPosition(`object`: Any): Int = PagerAdapter.POSITION_NONE
 
         override fun getCount() = MAX_VISIBLE_DAYS
+
+        companion object {
+            const val MAX_VISIBLE_DAYS = 100
+        }
 
     }
 

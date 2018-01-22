@@ -47,7 +47,7 @@ class PetStoreViewController(args: Bundle? = null) :
         setToolbar(view.toolbar)
 
         view.toolbarTitle.setText(R.string.pet_store)
-        view.playerGems.sendOnClick(ShowCurrencyConverter)
+        view.playerGems.setOnClickListener { showCurrencyConverter() }
 
         view.petPager.clipToPadding = false
         view.petPager.pageMargin = ViewUtils.dpToPx(16f, view.context).toInt()
@@ -80,18 +80,18 @@ class PetStoreViewController(args: Bundle? = null) :
             }
 
             PET_TOO_EXPENSIVE -> {
-                CurrencyConverterDialogController().showDialog(router, "currency-converter")
+                showCurrencyConverter()
                 Toast.makeText(view.context, "Pet too expensive", Toast.LENGTH_SHORT).show()
-            }
-
-            SHOW_CURRENCY_CONVERTER -> {
-                CurrencyConverterDialogController().showDialog(router, "currency-converter")
             }
 
             SHOW_GEM_STORE -> {
                 showGemStore()
             }
         }
+    }
+
+    private fun showCurrencyConverter() {
+        CurrencyConverterDialogController().showDialog(router, "currency-converter")
     }
 
     private fun showGemStore() {
