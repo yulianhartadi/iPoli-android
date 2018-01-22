@@ -1,10 +1,8 @@
 package mypoli.android
 
-import android.app.Notification
-import android.app.NotificationChannel
+import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.Context
-import android.os.Build
 import android.support.v4.app.NotificationCompat
 import android.widget.Toast
 import com.evernote.android.job.Job
@@ -32,21 +30,11 @@ import java.util.*
  */
 class ReminderNotificationJob : Job(), Injects<ControllerModule> {
 
+    @SuppressLint("NewApi")
     override fun onRunJob(params: Job.Params): Job.Result {
 
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val id = "myPoli"
-        val channelName = "myPoli"
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel(id, channelName, importance)
-            channel.description = "Reminder notification"
-            channel.enableLights(true)
-            channel.enableVibration(true)
-            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-            notificationManager.createNotificationChannel(channel)
-        }
 
         val kap = Kapsule<SimpleModule>()
         val findQuestsToRemindUseCase by kap.required { findQuestToRemindUseCase }
@@ -114,7 +102,7 @@ class ReminderNotificationJob : Job(), Injects<ControllerModule> {
     }
 
     private fun createNotification(title: String, message: String) =
-        NotificationCompat.Builder(context, "myPoli")
+        NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification_small)
             .setContentTitle(title)
             .setContentText(message)

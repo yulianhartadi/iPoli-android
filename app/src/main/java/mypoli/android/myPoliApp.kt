@@ -1,7 +1,12 @@
 package mypoli.android
 
+import android.annotation.SuppressLint
 import android.app.Application
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import com.bluelinelabs.conductor.Router
 import com.crashlytics.android.Crashlytics
@@ -44,6 +49,7 @@ class myPoliApp : Application() {
         ).transitive()
     }
 
+    @SuppressLint("NewApi")
     override fun onCreate() {
         super.onCreate()
         if (LeakCanary.isInAnalyzerProcess(this)) {
@@ -94,25 +100,21 @@ class myPoliApp : Application() {
             currentUncaughtExceptionHandler.uncaughtException(thread, exception)
         })
 
-
-//        val repo = CouchbaseQuestRepository(Database("iPoli", DatabaseConfiguration(this)), UI)
-//        val q = Quest(
-//            name = "Welcome",
-//            color = Color.GREEN,
-//            category = Category("Wellness", Color.GREEN),
-//            plannedSchedule = QuestSchedule(LocalDate.now(), duration = 60, time = Time.at(15, 0)),
-//            reminder = Reminder(Random().nextInt().toString(), "Welcome message", Time.at(20, 0), LocalDate.now())
-//        )
-//
-//        repo.save(q)
-//
-//
-//
-//        val quests = repo.findNextQuestsToRemind(System.currentTimeMillis())
-//        quests.forEach {
-//            Timber.d("AAAA $it")
-//        }
-//        Timber.d("AAAAA $quests")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(
+                Constants.NOTIFICATION_CHANNEL_ID,
+                Constants.NOTIFICATION_CHANNEL_NAME,
+                importance
+            )
+            channel.description = "Reminder notifications"
+            channel.enableLights(true)
+            channel.enableVibration(true)
+            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+            notificationManager.createNotificationChannel(channel)
+        }
 
 //        TinyDancer.create().show(this)
     }
