@@ -126,16 +126,7 @@ class TimerViewController :
 
             TimerViewState.StateType.TIMER_STOPPED -> {
                 handler.removeCallbacksAndMessages(null)
-                view.notImportantGroup.views().forEach {
-                    it.animate().cancel()
-                    it.alpha = 1f
-                }
-                //cancel buttons animations
-
-                val indicator =
-                    view.timerProgressContainer.getChildAt(state.currentProgressIndicator)
-                indicator.animate().cancel()
-                indicator.alpha = 1f
+                cancelAnimations(view, state)
 
                 renderTimerButton(view.startStop, TimerButton.START)
                 view.startStop.sendOnClick(TimerIntent.Start)
@@ -152,6 +143,24 @@ class TimerViewController :
 
         }
     }
+
+    private fun cancelAnimations(view: View, state: TimerViewState) {
+        view.notImportantGroup.views().forEach {
+            it.animate().cancel()
+            it.alpha = 1f
+        }
+
+        view.startStop.animate().cancel()
+        view.startStop.y = originalTimerButtonsY(view)
+
+        val indicator =
+            view.timerProgressContainer.getChildAt(state.currentProgressIndicator)
+        indicator.animate().cancel()
+        indicator.alpha = 1f
+    }
+
+    private fun originalTimerButtonsY(view: View) =
+        view.timerLabel.y + view.timerLabel.height + ViewUtils.dpToPx(32f, view.context)
 
     private fun renderTypeSwitch(view: View, state: TimerViewState) {
         view.timerType.visible = state.showTimerTypeSwitch
@@ -230,10 +239,9 @@ class TimerViewController :
     }
 
     private fun playShowNotImportantViewsAnimation(view: View) {
-        val labelBottom = view.timerLabel.y + view.timerLabel.height
         view.startStop
             .animate()
-            .y(labelBottom + ViewUtils.dpToPx(32f, view.context))
+            .y(originalTimerButtonsY(view))
             .setDuration(shortAnimTime)
             .withEndAction {
                 view.notImportantGroup.views().forEach {
