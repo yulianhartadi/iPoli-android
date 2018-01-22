@@ -26,6 +26,7 @@ import mypoli.android.common.redux.android.ReduxViewController
 import mypoli.android.common.view.*
 import mypoli.android.common.view.changehandler.CircularRevealChangeHandler
 import mypoli.android.quest.calendar.CalendarViewState.DatePickerState.*
+import mypoli.android.quest.calendar.CalendarViewState.StateType.*
 import mypoli.android.quest.calendar.addquest.AddQuestViewController
 import mypoli.android.quest.calendar.dayview.view.DayViewController
 import org.threeten.bp.LocalDate
@@ -65,6 +66,10 @@ class CalendarViewController(args: Bundle? = null) :
         val view = inflater.inflate(R.layout.controller_calendar, container, false)
 
         initAddQuest(view)
+
+        calendarToolbar = addToolbarView(R.layout.view_calendar_toolbar) as ViewGroup
+
+        initDayPicker(view, calendarToolbar)
 
         return view
     }
@@ -194,11 +199,9 @@ class CalendarViewController(args: Bundle? = null) :
 
     override fun onAttach(view: View) {
 //        hideBackButton()
+
+
         super.onAttach(view)
-
-        calendarToolbar = addToolbarView(R.layout.view_calendar_toolbar) as ViewGroup
-
-        initDayPicker(view, calendarToolbar)
 //        send(CalendarIntent.LoadData(LocalDate.now()))
     }
 
@@ -238,70 +241,67 @@ class CalendarViewController(args: Bundle? = null) :
     }
 
     override fun render(state: CalendarViewState, view: View) {
+        val levelProgress = view.levelProgress
 
-//        val calendarState = state.calendarState
-//
-//        val levelProgress = view.levelProgress
-//
-//        calendarToolbar.day.text = calendarState.dayText
-//        calendarToolbar.date.text = calendarState.dateText
-//        view.currentMonth.text = calendarState.monthText
-//
-//        view.addQuest.setOnClickListener {
-//            openAddContainer(calendarState.currentDate)
-//        }
+        calendarToolbar.day.text = state.dayText
+        calendarToolbar.date.text = state.dateText
+        view.currentMonth.text = state.monthText
 
-//        when (state.type) {
-//
-//            LOADING -> levelProgress.visible = false
-//
-//            XP_AND_COINS_CHANGED -> {
-//                levelProgress.visible = true
-//                val animator = ObjectAnimator.ofInt(
-//                    levelProgress,
-//                    "progress",
-//                    levelProgress.progress,
-//                    state.progress
-//                )
-//                animator.duration = shortAnimTime
-//                animator.start()
-//                calendarToolbar.playerGems.text = state.coins.toString()
-//            }
-//
-//            LEVEL_CHANGED -> {
-//                levelProgress.max = state.maxProgress
-//                levelProgress.progress = state.progress
-//                calendarToolbar.playerLevel.text =
-//                    resources!!.getString(R.string.player_level, state.level)
-//            }
-//
-//            DATE_PICKER_CHANGED -> renderDatePicker(state.datePickerState, view, state.currentDate)
-//
-//            DATA_LOADED -> {
-//                removeDayViewPagerAdapter(view)
-//                createDayViewPagerAdapter(state, view)
-//            }
-//
-//            PLAYER_LOADED -> {
-//                levelProgress.visible = true
-//                levelProgress.max = state.maxProgress
-//                levelProgress.progress = state.progress
-//                calendarToolbar.playerLevel.text =
-//                    resources!!.getString(R.string.player_level, state.level)
-//                calendarToolbar.playerGems.text = state.coins.toString()
-//            }
-//
-//            CALENDAR_DATE_CHANGED -> {
-//                markSelectedDate(view, state.currentDate)
-//                removeDayViewPagerAdapter(view)
-//                createDayViewPagerAdapter(state, view)
-//            }
-//
-//            SWIPE_DATE_CHANGED -> {
-//                markSelectedDate(view, state.currentDate)
-//                updateDayViewPagerAdapter(state)
-//            }
-//        }
+        view.addQuest.setOnClickListener {
+            openAddContainer(state.currentDate)
+        }
+
+        when (state.type) {
+
+            LOADING -> levelProgress.visible = false
+
+            XP_AND_COINS_CHANGED -> {
+                levelProgress.visible = true
+                val animator = ObjectAnimator.ofInt(
+                    levelProgress,
+                    "progress",
+                    levelProgress.progress,
+                    state.progress
+                )
+                animator.duration = shortAnimTime
+                animator.start()
+                calendarToolbar.playerGems.text = state.coins.toString()
+            }
+
+            LEVEL_CHANGED -> {
+                levelProgress.max = state.maxProgress
+                levelProgress.progress = state.progress
+                calendarToolbar.playerLevel.text =
+                    resources!!.getString(R.string.player_level, state.level)
+            }
+
+            DATE_PICKER_CHANGED -> renderDatePicker(state.datePickerState, view, state.currentDate)
+
+            DATA_LOADED -> {
+                removeDayViewPagerAdapter(view)
+                createDayViewPagerAdapter(state, view)
+            }
+
+            PLAYER_LOADED -> {
+                levelProgress.visible = true
+                levelProgress.max = state.maxProgress
+                levelProgress.progress = state.progress
+                calendarToolbar.playerLevel.text =
+                    resources!!.getString(R.string.player_level, state.level)
+                calendarToolbar.playerGems.text = state.coins.toString()
+            }
+
+            CALENDAR_DATE_CHANGED -> {
+                markSelectedDate(view, state.currentDate)
+                removeDayViewPagerAdapter(view)
+                createDayViewPagerAdapter(state, view)
+            }
+
+            SWIPE_DATE_CHANGED -> {
+                markSelectedDate(view, state.currentDate)
+                updateDayViewPagerAdapter(state)
+            }
+        }
     }
 
     private fun renderDatePicker(
