@@ -249,6 +249,8 @@ interface PopupUseCaseModule {
     val lowerPetStatsUseCase: LowerPetStatsUseCase
     val findPetUseCase: FindPetUseCase
     val listenForPlayerChangesUseCase: ListenForPlayerChangesUseCase
+    val saveQuestActualDurationUseCase: SaveQuestActualDurationUseCase
+    val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase
 }
 
 class AndroidPopupUseCaseModule : PopupUseCaseModule, Injects<SimpleModule> {
@@ -258,6 +260,8 @@ class AndroidPopupUseCaseModule : PopupUseCaseModule, Injects<SimpleModule> {
     private val questCompleteScheduler by required { questCompleteScheduler }
     private val levelUpScheduler by required { levelUpScheduler }
     private val rateDialogScheduler by required { ratePopupScheduler }
+    private val timerCompleteScheduler by required { timerCompleteScheduler }
+
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)
     override val completeQuestUseCase
@@ -280,6 +284,15 @@ class AndroidPopupUseCaseModule : PopupUseCaseModule, Injects<SimpleModule> {
     override val listenForPlayerChangesUseCase
         get() = ListenForPlayerChangesUseCase(
             playerRepository
+        )
+
+    override val splitDurationForPomodoroTimerUseCase get() = SplitDurationForPomodoroTimerUseCase()
+
+    override val saveQuestActualDurationUseCase
+        get() = SaveQuestActualDurationUseCase(
+            questRepository,
+            splitDurationForPomodoroTimerUseCase,
+            timerCompleteScheduler
         )
 }
 
