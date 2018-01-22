@@ -101,7 +101,7 @@ class TimerViewController :
             TimerViewState.StateType.SHOW_POMODORO -> {
                 renderTimerProgress(view, state)
                 renderTypeSwitch(view, state)
-                ViewUtils.showViews(view.timerProgressContainer, view.removePomodoro, view.addPomodoro)
+                view.pomodoroIndicatorsGroup.visibility = View.VISIBLE
                 renderTimerIndicatorsProgress(view, state)
 
                 view.addPomodoro.sendOnClick(TimerIntent.AddPomodoro)
@@ -114,7 +114,7 @@ class TimerViewController :
                 renderTimerProgress(view, state)
                 renderTypeSwitch(view, state)
                 view.startStop.sendOnClick(TimerIntent.Start)
-                ViewUtils.hideViews(view.timerProgressContainer, view.removePomodoro, view.addPomodoro)
+                view.pomodoroIndicatorsGroup.visibility = View.GONE
             }
 
             TimerViewState.StateType.RESUMED -> {
