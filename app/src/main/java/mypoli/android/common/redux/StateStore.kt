@@ -1,5 +1,6 @@
 package mypoli.android.common.redux
 
+import mypoli.android.common.redux.MiddleWare.Result.Continue
 import mypoli.android.player.Player
 import mypoli.android.quest.calendar.CalendarViewState
 import org.threeten.bp.LocalDate
@@ -101,9 +102,7 @@ class StateStore<out S : State>(
         fun changeIfNew(oldState: S, newState: S) {
             val old = transformer.transform(oldState)
             val new = transformer.transform(newState)
-            if (old != new) {
-                onStateChanged(new)
-            }
+            if (old != new) onStateChanged(new)
         }
 
         fun onStateChanged(newState: T)
@@ -121,18 +120,15 @@ class StateStore<out S : State>(
     private val middleWare = CompositeMiddleware<S>(middleware)
 
     override fun dispatch(action: Action) {
-
         val res = middleWare.execute(state, this, action)
-        if (res == MiddleWare.Result.Continue) {
-            changeState(action)
-        }
+        if (res == Continue) changeState(action)
     }
 
     private fun changeState(action: Action) {
         val newState = reducer.reduce(state, action)
         val oldState = state
         state = newState
-        notifyStateChanged(oldState, state)
+        notifyStateChanged(oldState, newState)
     }
 
     private fun notifyStateChanged(oldState: S, newState: S) {
