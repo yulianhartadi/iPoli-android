@@ -69,7 +69,7 @@ class TimerPresenter(
                     addTimerToQuestUseCase.execute(
                         AddTimerToQuestUseCase.Params(
                             questId = state.quest.id,
-                            isPomodoro = state.timerType == TimerViewState.TimerType.POMODOROx
+                            isPomodoro = state.timerType == TimerViewState.TimerType.POMODORO
                         )
                     )
                 }
