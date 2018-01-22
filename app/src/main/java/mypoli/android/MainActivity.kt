@@ -135,4 +135,8 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
                 or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
             )
     }
+
+    companion object {
+        const val ACTION_SHOW_TIMER = "mypoli.android.intent.action.SHOW_TIMER"
+    }
 }

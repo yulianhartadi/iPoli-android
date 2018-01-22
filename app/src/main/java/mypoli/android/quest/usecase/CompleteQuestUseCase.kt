@@ -1,7 +1,6 @@
 package mypoli.android.quest.usecase
 
 import mypoli.android.Constants
-import mypoli.android.quest.job.ReminderScheduler
 import mypoli.android.common.SimpleReward
 import mypoli.android.common.UseCase
 import mypoli.android.common.datetime.Time
@@ -9,8 +8,9 @@ import mypoli.android.pet.Food
 import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.player.usecase.RewardPlayerUseCase
 import mypoli.android.quest.Quest
-import mypoli.android.quest.job.QuestCompleteScheduler
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.quest.job.QuestCompleteScheduler
+import mypoli.android.quest.job.ReminderScheduler
 import mypoli.android.rate.RatePopupScheduler
 import org.threeten.bp.LocalDate
 import java.util.*
