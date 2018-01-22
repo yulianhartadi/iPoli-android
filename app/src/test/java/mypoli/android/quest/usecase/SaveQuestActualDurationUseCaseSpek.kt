@@ -41,7 +41,8 @@ class SaveQuestActualDurationUseCaseSpek : Spek({
             }
             return SaveQuestActualDurationUseCase(
                 questRepoMock,
-                SplitDurationForPomodoroTimerUseCase()
+                SplitDurationForPomodoroTimerUseCase(),
+                mock()
             )
                 .execute(SaveQuestActualDurationUseCase.Params(quest.id, isPomodoro, time))
         }
