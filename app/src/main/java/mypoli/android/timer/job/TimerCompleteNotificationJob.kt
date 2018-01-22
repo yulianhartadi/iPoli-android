@@ -58,13 +58,11 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
                 .setLargeIcon(BitmapFactory.decodeResource(context.resources, petAvatar.headImage))
 
         val (name, message) = if (quest!!.actualStart != null) {
-
             addMarkDoneAction(questId, notificationBuilder)
             Pair(
                 "Quest complete",
                 "${quest.name} is all done!"
             )
-
         } else {
             val timeRange = quest.pomodoroTimeRanges.last()
             if (timeRange.type == TimeRange.Type.WORK) {

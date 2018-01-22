@@ -31,7 +31,12 @@ class Duration<out T : TimeUnit>(value: Number, private val timeUnitFactory: () 
 
     val intValue = longValue.toInt()
 
-    val millisValue = asMilliseconds.longValue
+    val millisValue
+        get() = if (timeUnitFactory() is Millisecond) {
+            longValue
+        } else {
+            asMilliseconds.longValue
+        }
 
     val asDays: Duration<Day>
         get() = convert()
