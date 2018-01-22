@@ -111,12 +111,10 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
         val intent = Intent(context, CompleteTimeRangeReceiver::class.java)
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId)
 
-        val pi = getBroadcastPendingIntent(context, intent, Random().nextInt())
-
         notificationBuilder.addAction(
             R.drawable.ic_target_black_24dp,
             "Do it",
-            pi
+            getBroadcastPendingIntent(intent)
         )
     }
 
@@ -127,16 +125,14 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
         val intent = Intent(context, CompleteTimeRangeReceiver::class.java)
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId)
 
-        val pi = getBroadcastPendingIntent(context, intent, Random().nextInt())
-
         notificationBuilder.addAction(
             R.drawable.ic_flower_black_24dp,
             "Take Break",
-            pi
+            getBroadcastPendingIntent(intent)
         )
     }
 
-    private fun createContentIntent(questId: String?): PendingIntent {
+    private fun createContentIntent(questId: String): PendingIntent {
         val contentIntent = Intent(context, MainActivity::class.java)
         contentIntent.action = MainActivity.ACTION_SHOW_TIMER
         contentIntent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId)
@@ -156,23 +152,19 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
         val intent = Intent(context, CompleteQuestReceiver::class.java)
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId)
 
-        val pi = getBroadcastPendingIntent(context, intent, Random().nextInt())
-
         notificationBuilder.addAction(
             R.drawable.ic_done_black_24dp,
             "Mark Done",
-            pi
+            getBroadcastPendingIntent(intent)
         )
     }
 
     private fun getBroadcastPendingIntent(
-        context: Context,
-        intent: Intent,
-        requestCode: Int
+        intent: Intent
     ): PendingIntent =
         PendingIntent.getBroadcast(
             context,
-            requestCode,
+            Random().nextInt(),
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT
         )
