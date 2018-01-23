@@ -2,6 +2,7 @@ package mypoli.android.pet.store
 
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
+import mypoli.android.common.redux.Action
 import mypoli.android.pet.PetAvatar
 import mypoli.android.player.Player
 
@@ -15,6 +16,10 @@ sealed class PetStoreIntent : Intent {
     data class BuyPet(val pet: PetAvatar) : PetStoreIntent()
     data class UnlockPet(val pet: PetAvatar) : PetStoreIntent()
     data class ChangePet(val pet: PetAvatar) : PetStoreIntent()
+}
+
+sealed class PetStoreAction : Action {
+
 }
 
 data class PetStoreViewState(
