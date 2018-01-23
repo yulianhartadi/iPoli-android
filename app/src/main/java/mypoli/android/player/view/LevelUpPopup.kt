@@ -52,7 +52,7 @@ class LevelUpPresenter(
         when (intent) {
             is LevelUpIntent.LoadData -> {
                 launch {
-                    listenForPlayerChangesUseCase.execute(Unit).consumeEach {
+                    listenForPlayerChangesUseCase.listen(Unit).consumeEach {
                         sendChannel.send(LevelUpIntent.ChangePlayer(it))
                     }
                 }

@@ -37,7 +37,7 @@ class CalendarPresenter(
         when (intent) {
             is CalendarIntent.LoadData -> {
                 launch {
-                    listenForPlayerChangesUseCase.execute(Unit).consumeEach {
+                    listenForPlayerChangesUseCase.listen(Unit).consumeEach {
                         sendChannel.send(CalendarIntent.ChangePlayer(it))
                     }
                 }

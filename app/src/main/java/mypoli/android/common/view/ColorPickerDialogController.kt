@@ -80,7 +80,7 @@ class ColorPickerPresenter(
         when (intent) {
             is ColorPickerIntent.LoadData -> {
                 launch {
-                    listenForPlayerChangesUseCase.execute(Unit).consumeEach {
+                    listenForPlayerChangesUseCase.listen(Unit).consumeEach {
                         sendChannel.send(ColorPickerIntent.ChangePlayer(it))
                     }
                 }

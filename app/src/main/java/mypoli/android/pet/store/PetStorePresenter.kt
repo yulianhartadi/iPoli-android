@@ -31,7 +31,7 @@ class PetStorePresenter(
         when (intent) {
             is PetStoreIntent.LoadData -> {
                 launch {
-                    listenForPlayerChangesUseCase.execute(Unit).consumeEach {
+                    listenForPlayerChangesUseCase.listen(Unit).consumeEach {
                         sendChannel.send(ChangePlayer(it))
                     }
                 }

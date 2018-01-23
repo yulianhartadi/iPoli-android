@@ -32,7 +32,7 @@ class GemStorePresenter(
         when (intent) {
             is GemStoreIntent.LoadData -> {
                 launch {
-                    listenForPlayerChangesUseCase.execute(Unit).consumeEach {
+                    listenForPlayerChangesUseCase.listen(Unit).consumeEach {
                         sendChannel.send(GemStoreIntent.ChangePlayer(it))
                     }
                 }
