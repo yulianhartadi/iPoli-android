@@ -118,7 +118,7 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
         return execute(params).autoStop()
     }
 
-    private fun stopChannels() {
+    private fun stopAutoChannels() {
         autoStopChannels
             .filterNot { it.isClosedForReceive }
             .forEach { it.cancel() }
@@ -126,7 +126,7 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
     }
 
     override fun onDetachView() {
-        stopChannels()
+        stopAutoChannels()
         if (!sendChannel.isClosedForSend) {
             sendChannel.close()
         }
@@ -135,7 +135,7 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
     abstract fun reduceState(intent: I, state: VS): VS
 
     override fun onDestroy() {
-        stopChannels()
+        stopAutoChannels()
         if (!sendChannel.isClosedForSend) {
             sendChannel.close()
         }
