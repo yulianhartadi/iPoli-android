@@ -6,10 +6,7 @@ import com.amplitude.api.Amplitude
 import com.crashlytics.android.Crashlytics
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.channels.SendChannel
-import kotlinx.coroutines.experimental.channels.actor
-import kotlinx.coroutines.experimental.channels.consumeEach
+import kotlinx.coroutines.experimental.channels.*
 import kotlinx.coroutines.experimental.launch
 import org.json.JSONObject
 import timber.log.Timber
@@ -46,6 +43,8 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
     override fun intentChannel() = intentChannel
 
     protected lateinit var sendChannel: SendChannel<I>
+
+    private val receiveChannels = mutableListOf<ReceiveChannel<*>>()
 
     private fun stateReduceActor(view: V) =
         actor<I>(coroutineContext + CommonPool, Channel.CONFLATED) {
@@ -109,7 +108,21 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
         }
     }
 
+    protected fun <D> addReceiveChannel(channel: ReceiveChannel<D>): ReceiveChannel<D> {
+        receiveChannels += channel
+        return channel
+    }
+
+    private fun stopReceiveChannels() {
+        for (c in receiveChannels) {
+            if (!c.isClosedForReceive) {
+                c.cancel()
+            }
+        }
+    }
+
     override fun onDetachView() {
+        stopReceiveChannels()
         if (!sendChannel.isClosedForSend) {
             sendChannel.close()
         }
@@ -118,6 +131,7 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
     abstract fun reduceState(intent: I, state: VS): VS
 
     override fun onDestroy() {
+        stopReceiveChannels()
         if (!sendChannel.isClosedForSend) {
             sendChannel.close()
         }

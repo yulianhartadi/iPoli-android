@@ -32,20 +32,28 @@ class TimerPresenter(
     private val cancelTimerUseCase: CancelTimerUseCase,
     private val addPomodoroUseCase: AddPomodoroUseCase,
     private val removePomodoroUseCase: RemovePomodoroUseCase,
-    coroutineContext: CoroutineContext
+    private val coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<TimerViewState>, TimerViewState, TimerIntent>(
     TimerViewState(LOADING),
     coroutineContext
 ) {
+
+//    private var questChangeChannel: ReceiveChannel<Quest>? = null
+
     override fun reduceState(intent: TimerIntent, state: TimerViewState) =
 
         when (intent) {
             is TimerIntent.LoadData -> {
-                launch {
-                    listenForQuestChangeUseCase.execute(ListenForQuestChangeUseCase.Params(intent.questId))
-                        .consumeEach {
-                            sendChannel.send(TimerIntent.QuestChanged(it))
-                        }
+
+                launch(coroutineContext) {
+
+                    addReceiveChannel(
+                        listenForQuestChangeUseCase.execute(
+                            ListenForQuestChangeUseCase.Params(intent.questId)
+                        )
+                    ).consumeEach {
+                        sendChannel.send(TimerIntent.QuestChanged(it))
+                    }
                 }
                 state.copy(
                     type = LOADING
