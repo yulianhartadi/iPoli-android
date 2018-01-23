@@ -124,7 +124,7 @@ class AddTimerToQuestUseCaseSpek : Spek({
                 )
             )
             result.otherTimerStopped.`should be true`()
-            result.quest.hasCountDownTimer.`should not be true`()
+            result.quest.hasCountDownTimer.`should be true`()
         }
 
         it("should stop other pomodoro timer") {
