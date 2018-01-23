@@ -42,7 +42,7 @@ class AddTimerToQuestUseCase(
         time: Instant,
         startedQuest: Quest?
     ): Result {
-        require(quest!!.pomodoroTimeRanges.isEmpty())
+        require(!quest!!.hasPomodoroTimer)
 
         timerCompleteScheduler.schedule(
             questId = quest.id,

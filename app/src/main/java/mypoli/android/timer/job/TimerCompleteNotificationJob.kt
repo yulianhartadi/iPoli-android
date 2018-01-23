@@ -57,7 +57,7 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setLargeIcon(BitmapFactory.decodeResource(context.resources, petAvatar.headImage))
 
-        val (name, message) = if (quest!!.actualStart != null) {
+        val (name, message) = if (quest!!.hasCountDownTimer) {
             addMarkDoneAction(questId, notificationBuilder)
             Pair(
                 "Quest complete",
