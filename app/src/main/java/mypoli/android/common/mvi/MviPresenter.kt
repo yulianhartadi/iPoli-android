@@ -45,7 +45,7 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
 
     protected lateinit var sendChannel: SendChannel<I>
 
-    private val receiveChannels = mutableSetOf<ReceiveChannel<*>>()
+    private val autoStopChannels = mutableSetOf<ReceiveChannel<*>>()
 
     private fun stateReduceActor(view: V) =
         actor<I>(coroutineContext + CommonPool, Channel.CONFLATED) {
@@ -110,7 +110,7 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
     }
 
     private fun <D> ReceiveChannel<D>.autoStop(): ReceiveChannel<D> {
-        receiveChannels += this
+        autoStopChannels += this
         return this
     }
 
@@ -118,16 +118,15 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
         return execute(params).autoStop()
     }
 
-    private fun stopReceiveChannels() {
-        for (c in receiveChannels) {
-            if (!c.isClosedForReceive) {
-                c.cancel()
-            }
-        }
+    private fun stopChannels() {
+        autoStopChannels
+            .filterNot { it.isClosedForReceive }
+            .forEach { it.cancel() }
+        autoStopChannels.clear()
     }
 
     override fun onDetachView() {
-        stopReceiveChannels()
+        stopChannels()
         if (!sendChannel.isClosedForSend) {
             sendChannel.close()
         }
@@ -136,7 +135,7 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
     abstract fun reduceState(intent: I, state: VS): VS
 
     override fun onDestroy() {
-        stopReceiveChannels()
+        stopChannels()
         if (!sendChannel.isClosedForSend) {
             sendChannel.close()
         }
