@@ -55,6 +55,10 @@ class TimerViewController :
 
         view.complete.setImageDrawable(icon)
 
+        view.complete.post {
+            view.complete.visibility = View.GONE
+        }
+
         val minusIcon = IconicsDrawable(view.context)
             .icon(Ionicons.Icon.ion_minus)
             .color(attr(R.attr.colorAccent))
