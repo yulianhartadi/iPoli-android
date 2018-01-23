@@ -66,15 +66,15 @@ class AddPomodoroUseCaseSpek : Spek({
             val result = executeUseCase(
                 simpleQuest.copy(
                     duration = 10,
-                    pomodoroTimeRanges = listOf(
+                    timeRanges = listOf(
                         TimeRange(
-                            TimeRange.Type.WORK,
+                            TimeRange.Type.POMODORO_WORK,
                             1.pomodoros(),
                             now,
                             now.plusMinutes(1.pomodoros().toLong())
                         ),
                         TimeRange(
-                            TimeRange.Type.BREAK,
+                            TimeRange.Type.POMODORO_SHORT_BREAK,
                             1.shortBreaks(),
                             now,
                             now.plusMinutes(1.shortBreaks().toLong())
@@ -89,7 +89,7 @@ class AddPomodoroUseCaseSpek : Spek({
             val result = executeUseCase(
                 simpleQuest.copy(
                     duration = 10,
-                    pomodoroTimeRanges = listOf()
+                    timeRanges = listOf()
                 )
             )
             result.duration.`should be equal to`(1.pomodoros() + 1.shortBreaks() + 10)
@@ -102,7 +102,7 @@ class AddPomodoroUseCaseSpek : Spek({
                 if (i % 2 == 1) {
                     timeRanges.add(
                         TimeRange(
-                            TimeRange.Type.WORK,
+                            TimeRange.Type.POMODORO_WORK,
                             1.pomodoros(),
                             now,
                             now.plusMinutes(1.pomodoros().toLong())
@@ -111,7 +111,7 @@ class AddPomodoroUseCaseSpek : Spek({
                 } else {
                     timeRanges.add(
                         TimeRange(
-                            TimeRange.Type.BREAK,
+                            TimeRange.Type.POMODORO_SHORT_BREAK,
                             1.shortBreaks(),
                             now,
                             now.plusMinutes(1.shortBreaks().toLong())
@@ -123,7 +123,7 @@ class AddPomodoroUseCaseSpek : Spek({
             val result = executeUseCase(
                 simpleQuest.copy(
                     duration = 3.pomodoros() + 3.shortBreaks(),
-                    pomodoroTimeRanges = timeRanges
+                    timeRanges = timeRanges
                 )
             )
             result.duration.`should be equal to`(4.pomodoros() + 3.shortBreaks() + 1.longBreaks())

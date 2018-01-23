@@ -49,9 +49,9 @@ class AddTimerToQuestUseCase(
             after = Constants.DEFAULT_POMODORO_WORK_DURATION.minutes.asSeconds
         )
         val newQuest = quest.copy(
-            pomodoroTimeRanges = quest.pomodoroTimeRanges.toMutableList() +
+            timeRanges = quest.timeRanges.toMutableList() +
                 TimeRange(
-                    type = TimeRange.Type.WORK,
+                    type = TimeRange.Type.POMODORO_WORK,
                     duration = Constants.DEFAULT_POMODORO_WORK_DURATION,
                     start = time
                 )
@@ -64,13 +64,23 @@ class AddTimerToQuestUseCase(
         time: Instant,
         startedQuest: Quest?
     ): Result {
-        require(quest!!.actualStart == null)
+        require(!quest!!.hasCountDownTimer)
         timerCompleteScheduler.schedule(
             questId = quest.id,
             after = quest.duration.minutes.asSeconds
         )
         return Result(
-            questRepository.save(quest.copy(actualStart = time)),
+            questRepository.save(
+                quest.copy(
+                    timeRanges = listOf(
+                        TimeRange(
+                            TimeRange.Type.COUNTDOWN,
+                            quest.duration,
+                            time
+                        )
+                    )
+                )
+            ),
             startedQuest != null
         )
     }

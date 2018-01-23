@@ -110,8 +110,7 @@ data class Quest(
     val scheduledDate: LocalDate,
     val duration: Int,
     val reminder: Reminder? = null,
-    val actualStart: Instant? = null,
-    val pomodoroTimeRanges: List<TimeRange> = listOf(),
+    val timeRanges: List<TimeRange> = listOf(),
     override val createdAt: Instant = Instant.now(),
     override val updatedAt: Instant = Instant.now(),
     val completedAtDate: LocalDate? = null,
@@ -132,20 +131,25 @@ data class Quest(
         get() = startTime?.let { Time.of(it.toMinuteOfDay() + duration) }
     val isScheduled = startTime != null
 
+    val actualStart: Instant?
+        get() =
+            if (hasTimer) timeRanges.first().start else null
+
+
     val actualDuration: Duration<Second>
         get() {
 
             if (hasCountDownTimer) {
+                val timeRange = timeRanges.first()
                 return if (isCompleted) {
-                    completedAt!! - actualStart!!
+                    timeRange.actualDuration()
                 } else {
-                    Instant.now() - actualStart!!
-                }.milliseconds.asSeconds
+                    (Instant.now() - timeRange.start!!).milliseconds.asSeconds
+                }
             }
 
             if (hasPomodoroTimer) {
-                return pomodoroTimeRanges.sumByLong { it.actualDuration() }
-                    .milliseconds.asSeconds
+                return timeRanges.sumByLong { it.actualDuration().longValue }.seconds
             }
             return duration.minutes.asSeconds
         }
@@ -153,18 +157,20 @@ data class Quest(
     val hasTimer: Boolean
         get() = hasCountDownTimer || hasPomodoroTimer
 
-    val hasCountDownTimer : Boolean
-        get() = actualStart != null
+    val hasCountDownTimer: Boolean
+        get() = timeRanges.firstOrNull()?.type == TimeRange.Type.COUNTDOWN
 
-    val hasPomodoroTimer : Boolean
-        get() = pomodoroTimeRanges.isNotEmpty()
+    val hasPomodoroTimer: Boolean
+        get() = timeRanges.firstOrNull()?.type == TimeRange.Type.POMODORO_WORK
 
     val isStarted: Boolean
         get() = !isCompleted &&
             (hasCountDownTimer ||
-                (hasPomodoroTimer && pomodoroTimeRanges.last().end == null))
+                (hasPomodoroTimer && timeRanges.last().end == null))
 
-    fun hasCompletedAllTimeRanges() = pomodoroTimeRanges.sumBy { it.duration } >= duration
+    fun hasCompletedAllTimeRanges() = timeRanges.sumBy { it.duration } >= duration
+
+
 }
 
 data class TimeRange(
@@ -174,13 +180,16 @@ data class TimeRange(
     val end: Instant? = null
 ) {
     enum class Type {
-        WORK, BREAK
+        COUNTDOWN,
+        POMODORO_WORK,
+        POMODORO_SHORT_BREAK,
+        POMODORO_LONG_BREAK
     }
 
-    fun actualDuration(): Long {
+    fun actualDuration(): Duration<Second> {
         if (start != null && end != null) {
-            return (end - start).toEpochMilli()
+            return (end - start).toEpochMilli().milliseconds.asSeconds
         }
-        return duration.minutes.millisValue
+        return duration.minutes.asSeconds
     }
 }

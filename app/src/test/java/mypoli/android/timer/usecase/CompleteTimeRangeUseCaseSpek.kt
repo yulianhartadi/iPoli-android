@@ -64,15 +64,15 @@ class CompleteTimeRangeUseCaseSpek : Spek({
         it("should end the last time range") {
             val quest = simpleQuest.copy(
                 duration = 1.pomodoros() + 1.shortBreaks(),
-                pomodoroTimeRanges = listOf(
+                timeRanges = listOf(
                     TimeRange(
-                        TimeRange.Type.WORK,
+                        TimeRange.Type.POMODORO_WORK,
                         Constants.DEFAULT_POMODORO_WORK_DURATION,
                         now,
                         now
                     ),
                     TimeRange(
-                        TimeRange.Type.BREAK,
+                        TimeRange.Type.POMODORO_SHORT_BREAK,
                         Constants.DEFAULT_POMODORO_BREAK_DURATION,
                         now,
                         null
@@ -80,22 +80,22 @@ class CompleteTimeRangeUseCaseSpek : Spek({
                 )
             )
             val result = executeUseCase(quest)
-            result.pomodoroTimeRanges.size `should be equal to` (2)
-            result.pomodoroTimeRanges.last().end.`should not be null`()
+            result.timeRanges.size `should be equal to` (2)
+            result.timeRanges.last().end.`should not be null`()
         }
 
         it("should end the last time range with smaller duration") {
             val quest = simpleQuest.copy(
                 duration = 10,
-                pomodoroTimeRanges = listOf(
+                timeRanges = listOf(
                     TimeRange(
-                        TimeRange.Type.WORK,
+                        TimeRange.Type.POMODORO_WORK,
                         Constants.DEFAULT_POMODORO_WORK_DURATION,
                         now,
                         now
                     ),
                     TimeRange(
-                        TimeRange.Type.BREAK,
+                        TimeRange.Type.POMODORO_SHORT_BREAK,
                         Constants.DEFAULT_POMODORO_BREAK_DURATION,
                         now,
                         null
@@ -103,22 +103,22 @@ class CompleteTimeRangeUseCaseSpek : Spek({
                 )
             )
             val result = executeUseCase(quest)
-            result.pomodoroTimeRanges.size `should be equal to` (2)
-            result.pomodoroTimeRanges.last().end.`should not be null`()
+            result.timeRanges.size `should be equal to` (2)
+            result.timeRanges.last().end.`should not be null`()
         }
 
         it("should end the last and add new time range") {
             val quest = simpleQuest.copy(
                 duration = 2.pomodoros() + 1.shortBreaks(),
-                pomodoroTimeRanges = listOf(
+                timeRanges = listOf(
                     TimeRange(
-                        TimeRange.Type.WORK,
+                        TimeRange.Type.POMODORO_WORK,
                         Constants.DEFAULT_POMODORO_WORK_DURATION,
                         now,
                         now
                     ),
                     TimeRange(
-                        TimeRange.Type.BREAK,
+                        TimeRange.Type.POMODORO_SHORT_BREAK,
                         Constants.DEFAULT_POMODORO_BREAK_DURATION,
                         now,
                         null
@@ -126,9 +126,9 @@ class CompleteTimeRangeUseCaseSpek : Spek({
                 )
             )
             val result = executeUseCase(quest)
-            result.pomodoroTimeRanges.size `should be equal to` (3)
-            result.pomodoroTimeRanges[1].end.`should not be null`()
-            val range = result.pomodoroTimeRanges.last()
+            result.timeRanges.size `should be equal to` (3)
+            result.timeRanges[1].end.`should not be null`()
+            val range = result.timeRanges.last()
             range.start.`should not be null`()
             range.end.`should be null`()
         }
@@ -139,7 +139,13 @@ class CompleteTimeRangeUseCaseSpek : Spek({
 
             executeUseCase(
                 simpleQuest.copy(
-                    actualStart = now
+                    timeRanges = listOf(
+                        TimeRange(
+                            TimeRange.Type.COUNTDOWN,
+                            30,
+                            now
+                        )
+                    )
                 ),
                 completeQuestUseCase = completeQuestUseCaseMock
             )
@@ -154,9 +160,9 @@ class CompleteTimeRangeUseCaseSpek : Spek({
             executeUseCase(
                 simpleQuest.copy(
                     duration = 1.pomodoros() + 1.shortBreaks(),
-                    pomodoroTimeRanges = listOf(
-                        TimeRange(TimeRange.Type.WORK, 1.pomodoros(), now, now),
-                        TimeRange(TimeRange.Type.BREAK, 1.shortBreaks(), now, null)
+                    timeRanges = listOf(
+                        TimeRange(TimeRange.Type.POMODORO_WORK, 1.pomodoros(), now, now),
+                        TimeRange(TimeRange.Type.POMODORO_SHORT_BREAK, 1.shortBreaks(), now, null)
                     )
                 ),
                 completeQuestUseCase = completeQuestUseCaseMock
@@ -172,9 +178,9 @@ class CompleteTimeRangeUseCaseSpek : Spek({
             executeUseCase(
                 simpleQuest.copy(
                     duration = 1.pomodoros(),
-                    pomodoroTimeRanges = listOf(
-                        TimeRange(TimeRange.Type.WORK, 1.pomodoros(), now, now),
-                        TimeRange(TimeRange.Type.BREAK, 1.shortBreaks(), now, null)
+                    timeRanges = listOf(
+                        TimeRange(TimeRange.Type.POMODORO_WORK, 1.pomodoros(), now, now),
+                        TimeRange(TimeRange.Type.POMODORO_SHORT_BREAK, 1.shortBreaks(), now, null)
                     )
                 ),
                 completeQuestUseCase = completeQuestUseCaseMock

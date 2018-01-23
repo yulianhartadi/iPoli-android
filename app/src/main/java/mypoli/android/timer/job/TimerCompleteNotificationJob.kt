@@ -64,8 +64,8 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
                 "${quest.name} is all done!"
             )
         } else {
-            val timeRange = quest.pomodoroTimeRanges.last()
-            if (timeRange.type == TimeRange.Type.WORK) {
+            val timeRange = quest.timeRanges.last()
+            if (timeRange.type == TimeRange.Type.POMODORO_WORK) {
                 addStartBreakAction(questId, notificationBuilder)
                 Pair(
                     "Pomodoro complete",

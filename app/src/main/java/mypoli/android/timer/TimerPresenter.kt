@@ -78,7 +78,7 @@ class TimerPresenter(
 
                 val currentProgressIndicator =
                     if (state.timerType == TimerViewState.TimerType.POMODORO)
-                        findCurrentProgressIndicator(quest.pomodoroTimeRanges)
+                        findCurrentProgressIndicator(quest.timeRanges)
                     else state.currentProgressIndicator
 
                 state.copy(
@@ -182,7 +182,7 @@ class TimerPresenter(
             SplitDurationForPomodoroTimerUseCase.Params(quest)
         )
         val timeRanges = if (result == DurationNotSplit) {
-            quest.pomodoroTimeRanges
+            quest.timeRanges
         } else {
             (result as DurationSplit).timeRanges
         }
@@ -221,7 +221,7 @@ class TimerPresenter(
         quest: Quest,
         state: TimerViewState
     ): TimerViewState {
-        val questPomodoroTimeRanges = quest.pomodoroTimeRanges
+        val questPomodoroTimeRanges = quest.timeRanges
 
         if (quest.isCompleted) {
             return state.copy(
@@ -315,29 +315,30 @@ class TimerPresenter(
 
     private fun createPomodoroProgress(timeRange: TimeRange): PomodoroProgress {
         return when (timeRange.type) {
-            TimeRange.Type.BREAK -> {
-                if (timeRange.duration == Constants.DEFAULT_POMODORO_BREAK_DURATION) {
-                    if (timeRange.end != null) {
-                        PomodoroProgress.COMPLETE_SHORT_BREAK
-                    } else {
-                        PomodoroProgress.INCOMPLETE_SHORT_BREAK
-                    }
+            TimeRange.Type.POMODORO_SHORT_BREAK -> {
+                if (timeRange.end != null) {
+                    PomodoroProgress.COMPLETE_SHORT_BREAK
                 } else {
-                    if (timeRange.end != null) {
-                        PomodoroProgress.COMPLETE_LONG_BREAK
-                    } else {
-                        PomodoroProgress.INCOMPLETE_LONG_BREAK
-                    }
+                    PomodoroProgress.INCOMPLETE_SHORT_BREAK
                 }
             }
 
-            TimeRange.Type.WORK -> {
+            TimeRange.Type.POMODORO_LONG_BREAK -> {
+                if (timeRange.end != null) {
+                    PomodoroProgress.COMPLETE_LONG_BREAK
+                } else {
+                    PomodoroProgress.INCOMPLETE_LONG_BREAK
+                }
+            }
+
+            TimeRange.Type.POMODORO_WORK -> {
                 if (timeRange.end != null) {
                     PomodoroProgress.COMPLETE_WORK
                 } else {
                     PomodoroProgress.INCOMPLETE_WORK
                 }
             }
+            else -> PomodoroProgress.COMPLETE_WORK
         }
     }
 

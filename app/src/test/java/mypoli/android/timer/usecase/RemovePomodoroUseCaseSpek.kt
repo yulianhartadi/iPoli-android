@@ -78,7 +78,7 @@ class RemovePomodoroUseCaseSpek : Spek({
                 if (i % 2 == 1) {
                     timeRanges.add(
                         TimeRange(
-                            TimeRange.Type.WORK,
+                            TimeRange.Type.POMODORO_WORK,
                             1.pomodoros(),
                             now,
                             now.plusMinutes(1.pomodoros().toLong())
@@ -87,7 +87,7 @@ class RemovePomodoroUseCaseSpek : Spek({
                 } else {
                     timeRanges.add(
                         TimeRange(
-                            TimeRange.Type.BREAK,
+                            TimeRange.Type.POMODORO_SHORT_BREAK,
                             1.shortBreaks(),
                             now,
                             now.plusMinutes(1.shortBreaks().toLong())
@@ -99,7 +99,7 @@ class RemovePomodoroUseCaseSpek : Spek({
             val result = executeUseCase(
                 simpleQuest.copy(
                     duration = 2.pomodoros() + 2.shortBreaks(),
-                    pomodoroTimeRanges = timeRanges
+                    timeRanges = timeRanges
                 )
             )
             result.duration.`should be equal to`(1.pomodoros() + 1.shortBreaks())
@@ -112,7 +112,7 @@ class RemovePomodoroUseCaseSpek : Spek({
                 if (i % 2 == 1) {
                     timeRanges.add(
                         TimeRange(
-                            TimeRange.Type.WORK,
+                            TimeRange.Type.POMODORO_WORK,
                             1.pomodoros(),
                             now,
                             now.plusMinutes(1.pomodoros().toLong())
@@ -121,7 +121,7 @@ class RemovePomodoroUseCaseSpek : Spek({
                 } else {
                     timeRanges.add(
                         TimeRange(
-                            TimeRange.Type.BREAK,
+                            TimeRange.Type.POMODORO_SHORT_BREAK,
                             1.shortBreaks(),
                             now,
                             now.plusMinutes(1.shortBreaks().toLong())
@@ -133,7 +133,7 @@ class RemovePomodoroUseCaseSpek : Spek({
             val result = executeUseCase(
                 simpleQuest.copy(
                     duration = 4.pomodoros() + 3.shortBreaks() + 1.longBreaks(),
-                    pomodoroTimeRanges = timeRanges
+                    timeRanges = timeRanges
                 )
             )
             result.duration.`should be equal to`(3.pomodoros() + 3.shortBreaks())
@@ -145,21 +145,21 @@ class RemovePomodoroUseCaseSpek : Spek({
             val result = executeUseCase(
                 simpleQuest.copy(
                     duration = duration,
-                    pomodoroTimeRanges = listOf(
+                    timeRanges = listOf(
                         TimeRange(
-                            TimeRange.Type.WORK,
+                            TimeRange.Type.POMODORO_WORK,
                             1.pomodoros(),
                             now,
                             now.plusMinutes(1.pomodoros().toLong())
                         ),
                         TimeRange(
-                            TimeRange.Type.BREAK,
+                            TimeRange.Type.POMODORO_SHORT_BREAK,
                             1.shortBreaks(),
                             now,
                             now.plusMinutes(1.shortBreaks().toLong())
                         ),
                         TimeRange(
-                            TimeRange.Type.WORK,
+                            TimeRange.Type.POMODORO_WORK,
                             1.pomodoros(),
                             now
                         )
@@ -173,7 +173,7 @@ class RemovePomodoroUseCaseSpek : Spek({
             val result = executeUseCase(
                 simpleQuest.copy(
                     duration = 3.pomodoros() + 3.shortBreaks(),
-                    pomodoroTimeRanges = listOf()
+                    timeRanges = listOf()
                 )
             )
             result.duration.`should be equal to`(2.pomodoros() + 2.shortBreaks())

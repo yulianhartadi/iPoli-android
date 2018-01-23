@@ -22,24 +22,33 @@ open class SplitDurationForPomodoroTimerUseCase :
             return Result.DurationNotSplit
         }
 
-        val ranges = quest.pomodoroTimeRanges.toMutableList()
+        val ranges = quest.timeRanges.toMutableList()
         var scheduledDuration = ranges.sumBy { it.duration }
         while (scheduledDuration < duration) {
-            val range = if (ranges.isEmpty() || ranges.last().type == TimeRange.Type.BREAK) {
-                val workDuration =
-                    Math.min(Constants.DEFAULT_POMODORO_WORK_DURATION, duration - scheduledDuration)
-                TimeRange(TimeRange.Type.WORK, workDuration)
-            } else {
-                val breakDuration = if ((ranges.size + 1) % 8 == 0) {
-                    Math.min(
-                        Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION,
-                        duration - scheduledDuration
-                    )
+            val range =
+                if (ranges.isEmpty() || ranges.last().type == TimeRange.Type.POMODORO_SHORT_BREAK
+                    || ranges.last().type == TimeRange.Type.POMODORO_LONG_BREAK) {
+                    val workDuration =
+                        Math.min(
+                            Constants.DEFAULT_POMODORO_WORK_DURATION,
+                            duration - scheduledDuration
+                        )
+                    TimeRange(TimeRange.Type.POMODORO_WORK, workDuration)
                 } else {
-                    Constants.DEFAULT_POMODORO_BREAK_DURATION
+                    val (breakType, breakDuration) = if ((ranges.size + 1) % 8 == 0) {
+                        val longDuration = Math.min(
+                            Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION,
+                            duration - scheduledDuration
+                        )
+                        Pair(TimeRange.Type.POMODORO_LONG_BREAK, longDuration)
+                    } else {
+                        Pair(
+                            TimeRange.Type.POMODORO_SHORT_BREAK,
+                            Constants.DEFAULT_POMODORO_BREAK_DURATION
+                        )
+                    }
+                    TimeRange(breakType, breakDuration)
                 }
-                TimeRange(TimeRange.Type.BREAK, breakDuration)
-            }
             scheduledDuration += range.duration
             ranges.add(range)
         }

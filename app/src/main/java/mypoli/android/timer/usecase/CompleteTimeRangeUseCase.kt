@@ -27,11 +27,12 @@ class CompleteTimeRangeUseCase(
         val quest = questRepository.findById(parameters.questId)
         requireNotNull(quest)
 
-        if (quest!!.actualStart != null) {
-            return completeQuestUseCase.execute(WithQuest(quest))
-        }
-
         val time = parameters.time
+
+        if (quest!!.hasCountDownTimer) {
+            val newQuest = questRepository.save(endLastTimeRange(quest, time))
+            return completeQuestUseCase.execute(WithQuest(newQuest))
+        }
 
         val splitResult = splitDurationForPomodoroTimerUseCase
             .execute(SplitDurationForPomodoroTimerUseCase.Params(quest))
@@ -44,30 +45,30 @@ class CompleteTimeRangeUseCase(
         val timeRanges =
             (splitResult as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges
 
-        if (timeRanges.size <= quest.pomodoroTimeRanges.size) {
+        if (timeRanges.size <= quest.timeRanges.size) {
             val newQuest = questRepository.save(endLastTimeRange(quest, time))
             return completeQuestUseCase.execute(WithQuest(newQuest))
         }
 
         val questWithEndedLastRange = endLastTimeRange(quest, time)
-        val currentTimeRanges = questWithEndedLastRange.pomodoroTimeRanges.toMutableList()
-        val lastRangeType = questWithEndedLastRange.pomodoroTimeRanges.last().type
+        val currentTimeRanges = questWithEndedLastRange.timeRanges.toMutableList()
+        val lastRangeType = questWithEndedLastRange.timeRanges.last().type
 
         val newRangeDuration: Int
-        val newRangeType = if (lastRangeType == TimeRange.Type.BREAK) {
+        val newRangeType = if (lastRangeType == TimeRange.Type.POMODORO_SHORT_BREAK) {
             newRangeDuration = Constants.DEFAULT_POMODORO_WORK_DURATION
-            TimeRange.Type.WORK
+            TimeRange.Type.POMODORO_WORK
         } else {
             newRangeDuration = if ((currentTimeRanges.size + 1) % 8 == 0) {
                 Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION
             } else {
                 Constants.DEFAULT_POMODORO_BREAK_DURATION
             }
-            TimeRange.Type.BREAK
+            TimeRange.Type.POMODORO_SHORT_BREAK
         }
 
         val newQuest = questWithEndedLastRange.copy(
-            pomodoroTimeRanges = currentTimeRanges +
+            timeRanges = currentTimeRanges +
                 TimeRange(
                     newRangeType,
                     newRangeDuration,
@@ -87,11 +88,11 @@ class CompleteTimeRangeUseCase(
         quest: Quest,
         time: Instant
     ): Quest {
-        val lastTimeRange = quest.pomodoroTimeRanges.last().copy(
+        val lastTimeRange = quest.timeRanges.last().copy(
             end = time
         )
         return quest.copy(
-            pomodoroTimeRanges = quest.pomodoroTimeRanges - quest.pomodoroTimeRanges.last() + lastTimeRange
+            timeRanges = quest.timeRanges - quest.timeRanges.last() + lastTimeRange
         )
     }
 

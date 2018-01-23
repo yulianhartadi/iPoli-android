@@ -8,8 +8,7 @@ import mypoli.android.common.datetime.Time
 import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.QuestRepository
 import mypoli.android.timer.pomodoros
-import org.amshove.kluent.`should be empty`
-import org.amshove.kluent.`should be null`
+import org.amshove.kluent.`should be false`
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
 import org.jetbrains.spek.api.dsl.it
@@ -49,18 +48,25 @@ class CancelTimerUseCaseSpek : Spek({
         it("should cancel count down") {
             val result = executeUseCase(
                 simpleQuest.copy(
-                    actualStart = Instant.now()
+                    timeRanges = listOf(
+                        TimeRange(
+                            TimeRange.Type.COUNTDOWN,
+                            simpleQuest.duration,
+                            start = Instant.now(),
+                            end = null
+                        )
+                    )
                 )
             )
-            result.actualStart.`should be null`()
+            result.hasCountDownTimer.`should be false`()
         }
 
         it("should cancel current pomodoro") {
             val result = executeUseCase(
                 simpleQuest.copy(
-                    pomodoroTimeRanges = listOf(
+                    timeRanges = listOf(
                         TimeRange(
-                            TimeRange.Type.WORK,
+                            TimeRange.Type.POMODORO_WORK,
                             1.pomodoros(),
                             start = Instant.now(),
                             end = null
@@ -68,7 +74,7 @@ class CancelTimerUseCaseSpek : Spek({
                     )
                 )
             )
-            result.pomodoroTimeRanges.`should be empty`()
+            result.hasPomodoroTimer.`should be false`()
         }
     }
 })

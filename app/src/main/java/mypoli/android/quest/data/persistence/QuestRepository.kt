@@ -48,8 +48,7 @@ data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMa
     var scheduledDate: Long by map
     var completedAtDate: Long? by map
     var completedAtMinute: Long? by map
-    var actualStart: Long? by map
-    var pomodoroTimeRanges: List<MutableMap<String, Any?>> by map
+    var timeRanges: List<MutableMap<String, Any?>> by map
     override var createdAt: Long by map
     override var updatedAt: Long by map
     override var removedAt: Long? by map
@@ -154,10 +153,8 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
 
     override fun findStartedQuest(): Quest? {
         val query = createQuery(
-            where = property("completedAtDate").isNullOrMissing.and(
-                ArrayFunction.length(property("pomodoroTimeRanges")).greaterThan(0)
-                    .or(property("actualStart").notNullOrMissing())
-            ),
+            where = property("completedAtDate").isNullOrMissing
+                .and(ArrayFunction.length(property("timeRanges")).greaterThan(0)),
             limit = 1
         )
         val result = query.execute().next()
@@ -206,8 +203,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
                 val cr = CouchbaseReminder(it)
                 Reminder(cr.message, Time.of(cr.minute), DateUtils.fromMillis(cr.date))
             },
-            actualStart = cq.actualStart?.instant,
-            pomodoroTimeRanges = cq.pomodoroTimeRanges.map {
+            timeRanges = cq.timeRanges.map {
                 val ctr = CouchbaseTimeRange(it)
                 TimeRange(
                     TimeRange.Type.valueOf(ctr.type),
@@ -252,8 +248,7 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
         q.startMinute = entity.startTime?.toMinuteOfDay()?.toLong()
         q.completedAtDate = entity.completedAtDate?.startOfDayUTC()
         q.completedAtMinute = entity.completedAtTime?.toMinuteOfDay()?.toLong()
-        q.actualStart = entity.actualStart?.toEpochMilli()
-        q.pomodoroTimeRanges = entity.pomodoroTimeRanges.map {
+        q.timeRanges = entity.timeRanges.map {
             createCouchbaseTimeRange(it).map
         }
         return q
