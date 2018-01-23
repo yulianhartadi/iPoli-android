@@ -170,7 +170,12 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val loadScheduleForDateUseCase
         get() = LoadScheduleForDateUseCase(questRepository)
     override val saveQuestUseCase get() = SaveQuestUseCase(questRepository, reminderScheduler)
-    override val removeQuestUseCase get() = RemoveQuestUseCase(questRepository, reminderScheduler)
+    override val removeQuestUseCase
+        get() = RemoveQuestUseCase(
+            questRepository,
+            timerCompleteScheduler,
+            reminderScheduler
+        )
     override val undoRemoveQuestUseCase get() = UndoRemovedQuestUseCase(questRepository)
     override val findQuestToRemindUseCase get() = FindQuestsToRemindUseCase(questRepository)
     override val snoozeQuestUseCase get() = SnoozeQuestUseCase(questRepository, reminderScheduler)

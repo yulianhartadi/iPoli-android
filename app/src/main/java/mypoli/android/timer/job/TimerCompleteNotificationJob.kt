@@ -174,12 +174,13 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
 
 interface TimerCompleteScheduler {
     fun schedule(questId: String, after: Duration<Minute>)
+    fun cancelAll()
 }
 
 class AndroidJobTimerCompleteScheduler : TimerCompleteScheduler {
 
     override fun schedule(questId: String, after: Duration<Minute>) {
-        JobManager.instance().cancelAllForTag(TimerCompleteNotificationJob.TAG)
+        cancelAll()
 
         val bundle = PersistableBundleCompat()
         bundle.putString("questId", questId)
@@ -188,5 +189,9 @@ class AndroidJobTimerCompleteScheduler : TimerCompleteScheduler {
             .setExact(after.millisValue)
             .build()
             .schedule()
+    }
+
+    override fun cancelAll() {
+        JobManager.instance().cancelAllForTag(TimerCompleteNotificationJob.TAG)
     }
 }

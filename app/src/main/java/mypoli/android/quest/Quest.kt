@@ -150,8 +150,11 @@ data class Quest(
             return duration
         }
 
-    val isStarted: Boolean
+    val hasTimer: Boolean
         get() = actualStart != null || pomodoroTimeRanges.isNotEmpty()
+
+    val isStarted: Boolean
+        get() = actualStart != null || (pomodoroTimeRanges.isNotEmpty() && pomodoroTimeRanges.last().end == null)
 
     fun hasCompletedAllTimeRanges() = pomodoroTimeRanges.sumBy { it.duration } >= duration
 }

@@ -57,7 +57,7 @@ class TimerPresenter(
             }
 
             TimerIntent.Start -> {
-                val quest = if (state.quest!!.isStarted) {
+                val quest = if (state.quest!!.hasTimer) {
                     completeTimeRangeUseCase.execute(
                         CompleteTimeRangeUseCase.Params(
                             questId = state.quest.id
