@@ -65,7 +65,7 @@ class RatePresenter(
         when (intent) {
             is RateIntent.LoadData -> {
                 launch {
-                    listenForPlayerChangesUseCase.execute(Unit).consumeEach {
+                    listenForPlayerChangesUseCase.listen(Unit).consumeEach {
                         sendChannel.send(RateIntent.ChangePlayer(it))
                     }
                 }

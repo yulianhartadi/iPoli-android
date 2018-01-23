@@ -94,7 +94,7 @@ class CurrencyConverterPresenter(
         when (intent) {
             is CurrencyConverterIntent.LoadData -> {
                 launch {
-                    listenForPlayerChangesUseCase.execute(Unit).consumeEach {
+                    listenForPlayerChangesUseCase.listen(Unit).consumeEach {
                         sendChannel.send(ChangePlayer(it))
                     }
                 }

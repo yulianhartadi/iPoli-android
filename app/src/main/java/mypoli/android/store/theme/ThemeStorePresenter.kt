@@ -32,7 +32,7 @@ class ThemeStorePresenter(
         when (intent) {
             is LoadDataIntent -> {
                 launch {
-                    listenForPlayerChangesUseCase.execute(Unit).consumeEach {
+                    listenForPlayerChangesUseCase.listen(Unit).consumeEach {
                         sendChannel.send(ChangePlayerIntent(it))
                     }
                 }

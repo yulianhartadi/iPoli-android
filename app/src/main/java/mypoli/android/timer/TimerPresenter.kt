@@ -44,9 +44,9 @@ class TimerPresenter(
             is TimerIntent.LoadData -> {
 
                 launch(coroutineContext) {
-                    listenForQuestChangeUseCase.execute(
+                    listenForQuestChangeUseCase.listen(
                         ListenForQuestChangeUseCase.Params(intent.questId)
-                    ).autoStop().consumeEach {
+                    ).consumeEach {
                         sendChannel.send(TimerIntent.QuestChanged(it))
                     }
                 }

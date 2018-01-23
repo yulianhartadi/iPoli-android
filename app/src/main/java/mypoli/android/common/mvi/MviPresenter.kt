@@ -8,6 +8,7 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.*
 import kotlinx.coroutines.experimental.launch
+import mypoli.android.common.StreamingUseCase
 import org.json.JSONObject
 import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
@@ -44,7 +45,7 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
 
     protected lateinit var sendChannel: SendChannel<I>
 
-    private val receiveChannels = mutableListOf<ReceiveChannel<*>>()
+    private val receiveChannels = mutableSetOf<ReceiveChannel<*>>()
 
     private fun stateReduceActor(view: V) =
         actor<I>(coroutineContext + CommonPool, Channel.CONFLATED) {
@@ -108,9 +109,13 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
         }
     }
 
-    protected fun <D> ReceiveChannel<D>.autoStop(): ReceiveChannel<D> {
+    private fun <D> ReceiveChannel<D>.autoStop(): ReceiveChannel<D> {
         receiveChannels += this
         return this
+    }
+
+    fun <I, O> StreamingUseCase<I, O>.listen(params: I): ReceiveChannel<O> {
+        return execute(params).autoStop()
     }
 
     private fun stopReceiveChannels() {

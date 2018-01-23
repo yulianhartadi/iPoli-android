@@ -51,7 +51,7 @@ class QuestCompletePresenter(
         when (intent) {
             is QuestCompleteIntent.LoadData -> {
                 launch {
-                    listenForPlayerChangesUseCase.execute(Unit).consumeEach {
+                    listenForPlayerChangesUseCase.listen(Unit).consumeEach {
                         sendChannel.send(QuestCompleteIntent.ChangePlayer(it))
                     }
                 }

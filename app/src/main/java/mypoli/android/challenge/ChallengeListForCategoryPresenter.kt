@@ -34,7 +34,7 @@ class ChallengeListForCategoryPresenter(
 
             is ChallengeListForCategoryIntent.LoadData -> {
                 launch {
-                    listenForPlayerChangesUseCase.execute(Unit).consumeEach {
+                    listenForPlayerChangesUseCase.listen(Unit).consumeEach {
                         sendChannel.send(ChallengeListForCategoryIntent.ChangePlayerIntent(it))
                     }
                 }
