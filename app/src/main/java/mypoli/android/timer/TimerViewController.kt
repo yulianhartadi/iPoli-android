@@ -132,6 +132,7 @@ class TimerViewController :
                 renderTimerButton(view.startStop, TimerButton.START)
                 view.startStop.sendOnClick(TimerIntent.Start)
                 view.setOnClickListener(null)
+                view.complete.visibility = View.GONE
             }
 
             TimerViewState.StateType.RUNNING -> {

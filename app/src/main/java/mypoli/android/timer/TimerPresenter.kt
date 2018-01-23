@@ -167,7 +167,7 @@ class TimerPresenter(
             return createStateForRunningOrCompletedPomodoroTimer(quest, state)
         }
 
-        return if (quest.duration < MIN_POMODORO_TIMER_DURATION) {
+        return if (quest.duration < MIN_INITIAL_POMODORO_TIMER_DURATION) {
             createStateForInitialCountDownTimer(state, quest)
         } else {
             createStateForInitialPomodoroTimer(state, quest)
@@ -209,7 +209,7 @@ class TimerPresenter(
             type = SHOW_COUNTDOWN,
             questName = quest.name,
             timerType = TimerViewState.TimerType.COUNTDOWN,
-            showTimerTypeSwitch = true,
+            showTimerTypeSwitch = quest.duration >= MIN_POMODORO_TIMER_DURATION,
             timerLabel = TimerFormatter.format(quest.duration.minutes.millisValue),
             remainingTime = quest.duration.minutes.asSeconds,
             timerProgress = 0,
@@ -342,7 +342,10 @@ class TimerPresenter(
     }
 
     companion object {
-        const val MIN_POMODORO_TIMER_DURATION =
+        const val MIN_INITIAL_POMODORO_TIMER_DURATION =
             Constants.DEFAULT_POMODORO_WORK_DURATION * 2 + Constants.DEFAULT_POMODORO_BREAK_DURATION * 2
+
+        const val MIN_POMODORO_TIMER_DURATION =
+            Constants.DEFAULT_POMODORO_WORK_DURATION + Constants.DEFAULT_POMODORO_BREAK_DURATION
     }
 }
