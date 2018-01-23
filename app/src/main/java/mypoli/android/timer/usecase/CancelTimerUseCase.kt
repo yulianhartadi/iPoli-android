@@ -15,11 +15,11 @@ open class CancelTimerUseCase(private val questRepository: QuestRepository) :
         val quest = questRepository.findById(parameters.questId)
         requireNotNull(quest)
 
-        if (quest!!.actualStart != null) {
+        if (quest!!.hasCountDownTimer) {
             return questRepository.save(quest.copy(actualStart = null))
         }
 
-        require(quest.pomodoroTimeRanges.isNotEmpty())
+        require(quest.hasPomodoroTimer)
 
         return questRepository.save(
             quest.copy(

@@ -135,15 +135,15 @@ data class Quest(
     val actualDuration: Duration<Second>
         get() {
 
-            if (actualStart != null) {
+            if (hasCountDownTimer) {
                 return if (isCompleted) {
-                    completedAt!! - actualStart
+                    completedAt!! - actualStart!!
                 } else {
-                    Instant.now() - actualStart
+                    Instant.now() - actualStart!!
                 }.milliseconds.asSeconds
             }
 
-            if (pomodoroTimeRanges.isNotEmpty()) {
+            if (hasPomodoroTimer) {
                 return pomodoroTimeRanges.sumByLong { it.actualDuration() }
                     .milliseconds.asSeconds
             }
@@ -151,12 +151,18 @@ data class Quest(
         }
 
     val hasTimer: Boolean
-        get() = actualStart != null || pomodoroTimeRanges.isNotEmpty()
+        get() = hasCountDownTimer || hasPomodoroTimer
+
+    val hasCountDownTimer : Boolean
+        get() = actualStart != null
+
+    val hasPomodoroTimer : Boolean
+        get() = pomodoroTimeRanges.isNotEmpty()
 
     val isStarted: Boolean
         get() = !isCompleted &&
-            (actualStart != null ||
-                (pomodoroTimeRanges.isNotEmpty() && pomodoroTimeRanges.last().end == null))
+            (hasCountDownTimer ||
+                (hasPomodoroTimer && pomodoroTimeRanges.last().end == null))
 
     fun hasCompletedAllTimeRanges() = pomodoroTimeRanges.sumBy { it.duration } >= duration
 }

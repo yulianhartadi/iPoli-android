@@ -40,7 +40,7 @@ class RemovePomodoroUseCase(
             MIN_QUEST_POMODORO_DURATION
         )
 
-        if (quest.pomodoroTimeRanges.isNotEmpty() && newDuration < quest.actualDuration.asMinutes.intValue) {
+        if (quest.hasPomodoroTimer && newDuration < quest.actualDuration.asMinutes.intValue) {
             return quest
         }
 

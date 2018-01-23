@@ -18,7 +18,7 @@ open class SplitDurationForPomodoroTimerUseCase :
         val pomodoroDuration =
             Constants.DEFAULT_POMODORO_WORK_DURATION + Constants.DEFAULT_POMODORO_BREAK_DURATION
 
-        if (quest.pomodoroTimeRanges.isEmpty() && duration < pomodoroDuration) {
+        if (!quest.hasPomodoroTimer && duration < pomodoroDuration) {
             return Result.DurationNotSplit
         }
 

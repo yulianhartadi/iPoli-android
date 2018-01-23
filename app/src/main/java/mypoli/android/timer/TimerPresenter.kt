@@ -159,11 +159,11 @@ class TimerPresenter(
         state: TimerViewState
     ): TimerViewState {
         val quest = state.quest
-        if (quest!!.actualStart != null) {
+        if (quest!!.hasCountDownTimer) {
             return createStateForRunningOrCompletedCountdownTimer(quest, state)
         }
 
-        if (quest.pomodoroTimeRanges.isNotEmpty()) {
+        if (quest.hasPomodoroTimer) {
             return createStateForRunningOrCompletedPomodoroTimer(quest, state)
         }
 
@@ -260,7 +260,7 @@ class TimerPresenter(
             val remainingTime = duration.minutes - passed.milliseconds
 
             val type =
-                if (questPomodoroTimeRanges.isNotEmpty() && questPomodoroTimeRanges.last().end == null) RESUMED
+                if (questPomodoroTimeRanges.last().end == null) RESUMED
                 else SHOW_POMODORO
 
             return state.copy(
