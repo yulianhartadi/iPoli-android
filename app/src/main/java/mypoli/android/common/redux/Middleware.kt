@@ -6,7 +6,7 @@ import mypoli.android.common.redux.MiddleWare.Result.Stop
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
- * Created by Venelin Valkov <venelin@ipoli.io>
+ * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 01/20/2018.
  */
 interface MiddleWare<in S : State> {

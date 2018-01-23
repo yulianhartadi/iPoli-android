@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.view.View
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RestoreViewOnCreateController
+import mypoli.android.common.AppState
 import mypoli.android.common.di.Module
 import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.Action
-import mypoli.android.common.redux.AppState
 import mypoli.android.common.redux.StateStore
 import mypoli.android.myPoliApp
 import space.traversal.kapsule.Injects
@@ -36,11 +36,11 @@ abstract class ReduxViewController<in A : Action, VS : ViewState, out P : Androi
     init {
         val lifecycleListener = object : LifecycleListener() {
 
-            override fun postCreateView(controller: Controller, view: View) {
+            override fun postAttach(controller: Controller, view: View) {
                 stateStore.subscribe(this@ReduxViewController)
             }
 
-            override fun preDestroyView(controller: Controller, view: View) {
+            override fun preDetach(controller: Controller, view: View) {
                 stateStore.unsubscribe(this@ReduxViewController)
             }
         }
@@ -49,6 +49,10 @@ abstract class ReduxViewController<in A : Action, VS : ViewState, out P : Androi
 
     override val transformer: StateStore.StateChangeSubscriber.StateTransformer<AppState, VS>
         get() = object : StateStore.StateChangeSubscriber.StateTransformer<AppState, VS> {
+
+            override fun transformInitial(state: AppState): VS =
+                presenter.presentInitial(presenter.present(state, activity!!))
+
             override fun transform(state: AppState): VS =
                 presenter.present(state, activity!!)
         }

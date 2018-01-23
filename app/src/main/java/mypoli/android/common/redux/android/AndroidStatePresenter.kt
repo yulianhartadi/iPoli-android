@@ -5,10 +5,12 @@ import mypoli.android.common.mvi.ViewState
 import mypoli.android.common.redux.State
 
 /**
- * Created by Venelin Valkov <venelin@ipoli.io>
+ * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 01/22/2018.
  */
-interface AndroidStatePresenter<in S : State, out VS : ViewState> {
+interface AndroidStatePresenter<in S : State, VS : ViewState> {
 
     fun present(state: S, context: Context): VS
+
+    fun presentInitial(state: VS): VS = state
 }

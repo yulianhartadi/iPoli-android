@@ -1,12 +1,9 @@
 package mypoli.android.common.redux
 
 import mypoli.android.common.redux.MiddleWare.Result.Continue
-import mypoli.android.quest.calendar.CalendarAction
-import mypoli.android.quest.calendar.CalendarReducer
-import mypoli.android.quest.calendar.CalendarState
 
 /**
- * Created by Venelin Valkov <venelin@ipoli.io>
+ * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 01/20/2018.
  */
 
@@ -17,27 +14,6 @@ interface AsyncAction : Action {
 }
 
 interface State
-
-data class AppState(
-    val calendarState: CalendarState
-) : State
-
-
-object AppReducer : Reducer<AppState, Action> {
-
-    override fun reduce(state: AppState, action: Action) =
-        when (action) {
-            is CalendarAction -> state.copy(
-                calendarState = CalendarReducer.reduce(state.calendarState, action)
-            )
-            else -> state
-        }
-
-    override fun defaultState() =
-        AppState(
-            calendarState = CalendarReducer.defaultState()
-        )
-}
 
 interface Reducer<S : State, in A : Action> {
 
@@ -58,6 +34,11 @@ class StateStore<out S : State>(
     interface StateChangeSubscriber<in S, T> {
 
         interface StateTransformer<in S, out T> {
+
+            fun transformInitial(state: S): T {
+                return transform(state)
+            }
+
             fun transform(state: S): T
         }
 
@@ -103,7 +84,7 @@ class StateStore<out S : State>(
 
     fun <T> subscribe(subscriber: StateChangeSubscriber<S, T>) {
         stateChangeSubscribers += subscriber
-        subscriber.onStateChanged(subscriber.transformer.transform(state))
+        subscriber.onStateChanged(subscriber.transformer.transformInitial(state))
     }
 
     fun <T> unsubscribe(subscriber: StateChangeSubscriber<S, T>) {

@@ -15,8 +15,8 @@ import mypoli.android.challenge.ChallengeListForCategoryPresenter
 import mypoli.android.challenge.PersonalizeChallengePresenter
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
-import mypoli.android.common.redux.AppReducer
-import mypoli.android.common.redux.AppState
+import mypoli.android.common.AppReducer
+import mypoli.android.common.AppState
 import mypoli.android.common.redux.StateStore
 import mypoli.android.common.text.CalendarFormatter
 import mypoli.android.common.view.ColorPickerPresenter

@@ -1,7 +1,7 @@
 package mypoli.android.quest.calendar
 
 import android.content.Context
-import mypoli.android.common.redux.AppState
+import mypoli.android.common.AppState
 import mypoli.android.common.redux.android.AndroidStatePresenter
 import mypoli.android.common.text.CalendarFormatter
 import org.threeten.bp.format.DateTimeFormatter
@@ -33,5 +33,10 @@ class CalendarReduxPresenter : AndroidStatePresenter<AppState, CalendarViewState
             monthText = monthFormatter.format(calendarState.currentMonth)
         )
     }
+
+    override fun presentInitial(state: CalendarViewState) =
+        state.copy(
+            type = CalendarViewState.StateType.INITIAL
+        )
 
 }
