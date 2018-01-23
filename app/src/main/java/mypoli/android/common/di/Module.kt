@@ -169,7 +169,11 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     private val timerCompleteScheduler by required { timerCompleteScheduler }
     override val loadScheduleForDateUseCase
         get() = LoadScheduleForDateUseCase(questRepository)
-    override val saveQuestUseCase get() = SaveQuestUseCase(questRepository, reminderScheduler)
+    override val saveQuestUseCase
+        get() = SaveQuestUseCase(
+            questRepository,
+            reminderScheduler
+        )
     override val removeQuestUseCase
         get() = RemoveQuestUseCase(
             questRepository,

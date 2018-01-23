@@ -310,7 +310,18 @@ class DayViewPresenter(
 
     private fun savedQuestViewState(result: Result, state: DayViewState) =
         when (result) {
-            is Result.Invalid -> state.copy(type = EVENT_VALIDATION_ERROR)
+            is Result.Invalid -> {
+                when (result.error) {
+
+                    Result.ValidationError.EMPTY_NAME -> {
+                        state.copy(type = EVENT_VALIDATION_EMPTY_NAME)
+                    }
+
+                    Result.ValidationError.TIMER_RUNNING -> {
+                        state.copy(type = EVENT_VALIDATION_TIMER_RUNNING)
+                    }
+                }
+            }
             else -> state.copy(type = EVENT_UPDATED, reminder = null, scheduledDate = null)
         }
 
@@ -324,7 +335,8 @@ class DayViewPresenter(
                 it.icon?.let { AndroidIcon.valueOf(it.name) },
                 color,
                 color.color900,
-                it.isCompleted
+                it.isCompleted,
+                it.isStarted
             )
         }
 
@@ -349,7 +361,8 @@ class DayViewPresenter(
                 color,
                 color.color900,
                 reminder,
-                q.isCompleted
+                q.isCompleted,
+                q.isStarted
             )
         }
 }

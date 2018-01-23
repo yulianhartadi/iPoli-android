@@ -290,8 +290,8 @@ class TimerPresenter(
                 showTimerTypeSwitch = false,
                 timerLabel = TimerFormatter.format(0),
                 remainingTime = 0.seconds,
-                timerProgress = quest.actualDuration,
-                maxTimerProgress = quest.actualDuration
+                timerProgress = quest.actualDuration.asMinutes.intValue,
+                maxTimerProgress = quest.actualDuration.asMinutes.intValue
             )
         } else {
             val passed = Instant.now() - quest.actualStart!!

@@ -35,11 +35,12 @@ class RemovePomodoroUseCase(
             Constants.DEFAULT_POMODORO_WORK_DURATION + Constants.DEFAULT_POMODORO_BREAK_DURATION
         }
 
-        val newDuration = Math.max(quest.duration - pomodoroDuration,
+        val newDuration = Math.max(
+            quest.duration - pomodoroDuration,
             MIN_QUEST_POMODORO_DURATION
         )
 
-        if (quest.pomodoroTimeRanges.isNotEmpty() && newDuration < quest.actualDuration) {
+        if (quest.pomodoroTimeRanges.isNotEmpty() && newDuration < quest.actualDuration.asMinutes.intValue) {
             return quest
         }
 

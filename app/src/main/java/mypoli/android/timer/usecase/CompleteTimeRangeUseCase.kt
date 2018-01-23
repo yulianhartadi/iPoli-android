@@ -77,7 +77,7 @@ class CompleteTimeRangeUseCase(
 
         timerCompleteScheduler.schedule(
             questId = quest.id,
-            after = newRangeDuration.minutes
+            after = newRangeDuration.minutes.asSeconds
         )
 
         return questRepository.save(newQuest)

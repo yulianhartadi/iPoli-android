@@ -23,22 +23,21 @@ class AddPomodoroUseCase(
             SplitDurationForPomodoroTimerUseCase.Params(quest!!)
         )
 
-        val questDuration = Math.max(quest.duration, quest.actualDuration)
-
-        val pomodoroDuration: Int
-
-        if (splitResult == SplitDurationForPomodoroTimerUseCase.Result.DurationNotSplit) {
-            pomodoroDuration = Constants.DEFAULT_POMODORO_WORK_DURATION +
-                Constants.DEFAULT_POMODORO_BREAK_DURATION
-        } else {
-            val timeRanges =
-                (splitResult as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges
-            pomodoroDuration = if ((timeRanges.size + 2) % 8 == 0) {
-                Constants.DEFAULT_POMODORO_WORK_DURATION + Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION
+        val pomodoroDuration =
+            if (splitResult == SplitDurationForPomodoroTimerUseCase.Result.DurationNotSplit) {
+                Constants.DEFAULT_POMODORO_WORK_DURATION +
+                    Constants.DEFAULT_POMODORO_BREAK_DURATION
             } else {
-                Constants.DEFAULT_POMODORO_WORK_DURATION + Constants.DEFAULT_POMODORO_BREAK_DURATION
+                val timeRanges =
+                    (splitResult as SplitDurationForPomodoroTimerUseCase.Result.DurationSplit).timeRanges
+                if ((timeRanges.size + 2) % 8 == 0) {
+                    Constants.DEFAULT_POMODORO_WORK_DURATION + Constants.DEFAULT_POMODORO_LONG_BREAK_DURATION
+                } else {
+                    Constants.DEFAULT_POMODORO_WORK_DURATION + Constants.DEFAULT_POMODORO_BREAK_DURATION
+                }
             }
-        }
+
+        val questDuration = Math.max(quest.duration, quest.actualDuration.asMinutes.intValue)
 
         val newQuest = quest.copy(
             duration = questDuration + pomodoroDuration

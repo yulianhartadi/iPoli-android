@@ -1,14 +1,15 @@
 package mypoli.android.quest.usecase
 
-import mypoli.android.quest.job.ReminderScheduler
 import mypoli.android.common.UseCase
 import mypoli.android.common.Validator.Companion.validate
 import mypoli.android.common.datetime.DateUtils
 import mypoli.android.common.datetime.Time
 import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.quest.job.ReminderScheduler
 import mypoli.android.quest.usecase.Result.*
 import mypoli.android.quest.usecase.Result.ValidationError.EMPTY_NAME
+import mypoli.android.quest.usecase.Result.ValidationError.TIMER_RUNNING
 import org.threeten.bp.LocalDate
 
 /**
@@ -18,11 +19,12 @@ import org.threeten.bp.LocalDate
 sealed class Result {
 
     enum class ValidationError {
-        EMPTY_NAME
+        EMPTY_NAME,
+        TIMER_RUNNING
     }
 
     data class Added(val quest: Quest) : Result()
-    data class Invalid(val errors: List<ValidationError>) : Result()
+    data class Invalid(val error: ValidationError) : Result()
 }
 
 class SaveQuestUseCase(
@@ -50,7 +52,7 @@ class SaveQuestUseCase(
         }
 
         if (errors.isNotEmpty()) {
-            return Invalid(errors)
+            return Invalid(errors.first())
         }
         val quest = if (parameters.id.isEmpty()) {
             Quest(
@@ -64,7 +66,14 @@ class SaveQuestUseCase(
                 reminder = parameters.reminder
             )
         } else {
-            questRepository.findById(parameters.id)!!.copy(
+
+            val quest = questRepository.findById(parameters.id)!!
+
+            if (quest.isStarted) {
+                return Invalid(TIMER_RUNNING)
+            }
+
+            quest.copy(
                 name = parameters.name,
                 icon = parameters.icon,
                 color = parameters.color,

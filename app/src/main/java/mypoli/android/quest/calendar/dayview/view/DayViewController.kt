@@ -189,8 +189,12 @@ class DayViewController :
                 ViewUtils.hideKeyboard(calendarDayView)
             }
 
-            EVENT_VALIDATION_ERROR -> {
+            EVENT_VALIDATION_EMPTY_NAME -> {
                 calendarDayView.onEventValidationError()
+            }
+
+            EVENT_VALIDATION_TIMER_RUNNING -> {
+                showShortToast(R.string.validation_timer_running)
             }
 
             EVENT_REMOVED -> {
@@ -440,7 +444,8 @@ class DayViewController :
     }
 
     private fun showDatePicker(selectedDate: LocalDate) {
-        DatePickerDialog(view!!.context, R.style.Theme_myPoli_AlertDialog,
+        DatePickerDialog(
+            view!!.context, R.style.Theme_myPoli_AlertDialog,
             DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                 send(DayViewIntent.DatePicked(year, month + 1, dayOfMonth))
             }, selectedDate.year, selectedDate.month.value - 1, selectedDate.dayOfMonth
@@ -492,7 +497,8 @@ class DayViewController :
         val backgroundColor: AndroidColor,
         @ColorRes val textColor: Int,
         val reminder: ReminderViewModel?,
-        val isCompleted: Boolean
+        val isCompleted: Boolean,
+        val isStarted: Boolean
     ) : CalendarEvent
 
     inner class QuestScheduledEventsAdapter(
@@ -510,8 +516,13 @@ class DayViewController :
             val vm = getItem(position)
 
             view.setOnLongClickListener {
-                send(StartEditScheduledQuestIntent(vm))
-                calendarDayView.startEventRescheduling(vm)
+
+                if (vm.isStarted) {
+                    showShortToast(R.string.validation_timer_running)
+                } else {
+                    send(StartEditScheduledQuestIntent(vm))
+                    calendarDayView.startEventRescheduling(vm)
+                }
                 true
             }
 
@@ -679,6 +690,7 @@ class DayViewController :
         val backgroundColor: AndroidColor,
         @ColorRes val textColor: Int,
         val isCompleted: Boolean,
+        val isStarted: Boolean,
         val reminder: ReminderViewModel? = null
     ) : UnscheduledEvent
 
@@ -694,8 +706,12 @@ class DayViewController :
             calendarDayView: CalendarDayView
         ) {
             itemView.setOnLongClickListener {
-                send(StartEditUnscheduledQuestIntent(event))
-                calendarDayView.startEventRescheduling(events[adapterPosition])
+                if (event.isStarted) {
+                    showShortToast(R.string.validation_timer_running)
+                } else {
+                    send(StartEditUnscheduledQuestIntent(event))
+                    calendarDayView.startEventRescheduling(events[adapterPosition])
+                }
                 true
             }
 

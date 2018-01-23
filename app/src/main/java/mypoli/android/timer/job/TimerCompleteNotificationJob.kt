@@ -15,7 +15,7 @@ import mypoli.android.Constants
 import mypoli.android.MainActivity
 import mypoli.android.R
 import mypoli.android.common.datetime.Duration
-import mypoli.android.common.datetime.Minute
+import mypoli.android.common.datetime.Second
 import mypoli.android.common.di.ControllerModule
 import mypoli.android.common.di.SimpleModule
 import mypoli.android.myPoliApp
@@ -173,13 +173,13 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
 }
 
 interface TimerCompleteScheduler {
-    fun schedule(questId: String, after: Duration<Minute>)
+    fun schedule(questId: String, after: Duration<Second>)
     fun cancelAll()
 }
 
 class AndroidJobTimerCompleteScheduler : TimerCompleteScheduler {
 
-    override fun schedule(questId: String, after: Duration<Minute>) {
+    override fun schedule(questId: String, after: Duration<Second>) {
         cancelAll()
 
         val bundle = PersistableBundleCompat()

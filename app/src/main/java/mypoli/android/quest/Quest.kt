@@ -132,7 +132,7 @@ data class Quest(
         get() = startTime?.let { Time.of(it.toMinuteOfDay() + duration) }
     val isScheduled = startTime != null
 
-    val actualDuration: Int
+    val actualDuration: Duration<Second>
         get() {
 
             if (actualStart != null) {
@@ -140,14 +140,14 @@ data class Quest(
                     completedAt!! - actualStart
                 } else {
                     Instant.now() - actualStart
-                }.milliseconds.asMinutes.intValue
+                }.milliseconds.asSeconds
             }
 
             if (pomodoroTimeRanges.isNotEmpty()) {
                 return pomodoroTimeRanges.sumByLong { it.actualDuration() }
-                    .milliseconds.asMinutes.intValue
+                    .milliseconds.asSeconds
             }
-            return duration
+            return duration.minutes.asSeconds
         }
 
     val hasTimer: Boolean
