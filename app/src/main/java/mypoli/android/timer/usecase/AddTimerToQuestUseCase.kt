@@ -15,24 +15,33 @@ import org.threeten.bp.Instant
  */
 class AddTimerToQuestUseCase(
     private val questRepository: QuestRepository,
+    private val cancelTimerUseCase: CancelTimerUseCase,
     private val timerCompleteScheduler: TimerCompleteScheduler
 ) :
-    UseCase<AddTimerToQuestUseCase.Params, Quest> {
+    UseCase<AddTimerToQuestUseCase.Params, AddTimerToQuestUseCase.Result> {
 
-    override fun execute(parameters: Params): Quest {
+    override fun execute(parameters: Params): Result {
         val quest = questRepository.findById(parameters.questId)
         requireNotNull(quest)
 
-        val time = parameters.time
-        if (!parameters.isPomodoro) {
-            require(quest!!.actualStart == null)
-            timerCompleteScheduler.schedule(
-                questId = quest.id,
-                after = quest.duration.minutes
-            )
-            return questRepository.save(quest.copy(actualStart = time))
+        val startedQuest = questRepository.findStartedQuest()
+        if (startedQuest != null) {
+            cancelTimerUseCase.execute(CancelTimerUseCase.Params(startedQuest.id))
         }
 
+        val time = parameters.time
+        if (!parameters.isPomodoro) {
+            return addContDownTimer(quest, time, startedQuest)
+        }
+
+        return addPomodoroTimer(quest, time, startedQuest)
+    }
+
+    private fun addPomodoroTimer(
+        quest: Quest?,
+        time: Instant,
+        startedQuest: Quest?
+    ): Result {
         require(quest!!.pomodoroTimeRanges.isEmpty())
 
         timerCompleteScheduler.schedule(
@@ -47,11 +56,26 @@ class AddTimerToQuestUseCase(
                     start = time
                 )
         )
-        return questRepository.save(newQuest)
-
-
+        return Result(questRepository.save(newQuest), startedQuest != null)
     }
 
+    private fun addContDownTimer(
+        quest: Quest?,
+        time: Instant,
+        startedQuest: Quest?
+    ): Result {
+        require(quest!!.actualStart == null)
+        timerCompleteScheduler.schedule(
+            questId = quest.id,
+            after = quest.duration.minutes
+        )
+        return Result(
+            questRepository.save(quest.copy(actualStart = time)),
+            startedQuest != null
+        )
+    }
+
+    data class Result(val quest: Quest, val otherTimerStopped: Boolean)
 
     data class Params(
         val questId: String,

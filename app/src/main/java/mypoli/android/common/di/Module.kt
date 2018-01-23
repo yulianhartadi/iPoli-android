@@ -251,6 +251,7 @@ class MainUseCaseModule : UseCaseModule, Injects<ControllerModule> {
     override val addTimerToQuestUseCase: AddTimerToQuestUseCase
         get() = AddTimerToQuestUseCase(
             questRepository,
+            cancelTimerUseCase,
             timerCompleteScheduler
         )
 }

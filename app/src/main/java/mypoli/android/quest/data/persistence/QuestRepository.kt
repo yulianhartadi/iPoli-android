@@ -16,6 +16,7 @@ import mypoli.android.quest.*
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.ZoneId
+import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 interface QuestRepository : Repository<Quest> {
@@ -28,6 +29,7 @@ interface QuestRepository : Repository<Quest> {
     fun findNextQuestsToRemind(afterTime: Long = DateUtils.nowUTC().time): List<Quest>
     fun findQuestsToRemind(time: Long): List<Quest>
     fun findCompletedForDate(date: LocalDate): List<Quest>
+    fun findStartedQuest(): Quest?
 }
 
 data class CouchbaseQuest(override val map: MutableMap<String, Any?> = mutableMapOf()) :
@@ -149,6 +151,27 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
                 .between(date.startOfDayUTC(), date.startOfDayUTC())
         )
         return toEntities(query.execute().iterator())
+    }
+
+    override fun findStartedQuest(): Quest? {
+//        val query = createQuery(
+//            where = property("completedAtDate").isNullOrMissing
+//                .and(
+//                    ArrayFunction.length(property("pomodoroTimeRanges")).equalTo(0)
+//                        .or(property("pomodoroTimeRanges")).notNullOrMissing()
+//                ),
+//            limit = 1
+//        )
+        val query = createQuery(
+            where = ArrayFunction.length(property("pomodoroTimeRanges")).greaterThan(0)
+                .and(property("pomodoroTimeRanges").notNullOrMissing()),
+            limit = 1
+        )
+        val result = query.execute().next()
+        Timber.d("AAAA ${result?.toMap()}")
+        return result?.let {
+            toEntityObject(it)
+        }
     }
 
     override fun toEntityObject(dataMap: MutableMap<String, Any?>): Quest {

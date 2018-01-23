@@ -8,6 +8,7 @@ import mypoli.android.Constants
 import mypoli.android.common.datetime.Time
 import mypoli.android.quest.*
 import mypoli.android.quest.data.persistence.QuestRepository
+import mypoli.android.timer.pomodoros
 import org.amshove.kluent.*
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe
@@ -26,15 +27,17 @@ class AddTimerToQuestUseCaseSpek : Spek({
         fun executeUseCase(
             quest: Quest,
             isPomodoro: Boolean,
-            time: Instant = Instant.now()
-        ): Quest {
+            time: Instant = Instant.now(),
+            startedQuest: Quest? = null
+        ): AddTimerToQuestUseCase.Result {
             val questRepoMock = mock<QuestRepository> {
                 on { findById(any()) } doReturn quest
                 on { save(any()) } doAnswer { invocation ->
                     invocation.getArgument(0)
                 }
+                on { findStartedQuest() } doReturn startedQuest
             }
-            return AddTimerToQuestUseCase(questRepoMock, mock())
+            return AddTimerToQuestUseCase(questRepoMock, mock(), mock())
                 .execute(AddTimerToQuestUseCase.Params(quest.id, isPomodoro, time))
         }
 
@@ -51,13 +54,15 @@ class AddTimerToQuestUseCaseSpek : Spek({
 
         it("should save actual start") {
             val result = executeUseCase(quest, false, now)
-            result.actualStart.`should be`(now)
+            result.otherTimerStopped.`should be false`()
+            result.quest.actualStart.`should be`(now)
         }
 
         it("should add the first time range") {
             val result = executeUseCase(quest, true)
-            result.pomodoroTimeRanges.size `should be equal to` (1)
-            val range = result.pomodoroTimeRanges.first()
+            result.otherTimerStopped.`should be false`()
+            result.quest.pomodoroTimeRanges.size `should be equal to` (1)
+            val range = result.quest.pomodoroTimeRanges.first()
             range.start.`should not be null`()
             range.end.`should be null`()
         }
@@ -94,5 +99,36 @@ class AddTimerToQuestUseCaseSpek : Spek({
             exec shouldThrow IllegalArgumentException::class
         }
 
+        it("should stop other countdown timer") {
+            val result = executeUseCase(
+                quest = quest,
+                isPomodoro = false,
+                time = now,
+                startedQuest = quest.copy(
+                    actualStart = now
+                )
+            )
+            result.otherTimerStopped.`should be true`()
+            result.quest.actualStart.`should not be null`()
+        }
+
+        it("should stop other pomodoro timer") {
+            val result = executeUseCase(
+                quest = quest,
+                isPomodoro = true,
+                time = now,
+                startedQuest = quest.copy(
+                    pomodoroTimeRanges = listOf(
+                        TimeRange(
+                            TimeRange.Type.WORK,
+                            1.pomodoros(),
+                            now
+                        )
+                    )
+                )
+            )
+            result.otherTimerStopped.`should be true`()
+            result.quest.pomodoroTimeRanges.shouldNotBeEmpty()
+        }
     }
 })

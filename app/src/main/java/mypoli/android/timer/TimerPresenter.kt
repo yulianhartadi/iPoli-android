@@ -18,6 +18,7 @@ import mypoli.android.timer.usecase.SplitDurationForPomodoroTimerUseCase.Result.
 import mypoli.android.timer.usecase.SplitDurationForPomodoroTimerUseCase.Result.DurationSplit
 import mypoli.android.timer.view.formatter.TimerFormatter
 import org.threeten.bp.Instant
+import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -64,12 +65,14 @@ class TimerPresenter(
                         )
                     )
                 } else {
-                    addTimerToQuestUseCase.execute(
+                    val result = addTimerToQuestUseCase.execute(
                         AddTimerToQuestUseCase.Params(
                             questId = state.quest.id,
                             isPomodoro = state.timerType == TimerViewState.TimerType.POMODORO
                         )
                     )
+                    Timber.d("AAAA other timer stopped ${result.otherTimerStopped}")
+                    result.quest
                 }
 
                 val currentProgressIndicator =

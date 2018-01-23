@@ -8,7 +8,7 @@ import mypoli.android.quest.data.persistence.QuestRepository
  * Created by Polina Zhelyazkova <polina@ipoli.io>
  * on 1/18/18.
  */
-class CancelTimerUseCase(private val questRepository: QuestRepository) :
+open class CancelTimerUseCase(private val questRepository: QuestRepository) :
     UseCase<CancelTimerUseCase.Params, Quest> {
 
     override fun execute(parameters: Params): Quest {
