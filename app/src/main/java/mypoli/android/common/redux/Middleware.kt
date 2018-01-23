@@ -12,20 +12,24 @@ import kotlin.coroutines.experimental.CoroutineContext
 interface MiddleWare<in S : State> {
     fun execute(state: S, dispatcher: Dispatcher, action: Action): Result
 
+    fun canHandle(action: Action): Boolean {
+        return true
+    }
+
     sealed class Result {
         object Continue : Result()
         object Stop : Result()
     }
 }
 
-abstract class SimpleMiddleware<in S : State> : MiddleWare<S> {
+interface SimpleMiddleware<in S : State> : MiddleWare<S> {
 
     override fun execute(state: S, dispatcher: Dispatcher, action: Action): MiddleWare.Result {
         onExecute(state, dispatcher, action)
         return Continue
     }
 
-    abstract fun onExecute(state: S, dispatcher: Dispatcher, action: Action)
+    fun onExecute(state: S, dispatcher: Dispatcher, action: Action)
 }
 
 class CompositeMiddleware<in S : State>(private val middleware: List<MiddleWare<S>>) :
@@ -40,6 +44,15 @@ class CompositeMiddleware<in S : State>(private val middleware: List<MiddleWare<
         }
 
         return Continue
+    }
+
+    override fun canHandle(action: Action): Boolean {
+        for (m in middleware) {
+            if (m.canHandle(action)) {
+                return true
+            }
+        }
+        return false
     }
 }
 
@@ -66,10 +79,10 @@ abstract class AsyncMiddleware<in S : State>(
 
     override fun execute(state: S, dispatcher: Dispatcher, action: Action): MiddleWare.Result {
         launch(coroutineContext) {
-            onExecute(state, action)
+            onExecute(state, dispatcher, action)
         }
         return Continue
     }
 
-    abstract suspend fun onExecute(state: State, action: Action)
+    abstract suspend fun onExecute(state: State, dispatcher: Dispatcher, action: Action)
 }

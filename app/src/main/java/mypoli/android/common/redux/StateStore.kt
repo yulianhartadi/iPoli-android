@@ -23,7 +23,7 @@ interface Reducer<S : State, in A : Action> {
 }
 
 interface Dispatcher {
-    fun dispatch(action: Action)
+    fun <A : Action> dispatch(action: A)
 }
 
 class StateStore<out S : State>(
@@ -64,7 +64,11 @@ class StateStore<out S : State>(
     private var state = reducer.defaultState()
     private val middleWare = CompositeMiddleware<S>(middleware)
 
-    override fun dispatch(action: Action) {
+    override fun <A : Action> dispatch(action: A) {
+        if (!middleWare.canHandle(action)) {
+            changeState(action)
+            return
+        }
         val res = middleWare.execute(state, this, action)
         if (res == Continue) changeState(action)
     }

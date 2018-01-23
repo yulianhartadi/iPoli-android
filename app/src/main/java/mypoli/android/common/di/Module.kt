@@ -17,6 +17,7 @@ import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
 import mypoli.android.common.AppReducer
 import mypoli.android.common.AppState
+import mypoli.android.common.middleware.LoadDataMiddleware
 import mypoli.android.common.redux.StateStore
 import mypoli.android.common.text.CalendarFormatter
 import mypoli.android.common.view.ColorPickerPresenter
@@ -110,11 +111,15 @@ interface StateStoreModule {
     val stateStore: StateStore<AppState>
 }
 
-class AndroidStateStoreModule : StateStoreModule, Injects<Module> {
+class AndroidStateStoreModule(private val context: Context) : StateStoreModule, Injects<Module> {
 
     override val stateStore by required {
-        StateStore<AppState>(AppReducer)
+        StateStore<AppState>(
+            AppReducer,
+            listOf(LoadDataMiddleware(context, job + CommonPool))
+        )
     }
+
 }
 
 class MainAndroidModule(private val context: Context) : AndroidModule {

@@ -93,7 +93,7 @@ class myPoliApp : Application() {
             repositoryModule = CouchbaseRepositoryModule(),
             useCaseModule = MainUseCaseModule(),
             presenterModule = AndroidPresenterModule(),
-            stateStoreModule = AndroidStateStoreModule()
+            stateStoreModule = AndroidStateStoreModule(this)
         ).transitive()
 
         instance = this

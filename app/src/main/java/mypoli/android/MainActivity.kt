@@ -12,6 +12,7 @@ import com.amplitude.api.Amplitude
 import com.bluelinelabs.conductor.Conductor
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
+import mypoli.android.common.LoadDataAction
 import mypoli.android.common.di.Module
 import mypoli.android.common.view.playerTheme
 import mypoli.android.home.HomeViewController
@@ -81,6 +82,7 @@ class MainActivity : AppCompatActivity(), Injects<Module> {
 //            router.setRoot(RouterTransaction.with(ChallengeCategoryListViewController()))
 //            router.setRoot(RouterTransaction.with(PersonalizeChallengeViewController()))
         }
+        stateStore.dispatch(LoadDataAction.All)
     }
 
     private fun migrateIfNeeded() {
