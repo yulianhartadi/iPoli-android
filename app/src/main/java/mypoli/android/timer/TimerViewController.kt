@@ -122,7 +122,8 @@ class TimerViewController :
                 startTimer(view, state)
             }
 
-            TimerViewState.StateType.TIMER_STARTED -> {
+            TimerViewState.StateType.TIMER_REPLACED -> {
+                showShortToast(R.string.timer_replaced)
             }
 
             TimerViewState.StateType.TIMER_STOPPED -> {

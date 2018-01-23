@@ -18,7 +18,6 @@ import mypoli.android.timer.usecase.SplitDurationForPomodoroTimerUseCase.Result.
 import mypoli.android.timer.usecase.SplitDurationForPomodoroTimerUseCase.Result.DurationSplit
 import mypoli.android.timer.view.formatter.TimerFormatter
 import org.threeten.bp.Instant
-import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 /**
@@ -58,12 +57,13 @@ class TimerPresenter(
             }
 
             TimerIntent.Start -> {
-                val quest = if (state.quest!!.hasTimer) {
-                    completeTimeRangeUseCase.execute(
+                val (quest, stateType) = if (state.quest!!.hasTimer) {
+                    val quest = completeTimeRangeUseCase.execute(
                         CompleteTimeRangeUseCase.Params(
                             questId = state.quest.id
                         )
                     )
+                    Pair(quest, TIMER_STARTED)
                 } else {
                     val result = addTimerToQuestUseCase.execute(
                         AddTimerToQuestUseCase.Params(
@@ -71,8 +71,9 @@ class TimerPresenter(
                             isPomodoro = state.timerType == TimerViewState.TimerType.POMODORO
                         )
                     )
-                    Timber.d("AAAA other timer stopped ${result.otherTimerStopped}")
-                    result.quest
+
+                    val type = if (result.otherTimerStopped) TIMER_REPLACED else TIMER_STARTED
+                    Pair(result.quest, type)
                 }
 
                 val currentProgressIndicator =
@@ -81,7 +82,7 @@ class TimerPresenter(
                     else state.currentProgressIndicator
 
                 state.copy(
-                    type = TIMER_STARTED,
+                    type = stateType,
                     timerProgress = 0,
                     maxTimerProgress = state.remainingTime!!.asSeconds.longValue.toInt(),
                     currentProgressIndicator = currentProgressIndicator

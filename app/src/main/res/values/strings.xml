@@ -1096,6 +1096,7 @@
     <string name="no_quest_selected">Select some quests first</string>
     <string name="feedback_response">Thank you!</string>
     <string name="date">Date</string>
+    <string name="timer_replaced">All other timers are stopped. Have fun!</string>
 
     <string-array name="player_titles">
         <item>Novice</item>

@@ -16,7 +16,6 @@ import mypoli.android.quest.*
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
 import org.threeten.bp.ZoneId
-import timber.log.Timber
 import kotlin.coroutines.experimental.CoroutineContext
 
 interface QuestRepository : Repository<Quest> {
@@ -154,21 +153,14 @@ class CouchbaseQuestRepository(database: Database, coroutineContext: CoroutineCo
     }
 
     override fun findStartedQuest(): Quest? {
-//        val query = createQuery(
-//            where = property("completedAtDate").isNullOrMissing
-//                .and(
-//                    ArrayFunction.length(property("pomodoroTimeRanges")).equalTo(0)
-//                        .or(property("pomodoroTimeRanges")).notNullOrMissing()
-//                ),
-//            limit = 1
-//        )
         val query = createQuery(
-            where = ArrayFunction.length(property("pomodoroTimeRanges")).greaterThan(0)
-                .and(property("pomodoroTimeRanges").notNullOrMissing()),
+            where = property("completedAtDate").isNullOrMissing.and(
+                ArrayFunction.length(property("pomodoroTimeRanges")).greaterThan(0)
+                    .or(property("actualStart").notNullOrMissing())
+            ),
             limit = 1
         )
         val result = query.execute().next()
-        Timber.d("AAAA ${result?.toMap()}")
         return result?.let {
             toEntityObject(it)
         }

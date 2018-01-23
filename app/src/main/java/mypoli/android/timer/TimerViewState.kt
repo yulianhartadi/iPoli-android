@@ -46,6 +46,7 @@ data class TimerViewState(
         SHOW_POMODORO,
         SHOW_COUNTDOWN,
         TIMER_STARTED,
+        TIMER_REPLACED,
         TIMER_STOPPED,
         RUNNING,
         POMODORO_ADDED,
