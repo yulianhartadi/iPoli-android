@@ -27,7 +27,7 @@ class TimerViewController :
 
     private lateinit var questId: String
 
-    private lateinit var handler: Handler
+    private val handler = Handler(Looper.getMainLooper())
 
     private val presenter by required { timerPresenter }
 
@@ -38,8 +38,6 @@ class TimerViewController :
     }
 
     override fun createPresenter() = presenter
-
-    private lateinit var updateTimer: () -> Unit
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -88,6 +86,7 @@ class TimerViewController :
     }
 
     override fun onDetach(view: View) {
+        handler.removeCallbacksAndMessages(null)
         cancelAnimations(view)
         exitFullScreen()
         super.onDetach(view)
@@ -184,7 +183,11 @@ class TimerViewController :
         renderTypeSwitch(view, state)
         renderTimerIndicatorsProgress(view, state)
 
-        handler = Handler(Looper.getMainLooper())
+        handler.removeCallbacksAndMessages(null)
+        cancelAnimations(view)
+
+        var updateTimer = {}
+
         updateTimer = {
             send(TimerIntent.Tick)
             handler.postDelayed(updateTimer, 1000)
