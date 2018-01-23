@@ -108,9 +108,9 @@ abstract class BaseMviPresenter<in V : ViewStateRenderer<VS>, VS : ViewState, I 
         }
     }
 
-    protected fun <D> addReceiveChannel(channel: ReceiveChannel<D>): ReceiveChannel<D> {
-        receiveChannels += channel
-        return channel
+    protected fun <D> ReceiveChannel<D>.autoStop(): ReceiveChannel<D> {
+        receiveChannels += this
+        return this
     }
 
     private fun stopReceiveChannels() {

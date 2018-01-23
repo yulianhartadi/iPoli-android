@@ -38,20 +38,15 @@ class TimerPresenter(
     coroutineContext
 ) {
 
-//    private var questChangeChannel: ReceiveChannel<Quest>? = null
-
     override fun reduceState(intent: TimerIntent, state: TimerViewState) =
 
         when (intent) {
             is TimerIntent.LoadData -> {
 
                 launch(coroutineContext) {
-
-                    addReceiveChannel(
-                        listenForQuestChangeUseCase.execute(
-                            ListenForQuestChangeUseCase.Params(intent.questId)
-                        )
-                    ).consumeEach {
+                    listenForQuestChangeUseCase.execute(
+                        ListenForQuestChangeUseCase.Params(intent.questId)
+                    ).autoStop().consumeEach {
                         sendChannel.send(TimerIntent.QuestChanged(it))
                     }
                 }
