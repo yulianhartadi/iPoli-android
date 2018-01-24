@@ -30,7 +30,8 @@ data class CompletedQuestViewState(
     val timer: Timer? = null,
     val experience: Int? = null,
     val coins: Int? = null,
-    val bounty: Food? = null
+    val bounty: Food? = null,
+    val playerLevel: Int? = null
 ) : ViewState {
 
     enum class StateType {

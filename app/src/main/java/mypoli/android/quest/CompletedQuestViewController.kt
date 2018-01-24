@@ -13,6 +13,7 @@ import mypoli.android.common.datetime.Minute
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.text.DurationFormatter
+import mypoli.android.common.view.attr
 import mypoli.android.common.view.colorRes
 import mypoli.android.common.view.goneViews
 import mypoli.android.common.view.showViews
@@ -70,7 +71,8 @@ class CompletedQuestViewController :
                         null
                     )
                 }
-                view.questName.setBackgroundResource(state.color!!.color500)
+                val color = state.color!!
+                view.questName.setBackgroundResource(color.color500)
 
                 view.questDate.text = DateFormatter.format(view.context, state.completeAt)
                 view.questTime.text = "${state.startedAt} - ${state.finishedAt}"
@@ -80,8 +82,19 @@ class CompletedQuestViewController :
                 renderTimer(state.timer!!, view, state.totalDuration)
                 renderBounty(view, state)
 
-                view.questDurationProgress.progressTintList = ColorStateList.valueOf(colorRes(R.color.md_red_500))
-                view.questDurationProgress.secondaryProgressTintList = ColorStateList.valueOf(colorRes(R.color.md_red_300))
+                view.questDurationProgress.progressTintList =
+                    ColorStateList.valueOf(colorRes(color.color200))
+                view.questDurationProgress.secondaryProgressTintList =
+                    ColorStateList.valueOf(colorRes(color.color100))
+                view.questDurationProgress.backgroundTintList =
+                    ColorStateList.valueOf(colorRes(color.color500))
+
+                view.levelProgress.progressTintList =
+                    ColorStateList.valueOf(attr(R.attr.colorAccent))
+                view.levelProgress.secondaryProgressTintList =
+                    ColorStateList.valueOf(attr(R.attr.colorAccent))
+                view.levelProgress.backgroundTintList =
+                    ColorStateList.valueOf(attr(R.attr.colorAccent))
             }
         }
     }

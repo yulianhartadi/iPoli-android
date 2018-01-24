@@ -5,6 +5,7 @@ import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.common.view.AndroidColor
 import mypoli.android.common.view.AndroidIcon
+import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.quest.CompletedQuestViewState.StateType.DATA_LOADED
 import mypoli.android.quest.CompletedQuestViewState.StateType.LOADING
 import mypoli.android.quest.data.persistence.QuestRepository
@@ -19,6 +20,7 @@ import kotlin.coroutines.experimental.CoroutineContext
  */
 class CompletedQuestPresenter(
     private val questRepository: QuestRepository,
+    private val playerRepository: PlayerRepository,
     private val splitDurationForPomodoroTimerUseCase: SplitDurationForPomodoroTimerUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<CompletedQuestViewState>, CompletedQuestViewState, CompletedQuestIntent>(
@@ -78,6 +80,8 @@ class CompletedQuestPresenter(
                     )
                 }
 
+                val player = playerRepository.find()!!
+
                 state.copy(
                     type = DATA_LOADED,
                     name = quest.name,
@@ -98,7 +102,8 @@ class CompletedQuestPresenter(
                         } else {
                             null
                         }
-                    }
+                    },
+                    playerLevel = player.level
                 )
             }
         }
