@@ -7,283 +7,10 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <!--<android.support.v7.widget.CardView-->
-        <!--android:id="@+id/NoTimer"-->
-        <!--android:layout_width="49dp"-->
-        <!--android:layout_height="30dp"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginStart="8dp"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:visibility="gone"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent">-->
-
-        <!--<android.support.constraint.ConstraintLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent">-->
-
-        <!--<android.support.constraint.ConstraintLayout-->
-        <!--android:id="@+id/questName"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:background="@color/md_green_500"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent">-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/textView2"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginBottom="8dp"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:drawableLeft="@drawable/drawable_ic_worck"-->
-        <!--android:drawablePadding="8dp"-->
-        <!--android:text="Page design completed task"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Body1"-->
-        <!--android:textColor="@color/cardview_light_background"-->
-        <!--android:textSize="18sp"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintHorizontal_bias="0.0"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent" />-->
-        <!--</android.support.constraint.ConstraintLayout>-->
-
-        <!--<android.support.constraint.ConstraintLayout-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="0dp"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/questName">-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/textView4"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="18dp"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:drawableLeft="@drawable/drawable_calendar"-->
-        <!--android:drawablePadding="8dp"-->
-        <!--android:fontFamily="sans-serif"-->
-        <!--android:text="22 Jan 2018 -  23 Jan 2018"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Body2"-->
-        <!--android:visibility="visible"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintHorizontal_bias="0.0"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/textView5"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="16dp"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--android:layout_marginTop="4dp"-->
-        <!--android:drawableLeft="@drawable/drawable_clock"-->
-        <!--android:drawablePadding="8dp"-->
-        <!--android:text="4:15 a.m  - 7:20 p.m  "-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Body1"-->
-        <!--android:visibility="visible"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintHorizontal_bias="0.0"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/textView4" />-->
-
-        <!--<ProgressBar-->
-        <!--android:id="@+id/progressBar3"-->
-        <!--style="@android:style/Widget.DeviceDefault.ProgressBar"-->
-        <!--android:layout_width="71dp"-->
-        <!--android:layout_height="69dp"-->
-        <!--android:layout_marginBottom="16dp"-->
-        <!--android:layout_marginEnd="16dp"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:background="@drawable/proggresbar_time"-->
-        <!--android:indeterminate="false"-->
-        <!--android:progress="0"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintHorizontal_bias="0.664"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/textView5"-->
-        <!--app:layout_constraintTop_toTopOf="parent"-->
-        <!--app:layout_constraintVertical_bias="0.0" />-->
-        <!--</android.support.constraint.ConstraintLayout>-->
-
-        <!--</android.support.constraint.ConstraintLayout>-->
-        <!--</android.support.v7.widget.CardView>-->
-
-        <!--<android.support.v7.widget.CardView-->
-        <!--android:id="@+id/Timer"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="174dp"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginStart="8dp"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:visibility="gone"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent">-->
-
-        <!--<android.support.constraint.ConstraintLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent">-->
-
-        <!--<android.support.constraint.ConstraintLayout-->
-        <!--android:id="@+id/questName"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:background="@color/colorCard"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent">-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/textView2"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginBottom="16dp"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:drawableLeft="@drawable/drawable_ic_worck"-->
-        <!--android:drawablePadding="8dp"-->
-        <!--android:text="Page design completed task"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Body1"-->
-        <!--android:textColor="@color/cardview_light_background"-->
-        <!--android:textSize="18sp"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintHorizontal_bias="0.0"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent" />-->
-        <!--</android.support.constraint.ConstraintLayout>-->
-
-        <!--<android.support.constraint.ConstraintLayout-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="115dp"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/questName">-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/textView4"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="19dp"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:drawableLeft="@drawable/drawable_calendar"-->
-        <!--android:drawablePadding="8dp"-->
-        <!--android:fontFamily="sans-serif"-->
-        <!--android:text="22 Jan 2018 -  23 Jan 2018"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Body2"-->
-        <!--android:textSize="16sp"-->
-        <!--android:visibility="visible"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintHorizontal_bias="0.0"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/textView5"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="21dp"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--android:layout_marginTop="4dp"-->
-        <!--android:drawableLeft="@drawable/drawable_clock"-->
-        <!--android:drawablePadding="8dp"-->
-        <!--android:text="4:15 a.m  - 7:20 p.m  "-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Body1"-->
-        <!--android:textSize="16sp"-->
-        <!--android:visibility="visible"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintHorizontal_bias="0.0"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/textView4" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/textView7"-->
-        <!--android:layout_width="54dp"-->
-        <!--android:layout_height="19dp"-->
-        <!--android:layout_marginStart="32dp"-->
-        <!--android:layout_marginTop="12dp"-->
-        <!--android:drawableLeft="@drawable/drawable_ic_timer"-->
-        <!--android:text="Timer"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Body1"-->
-        <!--android:textSize="16sp"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/textView5" />-->
-
-        <!--<ProgressBar-->
-        <!--android:id="@+id/progressBar3"-->
-        <!--style="@android:style/Widget.DeviceDefault.ProgressBar"-->
-        <!--android:layout_width="79dp"-->
-        <!--android:layout_height="81dp"-->
-        <!--android:layout_marginBottom="16dp"-->
-        <!--android:layout_marginEnd="16dp"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:background="@drawable/proggresbar_time"-->
-        <!--android:indeterminate="false"-->
-        <!--android:progress="0"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintHorizontal_bias="1.0"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/textView5"-->
-        <!--app:layout_constraintTop_toTopOf="parent" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/textView8"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="20dp"-->
-        <!--android:layout_marginBottom="16dp"-->
-        <!--android:layout_marginStart="32dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:text="Worck:"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Body1"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/textView7" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/textView10"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="19dp"-->
-        <!--android:layout_marginStart="2dp"-->
-        <!--android:text="1hour 30 min"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Body1"-->
-        <!--app:layout_constraintBottom_toBottomOf="@+id/textView8"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/textView8"-->
-        <!--app:layout_constraintTop_toTopOf="@+id/textView8" />-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/textView11"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="19dp"-->
-        <!--android:layout_marginStart="2dp"-->
-        <!--android:text="(+20 min)"-->
-        <!--app:layout_constraintBottom_toBottomOf="@+id/textView8"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/textView10"-->
-        <!--app:layout_constraintTop_toTopOf="@+id/textView8" />-->
-
-        <!--</android.support.constraint.ConstraintLayout>-->
-
-        <!--</android.support.constraint.ConstraintLayout>-->
-        <!--</android.support.v7.widget.CardView>-->
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.CardView
-            android:id="@+id/TimerPomodoro"
+            android:id="@+id/questDetailsContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -291,7 +18,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             app:cardCornerRadius="6dp"
-            app:cardElevation="6dp"
+            app:cardElevation="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -471,137 +198,139 @@
 
         </android.support.v7.widget.CardView>
 
-        <!--<android.support.v7.widget.CardView-->
-        <!--android:id="@+id/cardView"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="213dp"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginStart="8dp"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/TimerPomodoro">-->
+        <android.support.v7.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="6dp"
+            app:cardElevation="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/questDetailsContainer">
 
-        <!--<android.support.constraint.ConstraintLayout-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent">-->
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-        <!--<TextView-->
-        <!--android:id="@+id/textView26"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginStart="16dp"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:text="Statistic"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Body1"-->
-        <!--android:textSize="16sp"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintHorizontal_bias="0.0"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent" />-->
+                <TextView
+                    android:id="@+id/textView26"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Statistic"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <!--<ProgressBar-->
-        <!--android:id="@+id/progressBar4"-->
-        <!--style="?android:attr/progressBarStyle"-->
-        <!--android:layout_width="78dp"-->
-        <!--android:layout_height="79dp"-->
-        <!--android:layout_marginStart="32dp"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:background="@drawable/lvl"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/textView26" />-->
+                <ProgressBar
+                    android:id="@+id/progressBar4"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="78dp"
+                    android:layout_height="79dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="16dp"
+                    android:progressDrawable="@drawable/completed_quest_duration_progress_background"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView26" />
 
-        <!--<TextView-->
-        <!--android:id="@+id/textView27"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginStart="32dp"-->
-        <!--android:text="From Task Complete"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Body1"-->
-        <!--android:textSize="16sp"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/progressBar4"-->
-        <!--app:layout_constraintTop_toTopOf="@+id/progressBar4" />-->
+                <TextView
+                    android:id="@+id/textView27"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:text="From Task Complete"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toEndOf="@+id/progressBar4"
+                    app:layout_constraintTop_toTopOf="@+id/progressBar4" />
 
-        <!--<TextView-->
-        <!--android:id="@+id/textView28"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginStart="32dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:text="+10 live cones"-->
-        <!--android:textSize="14sp"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/progressBar4"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/textView27" />-->
+                <TextView
+                    android:id="@+id/textView28"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="8dp"
+                    android:text="+10 live cones"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toEndOf="@+id/progressBar4"
+                    app:layout_constraintTop_toBottomOf="@+id/textView27" />
 
-        <!--<TextView-->
-        <!--android:id="@+id/textView29"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginStart="32dp"-->
-        <!--android:layout_marginTop="4dp"-->
-        <!--android:text="+40 experience"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/progressBar4"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/textView28" />-->
+                <TextView
+                    android:id="@+id/textView29"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="4dp"
+                    android:text="+40 experience"
+                    app:layout_constraintStart_toEndOf="@+id/progressBar4"
+                    app:layout_constraintTop_toBottomOf="@+id/textView28" />
 
-        <!--<android.support.v4.view.ViewPager-->
-        <!--android:id="@+id/viewPager"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="2dp"-->
-        <!--android:layout_marginEnd="32dp"-->
-        <!--android:layout_marginStart="32dp"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:background="@color/colorOpacity"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintHorizontal_bias="0.0"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/progressBar4" />-->
+                <View
+                    android:id="@+id/viewPager"
+                    android:layout_width="0dp"
+                    android:layout_height="2dp"
+                    android:layout_marginEnd="32dp"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/md_dark_text_87"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/progressBar4" />
 
-        <!--<TextView-->
-        <!--android:id="@+id/textView30"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginStart="32dp"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:text="Bonus:"-->
-        <!--android:textAppearance="@style/TextAppearance.AppCompat.Body1"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/viewPager" />-->
+                <TextView
+                    android:id="@+id/textView30"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Bonus:"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/viewPager" />
 
-        <!--<TextView-->
-        <!--android:id="@+id/textView31"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginStart="2dp"-->
-        <!--android:text="Food"-->
-        <!--app:layout_constraintBottom_toBottomOf="@+id/textView30"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/textView30"-->
-        <!--app:layout_constraintTop_toTopOf="@+id/textView30" />-->
+                <TextView
+                    android:id="@+id/textView31"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:text="Food"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView30"
+                    app:layout_constraintStart_toEndOf="@+id/textView30"
+                    app:layout_constraintTop_toTopOf="@+id/textView30" />
 
-        <!--<ImageView-->
-        <!--android:id="@+id/imageView2"-->
-        <!--android:layout_width="35dp"-->
-        <!--android:layout_height="28dp"-->
-        <!--android:layout_marginStart="8dp"-->
-        <!--app:layout_constraintBottom_toBottomOf="@+id/textView31"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/textView31"-->
-        <!--app:layout_constraintTop_toTopOf="@+id/textView31"-->
-        <!--app:srcCompat="@drawable/food_beer_1" />-->
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="35dp"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="8dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView31"
+                    app:layout_constraintStart_toEndOf="@+id/textView31"
+                    app:layout_constraintTop_toTopOf="@+id/textView31"
+                    app:srcCompat="@drawable/food_beer_1" />
 
-        <!--<TextView-->
-        <!--android:id="@+id/textView32"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginBottom="8dp"-->
-        <!--android:layout_marginStart="8dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:text="Cherry"-->
-        <!--app:layout_constraintBottom_toBottomOf="@+id/imageView2"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/imageView2"-->
-        <!--app:layout_constraintTop_toTopOf="@+id/imageView2" />-->
+                <TextView
+                    android:id="@+id/textView32"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="Cherry"
+                    app:layout_constraintBottom_toBottomOf="@+id/imageView2"
+                    app:layout_constraintStart_toEndOf="@+id/imageView2"
+                    app:layout_constraintTop_toTopOf="@+id/imageView2" />
 
-        <!--</android.support.constraint.ConstraintLayout>-->
-        <!--</android.support.v7.widget.CardView>-->
+            </android.support.constraint.ConstraintLayout>
+        </android.support.v7.widget.CardView>
 
 
     </android.support.constraint.ConstraintLayout>
