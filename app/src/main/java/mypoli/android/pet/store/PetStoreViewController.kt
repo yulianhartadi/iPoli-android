@@ -14,27 +14,27 @@ import kotlinx.android.synthetic.main.item_pet_store.view.*
 import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import mypoli.android.R
 import mypoli.android.common.ViewUtils
-import mypoli.android.common.mvi.MviViewController
-import mypoli.android.common.view.*
-import mypoli.android.pet.AndroidPetAvatar
+import mypoli.android.common.redux.android.ReduxViewController
+import mypoli.android.common.view.CurrencyConverterDialogController
+import mypoli.android.common.view.setToolbar
+import mypoli.android.common.view.showBackButton
+import mypoli.android.common.view.visible
 import mypoli.android.pet.PetAvatar
-import mypoli.android.pet.PetMood
-import mypoli.android.pet.store.PetStoreIntent.*
+import mypoli.android.pet.store.PetStoreAction.*
 import mypoli.android.pet.store.PetStoreViewState.StateType.*
 import mypoli.android.store.GemStoreViewController
-import space.traversal.kapsule.required
 
 /**
  * Created by Polina Zhelyazkova <polina@mypoli.fun>
  * on 12/4/17.
  */
 class PetStoreViewController(args: Bundle? = null) :
-    MviViewController<PetStoreViewState, PetStoreViewController, PetStorePresenter, PetStoreIntent>(
+//    MviViewController<PetStoreViewState, PetStoreViewController, PetStorePresenter, PetStoreIntent>(
+    ReduxViewController<PetStoreAction, PetStoreViewState, PetStoreReduxPresenter>(
         args
     ) {
-    private val presenter by required { petStorePresenter }
 
-    override fun createPresenter() = presenter
+    override val presenter get() = PetStoreReduxPresenter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,7 +57,7 @@ class PetStoreViewController(args: Bundle? = null) :
     override fun onAttach(view: View) {
         showBackButton()
         super.onAttach(view)
-        send(LoadData)
+//        send(LoadData)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -103,61 +103,45 @@ class PetStoreViewController(args: Bundle? = null) :
         )
     }
 
-    data class PetViewModel(
-        val avatar: AndroidPetAvatar,
-        val isBought: Boolean = false,
-        val isCurrent: Boolean = false,
-        val isLocked: Boolean = false
-    )
-
-    inner class PetPagerAdapter(private var viewModels: List<PetViewModel>) : PagerAdapter() {
+    inner class PetPagerAdapter(private var viewModels: List<PetStoreReduxPresenter.PetViewModel>) :
+        PagerAdapter() {
 
         override fun instantiateItem(container: ViewGroup, position: Int): Any {
             val inflater = LayoutInflater.from(container.context)
             val view = inflater.inflate(R.layout.item_pet_store, container, false)
             val vm = viewModels[position]
             val avatar = vm.avatar
-            view.petName.setText(avatar.petName)
-            view.pet.setImageResource(avatar.image)
+            view.petName.setText(vm.name)
+            view.pet.setImageResource(vm.image)
             view.petPrice.text = PetAvatar.valueOf(avatar.name).gemPrice.toString()
-            view.petDescription.setText(avatar.description)
+            view.petDescription.setText(vm.description)
             val action = view.petAction
             val current = view.currentPet
-            when {
-                vm.isCurrent -> {
-                    action.visible = false
-                    current.visible = true
-                    view.petState.setImageResource(avatar.moodImage[PetMood.HAPPY]!!)
-                }
-                vm.isBought -> {
-                    action.visible = true
-                    current.visible = false
-                    action.text = stringRes(R.string.store_pet_in_inventory)
-                    action.setOnClickListener {
-                        send(ChangePet(PetAvatar.valueOf(vm.avatar.name)))
-                    }
-                    view.petState.setImageResource(avatar.moodImage[PetMood.GOOD]!!)
-                }
-                vm.isLocked -> {
-                    action.visible = true
-                    current.visible = false
-                    action.text = stringRes(R.string.unlock)
-                    action.setOnClickListener {
-                        send(UnlockPet(PetAvatar.valueOf(vm.avatar.name)))
-                    }
-                    view.petState.setImageResource(avatar.moodImage[PetMood.GOOD]!!)
-                }
-                else -> {
-                    action.visible = true
-                    current.visible = false
-                    action.text = stringRes(R.string.store_buy_pet)
-                    action.setOnClickListener {
-                        send(BuyPet(PetAvatar.valueOf(vm.avatar.name)))
 
-                    }
-                    view.petState.setImageResource(avatar.moodImage[PetMood.GOOD]!!)
+            action.visible = vm.showAction
+            current.visible = vm.showIsCurrent
+            view.petState.setImageResource(vm.moodImage)
+
+            vm.actionText?.let {
+                action.setText(it)
+            }
+
+            action.setOnClickListener(null)
+
+            when (vm.action) {
+                PetStoreReduxPresenter.PetViewModel.Action.CHANGE -> {
+                    action.dispatchOnClick(ChangePet(vm.avatar))
+                }
+
+                PetStoreReduxPresenter.PetViewModel.Action.UNLOCK -> {
+                    action.dispatchOnClick(UnlockPet(vm.avatar))
+                }
+
+                PetStoreReduxPresenter.PetViewModel.Action.BUY -> {
+                    action.dispatchOnClick(BuyPet(vm.avatar))
                 }
             }
+
             container.addView(view)
             return view
         }
@@ -172,7 +156,7 @@ class PetStoreViewController(args: Bundle? = null) :
 
         override fun getItemPosition(`object`: Any) = PagerAdapter.POSITION_NONE
 
-        fun updateAll(viewModels: List<PetViewModel>) {
+        fun updateAll(viewModels: List<PetStoreReduxPresenter.PetViewModel>) {
             this.viewModels = viewModels
             notifyDataSetChanged()
         }

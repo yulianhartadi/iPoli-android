@@ -4,13 +4,10 @@ import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
-import mypoli.android.pet.AndroidPetAvatar
-import mypoli.android.pet.PetAvatar
 import mypoli.android.pet.store.PetStoreIntent.*
 import mypoli.android.pet.store.PetStoreViewState.StateType.*
 import mypoli.android.pet.usecase.BuyPetUseCase
 import mypoli.android.pet.usecase.ChangePetUseCase
-import mypoli.android.player.Player
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
 import kotlin.coroutines.experimental.CoroutineContext
 
@@ -44,7 +41,7 @@ class PetStorePresenter(
                 state.copy(
                     type = PLAYER_CHANGED,
                     playerGems = intent.player.gems,
-                    petViewModels = createPetViewModels(intent.player)
+                    petViewModels = listOf()
                 )
             }
 
@@ -74,14 +71,14 @@ class PetStorePresenter(
             }
         }
 
-    private fun createPetViewModels(player: Player) =
-        AndroidPetAvatar.values().map {
-            val petAvatar = PetAvatar.valueOf(it.name)
-            PetStoreViewController.PetViewModel(
-                avatar = it,
-                isBought = player.hasPet(petAvatar),
-                isCurrent = player.pet.avatar == petAvatar,
-                isLocked = (it == AndroidPetAvatar.DOG && !player.hasPet(PetAvatar.DOG))
-            )
-        }
+//    private fun createPetViewModels(player: Player) =
+//        AndroidPetAvatar.values().map {
+//            val petAvatar = PetAvatar.valueOf(it.name)
+//            PetStoreViewController.PetModel(
+//                avatar = it,
+//                isBought = player.hasPet(petAvatar),
+//                isCurrent = player.pet.avatar == petAvatar,
+//                isLocked = (it == AndroidPetAvatar.DOG && !player.hasPet(PetAvatar.DOG))
+//            )
+//        }
 }

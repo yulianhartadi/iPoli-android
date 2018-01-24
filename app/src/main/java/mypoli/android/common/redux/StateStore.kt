@@ -15,11 +15,20 @@ interface AsyncAction : Action {
 
 interface State
 
+interface PartialState
+
 interface Reducer<S : State, in A : Action> {
 
     fun reduce(state: S, action: A): S
 
     fun defaultState(): S
+}
+
+interface PartialReducer<in S : State, out P : PartialState, in A : Action> {
+
+    fun reduce(state: S, action: A): P
+
+    fun defaultState(): P
 }
 
 interface Dispatcher {
