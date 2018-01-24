@@ -313,7 +313,6 @@
                     android:text="Page design completed task"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     android:textColor="@color/md_light_text_87"
-
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
@@ -366,19 +365,19 @@
 
                 <ProgressBar
                     android:id="@+id/questDurationProgress"
-                    style="@android:style/Widget.DeviceDefault.ProgressBar"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
                     android:layout_marginBottom="16dp"
                     android:layout_marginEnd="16dp"
-                    android:layout_marginTop="8dp"
                     android:indeterminate="false"
-                    android:progress="0"
-                    android:progressDrawable="@drawable/timer_progress_background"
+                    android:max="100"
+                    android:progress="40"
+                    android:progressDrawable="@drawable/completed_quest_duration_progress_background"
+                    android:secondaryProgress="150"
+                    android:padding="8dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/timerLabel"
-                    app:layout_constraintVertical_bias="1.0" />
+                    app:layout_constraintEnd_toEndOf="parent" />
 
                 <TextView
                     android:id="@+id/questWorkTime"
@@ -420,6 +419,23 @@
                     android:textSize="14sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/timerLabel" />
+
+                <TextView
+                    android:id="@+id/questProgressDuration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="1h 30m"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="@color/md_light_text_87"
+                    app:layout_constraintBottom_toBottomOf="@+id/questDurationProgress"
+                    app:layout_constraintEnd_toEndOf="@+id/questDurationProgress"
+                    app:layout_constraintStart_toStartOf="@+id/questDurationProgress"
+                    app:layout_constraintTop_toTopOf="@+id/questDurationProgress"
+                    tools:text="1h 30m" />
 
             </android.support.constraint.ConstraintLayout>
 
