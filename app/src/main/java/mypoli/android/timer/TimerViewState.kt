@@ -50,7 +50,8 @@ data class TimerViewState(
         TIMER_STOPPED,
         RUNNING,
         POMODORO_ADDED,
-        POMODORO_REMOVED
+        POMODORO_REMOVED,
+        QUEST_COMPLETED
     }
 
     enum class TimerType {

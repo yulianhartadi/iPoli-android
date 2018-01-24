@@ -118,13 +118,13 @@ class TimerPresenter(
             }
 
             TimerIntent.CompletePomodoro -> {
-                completeTimeRangeUseCase.execute(
+                val quest = completeTimeRangeUseCase.execute(
                     CompleteTimeRangeUseCase.Params(
                         questId = state.quest!!.id
                     )
                 )
                 state.copy(
-                    type = TIMER_STOPPED
+                    type = if (quest.isCompleted) QUEST_COMPLETED else TIMER_STOPPED
                 )
             }
 
@@ -139,7 +139,7 @@ class TimerPresenter(
             TimerIntent.CompleteQuest -> {
                 completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(state.quest!!.id))
                 state.copy(
-                    type = TIMER_STOPPED
+                    type = QUEST_COMPLETED
                 )
             }
 

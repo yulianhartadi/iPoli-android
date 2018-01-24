@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import com.bluelinelabs.conductor.RouterTransaction
 import com.mikepenz.iconics.IconicsDrawable
 import com.mikepenz.ionicons_typeface_library.Ionicons
 import kotlinx.android.synthetic.main.controller_timer.view.*
@@ -16,6 +17,7 @@ import mypoli.android.R
 import mypoli.android.common.ViewUtils
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
+import mypoli.android.quest.CompletedQuestViewController
 import space.traversal.kapsule.required
 
 /**
@@ -97,7 +99,6 @@ class TimerViewController :
     }
 
     override fun render(state: TimerViewState, view: View) {
-
         view.questName.text = state.questName
         view.timerLabel.text = state.timerLabel
 
@@ -146,6 +147,9 @@ class TimerViewController :
                     view.startStop.sendOnClick(TimerIntent.CompletePomodoro)
                 }
             }
+
+            TimerViewState.StateType.QUEST_COMPLETED ->
+                showCompletedQuest(state.quest!!.id)
 
         }
     }
@@ -358,6 +362,10 @@ class TimerViewController :
         }
 
         view.timerProgressContainer.addView(progressView)
+    }
+
+    private fun showCompletedQuest(questId: String) {
+        pushWithRootRouter(RouterTransaction.with(CompletedQuestViewController(questId)))
     }
 
     enum class TimerButton {
