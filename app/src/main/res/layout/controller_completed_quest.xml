@@ -191,6 +191,7 @@
                     android:id="@+id/timerGroup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     app:constraint_referenced_ids="timerLabel,questWorkTime" />
 
             </android.support.constraint.ConstraintLayout>
@@ -356,7 +357,7 @@
                     android:id="@+id/bonusItemGroup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:constraint_referenced_ids="bonusItemName,bonusItemImage,divider,bonusLabel" />
 
             </android.support.constraint.ConstraintLayout>

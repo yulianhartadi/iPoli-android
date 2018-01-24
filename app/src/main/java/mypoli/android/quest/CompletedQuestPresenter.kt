@@ -35,7 +35,7 @@ class CompletedQuestPresenter(
                 val quest = questRepository.findById(intent.questId)!!
 
                 val timer = if (!quest.hasTimer) {
-                    CompletedQuestViewState.Timer.Untracked(quest.duration.minutes)
+                    CompletedQuestViewState.Timer.Untracked
                 } else if (quest.hasPomodoroTimer) {
                     val timeRanges = quest.timeRanges
 
@@ -74,7 +74,6 @@ class CompletedQuestPresenter(
                     )
                 } else {
                     CompletedQuestViewState.Timer.Countdown(
-                        quest.duration.minutes,
                         quest.actualDuration.asMinutes - quest.duration.minutes
                     )
                 }
@@ -86,8 +85,9 @@ class CompletedQuestPresenter(
                         AndroidIcon.valueOf(it.name)
                     },
                     color = AndroidColor.valueOf(quest.color.name),
+                    totalDuration = quest.actualDuration.asMinutes,
                     completeAt = quest.completedAtDate!!,
-                    startedAt = quest.startTime,
+                    startedAt = quest.actualStartTime,
                     finishedAt = quest.completedAtTime,
                     timer = timer,
                     experience = quest.experience,

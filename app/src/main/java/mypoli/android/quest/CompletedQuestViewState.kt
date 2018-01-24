@@ -23,6 +23,7 @@ data class CompletedQuestViewState(
     val name: String? = null,
     val icon: AndroidIcon? = null,
     val color: AndroidColor? = null,
+    val totalDuration: Duration<Minute>? = null,
     val completeAt: LocalDate? = null,
     val startedAt: Time? = null,
     val finishedAt: Time? = null,
@@ -48,12 +49,9 @@ data class CompletedQuestViewState(
         ) : Timer()
 
         data class Countdown(
-            val duration: Duration<Minute>,
             val overdueDuration: Duration<Minute>
         ) : Timer()
 
-        data class Untracked(
-            val duration: Duration<Minute>
-        ) : Timer()
+        object Untracked : Timer()
     }
 }

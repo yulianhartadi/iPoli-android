@@ -135,6 +135,18 @@ data class Quest(
         get() =
             if (hasTimer) timeRanges.first().start else null
 
+    val actualStartTime: Time?
+        get() {
+            if (isCompleted) {
+                val localCompletedAt = LocalDateTime.of(
+                    completedAtDate,
+                    LocalTime.of(completedAtTime!!.hours, completedAtTime.getMinutes())
+                )
+                val result = localCompletedAt.minusSeconds(actualDuration.longValue)
+                return Time.at(result.hour, result.minute)
+            }
+            return startTime
+        }
 
     val actualDuration: Duration<Second>
         get() {
