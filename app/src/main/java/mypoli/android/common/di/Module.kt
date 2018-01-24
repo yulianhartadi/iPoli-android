@@ -379,6 +379,8 @@ interface PresenterModule {
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
+
+    private val questRepository by required { questRepository }
     private val loadScheduleForDateUseCase by required { loadScheduleForDateUseCase }
     private val saveQuestUseCase by required { saveQuestUseCase }
     private val removeQuestUseCase by required { removeQuestUseCase }
@@ -516,6 +518,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
         )
     override val completedQuestPresenter: CompletedQuestPresenter
         get() = CompletedQuestPresenter(
+            questRepository,
             job
         )
 }

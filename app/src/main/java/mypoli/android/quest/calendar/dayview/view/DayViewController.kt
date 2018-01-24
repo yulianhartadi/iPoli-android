@@ -553,7 +553,7 @@ class DayViewController :
                 }
 
                 view.setOnClickListener {
-                    router.pushController(RouterTransaction.with(CompletedQuestViewController(vm.id)))
+                    showCompletedQuest(vm.id)
                 }
             } else {
 
@@ -685,6 +685,10 @@ class DayViewController :
         private fun tintList(@ColorRes color: Int) = ContextCompat.getColorStateList(context, color)
     }
 
+    private fun showCompletedQuest(questId: String) {
+        pushWithRootRouter(RouterTransaction.with(CompletedQuestViewController(questId)))
+    }
+
     data class UnscheduledQuestViewModel(
         override val id: String,
         val name: String,
@@ -737,7 +741,7 @@ class DayViewController :
                 }
 
                 itemView.setOnClickListener {
-                    router.pushController(RouterTransaction.with(CompletedQuestViewController(event.id)))
+                    showCompletedQuest(event.id)
                 }
 
             } else {

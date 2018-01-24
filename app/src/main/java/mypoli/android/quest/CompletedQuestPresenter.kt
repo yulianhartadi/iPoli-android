@@ -2,6 +2,7 @@ package mypoli.android.quest
 
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
+import mypoli.android.quest.CompletedQuestViewState.StateType.DATA_LOADED
 import mypoli.android.quest.CompletedQuestViewState.StateType.LOADING
 import mypoli.android.quest.data.persistence.QuestRepository
 import kotlin.coroutines.experimental.CoroutineContext
@@ -12,7 +13,7 @@ import kotlin.coroutines.experimental.CoroutineContext
  */
 class CompletedQuestPresenter(
     private val questRepository: QuestRepository,
-    private val coroutineContext: CoroutineContext
+    coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<CompletedQuestViewState>, CompletedQuestViewState, CompletedQuestIntent>(
     CompletedQuestViewState(LOADING),
     coroutineContext
@@ -24,7 +25,9 @@ class CompletedQuestPresenter(
         when (intent) {
             is CompletedQuestIntent.LoadData -> {
                 val quest = questRepository.findById(intent.questId)
-                state
+                state.copy(
+                    type = DATA_LOADED
+                )
             }
         }
 
