@@ -1,7 +1,12 @@
 package mypoli.android.quest
 
+import mypoli.android.common.datetime.Duration
+import mypoli.android.common.datetime.Minute
+import mypoli.android.common.datetime.Time
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
+import mypoli.android.pet.Food
+import org.threeten.bp.LocalDate
 
 /**
  * Created by Polina Zhelyazkova <polina@ipoli.io>
@@ -12,11 +17,39 @@ sealed class CompletedQuestIntent : Intent {
 }
 
 data class CompletedQuestViewState(
-    val type: StateType
+    val type: StateType,
+    val name: String? = null,
+    val completeAt: LocalDate? = null,
+    val startedAt: Time? = null,
+    val finishedAt: Time? = null,
+    val timer: Timer? = null,
+    val experience: Int? = null,
+    val coins: Int? = null,
+    val bounty: Food? = null
 ) : ViewState {
 
     enum class StateType {
         LOADING,
         DATA_LOADED
+    }
+
+    sealed class Timer {
+        data class Pomodoro(
+            val completedPomodoros: Int,
+            val totalPomodoros: Int,
+            val workDuration: Duration<Minute>,
+            val overdueWorkDuration: Duration<Minute>,
+            val breakDuration: Duration<Minute>,
+            val overdueBreakDuration: Duration<Minute>
+        ) : Timer()
+
+        data class Countdown(
+            val duration: Duration<Minute>,
+            val overdueDuration: Duration<Minute>
+        ) : Timer()
+
+        data class Untracked(
+            val duration: Duration<Minute>
+        ) : Timer()
     }
 }
