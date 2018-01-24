@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.mikepenz.iconics.IconicsDrawable
+import kotlinx.android.synthetic.main.controller_completed_quest.view.*
 import mypoli.android.R
 import mypoli.android.common.mvi.MviViewController
+import mypoli.android.common.text.DateFormatter
 import mypoli.android.quest.CompletedQuestViewState.StateType.DATA_LOADED
 import space.traversal.kapsule.required
 
@@ -45,6 +48,24 @@ class CompletedQuestViewController :
     override fun render(state: CompletedQuestViewState, view: View) {
         when (state.type) {
             DATA_LOADED -> {
+
+                view.questName.text = state.name
+
+                state.icon?.let {
+                    view.questName.setCompoundDrawablesWithIntrinsicBounds(
+                        IconicsDrawable(view.context)
+                            .icon(it.icon)
+                            .colorRes(R.color.md_white)
+                            .sizeDp(24),
+                        null,
+                        null,
+                        null
+                    )
+                }
+                view.questName.setBackgroundResource(state.color!!.color500)
+
+                view.questDate.text = DateFormatter.format(view.context, state.completeAt)
+//                view.questTime.text = state.startedAt!!
 
             }
         }
