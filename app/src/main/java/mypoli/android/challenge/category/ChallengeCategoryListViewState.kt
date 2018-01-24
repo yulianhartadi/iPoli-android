@@ -1,4 +1,4 @@
-package mypoli.android.challenge
+package mypoli.android.challenge.category
 
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState

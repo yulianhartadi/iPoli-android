@@ -1,4 +1,4 @@
-package mypoli.android.challenge
+package mypoli.android.challenge.category
 
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer

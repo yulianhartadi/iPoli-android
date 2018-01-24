@@ -1,8 +1,8 @@
-package mypoli.android.challenge
+package mypoli.android.challenge.category.list
 
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
-import mypoli.android.challenge.ChallengeListForCategoryViewState.StateType.*
+import mypoli.android.challenge.category.list.ChallengeListForCategoryViewState.StateType.*
 import mypoli.android.challenge.data.AndroidPredefinedChallenge
 import mypoli.android.challenge.data.Challenge
 import mypoli.android.challenge.data.PredefinedChallenge
@@ -35,7 +35,11 @@ class ChallengeListForCategoryPresenter(
             is ChallengeListForCategoryIntent.LoadData -> {
                 launch {
                     listenForPlayerChangesUseCase.execute(Unit).consumeEach {
-                        sendChannel.send(ChallengeListForCategoryIntent.ChangePlayerIntent(it))
+                        sendChannel.send(
+                            ChallengeListForCategoryIntent.ChangePlayerIntent(
+                                it
+                            )
+                        )
                     }
                 }
                 state.copy(

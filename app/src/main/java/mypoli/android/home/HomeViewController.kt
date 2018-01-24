@@ -12,7 +12,7 @@ import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.controller_home.view.*
 import mypoli.android.Constants
 import mypoli.android.R
-import mypoli.android.challenge.ChallengeCategoryListViewController
+import mypoli.android.challenge.category.ChallengeCategoryListViewController
 import mypoli.android.common.view.FeedbackDialogController
 import mypoli.android.common.view.setToolbar
 import mypoli.android.common.view.showShortToast

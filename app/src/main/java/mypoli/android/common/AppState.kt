@@ -1,5 +1,8 @@
 package mypoli.android.common
 
+import mypoli.android.challenge.category.list.ChallengeListForCategoryAction
+import mypoli.android.challenge.category.list.ChallengeListForCategoryReducer
+import mypoli.android.challenge.category.list.ChallengeListForCategoryState
 import mypoli.android.common.redux.Action
 import mypoli.android.common.redux.Reducer
 import mypoli.android.common.redux.State
@@ -22,7 +25,8 @@ sealed class LoadDataAction : Action {
 data class AppState(
     val appDataState: AppDataState,
     val calendarState: CalendarState,
-    val petStoreState: PetStoreState
+    val petStoreState: PetStoreState,
+    val challengeListForCategoryState: ChallengeListForCategoryState
 ) : State
 
 object AppReducer : Reducer<AppState, Action> {
@@ -38,6 +42,14 @@ object AppReducer : Reducer<AppState, Action> {
             is PetStoreAction -> state.copy(
                 petStoreState = PetStoreReducer.reduce(state, action)
             )
+            is ChallengeListForCategoryAction -> {
+                state.copy(
+                    challengeListForCategoryState = ChallengeListForCategoryReducer.reduce(
+                        state,
+                        action
+                    )
+                )
+            }
             else -> state
         }
 
@@ -45,6 +57,7 @@ object AppReducer : Reducer<AppState, Action> {
         AppState(
             appDataState = AppDataReducer.defaultState(),
             calendarState = CalendarReducer.defaultState(),
-            petStoreState = PetStoreReducer.defaultState()
+            petStoreState = PetStoreReducer.defaultState(),
+            challengeListForCategoryState = ChallengeListForCategoryReducer.defaultState()
         )
 }

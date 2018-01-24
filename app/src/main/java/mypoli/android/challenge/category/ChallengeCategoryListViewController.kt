@@ -1,4 +1,4 @@
-package mypoli.android.challenge
+package mypoli.android.challenge.category
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,6 +10,7 @@ import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.controller_challenge_category_list.view.*
 import kotlinx.android.synthetic.main.view_default_toolbar.view.*
 import mypoli.android.R
+import mypoli.android.challenge.category.list.ChallengeListForCategoryViewController
 import mypoli.android.challenge.data.Challenge
 import mypoli.android.challenge.data.Challenge.Category.*
 import mypoli.android.common.mvi.MviViewController
@@ -52,7 +53,11 @@ class ChallengeCategoryListViewController(args: Bundle? = null) :
         val handler = FadeChangeHandler()
         router.pushController(
             RouterTransaction
-                .with(ChallengeListForCategoryViewController(category))
+                .with(
+                    ChallengeListForCategoryViewController(
+                        category
+                    )
+                )
                 .pushChangeHandler(handler)
                 .popChangeHandler(handler)
         )

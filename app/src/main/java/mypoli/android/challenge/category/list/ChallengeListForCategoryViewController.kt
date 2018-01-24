@@ -1,4 +1,4 @@
-package mypoli.android.challenge
+package mypoli.android.challenge.category.list
 
 import android.os.Bundle
 import android.support.annotation.ColorRes
@@ -18,7 +18,8 @@ import kotlinx.android.synthetic.main.controller_challenge_list_for_category.vie
 import kotlinx.android.synthetic.main.item_buy_challenge.view.*
 import kotlinx.android.synthetic.main.view_inventory_toolbar.view.*
 import mypoli.android.R
-import mypoli.android.challenge.ChallengeListForCategoryViewState.StateType.*
+import mypoli.android.challenge.PersonalizeChallengeViewController
+import mypoli.android.challenge.category.list.ChallengeListForCategoryViewState.StateType.*
 import mypoli.android.challenge.data.AndroidPredefinedChallenge
 import mypoli.android.challenge.data.Challenge
 import mypoli.android.challenge.data.PredefinedChallenge
@@ -85,7 +86,11 @@ class ChallengeListForCategoryViewController :
     override fun onAttach(view: View) {
         showBackButton()
         super.onAttach(view)
-        send(ChallengeListForCategoryIntent.LoadData(challengeCategory))
+        send(
+            ChallengeListForCategoryIntent.LoadData(
+                challengeCategory
+            )
+        )
     }
 
     override fun render(state: ChallengeListForCategoryViewState, view: View) {
@@ -120,7 +125,11 @@ class ChallengeListForCategoryViewController :
     private fun showChallenge(challenge: PredefinedChallenge) {
         val handler = FadeChangeHandler()
         router.pushController(
-            RouterTransaction.with(PersonalizeChallengeViewController(challenge))
+            RouterTransaction.with(
+                PersonalizeChallengeViewController(
+                    challenge
+                )
+            )
                 .pushChangeHandler(handler)
                 .popChangeHandler(handler)
         )
@@ -159,7 +168,11 @@ class ChallengeListForCategoryViewController :
                     )
                 }
 
-                itemView.sendOnClick(ChallengeListForCategoryIntent.BuyChallenge(vm.challenge))
+                itemView.sendOnClick(
+                    ChallengeListForCategoryIntent.BuyChallenge(
+                        vm.challenge
+                    )
+                )
             } else {
                 itemView.setOnClickListener {
                     showChallenge(vm.challenge)

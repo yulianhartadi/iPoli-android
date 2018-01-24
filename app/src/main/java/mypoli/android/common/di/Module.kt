@@ -10,8 +10,8 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import mypoli.android.AndroidJobReminderScheduler
 import mypoli.android.ReminderScheduler
-import mypoli.android.challenge.ChallengeCategoryListPresenter
-import mypoli.android.challenge.ChallengeListForCategoryPresenter
+import mypoli.android.challenge.category.ChallengeCategoryListPresenter
+import mypoli.android.challenge.category.list.ChallengeListForCategoryPresenter
 import mypoli.android.challenge.PersonalizeChallengePresenter
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
@@ -393,7 +393,9 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
             listenForPlayerChangesUseCase,
             job
         )
-    override val challengeCategoryListPresenter get() = ChallengeCategoryListPresenter(job)
+    override val challengeCategoryListPresenter get() = ChallengeCategoryListPresenter(
+        job
+    )
     override val challengeListForCategoryPresenter
         get() = ChallengeListForCategoryPresenter(
             listenForPlayerChangesUseCase,

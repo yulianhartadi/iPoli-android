@@ -33,11 +33,16 @@ sealed class PetStoreAction : Action {
         override suspend fun execute(dispatcher: Dispatcher) {
             inject(myPoliApp.module(myPoliApp.instance))
             val result = buyPetUseCase.execute(pet)
-            dispatcher.dispatch(PetStoreAction.BuyPetComplete(result))
+            when (result) {
+                is BuyPetUseCase.Result.PetBought -> {
+                    dispatcher.dispatch(PetStoreAction.PetBought)
+                }
+                is BuyPetUseCase.Result.TooExpensive -> {
+                    dispatcher.dispatch(PetStoreAction.PetTooExpensive)
+                }
+            }
         }
     }
-
-    data class BuyPetComplete(val result: BuyPetUseCase.Result) : PetStoreAction()
 
     data class UnlockPet(val pet: PetAvatar) : PetStoreAction()
 
@@ -53,6 +58,10 @@ sealed class PetStoreAction : Action {
     }
 
     object Refresh : PetStoreAction()
+
+    object PetBought : PetStoreAction()
+
+    object PetTooExpensive : PetStoreAction()
 }
 
 data class PetStoreState(val type: StateType, val pets: List<PetModel>) : PartialState {
@@ -100,17 +109,15 @@ object PetStoreReducer : PartialReducer<AppState, PetStoreState, PetStoreAction>
                 )
             }
 
-            is PetStoreAction.BuyPetComplete -> {
-                val stateType = when (action.result) {
-                    is BuyPetUseCase.Result.TooExpensive -> {
-                        PetStoreState.StateType.PET_TOO_EXPENSIVE
-                    }
-                    is BuyPetUseCase.Result.PetBought -> {
-                        PetStoreState.StateType.PET_BOUGHT
-                    }
-                }
+            PetStoreAction.PetBought -> {
                 petStoreState.copy(
-                    type = stateType
+                    type = PetStoreState.StateType.PET_BOUGHT
+                )
+            }
+
+            PetStoreAction.PetTooExpensive -> {
+                petStoreState.copy(
+                    type = PetStoreState.StateType.PET_TOO_EXPENSIVE
                 )
             }
 
