@@ -34,6 +34,7 @@ import mypoli.android.common.datetime.isNotEqual
 import mypoli.android.common.datetime.startOfDayUTC
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.*
+import mypoli.android.quest.CompletedQuestViewController
 import mypoli.android.quest.Icon
 import mypoli.android.quest.calendar.CalendarViewController
 import mypoli.android.quest.calendar.dayview.DayViewPresenter
@@ -551,7 +552,9 @@ class DayViewController :
                     view.questIcon.setImageDrawable(icon)
                 }
 
-                view.setOnClickListener(null)
+                view.setOnClickListener {
+                    router.pushController(RouterTransaction.with(CompletedQuestViewController(vm.id)))
+                }
             } else {
 
                 view.questCategoryIndicator.setBackgroundResource(vm.backgroundColor.color900)
@@ -733,7 +736,9 @@ class DayViewController :
                     itemView.unscheduledQuestIcon.setImageDrawable(icon)
                 }
 
-                itemView.setOnClickListener(null)
+                itemView.setOnClickListener {
+                    router.pushController(RouterTransaction.with(CompletedQuestViewController(event.id)))
+                }
 
             } else {
                 itemView.unscheduledQuestName.text = event.name
