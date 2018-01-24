@@ -7,7 +7,8 @@
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp">
 
         <android.support.v7.widget.CardView
             android:id="@+id/questDetailsContainer"
@@ -199,13 +200,14 @@
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
-            android:id="@+id/cardView"
+            android:id="@+id/bountyContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
             app:cardCornerRadius="6dp"
+            android:layout_marginBottom="16dp"
             app:cardElevation="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -213,68 +215,81 @@
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:paddingBottom="16dp">
 
                 <TextView
-                    android:id="@+id/textView26"
+                    android:id="@+id/bountyTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:text="Statistic"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textSize="16sp"
+                    android:text="Bounty"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Bounty" />
 
                 <ProgressBar
-                    android:id="@+id/progressBar4"
+                    android:id="@+id/levelProgress"
                     style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="78dp"
-                    android:layout_height="79dp"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="16dp"
+                    android:max="100"
+                    android:padding="4dp"
+                    android:progress="60"
                     android:progressDrawable="@drawable/completed_quest_duration_progress_background"
+                    android:secondaryProgress="100"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView26" />
+                    app:layout_constraintTop_toBottomOf="@+id/bountyTitle" />
 
                 <TextView
-                    android:id="@+id/textView27"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/bountyCoins"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
-                    android:text="From Task Complete"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textSize="16sp"
-                    app:layout_constraintStart_toEndOf="@+id/progressBar4"
-                    app:layout_constraintTop_toTopOf="@+id/progressBar4" />
-
-                <TextView
-                    android:id="@+id/textView28"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
-                    android:text="+10 live cones"
-                    android:textSize="14sp"
-                    app:layout_constraintStart_toEndOf="@+id/progressBar4"
-                    app:layout_constraintTop_toBottomOf="@+id/textView27" />
+                    android:drawablePadding="8dp"
+                    android:drawableStart="@drawable/ic_life_coin_24dp"
+                    android:gravity="center_vertical"
+                    android:text="+10 live coins"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    app:layout_constraintBottom_toTopOf="@+id/bountyXP"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/levelProgress"
+                    app:layout_constraintTop_toTopOf="@+id/levelProgress"
+                    app:layout_constraintVertical_chainStyle="spread"
+                    tools:text="+10 live coins" />
 
                 <TextView
-                    android:id="@+id/textView29"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/bountyXP"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="32dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="4dp"
-                    android:text="+40 experience"
-                    app:layout_constraintStart_toEndOf="@+id/progressBar4"
-                    app:layout_constraintTop_toBottomOf="@+id/textView28" />
+                    android:drawablePadding="8dp"
+                    android:drawableStart="@drawable/ic_star_yellow_24dp"
+                    android:gravity="center_vertical"
+                    android:text="+40 XP"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    app:layout_constraintBottom_toBottomOf="@+id/levelProgress"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/levelProgress"
+                    app:layout_constraintTop_toBottomOf="@+id/bountyCoins"
+                    tools:text="+40 XP" />
 
                 <View
-                    android:id="@+id/viewPager"
+                    android:id="@+id/divider"
                     android:layout_width="0dp"
                     android:layout_height="2dp"
                     android:layout_marginEnd="32dp"
@@ -284,55 +299,70 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/progressBar4" />
+                    app:layout_constraintTop_toBottomOf="@+id/levelProgress" />
 
                 <TextView
-                    android:id="@+id/textView30"
+                    android:id="@+id/bonusLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="16dp"
                     android:text="Bonus:"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/viewPager" />
+                    app:layout_constraintTop_toBottomOf="@+id/divider" />
 
                 <TextView
-                    android:id="@+id/textView31"
+                    android:id="@+id/bonusItemName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="2dp"
+                    android:layout_marginStart="16dp"
                     android:text="Food"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView30"
-                    app:layout_constraintStart_toEndOf="@+id/textView30"
-                    app:layout_constraintTop_toTopOf="@+id/textView30" />
+                    android:textColor="@color/md_dark_text_54"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    app:layout_constraintBottom_toBottomOf="@+id/bonusLabel"
+                    app:layout_constraintStart_toEndOf="@+id/bonusLabel"
+                    app:layout_constraintTop_toTopOf="@+id/bonusLabel" />
+
+                <TextView
+                    android:id="@+id/level"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Lvl 5"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="@color/md_light_text_87"
+                    app:layout_constraintBottom_toBottomOf="@+id/levelProgress"
+                    app:layout_constraintEnd_toEndOf="@+id/levelProgress"
+                    app:layout_constraintStart_toStartOf="@+id/levelProgress"
+                    app:layout_constraintTop_toTopOf="@+id/levelProgress"
+                    tools:text="Lvl 5" />
 
                 <ImageView
-                    android:id="@+id/imageView2"
-                    android:layout_width="35dp"
-                    android:layout_height="28dp"
-                    android:layout_marginStart="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView31"
-                    app:layout_constraintStart_toEndOf="@+id/textView31"
-                    app:layout_constraintTop_toTopOf="@+id/textView31"
-                    app:srcCompat="@drawable/food_beer_1" />
+                    android:id="@+id/bonusItemImage"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="16dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/bonusLabel"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/bonusItemName"
+                    app:layout_constraintTop_toTopOf="@+id/bonusLabel"
+                    app:srcCompat="@drawable/food_candy_1" />
 
-                <TextView
-                    android:id="@+id/textView32"
+                <android.support.constraint.Group
+                    android:id="@+id/bonusItemGroup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:text="Cherry"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-                    app:layout_constraintStart_toEndOf="@+id/imageView2"
-                    app:layout_constraintTop_toTopOf="@+id/imageView2" />
+                    android:visibility="visible"
+                    app:constraint_referenced_ids="bonusItemName,bonusItemImage,divider,bonusLabel" />
 
             </android.support.constraint.ConstraintLayout>
         </android.support.v7.widget.CardView>
-
-
     </android.support.constraint.ConstraintLayout>
-
 </ScrollView>
