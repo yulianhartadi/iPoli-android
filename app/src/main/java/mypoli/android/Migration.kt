@@ -64,8 +64,9 @@ class Migration(private val database: Database) {
                 )
                 .execute()
 
-            while (questResultSet.iterator().hasNext()) {
-                val questId = questResultSet.next().getString("_id")
+            val iterator = questResultSet.iterator()
+            while (iterator.hasNext()) {
+                val questId = iterator.next().getString("_id")
                 val questDoc = database.getDocument(questId).toMutable()
                 questDoc.setArray("timeRanges", MutableArray())
                 database.save(questDoc)
