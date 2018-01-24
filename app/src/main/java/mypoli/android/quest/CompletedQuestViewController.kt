@@ -1,5 +1,6 @@
 package mypoli.android.quest
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import mypoli.android.common.datetime.Minute
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.text.DurationFormatter
+import mypoli.android.common.view.colorRes
 import mypoli.android.common.view.goneViews
 import mypoli.android.common.view.showViews
 import mypoli.android.quest.CompletedQuestViewState.StateType.DATA_LOADED
@@ -77,6 +79,9 @@ class CompletedQuestViewController :
 
                 renderTimer(state.timer!!, view, state.totalDuration)
                 renderBounty(view, state)
+
+                view.questDurationProgress.progressTintList = ColorStateList.valueOf(colorRes(R.color.md_red_500))
+                view.questDurationProgress.secondaryProgressTintList = ColorStateList.valueOf(colorRes(R.color.md_red_300))
             }
         }
     }
