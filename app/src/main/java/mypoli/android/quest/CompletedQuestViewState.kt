@@ -5,6 +5,8 @@ import mypoli.android.common.datetime.Minute
 import mypoli.android.common.datetime.Time
 import mypoli.android.common.mvi.Intent
 import mypoli.android.common.mvi.ViewState
+import mypoli.android.common.view.AndroidColor
+import mypoli.android.common.view.AndroidIcon
 import mypoli.android.pet.Food
 import org.threeten.bp.LocalDate
 
@@ -19,6 +21,8 @@ sealed class CompletedQuestIntent : Intent {
 data class CompletedQuestViewState(
     val type: StateType,
     val name: String? = null,
+    val icon: AndroidIcon? = null,
+    val color: AndroidColor? = null,
     val completeAt: LocalDate? = null,
     val startedAt: Time? = null,
     val finishedAt: Time? = null,

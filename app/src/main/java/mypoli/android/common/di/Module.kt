@@ -519,6 +519,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     override val completedQuestPresenter: CompletedQuestPresenter
         get() = CompletedQuestPresenter(
             questRepository,
+            splitDurationForPomodoroTimerUseCase,
             job
         )
 }
