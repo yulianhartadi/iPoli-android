@@ -56,7 +56,14 @@ class TimerPresenter(
             }
 
             is TimerIntent.QuestChanged -> {
-                createQuestChangedState(state.copy(quest = intent.quest))
+
+                if (intent.quest.isCompleted) {
+                    state.copy(
+                        type = QUEST_COMPLETED
+                    )
+                } else {
+                    createQuestChangedState(state.copy(quest = intent.quest))
+                }
             }
 
             TimerIntent.Start -> {
@@ -118,13 +125,13 @@ class TimerPresenter(
             }
 
             TimerIntent.CompletePomodoro -> {
-                val quest = completeTimeRangeUseCase.execute(
+                completeTimeRangeUseCase.execute(
                     CompleteTimeRangeUseCase.Params(
                         questId = state.quest!!.id
                     )
                 )
                 state.copy(
-                    type = if (quest.isCompleted) QUEST_COMPLETED else TIMER_STOPPED
+                    type = TIMER_STOPPED
                 )
             }
 
@@ -139,7 +146,7 @@ class TimerPresenter(
             TimerIntent.CompleteQuest -> {
                 completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(state.quest!!.id))
                 state.copy(
-                    type = QUEST_COMPLETED
+                    type = TIMER_STOPPED
                 )
             }
 

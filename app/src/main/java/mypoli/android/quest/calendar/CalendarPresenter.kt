@@ -5,7 +5,6 @@ import kotlinx.coroutines.experimental.launch
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.common.text.CalendarFormatter
-import mypoli.android.player.ExperienceForLevelGenerator
 import mypoli.android.player.usecase.ListenForPlayerChangesUseCase
 import mypoli.android.quest.calendar.CalendarViewState.DatePickerState.*
 import mypoli.android.quest.calendar.CalendarViewState.StateType.*
@@ -109,15 +108,12 @@ class CalendarPresenter(
                     else -> XP_AND_COINS_CHANGED
                 }
 
-                val thisLevelXP = ExperienceForLevelGenerator.forLevel(player.level).toInt()
-                val nextLevelXP = ExperienceForLevelGenerator.forLevel(player.level + 1).toInt()
-
                 state.copy(
                     type = type,
                     level = player.level,
-                    progress = player.experience.toInt() - thisLevelXP,
+                    progress = player.experienceProgressForLevel,
                     coins = player.coins,
-                    maxProgress = nextLevelXP - thisLevelXP
+                    maxProgress = player.experienceForNextLevel
                 )
             }
         }

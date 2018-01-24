@@ -31,7 +31,9 @@ data class CompletedQuestViewState(
     val experience: Int? = null,
     val coins: Int? = null,
     val bounty: Food? = null,
-    val playerLevel: Int? = null
+    val playerLevel: Int? = null,
+    val playerLevelProgress: Int? = null,
+    val playerLevelMaxProgress: Int? = null
 ) : ViewState {
 
     enum class StateType {
@@ -50,6 +52,7 @@ data class CompletedQuestViewState(
         ) : Timer()
 
         data class Countdown(
+            val duration: Duration<Minute>,
             val overdueDuration: Duration<Minute>
         ) : Timer()
 

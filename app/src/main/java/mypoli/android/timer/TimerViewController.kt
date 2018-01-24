@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -150,7 +151,6 @@ class TimerViewController :
 
             TimerViewState.StateType.QUEST_COMPLETED ->
                 showCompletedQuest(state.quest!!.id)
-
         }
     }
 
@@ -365,6 +365,7 @@ class TimerViewController :
     }
 
     private fun showCompletedQuest(questId: String) {
+        popCurrentFromRootRouter()
         pushWithRootRouter(RouterTransaction.with(CompletedQuestViewController(questId)))
     }
 

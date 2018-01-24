@@ -43,9 +43,11 @@ fun Controller.showBackButton() {
     (activity!! as MainActivity).showBackButton()
 }
 
-fun Controller.pushWithRootRouter(transaction: RouterTransaction) {
+fun Controller.pushWithRootRouter(transaction: RouterTransaction) =
     (activity!! as MainActivity).pushWithRootRouter(transaction)
-}
+
+fun Controller.popCurrentFromRootRouter() =
+    (activity!! as MainActivity).popCurrentFromRootRouter()
 
 fun Controller.attr(@AttrRes attributeRes: Int) =
     TypedValue().let {

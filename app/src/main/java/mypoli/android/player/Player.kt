@@ -91,6 +91,19 @@ data class Player(
         inventory.hasColorPack(colorPack)
 
     fun hasChallenge(challenge: PredefinedChallenge) = inventory.hasChallenge(challenge)
+
+    val experienceProgressForLevel: Int
+        get() {
+            val thisLevelXP = ExperienceForLevelGenerator.forLevel(level).toInt()
+            return experience.toInt() - thisLevelXP
+        }
+
+    val experienceForNextLevel: Int
+        get() {
+            val thisLevelXP = ExperienceForLevelGenerator.forLevel(level).toInt()
+            val nextLevelXP = ExperienceForLevelGenerator.forLevel(level + 1).toInt()
+            return nextLevelXP - thisLevelXP
+        }
 }
 
 data class InventoryPet(

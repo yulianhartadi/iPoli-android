@@ -123,6 +123,8 @@ class MainActivity : AppCompatActivity(), Injects<ControllerModule> {
         router.pushController(transaction)
     }
 
+    fun popCurrentFromRootRouter() = router.popCurrentController()
+
     fun enterFullScreen() {
         window.decorView.systemUiVisibility = (
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE

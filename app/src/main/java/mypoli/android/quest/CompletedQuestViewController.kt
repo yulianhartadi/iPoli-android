@@ -1,22 +1,25 @@
 package mypoli.android.quest
 
+import android.animation.ObjectAnimator
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
+import android.support.annotation.ColorInt
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import com.mikepenz.iconics.IconicsDrawable
 import kotlinx.android.synthetic.main.controller_completed_quest.view.*
+import kotlinx.android.synthetic.main.view_default_toolbar.view.*
 import mypoli.android.R
 import mypoli.android.common.datetime.Duration
 import mypoli.android.common.datetime.Minute
 import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.text.DateFormatter
 import mypoli.android.common.text.DurationFormatter
-import mypoli.android.common.view.attr
-import mypoli.android.common.view.colorRes
-import mypoli.android.common.view.goneViews
-import mypoli.android.common.view.showViews
+import mypoli.android.common.view.*
 import mypoli.android.quest.CompletedQuestViewState.StateType.DATA_LOADED
 import mypoli.android.quest.CompletedQuestViewState.Timer
 import space.traversal.kapsule.required
@@ -45,11 +48,24 @@ class CompletedQuestViewController :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_completed_quest, container, false)
+
+        setToolbar(view.toolbar)
+        toolbarTitle = "Completed Quest"
         return view
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            popCurrentFromRootRouter()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     override fun onAttach(view: View) {
+        showBackButton()
         super.onAttach(view)
         send(CompletedQuestIntent.LoadData(questId))
     }
@@ -79,24 +95,45 @@ class CompletedQuestViewController :
                 view.questProgressDuration.text =
                     DurationFormatter.formatShort(view.context, state.totalDuration!!.intValue)
 
-                renderTimer(state.timer!!, view, state.totalDuration)
+                renderTimer(state.timer!!, view, state)
                 renderBounty(view, state)
 
-                view.questDurationProgress.progressTintList =
-                    ColorStateList.valueOf(colorRes(color.color200))
                 view.questDurationProgress.secondaryProgressTintList =
                     ColorStateList.valueOf(colorRes(color.color100))
+
+                view.questDurationProgress.progressTintList =
+                    ColorStateList.valueOf(colorRes(color.color300))
+
                 view.questDurationProgress.backgroundTintList =
                     ColorStateList.valueOf(colorRes(color.color500))
 
-                view.levelProgress.progressTintList =
-                    ColorStateList.valueOf(attr(R.attr.colorAccent))
-                view.levelProgress.secondaryProgressTintList =
-                    ColorStateList.valueOf(attr(R.attr.colorAccent))
+                view.level.text = "Lvl ${state.playerLevel!!}"
+
                 view.levelProgress.backgroundTintList =
                     ColorStateList.valueOf(attr(R.attr.colorAccent))
+
+                view.levelProgress.progressTintList =
+                    ColorStateList.valueOf(
+                        lighten(attr(R.attr.colorAccent), 0.6f)
+                    )
+
+                view.levelProgress.secondaryProgressTintList =
+                    ColorStateList.valueOf(
+                        lighten(attr(R.attr.colorAccent), 0.3f)
+                    )
+
+                view.levelProgress.max = state.playerLevelMaxProgress!!
+                view.levelProgress.secondaryProgress = state.playerLevelMaxProgress
+                playProgressAnimation(view.levelProgress, 0, state.playerLevelProgress!!)
             }
         }
+    }
+
+    private fun lighten(@ColorInt color: Int, factor: Float): Int {
+        val hsv = FloatArray(3)
+        Color.colorToHSV(color, hsv)
+        hsv[1] *= factor
+        return Color.HSVToColor(hsv)
     }
 
     private fun renderBounty(view: View, state: CompletedQuestViewState) {
@@ -113,7 +150,7 @@ class CompletedQuestViewController :
     private fun renderTimer(
         timer: Timer,
         view: View,
-        totalDuration: Duration<Minute>
+        state: CompletedQuestViewState
     ) {
         when (timer) {
             is Timer.Pomodoro -> {
@@ -136,6 +173,15 @@ class CompletedQuestViewController :
                     timer.overdueBreakDuration
                 )
 
+                view.questDurationProgress.max = state.totalDuration!!.intValue
+
+                view.questDurationProgress.secondaryProgress = state.totalDuration.intValue
+
+                playProgressAnimation(
+                    view.questDurationProgress,
+                    0,
+                    (timer.workDuration + timer.overdueWorkDuration).intValue
+                )
             }
 
             is Timer.Countdown -> {
@@ -145,16 +191,53 @@ class CompletedQuestViewController :
                 view.questWorkTime.text = createDurationLabel(
                     view,
                     "Work",
-                    totalDuration,
+                    state.totalDuration!!,
                     timer.overdueDuration
                 )
+
+                val isOverdue = timer.overdueDuration.intValue > 0
+
+                view.questDurationProgress.max = timer.duration.intValue
+                view.questDurationProgress.secondaryProgress = timer.duration.intValue
+
+                if (isOverdue) {
+                    view.questDurationProgress.secondaryProgressTintList =
+                        ColorStateList.valueOf(colorRes(state.color!!.color300))
+
+                    view.questDurationProgress.progressTintList =
+                        ColorStateList.valueOf(colorRes(state.color.color700))
+
+                    playProgressAnimation(
+                        view.questDurationProgress,
+                        0,
+                        timer.overdueDuration.intValue
+                    )
+
+                } else {
+
+                    playProgressAnimation(
+                        view.questDurationProgress,
+                        0,
+                        state.totalDuration.intValue
+                    )
+                }
             }
 
             Timer.Untracked -> {
                 view.pomodoroGroup.goneViews()
                 view.timerGroup.goneViews()
+
+                view.questDurationProgress.max = state.totalDuration!!.intValue
+
+                playProgressAnimation(view.questDurationProgress, 0, state.totalDuration.intValue)
             }
         }
+    }
+
+    private fun playProgressAnimation(view: ProgressBar, from: Int, to: Int) {
+        val animator = ObjectAnimator.ofInt(view, "progress", from, to)
+        animator.duration = intRes(android.R.integer.config_mediumAnimTime).toLong()
+        animator.start()
     }
 
     private fun createDurationLabel(

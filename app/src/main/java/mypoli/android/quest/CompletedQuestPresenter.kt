@@ -76,6 +76,7 @@ class CompletedQuestPresenter(
                     )
                 } else {
                     CompletedQuestViewState.Timer.Countdown(
+                        quest.duration.minutes,
                         quest.actualDuration.asMinutes - quest.duration.minutes
                     )
                 }
@@ -103,7 +104,9 @@ class CompletedQuestPresenter(
                             null
                         }
                     },
-                    playerLevel = player.level
+                    playerLevel = player.level,
+                    playerLevelProgress = player.experienceProgressForLevel,
+                    playerLevelMaxProgress = player.experienceForNextLevel
                 )
             }
         }
