@@ -35,6 +35,7 @@ import mypoli.android.player.persistence.CouchbasePlayerRepository
 import mypoli.android.player.persistence.PlayerRepository
 import mypoli.android.player.usecase.*
 import mypoli.android.player.view.LevelUpPresenter
+import mypoli.android.quest.CompletedQuestPresenter
 import mypoli.android.quest.calendar.CalendarPresenter
 import mypoli.android.quest.calendar.addquest.AddQuestPresenter
 import mypoli.android.quest.calendar.dayview.DayViewPresenter
@@ -374,6 +375,7 @@ interface PresenterModule {
     val challengeListForCategoryPresenter: ChallengeListForCategoryPresenter
     val personalizeChallengePresenter: PersonalizeChallengePresenter
     val timerPresenter: TimerPresenter
+    val completedQuestPresenter: CompletedQuestPresenter
 }
 
 class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
@@ -510,6 +512,10 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
             cancelQuestTimerUseCase,
             addPomodoroUseCase,
             removePomodoroUseCase,
+            job
+        )
+    override val completedQuestPresenter: CompletedQuestPresenter
+        get() = CompletedQuestPresenter(
             job
         )
 }
