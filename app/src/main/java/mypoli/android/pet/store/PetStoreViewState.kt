@@ -150,7 +150,7 @@ object PetStoreReducer : PartialReducer<AppState, PetStoreState, PetStoreAction>
 data class PetStoreViewState(
     val type: StateType = StateType.DATA_CHANGED,
     val playerGems: Int = 0,
-    val petViewModels: List<PetStoreReduxPresenter.PetViewModel> = listOf()
+    val petViewModels: List<PetStorePresenter.PetViewModel> = listOf()
 ) : ViewState {
     enum class StateType {
         LOADING,

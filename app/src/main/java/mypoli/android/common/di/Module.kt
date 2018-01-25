@@ -10,9 +10,9 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import mypoli.android.AndroidJobReminderScheduler
 import mypoli.android.ReminderScheduler
+import mypoli.android.challenge.PersonalizeChallengePresenter
 import mypoli.android.challenge.category.ChallengeCategoryListPresenter
 import mypoli.android.challenge.category.list.ChallengeListForCategoryPresenter
-import mypoli.android.challenge.PersonalizeChallengePresenter
 import mypoli.android.challenge.usecase.BuyChallengeUseCase
 import mypoli.android.challenge.usecase.ScheduleChallengeUseCase
 import mypoli.android.common.AppReducer
@@ -28,7 +28,6 @@ import mypoli.android.pet.AndroidJobLowerPetStatsScheduler
 import mypoli.android.pet.LowerPetStatsScheduler
 import mypoli.android.pet.PetDialogPresenter
 import mypoli.android.pet.PetPresenter
-import mypoli.android.pet.store.PetStorePresenter
 import mypoli.android.pet.usecase.*
 import mypoli.android.player.AndroidLevelDownScheduler
 import mypoli.android.player.AndroidLevelUpScheduler
@@ -268,7 +267,6 @@ interface PresenterModule {
     val reminderPickerPresenter: ReminderPickerDialogPresenter
     val addQuestPresenter: AddQuestPresenter
     val petPresenter: PetPresenter
-    val petStorePresenter: PetStorePresenter
     val petDialogPresenter: PetDialogPresenter
     val themeStorePresenter: ThemeStorePresenter
     val colorPickerPresenter: ColorPickerPresenter
@@ -354,13 +352,6 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
             takeOffPetItemUseCase,
             job
         )
-    override val petStorePresenter
-        get() = PetStorePresenter(
-            listenForPlayerChangesUseCase,
-            buyPetUseCase,
-            changePetUseCase,
-            job
-        )
     override val petDialogPresenter get() = PetDialogPresenter(findPetUseCase, job)
     override val themeStorePresenter
         get() = ThemeStorePresenter(
@@ -393,9 +384,10 @@ class AndroidPresenterModule : PresenterModule, Injects<Module> {
             listenForPlayerChangesUseCase,
             job
         )
-    override val challengeCategoryListPresenter get() = ChallengeCategoryListPresenter(
-        job
-    )
+    override val challengeCategoryListPresenter
+        get() = ChallengeCategoryListPresenter(
+            job
+        )
     override val challengeListForCategoryPresenter
         get() = ChallengeListForCategoryPresenter(
             listenForPlayerChangesUseCase,

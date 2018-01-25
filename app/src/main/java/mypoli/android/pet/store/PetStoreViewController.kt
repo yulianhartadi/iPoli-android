@@ -29,11 +29,11 @@ import mypoli.android.store.GemStoreViewController
  * on 12/4/17.
  */
 class PetStoreViewController(args: Bundle? = null) :
-    ReduxViewController<PetStoreAction, PetStoreViewState, PetStoreReduxPresenter>(
+    ReduxViewController<PetStoreAction, PetStoreViewState, PetStorePresenter>(
         args
     ) {
 
-    override val presenter get() = PetStoreReduxPresenter()
+    override val presenter get() = PetStorePresenter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -104,7 +104,7 @@ class PetStoreViewController(args: Bundle? = null) :
         )
     }
 
-    inner class PetPagerAdapter(private var viewModels: List<PetStoreReduxPresenter.PetViewModel> = listOf()) :
+    inner class PetPagerAdapter(private var viewModels: List<PetStorePresenter.PetViewModel> = listOf()) :
         PagerAdapter() {
 
         override fun instantiateItem(container: ViewGroup, position: Int): Any {
@@ -130,15 +130,15 @@ class PetStoreViewController(args: Bundle? = null) :
             action.setOnClickListener(null)
 
             when (vm.action) {
-                PetStoreReduxPresenter.PetViewModel.Action.CHANGE -> {
+                PetStorePresenter.PetViewModel.Action.CHANGE -> {
                     action.dispatchOnClick(ChangePet(vm.avatar))
                 }
 
-                PetStoreReduxPresenter.PetViewModel.Action.UNLOCK -> {
+                PetStorePresenter.PetViewModel.Action.UNLOCK -> {
                     action.dispatchOnClick(UnlockPet(vm.avatar))
                 }
 
-                PetStoreReduxPresenter.PetViewModel.Action.BUY -> {
+                PetStorePresenter.PetViewModel.Action.BUY -> {
                     action.dispatchOnClick(BuyPet(vm.avatar))
                 }
             }
@@ -157,7 +157,7 @@ class PetStoreViewController(args: Bundle? = null) :
 
         override fun getItemPosition(`object`: Any) = PagerAdapter.POSITION_NONE
 
-        fun updateAll(viewModels: List<PetStoreReduxPresenter.PetViewModel>) {
+        fun updateAll(viewModels: List<PetStorePresenter.PetViewModel>) {
             this.viewModels = viewModels
             notifyDataSetChanged()
         }
