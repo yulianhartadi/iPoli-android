@@ -22,6 +22,7 @@ import mypoli.android.common.text.DurationFormatter
 import mypoli.android.common.view.*
 import mypoli.android.quest.CompletedQuestViewState.StateType.DATA_LOADED
 import mypoli.android.quest.CompletedQuestViewState.Timer
+import mypoli.android.timer.TimerViewController
 import space.traversal.kapsule.required
 
 /**
@@ -48,17 +49,24 @@ class CompletedQuestViewController :
         container: ViewGroup,
         savedViewState: Bundle?
     ): View {
+
+        rootRouter.getControllerWithTag(TimerViewController.TAG)?.let {
+            rootRouter.popController(it)
+        }
+
         setHasOptionsMenu(true)
         val view = inflater.inflate(R.layout.controller_completed_quest, container, false)
 
         setToolbar(view.toolbar)
         toolbarTitle = "Completed Quest"
+
         return view
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == android.R.id.home) {
-            popCurrentFromRootRouter()
+            rootRouter.popController(this)
+//            popCurrentFromRootRouter()
             return true
         }
         return super.onOptionsItemSelected(item)

@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -365,12 +364,15 @@ class TimerViewController :
     }
 
     private fun showCompletedQuest(questId: String) {
-        popCurrentFromRootRouter()
         pushWithRootRouter(RouterTransaction.with(CompletedQuestViewController(questId)))
     }
 
     enum class TimerButton {
         START, STOP, DONE
+    }
+
+    companion object {
+        const val TAG = "TimerViewController"
     }
 }
 

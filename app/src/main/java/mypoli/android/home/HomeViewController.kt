@@ -6,13 +6,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import com.amplitude.api.Amplitude
+import com.bluelinelabs.conductor.RestoreViewOnCreateController
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.changehandler.FadeChangeHandler
 import kotlinx.android.synthetic.main.controller_home.view.*
 import mypoli.android.Constants
 import mypoli.android.R
 import mypoli.android.challenge.ChallengeCategoryListViewController
-import mypoli.android.common.mvi.MviViewController
 import mypoli.android.common.view.FeedbackDialogController
 import mypoli.android.common.view.setToolbar
 import mypoli.android.common.view.showShortToast
@@ -20,25 +20,13 @@ import mypoli.android.pet.PetViewController
 import mypoli.android.quest.calendar.CalendarViewController
 import mypoli.android.store.theme.ThemeStoreViewController
 import org.json.JSONObject
-import space.traversal.kapsule.required
 
 /**
  * Created by Venelin Valkov <venelin@mypoli.fun>
  * on 8/19/17.
  */
 class HomeViewController(args: Bundle? = null) :
-    MviViewController<HomeViewState, HomeViewController, HomePresenter, HomeIntent>(args) {
-
-    private val presenter by required { homePresenter }
-
-    override fun createPresenter() = presenter
-
-    override fun render(state: HomeViewState, view: View) {
-
-        when (state.type) {
-
-        }
-    }
+    RestoreViewOnCreateController(args) {
 
 //    private var navigationItemSelected: MenuItem? = null
 
@@ -102,8 +90,6 @@ class HomeViewController(args: Bundle? = null) :
 //        RatePopup().show(view.context)
 
 //        DurationPickerDialogController().showDialog(childRouter, "hello")
-
-        send(LoadDataIntent)
 
 //        router.pushController(RouterTransaction.with(TimerViewController()))
 //        actionBarDrawerToggle.syncState()

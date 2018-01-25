@@ -783,6 +783,10 @@ class DayViewController :
     }
 
     private fun showQuest(questId: String) {
-        pushWithRootRouter(RouterTransaction.with(TimerViewController(questId)))
+        pushWithRootRouter(
+            RouterTransaction.with(TimerViewController(questId)).tag(
+                TimerViewController.TAG
+            )
+        )
     }
 }
