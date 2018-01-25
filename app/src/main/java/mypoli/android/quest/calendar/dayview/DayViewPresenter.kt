@@ -15,6 +15,7 @@ import mypoli.android.quest.calendar.dayview.view.*
 import mypoli.android.quest.calendar.dayview.view.DayViewState.StateType.*
 import mypoli.android.quest.usecase.*
 import mypoli.android.reminder.view.picker.ReminderViewModel
+import mypoli.android.timer.usecase.CompleteTimeRangeUseCase
 import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
@@ -33,6 +34,7 @@ class DayViewPresenter(
     private val undoRemovedQuestUseCase: UndoRemovedQuestUseCase,
     private val completeQuestUseCase: CompleteQuestUseCase,
     private val undoCompletedQuestUseCase: UndoCompletedQuestUseCase,
+    private val completeTimeRangeUseCase: CompleteTimeRangeUseCase,
     coroutineContext: CoroutineContext
 ) : BaseMviPresenter<ViewStateRenderer<DayViewState>, DayViewState, DayViewIntent>(
     DayViewState(type = DayViewState.StateType.LOADING), coroutineContext
@@ -254,7 +256,11 @@ class DayViewPresenter(
             }
 
             is CompleteQuestIntent -> {
-                completeQuestUseCase.execute(CompleteQuestUseCase.Params.WithQuestId(intent.questId))
+                if (intent.isStarted) {
+                    completeTimeRangeUseCase.execute(CompleteTimeRangeUseCase.Params(intent.questId))
+                } else {
+                    completeQuestUseCase.execute(CompleteQuestUseCase.Params.WithQuestId(intent.questId))
+                }
                 state.copy(type = QUEST_COMPLETED)
             }
 

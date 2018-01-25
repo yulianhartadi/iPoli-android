@@ -592,7 +592,7 @@ class DayViewController :
                         }
 
                         override fun onAnimationEnd(animation: Animator?) {
-                            send(CompleteQuestIntent(vm.id))
+                            send(CompleteQuestIntent(vm.id, vm.isStarted))
                         }
 
                     })
@@ -770,7 +770,7 @@ class DayViewController :
 
             itemView.unscheduledDone.setOnCheckedChangeListener { _, checked ->
                 if (checked) {
-                    send(CompleteQuestIntent(event.id))
+                    send(CompleteQuestIntent(event.id, event.isStarted))
                 } else {
                     send(UndoCompleteQuestIntent(event.id))
                 }

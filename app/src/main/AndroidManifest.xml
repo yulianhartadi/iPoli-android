@@ -32,10 +32,6 @@
         </activity>
 
         <receiver
-            android:name=".quest.receiver.CompleteQuestReceiver"
-            android:exported="false" />
-
-        <receiver
             android:name=".quest.receiver.CompleteTimeRangeReceiver"
             android:exported="false" />
 

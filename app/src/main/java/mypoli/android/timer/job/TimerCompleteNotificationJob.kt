@@ -21,7 +21,6 @@ import mypoli.android.common.di.SimpleModule
 import mypoli.android.myPoliApp
 import mypoli.android.pet.AndroidPetAvatar
 import mypoli.android.quest.TimeRange
-import mypoli.android.quest.receiver.CompleteQuestReceiver
 import mypoli.android.quest.receiver.CompleteTimeRangeReceiver
 import space.traversal.kapsule.Injects
 import space.traversal.kapsule.Kapsule
@@ -147,7 +146,7 @@ class TimerCompleteNotificationJob : Job(), Injects<ControllerModule> {
         questId: String,
         notificationBuilder: NotificationCompat.Builder
     ) {
-        val intent = Intent(context, CompleteQuestReceiver::class.java)
+        val intent = Intent(context, CompleteTimeRangeReceiver::class.java)
         intent.putExtra(Constants.QUEST_ID_EXTRA_KEY, questId)
 
         notificationBuilder.addAction(
@@ -186,7 +185,8 @@ class AndroidJobTimerCompleteScheduler : TimerCompleteScheduler {
         bundle.putString("questId", questId)
         JobRequest.Builder(TimerCompleteNotificationJob.TAG)
             .setExtras(bundle)
-            .setExact(after.millisValue)
+//            .setExact(after.millisValue)
+            .setExact(1000)
             .build()
             .schedule()
     }

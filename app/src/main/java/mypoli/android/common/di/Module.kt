@@ -410,7 +410,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
     private val scheduleChallengeUseCase by required { scheduleChallengeUseCase }
     private val splitDurationForPomodoroTimerUseCase by required { splitDurationForPomodoroTimerUseCase }
     private val listenForQuestChangeUseCase by required { listenForQuestChangeUseCase }
-    private val saveQuestActualDurationUseCase by required { completeTimeRangeUseCase }
+    private val completeTimeRangeUseCase by required { completeTimeRangeUseCase }
     private val cancelQuestTimerUseCase by required { cancelTimerUseCase }
     private val addPomodoroUseCase by required { addPomodoroUseCase }
     private val removePomodoroUseCase by required { removePomodoroUseCase }
@@ -424,6 +424,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
             undoRemoveQuestUseCase,
             completeQuestUseCase,
             undoCompleteQuestUseCase,
+            completeTimeRangeUseCase,
             job
         )
     override val reminderPickerPresenter
@@ -508,7 +509,7 @@ class AndroidPresenterModule : PresenterModule, Injects<ControllerModule> {
             splitDurationForPomodoroTimerUseCase,
             listenForQuestChangeUseCase,
             addTimerToQuestUseCase,
-            saveQuestActualDurationUseCase,
+            completeTimeRangeUseCase,
             cancelQuestTimerUseCase,
             addPomodoroUseCase,
             removePomodoroUseCase,
