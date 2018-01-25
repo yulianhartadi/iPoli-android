@@ -3,10 +3,7 @@ package mypoli.android.timer
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import mypoli.android.Constants
-import mypoli.android.common.datetime.milliseconds
-import mypoli.android.common.datetime.minus
-import mypoli.android.common.datetime.minutes
-import mypoli.android.common.datetime.seconds
+import mypoli.android.common.datetime.*
 import mypoli.android.common.mvi.BaseMviPresenter
 import mypoli.android.common.mvi.ViewStateRenderer
 import mypoli.android.quest.Quest
@@ -266,8 +263,12 @@ class TimerPresenter(
             }
 
             val duration = currentTimeRange.duration
-            val passed = Instant.now() - currentTimeRange.start!!
-            val remainingTime = duration.minutes - passed.milliseconds
+            val passed: Duration<Millisecond> = if (currentTimeRange.start != null)
+                (Instant.now() - currentTimeRange.start).milliseconds
+            else
+                0.milliseconds
+
+            val remainingTime = duration.minutes - passed
 
             val type =
                 if (questPomodoroTimeRanges.last().end == null) RESUMED
@@ -282,7 +283,7 @@ class TimerPresenter(
                 timerLabel = TimerFormatter.format(remainingTime.millisValue),
                 remainingTime = remainingTime.asSeconds,
                 currentProgressIndicator = currentProgressIndicator,
-                timerProgress = passed.milliseconds.asSeconds.intValue,
+                timerProgress = passed.asSeconds.intValue,
                 maxTimerProgress = duration.minutes.asSeconds.intValue
             )
         }
