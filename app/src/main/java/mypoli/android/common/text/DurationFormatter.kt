@@ -84,6 +84,9 @@ object DurationFormatter {
         if (duration < 0) {
             return ""
         }
+        if(duration == 0) {
+            return "0 min"
+        }
         val hours = TimeUnit.MINUTES.toHours(duration.toLong()).toInt()
         val mins = duration - hours * 60
         if (hours <= 0 && mins <= 0) {
@@ -103,7 +106,9 @@ object DurationFormatter {
         if (duration < 0) {
             return ""
         }
-
+        if(duration == 0) {
+            return context.resources.getQuantityString(R.plurals.duration_minutes, 0, 0)
+        }
         val hours = TimeUnit.MINUTES.toHours(duration.toLong()).toInt()
         val mins = duration - hours * 60
         if (hours <= 0 && mins <= 0) {
