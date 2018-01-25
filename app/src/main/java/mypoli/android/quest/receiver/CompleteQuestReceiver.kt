@@ -1,5 +1,6 @@
 package mypoli.android.quest.receiver
 
+import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -23,6 +24,9 @@ class CompleteQuestReceiver : BroadcastReceiver(), Injects<SimpleModule> {
         inject(myPoliApp.simpleModule(context))
         val questId = intent.getStringExtra(Constants.QUEST_ID_EXTRA_KEY)
         completeQuestUseCase.execute(WithQuestId(questId))
+
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(Constants.QUEST_TIMER_NOTIFICATION_ID)
     }
 
 }
